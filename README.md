@@ -11,6 +11,7 @@
 * [Requirements](#requirements)
 * [Dependencies](#dependencies)
 * [Usage](#usage)
+    * [Quick Start](#usage-quick-start)
     * [Component](#usage-component)
     * [TabShell](#usage-tabshell)
     * [Tab](#usage-tab)
@@ -45,11 +46,11 @@ Key features of TabShell include:
 * Support for 7 themes (4 dark and 3 light).
 * Styling with CSS.
 
-TabShell Kit include:
+Currently, TabShell Kit includes:
 
-* Terminal
-* Text Viewer/Editor
-* Dialogs
+* Terminal.
+* Text Viewer/Editor.
+* Dialogs.
 
 ## Requirements <a name="requirements"></a>
 
