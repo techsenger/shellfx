@@ -84,20 +84,20 @@ types of components:
 
 ### TabShell <a name="usage-tabshell"></a>
 
-TabShell is the main component and it is responsible for the following tasks:
+`TabShell` is the main component and it is responsible for the following tasks:
 
 * Window management.
 * Dynamic menu management.
-* ShellTab management.
+* Shell tab management.
 * Shell-scoped dialog management.
 * Theme management.
 
-TabShell core doesn't have any business logic. It is only a shell for tabs that contain logic.
+`TabShell` core doesn't have any business logic. It is only a shell for tabs that contain logic.
 
-TabShell works differently with the top menu (menu in MenuBar) and nested menus. When a tab is activated, the shell
+`TabShell` works differently with the top menu (menu in `MenuBar`) and nested menus. When a tab is activated, the shell
 requests the tab for supported optional menus (in the top menu) and hides menus that are not supported.
 
-When the menu is shown or when accelerator keys are used, the shell does the following (see the MenuAware interface):
+When the menu is shown or when accelerator keys are used, the shell does the following (see the `MenuAware` interface):
 1. The shell requests the tab to check if it supports this optional menu/item
 2. The shell requests the tab to verify if this menu/item is currently valid (i.e., not disabled).
 3. The shell requests the tab to check if this menu/item should be updated
