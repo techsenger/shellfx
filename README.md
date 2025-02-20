@@ -33,6 +33,7 @@ creating components. TabShell Kit includes pre-built components. Using TabShell 
 
 ## Demo <a name="demo"></a>
 
+![TabShell Demo](./demo.png)
 
 ## Features <a name="features"></a>
 
