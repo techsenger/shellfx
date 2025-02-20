@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palettes</title>
+    <style>
+        .color-box {
+            width: 125px;
+            height: 125px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0px;
+            position: relative;
+            font-weight: bold;
+        }
+        .color-box span {
+            background-color: white;
+            color: #222222;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .palette-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 1em;
+        }
+    </style>
+</head>
+<body>
+    <select id="palette-select">
+        <option value="cupertinoLight">Cupertino Light</option>
+        <option value="cupertinoDark">Cupertino Dark</option>
+        <option value="primerLight">Primer Light</option>
+        <option value="primerDark">Primer Dark</option>
+        <option value="nordLight">Nord Light</option>
+        <option value="nordDark">Nord Dark</option>
+        <option value="dracula">Dracula</option>
+    </select>
+
+    <input type="checkbox" id="rgba-checkbox">
+    <label for="rgba-checkbox">Always #RRGGBBAA</label>
+
+    <div id="palette-container" class="palette-container"></div>
+
+    <script>
+        const palettes = {
+            cupertinoLight: new Map([
+                ["dark", "#000000ff"], ["light", "#ffffffff"], ["base-0", "#f2f2f7ff"],
+                ["base-1", "#e5e5eaff"], ["base-2", "#d1d1d6ff"], ["base-3", "#c7c7ccff"],
+                ["base-4", "#aeaeb2ff"], ["base-5", "#8e8e93ff"], ["base-6", "#636366ff"],
+                ["base-7", "#48484aff"], ["base-8", "#3a3a3cff"], ["base-9", "#2c2c2eff"],
+                ["accent-0", "#bfdeffff"], ["accent-1", "#99caffff"], ["accent-2", "#73b6ffff"],
+                ["accent-3", "#4da2ffff"], ["accent-4", "#268effff"], ["accent-5", "#007affff"],
+                ["accent-6", "#0068d9ff"], ["accent-7", "#0055b3ff"], ["accent-8", "#00438cff"],
+                ["accent-9", "#003166ff"], ["success-0", "#c7f0cdff"], ["success-1", "#a5e7afff"],
+                ["success-2", "#83de91ff"], ["success-3", "#62d573ff"], ["success-4", "#40cc55ff"],
+                ["success-5", "#1ec337ff"], ["success-6", "#1aa62fff"], ["success-7", "#158927ff"],
+                ["success-8", "#116b1eff"], ["success-9", "#0c4e16ff"], ["warning-0", "#ffe5bfff"],
+                ["warning-1", "#ffd599ff"], ["warning-2", "#ffc573ff"], ["warning-3", "#ffb54dff"],
+                ["warning-4", "#ffa526ff"], ["warning-5", "#ff9500ff"], ["warning-6", "#d97f00ff"],
+                ["warning-7", "#b36800ff"], ["warning-8", "#8c5200ff"], ["warning-9", "#663c00ff"],
+                ["danger-0", "#ffcecbff"], ["danger-1", "#ffb1acff"], ["danger-2", "#ff938dff"],
+                ["danger-3", "#ff766eff"], ["danger-4", "#ff584fff"], ["danger-5", "#ff3b30ff"],
+                ["danger-6", "#d93229ff"], ["danger-7", "#b32922ff"], ["danger-8", "#8c201aff"],
+                ["danger-9", "#661813ff"], ["fg-default", "#000000ff"], ["fg-muted", "#636366ff"],
+                ["fg-subtle", "#8a8a8eff"], ["fg-emphasis", "#ffffffff"], ["bg-default", "#ffffffff"],
+                ["bg-overlay", "#ffffffff"], ["bg-subtle", "#f2f2f7ff"], ["bg-inset", "#f2f2f7ff"],
+                ["border-default", "#d1d1d6ff"], ["border-muted", "#d1d1d6ff"], ["border-subtle", "#d9d9d9ff"],
+                ["shadow-default", "#d1d1d6ff"], ["neutral-emphasis-plus", "#48484aff"], ["neutral-emphasis", "#636366ff"],
+                ["neutral-muted", "#d2d2d4ff"], ["neutral-subtle", "#f4f4f4ff"], ["accent-fg", "#007affff"],
+                ["accent-emphasis", "#007affff"], ["accent-muted", "#99caffff"], ["accent-subtle", "#e6f2ffff"],
+                ["warning-fg", "#ff9500ff"], ["warning-emphasis", "#d97f00ff"], ["warning-muted", "#ffd599ff"],
+                ["warning-subtle", "#fff4e6ff"], ["success-fg", "#1aa62fff"], ["success-emphasis", "#1ec337ff"],
+                ["success-muted", "#a5e7afff"], ["success-subtle", "#e9f9ebff"], ["danger-fg", "#ff3b30ff"],
+                ["danger-emphasis", "#ff3b30ff"], ["danger-muted", "#ffb1acff"], ["danger-subtle", "#ffe2e0ff"],
+                ["chart-1", "#f3622dff"], ["chart-2", "#fba71bff"], ["chart-3", "#57b757ff"],
+                ["chart-4", "#41a9c9ff"], ["chart-5", "#4258c9ff"], ["chart-6", "#9a42c8ff"],
+                ["chart-7", "#c84164ff"], ["chart-8", "#888888ff"], ["chart-1-alpha70", "#f3622db2"],
+                ["chart-2-alpha70", "#fba71bb2"], ["chart-3-alpha70", "#57b757b2"], ["chart-4-alpha70", "#41a9c9b2"],
+                ["chart-5-alpha70", "#4258c9b2"], ["chart-6-alpha70", "#9a42c8b2"], ["chart-7-alpha70", "#c84164b2"],
+                ["chart-8-alpha70", "#888888b2"], ["chart-1-alpha20", "#f3622d33"], ["chart-2-alpha20", "#fba71b33"],
+                ["chart-3-alpha20", "#57b75733"], ["chart-4-alpha20", "#41a9c933"], ["chart-5-alpha20", "#4258c933"],
+                ["chart-6-alpha20", "#9a42c833"], ["chart-7-alpha20", "#c8416433"], ["chart-8-alpha20", "#88888833"],
+            ]),
+
+            cupertinoDark: new Map([
+                ["dark", "#000000ff"], ["light", "#ffffffff"], ["base-0", "#f2f2f7ff"],
+                ["base-1", "#e5e5eaff"], ["base-2", "#d1d1d6ff"], ["base-3", "#aeaeb2ff"],
+                ["base-4", "#8e8e93ff"], ["base-5", "#636366ff"], ["base-6", "#48484aff"],
+                ["base-7", "#3a3a3cff"], ["base-8", "#2c2c2eff"], ["base-9", "#1c1c1eff"],
+                ["accent-0", "#c2e0ffff"], ["accent-1", "#9dceffff"], ["accent-2", "#78bbffff"],
+                ["accent-3", "#54a9ffff"], ["accent-4", "#2f96ffff"], ["accent-5", "#0a84ffff"],
+                ["accent-6", "#0970d9ff"], ["accent-7", "#075cb3ff"], ["accent-8", "#06498cff"],
+                ["accent-9", "#043566ff"], ["success-0", "#ccf5d2ff"], ["success-1", "#adefb7ff"],
+                ["success-2", "#8ee99cff"], ["success-3", "#70e381ff"], ["success-4", "#51dd66ff"],
+                ["success-5", "#32d74bff"], ["success-6", "#2bb740ff"], ["success-7", "#239735ff"],
+                ["success-8", "#1c7629ff"], ["success-9", "#14561eff"], ["warning-0", "#ffe7c2ff"],
+                ["warning-1", "#ffd99dff"], ["warning-2", "#ffca78ff"], ["warning-3", "#ffbc54ff"],
+                ["warning-4", "#ffad2fff"], ["warning-5", "#ff9f0aff"], ["warning-6", "#d98709ff"],
+                ["warning-7", "#b36f07ff"], ["warning-8", "#8c5706ff"], ["warning-9", "#664004ff"],
+                ["danger-0", "#ffd1ceff"], ["danger-1", "#ffb5b0ff"], ["danger-2", "#ff9993ff"],
+                ["danger-3", "#ff7d75ff"], ["danger-4", "#ff6158ff"], ["danger-5", "#ff453aff"],
+                ["danger-6", "#d93b31ff"], ["danger-7", "#b33029ff"], ["danger-8", "#8c2620ff"],
+                ["danger-9", "#661c17ff"], ["fg-default", "#ffffffff"], ["fg-muted", "#aeaeb2ff"],
+                ["fg-subtle", "#8d8d93ff"], ["fg-emphasis", "#ffffffff"], ["bg-default", "#1c1c1eff"],
+                ["bg-overlay", "#1c1c1eff"], ["bg-subtle", "#2c2c2eff"], ["bg-inset", "#0b0b0cff"],
+                ["border-default", "#48484aff"], ["border-muted", "#3a3a3cff"], ["border-subtle", "#313134ff"],
+                ["shadow-default", "#000000ff"], ["neutral-emphasis-plus", "#8e8e93ff"], ["neutral-emphasis", "#8e8e93ff"],
+                ["neutral-muted", "#63636666"], ["neutral-subtle", "#6363661a"], ["accent-fg", "#2f96ffff"],
+                ["accent-emphasis", "#0a84ffff"], ["accent-muted", "#0a84ff66"], ["accent-subtle", "#0a84ff26"],
+                ["warning-fg", "#ff9f0aff"], ["warning-emphasis", "#d98709ff"], ["warning-muted", "#ff9f0a66"],
+                ["warning-subtle", "#ff9f0a26"], ["success-fg", "#32d74bff"], ["success-emphasis", "#2bb740ff"],
+                ["success-muted", "#32d74b66"], ["success-subtle", "#32d74b26"], ["danger-fg", "#ff453aff"],
+                ["danger-emphasis", "#ff453aff"], ["danger-muted", "#ff453a66"], ["danger-subtle", "#ff453a26"],
+                ["chart-1", "#f3622dff"], ["chart-2", "#fba71bff"], ["chart-3", "#57b757ff"],
+                ["chart-4", "#41a9c9ff"], ["chart-5", "#4258c9ff"], ["chart-6", "#9a42c8ff"],
+                ["chart-7", "#c84164ff"], ["chart-8", "#888888ff"], ["chart-1-alpha70", "#f3622db2"],
+                ["chart-2-alpha70", "#fba71bb2"], ["chart-3-alpha70", "#57b757b2"], ["chart-4-alpha70", "#41a9c9b2"],
+                ["chart-5-alpha70", "#4258c9b2"], ["chart-6-alpha70", "#9a42c8b2"], ["chart-7-alpha70", "#c84164b2"],
+                ["chart-8-alpha70", "#888888b2"], ["chart-1-alpha20", "#f3622d33"], ["chart-2-alpha20", "#fba71b33"],
+                ["chart-3-alpha20", "#57b75733"], ["chart-4-alpha20", "#41a9c933"], ["chart-5-alpha20", "#4258c933"],
+                ["chart-6-alpha20", "#9a42c833"], ["chart-7-alpha20", "#c8416433"], ["chart-8-alpha20", "#88888833"],
+
+            ]),
+            primerLight: new Map([
+                ["dark", "#1b1f24ff"], ["light", "#ffffffff"], ["base-0", "#f6f8faff"],
+                ["base-1", "#eaeef2ff"], ["base-2", "#d0d7deff"], ["base-3", "#afb8c1ff"],
+                ["base-4", "#8c959fff"], ["base-5", "#6e7781ff"], ["base-6", "#57606aff"],
+                ["base-7", "#424a53ff"], ["base-8", "#32383fff"], ["base-9", "#24292fff"],
+                ["accent-0", "#ddf4ffff"], ["accent-1", "#b6e3ffff"], ["accent-2", "#80ccffff"],
+                ["accent-3", "#54aeffff"], ["accent-4", "#218bffff"], ["accent-5", "#0969daff"],
+                ["accent-6", "#0550aeff"], ["accent-7", "#033d8bff"], ["accent-8", "#0a3069ff"],
+                ["accent-9", "#002155ff"], ["success-0", "#dafbe1ff"], ["success-1", "#aceebbff"],
+                ["success-2", "#6fdd8bff"], ["success-3", "#4ac26bff"], ["success-4", "#2da44eff"],
+                ["success-5", "#1a7f37ff"], ["success-6", "#116329ff"], ["success-7", "#044f1eff"],
+                ["success-8", "#003d16ff"], ["success-9", "#002d11ff"], ["warning-0", "#fff8c5ff"],
+                ["warning-1", "#fae17dff"], ["warning-2", "#eac54fff"], ["warning-3", "#d4a72cff"],
+                ["warning-4", "#bf8700ff"], ["warning-5", "#9a6700ff"], ["warning-6", "#7d4e00ff"],
+                ["warning-7", "#633c01ff"], ["warning-8", "#4d2d00ff"], ["warning-9", "#3b2300ff"],
+                ["danger-0", "#ffebe9ff"], ["danger-1", "#ffcecbff"], ["danger-2", "#ffaba8ff"],
+                ["danger-3", "#ff8182ff"], ["danger-4", "#fa4549ff"], ["danger-5", "#cf222eff"],
+                ["danger-6", "#a40e26ff"], ["danger-7", "#82071eff"], ["danger-8", "#660018ff"],
+                ["danger-9", "#4c0014ff"], ["fg-default", "#24292fff"], ["fg-muted", "#57606aff"],
+                ["fg-subtle", "#6e7781ff"], ["fg-emphasis", "#ffffffff"], ["bg-default", "#ffffffff"],
+                ["bg-overlay", "#ffffffff"], ["bg-subtle", "#f6f8faff"], ["bg-inset", "#f6f8faff"],
+                ["border-default", "#d0d7deff"], ["border-muted", "#d0d7deff"], ["border-subtle", "#dddddeff"],
+                ["shadow-default", "#d0d7deff"], ["neutral-emphasis-plus", "#24292fff"], ["neutral-emphasis", "#6e7781ff"],
+                ["neutral-muted", "#afb8c133"], ["neutral-subtle", "#eaeef280"], ["accent-fg", "#0969daff"],
+                ["accent-emphasis", "#0969daff"], ["accent-muted", "#54aeff66"], ["accent-subtle", "#ddf4ffff"],
+                ["warning-fg", "#9a6700ff"], ["warning-emphasis", "#bf8700ff"], ["warning-muted", "#d4a72c66"],
+                ["warning-subtle", "#fff8c5ff"], ["success-fg", "#1a7f37ff"], ["success-emphasis", "#2da44eff"],
+                ["success-muted", "#4ac26b66"], ["success-subtle", "#dafbe1ff"], ["danger-fg", "#cf222eff"],
+                ["danger-emphasis", "#cf222eff"], ["danger-muted", "#ff818266"], ["danger-subtle", "#ffebe9ff"],
+                ["chart-1", "#f3622dff"], ["chart-2", "#fba71bff"], ["chart-3", "#57b757ff"],
+                ["chart-4", "#41a9c9ff"], ["chart-5", "#4258c9ff"], ["chart-6", "#9a42c8ff"],
+                ["chart-7", "#c84164ff"], ["chart-8", "#888888ff"], ["chart-1-alpha70", "#f3622db2"],
+                ["chart-2-alpha70", "#fba71bb2"], ["chart-3-alpha70", "#57b757b2"], ["chart-4-alpha70", "#41a9c9b2"],
+                ["chart-5-alpha70", "#4258c9b2"], ["chart-6-alpha70", "#9a42c8b2"], ["chart-7-alpha70", "#c84164b2"],
+                ["chart-8-alpha70", "#888888b2"], ["chart-1-alpha20", "#f3622d33"], ["chart-2-alpha20", "#fba71b33"],
+                ["chart-3-alpha20", "#57b75733"], ["chart-4-alpha20", "#41a9c933"], ["chart-5-alpha20", "#4258c933"],
+                ["chart-6-alpha20", "#9a42c833"], ["chart-7-alpha20", "#c8416433"], ["chart-8-alpha20", "#88888833"],
+            ]),
+            primerDark: new Map([
+                ["dark", "#010409ff"], ["light", "#ffffffff"], ["base-0", "#f0f6fcff"],
+                ["base-1", "#c9d1d9ff"], ["base-2", "#b1bac4ff"], ["base-3", "#8b949eff"],
+                ["base-4", "#6e7681ff"], ["base-5", "#484f58ff"], ["base-6", "#30363dff"],
+                ["base-7", "#21262dff"], ["base-8", "#161b22ff"], ["base-9", "#0d1117ff"],
+                ["accent-0", "#cae8ffff"], ["accent-1", "#a5d6ffff"], ["accent-2", "#79c0ffff"],
+                ["accent-3", "#58a6ffff"], ["accent-4", "#388bfdff"], ["accent-5", "#1f6febff"],
+                ["accent-6", "#1158c7ff"], ["accent-7", "#0d419dff"], ["accent-8", "#0c2d6bff"],
+                ["accent-9", "#051d4dff"], ["success-0", "#aff5b4ff"], ["success-1", "#7ee787ff"],
+                ["success-2", "#56d364ff"], ["success-3", "#3fb950ff"], ["success-4", "#2ea043ff"],
+                ["success-5", "#238636ff"], ["success-6", "#196c2eff"], ["success-7", "#0f5323ff"],
+                ["success-8", "#033a16ff"], ["success-9", "#04260fff"], ["warning-0", "#f8e3a1ff"],
+                ["warning-1", "#f2cc60ff"], ["warning-2", "#e3b341ff"], ["warning-3", "#d29922ff"],
+                ["warning-4", "#bb8009ff"], ["warning-5", "#9e6a03ff"], ["warning-6", "#845306ff"],
+                ["warning-7", "#693e00ff"], ["warning-8", "#4b2900ff"], ["warning-9", "#341a00ff"],
+                ["danger-0", "#ffdcd7ff"], ["danger-1", "#ffc1baff"], ["danger-2", "#ffa198ff"],
+                ["danger-3", "#ff7b72ff"], ["danger-4", "#f85149ff"], ["danger-5", "#da3633ff"],
+                ["danger-6", "#b62324ff"], ["danger-7", "#8e1519ff"], ["danger-8", "#67060cff"],
+                ["danger-9", "#490202ff"], ["fg-default", "#c9d1d9ff"], ["fg-muted", "#8b949eff"],
+                ["fg-subtle", "#6e7681ff"], ["fg-emphasis", "#ffffffff"], ["bg-default", "#0d1117ff"],
+                ["bg-overlay", "#0d1117ff"], ["bg-subtle", "#161b22ff"], ["bg-inset", "#010409ff"],
+                ["border-default", "#30363dff"], ["border-muted", "#21262dff"], ["border-subtle", "#24282eff"],
+                ["shadow-default", "#010409ff"], ["neutral-emphasis-plus", "#6e7681ff"], ["neutral-emphasis", "#6e7681ff"],
+                ["neutral-muted", "#6e768166"], ["neutral-subtle", "#6e76811a"], ["accent-fg", "#58a6ffff"],
+                ["accent-emphasis", "#1f6febff"], ["accent-muted", "#388bfd66"], ["accent-subtle", "#388bfd26"],
+                ["warning-fg", "#d29922ff"], ["warning-emphasis", "#9e6a03ff"], ["warning-muted", "#bb800966"],
+                ["warning-subtle", "#bb800926"], ["success-fg", "#3fb950ff"], ["success-emphasis", "#238636ff"],
+                ["success-muted", "#2ea04366"], ["success-subtle", "#2ea04326"], ["danger-fg", "#f85149ff"],
+                ["danger-emphasis", "#da3633ff"], ["danger-muted", "#f8514966"], ["danger-subtle", "#f8514926"],
+                ["chart-1", "#f3622dff"], ["chart-2", "#fba71bff"], ["chart-3", "#57b757ff"],
+                ["chart-4", "#41a9c9ff"], ["chart-5", "#4258c9ff"], ["chart-6", "#9a42c8ff"],
+                ["chart-7", "#c84164ff"], ["chart-8", "#888888ff"], ["chart-1-alpha70", "#f3622db2"],
+                ["chart-2-alpha70", "#fba71bb2"], ["chart-3-alpha70", "#57b757b2"], ["chart-4-alpha70", "#41a9c9b2"],
+                ["chart-5-alpha70", "#4258c9b2"], ["chart-6-alpha70", "#9a42c8b2"], ["chart-7-alpha70", "#c84164b2"],
+                ["chart-8-alpha70", "#888888b2"], ["chart-1-alpha20", "#f3622d33"], ["chart-2-alpha20", "#fba71b33"],
+                ["chart-3-alpha20", "#57b75733"], ["chart-4-alpha20", "#41a9c933"], ["chart-5-alpha20", "#4258c933"],
+                ["chart-6-alpha20", "#9a42c833"], ["chart-7-alpha20", "#c8416433"], ["chart-8-alpha20", "#88888833"],
+            ]),
+            nordLight: new Map([
+                ["dark", "#232730ff"], ["light", "#fafafcff"], ["base-0", "#eef1f5ff"],
+                ["base-1", "#e5e9f0ff"], ["base-2", "#d8dee9ff"], ["base-3", "#c7cedaff"],
+                ["base-4", "#b7becbff"], ["base-5", "#979faeff"], ["base-6", "#788192ff"],
+                ["base-7", "#4c566aff"], ["base-8", "#3b4252ff"], ["base-9", "#2e3440ff"],
+                ["accent-0", "#d2dce8ff"], ["accent-1", "#bccadcff"], ["accent-2", "#98aecaff"],
+                ["accent-3", "#859fc0ff"], ["accent-4", "#7190b6ff"], ["accent-5", "#5e81acff"],
+                ["accent-6", "#537297ff"], ["accent-7", "#476283ff"], ["accent-8", "#3c536eff"],
+                ["accent-9", "#314359ff"], ["success-0", "#d1e5e5ff"], ["success-1", "#aacfceff"],
+                ["success-2", "#82b8b8ff"], ["success-3", "#6fadacff"], ["success-4", "#5ba2a1ff"],
+                ["success-5", "#508f8eff"], ["success-6", "#457b7aff"], ["success-7", "#3a6867ff"],
+                ["success-8", "#2f5454ff"], ["success-9", "#244140ff"], ["warning-0", "#f1dcd5ff"],
+                ["warning-1", "#e9c7bcff"], ["warning-2", "#e1b1a2ff"], ["warning-3", "#daa08dff"],
+                ["warning-4", "#d5937eff"], ["warning-5", "#bb7a65ff"], ["warning-6", "#a66c5aff"],
+                ["warning-7", "#925f4eff"], ["warning-8", "#7d5143ff"], ["warning-9", "#684438ff"],
+                ["danger-0", "#eacacdff"], ["danger-1", "#dfb1b5ff"], ["danger-2", "#d29097ff"],
+                ["danger-3", "#c57179ff"], ["danger-4", "#bf616aff"], ["danger-5", "#ac575fff"],
+                ["danger-6", "#994e55ff"], ["danger-7", "#86444aff"], ["danger-8", "#733a40ff"],
+                ["danger-9", "#603135ff"], ["fg-default", "#2e3440ff"], ["fg-muted", "#4c566ae0"],
+                ["fg-subtle", "#788192ff"], ["fg-emphasis", "#fafafcff"], ["bg-default", "#fafafcff"],
+                ["bg-overlay", "#fafafcff"], ["bg-subtle", "#eef1f5ff"], ["bg-inset", "#e5e9f0ff"],
+                ["border-default", "#c7cedaff"], ["border-muted", "#c7cedaff"], ["border-subtle", "#dadaddff"],
+                ["shadow-default", "#c7cedaff"], ["neutral-emphasis-plus", "#3b4252ff"], ["neutral-emphasis", "#4c566aff"],
+                ["neutral-muted", "#d2d6ddff"], ["neutral-subtle", "#f0f1f4ff"], ["accent-fg", "#537297ff"],
+                ["accent-emphasis", "#476283ff"], ["accent-muted", "#c3d0e0ff"], ["accent-subtle", "#eceff5ff"],
+                ["warning-fg", "#925f4eff"], ["warning-emphasis", "#a66c5aff"], ["warning-muted", "#ebd1caff"],
+                ["warning-subtle", "#f6f0efff"], ["success-fg", "#3a6867ff"], ["success-emphasis", "#457b7aff"],
+                ["success-muted", "#bad7d8ff"], ["success-subtle", "#eaf1f3ff"], ["danger-fg", "#994e55ff"],
+                ["danger-emphasis", "#ac575fff"], ["danger-muted", "#e2bdc2ff"], ["danger-subtle", "#f1e3e6ff"],
+                ["chart-1", "#f3622dff"], ["chart-2", "#fba71bff"], ["chart-3", "#57b757ff"],
+                ["chart-4", "#41a9c9ff"], ["chart-5", "#4258c9ff"], ["chart-6", "#9a42c8ff"],
+                ["chart-7", "#c84164ff"], ["chart-8", "#888888ff"], ["chart-1-alpha70", "#f3622db2"],
+                ["chart-2-alpha70", "#fba71bb2"], ["chart-3-alpha70", "#57b757b2"], ["chart-4-alpha70", "#41a9c9b2"],
+                ["chart-5-alpha70", "#4258c9b2"], ["chart-6-alpha70", "#9a42c8b2"], ["chart-7-alpha70", "#c84164b2"],
+                ["chart-8-alpha70", "#888888b2"], ["chart-1-alpha20", "#f3622d33"], ["chart-2-alpha20", "#fba71b33"],
+                ["chart-3-alpha20", "#57b75733"], ["chart-4-alpha20", "#41a9c933"], ["chart-5-alpha20", "#4258c933"],
+                ["chart-6-alpha20", "#9a42c833"], ["chart-7-alpha20", "#c8416433"], ["chart-8-alpha20", "#88888833"],
+            ]),
+            nordDark: new Map([
+                ["dark", "#232730ff"], ["light", "#fdfdfeff"], ["base-0", "#eceff4ff"],
+                ["base-1", "#e5e9f0ff"], ["base-2", "#d8dee9ff"], ["base-3", "#c7cedaff"],
+                ["base-4", "#b7becbff"], ["base-5", "#979faeff"], ["base-6", "#788192ff"],
+                ["base-7", "#4c566aff"], ["base-8", "#3b4252ff"], ["base-9", "#2e3440ff"],
+                ["accent-0", "#d2dce8ff"], ["accent-1", "#bccadcff"], ["accent-2", "#98aecaff"],
+                ["accent-3", "#859fc0ff"], ["accent-4", "#7190b6ff"], ["accent-5", "#5e81acff"],
+                ["accent-6", "#537297ff"], ["accent-7", "#476283ff"], ["accent-8", "#3c536eff"],
+                ["accent-9", "#314359ff"], ["success-0", "#d1e5e5ff"], ["success-1", "#aacfceff"],
+                ["success-2", "#82b8b8ff"], ["success-3", "#6fadacff"], ["success-4", "#5ba2a1ff"],
+                ["success-5", "#508f8eff"], ["success-6", "#457b7aff"], ["success-7", "#3a6867ff"],
+                ["success-8", "#2f5454ff"], ["success-9", "#244140ff"], ["warning-0", "#f1dcd5ff"],
+                ["warning-1", "#e9c7bcff"], ["warning-2", "#e1b1a2ff"], ["warning-3", "#daa08dff"],
+                ["warning-4", "#d5937eff"], ["warning-5", "#bb7a65ff"], ["warning-6", "#a66c5aff"],
+                ["warning-7", "#925f4eff"], ["warning-8", "#7d5143ff"], ["warning-9", "#684438ff"],
+                ["danger-0", "#eacacdff"], ["danger-1", "#dfb1b5ff"], ["danger-2", "#d29097ff"],
+                ["danger-3", "#c57179ff"], ["danger-4", "#bf616aff"], ["danger-5", "#ac575fff"],
+                ["danger-6", "#994e55ff"], ["danger-7", "#86444aff"], ["danger-8", "#733a40ff"],
+                ["danger-9", "#603135ff"], ["fg-default", "#eceff4ff"], ["fg-muted", "#979faeff"],
+                ["fg-subtle", "#788192ff"], ["fg-emphasis", "#fdfdfeff"], ["bg-default", "#2e3440ff"],
+                ["bg-overlay", "#2e3440ff"], ["bg-subtle", "#3b4252ff"], ["bg-inset", "#232730ff"],
+                ["border-default", "#5e6675ff"], ["border-muted", "#4c566aff"], ["border-subtle", "#3b4252ff"],
+                ["shadow-default", "#232730ff"], ["neutral-emphasis-plus", "#788192ff"], ["neutral-emphasis", "#4c566aff"],
+                ["neutral-muted", "#3a4251ff"], ["neutral-subtle", "#343b48ff"], ["accent-fg", "#98aecaff"],
+                ["accent-emphasis", "#5e81acff"], ["accent-muted", "#49596fff"], ["accent-subtle", "#353d4cff"],
+                ["warning-fg", "#e1b1a2ff"], ["warning-emphasis", "#bb7a65ff"], ["warning-muted", "#715a59ff"],
+                ["warning-subtle", "#3f3e46ff"], ["success-fg", "#82b8b8ff"], ["success-emphasis", "#508f8eff"],
+                ["success-muted", "#406067ff"], ["success-subtle", "#333f4aff"], ["danger-fg", "#d29097ff"],
+                ["danger-emphasis", "#bf616aff"], ["danger-muted", "#684651ff"], ["danger-subtle", "#3d3944ff"],
+                ["chart-1", "#f3622dff"], ["chart-2", "#fba71bff"], ["chart-3", "#57b757ff"],
+                ["chart-4", "#41a9c9ff"], ["chart-5", "#4258c9ff"], ["chart-6", "#9a42c8ff"],
+                ["chart-7", "#c84164ff"], ["chart-8", "#888888ff"], ["chart-1-alpha70", "#f3622db2"],
+                ["chart-2-alpha70", "#fba71bb2"], ["chart-3-alpha70", "#57b757b2"], ["chart-4-alpha70", "#41a9c9b2"],
+                ["chart-5-alpha70", "#4258c9b2"], ["chart-6-alpha70", "#9a42c8b2"], ["chart-7-alpha70", "#c84164b2"],
+                ["chart-8-alpha70", "#888888b2"], ["chart-1-alpha20", "#f3622d33"], ["chart-2-alpha20", "#fba71b33"],
+                ["chart-3-alpha20", "#57b75733"], ["chart-4-alpha20", "#41a9c933"], ["chart-5-alpha20", "#4258c933"],
+                ["chart-6-alpha20", "#9a42c833"], ["chart-7-alpha20", "#c8416433"], ["chart-8-alpha20", "#88888833"],
+            ]),
+            dracula: new Map([
+                ["dark", "#0d0e12ff"], ["light", "#f8f8f2ff"], ["base-0", "#d4d4d7ff"],
+                ["base-1", "#bfbfc3ff"], ["base-2", "#94959bff"], ["base-3", "#7e7f86ff"],
+                ["base-4", "#696a72ff"], ["base-5", "#53555eff"], ["base-6", "#3d3f4aff"],
+                ["base-7", "#282a36ff"], ["base-8", "#181920ff"], ["base-9", "#0d0e12ff"],
+                ["accent-0", "#e5dfffff"], ["accent-1", "#d5ccffff"], ["accent-2", "#c5b9ffff"],
+                ["accent-3", "#b5a6ffff"], ["accent-4", "#a593ffff"], ["accent-5", "#9580ffff"],
+                ["accent-6", "#7f6dd9ff"], ["accent-7", "#685ab3ff"], ["accent-8", "#52468cff"],
+                ["accent-9", "#3c3366ff"], ["success-0", "#e2ffdfff"], ["success-1", "#d0ffccff"],
+                ["success-2", "#bfffb9ff"], ["success-3", "#adffa6ff"], ["success-4", "#9cff93ff"],
+                ["success-5", "#8aff80ff"], ["success-6", "#75d96dff"], ["success-7", "#61b35aff"],
+                ["success-8", "#4c8c46ff"], ["success-9", "#376633ff"], ["warning-0", "#fff2dfff"],
+                ["warning-1", "#ffeaccff"], ["warning-2", "#ffe2b9ff"], ["warning-3", "#ffdaa6ff"],
+                ["warning-4", "#ffd293ff"], ["warning-5", "#ffca80ff"], ["warning-6", "#d9ac6dff"],
+                ["warning-7", "#b38d5aff"], ["warning-8", "#8c6f46ff"], ["warning-9", "#665133ff"],
+                ["danger-0", "#ffe5dfff"], ["danger-1", "#ffd5ccff"], ["danger-2", "#ffc5b9ff"],
+                ["danger-3", "#ffb5a6ff"], ["danger-4", "#ffa593ff"], ["danger-5", "#ff9580ff"],
+                ["danger-6", "#d97f6dff"], ["danger-7", "#b3685aff"], ["danger-8", "#8c5246ff"],
+                ["danger-9", "#663c33ff"], ["fg-default", "#f8f8f2ff"], ["fg-muted", "#bfbfc3ff"],
+                ["fg-subtle", "#7e7f86ff"], ["fg-emphasis", "#0d0e12ff"], ["bg-default", "#282a36ff"],
+                ["bg-overlay", "#282a36ff"], ["bg-subtle", "#3d3f4aff"], ["bg-inset", "#181920ff"],
+                ["border-default", "#685ab3ff"], ["border-muted", "#52468cff"], ["border-subtle", "#3c3366ff"],
+                ["shadow-default", "#0d0e12ff"], ["neutral-emphasis-plus", "#94959bff"], ["neutral-emphasis", "#7e7f86ff"],
+                ["neutral-muted", "#7e7f8666"], ["neutral-subtle", "#94959b1a"], ["accent-fg", "#9580ffff"],
+                ["accent-emphasis", "#9580ffff"], ["accent-muted", "#9580ff66"], ["accent-subtle", "#9580ff1a"],
+                ["warning-fg", "#ffca80ff"], ["warning-emphasis", "#ffca80ff"], ["warning-muted", "#ffca8066"],
+                ["warning-subtle", "#ffca801a"], ["success-fg", "#8aff80ff"], ["success-emphasis", "#8aff80ff"],
+                ["success-muted", "#8aff8066"], ["success-subtle", "#8aff801a"], ["danger-fg", "#ff9580ff"],
+                ["danger-emphasis", "#ff9580ff"], ["danger-muted", "#ff958066"], ["danger-subtle", "#ff95801a"],
+                ["chart-1", "#f3622dff"], ["chart-2", "#fba71bff"], ["chart-3", "#57b757ff"],
+                ["chart-4", "#41a9c9ff"], ["chart-5", "#4258c9ff"], ["chart-6", "#9a42c8ff"],
+                ["chart-7", "#c84164ff"], ["chart-8", "#888888ff"], ["chart-1-alpha70", "#f3622db2"],
+                ["chart-2-alpha70", "#fba71bb2"], ["chart-3-alpha70", "#57b757b2"], ["chart-4-alpha70", "#41a9c9b2"],
+                ["chart-5-alpha70", "#4258c9b2"], ["chart-6-alpha70", "#9a42c8b2"], ["chart-7-alpha70", "#c84164b2"],
+                ["chart-8-alpha70", "#888888b2"], ["chart-1-alpha20", "#f3622d33"], ["chart-2-alpha20", "#fba71b33"],
+                ["chart-3-alpha20", "#57b75733"], ["chart-4-alpha20", "#41a9c933"], ["chart-5-alpha20", "#4258c933"],
+                ["chart-6-alpha20", "#9a42c833"], ["chart-7-alpha20", "#c8416433"], ["chart-8-alpha20", "#88888833"],
+            ]),
+        };
+
+        function resolveForegroundColor(backgroundColor) {
+            if (!/^#[0-9A-Fa-f]{8}$/.test(backgroundColor)) {
+                throw new Error("Invalid color format. Expected #rrggbbaa.");
+            }
+            const r = parseInt(backgroundColor.slice(1, 3), 16);
+            const g = parseInt(backgroundColor.slice(3, 5), 16);
+            const b = parseInt(backgroundColor.slice(5, 7), 16);
+            const a = parseInt(backgroundColor.slice(7, 9), 16) / 255;
+            const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+            const textColor = luminance > 128 ? '#000000' : '#FFFFFF';
+            return `${textColor}${Math.round(a * 255).toString(16).padStart(2, '0')}`;
+        }
+
+        const selectElement = document.getElementById('palette-select');
+        const checkboxElement = document.getElementById('rgba-checkbox');
+        const paletteContainer = document.getElementById('palette-container');
+
+        function updatePalette() {
+            const selectedPalette = selectElement.value;
+            const map = palettes[selectedPalette];
+            paletteContainer.innerHTML = ''; // Clear previous palette
+            for (const [key, value] of map.entries()) {
+                const colorBox = document.createElement('div');
+                colorBox.className = 'color-box';
+                colorBox.style.backgroundColor = value;
+                const colorValue = document.createElement('span');
+                var v = value.toUpperCase();
+                if (v.endsWith('FF')) {
+                    if (checkboxElement.checked) {
+                        colorValue.textContent = "0x" + v.substring(1);
+                    } else {
+                        colorValue.textContent = "0x" + v.substring(1).substring(0, 6);
+                    }
+                } else {
+                    colorValue.textContent = "0x" + v.substring(1);
+                }
+                colorBox.appendChild(colorValue);
+                const colorName = document.createElement('span');
+                //colorName.style = "user-select: none;";
+                colorName.textContent = key;
+                colorName.style.backgroundColor = value;
+                colorName.style.color = resolveForegroundColor(value);
+                colorBox.appendChild(colorName);
+                paletteContainer.appendChild(colorBox);
+            }
+        }
+
+        selectElement.addEventListener('change', updatePalette);
+        checkboxElement.addEventListener('change', updatePalette);
+
+        // Initialize with the first palette
+        updatePalette();
+    </script>
+</body>
+</html>

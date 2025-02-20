@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.techsenger.maven-root</groupId>
+        <artifactId>maven-root</artifactId>
+        <version>1.5.0</version>
+    </parent>
+
+    <groupId>com.techsenger.tabshell</groupId>
+    <artifactId>tabshell</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>TabShell</name>
+    <description>Techsenger TabShell</description>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <url>https://github.com/techsenger/tabshell</url>
+
+    <scm>
+        <connection>scm:git:https://github.com/techsenger/tabshell.git</connection>
+        <developerConnection>scm:git:https://github.com/techsenger/tabshell.git</developerConnection>
+        <url>https://github.com/techsenger/tabshell</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/techsenger/tabshell/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>pcastornii</id>
+            <name>Pavel Castornii</name>
+        </developer>
+    </developers>
+
+    <properties>
+        <publishing.plugin.exclusions>tabshell-demo,tabshell-kit-demo</publishing.plugin.exclusions>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.techsenger.osp-bom</groupId>
+                <artifactId>osp-bom</artifactId>
+                <version>1.5.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-material</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-demo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell.kit</groupId>
+                <artifactId>tabshell-kit-material</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell.kit</groupId>
+                <artifactId>tabshell-kit-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell.kit</groupId>
+                <artifactId>tabshell-kit-dialog</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell.kit</groupId>
+                <artifactId>tabshell-kit-text</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell.kit</groupId>
+                <artifactId>tabshell-kit-terminal</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>tabshell-material</module>
+        <module>tabshell-core</module>
+        <module>tabshell-demo</module>
+        <module>tabshell-kit</module>
+    </modules>
+</project>

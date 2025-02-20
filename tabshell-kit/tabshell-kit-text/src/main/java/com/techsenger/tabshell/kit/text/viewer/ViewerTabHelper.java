@@ -1,0 +1,84 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.kit.text.viewer;
+
+import com.techsenger.mvvm4fx.core.HistoryPolicy;
+import com.techsenger.tabshell.kit.core.workertab.WorkerTabHelper;
+import com.techsenger.tabshell.kit.dialog.StandardDialogHelper;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class ViewerTabHelper<T extends AbstractViewerTabView<?>>
+        extends WorkerTabHelper<T> implements StandardDialogHelper<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(ViewerTabHelper.class);
+
+    public ViewerTabHelper(T view) {
+        super(view);
+    }
+
+    public void openGoToLineDialog(GoToLineDialogViewModel viewModel) {
+        var tabView = (AbstractViewerTabView<?>) getView();
+        var view = new GoToLineDialogView(viewModel);
+        view.initialize();
+        viewModel.okActionProperty().set(() -> {
+            try {
+                viewModel.setHistoryPolicy(HistoryPolicy.DATA); //before closing
+                viewModel.close();
+                var line = viewModel.getLine();
+                if (line > 0) {
+                    line--;
+                }
+                var column = viewModel.getColumn();
+                if (column > 0) {
+                    column--;
+                }
+                tabView.getTextArea().moveTo(line, column);
+                tabView.getTextArea().requestFollowCaret();
+                tabView.getTextArea().requestFocus();
+                logger.debug("Moved caret to line: {}, column: {}", line, column);
+            } catch (Exception ex) {
+                logger.error("e", ex);
+            }
+        });
+        tabView.getDialogManager().openDialog(view);
+    }
+
+    public void addFindPane(DefaultFindPaneViewModel viewModel) {
+        var view = new DefaultFindPaneView(getView().getTextArea(), viewModel);
+        view.initialize();
+        view.getNode().addEventHandler(KeyEvent.KEY_PRESSED, (e) -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                getView().getViewModel().removeFindPane();
+            }
+        });
+        if (!viewModel.replaceModeProperty().get()) {
+            view.setSelectionToFindText();
+        }
+        getView().addFindPane(view);
+    }
+
+    public void removeFindPane() {
+        getView().removeFindPane();
+    }
+}

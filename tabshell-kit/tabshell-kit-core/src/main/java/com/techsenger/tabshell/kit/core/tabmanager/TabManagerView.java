@@ -1,0 +1,166 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.kit.core.tabmanager;
+
+import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.tab.ComponentTab;
+import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.core.tab.TabPaneHolderView;
+import com.techsenger.tabshell.core.tab.TabPaneHolderViewUtils;
+import com.techsenger.tabshell.kit.core.style.StyleClasses;
+import java.util.List;
+import java.util.stream.Collectors;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ListChangeListener;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+
+/**
+ * TabManager is the generic class for components that have TabPane and every tab is a separate component.
+ *
+ * @author Pavel Castornii
+ */
+public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implements TabPaneHolderView<TabView<?>> {
+
+    private final TabPane root = new TabPane();
+
+    private final ReadOnlyObjectWrapper<TabView<?>> selectedTab = new ReadOnlyObjectWrapper<>();
+
+    public TabManagerView(TabManagerViewModel viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void openTab(TabView<?> tabView) {
+        root.getTabs().add(tabView.getNode());
+    }
+
+    @Override
+    public void closeTab(ComponentTab tab) {
+        this.closeTab(tab.getView());
+    }
+
+    @Override
+    public void closeTab(TabView<?> tabView) {
+        if (tabView.doOnCloseRequest()) {
+            root.getTabs().remove(tabView.getNode());
+            tabView.deinitialize();
+            var closedCallback = tabView.getViewModel().getOnClosed();
+            if (closedCallback != null) {
+                closedCallback.call();
+            }
+        }
+    }
+
+    @Override
+    public TabView<?> getSelectedTab() {
+        var tab = this.root.getSelectionModel().getSelectedItem();
+        return ((ComponentTab) tab).getView();
+    }
+
+    public List<TabView<?>> getTabs() {
+        return (List) this.root.getTabs().stream().map(e -> ((ComponentTab) e).getView()).collect(Collectors.toList());
+    }
+
+    public ReadOnlyObjectProperty<TabView<?>> selectedTabProperty() {
+        return this.selectedTab.getReadOnlyProperty();
+    }
+
+    @Override
+    public void requestFocus() {
+        var tab = this.getSelectedTab();
+        if (tab != null) {
+            tab.requestFocus();
+        }
+    }
+
+    @Override
+    public TabPane getNode() {
+        return this.root;
+    }
+
+    @Override
+    protected void build(TabManagerViewModel viewModel) {
+        super.build(viewModel);
+        TabPaneHolderViewUtils.initTabPane(root, this);
+        VBox.setVgrow(this.root, Priority.ALWAYS);
+    }
+
+    @Override
+    protected void bind(TabManagerViewModel viewModel) {
+        super.bind(viewModel);
+    }
+
+    @Override
+    protected void addListeners(TabManagerViewModel viewModel) {
+        super.addListeners(viewModel);
+        this.root.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+            if (oldV != null) {
+                var tab = (ComponentTab) oldV;
+                tab.getView().doOnDeselected();
+            }
+            if (newV != null) {
+                var tab = (ComponentTab) newV;
+                this.selectedTab.set(tab.getView());
+                viewModel.selectedTabWrapper().set(tab.getView().getViewModel());
+                tab.getView().doOnSelected();
+            } else {
+                this.selectedTab.set(null);
+                viewModel.selectedTabWrapper().set(null);
+            }
+        });
+        this.root.getTabs().addListener((ListChangeListener<? super Tab>) (change) -> {
+
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    for (Tab tab : change.getAddedSubList()) {
+                        var tabViewModel = ((ComponentTab) tab).getView().getViewModel();
+                        viewModel.getModifiableTabs().add(tabViewModel);
+                    }
+                }
+                if (change.wasRemoved()) {
+                    for (Tab tab : change.getRemoved()) {
+                        var tabViewModel = ((ComponentTab) tab).getView().getViewModel();
+                        viewModel.getModifiableTabs().remove(tabViewModel);
+                    }
+                }
+            }
+        });
+        viewModel.tabHeaderVisibleProperty().addListener((ov, oldV, newV) -> {
+            if (newV) {
+                this.root.getStyleClass().remove(StyleClasses.HIDDEN_TABS);
+            } else {
+                this.root.getStyleClass().add(StyleClasses.HIDDEN_TABS);
+            }
+        });
+        viewModel.selectedTabIndexWrapper().addListener((ov, oldV, newV) ->
+                this.root.getSelectionModel().select(newV.intValue()));
+        this.root.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
+                viewModel.selectedTabIndexWrapper().set(newV.intValue()));
+    }
+
+    @Override
+    protected void postDeinitialize(TabManagerViewModel viewModel) {
+        super.postDeinitialize(viewModel);
+        for (var t : this.root.getTabs()) {
+            ((ComponentTab) t).getView().deinitialize();
+        }
+    }
+}

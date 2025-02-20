@@ -1,0 +1,127 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+    Author: Pavel Castornii
+*/
+
+.font-icon-view.tabshell-open-icon {
+    -fx-code-point: 986575; /* folder-open-outline */
+}
+
+.font-icon-view.tabshell-open-in-new-icon {
+    -fx-code-point: 984012; /* open-in-new */
+}
+
+.font-icon-view.tabshell-save-icon {
+    -fx-code-point: 985112; /* content-save-outline */
+}
+
+.font-icon-view.tabshell-save-as-icon {
+    -fx-code-point: 986364; /* content-save-edit-outline */
+}
+
+.font-icon-view.tabshell-settings-icon {
+    -fx-code-point: 985275; /* cog-outline */
+}
+
+.font-icon-view.tabshell-exit-icon {
+    -fx-code-point: 983875; /* logout */
+}
+
+.font-icon-view.tabshell-undo-icon {
+    -fx-code-point: 984396; /* undo */
+}
+
+.font-icon-view.tabshell-redo-icon {
+    -fx-code-point: 984142; /* redo */
+}
+
+.font-icon-view.tabshell-help-icon {
+    -fx-code-point: 986022; /* help-rhombus-outline */
+}
+
+.font-icon-view.tabshell-process-icon {
+    -fx-code-point: 985302; /* cogs */
+}
+
+.font-icon-view.tabshell-add-icon {
+    -fx-code-point: 984085; /* plus */
+}
+
+.font-icon-view.tabshell-remove-icon {
+    -fx-code-point: 983924; /* minus */
+}
+
+.font-icon-view.tabshell-chevron-up-icon {
+    -fx-code-point: 983363; /* chevron-up */
+}
+
+.font-icon-view.tabshell-chevron-down-icon {
+    -fx-code-point: 983360; /* chevron-down */
+}
+
+.font-icon-view.tabshell-chevron-double-up-icon {
+    -fx-code-point: 983359; /* chevron-double-up */
+}
+
+.font-icon-view.tabshell-chevron-double-down-icon {
+    -fx-code-point: 983356; /* chevron-double-down */
+}
+
+.font-icon-view.tabshell-cut-icon {
+    -fx-code-point: 983440; /* content-cut */
+}
+
+.font-icon-view.tabshell-copy-icon {
+    -fx-code-point: 983439; /* content-copy */
+}
+
+.font-icon-view.tabshell-paste-icon {
+    -fx-code-point: 983442; /* content-paste */
+}
+
+.font-icon-view.tabshell-clear-icon {
+    -fx-code-point: 985722; /* trash-can-outline */
+}
+
+.font-icon-view.tabshell-match-case-icon {
+    -fx-code-point: 985908; /* format-letter-case */
+}
+
+.font-icon-view.tabshell-whole-word-icon {
+    -fx-code-point: 987065; /* format-letter-matches */
+}
+
+.font-icon-view.tabshell-reg-exp-icon {
+    -fx-code-point: 984145; /* regex */
+}
+
+.font-icon-view.tabshell-highlight-icon {
+    -fx-code-point: 984658; /* marker */
+}
+
+.font-icon-view.tabshell-find-icon {
+    -fx-code-point: 983881; /* magnify */
+}
+
+.font-icon-view.tabshell-replace-icon {
+    -fx-code-point: 984788; /* find-replace */
+}
+
+.font-icon-view.tabshell-select-all-icon {
+    -fx-code-point: 984198; /* select all */
+}

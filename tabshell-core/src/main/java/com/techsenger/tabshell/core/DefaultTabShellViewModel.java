@@ -1,0 +1,336 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.core;
+
+import com.techsenger.mvvm4fx.core.AbstractParentViewModel;
+import com.techsenger.mvvm4fx.core.ComponentKey;
+import com.techsenger.mvvm4fx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.Settings;
+import com.techsenger.tabshell.core.tab.ShellTabViewModel;
+import com.techsenger.tabshell.material.icon.Icon;
+import com.techsenger.tabshell.material.menu.KeyedMenuItemState;
+import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
+import com.techsenger.tabshell.material.menu.KeyedMenuState;
+import com.techsenger.tabshell.material.menu.KeyedMenuUpdate;
+import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.material.menu.MenuKey;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * This class extends ParentViewModel but its interface doesn't because of encapsulation.
+ *
+ * @author Pavel Castornii
+ */
+public class DefaultTabShellViewModel extends AbstractParentViewModel implements TabShellViewModel {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultTabShellViewModel.class);
+
+    private TabShellClosedCallback onClosed;
+
+    private final ReadOnlyObjectWrapper<ShellTabViewModel> selectedTab = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyIntegerWrapper selectedTabIndex = new ReadOnlyIntegerWrapper();
+
+    private ObservableList<ShellTabViewModel> modifiableTabs = FXCollections.observableArrayList();
+
+    private ObservableList<ShellTabViewModel> unmodifiableTabs =
+            FXCollections.unmodifiableObservableList(modifiableTabs);
+
+    private ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper();
+
+    private ReadOnlyDoubleWrapper height = new ReadOnlyDoubleWrapper();
+
+    private ReadOnlyBooleanWrapper maximized = new ReadOnlyBooleanWrapper();
+
+    private ReadOnlyIntegerWrapper dialogCount = new ReadOnlyIntegerWrapper();
+
+    private final StringProperty title = new SimpleStringProperty();
+
+    private final ObjectProperty<Icon<?>> icon = new SimpleObjectProperty<>();
+
+    private final Settings settings;
+
+    private final HistoryManager historyManager;
+
+    /**
+     * The width of the stage if the stage is not maximized.
+     */
+    private double defaultWidth;
+
+    /**
+     * The height of the stage if the stage is not maximized.
+     */
+    private double defaultHeight;
+
+    public DefaultTabShellViewModel(Settings settings, HistoryManager historyManager) {
+        super();
+        this.settings = settings;
+        this.historyManager = historyManager;
+        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        setHistoryProvider(() -> historyManager.getHistory(DefaultTabShellHistory.class, DefaultTabShellHistory::new));
+    }
+
+    @Override
+    public TabShellClosedCallback getOnClosed() {
+        return onClosed;
+    }
+
+    @Override
+    public void setOnClosed(TabShellClosedCallback onClose) {
+        this.onClosed = onClose;
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<ShellTabViewModel> selectedTabProperty() {
+        return this.selectedTab.getReadOnlyProperty();
+    }
+
+    @Override
+    public ShellTabViewModel getSelectedTab() {
+        return this.selectedTab.get();
+    }
+
+    @Override
+    public void selectTab(ShellTabViewModel tabViewModel) {
+        var tabIndex = modifiableTabs.indexOf(tabViewModel);
+        if (tabIndex >= 0) {
+            selectTab(tabIndex);
+        }
+    }
+
+    @Override
+    public void selectTab(int tabIndex) {
+        if (tabIndex >= 0 && tabIndex < this.modifiableTabs.size())  {
+            this.selectedTabIndex.set(tabIndex);
+        }
+    }
+
+    @Override
+    public int getSelectedTabIndex() {
+        return this.selectedTabIndex.get();
+    }
+
+    @Override
+    public ReadOnlyIntegerProperty selectedTabIndexProperty() {
+        return this.selectedTabIndex.getReadOnlyProperty();
+    }
+
+    @Override
+    public ObservableList<ShellTabViewModel> getTabs() {
+        return this.unmodifiableTabs;
+    }
+
+    @Override
+    public ComponentKey getKey() {
+        return TabShellKey.INSTANCE;
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty widthProperty() {
+        return this.width.getReadOnlyProperty();
+    }
+
+    @Override
+    public double getWidth() {
+        return widthProperty().get();
+    }
+
+    @Override
+    public ReadOnlyDoubleProperty heightProperty() {
+        return this.height.getReadOnlyProperty();
+    }
+
+    @Override
+    public double getHeight() {
+        return heightProperty().get();
+    }
+
+    @Override
+    public StringProperty titleProperty() {
+        return this.title;
+    }
+
+    @Override
+    public String getTitle() {
+        return this.title.get();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title.set(title);
+    }
+
+    @Override
+    public ObjectProperty<Icon<?>> iconProperty() {
+        return this.icon;
+    }
+
+    @Override
+    public Icon<?> getIcon() {
+        return this.icon.get();
+    }
+
+    @Override
+    public void setIcon(Icon<?> icon) {
+        this.icon.set(icon);
+    }
+
+    @Override
+    public Settings getSettings() {
+        return settings;
+    }
+
+    @Override
+    public <T extends Settings> T getSettings(Class<T> settingsClass) {
+        return (T) this.settings;
+    }
+
+    @Override
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
+
+    @Override
+    public ReadOnlyBooleanProperty maximizedProperty() {
+        return this.maximized.getReadOnlyProperty();
+    }
+
+    @Override
+    public boolean isMaximized() {
+        return maximizedProperty().get();
+    }
+
+    @Override
+    public ReadOnlyIntegerProperty dialogCountProperty() {
+        return this.dialogCount.getReadOnlyProperty();
+    }
+
+    @Override
+    public int getDialogCount() {
+        return this.dialogCount.get();
+    }
+
+    @Override
+    public boolean isMenuSupported(MenuKey menuKey) {
+        //by default optional are not supported
+        return false;
+    }
+
+    @Override
+    public boolean isMenuItemSupported(MenuKey menuKey, MenuItemKey itemKey) {
+        //by default optional are not supported
+        return false;
+    }
+
+    @Override
+    public boolean isMenuValid(MenuKey menuKey) {
+        return true;
+    }
+
+    @Override
+    public boolean isMenuItemValid(MenuKey menuKey, MenuItemKey itemKey) {
+        return true;
+    }
+
+    @Override
+    public KeyedMenuUpdate updateMenu(MenuKey menuKey, KeyedMenuState menuState) {
+        return null;
+    }
+
+    @Override
+    public KeyedMenuItemUpdate updateMenuItem(MenuKey menuKey, MenuItemKey itemKey, KeyedMenuItemState itemState) {
+        return null;
+    }
+
+    @Override
+    public void doOnMenuShowing(MenuKey menuKey) { }
+
+    @Override
+    public void doOnMenuHiding(MenuKey menuKey) { }
+
+    @Override
+    public void doOnSharedMenuItemAction(MenuKey menuKey, MenuItemKey itemKey) { }
+
+    public MenuAware getCurrentMenuAware() {
+        var selectedTab = getSelectedTab();
+        if (selectedTab != null) {
+            return selectedTab;
+        } else {
+            return this;
+        }
+    }
+
+    ReadOnlyObjectWrapper<ShellTabViewModel> selectedTabWrapper() {
+        return this.selectedTab;
+    }
+
+    ReadOnlyIntegerWrapper selectedTabIndexWrapper() {
+        return selectedTabIndex;
+    }
+
+    ReadOnlyDoubleWrapper widthWrapper() {
+        return width;
+    }
+
+    ReadOnlyDoubleWrapper heightWrapper() {
+        return height;
+    }
+
+    ReadOnlyBooleanWrapper maximizedWrapper() {
+        return maximized;
+    }
+
+    ReadOnlyIntegerWrapper dialogCountWrapper() {
+        return dialogCount;
+    }
+
+    ObservableList<ShellTabViewModel> getModifiableTabs() {
+        return modifiableTabs;
+    }
+
+    double getDefaultWidth() {
+        return defaultWidth;
+    }
+
+    void setDefaultWidth(double defaultWidth) {
+        this.defaultWidth = defaultWidth;
+    }
+
+    double getDefaultHeight() {
+        return defaultHeight;
+    }
+
+    void setDefaultHeight(double defaultHeight) {
+        this.defaultHeight = defaultHeight;
+    }
+}
