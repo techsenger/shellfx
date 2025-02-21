@@ -39,7 +39,7 @@ creating components. TabShell Kit includes pre-built components. Using TabShell 
 
 Key features of TabShell include:
 
-* Contains abstract classes for rapid component development.
+* Abstract classes to simplify component development.
 * Dynamically configurable menu.
 * Ability to preserve component history.
 * Support for dialogs with two scopes — shell and tab.
