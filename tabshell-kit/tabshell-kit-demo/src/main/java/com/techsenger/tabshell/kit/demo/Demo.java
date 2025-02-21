@@ -34,6 +34,7 @@ import com.techsenger.tabshell.kit.text.menu.EditMenuRegistrar;
 import com.techsenger.tabshell.kit.text.style.TextIcons;
 import java.util.List;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -47,6 +48,9 @@ public class Demo extends Application {
         //creating shell
         var viewModel = new DefaultTabShellViewModel(createSettings(), new DemoHistoryManager());
         viewModel.setTitle("TabShell Kit Demo");
+        viewModel.setOnClosed(() -> {
+            Platform.exit();
+        });
         var stylesheets = List.of(
                 StyleClasses.class.getResource("base.css").toExternalForm(),
                 CoreIcons.class.getResource("icons.css").toExternalForm(),
