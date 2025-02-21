@@ -23,14 +23,14 @@ import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogView;
-import com.techsenger.tabshell.core.tab.ComponentTab;
-import com.techsenger.tabshell.core.tab.TabView;
-import com.techsenger.tabshell.core.tab.TabPaneHolderViewUtils;
 import com.techsenger.tabshell.core.menu.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabView;
+import com.techsenger.tabshell.core.tab.TabPaneHolderViewUtils;
+import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.List;
@@ -164,19 +164,26 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
         @Override
         public void run() {
             ShellTabView<?> selectedTab;
-            while ((selectedTab = getSelectedTab()) != null) {
-                if (selectedTab.doOnCloseRequest()) {
-                    doCloseTab(selectedTab);
-                } else {
+            var allCanBeClosed = true;
+            for (var tab: tabPane.getTabs()) {
+                var view = ((ComponentTab) tab).getView();
+                if (!view.doOnCloseRequest()) {
+                    allCanBeClosed = false;
                     break;
                 }
             }
-            if (tabPane.getTabs().size() == 0) {
-                stage.close();
-                deinitialize();
-                var onClosed = getViewModel().getOnClosed();
-                if (onClosed != null) {
-                    onClosed.call();
+            if (allCanBeClosed) {
+                while ((selectedTab = getSelectedTab()) != null) {
+                    doCloseTab(selectedTab);
+                }
+                if (tabPane.getTabs().size() == 0) {
+                    stage.hide();
+                    deinitialize();
+                    stage.close();
+                    var onClosed = getViewModel().getOnClosed();
+                    if (onClosed != null) {
+                        onClosed.call();
+                    }
                 }
             }
         }
