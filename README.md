@@ -26,7 +26,7 @@
 
 ## Overview <a name="overview"></a>
 
-Techsenger TabShell is a lightweight platform for building tab-based applications on JavaFX using the MVVM pattern.
+Techsenger TabShell is a lightweight platform for building tab-based applications in JavaFX using the MVVM pattern.
 
 The platform consists of two parts: TabShell and TabShell Kit. TabShell contains the core shell and classes for
 creating components. TabShell Kit includes pre-built components. Using TabShell Kit is optional.
