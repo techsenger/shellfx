@@ -92,7 +92,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
     }
 
     /**
-     * New item will be in the group two. It is optional and validatable.
+     * Exit item will be in the group two. It is optional and validatable.
      */
     protected void registerExitItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
