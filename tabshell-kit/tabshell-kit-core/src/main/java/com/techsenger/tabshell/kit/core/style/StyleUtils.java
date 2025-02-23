@@ -31,9 +31,9 @@ public final class StyleUtils {
      * @param fontSize
      * @return
      */
-    public static double getMonospaceCharWidth(int fontSize) {
+    public static double getMonospaceCharWidth(String fontName, int fontSize) {
         final Text text = new Text("0");
-        Font font = Font.font("DejaVu Sans Mono", fontSize);
+        Font font = Font.font(fontName, fontSize);
         if (font == null) {
             throw new NullPointerException("No mono font");
         }
