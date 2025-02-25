@@ -113,7 +113,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
 
     protected SettingsProvider createSettingsProvider() {
         var settings = getTabShell().getSettings();
-        return new TerminalSettingsProvider(settings.getAppearance().getFont().getSize(), terminalPalette);
+        return new TerminalSettingsProvider(settings.getAppearance().getMonospaceFont(), terminalPalette);
     }
 
     protected PtyProcessTtyConnector createTtyConnector() {

@@ -22,11 +22,6 @@
     src: url('materialdesignicons-webfont.ttf');
 }
 
-.root {
-    /* -fx-font-size set via code from settings */
-    -fx-font-family: 'DejaVu Sans', sans-serif;
-}
-
 .stage-box > .title-bar > .icon-view-box > .font-icon-view {
     -fx-font-size: 1.6em;
 }
@@ -297,18 +292,12 @@
 }
 
 /*
-    Font
-*/
-.monospace {
-    -fx-font-family: 'DejaVu Sans Mono', 'monospace';
-}
-
-/*
     RichTextFX see https://github.com/FXMisc/RichTextFX/wiki/RichTextFX-CSS-Reference-Guide
+
+    Important for font family and size stylesheet is created dynamically on the base of settings.
 */
 .styled-text-area {
     -fx-font-size: 1em;
-    -fx-font-family: 'DejaVu Sans Mono', sans-serif;
     -fx-padding: 0;
     -fx-border-width: 0;
     -fx-background-color: -color-bg-default;
@@ -339,13 +328,11 @@
 .styled-text-area .lineno {
     -fx-background-color: -color-bg-inset;
     -fx-font-size: 1em;
-    -fx-font-family: 'DejaVu Sans Mono', sans-serif;
     -fx-padding: 0 6 0 6;/* SizeConstants.HALF_INSET */
 }
 
 .styled-text-area .lineno .text {
     -fx-font-size: 1em;
-    -fx-font-family: 'DejaVu Sans Mono', sans-serif;
     -fx-fill: -color-fg-muted;
 }
 

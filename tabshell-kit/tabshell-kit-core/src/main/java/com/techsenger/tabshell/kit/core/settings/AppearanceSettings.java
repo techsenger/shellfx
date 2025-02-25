@@ -16,50 +16,60 @@
 
 package com.techsenger.tabshell.kit.core.settings;
 
+import com.techsenger.tabshell.core.settings.AbstractAppearanceSettings;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.text.Font;
 
 /**
+ * Getters are overridden because, otherwise, JAXB does not recognize them when setters are overridden.
  *
  * @author Pavel Castornii
  */
-public class AppearanceSettings implements com.techsenger.tabshell.core.settings.AppearanceSettings {
-
-    private ObjectProperty<TabShellTheme> theme = new SimpleObjectProperty<>();
-
-    @XmlElement(name = "Font")
-    private FontSettings font;
+public class AppearanceSettings extends AbstractAppearanceSettings {
 
     public AppearanceSettings() {
 
     }
 
-    public AppearanceSettings(FontSettings font) {
-        this.font = font;
-    }
-
-    @Override
-    public ObjectProperty<TabShellTheme> themeProperty() {
-        return theme;
-    }
-
-    @Override
-    public TabShellTheme getTheme() {
-        return theme.get();
+    public AppearanceSettings(Font regularFont, Font monospaceFont) {
+        super(regularFont, monospaceFont);
     }
 
     @XmlAttribute(name = "theme")
     @XmlJavaTypeAdapter(ThemeAdapter.class)
     public void setTheme(TabShellTheme theme) {
-        this.theme.set(theme);
+        super.setTheme(theme);
     }
 
     @Override
-    public FontSettings getFont() {
-        return font;
+    public TabShellTheme getTheme() {
+        return super.getTheme();
+    }
+
+    @Override
+    @XmlElement(name = "RegularFont")
+    @XmlJavaTypeAdapter(FontAdapter.class)
+    public void setRegularFont(Font regularFont) {
+        super.setRegularFont(regularFont);
+    }
+
+    @Override
+    public Font getRegularFont() {
+        return super.getRegularFont();
+    }
+
+    @Override
+    @XmlElement(name = "MonospaceFont")
+    @XmlJavaTypeAdapter(FontAdapter.class)
+    public void setMonospaceFont(Font monospaceFont) {
+        super.setMonospaceFont(monospaceFont);
+    }
+
+    @Override
+    public Font getMonospaceFont() {
+        return super.getMonospaceFont();
     }
 }

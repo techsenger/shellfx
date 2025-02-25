@@ -22,6 +22,7 @@
     Root
 */
 .root {
+    /* -fx-font-size and -fx-font-family are set via settings, see FontManager */
     /* atlantafx doesn't provide the following colors, but they are used in
     other fx libraries; to prevent errors and warns they are set here */
     -fx-text-inner-color: transparent;

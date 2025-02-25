@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import javafx.application.Application;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -221,15 +222,15 @@ public enum TabShellTheme {
      *
      * @return
      */
-    public Map<String, String> getWebStyle(int fontSize) {
+    public Map<String, String> getWebStyle(Font font) {
         var map = new HashMap<String, String>();
         var palette = getPalette();
         var bgColor = ColorUtils.toHexWithAlpha(ColorUtils.toColor(palette.getDefaultBgColor()));
         map.put("background-color", bgColor);
         var fgColor = ColorUtils.toHexWithAlpha(ColorUtils.toColor(palette.getDefaultFgColor()));
         map.put("color", fgColor);
-        map.put("font-size", String.valueOf(fontSize) + "px");
-        map.put("font-family", "'DejaVu Sans'");
+        map.put("font-size", String.valueOf(Math.round(font.getSize())) + "px");
+        map.put("font-family", "'" + font.getFamily() + "'");
         return map;
     }
 

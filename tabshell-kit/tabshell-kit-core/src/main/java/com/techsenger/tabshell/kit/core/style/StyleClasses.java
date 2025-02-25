@@ -41,9 +41,4 @@ public interface StyleClasses extends com.techsenger.tabshell.core.style.StyleCl
      * Use this class for TabPanes to hide entire tab-header-area.
      */
     String HIDDEN_TABS = "hidden-tabs";
-
-    /**
-     * This style class is used when it is necessary to make font monospace.
-     */
-    String MONOSPACE = "monospace";
 }

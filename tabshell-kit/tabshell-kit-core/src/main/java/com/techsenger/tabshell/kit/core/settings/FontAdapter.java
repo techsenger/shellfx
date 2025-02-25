@@ -16,44 +16,22 @@
 
 package com.techsenger.tabshell.kit.core.settings;
 
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import javafx.scene.text.Font;
 
 /**
  *
  * @author Pavel Castornii
  */
-@XmlRootElement
-public class FontSettings {
+public class FontAdapter extends XmlAdapter<FontSettings, Font> {
 
-    private String family;
-
-    private double size;
-
-    public FontSettings() {
-
+    @Override
+    public Font unmarshal(FontSettings s) {
+        return Font.font(s.getFamily(), s.getSize());
     }
 
-    public FontSettings(String family, double size) {
-        this.family = family;
-        this.size = size;
-    }
-
-    public double getSize() {
-        return size;
-    }
-
-    @XmlAttribute(name = "size")
-    public void setSize(double size) {
-        this.size = size;
-    }
-
-    public String getFamily() {
-        return family;
-    }
-
-    @XmlAttribute(name = "family")
-    public void setFamily(String family) {
-        this.family = family;
+    @Override
+    public FontSettings marshal(Font v) {
+        return new FontSettings(v.getFamily(), v.getSize());
     }
 }

@@ -16,14 +16,11 @@
 
 package com.techsenger.tabshell.demo;
 
+import com.techsenger.tabshell.core.settings.AbstractAppearanceSettings;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.core.settings.FontSettings;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -31,42 +28,12 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 class DemoSettings implements Settings {
 
-    private static final class DemoFontSettings implements FontSettings {
+    private static final class DemoAppearanceSettings extends AbstractAppearanceSettings {
 
-        private final IntegerProperty size = new SimpleIntegerProperty(14);
-
-        @Override
-        public IntegerProperty sizeProperty() {
-            return size;
+        DemoAppearanceSettings() {
+            super(Font.font("Ubuntu", 14), Font.font("Ubuntu Mono", 14));
+            setTheme(TabShellTheme.CUPERTINO_DARK);
         }
-
-        @Override
-        public int getSize() {
-            return size.get();
-        }
-    }
-
-    private static final class DemoAppearanceSettings implements AppearanceSettings {
-
-        private final FontSettings font = new DemoFontSettings();
-
-        private ObjectProperty<TabShellTheme> theme = new SimpleObjectProperty<>(TabShellTheme.CUPERTINO_DARK);
-
-        @Override
-        public ObjectProperty<TabShellTheme> themeProperty() {
-            return theme;
-        }
-
-        @Override
-        public TabShellTheme getTheme() {
-            return theme.get();
-        }
-
-        @Override
-        public FontSettings getFont() {
-            return this.font;
-        }
-
     }
 
     private final AppearanceSettings appearance = new DemoAppearanceSettings();

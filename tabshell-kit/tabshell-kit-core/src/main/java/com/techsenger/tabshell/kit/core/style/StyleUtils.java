@@ -31,12 +31,8 @@ public final class StyleUtils {
      * @param fontSize
      * @return
      */
-    public static double getMonospaceCharWidth(String fontName, int fontSize) {
+    public static double getMonospaceCharWidth(Font font) {
         final Text text = new Text("0");
-        Font font = Font.font(fontName, fontSize);
-        if (font == null) {
-            throw new NullPointerException("No mono font");
-        }
         text.setFont(font);
         double width = text.getBoundsInLocal().getWidth();
         return width;

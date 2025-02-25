@@ -31,12 +31,12 @@ import javafx.scene.text.Font;
  */
 class TerminalSettingsProvider extends DefaultSettingsProvider {
 
-    private final float fontSize;
+    private final Font monospaceFont;
 
     private final TerminalPalette terminalPalette;
 
-    TerminalSettingsProvider(float fontSize, TerminalPalette themePalette) {
-        this.fontSize = fontSize;
+    TerminalSettingsProvider(Font monospaceFont, TerminalPalette themePalette) {
+        this.monospaceFont = monospaceFont;
         this.terminalPalette = themePalette;
     }
 
@@ -47,13 +47,12 @@ class TerminalSettingsProvider extends DefaultSettingsProvider {
 
     @Override
     public float getTerminalFontSize() {
-        return fontSize;
+        return (float) this.monospaceFont.getSize();
     }
 
     @Override
     public Font getTerminalFont() {
-        var font = Font.font("DejaVu Sans Mono", getTerminalFontSize());
-        return font;
+        return monospaceFont;
     }
 
 //    @Override

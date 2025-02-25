@@ -22,7 +22,6 @@ import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.demo.history.DemoHistoryManager;
 import com.techsenger.tabshell.kit.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.kit.core.settings.FontSettings;
 import com.techsenger.tabshell.kit.core.settings.Settings;
 import com.techsenger.tabshell.kit.core.settings.TabSymbolSettings;
 import com.techsenger.tabshell.kit.core.settings.ViewerSettings;
@@ -35,6 +34,7 @@ import com.techsenger.tabshell.kit.text.style.TextIcons;
 import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -71,15 +71,15 @@ public class Demo extends Application {
     }
 
     private Settings createSettings() {
-        var font = new FontSettings();
-        font.setSize(14);
+        var regularFont = Font.font("Ubuntu", 14);
+        var monospaceFont = Font.font("Ubuntu Mono", 14);
         var tabSymbol = new TabSymbolSettings();
         tabSymbol.setSize(4);
         tabSymbol.setUseSpaces(true);
-        var appearance = new AppearanceSettings(font);
+        var appearance = new AppearanceSettings(regularFont, monospaceFont);
         appearance.setTheme(TabShellTheme.CUPERTINO_DARK);
-        var viewerer = new ViewerSettings(font, tabSymbol);
-        var settings = new Settings(appearance, viewerer);
+        var viewer = new ViewerSettings(regularFont, tabSymbol);
+        var settings = new Settings(appearance, viewer);
         return settings;
     }
 }

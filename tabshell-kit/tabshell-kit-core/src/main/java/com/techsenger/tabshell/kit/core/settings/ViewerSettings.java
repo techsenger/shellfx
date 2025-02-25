@@ -17,6 +17,10 @@
 package com.techsenger.tabshell.kit.core.settings;
 
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -24,26 +28,35 @@ import jakarta.xml.bind.annotation.XmlElement;
  */
 public class ViewerSettings {
 
-    @XmlElement(name = "Font")
-    private FontSettings font;
+    private ObjectProperty<Font> font = new SimpleObjectProperty<>();
 
     @XmlElement(name = "TabSymbol")
-    private TabSymbolSettings textTab;
+    private TabSymbolSettings tabSymbol;
 
     public ViewerSettings() {
 
     }
 
-    public ViewerSettings(FontSettings font, TabSymbolSettings textTab) {
-        this.font = font;
-        this.textTab = textTab;
+    public ViewerSettings(Font font, TabSymbolSettings tabSymbol) {
+        setFont(font);
+        this.tabSymbol = tabSymbol;
     }
 
-    public FontSettings getFont() {
+    public ObjectProperty<Font> fontProperty() {
         return font;
     }
 
+    public Font getFont() {
+        return font.get();
+    }
+
+    @XmlElement(name = "Font")
+    @XmlJavaTypeAdapter(FontAdapter.class)
+    public void setFont(Font font) {
+        this.font.set(font);
+    }
+
     public TabSymbolSettings getTabSymbol() {
-        return textTab;
+        return tabSymbol;
     }
 }

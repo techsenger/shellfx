@@ -19,6 +19,7 @@ package com.techsenger.tabshell.kit.text.viewer;
 import com.techsenger.mvvm4fx.core.ComponentHelper;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.core.style.StyleUtils;
 import com.techsenger.tabshell.kit.core.style.CoreIcons;
 import com.techsenger.tabshell.kit.core.style.StyleClasses;
 import com.techsenger.tabshell.kit.core.workertab.AbstractWorkerTabView;
@@ -27,6 +28,7 @@ import com.techsenger.tabshell.kit.material.textarea.RichTextFxUtils;
 import com.techsenger.tabshell.kit.text.style.TextIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
+import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
@@ -47,6 +49,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.Caret;
 import org.fxmisc.wellbehaved.event.EventPattern;
@@ -85,21 +88,37 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
 
     private DefaultFindPaneView find;
 
-    private ChangeListener<Number> tabSizeListener = (ov, oldV, newV) -> {
-        this.getTextArea().getStyleClass().remove("styled-text-area-tab" + oldV);
+    private String fontStylesheet;
+
+    private final ChangeListener<Number> tabSizeListener = (ov, oldV, newV) -> {
+        if (oldV != null) {
+            this.getTextArea().getStyleClass().remove("styled-text-area-tab" + oldV);
+        }
         this.getTextArea().getStyleClass().add("styled-text-area-tab" + newV);
         this.updateInputMap(this.getViewModel());
     };
 
-    private ChangeListener<Boolean> tabUseSpacesListener = (ov, oldV, newV) -> {
+    private final ChangeListener<Boolean> tabUseSpacesListener = (ov, oldV, newV) -> {
         this.updateInputMap(this.getViewModel());
+    };
+
+    private final ChangeListener<Font> fontListener = (ov, oldV, newV) -> {
+        if (fontStylesheet != null) {
+            getTextArea().getStylesheets().remove(fontStylesheet);
+            fontStylesheet = null;
+        }
+        if (newV != null) {
+            fontStylesheet = "data:text/css, .styled-text-area {" + StyleUtils.toStyle(newV) + "}";
+            fontStylesheet += ".styled-text-area .lineno {-fx-font-family:'" + newV.getFamily() + "'}";
+            fontStylesheet += ".styled-text-area .lineno .text {-fx-font-family:'" + newV.getFamily() + "'}";
+            getTextArea().getStylesheets().add(fontStylesheet);
+        }
     };
 
     public AbstractViewerTabView(TabShellView<?> tabShell, T viewModel, ExtendedTextArea textArea) {
         super(tabShell, viewModel);
         this.textArea = textArea;
         this.textScrollPane = new VirtualizedScrollPane(textArea);
-        this.updateInputMap(viewModel);
     }
 
     public void copy() {
@@ -145,8 +164,6 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         HBox.setHgrow(this.statusBarLeftBox, Priority.NEVER);
         this.getStatusBar().getLeftItems().add(this.statusBarLeftBox);
         copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
-        var viewerSettings = viewModel.getSettings();
-        textArea.getStyleClass().add("styled-text-area-tab" + viewerSettings.getTabSymbol().getSize());
         textArea.setContextMenu(textAreaMenu);
     }
 
@@ -175,7 +192,8 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         super.addListeners(viewModel);
 
         var viewerSettings = viewModel.getSettings();
-        viewerSettings.getTabSymbol().sizeProperty().addListener(tabSizeListener);
+        ValueUtils.callAndAddListener(viewerSettings.fontProperty(), fontListener);
+        ValueUtils.callAndAddListener(viewerSettings.getTabSymbol().sizeProperty(), tabSizeListener);
         viewerSettings.getTabSymbol().useSpacesProperty().addListener(tabUseSpacesListener);
 
         textArea.showCaretProperty().addListener((ov, t, t1) -> {
@@ -226,6 +244,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     protected void removeListeners(T viewModel) {
         super.removeListeners(viewModel);
         var viewerSettings = viewModel.getSettings();
+        viewerSettings.fontProperty().removeListener(fontListener);
         viewerSettings.getTabSymbol().sizeProperty().removeListener(this.tabSizeListener);
         viewerSettings.getTabSymbol().useSpacesProperty().removeListener(this.tabUseSpacesListener);
     }

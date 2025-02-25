@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.settings;
+package com.techsenger.tabshell.core.style;
 
-import javafx.beans.property.IntegerProperty;
+import javafx.scene.text.Font;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FontSettings {
+public final class StyleUtils {
 
-    IntegerProperty sizeProperty();
+    public static String toStyle(Font font) {
+        if (font != null) {
+            var result = "-fx-font-size:" + Math.round(font.getSize()) + "px;-fx-font-family:'"
+                    + font.getFamily() + "';";
+            return result;
+        } else {
+            return "";
+        }
+    }
 
-    int getSize();
+    private StyleUtils() {
+
+    }
 }

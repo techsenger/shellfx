@@ -32,7 +32,6 @@ import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabPaneHolderViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.material.icon.IconViewBox;
-import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -203,6 +202,8 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
 
     private final ThemeManager themeManager;
 
+    private final FontManager fontManager;
+
     private final ShellStageController stageController;
 
     private final DialogManager dialogManager;
@@ -220,6 +221,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
         this.dialogManager = new TabShellDialogManager(stageController, stackPane, contentPane,
                 viewModel.dialogCountWrapper());
         this.menuManager = new MenuManager(this, this.menuBar);
+        this.fontManager = new FontManager(stackPane, viewModel.getSettings().getAppearance());
     }
 
     @Override
@@ -306,10 +308,6 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
     @Override
     protected void addListeners(DefaultTabShellViewModel viewModel) {
         super.addListeners(viewModel);
-        var fontSettings = viewModel.getSettings().getAppearance().getFont();
-        ValueUtils.callAndAddListener(fontSettings.sizeProperty(), (ov, t, t1) -> {
-            stage.getScene().getRoot().setStyle("-fx-font-size:" + t1);
-        });
         this.tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV != null) {
                 ShellTabView<?> view = (ShellTabView<?>) ((ComponentTab) newV).getView();

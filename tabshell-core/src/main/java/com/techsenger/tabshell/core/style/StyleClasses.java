@@ -63,4 +63,9 @@ public interface StyleClasses {
      * in model, but selection won't be visible.
      */
     String NO_SELECTED = "no-selection";
+
+    /**
+     * This style class is used when it is necessary to make font monospace.
+     */
+    String MONOSPACE = "monospace";
 }
