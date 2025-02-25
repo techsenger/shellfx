@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.menu;
+package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
 import java.util.ArrayList;

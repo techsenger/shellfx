@@ -16,8 +16,9 @@
 
 package com.techsenger.tabshell.kit.text.viewer;
 
-import com.techsenger.tabshell.core.MenuItemValidator;
 import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
+import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.kit.core.file.FileInfo;
 import com.techsenger.tabshell.kit.core.file.FileTabViewModel;
 import com.techsenger.tabshell.kit.core.file.FileTaskProvider;
@@ -26,12 +27,8 @@ import com.techsenger.tabshell.kit.core.settings.Settings;
 import com.techsenger.tabshell.kit.core.settings.ViewerSettings;
 import com.techsenger.tabshell.kit.core.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.tabshell.kit.text.menu.EditMenuKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -44,8 +41,6 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.IndexRange;
 import org.fxmisc.undo.UndoManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Text tab can be used in very different components that's why it doesn't add any optional menu/items.
@@ -54,8 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewModel
         implements FileTabViewModel<String> {
-
-    private static final Logger logger = LoggerFactory.getLogger(AbstractViewerTabViewModel.class);
 
     private final ReadOnlyBooleanWrapper textFocused  = new ReadOnlyBooleanWrapper(false);
 
@@ -93,8 +86,6 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     private DefaultFindPaneViewModel find;
 
-    private final Map<MenuItemKey, MenuItemValidator> menuItemValidatorsByKey = new HashMap<>();
-
     private UndoManager undoManager;
 
     /**
@@ -106,16 +97,58 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         super(tabShell);
         this.fileInfo = fileInfo;
         this.fileTaskProvider = fileTaskProvider;
-        this.addSupportedMenus(EditMenuKeys.EDIT);
-        this.addSupportedMenuItems(FileMenuKeys.FILE,
-                FileMenuKeys.OPEN);
-        this.addSupportedMenuItems(EditMenuKeys.EDIT,
-                EditMenuKeys.COPY,
-                EditMenuKeys.FIND,
-                EditMenuKeys.FIND_SELECTION,
-                EditMenuKeys.FIND_NEXT,
-                EditMenuKeys.FIND_PREVIOUS);
-        initializeMenuItemValidators();
+        addMenuHelpers(new SimpleMenuHelper(EditMenuKeys.EDIT, Boolean.TRUE));
+        addMenuItemHelpers(
+            //file
+            new SimpleMenuItemHelper(FileMenuKeys.OPEN, Boolean.TRUE),
+            new SimpleMenuItemHelper(FileMenuKeys.SAVE, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    return getFileInfo().getPath() != null;
+                }
+            },
+            new SimpleMenuItemHelper(FileMenuKeys.SAVE_AS, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    return !fileInfo.isRemote();
+                }
+            },
+
+            //edit
+            new SimpleMenuItemHelper(EditMenuKeys.COPY, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    return isCopyItemValid();
+                }
+            },
+            new SimpleMenuItemHelper(EditMenuKeys.FIND, Boolean.TRUE, Boolean.TRUE),
+            new SimpleMenuItemHelper(EditMenuKeys.FIND_SELECTION, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    return !selectedText.get().isEmpty();
+                }
+            },
+            new SimpleMenuItemHelper(EditMenuKeys.FIND_NEXT, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    if (find != null) {
+                        return find.hasNextMatch();
+                    } else {
+                        return false;
+                    }
+                }
+            },
+            new SimpleMenuItemHelper(EditMenuKeys.FIND_PREVIOUS, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    if (find != null) {
+                        return find.hasPreviousMatch();
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        );
     }
 
     public void openGoToLineDialog() {
@@ -185,21 +218,6 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         this.content.next(content);
     }
 
-    @Override
-    public boolean isMenuValid(MenuKey menuKey) {
-        return true;
-    }
-
-    @Override
-    public boolean isMenuItemValid(MenuKey menuKey, MenuItemKey itemKey) {
-        var validator = this.menuItemValidatorsByKey.get(itemKey);
-        if (validator != null) {
-            return validator.validate(menuKey, itemKey);
-        } else {
-            return false;
-        }
-    }
-
     public ReadOnlyBooleanProperty contentModifiedProperty() {
         return contentModified.getReadOnlyProperty();
     }
@@ -250,33 +268,6 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     protected boolean isCopyItemValid() {
         return !this.selectedText.get().isEmpty();
-    }
-
-    protected void initializeMenuItemValidators() {
-        this.menuItemValidatorsByKey.put(FileMenuKeys.SAVE, (menuKey, itemKey) -> getFileInfo().getPath() != null);
-        this.menuItemValidatorsByKey.put(FileMenuKeys.SAVE_AS, (menuKey, itemKey) -> !this.fileInfo.isRemote());
-        this.menuItemValidatorsByKey.put(EditMenuKeys.COPY, (menuKey, itemKey) -> isCopyItemValid());
-        this.menuItemValidatorsByKey.put(EditMenuKeys.FIND, (menuKey, itemKey) -> true);
-        this.menuItemValidatorsByKey.put(EditMenuKeys.FIND_SELECTION, (menuKey, itemKey) ->
-                !this.selectedText.get().isEmpty());
-        this.menuItemValidatorsByKey.put(EditMenuKeys.FIND_NEXT, (menuKey, itemKey) -> {
-            if (this.find != null) {
-                return this.find.hasNextMatch();
-            } else {
-                return false;
-            }
-        });
-        this.menuItemValidatorsByKey.put(EditMenuKeys.FIND_PREVIOUS, (menuKey, itemKey) -> {
-            if (this.find != null) {
-                return this.find.hasPreviousMatch();
-            } else {
-                return false;
-            }
-        });
-    }
-
-    protected Map<MenuItemKey, MenuItemValidator> getMenuItemValidatorsByKey() {
-        return menuItemValidatorsByKey;
     }
 
     protected ReadOnlyIntegerProperty textLengthProperty() {

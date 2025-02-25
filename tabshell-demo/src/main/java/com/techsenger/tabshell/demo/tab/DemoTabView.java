@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.demo.tab;
 
 import com.techsenger.mvvm4fx.core.ComponentHelper;
-import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import javafx.geometry.Pos;
@@ -33,15 +33,18 @@ import javafx.scene.layout.VBox;
  */
 public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
 
-    private final CheckBox newCheckBox = new CheckBox("New Item Valid");
+    private final CheckBox newValidCheckBox = new CheckBox("New Item Valid");
 
-    private final CheckBox exitCheckBox = new CheckBox("Exit Item Valid");
+    private final CheckBox exitIncludedCheckBox = new CheckBox("Exit Item Included");
+
+    private final CheckBox exitValidCheckBox = new CheckBox("Exit Item Valid");
 
     private final Button shellDialogButton = new Button("Shell Dialog");
 
     private final Button tabDialogButton = new Button("Tab Dialog");
 
-    private final VBox vBox = new VBox(newCheckBox, exitCheckBox, shellDialogButton, tabDialogButton);
+    private final VBox vBox = new VBox(newValidCheckBox, exitIncludedCheckBox, exitValidCheckBox, shellDialogButton,
+            tabDialogButton);
 
     private final HBox hBox = new HBox(vBox);
 
@@ -72,8 +75,9 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
     @Override
     protected void bind(DemoTabViewModel viewModel) {
         super.bind(viewModel);
-        newCheckBox.selectedProperty().bindBidirectional(viewModel.newValidProperty());
-        exitCheckBox.selectedProperty().bindBidirectional(viewModel.exitValidProperty());
+        newValidCheckBox.selectedProperty().bindBidirectional(viewModel.newValidProperty());
+        exitIncludedCheckBox.selectedProperty().bindBidirectional(viewModel.exitIncludedProperty());
+        exitValidCheckBox.selectedProperty().bindBidirectional(viewModel.exitValidProperty());
         shellDialogButton.prefWidthProperty().bind(vBox.widthProperty());
         tabDialogButton.prefWidthProperty().bind(vBox.widthProperty());
     }

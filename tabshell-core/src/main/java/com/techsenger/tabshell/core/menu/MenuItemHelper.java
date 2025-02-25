@@ -1,0 +1,65 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.core.menu;
+
+import com.techsenger.tabshell.material.menu.KeyedMenuItemState;
+import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
+import com.techsenger.tabshell.material.menu.MenuItemKey;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface MenuItemHelper {
+
+    /**
+     * Returns the key of the item this helper works with.
+     * @return
+     */
+    MenuItemKey getItemKey();
+
+    /**
+     * Checks if a specific menu item is included. Not included menu items will be hidden. This method is used only for
+     * optional menu items.
+     *
+     */
+    Boolean getItemIncluded();
+
+    /**
+     * Checks if menu item is currently valid. Invalid menu items will be disabled and their actions will be
+     * ignored. This method is used only for validatable menu items and is called when user clicks on menu item or uses
+     * accelerator keys.
+     *
+     * @return
+     */
+    Boolean getItemValid();
+
+    /**
+     * Updates menu item with specific key. This method will be called only for updatable menu items.
+     *
+     * @param itemState the current state of the item
+     * @return update object or null if there are no changes.
+     */
+    KeyedMenuItemUpdate updateItem(KeyedMenuItemState itemState);
+
+    /**
+     * This method is called when user clicks on menu item and action should be directed to the current tab.
+     * So, this method is used when there is a menu item that can be used for many tabs.
+     *
+     */
+    void doOnItemAction();
+}

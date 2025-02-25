@@ -16,14 +16,13 @@
 
 package com.techsenger.tabshell.demo.tab;
 
-import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.demo.dialog.DemoDialogViewModel;
 import com.techsenger.tabshell.demo.menu.DemoMenuKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
@@ -37,35 +36,32 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
 
     private final BooleanProperty newValid = new SimpleBooleanProperty();
 
+    private final BooleanProperty exitIncluded = new SimpleBooleanProperty();
+
     private final BooleanProperty exitValid = new SimpleBooleanProperty();
 
     public DemoTabViewModel(TabShellViewModel tabShell) {
         super(tabShell);
         setTitle("Tab");
-        //here we specify that this component can work with the following optional items
-        addSupportedMenuItems(DemoMenuKeys.DEMO, DemoMenuKeys.EXIT);
-    }
+        addMenuItemHelpers(
+            new SimpleMenuItemHelper(DemoMenuKeys.NEW) {
+                @Override
+                public Boolean getItemValid() {
+                    return newValid.get();
+                }
+            },
+            new SimpleMenuItemHelper(DemoMenuKeys.EXIT) {
+                @Override
+                public Boolean getItemIncluded() {
+                    return exitIncluded.get();
+                }
 
-    @Override
-    public boolean isMenuValid(MenuKey menuKey) {
-        return true;
-    }
-
-    /**
-     * If an item is validatable then this method is called to check if it is valid.
-     *
-     * @param menuKey
-     * @param itemKey
-     * @return
-     */
-    @Override
-    public boolean isMenuItemValid(MenuKey menuKey, MenuItemKey itemKey) {
-        if (itemKey == DemoMenuKeys.NEW) {
-            return newValid.get();
-        } else if (itemKey == DemoMenuKeys.EXIT) {
-            return exitValid.get();
-        }
-        return false;
+                @Override
+                public Boolean getItemValid() {
+                    return exitValid.get();
+                }
+            }
+        );
     }
 
     @Override
@@ -75,6 +71,10 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
 
     public BooleanProperty newValidProperty() {
         return newValid;
+    }
+
+    public BooleanProperty exitIncludedProperty() {
+        return exitIncluded;
     }
 
     public BooleanProperty exitValidProperty() {

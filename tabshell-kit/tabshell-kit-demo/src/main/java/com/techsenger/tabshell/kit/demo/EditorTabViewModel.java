@@ -19,6 +19,7 @@ package com.techsenger.tabshell.kit.demo;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.TabShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.kit.core.file.FileInfo;
 import com.techsenger.tabshell.kit.core.file.FileTaskProvider;
@@ -46,6 +47,10 @@ public class EditorTabViewModel extends AbstractEditorTabViewModel {
         setHistoryProvider(() -> tabShell.getHistoryManager()
                 .getHistory(EditorTabHistory.class, EditorTabHistory::new));
         setIcon(new FontIcon(TextIcons.EDITOR));
+
+        //these validators will be used when menu is shown
+        addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuKeys.REPLACE, null, true));
+        addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuKeys.GO_TO_LINE, null, true));
     }
 
     @Override
@@ -66,15 +71,6 @@ public class EditorTabViewModel extends AbstractEditorTabViewModel {
     @Override
     public String resolveDefaultExtension(FileChooser.ExtensionFilter filter) {
         return null;
-    }
-
-    @Override
-    protected void initializeMenuItemValidators() {
-        super.initializeMenuItemValidators();
-        var m = getMenuItemValidatorsByKey();
-        //these validators will be used when menu is shown
-        m.put(EditMenuKeys.REPLACE, (menuKey, menuItemKey) -> true);
-        m.put(EditMenuKeys.GO_TO_LINE, (menuKey, menuItemKey) -> true);
     }
 
     void showInfo() {

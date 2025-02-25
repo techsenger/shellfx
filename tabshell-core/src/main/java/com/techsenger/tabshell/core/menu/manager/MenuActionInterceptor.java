@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.menu;
+package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.DefaultTabShellView;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-class MenuActionInterceptor implements EventHandler<ActionEvent> {
+class MenuActionInterceptor implements ActionInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuActionInterceptor.class);
 
@@ -47,30 +47,36 @@ class MenuActionInterceptor implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent t) {
-        var dispatched = false;
-        var currentTab = shellView.getSelectedTab();
-        if (currentTab != null) {
-            var viewModel = currentTab.getViewModel();
-            var supported = true;
-            if (menu.isOptional()) {
-                supported = viewModel.isMenuSupported(menu.getKey());
+        var menuAware = shellView.getViewModel().getCurrentMenuAware();
+        var helper = menuAware.getMenuHelper(menu.getKey());
+        var included = true;
+        var valid = false;
+        if (menu.isOptional()) {
+            if (helper == null || !Boolean.TRUE.equals(helper.getMenuIncluded())) {
+                included = false;
             }
-            if (supported && viewModel.isMenuValid(menu.getKey())) {
-                dispatched = true;
-            }
-        } else {
-            dispatched = true;
         }
-        if (dispatched) {
+        if (included) {
+            if (menu.isValidatable()) {
+                if (helper != null && Boolean.TRUE.equals(helper.getMenuValid())) {
+                    valid = true;
+                }
+            } else {
+                valid = true;
+            }
+        }
+        if (included && valid) {
             if (this.action != null) {
                 action.handle(t);
             }
-            logger.debug("Event for '{}' was dispatched", menu.getText().replace("_", ""));
+            logger.debug("Event from '{}' menu was dispatched", menu.getText().replace("_", ""));
         } else {
-            logger.debug("Event for '{}' was consumed", menu.getText().replace("_", ""));
+            logger.debug("Event from '{}' menu was ignored; included: {}, valid: {}",
+                    menu.getText().replace("_", ""), included, valid);
         }
     }
 
+    @Override
     public EventHandler<ActionEvent> getAction() {
         return action;
     }

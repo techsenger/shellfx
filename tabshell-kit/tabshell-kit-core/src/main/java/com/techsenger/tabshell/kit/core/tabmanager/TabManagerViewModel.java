@@ -16,15 +16,13 @@
 
 package com.techsenger.tabshell.kit.core.tabmanager;
 
+import com.techsenger.tabshell.core.menu.MenuAware;
+import com.techsenger.tabshell.core.menu.MenuHelper;
+import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.core.MenuAware;
-import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.core.tab.TabPaneHolderViewModel;
-import com.techsenger.tabshell.material.menu.KeyedMenuItemState;
-import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
-import com.techsenger.tabshell.material.menu.KeyedMenuState;
-import com.techsenger.tabshell.material.menu.KeyedMenuUpdate;
+import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
 import javafx.beans.property.BooleanProperty;
@@ -105,68 +103,22 @@ public class TabManagerViewModel extends AbstractPaneViewModel implements MenuAw
     }
 
     @Override
-    public boolean isMenuSupported(MenuKey menuKey) {
+    public MenuHelper getMenuHelper(MenuKey menuKey) {
         var tab = this.selectedTab.get();
         if (tab != null) {
-            return tab.isMenuSupported(menuKey);
+            return tab.getMenuHelper(menuKey);
         } else {
-            return false;
+            return null;
         }
     }
 
     @Override
-    public boolean isMenuItemSupported(MenuKey menuKey, MenuItemKey itemKey) {
+    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
         var tab = this.selectedTab.get();
         if (tab != null) {
-            return tab.isMenuItemSupported(menuKey, itemKey);
+            return tab.getMenuItemHelper(menuItemKey);
         } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isMenuValid(MenuKey menuKey) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            return tab.isMenuValid(menuKey);
-        } else {
-            return true;
-        }
-    }
-
-    @Override
-    public boolean isMenuItemValid(MenuKey menuKey, MenuItemKey itemKey) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            return tab.isMenuItemValid(menuKey, itemKey);
-        } else {
-            return true;
-        }
-    }
-
-    @Override
-    public KeyedMenuUpdate updateMenu(MenuKey menuKey, KeyedMenuState menuState) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            return tab.updateMenu(menuKey, menuState);
-        }
-        return null;
-    }
-
-    @Override
-    public KeyedMenuItemUpdate updateMenuItem(MenuKey menuKey, MenuItemKey itemKey, KeyedMenuItemState itemState) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            return tab.updateMenuItem(menuKey, itemKey, itemState);
-        }
-        return null;
-    }
-
-    @Override
-    public void doOnSharedMenuItemAction(MenuKey menuKey, MenuItemKey itemKey) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            tab.doOnSharedMenuItemAction(menuKey, itemKey);
+            return null;
         }
     }
 

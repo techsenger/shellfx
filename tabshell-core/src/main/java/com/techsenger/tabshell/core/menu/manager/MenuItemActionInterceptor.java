@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.menu;
+package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.DefaultTabShellView;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-class MenuItemActionInterceptor implements EventHandler<ActionEvent> {
+class MenuItemActionInterceptor implements ActionInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuItemActionInterceptor.class);
 
@@ -49,36 +49,36 @@ class MenuItemActionInterceptor implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent t) {
-        var dispatched = false;
-        var currentTab = shellView.getSelectedTab();
-        if (currentTab != null) {
-            var viewModel = currentTab.getViewModel();
-            var supported = true;
-            if (item.isOptional()) {
-                supported = viewModel.isMenuItemSupported(menu.getKey(), item.getKey());
+        var menuAware = shellView.getViewModel().getCurrentMenuAware();
+        var helper = menuAware.getMenuItemHelper(item.getKey());
+        var included = true;
+        var valid = false;
+        if (item.isOptional()) {
+            if (helper == null || !Boolean.TRUE.equals(helper.getItemIncluded())) {
+                included = false;
             }
-            if (supported) {
-                if (item.isValidatable()) {
-                    if (viewModel.isMenuItemValid(menu.getKey(), item.getKey())) {
-                        dispatched = true;
-                    }
-                } else {
-                    dispatched = true;
-                }
-            }
-        } else {
-            dispatched = true;
         }
-        if (dispatched) {
+        if (included) {
+            if (item.isValidatable()) {
+                if (helper != null && Boolean.TRUE.equals(helper.getItemValid())) {
+                    valid = true;
+                }
+            } else {
+                valid = true;
+            }
+        }
+        if (included && valid) {
             if (this.action != null) {
                 action.handle(t);
             }
-            logger.debug("Event for '{}' was dispatched", item.getText().replace("_", ""));
+            logger.debug("Event from '{}' menu item was dispatched", menu.getText().replace("_", ""));
         } else {
-            logger.debug("Event for '{}' was consumed", item.getText().replace("_", ""));
+            logger.debug("Event from '{}' menu item was ignored; included: {}, valid: {}",
+                    menu.getText().replace("_", ""), included, valid);
         }
     }
 
+    @Override
     public EventHandler<ActionEvent> getAction() {
         return action;
     }

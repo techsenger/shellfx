@@ -95,16 +95,31 @@ types of components:
 
 `TabShell` core doesn't have any business logic. It is only a shell for tabs that contain logic.
 
-`TabShell` works differently with the top menu (menu in `MenuBar`) and nested menus. When a tab is activated, the shell
-requests the tab for supported optional menus (in the top menu) and hides menus that are not supported.
+Working with the main menu of the `TabShell` is carried out in two directions:
 
-When the menu is shown or when accelerator keys are used, the shell does the following (see the `MenuAware` interface):
-1. The shell requests the tab to check if it supports this optional menu/item
-2. The shell requests the tab to verify if this menu/item is currently valid (i.e., not disabled).
-3. The shell requests the tab to check if this menu/item should be updated
+1. Configuring menu elements
+2. Managing the state of elements and responding to user actions
 
-It is important to note that steps 1 and 2 are called in two situations: when the user clicks the menu and when the
-user uses accelerator keys.
+The configuration of menu elements is performed dynamically and in any order, with the final result being unknown in
+advance. This feature is crucial in cases where plugins/extensions are used, as they can be added/removed dynamically by
+the user. Each plugin may introduce its own menu items and interact with existing menus. Therefore, it is impossible
+to predict the final structure of the menu that the user will work with.
+
+The implementation of this feature is structured as follows. There are three key elements: the menu, the group, and the
+item. Each element has its own key, which is used for identification. A menu consists of groups separated by a
+separator. Items are added to groups (the system handles cases where groups remain empty). All three elements are
+registered/unregistered in the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is passed to
+`TabShell`, which then constructs the final menu.
+
+The `MenuManager` is responsible for managing the state of menu elements and responding to their actions. It interacts
+with a component that implements the `MenuAware` interface. This interface is always implemented by both `TabShell` and
+`ShellTab`. If all tabs are closed, `MenuManager` interacts with `TabShell`. When tabs are present, `MenuManager`
+interacts with the currently selected tab.
+
+It is also important to remember that the `MenuManager` also interacts with MenuAware when the user uses accelerators.
+
+To gain a complete understanding of working with the menu, it is recommended to familiarize yourself with the
+`MenuAware` interface, experiment with the menu in the demo, and pay attention to log messages at the debug level.
 
 ### Tab <a name="usage-tab"></a>
 

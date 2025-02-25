@@ -26,6 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -67,6 +68,7 @@ public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel> {
         gridPane.add(barLabel, 0, 1);
         gridPane.add(barTextField, 1, 1);
         GridPane.setHgrow(barTextField, Priority.ALWAYS);
+        VBox.setVgrow(gridPane, Priority.ALWAYS);
 
         okButton.setDefaultButton(true);
         hBox.setAlignment(Pos.CENTER_RIGHT);

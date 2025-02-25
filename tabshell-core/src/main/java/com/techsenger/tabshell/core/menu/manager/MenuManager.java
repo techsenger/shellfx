@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.menu;
+package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.core.MenuAware;
 import com.techsenger.tabshell.core.DefaultTabShellView;
+import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
 import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
@@ -80,7 +80,7 @@ public class MenuManager {
                 this.configureMenu(keyedMenu, updateHelper, menuAware, logMessageBuilder);
             }
         }
-        MenuLogger.logTabMenuConfigMessage("Main", menuAware, logMessageBuilder);
+        MenuLogger.logComponentMenuMessage("Main", menuAware, logMessageBuilder);
     }
 
     private <T extends MenuItem> void processMenuListChange(ListChangeListener.Change<T> c) {
@@ -143,13 +143,13 @@ public class MenuManager {
         keyedMenu.getItems().removeListener(menuItemsListener);
         keyedMenu.setOnShowing(null);
         keyedMenu.setOnHiding(null);
-        keyedMenu.setOnAction(((MenuActionInterceptor) keyedMenu.getOnAction()).getAction());
+        keyedMenu.setOnAction(((ActionInterceptor) keyedMenu.getOnAction()).getAction());
         for (var m : keyedMenu.getItems()) {
             if (m instanceof KeyedMenu) {
                 this.deinitializeMenu((KeyedMenu) m);
             } else if (m instanceof KeyedMenuItem) {
                 KeyedMenuItem item = (KeyedMenuItem) m;
-                item.setOnAction(((MenuItemActionInterceptor) item.getOnAction()).getAction());
+                item.setOnAction(((ActionInterceptor) item.getOnAction()).getAction());
             }
         }
         if (logger.isDebugEnabled()) {
@@ -206,7 +206,7 @@ public class MenuManager {
         if (previousVisibleSeparator != null && !visibleItemsPresent) {
             previousVisibleSeparator.setVisible(false);
         }
-        MenuLogger.logTabMenuConfigMessage(menu.getText(), menuAware, logMessageBuilder);
+        MenuLogger.logComponentMenuMessage(menu.getText(), menuAware, logMessageBuilder);
     }
 
     private void doOnMenuHiding(KeyedMenu menu, MenuUpdateHelper updateHelper) {
@@ -228,26 +228,27 @@ public class MenuManager {
             MenuAware menuAware, StringBuilder logMessageBuilder) {
         //supported
         KeyedMenuUpdate update = null;
-        if (keyedMenu.isOptional() && !menuAware.isMenuSupported(keyedMenu.getKey())) {
+        var helper = menuAware.getMenuHelper(keyedMenu.getKey());
+        if (keyedMenu.isOptional() && (helper == null || !Boolean.TRUE.equals(helper.getMenuIncluded()))) {
             keyedMenu.setVisible(false);
         } else {
             //this method can be called to update top menu; so, unconfigureMenu won't be used
             keyedMenu.setVisible(true);
             //valid
-            if (keyedMenu.isValidatable() && !menuAware.isMenuValid(keyedMenu.getKey())) {
+            if (keyedMenu.isValidatable() && (helper == null || !Boolean.TRUE.equals(helper.getMenuValid()))) {
                 keyedMenu.setDisable(true);
             }
             //update
-            if (keyedMenu.isVisible() && keyedMenu.isUpdatable()) {
+            if (keyedMenu.isVisible() && keyedMenu.isUpdatable() && helper != null) {
                 var state = new MenuElementState(keyedMenu.isVisible(), keyedMenu.isDisable(),
                         keyedMenu.getText(), keyedMenu.getGraphic());
-                update = menuAware.updateMenu(keyedMenu.getKey(), state);
+                update = helper.updateMenu(state);
                 if (update != null) {
                     updateHelper.applyUpdate(keyedMenu, state, update);
                 }
             }
         }
-        MenuLogger.buildTabMenuConfigMessage(keyedMenu, update, logMessageBuilder);
+        MenuLogger.buildComponentMenuMessage(keyedMenu, update, logMessageBuilder);
     }
 
     private void unconfigureMenu(KeyedMenu keyedMenu, MenuUpdateHelper updateHelper) {
@@ -260,24 +261,25 @@ public class MenuManager {
             KeyedMenuItem keyedItem, StringBuilder logMessageBuilder) {
         //supported
         KeyedMenuItemUpdate update = null;
-        if (keyedItem.isOptional() && !menuAware.isMenuItemSupported(keyedMenu.getKey(), keyedItem.getKey())) {
+        var helper = menuAware.getMenuItemHelper(keyedItem.getKey());
+        if (keyedItem.isOptional() && (helper == null || !Boolean.TRUE.equals(helper.getItemIncluded()))) {
             keyedItem.setVisible(false);
         } else {
             //valid
-            if (keyedItem.isValidatable() && !menuAware.isMenuItemValid(keyedMenu.getKey(), keyedItem.getKey())) {
+            if (keyedItem.isValidatable() && (helper == null || !Boolean.TRUE.equals(helper.getItemValid()))) {
                 keyedItem.setDisable(true);
             }
             //update
-            if (keyedItem.isVisible() && keyedItem.isUpdatable()) {
+            if (keyedItem.isVisible() && keyedItem.isUpdatable() && helper != null) {
                 var state = new MenuElementState(keyedItem.isVisible(), keyedItem.isDisable(),
                         keyedItem.getText(), keyedItem.getGraphic());
-                update = menuAware.updateMenuItem(keyedMenu.getKey(), keyedItem.getKey(), state);
+                update = helper.updateItem(state);
                 if (update != null) {
                     updateHelper.applyUpdate(keyedItem, state, update);
                 }
             }
         }
-        MenuLogger.buildTabMenuConfigMessage(keyedItem, update, logMessageBuilder);
+        MenuLogger.buildComponentMenuMessage(keyedItem, update, logMessageBuilder);
     }
 
     private void unconfigureMenuItem(KeyedMenu keyedMenu, KeyedMenuItem keyedItem) {

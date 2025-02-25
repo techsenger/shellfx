@@ -23,7 +23,7 @@ import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogView;
-import com.techsenger.tabshell.core.menu.MenuManager;
+import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.SizeConstants;

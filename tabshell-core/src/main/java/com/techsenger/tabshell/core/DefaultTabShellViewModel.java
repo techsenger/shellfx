@@ -20,15 +20,16 @@ import com.techsenger.mvvm4fx.core.AbstractParentViewModel;
 import com.techsenger.mvvm4fx.core.ComponentKey;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.menu.MenuAware;
+import com.techsenger.tabshell.core.menu.MenuHelper;
+import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
-import com.techsenger.tabshell.material.menu.KeyedMenuItemState;
-import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
-import com.techsenger.tabshell.material.menu.KeyedMenuState;
-import com.techsenger.tabshell.material.menu.KeyedMenuUpdate;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -77,6 +78,10 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
     private final StringProperty title = new SimpleStringProperty();
 
     private final ObjectProperty<Icon<?>> icon = new SimpleObjectProperty<>();
+
+    private final Map<MenuKey, MenuHelper> menuHelpersByKey = new HashMap<>();
+
+    private final Map<MenuItemKey, MenuItemHelper> menuItemHelpersByKey = new HashMap<>();
 
     private final Settings settings;
 
@@ -241,35 +246,13 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
     }
 
     @Override
-    public boolean isMenuSupported(MenuKey menuKey) {
-        //by default optional are not supported
-        return false;
+    public MenuHelper getMenuHelper(MenuKey menuKey) {
+        return menuHelpersByKey.get(menuKey);
     }
 
     @Override
-    public boolean isMenuItemSupported(MenuKey menuKey, MenuItemKey itemKey) {
-        //by default optional are not supported
-        return false;
-    }
-
-    @Override
-    public boolean isMenuValid(MenuKey menuKey) {
-        return true;
-    }
-
-    @Override
-    public boolean isMenuItemValid(MenuKey menuKey, MenuItemKey itemKey) {
-        return true;
-    }
-
-    @Override
-    public KeyedMenuUpdate updateMenu(MenuKey menuKey, KeyedMenuState menuState) {
-        return null;
-    }
-
-    @Override
-    public KeyedMenuItemUpdate updateMenuItem(MenuKey menuKey, MenuItemKey itemKey, KeyedMenuItemState itemState) {
-        return null;
+    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
+        return menuItemHelpersByKey.get(menuItemKey);
     }
 
     @Override
@@ -278,9 +261,6 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
     @Override
     public void doOnMenuHiding(MenuKey menuKey) { }
 
-    @Override
-    public void doOnSharedMenuItemAction(MenuKey menuKey, MenuItemKey itemKey) { }
-
     public MenuAware getCurrentMenuAware() {
         var selectedTab = getSelectedTab();
         if (selectedTab != null) {
@@ -288,6 +268,42 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
         } else {
             return this;
         }
+    }
+
+    @Override
+    public void addMenuHelpers(MenuHelper... menuHelpers) {
+        for (var h : menuHelpers) {
+            this.menuHelpersByKey.put(h.getMenuKey(), h);
+        }
+    }
+
+    @Override
+    public void removeMenuHelpers(MenuKey... menuKeys) {
+        for (var k : menuKeys) {
+            this.menuHelpersByKey.remove(k);
+        }
+    }
+
+    @Override
+    public void addMenuItemHelpers(MenuItemHelper... itemHelpers) {
+        for (var h : itemHelpers) {
+            this.menuItemHelpersByKey.put(h.getItemKey(), h);
+        }
+    }
+
+    @Override
+    public void removeMenuItemHelpers(MenuItemKey... itemKeys) {
+        for (var k : itemKeys) {
+            this.menuItemHelpersByKey.remove(k);
+        }
+    }
+
+    protected Map<MenuKey, MenuHelper> getMenuHelpersByKey() {
+        return menuHelpersByKey;
+    }
+
+    protected Map<MenuItemKey, MenuItemHelper> getMenuItemHelpersByKey() {
+        return menuItemHelpersByKey;
     }
 
     ReadOnlyObjectWrapper<ShellTabViewModel> selectedTabWrapper() {

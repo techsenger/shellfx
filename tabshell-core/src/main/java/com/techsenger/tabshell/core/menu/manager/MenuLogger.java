@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.menu;
+package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.core.MenuAware;
+import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
 import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
@@ -33,11 +33,11 @@ import org.slf4j.event.Level;
  */
 final class MenuLogger {
 
-    public static final Level CONFIGURED_MENU_LOG_LEVEL = Level.TRACE;
+    public static final Level CONFIGURED_MENU_LOG_LEVEL = Level.DEBUG;
 
     private static final Logger logger = LoggerFactory.getLogger(MenuLogger.class);
 
-    public static void buildTabMenuConfigMessage(MenuItem menuOrItem, KeyedMenuItemUpdate update,
+    public static void buildComponentMenuMessage(MenuItem menuOrItem, KeyedMenuItemUpdate update,
             StringBuilder logMessageBuilder) {
         if (logMessageBuilder != null) {
             logMessageBuilder.append(System.lineSeparator());
@@ -48,16 +48,16 @@ final class MenuLogger {
                 logMessageBuilder.append("item: ");
             }
             logMessageBuilder.append(menuOrItem.getText().replace("_", ""));
-            logMessageBuilder.append(", supported: ");
+            logMessageBuilder.append(", included: ");
             logMessageBuilder.append(menuOrItem.isVisible());
-            logMessageBuilder.append(", actual: ");
+            logMessageBuilder.append(", valid: ");
             logMessageBuilder.append(!menuOrItem.isDisable());
             logMessageBuilder.append(", update: ");
             logMessageBuilder.append(update);
         }
     }
 
-    public static void logTabMenuConfigMessage(String menuName, MenuAware menuAware,
+    public static void logComponentMenuMessage(String menuName, MenuAware menuAware,
             StringBuilder logMessageBuilder) {
         if (logMessageBuilder != null) {
             logger.atLevel(CONFIGURED_MENU_LOG_LEVEL).log("Configuration of '{}' menu for '{}' component: {}",

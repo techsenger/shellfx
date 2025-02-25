@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 /**
- * This interface can be used for {@link MenuAware#isMenuItemValid(MenuKey, MenuItemKey)}. At the same time its usage
- * is not mandatory.
+ * This interface is a wrapper for menu/menu item actions. We need it because when menu items are not shown to user
+ * they are NOT disabled and their actions can be called using accelerator keys. So, it intercepts the event and
+ * decides to call origin action or not.
  *
  * @author Pavel Castornii
  */
-public interface MenuItemValidator {
+public interface ActionInterceptor extends EventHandler<ActionEvent> {
 
-    boolean validate(MenuKey menuKey, MenuItemKey itemKey);
+    EventHandler<ActionEvent> getAction();
 }

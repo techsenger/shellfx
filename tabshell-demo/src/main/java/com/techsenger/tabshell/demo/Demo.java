@@ -18,8 +18,10 @@ package com.techsenger.tabshell.demo;
 
 import com.techsenger.tabshell.core.DefaultTabShellView;
 import com.techsenger.tabshell.core.DefaultTabShellViewModel;
+import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.demo.history.DemoHistoryManager;
+import com.techsenger.tabshell.demo.menu.DemoMenuKeys;
 import com.techsenger.tabshell.demo.menu.DemoMenuRegistrar;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -39,6 +41,8 @@ public class Demo extends Application {
         viewModel.setOnClosed(() -> {
             Platform.exit();
         });
+        //this helper will be used when there are no tabs
+        viewModel.addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuKeys.NEW, null, Boolean.TRUE));
         var view = new DefaultTabShellView(stage, null, viewModel);
         view.initialize();
 

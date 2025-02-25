@@ -17,9 +17,9 @@
 package com.techsenger.tabshell.kit.text.editor;
 
 import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.kit.core.file.FileInfo;
 import com.techsenger.tabshell.kit.core.file.FileTaskProvider;
-import com.techsenger.tabshell.kit.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.kit.text.menu.EditMenuKeys;
 import com.techsenger.tabshell.kit.text.viewer.AbstractViewerTabViewModel;
 import java.util.regex.Pattern;
@@ -87,16 +87,33 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
                 -> this.updatePosition(this.currentParagraph.get(), newV.intValue()));
         //setting initial value
         this.updatePosition(0, 0);
-        this.addSupportedMenus(EditMenuKeys.EDIT);
-        this.addSupportedMenuItems(FileMenuKeys.FILE,
-                FileMenuKeys.SAVE,
-                FileMenuKeys.SAVE_AS);
-        this.addSupportedMenuItems(EditMenuKeys.EDIT,
-                EditMenuKeys.UNDO,
-                EditMenuKeys.REDO,
-                EditMenuKeys.CUT,
-                EditMenuKeys.PASTE,
-                EditMenuKeys.GO_TO_LINE);
+        addMenuItemHelpers(
+            new SimpleMenuItemHelper(EditMenuKeys.UNDO, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    return getUndoManager().isUndoAvailable();
+                }
+            },
+            new SimpleMenuItemHelper(EditMenuKeys.REDO, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    return getUndoManager().isRedoAvailable();
+                }
+            },
+            new SimpleMenuItemHelper(EditMenuKeys.CUT, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    return isCutItemValid();
+                }
+            },
+            new SimpleMenuItemHelper(EditMenuKeys.PASTE, Boolean.TRUE) {
+                @Override
+                public Boolean getItemValid() {
+                    return isPasteItemValid();
+                }
+            },
+            new SimpleMenuItemHelper(EditMenuKeys.GO_TO_LINE, Boolean.TRUE)
+        );
     }
 
     public Clipboard getClipboard() {
@@ -109,16 +126,6 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
 
     protected boolean isPasteItemValid() {
         return this.getClipboard().getString() != null;
-    }
-
-    @Override
-    protected void initializeMenuItemValidators() {
-        super.initializeMenuItemValidators();
-        var m = getMenuItemValidatorsByKey();
-        m.put(EditMenuKeys.UNDO, (menuKey, menuItemKey) -> getUndoManager().isUndoAvailable());
-        m.put(EditMenuKeys.REDO, (menuKey, menuItemKey) -> getUndoManager().isRedoAvailable());
-        m.put(EditMenuKeys.CUT, (menuKey, menuItemKey) -> isCutItemValid());
-        m.put(EditMenuKeys.PASTE, (menuKey, menuItemKey) -> isPasteItemValid());
     }
 
     protected StringProperty positionTextProperty() {

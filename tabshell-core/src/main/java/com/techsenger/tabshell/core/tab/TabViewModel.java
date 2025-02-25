@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.tabshell.core.MenuAware;
+import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.mvvm4fx.core.ChildViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.SelectableViewModel;

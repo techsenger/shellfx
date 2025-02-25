@@ -27,8 +27,6 @@ import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.kit.terminal.style.TerminalIcons;
 import com.techsenger.tabshell.material.icon.FontIcon;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.net.URI;
@@ -88,16 +86,6 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
     @Override
     public ShellTabKey getKey() {
         return TerminalComponentKeys.TERMINAL_TAB;
-    }
-
-    @Override
-    public boolean isMenuValid(MenuKey menuKey) {
-        return false;
-    }
-
-    @Override
-    public boolean isMenuItemValid(MenuKey menuKey, MenuItemKey itemKey) {
-        return false;
     }
 
     public ObjectProperty<TerminalPaletteType> paletteTypeProperty() {

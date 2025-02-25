@@ -19,8 +19,6 @@ package com.techsenger.tabshell.kit.core.workertab;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.TabKey;
 import com.techsenger.tabshell.kit.core.CoreComponentKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
 import javafx.collections.ObservableList;
 
 /**
@@ -40,16 +38,6 @@ public class WorkerReportTabViewModel extends AbstractTabViewModel {
     @Override
     public TabKey getKey() {
         return CoreComponentKeys.WORKER_REPORT_TAB;
-    }
-
-    @Override
-    public boolean isMenuValid(MenuKey menuKey) {
-        return true;
-    }
-
-    @Override
-    public boolean isMenuItemValid(MenuKey menuKey, MenuItemKey itemKey) {
-        return true;
     }
 
     protected ObservableList<TabWorker<?>> getWorkers() {
