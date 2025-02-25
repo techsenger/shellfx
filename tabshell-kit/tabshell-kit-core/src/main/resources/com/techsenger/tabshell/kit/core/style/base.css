@@ -29,12 +29,10 @@
 
 .stage-box > .title-bar > .icon-view-box > .font-icon-view {
     -fx-font-size: 1.6em;
-    -fx-font-family: 'Material Design Icons';
 }
 
 .dialog-box > .title-bar > .icon-view-box > .font-icon-view {
     -fx-font-size: 1.6em;
-    -fx-font-family: 'Material Design Icons';
 }
 
 /*
@@ -42,7 +40,6 @@
 */
 .shell-tab-pane > .tab-header-area > .headers-region > .tab .font-icon-view {
     -fx-font-size: 1.6em;
-    -fx-font-family: 'Material Design Icons';
     -fx-padding: 0;
 }
 
