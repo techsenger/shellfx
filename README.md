@@ -107,9 +107,9 @@ to predict the final structure of the menu that the user will work with.
 
 The implementation of this feature is structured as follows. There are three key elements: the menu, the group, and the
 item. Each element has its own key, which is used for identification. A menu consists of groups separated by a
-separator. Items are added to groups (the system handles cases where groups remain empty). All three elements are
-registered/unregistered in the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is passed to
-`TabShell`, which then constructs the final menu.
+separator. Items are added to groups, and empty groups are ignored. All three elements are registered/unregistered in
+the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is passed to `TabShell`, which then
+constructs the final menu.
 
 The `MenuManager` is responsible for managing the state of menu elements and responding to their actions. It interacts
 with a component that implements the `MenuAware` interface. This interface is always implemented by both `TabShell` and
