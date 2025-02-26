@@ -168,8 +168,8 @@
     -fx-pref-width: 2.1em;
 }
 
-.tool-bar .button.iconed .font-icon-view,
-.tool-bar .toggle-button.iconed .font-icon-view {
+.tool-bar .button .font-icon-view,
+.tool-bar .toggle-button .font-icon-view {
     -fx-padding: 0;
     -fx-font-size: 1.8em;
 }
