@@ -84,7 +84,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             item.setOnAction((e) -> {
                 var tabShell = (TabShellView<?>) v;
                 //terminal
-                var terminalViewModel = new TerminalTabViewModel(tabShell.getViewModel());
+                var terminalViewModel = new TerminalTabViewModel(tabShell.getViewModel(), null);
                 var terminalView = new TerminalTabView(tabShell, terminalViewModel);
                 terminalView.initialize();
                 tabShell.openTab(terminalView);

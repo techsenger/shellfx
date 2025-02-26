@@ -71,12 +71,13 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
     private final ObjectProperty<TerminalPaletteType> paletteType =
             new SimpleObjectProperty<>();
 
-    private final PtyProcessTtyConnector ttyConnector = createTtyConnector();
+    private final PtyProcessTtyConnector ttyConnector;
 
     private FindPaneViewModel find;
 
-    public TerminalTabViewModel(TabShellViewModel tabShell) {
+    public TerminalTabViewModel(TabShellViewModel tabShell, String directory) {
         super(tabShell);
+        this.ttyConnector = createTtyConnector(directory);
         this.setIcon(new FontIcon(TerminalIcons.TERMINAL));
         this.setTitle("Terminal");
         setHistoryPolicy(HistoryPolicy.ALL);
@@ -116,7 +117,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         return new TerminalSettingsProvider(settings.getAppearance().getMonospaceFont(), terminalPalette);
     }
 
-    protected PtyProcessTtyConnector createTtyConnector() {
+    protected PtyProcessTtyConnector createTtyConnector(String directory) {
         try {
             Map<String, String> envs = System.getenv();
             String[] command;
@@ -127,7 +128,9 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
                 envs = new HashMap<>(System.getenv());
                 envs.put("TERM", "xterm-256color");
             }
-            PtyProcess process = new PtyProcessBuilder().setCommand(command).setEnvironment(envs).start();
+            PtyProcess process = new PtyProcessBuilder()
+                    .setDirectory(directory)
+                    .setCommand(command).setEnvironment(envs).start();
             return new PtyProcessTtyConnector(process, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new IllegalStateException(e);
