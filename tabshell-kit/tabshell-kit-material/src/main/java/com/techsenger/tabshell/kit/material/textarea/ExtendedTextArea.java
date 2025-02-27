@@ -48,6 +48,11 @@ import org.reactfx.SuspendableYes;
  *      folding/unfolding (+ -));</li>
  *  <li>{@code ExtendedStyle} - text style.</li>
  * </ol>
+ *
+ * <p>Important. Only \n line terminators are used inside all RichTextFX text areas,
+ * see this <a href="https://github.com/FXMisc/RichTextFX/issues/211#issuecomment-158661921">comment</a>
+ * So, don't use {@link System#lineSeparator()} and its length, because you will get wrong results.
+ *
  * @author Pavel Castornii
  */
 public class ExtendedTextArea extends StyledTextArea<Collection<String>, Collection<TextAreaStyle>> {
