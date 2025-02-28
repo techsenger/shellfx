@@ -198,7 +198,7 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
         pasteItem.setOnAction((t) -> getTextArea().paste());
         getTextArea().addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
             cutItem.setDisable(!viewModel.isCutItemValid());
-            pasteButton.setDisable(!viewModel.isPasteItemValid());
+            pasteItem.setDisable(!viewModel.isPasteItemValid());
         });
     }
 
