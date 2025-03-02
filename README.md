@@ -60,7 +60,7 @@ The library requires Java 17 or later. Due to some bugs, use JavaFX versions 19â
 
 ## Dependencies <a name="dependencies"></a>
 
-This project will be available on Maven Central in a few weeks.
+This project is available on Maven Central.
 
 ## Usage <a name="usage"></a>
 
@@ -180,44 +180,5 @@ with fixes and new features. If you have any questions, feel free to reach out â
 You can support us financially through [GitHub Sponsors](https://github.com/sponsors/techsenger). Your
 contribution directly helps us keep our open-source projects active, improve their features, and offer ongoing support.
 Besides, we offer multiple sponsorship tiers, with different rewards.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
