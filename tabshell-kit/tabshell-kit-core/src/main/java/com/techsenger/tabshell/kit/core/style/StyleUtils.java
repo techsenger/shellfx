@@ -28,7 +28,7 @@ public final class StyleUtils {
     /**
      * Returns the width of the char for monospace font.
      *
-     * @param fontSize
+     * @param font
      * @return
      */
     public static double getMonospaceCharWidth(Font font) {

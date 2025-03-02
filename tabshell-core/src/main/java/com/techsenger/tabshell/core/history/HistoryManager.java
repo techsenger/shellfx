@@ -20,7 +20,7 @@ import com.techsenger.mvvm4fx.core.ComponentHistory;
 import com.techsenger.toolkit.core.function.Factory;
 
 /**
- * {@link HistoryManger{ is interface and there can be different implementations. For example, it is possible to use
+ * {@link HistoryManager} is interface and there can be different implementations. For example, it is possible to use
  * different {@link HistoryFile} when one file is used for one layer.
  *
  * @author Pavel Castornii
