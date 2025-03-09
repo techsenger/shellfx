@@ -239,6 +239,11 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
         this.windowCloser.run();
     }
 
+    @Override
+    public DialogHelper<?> getComponentHelper() {
+        return (DialogHelper<?>) super.getComponentHelper();
+    }
+
     void setWindowCloser(Runnable closer) {
         this.windowCloser = closer;
     }

@@ -144,11 +144,11 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
                 viewModel.minWidthProperty(), viewModel.minHeightProperty(),
                 viewModel.maxWidthProperty(), viewModel.maxHeightProperty(),
                 (e) -> {
-                    var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZING_STARTED, e);
+                    var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_STARTED, e);
                     this.dialogBox.fireEvent(event);
                 },
                 (e) -> {
-                    var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZING_FINISHED, e);
+                    var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_FINISHED, e);
                     this.dialogBox.fireEvent(event);
                 });
         this.resizer.initialize(dialogBox);
@@ -186,6 +186,22 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
         super.addHandlers(viewModel);
         titleBar.setOnMousePressed((event) -> this.doOnMousePressed(event));
         titleBar.setOnMouseDragged((event) -> this.doOnMouseDragged(event));
+    }
+
+    @Override
+    protected DialogHelper<?> createComponentHelper() {
+        //we suppose that all child dialogs
+        //will be with the same scope
+        return new DialogHelper() {
+            @Override
+            public void openDialog(DialogView dialog) {
+                getDialogManager().openDialog(dialog);
+            }
+        };
+    }
+
+    protected DialogManager getDialogManager() {
+        return dialogManager;
     }
 
     void setDialogManager(DialogManager dialogManager) {

@@ -16,11 +16,12 @@
 
 package com.techsenger.tabshell.kit.core.tabmanager;
 
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.tab.ComponentTab;
-import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.core.tab.TabPaneHolderView;
 import com.techsenger.tabshell.core.tab.TabPaneHolderViewUtils;
+import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.kit.core.style.StyleClasses;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
 
     @Override
     public void closeTab(TabView<?> tabView) {
-        if (tabView.doOnCloseRequest()) {
+        if (tabView.doOnCloseRequest(CloseScope.TAB)) {
             root.getTabs().remove(tabView.getNode());
             tabView.deinitialize();
             var closedCallback = tabView.getViewModel().getOnClosed();

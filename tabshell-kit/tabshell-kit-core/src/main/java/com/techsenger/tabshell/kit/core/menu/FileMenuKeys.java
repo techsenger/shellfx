@@ -28,7 +28,7 @@ public interface FileMenuKeys {
 
     MenuKey FILE = new MenuKey();
 
-    MenuGroupKey BASE_FILE_ACTIONS = new MenuGroupKey();
+    MenuGroupKey FILE_ACTIONS = new MenuGroupKey();
 
     MenuGroupKey DEFAULT = new MenuGroupKey();
 

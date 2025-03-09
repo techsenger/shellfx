@@ -22,11 +22,13 @@ module com.techsenger.tabshell.kit.material {
     requires atlantafx.base;
     requires org.fxmisc.richtext;
     requires com.techsenger.toolkit.core;
+    requires com.techsenger.toolkit.fx;
     requires reactfx;
     requires org.fxmisc.flowless;
     requires org.fxmisc.undo;
     requires wellbehavedfx;
 
     exports com.techsenger.tabshell.kit.material;
+    exports com.techsenger.tabshell.kit.material.list;
     exports com.techsenger.tabshell.kit.material.textarea;
 }

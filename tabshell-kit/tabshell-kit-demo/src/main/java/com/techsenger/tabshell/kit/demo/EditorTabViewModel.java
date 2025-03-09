@@ -21,16 +21,15 @@ import com.techsenger.tabshell.core.TabShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
-import com.techsenger.tabshell.kit.core.file.FileInfo;
-import com.techsenger.tabshell.kit.core.file.FileTaskProvider;
+import com.techsenger.tabshell.kit.core.file.GenericFile;
+import com.techsenger.tabshell.kit.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.kit.dialog.alert.AlertDialogType;
 import com.techsenger.tabshell.kit.dialog.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.kit.dialog.file.ExtensionFilter;
 import com.techsenger.tabshell.kit.text.editor.AbstractEditorTabViewModel;
-import com.techsenger.tabshell.kit.text.menu.EditMenuKeys;
 import com.techsenger.tabshell.kit.text.style.TextIcons;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import java.util.List;
-import javafx.stage.FileChooser;
 
 /**
  *
@@ -38,9 +37,8 @@ import javafx.stage.FileChooser;
  */
 public class EditorTabViewModel extends AbstractEditorTabViewModel {
 
-    EditorTabViewModel(TabShellViewModel tabShell, FileInfo fileInfo,
-            FileTaskProvider<String> fileTaskProvider) {
-        super(tabShell, fileInfo, fileTaskProvider);
+    EditorTabViewModel(TabShellViewModel tabShell, GenericFile file) {
+        super(tabShell, file);
         //the initial history is created using a factory instead of reflection in the history manager to avoid
         //access issues with hidden packages
         setHistoryPolicy(HistoryPolicy.ALL);
@@ -58,24 +56,25 @@ public class EditorTabViewModel extends AbstractEditorTabViewModel {
         return DemoComponentKeys.EDITOR_TAB;
     }
 
-    @Override
-    public String getDefaultExtension() {
-        return null;
-    }
-
-    @Override
-    public List<FileChooser.ExtensionFilter> getExtensionFilters() {
-        return null;
-    }
-
-    @Override
-    public String resolveDefaultExtension(FileChooser.ExtensionFilter filter) {
-        return null;
-    }
-
     void showInfo() {
         //shell scope!
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO, "That is a message.");
         getComponentHelper().openAlertDialog(viewModel);
+    }
+
+    @Override
+    public List<ExtensionFilter> createOpenExtensionFilters() {
+        return List.of(
+                new ExtensionFilter("All Files", true, "*.*"),
+                new ExtensionFilter("Text Files", true, "*.txt")
+        );
+    }
+
+    @Override
+    public List<ExtensionFilter> createSaveExtensionFilters() {
+        return List.of(
+                new ExtensionFilter("All Files", true, "*.*"),
+                new ExtensionFilter("Text Files", true, "*.txt")
+        );
     }
 }

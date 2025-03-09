@@ -18,9 +18,11 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.mvvm4fx.core.View;
 import com.techsenger.tabshell.core.dialog.DialogManager;
-import com.techsenger.tabshell.core.tab.TabPaneHolderView;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ShellTabView;
+import com.techsenger.tabshell.core.tab.TabPaneHolderView;
+import java.util.List;
 
 /**
  * There can be only one instance of TabShell in VirtualMachine.
@@ -61,4 +63,18 @@ public interface TabShellView<T extends TabShellViewModel> extends View<T>, TabP
      *
      */
     void close();
+
+    /**
+     * Adds stylesheets to TabShell.
+     *
+     * @param sheets
+     */
+    void addStylesheets(List<Stylesheet> sheets);
+
+    /**
+     * Removes stylesheets from TabShell.
+     *
+     * @param sheets
+     */
+    void removeStylesheets(List<Stylesheet> sheets);
 }

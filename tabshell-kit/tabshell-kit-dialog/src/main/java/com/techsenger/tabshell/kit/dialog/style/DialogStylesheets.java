@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.kit.core.file;
+package com.techsenger.tabshell.kit.dialog.style;
+
+import com.techsenger.tabshell.core.style.AbstractStylesheets;
+import com.techsenger.tabshell.core.style.Stylesheet;
 
 /**
  *
  * @author Pavel Castornii
  */
-public final class FileChooserTitles {
+public final class DialogStylesheets extends AbstractStylesheets {
 
-    public static final String OPEN = "Open File";
-
-    public static final String SAVE_AS = "Save File As";
-
-    private FileChooserTitles() {
-        //empty
+    public DialogStylesheets(boolean iconsIncluded) {
+        super(iconsIncluded);
+        if (iconsIncluded) {
+            add(new Stylesheet(DialogIcons.class.getResource("icons.css")));
+        }
     }
 }

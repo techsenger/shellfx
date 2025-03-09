@@ -125,3 +125,11 @@
 .font-icon-view.tabshell-select-all-icon {
     -fx-code-point: 984198; /* select all */
 }
+
+.font-icon-view.tabshell-directory-icon {
+    -fx-code-point: 983627; /* folder */
+}
+
+.font-icon-view.tabshell-file-icon {
+    -fx-code-point: 983588; /* file-outline */
+}

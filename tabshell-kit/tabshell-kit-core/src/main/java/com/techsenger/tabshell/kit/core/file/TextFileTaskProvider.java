@@ -17,33 +17,31 @@
 package com.techsenger.tabshell.kit.core.file;
 
 import com.techsenger.tabshell.kit.core.workertab.TabWorker;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.charset.Charset;
 import javafx.concurrent.Task;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class LocalBinFileTaskProvider implements FileTaskProvider<byte[]> {
+public class TextFileTaskProvider implements FileTaskProvider<String> {
+
+    private final Charset charset;
+
+    public TextFileTaskProvider(Charset charset) {
+        this.charset = charset;
+    }
 
     @Override
-    public TabWorker<byte[]> createFileReader(FileInfo fileInfo) {
-        class ReaderTask extends Task<byte[]> implements TabWorker<byte[]> {
+    public TabWorker<String> createFileReader(GenericFile file) {
+        class ReaderTask extends Task<String> implements TabWorker<String> {
 
             @Override
-            protected byte[] call() throws Exception {
-                var p = Paths.get(fileInfo.getPath());
-                var f = p.toFile();
-                if (!f.exists()) {
-                    return null;
-                }
-                if (fileInfo.getSize() == null) {
-                    fileInfo.setSize(f.length());
-                }
-                byte[] array = Files.readAllBytes(p);
+            protected String call() throws Exception {
+                var storage = file.getStorage();
+                var content = storage.readFile(file.getUri(), charset);
                 updateProgress(100, 100);
-                return array;
+                return content;
             }
 
             @Override
@@ -55,13 +53,13 @@ public class LocalBinFileTaskProvider implements FileTaskProvider<byte[]> {
     }
 
     @Override
-    public TabWorker<Void> createFileWriter(FileInfo fileInfo, byte[] content) {
+    public TabWorker<Void> createFileWriter(GenericFile file, String content) {
         class WriterTask extends Task<Void> implements TabWorker<Void> {
 
             @Override
             protected Void call() throws Exception {
-                var p = Paths.get(fileInfo.getPath());
-                Files.write(p, content);
+                var storage = file.getStorage();
+                storage.writeFile(file.getUri(), content, charset);
                 updateProgress(100, 100);
                 return null;
             }

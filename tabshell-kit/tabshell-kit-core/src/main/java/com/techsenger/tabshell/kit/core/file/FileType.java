@@ -16,16 +16,11 @@
 
 package com.techsenger.tabshell.kit.core.file;
 
-import javafx.stage.FileChooser;
-
 /**
  *
  * @author Pavel Castornii
  */
-public interface FileType {
+public enum FileType {
 
-    String getExtension();
-
-    FileChooser.ExtensionFilter getExtensionFilter();
-
+    DIRECTORY, FILE, SYMBOLIC_LINK
 }

@@ -16,10 +16,12 @@
 
 module com.techsenger.tabshell.kit.dialog {
     requires org.slf4j;
+    requires com.techsenger.toolkit.core;
     requires com.techsenger.mvvm4fx.core;
     requires com.techsenger.tabshell.core;
-    requires com.techsenger.tabshell.kit.core;
     requires com.techsenger.tabshell.material;
+    requires com.techsenger.tabshell.kit.core;
+    requires com.techsenger.tabshell.kit.material;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
@@ -29,6 +31,7 @@ module com.techsenger.tabshell.kit.dialog {
 
     exports com.techsenger.tabshell.kit.dialog;
     exports com.techsenger.tabshell.kit.dialog.alert;
+    exports com.techsenger.tabshell.kit.dialog.file;
     exports com.techsenger.tabshell.kit.dialog.page;
     exports com.techsenger.tabshell.kit.dialog.style;
 

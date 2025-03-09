@@ -31,6 +31,10 @@
             <artifactId>tabshell-kit-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.tabshell.kit</groupId>
+            <artifactId>tabshell-kit-material</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.toolkit</groupId>
             <artifactId>toolkit-fx</artifactId>
         </dependency>

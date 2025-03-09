@@ -1,0 +1,85 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.kit.dialog.file;
+
+import com.techsenger.tabshell.kit.core.file.FileColumnBuilder;
+import com.techsenger.tabshell.kit.core.file.FileColumnKeys;
+import com.techsenger.tabshell.kit.core.file.GenericFile;
+import com.techsenger.tabshell.kit.core.style.StyleClasses;
+import com.techsenger.tabshell.material.table.KeyedTableColumn;
+import com.techsenger.tabshell.material.table.TableHistoryUtils;
+import java.util.function.Function;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.TextFieldTableCell;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+class FileTableView extends TableView<GenericFile> {
+
+    private final FileColumnBuilder columnBuilder;
+
+    private final FileStringConverter stringConverter = new FileStringConverter();
+
+    FileTableView(FileChooserDialogViewModel viewModel) {
+        super(viewModel.getFiles());
+        this.columnBuilder = new FileColumnBuilder(viewModel.getAppearanceSettings().getRegularFont());
+        getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.SAME_SPACING_TABLE);
+        setEditable(true);
+        setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
+        setPlaceholder(new Label(""));
+
+        Function<String, TableColumn<?, ?>> columnProvider = (key) -> {
+            if (key.equals(FileColumnKeys.TYPE.toString())) {
+                var typeColumn = columnBuilder.buildTypeColumn();
+                typeColumn.setEditable(false);
+                typeColumn.getStyleClass().add(StyleClasses.SAME_SPACING_TABLE_FIRST_COLUMN);
+                return typeColumn;
+            } else if (key.equals(FileColumnKeys.NAME.toString())) {
+                var nameColumn = columnBuilder.buildNameColumn();
+                nameColumn.setEditable(false);
+                nameColumn.setCellFactory(r -> new TextFieldTableCell<>(stringConverter));
+                return nameColumn;
+            } else if (key.equals(FileColumnKeys.SIZE.toString())) {
+                var sizeColumn = columnBuilder.buildSizeColumn();
+                sizeColumn.setEditable(false);
+                return sizeColumn;
+            } else if (key.equals(FileColumnKeys.LAST_MODIFIED.toString())) {
+                var lastModifiedColumn = columnBuilder.buildLastModifiedColumn();
+                lastModifiedColumn.setEditable(false);
+                lastModifiedColumn.getStyleClass().add(StyleClasses.SAME_SPACING_TABLE_LAST_COLUMN);
+                return lastModifiedColumn;
+            }
+            throw new AssertionError();
+        };
+        TableHistoryUtils.restoreTable(this, columnProvider, viewModel.getTableHistory(), false);
+    }
+
+    TableColumn<GenericFile, ?> findNameColumn() {
+        for (var c : getColumns()) {
+            var keyedColumn = (KeyedTableColumn<?, ?>) c;
+            if (keyedColumn.getKey() == FileColumnKeys.NAME) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+}

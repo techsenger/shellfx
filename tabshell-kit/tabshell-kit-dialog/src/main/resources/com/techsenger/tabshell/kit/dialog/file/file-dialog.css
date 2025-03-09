@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.table;
-
-import javafx.scene.control.TableColumn;
-
-/**
- *
- * @author Pavel Castornii
- */
-public class TableKeyedColumn<S, T> extends TableColumn<S, T> {
-
-    private final TableColumnKey key;
-
-    public TableKeyedColumn(TableColumnKey key) {
-        super();
-        this.key = key;
-    }
-
-    public TableKeyedColumn(TableColumnKey key, String string) {
-        super(string);
-        this.key = key;
-    }
-
-    public TableColumnKey getKey() {
-        return key;
-    }
+.table-view .table-row-cell {
+    -fx-background-insets: 0, 0 0 0 0;
 }
+
+.combo-box.location .list-cell HBox{
+    -fx-spacing: 0.25em;
+}
+
+.column-list-view .label {
+    -fx-padding: 0 0 0 0.25em;
+    -fx-graphic-text-gap: 0.5em;
+}
+

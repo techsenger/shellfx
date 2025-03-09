@@ -60,6 +60,10 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell.kit</groupId>
+            <artifactId>tabshell-kit-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.tabshell.kit</groupId>
             <artifactId>tabshell-kit-dialog</artifactId>
         </dependency>
         <!-- testing -->

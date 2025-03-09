@@ -20,10 +20,11 @@ import com.techsenger.tabshell.core.TabShellKey;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.kit.core.file.FileInfo;
-import com.techsenger.tabshell.kit.core.file.LocalTextFileTaskProvider;
+import com.techsenger.tabshell.kit.core.file.FileStorages;
+import com.techsenger.tabshell.kit.core.file.FileType;
+import com.techsenger.tabshell.kit.core.file.GenericFile;
 import com.techsenger.tabshell.kit.core.menu.FileMenuKeys;
-import com.techsenger.tabshell.kit.core.menu.FileMenuRegistrar;
+import com.techsenger.tabshell.kit.registrar.FileMenuRegistrar;
 import com.techsenger.tabshell.kit.terminal.TerminalTabView;
 import com.techsenger.tabshell.kit.terminal.TerminalTabViewModel;
 import com.techsenger.tabshell.kit.terminal.style.TerminalIcons;
@@ -46,15 +47,10 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
 
     @Override
     public void register() {
-        //super.register();
-        registerFileMenu();
-        //two groups
-        registerDefaultGroup();
-        registerBaseFileGroup();
-        registerEditorItem(); //will be in the base file actions group
-        registerTerminalItem(); //will be in the base file actions group
-        registerThemeItem(); //will be in the base file actions group
-        registerExitItem(); //will be the the default group
+        super.register();
+        registerEditorItem(); //file actions group
+        registerTerminalItem(); //file actions group
+        registerThemeItem(); //file actions group
     }
 
     protected void registerEditorItem() {
@@ -64,8 +60,10 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             item.setOnAction((e) -> {
                 var tabShell = (TabShellView<?>) v;
                 //editor
-                var editorViewModel = new EditorTabViewModel(tabShell.getViewModel(),
-                        new FileInfo("~", "Lorem Ipsum", "txt"), new LocalTextFileTaskProvider());
+                var stogages = FileStorages.getDefault(true);
+                var homeDir = GenericFile.getHome(stogages);
+                var file = GenericFile.getChild(homeDir, "Lorem Ipsum.txt", FileType.FILE);
+                var editorViewModel = new EditorTabViewModel(tabShell.getViewModel(), file);
                 var editorView = new EditorTabView(tabShell, editorViewModel);
                 editorView.initialize();
                 editorViewModel.setContent(Text.INSTANCE);
@@ -73,7 +71,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.BASE_FILE_ACTIONS, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 100));
     }
 
     protected void registerTerminalItem() {
@@ -91,7 +89,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.BASE_FILE_ACTIONS, f, 200));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 200));
     }
 
     protected void registerThemeItem() {
@@ -111,7 +109,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.BASE_FILE_ACTIONS, f, 300));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 300));
     }
 
 }

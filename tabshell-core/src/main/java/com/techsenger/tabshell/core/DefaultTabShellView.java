@@ -22,21 +22,26 @@ import com.techsenger.stagepro.core.StageResizeEvent;
 import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
+import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabPaneHolderViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
@@ -72,7 +77,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
 
         TabShellDialogManager(ShellStageController controller, StackPane stackPane, VBox mainPane,
                 ReadOnlyIntegerWrapper dialogCount) {
-            super(stackPane, mainPane, dialogCount);
+            super(DialogScope.SHELL, stackPane, mainPane, dialogCount);
             this.controller = controller;
         }
 
@@ -166,7 +171,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
             var allCanBeClosed = true;
             for (var tab: tabPane.getTabs()) {
                 var view = ((ComponentTab) tab).getView();
-                if (!view.doOnCloseRequest()) {
+                if (!view.doOnCloseRequest(CloseScope.SHELL)) {
                     allCanBeClosed = false;
                     break;
                 }
@@ -208,16 +213,22 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
 
     private final DialogManager dialogManager;
 
-    public DefaultTabShellView(List<String> stylesheetUrls, DefaultTabShellViewModel viewModel) {
-        this(new Stage(), stylesheetUrls, viewModel);
+    private final ObservableList<Stylesheet> stylesheets;
+
+    public DefaultTabShellView(List<Stylesheet> stylesheets, DefaultTabShellViewModel viewModel) {
+        this(new Stage(), stylesheets, viewModel);
     }
 
-    public DefaultTabShellView(Stage stage, List<String> stylesheetUrls, DefaultTabShellViewModel viewModel) {
+    public DefaultTabShellView(Stage stage, List<Stylesheet> stylesheets, DefaultTabShellViewModel viewModel) {
         super(viewModel);
         this.stage = stage;
         stageController = new ShellStageController(stage, viewModel.getDefaultWidth(),
                 viewModel.getDefaultHeight(), viewModel.dialogCountProperty());
-        themeManager = new ThemeManager(stageController, stylesheetUrls, viewModel.getSettings().getAppearance());
+        this.stylesheets = FXCollections.observableArrayList(createDefaultStylesheets());
+        if (stylesheets != null) {
+            this.stylesheets.addAll(stylesheets);
+        }
+        themeManager = new ThemeManager(stageController, this.stylesheets, viewModel.getSettings().getAppearance());
         this.dialogManager = new TabShellDialogManager(stageController, stackPane, contentPane,
                 viewModel.dialogCountWrapper());
         this.menuManager = new MenuManager(this, this.menuBar);
@@ -236,7 +247,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
 
     @Override
     public void closeTab(ShellTabView<?> tabView) {
-        if (tabView.doOnCloseRequest()) {
+        if (tabView.doOnCloseRequest(CloseScope.TAB)) {
             this.doCloseTab(tabView);
         }
     }
@@ -276,6 +287,16 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
     public void close() {
         var closer = this.new Closer();
         closer.run();
+    }
+
+    @Override
+    public void addStylesheets(List<Stylesheet> sheets) {
+        this.stylesheets.addAll(sheets);
+    }
+
+    @Override
+    public void removeStylesheets(List<Stylesheet> sheets) {
+        this.stylesheets.removeAll(sheets);
     }
 
     @Override
@@ -408,5 +429,21 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
         if (newTab != null) {
             newTab.getView().doOnSelected();
         }
+    }
+
+    private List<Stylesheet> createDefaultStylesheets() {
+        return List.of(
+                new Stylesheet(TabShellView.class.getResource("core.css")),
+                new Stylesheet(TabShellTheme.CASPIAN, TabShellView.class.getResource("core-caspian.css")),
+                new Stylesheet(TabShellTheme.CUPERTINO_DARK, TabShellView.class.getResource("core-cupertino-dark.css")),
+                new Stylesheet(TabShellTheme.CUPERTINO_LIGHT,
+                        TabShellView.class.getResource("core-cupertino-light.css")),
+                new Stylesheet(TabShellTheme.DRACULA, TabShellView.class.getResource("core-dracula.css")),
+                new Stylesheet(TabShellTheme.MODENA, TabShellView.class.getResource("core-modena.css")),
+                new Stylesheet(TabShellTheme.NORD_DARK, TabShellView.class.getResource("core-nord-dark.css")),
+                new Stylesheet(TabShellTheme.NORD_LIGHT, TabShellView.class.getResource("core-nord-light.css")),
+                new Stylesheet(TabShellTheme.PRIMER_DARK, TabShellView.class.getResource("core-primer-dark.css")),
+                new Stylesheet(TabShellTheme.PRIMER_LIGHT, TabShellView.class.getResource("core-primer-light.css"))
+        );
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.kit.text.menu;
+package com.techsenger.tabshell.kit.core.menu;
 
 import com.techsenger.tabshell.material.menu.MenuGroupKey;
 import com.techsenger.tabshell.material.menu.MenuItemKey;

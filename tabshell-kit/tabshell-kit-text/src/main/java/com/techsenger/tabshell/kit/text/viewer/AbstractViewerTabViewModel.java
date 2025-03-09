@@ -17,19 +17,27 @@
 package com.techsenger.tabshell.kit.text.viewer;
 
 import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
-import com.techsenger.tabshell.kit.core.file.FileInfo;
-import com.techsenger.tabshell.kit.core.file.FileTabViewModel;
 import com.techsenger.tabshell.kit.core.file.FileTaskProvider;
+import com.techsenger.tabshell.kit.core.file.GenericFile;
+import com.techsenger.tabshell.kit.core.file.TextFileTaskProvider;
+import com.techsenger.tabshell.kit.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.kit.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.kit.core.settings.Settings;
 import com.techsenger.tabshell.kit.core.settings.ViewerSettings;
 import com.techsenger.tabshell.kit.core.workertab.AbstractWorkerTabViewModel;
-import com.techsenger.tabshell.kit.text.menu.EditMenuKeys;
+import com.techsenger.tabshell.kit.dialog.alert.AlertDialogType;
+import com.techsenger.tabshell.kit.dialog.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.kit.dialog.file.FileOpenerViewModel;
+import com.techsenger.tabshell.kit.dialog.file.FileSaverViewModel;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -39,8 +47,12 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Worker;
 import javafx.scene.control.IndexRange;
 import org.fxmisc.undo.UndoManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Text tab can be used in very different components that's why it doesn't add any optional menu/items.
@@ -48,7 +60,9 @@ import org.fxmisc.undo.UndoManager;
  * @author Pavel Castornii
  */
 public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewModel
-        implements FileTabViewModel<String> {
+        implements FileOpenerViewModel, FileSaverViewModel {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractViewerTabViewModel.class);
 
     private final ReadOnlyBooleanWrapper textFocused  = new ReadOnlyBooleanWrapper(false);
 
@@ -59,7 +73,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     /**
      * Although it is a viewer content can be modified, for example, if it a log viewer.
      */
-    private final ReadOnlyBooleanWrapper contentModified = new ReadOnlyBooleanWrapper(false);
+    private final ReadOnlyBooleanWrapper modified = new ReadOnlyBooleanWrapper(false);
 
     /**
      * Never null. If there is no selection, then empty string.
@@ -78,9 +92,11 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     private final BooleanProperty wrapText = new SimpleBooleanProperty(true);
 
-    private final FileInfo fileInfo;
+    private final ObjectProperty<GenericFile> file = new SimpleObjectProperty<>();
 
-    private final FileTaskProvider<String> fileTaskProvider;
+    private final ObjectProperty<Charset> charset = new SimpleObjectProperty<>(StandardCharsets.UTF_8);
+
+    private final ReadOnlyBooleanWrapper persisted = new ReadOnlyBooleanWrapper();
 
     private FindMatchesResetPolicy findMatchesResetPolicy = FindMatchesResetPolicy.AUTOMATIC;
 
@@ -92,25 +108,39 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
      * Constructor.
      *
      */
-    public AbstractViewerTabViewModel(TabShellViewModel tabShell, FileInfo fileInfo,
-            FileTaskProvider<String> fileTaskProvider) {
+    public AbstractViewerTabViewModel(TabShellViewModel tabShell, GenericFile file) {
         super(tabShell);
-        this.fileInfo = fileInfo;
-        this.fileTaskProvider = fileTaskProvider;
+        this.file.set(file);
         addMenuHelpers(new SimpleMenuHelper(EditMenuKeys.EDIT, Boolean.TRUE));
         addMenuItemHelpers(
             //file
-            new SimpleMenuItemHelper(FileMenuKeys.OPEN, Boolean.TRUE),
+            new SimpleMenuItemHelper(FileMenuKeys.OPEN, Boolean.TRUE, Boolean.TRUE) {
+                @Override
+                public void doOnItemAction() {
+                    openFile(DialogScope.TAB);
+                }
+            },
             new SimpleMenuItemHelper(FileMenuKeys.SAVE, Boolean.TRUE) {
                 @Override
+                public void doOnItemAction() {
+                    writeFile();
+                }
+
+                @Override
                 public Boolean getItemValid() {
-                    return getFileInfo().getPath() != null;
+                    return isPersisted();
                 }
             },
             new SimpleMenuItemHelper(FileMenuKeys.SAVE_AS, Boolean.TRUE) {
+
+                @Override
+                public void doOnItemAction() {
+                    saveFile(DialogScope.TAB);
+                }
+
                 @Override
                 public Boolean getItemValid() {
-                    return !fileInfo.isRemote();
+                    return true;
                 }
             },
 
@@ -188,38 +218,93 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     }
 
     @Override
-    public FileInfo getFileInfo() {
-        return this.fileInfo;
+    public GenericFile getFile() {
+        return this.file.get();
     }
 
     @Override
-    public FileTaskProvider<String> getFileTaskProvider() {
-        return this.fileTaskProvider;
+    public void setFile(GenericFile file) {
+        this.file.set(file);
     }
 
     @Override
-    public boolean isContentModified() {
-        return this.contentModified.get();
+    public void readFile() {
+        var file = getFile();
+        if (file == null || file.getUri() == null) {
+            return;
+        }
+        var task = createFileTaskProvider().createFileReader(file);
+        task.stateProperty().addListener((ob, oldV, newV) -> {
+            if (newV == Worker.State.SUCCEEDED) {
+                this.modified.set(false);
+                setContent(task.getValue());
+                this.persisted.set(true);
+            } else if (newV == Worker.State.FAILED) {
+                var message = "Error reading file " + file.getUri();
+                logger.warn(message, task.getException());
+                var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
+                getComponentHelper().openAlertDialog(alertViewModel);
+            }
+        });
+        this.submitWorker(task);
     }
 
-    @Override
-    public void setContentModified(boolean modified) {
-        this.contentModified.set(modified);
+    public void writeFile() {
+        var file = getFile();
+        if (file == null || file.getUri() == null) {
+            return;
+        }
+        var content = this.getContent();
+        var task = createFileTaskProvider().createFileWriter(file, content);
+        task.stateProperty().addListener((ob, oldV, newV) -> {
+            if (newV == Worker.State.SUCCEEDED) {
+                persisted.set(true);
+                modified.set(false);
+            } else if (newV == Worker.State.FAILED) {
+                var message = "Error writing file " + file.getUri();
+                logger.warn(message, task.getException());
+                var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
+                getComponentHelper().openAlertDialog(alertViewModel);
+            }
+        });
+        this.submitWorker(task);
     }
 
-    @Override
+    public FileTaskProvider<String> createFileTaskProvider() {
+        return new TextFileTaskProvider(getCharset());
+    }
+
+    public ObjectProperty<GenericFile> fileProperty() {
+        return this.file;
+    }
+
+    public Charset getCharset() {
+        return charset.get();
+    }
+
+    public void setCharset(Charset charset) {
+        this.charset.set(charset);
+    }
+
+    public ObjectProperty<Charset> charsetProperty() {
+        return charset;
+    }
+
+    public boolean isModified() {
+        return this.modified.get();
+    }
+
     public String getContent() {
         this.undoManager.mark();
         return this.text.get();
     }
 
-    @Override
     public void setContent(String content) {
         this.content.next(content);
     }
 
-    public ReadOnlyBooleanProperty contentModifiedProperty() {
-        return contentModified.getReadOnlyProperty();
+    public ReadOnlyBooleanProperty modifiedProperty() {
+        return modified.getReadOnlyProperty();
     }
 
     public ReadOnlyBooleanProperty textFocusedProperty() {
@@ -266,6 +351,18 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return getTabShell().getSettings(Settings.class).getViewer();
     }
 
+    public ReadOnlyBooleanProperty persistedProperty() {
+        return persisted.getReadOnlyProperty();
+    }
+
+    public boolean isPersisted() {
+        return persisted.get();
+    }
+
+    protected void doOnCloseRequest() {
+
+    }
+
     protected boolean isCopyItemValid() {
         return !this.selectedText.get().isEmpty();
     }
@@ -298,8 +395,8 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return text;
     }
 
-    ReadOnlyBooleanWrapper contentModifiedWrapper() {
-        return contentModified;
+    ReadOnlyBooleanWrapper modifiedWrapper() {
+        return modified;
     }
 
     ReadOnlyIntegerWrapper textLengthWrapper() {

@@ -20,6 +20,7 @@
         <module>tabshell-kit-text</module>
         <module>tabshell-kit-terminal</module>
         <module>tabshell-kit-demo</module>
+        <module>tabshell-kit-registrar</module>
     </modules>
 
     <build>

@@ -18,9 +18,9 @@ package com.techsenger.tabshell.kit.text.editor;
 
 import com.techsenger.tabshell.core.TabShellViewModel;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
-import com.techsenger.tabshell.kit.core.file.FileInfo;
-import com.techsenger.tabshell.kit.core.file.FileTaskProvider;
-import com.techsenger.tabshell.kit.text.menu.EditMenuKeys;
+import com.techsenger.tabshell.kit.core.file.GenericFile;
+import com.techsenger.tabshell.kit.core.file.UriUtils;
+import com.techsenger.tabshell.kit.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.kit.text.viewer.AbstractViewerTabViewModel;
 import java.util.regex.Pattern;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -61,26 +61,9 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
 
     private SimpleStringProperty positionText = new SimpleStringProperty();
 
-    public AbstractEditorTabViewModel(TabShellViewModel tabShell, FileInfo fileInfo,
-            FileTaskProvider<String> fileTaskProvider) {
-        super(tabShell, fileInfo, fileTaskProvider);
+    public AbstractEditorTabViewModel(TabShellViewModel tabShell, GenericFile file) {
+        super(tabShell, file);
         this.updateTextTabValues();
-        this.contentModifiedProperty().addListener((ov, oldValue, newValue) -> {
-            if (this.getFileInfo().getPath() == null) {
-                return;
-            }
-            this.titleProperty().set(this.resolveTabTitle(this.titleProperty().get()));
-        });
-        if (this.getFileInfo().getName() == null) {
-            var ext = this.getDefaultExtension();
-            if (ext != null) {
-                this.getFileInfo().setName("New File." + ext);
-                this.getFileInfo().setExtension(ext);
-            } else {
-                this.getFileInfo().setName("New File");
-            }
-        }
-        this.setTitle(this.getFileInfo().getName());
         this.currentParagraph.addListener((ov, oldV, newV)
                 -> this.updatePosition(newV.intValue(), this.currentColumn.get()));
         this.currentColumn.addListener((ov, oldV, newV)
@@ -114,6 +97,14 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
             },
             new SimpleMenuItemHelper(EditMenuKeys.GO_TO_LINE, Boolean.TRUE)
         );
+        modifiedProperty().addListener((ov, oldV, newV) -> {
+            updateTitle();
+            updateTooltip();
+        });
+        fileProperty().addListener((ov, oldV, newV) -> {
+            updateTitle();
+            updateTooltip();
+        });
     }
 
     public Clipboard getClipboard() {
@@ -146,6 +137,28 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
 
     protected String getTabSpaceString() {
         return tabSpaceString;
+    }
+
+    protected void updateTitle() {
+        var file = getFile();
+        var modified = isModified();
+        if (file == null) {
+            setTitle("");
+        }
+        if (modified) {
+            setTitle(file.getName() + "*");
+        } else {
+            setTitle(file.getName());
+        }
+    }
+
+    protected void updateTooltip() {
+        var file = getFile();
+        if (file == null) {
+            setTooltip("");
+        } else {
+            setTooltip(UriUtils.toHumanString(file.getUri()));
+        }
     }
 
     ReadOnlyIntegerWrapper currentParagraphWrapper() {

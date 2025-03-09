@@ -34,14 +34,14 @@ public class DialogResizeEvent extends Event {
     /**
      * This event occurs when user starts resizing a dialog.
      */
-    public static final EventType<DialogResizeEvent> DIALOG_RESIZING_STARTED =
-            new EventType<>(DialogResizeEvent.ANY, "DIALOG_RESIZING_STARTED");
+    public static final EventType<DialogResizeEvent> DIALOG_RESIZE_STARTED =
+            new EventType<>(DialogResizeEvent.ANY, "DIALOG_RESIZE_STARTED");
 
     /**
      * This event occurs when user finishes resizing a dialog.
      */
-    public static final EventType<DialogResizeEvent> DIALOG_RESIZING_FINISHED =
-            new EventType<>(DialogResizeEvent.ANY, "DIALOG_RESIZING_FINISHED");
+    public static final EventType<DialogResizeEvent> DIALOG_RESIZE_FINISHED =
+            new EventType<>(DialogResizeEvent.ANY, "DIALOG_RESIZE_FINISHED");
 
     private final MouseEvent mouseEvent;
 

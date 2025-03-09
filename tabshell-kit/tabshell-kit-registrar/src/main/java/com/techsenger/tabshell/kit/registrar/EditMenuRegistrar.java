@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.kit.text.menu;
+package com.techsenger.tabshell.kit.registrar;
 
+import com.techsenger.tabshell.kit.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.TabShellKey;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;

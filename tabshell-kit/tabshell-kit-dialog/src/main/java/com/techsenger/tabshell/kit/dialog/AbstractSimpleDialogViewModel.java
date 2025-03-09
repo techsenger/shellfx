@@ -56,4 +56,9 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
     public BooleanProperty cancelDisableProperty() {
         return cancelDisable;
     }
+
+    @Override
+    public StandardDialogHelper<?> getComponentHelper() {
+        return (StandardDialogHelper<?>) super.getComponentHelper();
+    }
 }

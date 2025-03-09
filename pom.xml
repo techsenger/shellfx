@@ -92,7 +92,17 @@
             </dependency>
             <dependency>
                 <groupId>com.techsenger.tabshell.kit</groupId>
+                <artifactId>tabshell-kit-hex</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell.kit</groupId>
                 <artifactId>tabshell-kit-terminal</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell.kit</groupId>
+                <artifactId>tabshell-kit-registrar</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

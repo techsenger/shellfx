@@ -25,4 +25,6 @@ import com.techsenger.tabshell.core.dialog.DialogKey;
 public interface DialogComponentKeys {
 
     DialogKey ALERT_DIALOG = new DialogKey("Alert Dialog");
+
+    DialogKey FILE_DIALOG = new DialogKey("File Dialog");
 }

@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.mvvm4fx.core.ChildView;
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.SelectableView;
 
 /**
@@ -31,7 +32,7 @@ public interface TabView<T extends TabViewModel> extends ChildView<T>, Selectabl
      *
      * @return true if it can be closed. Otherwise returns false.
      */
-    boolean doOnCloseRequest();
+    boolean doOnCloseRequest(CloseScope scope);
 
     @Override
     ComponentTab getNode();

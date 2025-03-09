@@ -29,3 +29,40 @@
 .font-icon-view.tabshell-warning-icon {
     -fx-code-point: 983082; /* alert-outline */
 }
+
+.font-icon-view.tabshell-directory-up-icon {
+    -fx-code-point: 989683; /* folder-arrow-up-outline */
+}
+
+.font-icon-view.tabshell-home-icon {
+    -fx-code-point: 984737; /* home-outline */
+}
+
+.font-icon-view.tabshell-add-directory-icon {
+    -fx-code-point: 986013; /* folder-plus-outline */
+}
+
+.font-icon-view.tabshell-list-view-icon {
+    -fx-code-point: 988299; /* view-list-outline */
+}
+
+.font-icon-view.tabshell-grid-view-icon {
+    -fx-code-point: 987609; /* view-grid-outline */
+}
+
+.font-icon-view.tabshell-disc-icon {
+    -fx-code-point: 984558; /* disc */
+}
+
+.font-icon-view.tabshell-floppy-icon {
+    -fx-code-point: 983625; /* floppy */
+}
+
+.font-icon-view.tabshell-base-disk-icon {
+    /* view-agenda-outline, harddisk, table-row */
+    -fx-code-point: 990362; /* server-outline */
+}
+
+.font-icon-view.tabshell-network-disk-icon {
+    -fx-code-point: 990361; /* server-network-outline */
+}

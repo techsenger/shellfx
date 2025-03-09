@@ -17,33 +17,24 @@
 package com.techsenger.tabshell.kit.core.file;
 
 import com.techsenger.tabshell.kit.core.workertab.TabWorker;
-import com.techsenger.toolkit.core.file.FileUtils;
-import java.nio.file.Paths;
 import javafx.concurrent.Task;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class LocalTextFileTaskProvider implements FileTaskProvider<String> {
+public class BinaryFileTaskProvider implements FileTaskProvider<byte[]> {
 
     @Override
-    public TabWorker<String> createFileReader(FileInfo fileInfo) {
-        class ReaderTask extends Task<String> implements TabWorker<String> {
+    public TabWorker<byte[]> createFileReader(GenericFile file) {
+        class ReaderTask extends Task<byte[]> implements TabWorker<byte[]> {
 
             @Override
-            protected String call() throws Exception {
-                var p = Paths.get(fileInfo.getPath());
-                var f = p.toFile();
-                if (!f.exists()) {
-                    return null;
-                }
-                if (fileInfo.getSize() == null) {
-                    fileInfo.setSize(f.length());
-                }
-                var content = FileUtils.readFile(p, fileInfo.getCharset());
+            protected byte[] call() throws Exception {
+                var storage = file.getStorage();
+                byte[] array = storage.readFile(file.getUri());
                 updateProgress(100, 100);
-                return content;
+                return array;
             }
 
             @Override
@@ -55,13 +46,13 @@ public class LocalTextFileTaskProvider implements FileTaskProvider<String> {
     }
 
     @Override
-    public TabWorker<Void> createFileWriter(FileInfo fileInfo, String content) {
+    public TabWorker<Void> createFileWriter(GenericFile file, byte[] content) {
         class WriterTask extends Task<Void> implements TabWorker<Void> {
 
             @Override
             protected Void call() throws Exception {
-                var p = Paths.get(fileInfo.getPath());
-                FileUtils.writeFile(p, content, fileInfo.getCharset());
+                var storage = file.getStorage();
+                storage.writeFile(file.getUri(), content);
                 updateProgress(100, 100);
                 return null;
             }

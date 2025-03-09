@@ -25,7 +25,7 @@ import com.techsenger.tabshell.kit.core.workertab.TabWorker;
  */
 public interface FileTaskProvider<T> {
 
-    TabWorker<T> createFileReader(FileInfo fileInfo);
+    TabWorker<T> createFileReader(GenericFile file);
 
-    TabWorker<Void> createFileWriter(FileInfo fileInfo, T content);
+    TabWorker<Void> createFileWriter(GenericFile fileInfo, T content);
 }

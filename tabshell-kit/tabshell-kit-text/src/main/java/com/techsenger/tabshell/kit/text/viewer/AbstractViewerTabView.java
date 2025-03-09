@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.kit.text.viewer;
 
 import com.techsenger.mvvm4fx.core.ComponentHelper;
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleUtils;
@@ -135,6 +136,13 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
+    public boolean doOnCloseRequest(CloseScope scope) {
+        super.doOnCloseRequest(scope);
+        //TODO
+        return true;
+    }
+
+    @Override
     protected ComponentHelper<?> createComponentHelper() {
         return new ViewerTabHelper(this);
     }
@@ -202,7 +210,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         });
         //we check if position is equal to the position we marked
         textArea.getUndoManager().atMarkedPositionProperty().addListener((ov, t, t1) -> {
-            viewModel.contentModifiedWrapper().set(!t1);
+            viewModel.modifiedWrapper().set(!t1);
         });
 
         viewModel.getContentSource().addListener((t) -> {
@@ -224,8 +232,6 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     @Override
     protected void addHandlers(T viewModel) {
         super.addHandlers(viewModel);
-        this.getNode().setOnCloseRequest((event) ->
-                viewModel.doOnTabClosed(event, this.getNode().getContent().getScene().getWindow()));
         this.getTextArea().addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 viewModel.removeFindPane();

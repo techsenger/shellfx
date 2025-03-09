@@ -69,6 +69,8 @@ public class DefaultDialogManager implements DialogManager {
      */
     private final EventHandler<? super Event> eventConsumer = event -> event.consume();
 
+    private final DialogScope scope;
+
     private final StackPane stackPane;
 
     private final VBox mainPane;
@@ -77,10 +79,17 @@ public class DefaultDialogManager implements DialogManager {
 
     private final ReadOnlyIntegerWrapper dialogCount;
 
-    public DefaultDialogManager(StackPane stackPane, VBox mainPane, ReadOnlyIntegerWrapper dialogCount) {
+    public DefaultDialogManager(DialogScope scope, StackPane stackPane, VBox mainPane,
+            ReadOnlyIntegerWrapper dialogCount) {
+        this.scope = scope;
         this.stackPane = stackPane;
         this.mainPane = mainPane;
         this.dialogCount = dialogCount;
+    }
+
+    @Override
+    public DialogScope getScope() {
+        return scope;
     }
 
     /**

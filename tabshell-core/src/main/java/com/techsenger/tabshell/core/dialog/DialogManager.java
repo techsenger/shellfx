@@ -22,6 +22,8 @@ package com.techsenger.tabshell.core.dialog;
  */
 public interface DialogManager {
 
+    DialogScope getScope();
+
     void openDialog(DialogView<?> dialogView);
 
     void closeDialog(DialogView<?> dialogView);

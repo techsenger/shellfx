@@ -25,6 +25,7 @@ module com.techsenger.tabshell.kit.demo {
     requires com.techsenger.tabshell.kit.text;
     requires com.techsenger.tabshell.kit.dialog;
     requires com.techsenger.tabshell.kit.terminal;
+    requires com.techsenger.tabshell.kit.registrar;
 
     requires org.slf4j;
     requires javafx.base;

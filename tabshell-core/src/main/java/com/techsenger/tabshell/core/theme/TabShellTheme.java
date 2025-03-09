@@ -128,20 +128,6 @@ public enum TabShellTheme {
         return fileName;
     }
 
-    /**
-     * Resolves the name of the file that contains specific for this theme CSS rules.
-     *
-     * <p>Generating CSS file in AtlantaFX is done via code with conditions. So, it is impossible to override some
-     * styles using only JavaFX CSS features. That's why in some cases it is necessary to add rules specific for
-     * concrete theme. At the same time if it possible it must be avoided.
-     *
-     * @param baseName for example "foo"
-     * @return resolved name, for example "foo-dracula.css"
-     */
-    public String resolveFileName(String baseName) {
-        return baseName + "-" + getFileName();
-    }
-
     public boolean isDark() {
         return dark;
     }

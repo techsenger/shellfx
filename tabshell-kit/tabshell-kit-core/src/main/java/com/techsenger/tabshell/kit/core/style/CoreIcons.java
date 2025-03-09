@@ -75,4 +75,8 @@ public interface CoreIcons {
     String REPLACE = "tabshell-replace-icon";
 
     String SELECT_ALL = "tabshell-select-all-icon";
+
+    String DIRECTORY = "tabshell-directory-icon";
+
+    String FILE = "tabshell-file-icon";
 }

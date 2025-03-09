@@ -41,4 +41,15 @@ public interface StyleClasses extends com.techsenger.tabshell.core.style.StyleCl
      * Use this class for TabPanes to hide entire tab-header-area.
      */
     String HIDDEN_TABS = "hidden-tabs";
+
+    /**
+     * By default all table cells in all themes have {@code -fx-padding: 0 0.5em 0 0.5em;}. The table with the same
+     * spacing sets 0.25em instead of 0.5em, but leaves 0.5em for left padding of the first column and right padding
+     * for the last column. So, the `spacing` between columns will be the same.
+     */
+    String SAME_SPACING_TABLE = "same-spacing-table";
+
+    String SAME_SPACING_TABLE_FIRST_COLUMN = "first";
+
+    String SAME_SPACING_TABLE_LAST_COLUMN = "last";
 }

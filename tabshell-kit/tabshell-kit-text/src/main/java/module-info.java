@@ -33,7 +33,6 @@ module com.techsenger.tabshell.kit.text {
 
     exports com.techsenger.tabshell.kit.text;
     exports com.techsenger.tabshell.kit.text.editor;
-    exports com.techsenger.tabshell.kit.text.menu;
     exports com.techsenger.tabshell.kit.text.style;
     exports com.techsenger.tabshell.kit.text.viewer;
 

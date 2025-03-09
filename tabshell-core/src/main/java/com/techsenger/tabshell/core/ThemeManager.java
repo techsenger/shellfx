@@ -18,10 +18,15 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import java.util.List;
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,13 +34,11 @@ import javafx.scene.Scene;
  */
 class ThemeManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(ThemeManager.class);
+
     private final Scene scene;
 
-    private final List<String> stylesheetUrls;
-
-    private String baseCss;
-
-    private String baseThemeCss;
+    private final ObservableList<Stylesheet> stylesheets;
 
     /**
      * Constructor.
@@ -43,17 +46,31 @@ class ThemeManager {
      * @param root the root of the scene. We can't get the root from stage.getScene().getRoot() because of custom stage.
      * @param theme
      */
-    ThemeManager(StandardStageController controller, List<String> stylesheetUrls, AppearanceSettings settings) {
+    ThemeManager(StandardStageController controller, ObservableList<Stylesheet> stylesheets,
+            AppearanceSettings settings) {
         var theme = settings.themeProperty();
-        this.stylesheetUrls = stylesheetUrls;
+        this.stylesheets = stylesheets;
         this.scene = controller.getStage().getScene();
         addTheme(theme.get(), false);
+        logSceneStylesheets();
         theme.addListener((ov, oldV, newV) -> {
-            removeTheme(newV);
+            removeTheme(oldV);
             addTheme(newV, true);
             //without applying css and layout title bar spacers are not updated
             controller.getTitleBar().applyCss();
             controller.getTitleBar().layout();
+            logSceneStylesheets();
+        });
+        this.stylesheets.addListener((ListChangeListener<Stylesheet>) change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    addStylesheets(theme.get(), change.getAddedSubList());
+                }
+                if (change.wasRemoved()) {
+                    removeStylesheets(theme.get(), change.getRemoved());
+                }
+            }
+            logSceneStylesheets();
         });
     }
 
@@ -62,34 +79,44 @@ class ThemeManager {
             return;
         }
         Application.setUserAgentStylesheet(theme.getStylesheetSupplier().get());
-        //2. tabshell base css file
-        this.baseCss = ThemeManager.class.getResource("base.css").toExternalForm();
-        this.scene.getStylesheets().add(this.baseCss);
-        if (theme.getFileName() != null) {
-            //3. base theme addons
-            this.baseThemeCss = ThemeManager.class.getResource(theme.resolveFileName("base")).toExternalForm();
-            this.scene.getStylesheets().add(this.baseThemeCss);
-        }
-        //4. custom stylesheets
-        if (this.stylesheetUrls != null) {
-            this.scene.getStylesheets().addAll(this.stylesheetUrls);
-        }
+        addStylesheets(theme, stylesheets);
     }
 
     private void removeTheme(TabShellTheme theme) {
         if (theme == null) {
             return;
         }
-        if (this.baseCss != null) {
-            this.scene.getStylesheets().remove(this.baseCss);
-            this.baseCss = null;
+        removeStylesheets(theme, stylesheets);
+    }
+
+    private void addStylesheets(TabShellTheme theme, List<? extends Stylesheet> sheets) {
+        for (var s : sheets) {
+            if (s.getTheme() == null || s.getTheme().equals(theme)) {
+                var url = s.getUrl().toExternalForm();
+                this.scene.getStylesheets().add(url);
+            }
         }
-        if (this.baseThemeCss != null) {
-            this.scene.getStylesheets().remove(this.baseThemeCss);
-            this.baseThemeCss = null;
+    }
+
+    private void removeStylesheets(TabShellTheme theme, List<? extends Stylesheet> sheets) {
+        for (var s : sheets) {
+            if (s.getTheme() == null || s.getTheme().equals(theme)) {
+                var url = s.getUrl().toExternalForm();
+                this.scene.getStylesheets().remove(url);
+            }
         }
-        if (this.stylesheetUrls != null) {
-            this.scene.getStylesheets().removeAll(this.stylesheetUrls);
+    }
+
+    private void logSceneStylesheets() {
+        if (logger.isDebugEnabled()) {
+            var sb = new StringBuilder();
+            sb.append("Scene stylesheets updated. Current stylesheets:");
+            for (var s : this.scene.getStylesheets()) {
+                sb.append(System.lineSeparator());
+                sb.append("    ");
+                sb.append(s);
+            }
+            logger.debug(sb.toString());
         }
     }
 }

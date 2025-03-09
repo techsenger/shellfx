@@ -27,4 +27,26 @@ public interface DialogIcons {
     String ERROR = "tabshell-error-icon";
 
     String WARNING = "tabshell-warning-icon";
+
+    String DIRECTORY_UP = "tabshell-directory-up-icon";
+
+    String HOME = "tabshell-home-icon";
+
+    String ADD_DIRECTORY = "tabshell-add-directory-icon";
+
+    String LIST_VIEW = "tabshell-list-view-icon";
+
+    String GRID_VIEW = "tabshell-grid-view-icon";
+
+    String DISC = "tabshell-disc-icon";
+
+    String FLOPPY = "tabshell-floppy-icon";
+
+    String BASE_DISK = "tabshell-base-disk-icon";
+
+    String NETWORK_DISK = "tabshell-network-disk-icon";
+
 }
+
+
+

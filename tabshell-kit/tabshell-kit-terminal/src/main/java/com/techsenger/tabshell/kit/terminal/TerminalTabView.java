@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
 import com.techsenger.mvvm4fx.core.ComponentHelper;
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.kit.core.style.CoreIcons;
@@ -97,7 +98,7 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     }
 
     @Override
-    public boolean doOnCloseRequest() {
+    public boolean doOnCloseRequest(CloseScope scope) {
         widget.close();
         widget.getTtyConnector().close();
         return true;

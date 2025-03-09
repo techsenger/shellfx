@@ -20,6 +20,8 @@ import com.techsenger.mvvm4fx.core.ParentView;
 import com.techsenger.tabshell.core.dialog.DialogHelper;
 import com.techsenger.tabshell.kit.dialog.alert.AlertDialogView;
 import com.techsenger.tabshell.kit.dialog.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.kit.dialog.file.FileChooserDialogView;
+import com.techsenger.tabshell.kit.dialog.file.FileChooserDialogViewModel;
 
 /**
  * This dialog helper is used to open standard dialogs, like alert, info etc.
@@ -30,6 +32,12 @@ public interface StandardDialogHelper<T extends ParentView<?>> extends DialogHel
 
     default void openAlertDialog(AlertDialogViewModel viewModel) {
         var view = new AlertDialogView<AlertDialogViewModel>(viewModel);
+        view.initialize();
+        openDialog(view);
+    }
+
+    default void openFileChooserDialog(FileChooserDialogViewModel viewModel) {
+        var view = new FileChooserDialogView(viewModel);
         view.initialize();
         openDialog(view);
     }

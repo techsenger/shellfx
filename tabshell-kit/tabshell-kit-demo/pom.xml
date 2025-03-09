@@ -51,6 +51,10 @@
             <artifactId>tabshell-kit-text</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.tabshell.kit</groupId>
+            <artifactId>tabshell-kit-registrar</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
         </dependency>

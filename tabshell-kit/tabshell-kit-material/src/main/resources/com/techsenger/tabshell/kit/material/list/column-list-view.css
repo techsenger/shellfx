@@ -1,0 +1,56 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+    Author     : Pavel Castornii
+*/
+
+.column-list-view {
+    -fx-border-width: 1px;
+    -fx-border-color: -color-border-default;
+}
+
+.column-list-view .column {
+    -fx-min-width: 15em;
+    -fx-pref-width: -1; /* use_comp_size */
+    -fx-max-width: 100000;
+}
+
+.column-list-view .column > .cell {
+    -fx-text-fill: -color-fg-default;
+    -fx-min-width: 15em;
+    -fx-pref-width: -1; /* use_comp_size */
+    -fx-max-width: 100000;
+}
+
+.column-list-view.extra-dense .column > .cell {
+    -fx-pref-height: 1.5em;
+    -fx-max-height: 1.5em;
+    -fx-min-height: 1.5em;
+}
+
+.column-list-view .column > .cell > .box {
+    -fx-spacing: 0.25em;
+    -fx-alignment: center_left;
+    -fx-padding: 0 4px 0 0;
+/*    -fx-background-color: -color-bg-default;*/
+}
+
+.column-list-view .column > .cell > .box > .text-field {
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-color: -color-bg-default, -color-accent-emphasis, -color-bg-default;
+    -fx-padding: 1px 4px 1px 4px;
+}

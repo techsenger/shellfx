@@ -19,19 +19,21 @@ package com.techsenger.tabshell.kit.demo;
 import com.techsenger.tabshell.core.DefaultTabShellView;
 import com.techsenger.tabshell.core.DefaultTabShellViewModel;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.demo.history.DemoHistoryManager;
 import com.techsenger.tabshell.kit.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.kit.core.settings.Settings;
 import com.techsenger.tabshell.kit.core.settings.TabSymbolSettings;
 import com.techsenger.tabshell.kit.core.settings.ViewerSettings;
-import com.techsenger.tabshell.kit.core.style.CoreIcons;
-import com.techsenger.tabshell.kit.core.style.StyleClasses;
-import com.techsenger.tabshell.kit.dialog.style.DialogIcons;
-import com.techsenger.tabshell.kit.terminal.style.TerminalIcons;
-import com.techsenger.tabshell.kit.text.menu.EditMenuRegistrar;
-import com.techsenger.tabshell.kit.text.style.TextIcons;
+import com.techsenger.tabshell.kit.core.style.CoreStylesheets;
+import com.techsenger.tabshell.kit.dialog.style.DialogStylesheets;
+import com.techsenger.tabshell.kit.registrar.EditMenuRegistrar;
+import com.techsenger.tabshell.kit.terminal.style.TerminalStylesheets;
+import com.techsenger.tabshell.kit.text.style.TextStylesheets;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.text.Font;
@@ -51,13 +53,14 @@ public class Demo extends Application {
         viewModel.setOnClosed(() -> {
             Platform.exit();
         });
-        var stylesheets = List.of(
-                StyleClasses.class.getResource("base.css").toExternalForm(),
-                CoreIcons.class.getResource("icons.css").toExternalForm(),
-                TextIcons.class.getResource("icons.css").toExternalForm(),
-                DialogIcons.class.getResource("icons.css").toExternalForm(),
-                TerminalIcons.class.getResource("icons.css").toExternalForm()
-        );
+        List<Stylesheet> stylesheets = Stream.of(
+                new CoreStylesheets(true),
+                new TextStylesheets(true),
+                new TerminalStylesheets(true),
+                new DialogStylesheets(true))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
         var view = new DefaultTabShellView(stage, stylesheets, viewModel);
         view.initialize();
 

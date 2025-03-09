@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.kit.core.menu;
+package com.techsenger.tabshell.kit.registrar;
 
 import com.techsenger.tabshell.core.TabShellKey;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.kit.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.kit.core.style.CoreIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
@@ -44,7 +45,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     public void register() {
         registerFileMenu();
         registerDefaultGroup();
-        registerBaseFileGroup();
+        registerFileActionsGroup();
         registerOpenFileItem();
         registerSaveFileItem();
         registerSaveFileAsItem();
@@ -58,9 +59,9 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         addRegistration(getRegistry().registerMenu(TabShellKey.INSTANCE, null, f, 100));
     }
 
-    protected void registerBaseFileGroup() {
+    protected void registerFileActionsGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(FileMenuKeys.BASE_FILE_ACTIONS);
+            return new KeyedMenuGroup(FileMenuKeys.FILE_ACTIONS);
         };
         addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, FileMenuKeys.FILE, f, 100));
     }
@@ -79,14 +80,15 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.OPEN));
             item.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
-//            var view = this.getTabShell().getSelectedTab().getView();
-//            var viewModel = (FileTabViewModel) view.getViewModel();
-//            viewModel.openFile(view.getRoot().getContent().getScene().getWindow());
+                var view = tabShellView.getSelectedTab();
+                var viewModel = view.getViewModel();
+                var helper = viewModel.getMenuItemHelper(item.getKey());
+                helper.doOnItemAction();
             });
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.BASE_FILE_ACTIONS, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 100));
     }
 
     protected void registerSaveFileItem() {
@@ -96,13 +98,15 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.SAVE));
             item.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
-//            var view = this.getTabShell().getSelectedTab().getView();
-//            var viewModel = (FileTabViewModel) view.getViewModel();
-//            viewModel.saveFile(view.getRoot().getContent().getScene().getWindow());
+                var view = tabShellView.getSelectedTab();
+                var viewModel = view.getViewModel();
+                var helper = viewModel.getMenuItemHelper(item.getKey());
+                helper.doOnItemAction();
+
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.BASE_FILE_ACTIONS, f, 200));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 200));
     }
 
     protected void registerSaveFileAsItem() {
@@ -111,13 +115,14 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             var item = new KeyedMenuItem(FileMenuKeys.SAVE_AS, true, true, false, "Sa_ve As",
                     new FontIconView(CoreIcons.SAVE_AS));
             item.setOnAction((e) -> {
-//            var view = this.getTabShell().getSelectedTab().getView();
-//            var viewModel = (FileTabViewModel) view.getViewModel();
-//            viewModel.saveFileAs(view.getRoot().getContent().getScene().getWindow());
+                var view = tabShellView.getSelectedTab();
+                var viewModel = view.getViewModel();
+                var helper = viewModel.getMenuItemHelper(item.getKey());
+                helper.doOnItemAction();
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.BASE_FILE_ACTIONS, f, 300));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 300));
     }
 
     protected void registerExitItem() {

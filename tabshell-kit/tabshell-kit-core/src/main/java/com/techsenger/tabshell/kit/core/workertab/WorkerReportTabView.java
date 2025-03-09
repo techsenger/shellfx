@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.kit.core.workertab;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.scene.control.Label;
@@ -44,7 +45,7 @@ public class WorkerReportTabView extends AbstractTabView<WorkerReportTabViewMode
     }
 
     @Override
-    public boolean doOnCloseRequest() {
+    public boolean doOnCloseRequest(CloseScope scope) {
         return true;
     }
 

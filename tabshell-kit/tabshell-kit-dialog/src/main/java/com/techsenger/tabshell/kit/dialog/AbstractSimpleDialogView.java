@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.kit.dialog;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
+import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import javafx.geometry.Insets;
@@ -81,4 +82,16 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     protected HBox getButtonBox() {
         return buttonBox;
     }
+
+    @Override
+    protected StandardDialogHelper<?> createComponentHelper() {
+        return new StandardDialogHelper() {
+            @Override
+            public void openDialog(DialogView dialog) {
+                getDialogManager().openDialog(dialog);
+            }
+        };
+    }
+
+
 }

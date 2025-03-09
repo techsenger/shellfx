@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.kit.core.workertab;
 
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.kit.core.splittab.AbstractSplitTabView;
 import com.techsenger.tabshell.kit.core.style.CoreIcons;
@@ -44,7 +45,7 @@ public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel
     }
 
     @Override
-    public boolean doOnCloseRequest() {
+    public boolean doOnCloseRequest(CloseScope scope) {
         getViewModel().cancelAllWorkers();
         return true;
     }

@@ -27,4 +27,8 @@ public class TableColumnKey extends Key {
     public TableColumnKey() {
         super(null);
     }
+
+    public TableColumnKey(String text) {
+        super(text);
+    }
 }

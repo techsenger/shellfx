@@ -124,22 +124,22 @@ final class ThemeProvider {
     private static final ThemeProvider instance = new ThemeProvider();
 
     /**
-     * Colors from base.css.
+     * Colors from core.css.
      */
     private final Map<String, Integer> sharedColorsByName;
 
     /**
-     * Colors from atlantafx, base.css, base-X.css.
+     * Colors from atlantafx, core.css, core-X.css.
      */
     private Map<String, Integer> themeColorsByName;
 
     private ThemeProvider() {
-        this.sharedColorsByName = readColors(DefaultTabShellView.class, "base.css", null);
+        this.sharedColorsByName = readColors(DefaultTabShellView.class, "core.css", null);
     }
 
     ThemePalettes createCupertinoPalettes(boolean dark) {
         if (!dark) {
-            this.themeColorsByName = createThemeColors("base-cupertino-light.css");
+            this.themeColorsByName = createThemeColors("core-cupertino-light.css");
             int[] blacks = new int[]{c("base-8"), c("fg-default")};
             int[] reds = new int[]{c("danger-4"), c("danger-5"), c("danger-6"), c("danger-7")};
             int[] greens = new int[]{c("success-4"), c("success-5"), c("success-6"), c("success-7")};
@@ -150,7 +150,7 @@ final class ThemeProvider {
             logger.debug("Created palettes for cupertino light theme");
             return palettes;
         } else {
-            this.themeColorsByName = createThemeColors("base-cupertino-dark.css");
+            this.themeColorsByName = createThemeColors("core-cupertino-dark.css");
             int[] blacks = new int[]{c("base-6"), c("bg-default")};
             int[] reds = new int[]{c("danger-5"), c("danger-6"), c("danger-7"), c("danger-8")};
             int[] greens = new int[]{c("success-5"), c("success-6"), c("success-7"), c("success-8")};
@@ -165,7 +165,7 @@ final class ThemeProvider {
 
     ThemePalettes createPrimerPalettes(boolean dark) {
         if (!dark) {
-            this.themeColorsByName = createThemeColors("base-primer-light.css");
+            this.themeColorsByName = createThemeColors("core-primer-light.css");
             int[] blacks = new int[]{c("base-6"), c("fg-default")};
             int[] reds = new int[]{c("danger-3"), c("danger-4"), c("danger-5"), c("danger-6")};
             int[] greens = new int[]{c("success-3"), c("success-4"), c("success-5"), c("success-6")};
@@ -176,7 +176,7 @@ final class ThemeProvider {
             logger.debug("Created palettes for primer light theme");
             return palettes;
         } else {
-            this.themeColorsByName = createThemeColors("base-primer-dark.css");
+            this.themeColorsByName = createThemeColors("core-primer-dark.css");
             int[] blacks = new int[]{c("base-6"), c("bg-default")};
             int[] reds = new int[]{c("danger-4"), c("danger-5"), c("danger-6"), c("danger-7")};
             int[] greens = new int[]{c("success-4"), c("success-5"), c("success-6"), c("success-7")};
@@ -192,7 +192,7 @@ final class ThemeProvider {
     ThemePalettes createNordPalettes(boolean dark) {
         //Nord light palette has same colors as nord dark (see palettes.html).
         if (!dark) {
-            this.themeColorsByName = createThemeColors("base-nord-light.css");
+            this.themeColorsByName = createThemeColors("core-nord-light.css");
             int[] blacks = new int[]{c("base-6"), c("fg-default")};
             int[] reds = new int[]{c("danger-4"), c("danger-5"), c("danger-6"), c("danger-7")};
             int[] greens = new int[]{c("success-4"), c("success-5"), c("success-6"), c("success-7")};
@@ -203,7 +203,7 @@ final class ThemeProvider {
             logger.debug("Created palettes for nord light theme");
             return palettes;
         } else {
-            this.themeColorsByName = createThemeColors("base-nord-dark.css");
+            this.themeColorsByName = createThemeColors("core-nord-dark.css");
             int[] blacks = new int[]{c("base-6"), c("bg-default")};
             int[] reds = new int[]{c("danger-4"), c("danger-5"), c("danger-6"), c("danger-7")};
             int[] greens = new int[]{c("success-4"), c("success-5"), c("success-6"), c("success-7")};
@@ -217,7 +217,7 @@ final class ThemeProvider {
     }
 
     ThemePalettes createDraculaPalettes() {
-        this.themeColorsByName = createThemeColors("base-dracula.css");
+        this.themeColorsByName = createThemeColors("core-dracula.css");
         int[] blacks = new int[]{c("base-5"), c("bg-default")};
         int[] reds = new int[]{c("danger-5"), c("danger-6"), c("danger-7"), c("danger-8")};
         int[] greens = new int[]{c("success-5"), c("success-6"), c("success-7"), c("success-8")};

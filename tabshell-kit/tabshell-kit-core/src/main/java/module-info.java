@@ -24,6 +24,7 @@ module com.techsenger.tabshell.kit.core {
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
+    requires javafx.swing;
     requires org.controlsfx.controls;
     requires atlantafx.base;
     requires jakarta.xml.bind;
