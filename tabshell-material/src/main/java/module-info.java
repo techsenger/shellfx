@@ -22,9 +22,17 @@ module com.techsenger.tabshell.material {
     requires javafx.graphics;
     requires javafx.controls;
     requires atlantafx.base;
+    requires org.fxmisc.richtext;
+    requires reactfx;
+    requires org.fxmisc.flowless;
+    requires org.fxmisc.undo;
+    requires wellbehavedfx;
 
+    exports com.techsenger.tabshell.material;
     exports com.techsenger.tabshell.material.button;
     exports com.techsenger.tabshell.material.icon;
+    exports com.techsenger.tabshell.material.list;
     exports com.techsenger.tabshell.material.menu;
     exports com.techsenger.tabshell.material.table;
+    exports com.techsenger.tabshell.material.textarea;
 }

@@ -9,6 +9,7 @@
 * [Demo](#demo)
 * [Features](#features)
 * [Requirements](#requirements)
+* [Modules](#modules)
 * [Dependencies](#dependencies)
 * [Usage](#usage)
     * [Quick Start](#usage-quick-start)
@@ -17,9 +18,9 @@
     * [Tab](#usage-tab)
     * [Dialog](#usage-dialog)
 * [Code building](#code-building)
-* [Running Demo](#running-demo)
-    * [TabShell Demo](#running-tabshell-demo)
-    * [TabShell Kit Demo](#running-tabshell-kit-demo)
+* [Running Demos](#running-demos)
+    * [Core Demo](#running-core-demo)
+    * [Full Demo](#running-full-demo)
 * [License](#license)
 * [Contributing](#contributing)
 * [👉 Support Us](#support-us)
@@ -28,8 +29,9 @@
 
 Techsenger TabShell is a lightweight platform for building tab-based applications in JavaFX using the MVVM pattern.
 
-The platform consists of two parts: TabShell and TabShell Kit. TabShell contains the core shell and classes for
-creating components. TabShell Kit includes pre-built components. Using TabShell Kit is optional.
+The platform consists of two parts: the core and ready-made components. The core includes the core shell and classes
+for creating components. Ready-made components are used as needed and significantly reduce the development time of the
+final application.
 
 ## Demo <a name="demo"></a>
 
@@ -47,7 +49,7 @@ Key features of TabShell include:
 * Support for 7 themes (4 dark and 3 light).
 * Styling with CSS.
 
-Currently, TabShell Kit includes:
+Currently, TabShell contains the following ready-made components:
 
 * Terminal.
 * Text Viewer/Editor.
@@ -57,6 +59,25 @@ Currently, TabShell Kit includes:
 
 The library requires Java 17 or later. Due to some bugs, use JavaFX versions 19–20, or a version of JavaFX after
 24-ea+19 (see JDK-8344372).
+
+## Modules<a name="modules"></a>
+
+The platform consists of the following modules:
+
+* Material — provides UI elements (menus, text areas, etc.) and supporting classes.
+* Core — includes the shell itself (TabShell), base classes for component development, settings,
+and core utility classes. If you don't plan to use ready-made components, just two modules (material and core)
+are sufficient to run TabShell and develop custom components. See [Core Demo](#running-core-demo) for details.
+* Tabs — offers abstract components for creating tabs with various layouts.
+* Dialogs — provides ready-to-use dialog boxes: alert, file chooser, confirmation etc.
+* Text — contains viewer and editor components for text processing.
+* Terminal — includes a terminal emulator component.
+* Registrars — provides default registrars (for menu items, etc.).
+* Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use
+custom icons instead, simply create your own stylesheets and add them to TabShell.
+* Core Demo — showcases TabShell's core functionality and provides examples for building custom components. This demo
+only requires the material and core modules.
+* Full Demo — showcases the complete platform with all components. This comprehensive demo uses all modules.
 
 ## Dependencies <a name="dependencies"></a>
 
@@ -68,8 +89,8 @@ This project is available on Maven Central.
 To get started with TabShell, it is recommended to follow these steps:
 
 1. Familiarize yourself with the [mvvm4fx](https://github.com/techsenger/mvvm4fx) framework and its sampler.
-2. Explore and run tabshell-demo. See [TabShell Demo](#running-tabshell-demo) for details.
-3. Explore and run tabshell-kit-demo. See [TabShell Kit Demo](#running-tabshell-kit-demo) for details.
+2. Explore and run core demo. See [Core Demo](#running-core-demo) for details.
+3. Explore and run full demo. See [Full Demo](#running-full-demo) for details.
 
 ### Component <a name="usage-component"></a>
 
@@ -144,24 +165,29 @@ To build the library use standard Git and Maven commands:
     cd tabshell
     mvn clean install
 
-## Running Demo <a name="running-demo"></a>
+## Running Demos <a name="running-demos"></a>
 
-The project includes two demo modules - tabshell-demo, tabshell-kit-demo.
+The project provides two demo applications:
 
-### TabShell Demo <a name="running-tabshell-demo"></a>
+* Core Demo — showcases TabShell basics (material and core modules) including shell operation and custom component
+development.
+* Full Demo — demonstrates the complete platform with all components, featuring pre-built tabs, dialogs, text editor,
+terminal emulator, and other ready-to-use components.
+
+### Core Demo <a name="running-core-demo"></a>
 
 To run the demo, execute the following commands in the project root:
 
-    cd tabshell-demo
+    cd tabshell-demos/tabshell-demos-core
     mvn javafx:run
 
 Please note, that debugger settings are in `pom.xml` file.
 
-### TabShell Kit Demo <a name="running-tabshell-kit-demo"></a>
+### Full Demo <a name="running-full-demo"></a>
 
 To run the demo, execute the following commands in the project root:
 
-    cd tabshell-kit/tabshell-kit-demo
+    cd tabshell-demos/tabshell-demos-full
     mvn javafx:run
 
 Please note, that debugger settings are in `pom.xml` file.

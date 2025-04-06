@@ -42,7 +42,7 @@
     </developers>
 
     <properties>
-        <publishing.plugin.exclusions>tabshell-demo,tabshell-kit-demo</publishing.plugin.exclusions>
+        <publishing.plugin.exclusions>tabshell-demos-core,tabshell-demos-all</publishing.plugin.exclusions>
     </properties>
 
     <dependencyManagement>
@@ -67,42 +67,42 @@
             </dependency>
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-demo</artifactId>
+                <artifactId>tabshell-tabs</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.techsenger.tabshell.kit</groupId>
-                <artifactId>tabshell-kit-material</artifactId>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-dialogs</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.techsenger.tabshell.kit</groupId>
-                <artifactId>tabshell-kit-core</artifactId>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-text</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.techsenger.tabshell.kit</groupId>
-                <artifactId>tabshell-kit-dialog</artifactId>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-terminal</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.techsenger.tabshell.kit</groupId>
-                <artifactId>tabshell-kit-text</artifactId>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-hex</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.techsenger.tabshell.kit</groupId>
-                <artifactId>tabshell-kit-hex</artifactId>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-registrars</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.techsenger.tabshell.kit</groupId>
-                <artifactId>tabshell-kit-terminal</artifactId>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-icons</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.techsenger.tabshell.kit</groupId>
-                <artifactId>tabshell-kit-registrar</artifactId>
+                <groupId>com.techsenger.tabshell.demos</groupId>
+                <artifactId>tabshell-demos-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
@@ -111,7 +111,24 @@
     <modules>
         <module>tabshell-material</module>
         <module>tabshell-core</module>
-        <module>tabshell-demo</module>
-        <module>tabshell-kit</module>
+        <module>tabshell-text</module>
+        <module>tabshell-terminal</module>
+        <module>tabshell-dialogs</module>
+        <module>tabshell-tabs</module>
+        <module>tabshell-registrars</module>
+        <module>tabshell-icons</module>
+        <module>tabshell-demos</module>
     </modules>
+
+    <build>
+        <!-- temp solution until maven doesn't fix the problem with resources for unit tests -->
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
 </project>

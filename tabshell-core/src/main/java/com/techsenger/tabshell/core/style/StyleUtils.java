@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.style;
 
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 /**
  *
@@ -32,6 +33,19 @@ public final class StyleUtils {
         } else {
             return "";
         }
+    }
+
+    /**
+     * Returns the width of the char for monospace font.
+     *
+     * @param font
+     * @return
+     */
+    public static double getMonospaceCharWidth(Font font) {
+        final Text text = new Text("0");
+        text.setFont(font);
+        double width = text.getBoundsInLocal().getWidth();
+        return width;
     }
 
     private StyleUtils() {

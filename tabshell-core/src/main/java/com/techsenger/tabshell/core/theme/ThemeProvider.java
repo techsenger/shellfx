@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core.theme;
 
 import atlantafx.base.theme.Theme;
-import com.techsenger.tabshell.core.DefaultTabShellView;
+import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.toolkit.core.StringUtils;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.io.BufferedReader;
@@ -134,7 +134,7 @@ final class ThemeProvider {
     private Map<String, Integer> themeColorsByName;
 
     private ThemeProvider() {
-        this.sharedColorsByName = readColors(DefaultTabShellView.class, "core.css", null);
+        this.sharedColorsByName = readColors(Stylesheet.class, "core.css", null);
     }
 
     ThemePalettes createCupertinoPalettes(boolean dark) {
@@ -301,7 +301,7 @@ final class ThemeProvider {
         //now we add shared colors, because they must override atlantafx colors
         atlantaColorsByName.putAll(sharedColorsByName);
         //reading tabshell base css file
-        var shellThemeColorsByName = readColors(DefaultTabShellView.class, baseFile, atlantaColorsByName);
+        var shellThemeColorsByName = readColors(Stylesheet.class, baseFile, atlantaColorsByName);
         return shellThemeColorsByName;
     }
 

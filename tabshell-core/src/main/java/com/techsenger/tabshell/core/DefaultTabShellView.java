@@ -433,17 +433,17 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
 
     private List<Stylesheet> createDefaultStylesheets() {
         return List.of(
-                new Stylesheet(TabShellView.class.getResource("core.css")),
-                new Stylesheet(TabShellTheme.CASPIAN, TabShellView.class.getResource("core-caspian.css")),
-                new Stylesheet(TabShellTheme.CUPERTINO_DARK, TabShellView.class.getResource("core-cupertino-dark.css")),
+                new Stylesheet(Stylesheet.class.getResource("core.css")),
+                new Stylesheet(TabShellTheme.CASPIAN, Stylesheet.class.getResource("core-caspian.css")),
+                new Stylesheet(TabShellTheme.CUPERTINO_DARK, Stylesheet.class.getResource("core-cupertino-dark.css")),
                 new Stylesheet(TabShellTheme.CUPERTINO_LIGHT,
-                        TabShellView.class.getResource("core-cupertino-light.css")),
-                new Stylesheet(TabShellTheme.DRACULA, TabShellView.class.getResource("core-dracula.css")),
-                new Stylesheet(TabShellTheme.MODENA, TabShellView.class.getResource("core-modena.css")),
-                new Stylesheet(TabShellTheme.NORD_DARK, TabShellView.class.getResource("core-nord-dark.css")),
-                new Stylesheet(TabShellTheme.NORD_LIGHT, TabShellView.class.getResource("core-nord-light.css")),
-                new Stylesheet(TabShellTheme.PRIMER_DARK, TabShellView.class.getResource("core-primer-dark.css")),
-                new Stylesheet(TabShellTheme.PRIMER_LIGHT, TabShellView.class.getResource("core-primer-light.css"))
+                        Stylesheet.class.getResource("core-cupertino-light.css")),
+                new Stylesheet(TabShellTheme.DRACULA, Stylesheet.class.getResource("core-dracula.css")),
+                new Stylesheet(TabShellTheme.MODENA, Stylesheet.class.getResource("core-modena.css")),
+                new Stylesheet(TabShellTheme.NORD_DARK, Stylesheet.class.getResource("core-nord-dark.css")),
+                new Stylesheet(TabShellTheme.NORD_LIGHT, Stylesheet.class.getResource("core-nord-light.css")),
+                new Stylesheet(TabShellTheme.PRIMER_DARK, Stylesheet.class.getResource("core-primer-dark.css")),
+                new Stylesheet(TabShellTheme.PRIMER_LIGHT, Stylesheet.class.getResource("core-primer-light.css"))
         );
     }
 }

@@ -23,4 +23,6 @@ package com.techsenger.tabshell.core.settings;
 public interface Settings {
 
     AppearanceSettings getAppearance();
+
+    ViewerSettings getViewer();
 }
