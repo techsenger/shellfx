@@ -41,11 +41,18 @@ public interface TabShellView<T extends TabShellViewModel> extends View<T>, TabP
     ShellTabView<?> getSelectedTab();
 
     /**
+     * Returns the control registry. There can be only one registry in the application.
+     *
+     * @return
+     */
+    ControlRegistry getControlRegistry();
+
+    /**
      * Clears all existing elements in menu bar and adds new elements build using registry.
      *
      * @param registry
      */
-    void upgradeMenuBar(ControlRegistry registry);
+    void upgradeMenuBar();
 
     /**
      * Forces shell to update the visibility of the elements in menu bar.

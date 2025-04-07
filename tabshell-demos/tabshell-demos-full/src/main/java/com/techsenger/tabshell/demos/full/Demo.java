@@ -18,7 +18,6 @@ package com.techsenger.tabshell.demos.full;
 
 import com.techsenger.tabshell.core.DefaultTabShellView;
 import com.techsenger.tabshell.core.DefaultTabShellViewModel;
-import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
 import com.techsenger.tabshell.icons.IconsProvider;
@@ -46,12 +45,12 @@ public class Demo extends Application {
         view.initialize();
 
         //adding menu
-        var controlRegistry = new ControlRegistry();
-        var registrar = new DemoFileMenuRegistrar(controlRegistry);
-        registrar.register();
+        var controlRegistry = view.getControlRegistry();
+        var fmr = new DemoFileMenuRegistrar(controlRegistry);
+        fmr.register();
         var emr = new EditMenuRegistrar(controlRegistry);
         emr.register();
-        view.upgradeMenuBar(controlRegistry);
+        view.upgradeMenuBar();
     }
 
 

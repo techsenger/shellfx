@@ -215,6 +215,8 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
 
     private final ObservableList<Stylesheet> stylesheets;
 
+    private final ControlRegistry controlRegistry = new ControlRegistry();
+
     public DefaultTabShellView(List<Stylesheet> stylesheets, DefaultTabShellViewModel viewModel) {
         this(new Stage(), stylesheets, viewModel);
     }
@@ -263,9 +265,14 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
     }
 
     @Override
-    public void upgradeMenuBar(ControlRegistry registry) {
+    public ControlRegistry getControlRegistry() {
+        return controlRegistry;
+    }
+
+    @Override
+    public void upgradeMenuBar() {
         this.menuBar.getMenus().clear();
-        var builder = new ControlBuilder(registry);
+        var builder = new ControlBuilder(controlRegistry);
         var menus = builder.buildMenuBarElements(this);
         this.menuBar.getMenus().addAll(menus);
         logger.debug("Menu bar upgraded");
