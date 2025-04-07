@@ -31,8 +31,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.filechooser.FileSystemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,26 +48,48 @@ public final class FileStorages {
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorages.class);
 
-    private static List<FileStorage> storages = null;
+    private static List<FileStorage> defaultStorages = null;
+
+    private static List<FileStorage> customStorages = new CopyOnWriteArrayList<>();
 
     private static final Map<String, FileStorage> storagesByUri = new HashMap<>();
 
     /**
-     * Returns unmodifiable list of all default file storage for this machine.
+     * Returns an unmodifiable list of all default file storages for this machine.
      *
      * @param refresh if true, or it is the first call then existing list is created/refreshed.
      * @return
      */
     public static synchronized List<FileStorage> getDefault(boolean refresh) {
-        if (storages == null || refresh) {
+        if (defaultStorages == null || refresh) {
             if (OsUtils.isWindows()) {
-                storages = getWindowsStorages();
+                defaultStorages = getWindowsStorages();
             } else {
-                storages = getUnixStorages();
+                defaultStorages = getUnixStorages();
             }
-            storages = Collections.unmodifiableList(storages);
+            defaultStorages = Collections.unmodifiableList(defaultStorages);
         }
-        return storages;
+        return defaultStorages;
+    }
+
+    /**
+     * Returns a modifiable thread safe list of custom storages (which don't exist in OS).
+     *
+     * @return
+     */
+    public static List<FileStorage> getCustom() {
+        return customStorages;
+    }
+
+    /**
+     * Returns an unmodifiable list of all default and custom file storages.
+     *
+     * @return
+     */
+    public static List<FileStorage> getAll(boolean refreshDefault) {
+        var combinedList = Stream.concat(getDefault(refreshDefault).stream(), customStorages.stream())
+                .collect(Collectors.toList());
+        return combinedList;
     }
 
     /**

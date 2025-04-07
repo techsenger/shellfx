@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.file.FileStorage;
 import com.techsenger.tabshell.core.file.GenericFile;
 import java.util.List;
 
@@ -26,10 +27,16 @@ import java.util.List;
  */
 public interface FileOpenerViewModel extends DialogClientViewModel {
 
-    default void openFile(DialogScope scope) {
+    /**
+     * Opens a file by displaying a file chooser dialog and reading the selected file.
+     *
+     * @param scope the scope of the dialog.
+     * @param storages the storages or null.
+     */
+    default void openFile(DialogScope scope, List<FileStorage> storages) {
         var file = getFile();
         var viewModel = new FileChooserDialogViewModel(scope, FileChooserType.OPEN,
-                getTabShell().getSettings().getAppearance(),
+                getTabShell().getSettings().getAppearance(), storages,
                 getTabShell().getHistoryManager());
         var filters = createOpenExtensionFilters();
         if (filters != null) {

@@ -116,7 +116,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             new SimpleMenuItemHelper(FileMenuKeys.OPEN, Boolean.TRUE, Boolean.TRUE) {
                 @Override
                 public void doOnItemAction() {
-                    openFile(DialogScope.TAB);
+                    openFile(DialogScope.TAB, null);
                 }
             },
             new SimpleMenuItemHelper(FileMenuKeys.SAVE, Boolean.TRUE) {
@@ -134,7 +134,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
                 @Override
                 public void doOnItemAction() {
-                    saveFile(DialogScope.TAB);
+                    saveFile(DialogScope.TAB, null);
                 }
 
                 @Override

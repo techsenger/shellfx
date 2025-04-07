@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.file.FileStorage;
 import com.techsenger.tabshell.core.file.GenericFile;
 import java.util.List;
 
@@ -26,10 +27,16 @@ import java.util.List;
  */
 public interface FileSaverViewModel extends DialogClientViewModel {
 
-    default void saveFile(DialogScope scope) {
+    /**
+     * Saves a file by displaying a file chooser dialog and writing the selected file.
+     *
+     * @param scope the scope of dialog
+     * @param storages the storages or null.
+     */
+    default void saveFile(DialogScope scope, List<FileStorage> storages) {
         var file = getFile();
         var viewModel = new FileChooserDialogViewModel(scope, FileChooserType.SAVE_AS,
-                getTabShell().getSettings().getAppearance(),
+                getTabShell().getSettings().getAppearance(), storages,
                 getTabShell().getHistoryManager());
         var filters = createSaveExtensionFilters();
         if (filters != null) {

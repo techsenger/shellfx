@@ -113,7 +113,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
 
     public FileChooserDialogViewModel(DialogScope scope, FileChooserType type, AppearanceSettings settings,
             HistoryManager historyManager) {
-        this(scope, type, settings, FileStorages.getDefault(true), historyManager);
+        this(scope, type, settings, FileStorages.getAll(true), historyManager);
     }
 
     public FileChooserDialogViewModel(DialogScope scope, FileChooserType type, AppearanceSettings settings,
