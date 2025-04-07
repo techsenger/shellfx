@@ -36,7 +36,7 @@ public class Demo extends Application {
     public void start(Stage stage) throws Exception {
         //creating shell
         var viewModel = new DefaultTabShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
-        viewModel.setTitle("TabShell All Demo");
+        viewModel.setTitle("TabShell Full Demo");
         viewModel.setOnClosed(() -> {
             Platform.exit();
         });

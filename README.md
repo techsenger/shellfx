@@ -73,7 +73,7 @@ are sufficient to run TabShell and develop custom components. See [Core Demo](#r
 (such as Google Drive, Dropbox, FTP, and similar). At the same time, the module only includes implementations for
 working with the OS's default storage systems.
 * Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation etc.
-* Text — contains viewer and editor components for text processing.
+* Text — contains text viewer and editor components.
 * Terminal — includes a terminal emulator component.
 * Registrars — provides default registrars (for menu items, etc.).
 * Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use
@@ -132,8 +132,8 @@ to predict the final structure of the menu that the user will work with.
 The implementation of this feature is structured as follows. There are three key elements: the menu, the group, and the
 item. Each element has its own key, which is used for identification. A menu consists of groups separated by a
 separator. Items are added to groups, and empty groups are ignored. All three elements are registered/unregistered in
-the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is passed to `TabShell`, which then
-constructs the final menu.
+the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is used by `TabShell` to construct
+the final menu.
 
 The `MenuManager` is responsible for managing the state of menu elements and responding to their actions. It interacts
 with a component that implements the `MenuAware` interface. This interface is always implemented by both `TabShell` and
