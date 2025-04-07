@@ -146,7 +146,7 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
             setTitle("");
         }
         if (modified) {
-            setTitle(file.getName() + "*");
+            setTitle("*" + file.getName());
         } else {
             setTitle(file.getName());
         }
