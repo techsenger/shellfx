@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.core.file.FileStorage;
+import com.techsenger.tabshell.storage.FileStorage;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import java.net.URI;
 

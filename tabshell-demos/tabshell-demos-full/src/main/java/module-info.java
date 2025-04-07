@@ -20,6 +20,7 @@ module com.techsenger.tabshell.demos.full {
     requires com.techsenger.tabshell.material;
     requires com.techsenger.mvvm4fx.core;
     requires com.techsenger.tabshell.text;
+    requires com.techsenger.tabshell.storage;
     requires com.techsenger.tabshell.dialogs;
     requires com.techsenger.tabshell.terminal;
     requires com.techsenger.tabshell.registrars;

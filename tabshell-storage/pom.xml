@@ -8,19 +8,15 @@
     </parent>
 
     <groupId>com.techsenger.tabshell</groupId>
-    <artifactId>tabshell-dialogs</artifactId>
+    <artifactId>tabshell-storage</artifactId>
     <packaging>jar</packaging>
-    <name>TabShell - Dialogs</name>
-    <description>Dialog components</description>
+    <name>TabShell - Storage</name>
+    <description>Classes for file storage</description>
 
     <dependencies>
         <dependency>
-            <groupId>com.techsenger.mvvm4fx</groupId>
-            <artifactId>mvvm4fx-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-core</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
@@ -28,35 +24,19 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-storage</artifactId>
+            <artifactId>tabshell-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.techsenger.toolkit</groupId>
-            <artifactId>toolkit-fx</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
+            <artifactId>toolkit-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.mkpaz</groupId>
-            <artifactId>atlantafx-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fxmisc.richtext</groupId>
-            <artifactId>richtextfx</artifactId>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
         </dependency>
         <!-- testing -->
         <dependency>

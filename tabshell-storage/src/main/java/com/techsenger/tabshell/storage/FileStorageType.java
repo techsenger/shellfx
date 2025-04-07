@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.file;
-
-import java.net.URI;
+package com.techsenger.tabshell.storage;
 
 /**
+ * The types are defined based on the possibilities of their identification.
  *
  * @author Pavel Castornii
  */
-class LinuxFileStorage extends AbstractDefaultFileStorage {
+public enum FileStorageType {
 
-    LinuxFileStorage(FileStorageType type, String displayName, URI rootUri) {
-        super(type, displayName, rootUri);
-    }
-
-    @Override
-    public boolean refersToStorage(URI uri) {
-        return "file".equalsIgnoreCase(uri.getScheme());
-    }
-
+    BASE, FLOPPY, OPTICAL, NETWORK
 }

@@ -18,7 +18,7 @@ package com.techsenger.tabshell.dialogs.file;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
-import com.techsenger.tabshell.core.file.GenericFile;
+import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;

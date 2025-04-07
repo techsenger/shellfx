@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.core.file.GenericFile;
+import com.techsenger.tabshell.storage.GenericFile;
 import javafx.util.StringConverter;
 
 

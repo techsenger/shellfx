@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.file;
+package com.techsenger.tabshell.storage;
 
-import java.net.URI;
+import com.techsenger.tabshell.core.tab.TabWorker;
 
 /**
+ * Interface that allows to use files from different storage - local, samba, ftp etc.
  *
  * @author Pavel Castornii
  */
-class WindowsFileStorage extends AbstractDefaultFileStorage {
+public interface FileTaskProvider<T> {
 
-    WindowsFileStorage(FileStorageType type, String displayName, URI rootUri) {
-        super(type, displayName, rootUri);
-    }
+    TabWorker<T> createFileReader(GenericFile file);
 
-    @Override
-    public boolean refersToStorage(URI uri) {
-        String givenRoot = uri.getPath().substring(0, Math.min(uri.getPath().length(), 3));
-        String storageRoot = getRootUri().getPath().substring(0, 3);
-        return givenRoot.equalsIgnoreCase(storageRoot);
-    }
+    TabWorker<Void> createFileWriter(GenericFile fileInfo, T content);
 }

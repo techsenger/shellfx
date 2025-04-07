@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.file;
+package com.techsenger.tabshell.storage;
+
+import java.net.URI;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum FileType {
+public class WindowsFileStorage extends AbstractDefaultFileStorage {
 
-    DIRECTORY, FILE, SYMBOLIC_LINK
+    public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri) {
+        super(type, displayName, rootUri);
+    }
+
+    @Override
+    public boolean refersToStorage(URI uri) {
+        String givenRoot = uri.getPath().substring(0, Math.min(uri.getPath().length(), 3));
+        String storageRoot = getRootUri().getPath().substring(0, 3);
+        return givenRoot.equalsIgnoreCase(storageRoot);
+    }
 }

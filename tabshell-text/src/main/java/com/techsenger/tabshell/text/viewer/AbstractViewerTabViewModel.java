@@ -18,9 +18,6 @@ package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.core.TabShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.file.FileTaskProvider;
-import com.techsenger.tabshell.core.file.GenericFile;
-import com.techsenger.tabshell.core.file.TextFileTaskProvider;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
@@ -30,6 +27,10 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
+import com.techsenger.tabshell.storage.FileStorages;
+import com.techsenger.tabshell.storage.FileTaskProvider;
+import com.techsenger.tabshell.storage.GenericFile;
+import com.techsenger.tabshell.storage.TextFileTaskProvider;
 import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -116,7 +117,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             new SimpleMenuItemHelper(FileMenuKeys.OPEN, Boolean.TRUE, Boolean.TRUE) {
                 @Override
                 public void doOnItemAction() {
-                    openFile(DialogScope.TAB, null);
+                    openFile(DialogScope.TAB, FileStorages.getAll(true));
                 }
             },
             new SimpleMenuItemHelper(FileMenuKeys.SAVE, Boolean.TRUE) {
@@ -134,7 +135,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
                 @Override
                 public void doOnItemAction() {
-                    saveFile(DialogScope.TAB, null);
+                    saveFile(DialogScope.TAB, FileStorages.getAll(true));
                 }
 
                 @Override

@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.file;
+package com.techsenger.tabshell.storage;
 
-import com.techsenger.tabshell.storage.GenericFile;
-import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.material.list.ColumnListView;
-import javafx.scene.control.ContextMenu;
+import com.techsenger.tabshell.material.table.TableColumnKey;
 
 /**
  *
  * @author Pavel Castornii
  */
-class FileListView extends ColumnListView<GenericFile> {
+public interface FileColumnKeys {
 
-    private final FileStringConverter stringConverter = new FileStringConverter();
+    TableColumnKey TYPE = new TableColumnKey("Type");
 
-    FileListView(FileChooserDialogViewModel viewModel, ContextMenu cellContextMenu) {
-        setManualRefresh(true);
-        setEditable(true);
-        setItems(viewModel.getFiles());
-        getStyleClass().add(StyleClasses.EXTRA_DENSE);
+    TableColumnKey NAME = new TableColumnKey("Name");
 
-    }
+    TableColumnKey SIZE = new TableColumnKey("Size");
+
+    TableColumnKey LAST_MODIFIED = new TableColumnKey("Last Modified");
 }

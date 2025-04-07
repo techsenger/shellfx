@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.file;
+package com.techsenger.tabshell.storage;
 
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.io.IOException;
@@ -37,9 +37,9 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
+public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
 
-    AbstractDefaultFileStorage(FileStorageType type, String displayName, URI rootUri) {
+    public AbstractDefaultFileStorage(FileStorageType type, String displayName, URI rootUri) {
         super(type, displayName, rootUri, true);
     }
 

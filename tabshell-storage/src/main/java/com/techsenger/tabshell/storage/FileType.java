@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.file;
-
-import com.techsenger.tabshell.core.tab.TabWorker;
+package com.techsenger.tabshell.storage;
 
 /**
- * Interface that allows to use files from different storage - local, samba, ftp etc.
  *
  * @author Pavel Castornii
  */
-public interface FileTaskProvider<T> {
+public enum FileType {
 
-    TabWorker<T> createFileReader(GenericFile file);
-
-    TabWorker<Void> createFileWriter(GenericFile fileInfo, T content);
+    DIRECTORY, FILE, SYMBOLIC_LINK
 }

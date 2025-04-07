@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.file;
+package com.techsenger.tabshell.storage;
 
 import com.techsenger.toolkit.core.os.OsUtils;
 import java.io.BufferedReader;

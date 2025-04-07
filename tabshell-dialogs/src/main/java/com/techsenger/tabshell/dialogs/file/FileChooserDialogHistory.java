@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.core.file.FileColumnKeys;
+import com.techsenger.tabshell.storage.FileColumnKeys;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogHistory;
 import com.techsenger.tabshell.material.button.ToggleButtonHistory;
 import com.techsenger.tabshell.material.table.TableColumnHistory;

@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.file;
+package com.techsenger.tabshell.storage;
 
-import com.techsenger.tabshell.material.table.TableColumnKey;
+import java.net.URI;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FileColumnKeys {
+public class LinuxFileStorage extends AbstractDefaultFileStorage {
 
-    TableColumnKey TYPE = new TableColumnKey("Type");
+    public LinuxFileStorage(FileStorageType type, String displayName, URI rootUri) {
+        super(type, displayName, rootUri);
+    }
 
-    TableColumnKey NAME = new TableColumnKey("Name");
-
-    TableColumnKey SIZE = new TableColumnKey("Size");
-
-    TableColumnKey LAST_MODIFIED = new TableColumnKey("Last Modified");
+    @Override
+    public boolean refersToStorage(URI uri) {
+        return "file".equalsIgnoreCase(uri.getScheme());
+    }
 }

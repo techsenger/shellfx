@@ -18,9 +18,9 @@ package com.techsenger.tabshell.demos.full;
 
 import com.techsenger.tabshell.core.TabShellKey;
 import com.techsenger.tabshell.core.TabShellView;
-import com.techsenger.tabshell.core.file.FileStorages;
-import com.techsenger.tabshell.core.file.FileType;
-import com.techsenger.tabshell.core.file.GenericFile;
+import com.techsenger.tabshell.storage.FileStorages;
+import com.techsenger.tabshell.storage.FileType;
+import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;

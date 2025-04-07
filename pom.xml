@@ -72,6 +72,11 @@
             </dependency>
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-storage</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell</groupId>
                 <artifactId>tabshell-dialogs</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -113,6 +118,7 @@
         <module>tabshell-core</module>
         <module>tabshell-text</module>
         <module>tabshell-terminal</module>
+        <module>tabshell-storage</module>
         <module>tabshell-dialogs</module>
         <module>tabshell-tabs</module>
         <module>tabshell-registrars</module>

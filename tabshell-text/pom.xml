@@ -32,6 +32,10 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
+            <artifactId>tabshell-storage</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-dialogs</artifactId>
         </dependency>
         <dependency>

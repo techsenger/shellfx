@@ -19,7 +19,7 @@ package com.techsenger.tabshell.demos.full;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.TabShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.file.GenericFile;
+import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.ShellTabKey;

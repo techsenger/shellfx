@@ -69,7 +69,10 @@ The platform consists of the following modules:
 and core utility classes. If you don't plan to use ready-made components, just two modules (material and core)
 are sufficient to run TabShell and develop custom components. See [Core Demo](#running-core-demo) for details.
 * Tabs — offers abstract components for creating tabs with various layouts.
-* Dialogs — provides ready-to-use dialog boxes: alert, file chooser, confirmation etc.
+* Storage — contains classes to interact with storage systems that are not natively recognized by the operating system
+(such as Google Drive, Dropbox, FTP, and similar). At the same time, the module only includes implementations for
+working with the OS's default storage systems.
+* Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation etc.
 * Text — contains viewer and editor components for text processing.
 * Terminal — includes a terminal emulator component.
 * Registrars — provides default registrars (for menu items, etc.).

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.file;
+module com.techsenger.tabshell.storage {
+    requires org.slf4j;
+    requires com.techsenger.toolkit.core;
+    requires com.techsenger.tabshell.material;
+    requires com.techsenger.tabshell.core;
+    requires javafx.controls;
+    requires javafx.swing;
 
-/**
- * The types are defined based on the possibilities of their identification.
- *
- * @author Pavel Castornii
- */
-public enum FileStorageType {
+    exports com.techsenger.tabshell.storage;
 
-    BASE, FLOPPY, OPTICAL, NETWORK
 }

@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.file.FileStorage;
-import com.techsenger.tabshell.core.file.GenericFile;
+import com.techsenger.tabshell.storage.FileStorage;
+import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
 
 /**

@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.text.editor;
 
 import com.techsenger.tabshell.core.TabShellViewModel;
-import com.techsenger.tabshell.core.file.GenericFile;
-import com.techsenger.tabshell.core.file.UriUtils;
+import com.techsenger.tabshell.storage.GenericFile;
+import com.techsenger.tabshell.storage.UriUtils;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.text.viewer.AbstractViewerTabViewModel;

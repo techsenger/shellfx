@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.TabShellViewModel;
-import com.techsenger.tabshell.core.file.GenericFile;
+import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.dialogs.StandardDialogHelper;
 
 /**

@@ -22,6 +22,7 @@ module com.techsenger.tabshell.text {
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.tabs;
+    requires com.techsenger.tabshell.storage;
     requires com.techsenger.tabshell.dialogs;
     requires javafx.base;
     requires javafx.graphics;

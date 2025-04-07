@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.core.file.FileColumnBuilder;
-import com.techsenger.tabshell.core.file.FileColumnKeys;
-import com.techsenger.tabshell.core.file.GenericFile;
+import com.techsenger.tabshell.storage.FileColumnBuilder;
+import com.techsenger.tabshell.storage.FileColumnKeys;
+import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.table.KeyedTableColumn;
 import com.techsenger.tabshell.material.table.TableHistoryUtils;
