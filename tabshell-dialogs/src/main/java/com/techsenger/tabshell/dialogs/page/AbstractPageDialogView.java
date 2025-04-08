@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialog.page;
+package com.techsenger.tabshell.dialogs.page;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.page.PageView;

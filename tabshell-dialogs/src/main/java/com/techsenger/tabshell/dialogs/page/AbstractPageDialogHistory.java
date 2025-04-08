@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialog.page;
+package com.techsenger.tabshell.dialogs.page;
 
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogHistory;
 
