@@ -17,17 +17,13 @@
 package com.techsenger.tabshell.dialogs.alert;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogView;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
+import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
-import javafx.geometry.Insets;
+import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 
 /**
  *
@@ -47,7 +43,7 @@ public class AlertDialogView<T extends AlertDialogViewModel> extends AbstractSim
 
     @Override
     public void requestFocus() {
-
+        NodeUtils.requestFocus(getNode());
     }
 
     @Override
@@ -55,8 +51,7 @@ public class AlertDialogView<T extends AlertDialogViewModel> extends AbstractSim
         super.build(viewModel);
         getButtonBox().getChildren().add(getOkButton());
         getContentPane().getStylesheets().add(AlertDialogView.class.getResource("alert.css").toExternalForm());
-        this.messageIconView.getStyleClass().addAll(viewModel.getMessageIcon(), "message-icon-view");
-        this.messageIconView.setMinWidth(Label.USE_PREF_SIZE);
+        messageIconView.getStyleClass().addAll(viewModel.getMessageIcon(), "message-icon-view");
         switch (viewModel.getDialogType()) {
             case INFO:
                 this.messageIconView.getStyleClass().add(Styles.ACCENT);
@@ -70,21 +65,9 @@ public class AlertDialogView<T extends AlertDialogViewModel> extends AbstractSim
             default:
                 throw new AssertionError();
         }
-
-        this.messageLabel.getStyleClass().add("message-label");
-        this.messageLabel.textProperty().bind(viewModel.messageProperty());
-        DoubleBinding messageLabelWidth = Bindings.createDoubleBinding(
-                () -> messageBox.getWidth() - messageIconView.getWidth() - 2 * SizeConstants.INSET, //0.5 + 0.5 + 1
-                messageBox.widthProperty(), messageIconView.widthProperty());
-        this.messageLabel.prefWidthProperty().bind(messageLabelWidth);
-        this.messageLabel.minWidthProperty().bind(messageLabelWidth);
-        this.messageLabel.maxWidthProperty().bind(messageLabelWidth);
-        this.messageLabel.setPadding(new Insets(SizeConstants.INSET, 0, 0, 0));
-
-        this.messageBox.getStyleClass().add("message-box");
-        this.messageBox.setSpacing(SizeConstants.HALF_INSET);
-        this.messageBox.setPadding(new Insets(0, SizeConstants.INSET, 0, SizeConstants.HALF_INSET));
-        VBox.setVgrow(messageBox, Priority.ALWAYS);
+        messageLabel.textProperty().bind(viewModel.messageProperty());
+        messageLabel.getStyleClass().add("message-label");
+        ViewUtils.buildIconedMessageBox(messageIconView, messageLabel, messageBox);
         getContentPane().getChildren().addAll(messageBox, getButtonBox());
     }
 

@@ -19,15 +19,6 @@ package com.techsenger.tabshell.dialogs.file;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.dialog.DialogKey;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.storage.FileStorage;
-import static com.techsenger.tabshell.storage.FileStorageType.BASE;
-import static com.techsenger.tabshell.storage.FileStorageType.FLOPPY;
-import static com.techsenger.tabshell.storage.FileStorageType.NETWORK;
-import static com.techsenger.tabshell.storage.FileStorageType.OPTICAL;
-import com.techsenger.tabshell.storage.FileStorages;
-import com.techsenger.tabshell.storage.FileType;
-import com.techsenger.tabshell.storage.GenericFile;
-import com.techsenger.tabshell.storage.UriUtils;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.style.CoreIcons;
@@ -38,6 +29,15 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.material.table.TableHistory;
+import com.techsenger.tabshell.storage.FileStorage;
+import static com.techsenger.tabshell.storage.FileStorageType.BASE;
+import static com.techsenger.tabshell.storage.FileStorageType.FLOPPY;
+import static com.techsenger.tabshell.storage.FileStorageType.NETWORK;
+import static com.techsenger.tabshell.storage.FileStorageType.OPTICAL;
+import com.techsenger.tabshell.storage.FileStorages;
+import com.techsenger.tabshell.storage.FileType;
+import com.techsenger.tabshell.storage.GenericFile;
+import com.techsenger.tabshell.storage.UriUtils;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -161,7 +161,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
 
     @Override
     public DialogKey getKey() {
-        return DialogComponentKeys.FILE_DIALOG;
+        return DialogComponentKeys.FILE_CHOOSER_DIALOG;
     }
 
     public FileChooserType getType() {

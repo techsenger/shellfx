@@ -20,6 +20,8 @@ import com.techsenger.mvvm4fx.core.ParentView;
 import com.techsenger.tabshell.core.dialog.DialogHelper;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.confirmation.ConfirmationDialogView;
+import com.techsenger.tabshell.dialogs.confirmation.ConfirmationDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogView;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
 
@@ -32,6 +34,12 @@ public interface StandardDialogHelper<T extends ParentView<?>> extends DialogHel
 
     default void openAlertDialog(AlertDialogViewModel viewModel) {
         var view = new AlertDialogView<AlertDialogViewModel>(viewModel);
+        view.initialize();
+        openDialog(view);
+    }
+
+    default void openConfirmationDialog(ConfirmationDialogViewModel viewModel) {
+        var view = new ConfirmationDialogView(viewModel);
         view.initialize();
         openDialog(view);
     }

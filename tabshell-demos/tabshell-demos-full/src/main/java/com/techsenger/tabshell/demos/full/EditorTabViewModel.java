@@ -19,14 +19,15 @@ package com.techsenger.tabshell.demos.full;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.TabShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.confirmation.ConfirmationDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.material.icon.FontIcon;
+import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabViewModel;
 import com.techsenger.tabshell.text.style.TextIcons;
 import java.util.List;
@@ -56,10 +57,30 @@ public class EditorTabViewModel extends AbstractEditorTabViewModel {
         return DemoComponentKeys.EDITOR_TAB;
     }
 
-    void showInfo() {
-        //shell scope!
-        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO, "That is a message.");
+    void showInfoDialog() {
+        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
+                "All done! Time for coffee.");
         getComponentHelper().openAlertDialog(viewModel);
+    }
+
+    void showWarningDialog() {
+        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
+                "Attention! You shouldn't do it!");
+        getComponentHelper().openAlertDialog(viewModel);
+    }
+
+    void showErrorDialog() {
+        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
+                "Oops! That didn’t work.");
+        getComponentHelper().openAlertDialog(viewModel);
+    }
+
+    void showConfirmationDialog() {
+        var viewModel = new ConfirmationDialogViewModel(DialogScope.SHELL,
+                "This choice will determine the fate of the world! Are you sure?");
+        viewModel.setConfirmText("Yes");
+        viewModel.setDenyText("No");
+        getComponentHelper().openConfirmationDialog(viewModel);
     }
 
     @Override

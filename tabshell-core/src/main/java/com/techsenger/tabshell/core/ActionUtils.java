@@ -14,19 +14,32 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs;
+package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.core.dialog.DialogKey;
+import javafx.beans.property.ObjectProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogComponentKeys {
+public final class ActionUtils {
 
-    DialogKey ALERT_DIALOG = new DialogKey("Alert Dialog");
+    /**
+     * Runs an action from the property if the property and the action are not null.
+     *
+     * @param actionProperty
+     */
+    public static void runIfExists(ObjectProperty<Runnable> actionProperty) {
+        if (actionProperty == null) {
+            return;
+        }
+        var action = actionProperty.get();
+        if (action != null) {
+            action.run();
+        }
+    }
 
-    DialogKey CONFIRMATION_DIALOG = new DialogKey("Confirmation Dialog");
-
-    DialogKey FILE_CHOOSER_DIALOG = new DialogKey("File Chooser Dialog");
+    private ActionUtils() {
+        //empty
+    }
 }

@@ -30,6 +30,7 @@ module com.techsenger.tabshell.dialogs {
 
     exports com.techsenger.tabshell.dialogs;
     exports com.techsenger.tabshell.dialogs.alert;
+    exports com.techsenger.tabshell.dialogs.confirmation;
     exports com.techsenger.tabshell.dialogs.file;
     exports com.techsenger.tabshell.dialogs.page;
     exports com.techsenger.tabshell.dialogs.style;

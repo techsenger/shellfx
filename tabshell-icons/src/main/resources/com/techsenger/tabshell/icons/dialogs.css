@@ -34,6 +34,10 @@
     -fx-code-point: 983082; /* alert-outline */
 }
 
+.font-icon-view.tabshell-confirmation-icon {
+    -fx-code-point: 986022; /* help-rhombus-outline */
+}
+
 .font-icon-view.tabshell-directory-up-icon {
     -fx-code-point: 989683; /* folder-arrow-up-outline */
 }

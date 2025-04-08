@@ -31,6 +31,12 @@ public class EditorTabView extends AbstractEditorTabView<EditorTabViewModel> {
 
     private final Button infoButton = new Button("Info");
 
+    private final Button warningButton = new Button("Warning");
+
+    private final Button errorButton = new Button("Error");
+
+    private final Button confirmButton = new Button("Confirmation");
+
     EditorTabView(TabShellView<?> tabShell, EditorTabViewModel viewModel) {
         super(tabShell, viewModel, new ExtendedTextArea());
     }
@@ -40,7 +46,7 @@ public class EditorTabView extends AbstractEditorTabView<EditorTabViewModel> {
         super.build(viewModel);
         getToolBar().getItems().addAll(getClearButton(), getCopyButton(), getCutButton(), getPasteButton(),
                 getUndoButton(), getRedoButton(), getWrapTextButton(), new Separator(Orientation.VERTICAL),
-                infoButton);
+                infoButton, warningButton, errorButton, confirmButton);
         getTopPane().getChildren().addAll(getToolBar(), this.getTextScrollPane());
         getTextAreaMenu().getItems().addAll(getCutItem(), getCopyItem(), getPasteItem());
     }
@@ -48,6 +54,9 @@ public class EditorTabView extends AbstractEditorTabView<EditorTabViewModel> {
     @Override
     protected void addHandlers(EditorTabViewModel viewModel) {
         super.addHandlers(viewModel);
-        infoButton.setOnAction(e -> viewModel.showInfo());
+        infoButton.setOnAction(e -> viewModel.showInfoDialog());
+        warningButton.setOnAction(e -> viewModel.showWarningDialog());
+        errorButton.setOnAction(e -> viewModel.showErrorDialog());
+        confirmButton.setOnAction(e -> viewModel.showConfirmationDialog());
     }
 }

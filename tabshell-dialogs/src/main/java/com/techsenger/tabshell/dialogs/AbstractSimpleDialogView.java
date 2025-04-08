@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.dialogs;
 
+import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -54,20 +55,10 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
-        okButton.setOnAction(e -> {
-            var r = viewModel.okActionProperty().get();
-            if (r != null) {
-                r.run();
-            }
-        });
+        okButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
         okButton.disableProperty().bind(viewModel.okDisableProperty());
         okButton.defaultButtonProperty().bind(viewModel.okDefault());
-        cancelButton.setOnAction(e -> {
-            var r = viewModel.cancelActionProperty().get();
-            if (r != null) {
-                r.run();
-            }
-        });
+        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
         cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
         cancelButton.defaultButtonProperty().bind(viewModel.cancelDefaultProperty());
     }
@@ -93,6 +84,4 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
             }
         };
     }
-
-
 }
