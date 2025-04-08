@@ -31,11 +31,15 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
 
     private final ObjectProperty<Runnable> okAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
 
-    private final ObjectProperty<Runnable> cancelAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
-
     private final BooleanProperty okDisable = new SimpleBooleanProperty();
 
+    private final BooleanProperty okDefault = new SimpleBooleanProperty(true);
+
+    private final ObjectProperty<Runnable> cancelAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
+
     private final BooleanProperty cancelDisable = new SimpleBooleanProperty();
+
+    private final BooleanProperty cancelDefault = new SimpleBooleanProperty();
 
     public AbstractSimpleDialogViewModel(DialogScope scope, boolean resizable) {
         super(scope, resizable);
@@ -45,16 +49,72 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
         return okAction;
     }
 
-    public ObjectProperty<Runnable> cancelActionProperty() {
-        return cancelAction;
+    public Runnable getOkAction() {
+        return okAction.get();
+    }
+
+    public void setOkAction(Runnable action) {
+        this.okAction.set(action);
     }
 
     public BooleanProperty okDisableProperty() {
         return okDisable;
     }
 
+    public boolean isOkDisable() {
+        return okDisable.get();
+    }
+
+    public void setOkDisable(boolean disable) {
+        this.okDisable.set(disable);
+    }
+
+    public BooleanProperty okDefault() {
+        return okDefault;
+    }
+
+    public boolean isOkDefault() {
+        return okDefault.get();
+    }
+
+    public void okDefault(boolean okDefault) {
+        this.okDefault.set(okDefault);
+    }
+
     public BooleanProperty cancelDisableProperty() {
         return cancelDisable;
+    }
+
+    public boolean isCancelDisable() {
+        return cancelDisable.get();
+    }
+
+    public void setCancelDisable(boolean disable) {
+        this.cancelDisable.set(disable);
+    }
+
+    public ObjectProperty<Runnable> cancelActionProperty() {
+        return cancelAction;
+    }
+
+    public Runnable getCancelAction() {
+        return cancelAction.get();
+    }
+
+    public void setCancelAction(Runnable action) {
+        this.cancelAction.set(action);
+    }
+
+    public BooleanProperty cancelDefaultProperty() {
+        return cancelDefault;
+    }
+
+    public boolean isCancelDefault() {
+        return cancelDefault.get();
+    }
+
+    public void setCancelDefault(boolean cancelDefault) {
+        this.cancelDefault.set(cancelDefault);
     }
 
     @Override

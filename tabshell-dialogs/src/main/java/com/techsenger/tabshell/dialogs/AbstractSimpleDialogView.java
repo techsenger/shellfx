@@ -32,9 +32,9 @@ import javafx.scene.layout.HBox;
  */
 public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogViewModel> extends AbstractDialogView<T> {
 
-    private final Button cancelButton = new Button("Cancel");
-
     private final Button okButton = new Button("OK");
+
+    private final Button cancelButton = new Button("Cancel");
 
     private final HBox buttonBox = new HBox();
 
@@ -45,7 +45,6 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        okButton.setDefaultButton(true);
         this.buttonBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
         this.buttonBox.setPadding(new Insets(SizeConstants.INSET));
         buttonBox.setAlignment(Pos.BOTTOM_RIGHT);
@@ -55,13 +54,6 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
-        cancelButton.setOnAction(e -> {
-            var r = viewModel.cancelActionProperty().get();
-            if (r != null) {
-                r.run();
-            }
-        });
-        cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
         okButton.setOnAction(e -> {
             var r = viewModel.okActionProperty().get();
             if (r != null) {
@@ -69,14 +61,23 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
             }
         });
         okButton.disableProperty().bind(viewModel.okDisableProperty());
-    }
-
-    protected Button getCancelButton() {
-        return cancelButton;
+        okButton.defaultButtonProperty().bind(viewModel.okDefault());
+        cancelButton.setOnAction(e -> {
+            var r = viewModel.cancelActionProperty().get();
+            if (r != null) {
+                r.run();
+            }
+        });
+        cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
+        cancelButton.defaultButtonProperty().bind(viewModel.cancelDefaultProperty());
     }
 
     protected Button getOkButton() {
         return okButton;
+    }
+
+    protected Button getCancelButton() {
+        return cancelButton;
     }
 
     protected HBox getButtonBox() {
