@@ -59,6 +59,8 @@ public class ConfirmationDialogViewModel extends AbstractDialogViewModel {
 
     private final StringProperty cancelText = new SimpleStringProperty("Cancel");
 
+    private final BooleanProperty cancelVisible = new SimpleBooleanProperty(false);
+
     public ConfirmationDialogViewModel(DialogScope scope, String message) {
         super(scope, false);
         this.message.set(message);
@@ -219,6 +221,18 @@ public class ConfirmationDialogViewModel extends AbstractDialogViewModel {
 
     public void setCancelText(String text) {
         this.cancelText.set(text);
+    }
+
+    public BooleanProperty cancelVisibleProperty() {
+        return cancelVisible;
+    }
+
+    public boolean isCancelVisible() {
+        return cancelVisible.get();
+    }
+
+    public void setCancelVisible(boolean value) {
+        cancelVisible.set(value);
     }
 
     /* *************************************************** other **************************************************** */

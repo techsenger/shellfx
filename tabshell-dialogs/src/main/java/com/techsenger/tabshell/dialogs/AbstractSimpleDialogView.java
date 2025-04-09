@@ -61,6 +61,7 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
         cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
         cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
         cancelButton.defaultButtonProperty().bind(viewModel.cancelDefaultProperty());
+        cancelButton.visibleProperty().bind(viewModel.cancelVisibleProperty());
     }
 
     protected Button getOkButton() {

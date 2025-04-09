@@ -57,6 +57,7 @@ public class AlertDialogViewModel extends AbstractSimpleDialogViewModel {
         }
         prefWidthProperty().set(600);
         this.message.set(message);
+        setCancelVisible(false);
     }
 
     @Override

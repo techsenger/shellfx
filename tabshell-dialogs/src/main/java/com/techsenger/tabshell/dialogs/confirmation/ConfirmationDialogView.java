@@ -77,7 +77,7 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
         this.buttonBox.setPadding(new Insets(SizeConstants.INSET));
         buttonBox.setAlignment(Pos.BOTTOM_RIGHT);
         buttonBox.setSpacing(SizeConstants.INSET);
-        buttonBox.getChildren().addAll(denyButton, confirmButton);
+        buttonBox.getChildren().addAll(cancelButton, denyButton, confirmButton);
 
         getContentPane().getChildren().addAll(messageBox, getButtonBox());
     }
@@ -96,6 +96,7 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
         cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
         cancelButton.defaultButtonProperty().bind(viewModel.cancelDefaultProperty());
         cancelButton.textProperty().bind(viewModel.cancelTextProperty());
+        cancelButton.visibleProperty().bind(viewModel.cancelVisibleProperty());
     }
 
     @Override

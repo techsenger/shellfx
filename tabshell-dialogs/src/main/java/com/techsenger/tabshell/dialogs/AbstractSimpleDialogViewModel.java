@@ -41,6 +41,8 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
 
     private final BooleanProperty cancelDefault = new SimpleBooleanProperty();
 
+    private final BooleanProperty cancelVisible = new SimpleBooleanProperty();
+
     public AbstractSimpleDialogViewModel(DialogScope scope, boolean resizable) {
         super(scope, resizable);
     }
@@ -115,6 +117,18 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
 
     public void setCancelDefault(boolean cancelDefault) {
         this.cancelDefault.set(cancelDefault);
+    }
+
+    public BooleanProperty cancelVisibleProperty() {
+        return cancelVisible;
+    }
+
+    public boolean isCancelVisible() {
+        return cancelVisible.get();
+    }
+
+    public void setCancelVisible(boolean value) {
+        cancelVisible.set(value);
     }
 
     @Override
