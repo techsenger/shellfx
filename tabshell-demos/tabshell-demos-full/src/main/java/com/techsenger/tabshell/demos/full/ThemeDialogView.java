@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogView;
+import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
@@ -82,4 +83,13 @@ public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewMod
         super.bind(viewModel);
         themeComboBox.valueProperty().bindBidirectional(viewModel.themeProperty());
     }
+
+    @Override
+    protected void makeEqualButtons() {
+        if (getViewModel().isCancelVisible()) {
+            ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
+        }
+    }
+
+
 }

@@ -63,7 +63,6 @@ class GoToLineDialogView extends AbstractSimpleDialogView<GoToLineDialogViewMode
     protected void build(GoToLineDialogViewModel viewModel) {
         super.build(viewModel);
         this.getButtonBox().getChildren().addAll(getCancelButton(), getOkButton());
-        ButtonUtils.makeEqualWidth(getCancelButton(), getOkButton());
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(SizeConstants.INSET, SizeConstants.INSET, 0, SizeConstants.INSET));
         gridPane.setHgap(SizeConstants.INSET);
@@ -113,5 +112,12 @@ class GoToLineDialogView extends AbstractSimpleDialogView<GoToLineDialogViewMode
     protected void addListeners(GoToLineDialogViewModel viewModel) {
         super.addListeners(viewModel);
         lineComboBox.getEditor().textProperty().addListener((ov, oldV, newV) -> viewModel.checkOkButtonState(newV));
+    }
+
+    @Override
+    protected void makeEqualButtons() {
+        if (getViewModel().isCancelVisible()) {
+            ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
+        }
     }
 }

@@ -66,6 +66,7 @@ public class ConfirmationDialogViewModel extends AbstractDialogViewModel {
         this.message.set(message);
         prefWidthProperty().set(600);
         this.titleProperty().set("Confirmation");
+        setButtonWidthEqual(true);
     }
 
     @Override

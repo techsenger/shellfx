@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demos.core.dialog;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -46,7 +47,9 @@ public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel> {
 
     private final Button okButton = new Button("OK");
 
-    private final HBox hBox = new HBox(okButton);
+    private final Button cancelButton = new Button("Cancel");
+
+    private final HBox hBox = new HBox(cancelButton, okButton);
 
     public DemoDialogView(DemoDialogViewModel viewModel) {
         super(viewModel);
@@ -72,6 +75,7 @@ public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel> {
 
         okButton.setDefaultButton(true);
         hBox.setAlignment(Pos.CENTER_RIGHT);
+        hBox.setSpacing(SizeConstants.INSET);
 
         getContentPane().getChildren().addAll(gridPane, hBox);
         getContentPane().setPadding(new Insets(SizeConstants.INSET));
@@ -82,5 +86,11 @@ public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel> {
     protected void addHandlers(DemoDialogViewModel viewModel) {
         super.addHandlers(viewModel);
         okButton.setOnAction(e -> viewModel.close());
+        cancelButton.setOnAction(e -> viewModel.close());
+    }
+
+    @Override
+    protected void makeEqualButtons() {
+        ButtonUtils.makeEqualWidthBySize(cancelButton, okButton);
     }
 }

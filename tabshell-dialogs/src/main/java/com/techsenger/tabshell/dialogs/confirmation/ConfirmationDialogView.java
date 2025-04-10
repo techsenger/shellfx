@@ -26,6 +26,7 @@ import com.techsenger.tabshell.dialogs.StandardDialogHelper;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -131,5 +132,14 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 
     protected HBox getButtonBox() {
         return buttonBox;
+    }
+
+    @Override
+    protected void makeEqualButtons() {
+        if (getViewModel().isCancelVisible()) {
+            ButtonUtils.makeEqualWidthBySize(getCancelButton(), getDenyButton(), getConfirmButton());
+        } else {
+            ButtonUtils.makeEqualWidthBySize(getDenyButton(), getConfirmButton());
+        }
     }
 }

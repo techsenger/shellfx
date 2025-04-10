@@ -18,7 +18,6 @@ package com.techsenger.tabshell.dialogs.file;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
-import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -27,6 +26,7 @@ import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.list.TextFieldColumnListCell;
 import com.techsenger.tabshell.material.table.TableHistoryUtils;
+import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.geometry.Insets;
@@ -310,7 +310,6 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
         main.getStylesheets().add(FileChooserDialogView.class.getResource("file-dialog.css").toExternalForm());
 
         getButtonBox().getChildren().addAll(getCancelButton(), getOkButton());
-        ButtonUtils.makeEqualWidth(getCancelButton(), getOkButton());
         getContentPane().getChildren().addAll(main, getButtonBox());
     }
 
@@ -457,6 +456,13 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
 
     protected Label getLocationLabel() {
         return locationLabel;
+    }
+
+    @Override
+    protected void makeEqualButtons() {
+        if (getViewModel().isCancelVisible()) {
+            ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
+        }
     }
 
     private void updateFileBox(Node node) {

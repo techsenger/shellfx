@@ -49,6 +49,8 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
         prefWidthProperty().set(400);
         titleProperty().set("Go To Line");
         okDisableProperty().set(true);
+        setCancelVisible(true);
+        setButtonWidthEqual(true);
     }
 
     @Override

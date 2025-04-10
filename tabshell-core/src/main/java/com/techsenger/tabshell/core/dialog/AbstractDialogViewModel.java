@@ -62,6 +62,8 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
 
     private final BooleanProperty waiting = new SimpleBooleanProperty(false);
 
+    private final BooleanProperty buttonWidthEqual = new SimpleBooleanProperty(false);
+
     /**
      * If it is necessary to close a dialog then dialog helper should be used. Default implementation uses window
      * closer set from view.
@@ -232,6 +234,24 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
 
     public boolean getWaiting() {
         return waiting.get();
+    }
+
+    /**
+     * Use this property if it is necessary to make buttons with equal width. View will add a pulse listener that will
+     * call the makeEqualButtons() method. So, when this method is called the width of the buttons have been calculated.
+     *
+     * @return
+     */
+    public BooleanProperty buttonWidthEqualProperty() {
+        return buttonWidthEqual;
+    }
+
+    public boolean isButtonWidthEqual() {
+        return buttonWidthEqual.get();
+    }
+
+    public void setButtonWidthEqual(boolean value) {
+        this.buttonWidthEqual.set(value);
     }
 
     @Override

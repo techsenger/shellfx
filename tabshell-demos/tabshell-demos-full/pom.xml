@@ -19,6 +19,14 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.toolkit</groupId>
+            <artifactId>toolkit-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.toolkit</groupId>
+            <artifactId>toolkit-fx</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-core</artifactId>
         </dependency>

@@ -32,6 +32,7 @@ public class DemoDialogViewModel extends AbstractDialogViewModel {
         super(scope, resizable);
         setPrefWidth(500);
         setTitle("Demo Dialog");
+        setButtonWidthEqual(true); //cancel button width will be equal to ok button width
     }
 
     @Override

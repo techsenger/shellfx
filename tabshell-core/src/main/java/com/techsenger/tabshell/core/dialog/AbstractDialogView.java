@@ -16,11 +16,14 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.mvvm4fx.core.LayoutPulseListener;
+import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.RegionResizer;
+import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -92,6 +95,11 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     private DialogManager dialogManager;
 
     private Pane backgroundPane;
+
+    private final LayoutPulseListener buttonWidthListener = () -> {
+        makeEqualButtons();
+        return false;
+    };
 
     public AbstractDialogView(T viewModel) {
         super(viewModel);
@@ -179,6 +187,14 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
                 stackPane.getChildren().remove(stackPane.getChildren().size() - 1);
             }
         });
+        ValueUtils.callAndAddListener(viewModel.buttonWidthEqualProperty(), (ov, oldV, newV) -> {
+            if (Boolean.FALSE.equals(oldV)) {
+                removeLayoutPulseListener(PulseListenerTiming.AFTER, buttonWidthListener);
+            }
+            if (newV) {
+                addLayoutPulseListener(PulseListenerTiming.AFTER, buttonWidthListener);
+            }
+        });
     }
 
     @Override
@@ -203,6 +219,8 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     protected DialogManager getDialogManager() {
         return dialogManager;
     }
+
+    protected abstract void makeEqualButtons();
 
     void setDialogManager(DialogManager dialogManager) {
         this.dialogManager = dialogManager;

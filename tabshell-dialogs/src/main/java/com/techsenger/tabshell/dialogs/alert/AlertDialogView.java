@@ -21,6 +21,7 @@ import com.techsenger.tabshell.dialogs.AbstractSimpleDialogView;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
 import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -81,5 +82,12 @@ public class AlertDialogView<T extends AlertDialogViewModel> extends AbstractSim
 
     protected HBox getMessageBox() {
         return messageBox;
+    }
+
+    @Override
+    protected void makeEqualButtons() {
+        if (getViewModel().isCancelVisible()) {
+            ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
+        }
     }
 }

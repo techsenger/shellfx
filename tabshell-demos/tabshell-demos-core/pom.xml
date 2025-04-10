@@ -23,6 +23,10 @@
             <artifactId>toolkit-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.toolkit</groupId>
+            <artifactId>toolkit-fx</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-material</artifactId>
         </dependency>

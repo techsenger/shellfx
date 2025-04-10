@@ -16,6 +16,7 @@
 
 module com.techsenger.tabshell.demos.core {
     requires com.techsenger.toolkit.core;
+    requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.mvvm4fx.core;
