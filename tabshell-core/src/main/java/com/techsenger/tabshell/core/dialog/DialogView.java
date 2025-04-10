@@ -27,4 +27,9 @@ public interface DialogView<T extends DialogViewModel> extends PaneView<T> {
 
     @Override
     VBox getNode();
+
+    /**
+     * Closes this dialog.
+     */
+    void close();
 }

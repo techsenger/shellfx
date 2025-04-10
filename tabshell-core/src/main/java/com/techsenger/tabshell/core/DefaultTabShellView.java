@@ -367,6 +367,11 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
                 this.tabPane.getSelectionModel().select(newV.intValue()));
         this.tabPane.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
                 viewModel.selectedTabIndexWrapper().set(newV.intValue()));
+        viewModel.closeRequestedSource().addListener(v -> {
+            if (Boolean.TRUE.equals(v)) {
+                close();
+            }
+        });
     }
 
     @Override

@@ -61,15 +61,10 @@ public interface TabShellView<T extends TabShellViewModel> extends View<T>, TabP
 
     /**
      * Returns dialog manager.
+     *
      * @return
      */
     DialogManager getDialogManager();
-
-    /**
-     * Closes tab shell.
-     *
-     */
-    void close();
 
     /**
      * Adds stylesheets to TabShell.
@@ -84,4 +79,10 @@ public interface TabShellView<T extends TabShellViewModel> extends View<T>, TabP
      * @param sheets
      */
     void removeStylesheets(List<Stylesheet> sheets);
+
+    /**
+     * Closes tab shell.
+     *
+     */
+    void close();
 }

@@ -110,6 +110,13 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
         return this.dialogBox;
     }
 
+    @Override
+    public void close() {
+        if (this.dialogManager != null) {
+            this.dialogManager.closeDialog(this);
+        }
+    }
+
     protected VBox getContentPane() {
         return contentPane;
     }
@@ -121,11 +128,9 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        viewModel.getCloseRequested().addListener((v) -> {
+        viewModel.closeRequestedSource().addListener((v) -> {
             if (Boolean.TRUE.equals(v)) {
-                if (this.dialogManager != null) {
-                    this.dialogManager.closeDialog(this);
-                }
+                close();
             }
         });
         titleLabel.getStyleClass().add("title-label");

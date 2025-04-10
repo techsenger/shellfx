@@ -29,10 +29,10 @@ public interface DialogViewModel extends PaneViewModel, TitledViewModel, IconedV
     @Override
     DialogKey getKey();
 
-    /**
-     * Closes current dialog.
-     */
-    void close();
-
     DialogScope getScope();
+
+    /**
+     * Requests the View to close itself.
+     */
+    void requestClose();
 }

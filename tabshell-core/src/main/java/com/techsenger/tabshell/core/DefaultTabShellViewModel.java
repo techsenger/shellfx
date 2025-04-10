@@ -28,6 +28,8 @@ import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.toolkit.fx.value.ObservableSource;
+import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.property.ObjectProperty;
@@ -82,6 +84,8 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
     private final Map<MenuKey, MenuHelper> menuHelpersByKey = new HashMap<>();
 
     private final Map<MenuItemKey, MenuItemHelper> menuItemHelpersByKey = new HashMap<>();
+
+    private final ObservableSource<Boolean> closeRequested = new SimpleObservableSource<>();
 
     private final Settings settings;
 
@@ -298,6 +302,11 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
         }
     }
 
+    @Override
+    public void requestClose() {
+        this.closeRequested.next(Boolean.TRUE);
+    }
+
     protected Map<MenuKey, MenuHelper> getMenuHelpersByKey() {
         return menuHelpersByKey;
     }
@@ -348,5 +357,9 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
 
     void setDefaultHeight(double defaultHeight) {
         this.defaultHeight = defaultHeight;
+    }
+
+    ObservableSource<Boolean> closeRequestedSource() {
+        return closeRequested;
     }
 }

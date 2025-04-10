@@ -52,7 +52,7 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
         viewModel.okActionProperty().set(() -> {
             var resultFile = viewModel.getResultFile();
             if (resultFile != null) {
-                viewModel.close();
+                viewModel.requestClose();
                 setFile(resultFile);
                 readFile();
             }

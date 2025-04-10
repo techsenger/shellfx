@@ -70,8 +70,7 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
      * If it is necessary to close a dialog then dialog helper should be used. Default implementation uses window
      * closer set from view.
      */
-    private final ObjectProperty<Runnable> closeAction =
-            new SimpleObjectProperty<>(() -> close());
+    private final ObjectProperty<Runnable> closeAction = new SimpleObjectProperty<>(() -> requestClose());
 
     private final ObservableSource<Boolean> closeRequested = new SimpleObservableSource<>();
 
@@ -257,8 +256,8 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
     }
 
     @Override
-    public void close() {
-        closeRequested.next(true);
+    public void requestClose() {
+        closeRequested.next(Boolean.TRUE);
     }
 
     @Override
@@ -266,7 +265,7 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
         return (DialogHelper<?>) super.getComponentHelper();
     }
 
-    ObservableSource<Boolean> getCloseRequested() {
+    ObservableSource<Boolean> closeRequestedSource() {
         return closeRequested;
     }
 

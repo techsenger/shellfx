@@ -177,4 +177,9 @@ public interface TabShellViewModel extends ViewModel, TabPaneHolderViewModel<She
      * @param itemKeys
      */
     void removeMenuItemHelpers(MenuItemKey... itemKeys);
+
+    /**
+     * Requests the View to close itself.
+     */
+    void requestClose();
 }

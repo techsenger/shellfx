@@ -44,7 +44,7 @@ public class ViewerTabHelper<T extends AbstractViewerTabView<?>>
         viewModel.okActionProperty().set(() -> {
             try {
                 viewModel.setHistoryPolicy(HistoryPolicy.DATA); //before closing
-                viewModel.close();
+                viewModel.requestClose();
                 var line = viewModel.getLine();
                 if (line > 0) {
                     line--;

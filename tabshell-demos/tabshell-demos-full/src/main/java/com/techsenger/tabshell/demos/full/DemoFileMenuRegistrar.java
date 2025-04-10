@@ -18,15 +18,15 @@ package com.techsenger.tabshell.demos.full;
 
 import com.techsenger.tabshell.core.TabShellKey;
 import com.techsenger.tabshell.core.TabShellView;
-import com.techsenger.tabshell.storage.FileStorages;
-import com.techsenger.tabshell.storage.FileType;
-import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
 import com.techsenger.tabshell.registrars.FileMenuRegistrar;
+import com.techsenger.tabshell.storage.FileStorages;
+import com.techsenger.tabshell.storage.FileType;
+import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.terminal.TerminalTabView;
 import com.techsenger.tabshell.terminal.TerminalTabViewModel;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
@@ -100,8 +100,8 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
                 var appearance = tabShell.getViewModel().getSettings().getAppearance();
                 var dialogViewModel = new ThemeDialogViewModel(appearance.getTheme());
                 dialogViewModel.okActionProperty().set(() -> {
-                    dialogViewModel.close();
                     appearance.themeProperty().set(dialogViewModel.themeProperty().get());
+                    dialogViewModel.requestClose();
                 });
                 var dialogView = new ThemeDialogView(dialogViewModel);
                 dialogView.initialize();

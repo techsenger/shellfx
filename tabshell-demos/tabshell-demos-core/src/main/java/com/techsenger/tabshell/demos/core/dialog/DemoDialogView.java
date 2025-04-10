@@ -85,8 +85,8 @@ public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel> {
     @Override
     protected void addHandlers(DemoDialogViewModel viewModel) {
         super.addHandlers(viewModel);
-        okButton.setOnAction(e -> viewModel.close());
-        cancelButton.setOnAction(e -> viewModel.close());
+        okButton.setOnAction(e -> close());
+        cancelButton.setOnAction(e -> close());
     }
 
     @Override
