@@ -18,6 +18,8 @@ package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
+import com.techsenger.toolkit.fx.value.ObservableSource;
+import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -71,7 +73,7 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
     private final ObjectProperty<Runnable> closeAction =
             new SimpleObjectProperty<>(() -> close());
 
-    private Runnable windowCloser;
+    private final ObservableSource<Boolean> closeRequested = new SimpleObservableSource<>();
 
     /**
      * If it is true user can move dialog only with minimum top constrain. If this value is false user
@@ -256,7 +258,7 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
 
     @Override
     public void close() {
-        this.windowCloser.run();
+        closeRequested.next(true);
     }
 
     @Override
@@ -264,8 +266,8 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
         return (DialogHelper<?>) super.getComponentHelper();
     }
 
-    void setWindowCloser(Runnable closer) {
-        this.windowCloser = closer;
+    ObservableSource<Boolean> getCloseRequested() {
+        return closeRequested;
     }
 
     ReadOnlyDoubleWrapper widthWrapper() {

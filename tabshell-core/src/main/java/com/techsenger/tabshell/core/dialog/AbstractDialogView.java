@@ -121,9 +121,11 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        viewModel.setWindowCloser(() -> {
-            if (this.dialogManager != null) {
-                this.dialogManager.closeDialog(this);
+        viewModel.getCloseRequested().addListener((v) -> {
+            if (Boolean.TRUE.equals(v)) {
+                if (this.dialogManager != null) {
+                    this.dialogManager.closeDialog(this);
+                }
             }
         });
         titleLabel.getStyleClass().add("title-label");
