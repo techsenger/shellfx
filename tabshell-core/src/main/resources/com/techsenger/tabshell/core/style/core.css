@@ -183,8 +183,10 @@
     -fx-padding: 0;
 }
 
-.shell-tab-pane > .tab-header-area > .headers-region > .tab {
-    -fx-pref-width: 14em;
+.shell-tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-width: -1;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0.4em 12px 0.4em 0.4em;
 }
 
 /*
