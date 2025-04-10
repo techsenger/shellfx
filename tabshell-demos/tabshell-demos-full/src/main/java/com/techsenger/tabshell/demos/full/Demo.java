@@ -20,7 +20,7 @@ import com.techsenger.tabshell.core.DefaultTabShellView;
 import com.techsenger.tabshell.core.DefaultTabShellViewModel;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
-import com.techsenger.tabshell.icons.IconsProvider;
+import com.techsenger.tabshell.icons.IconStylesheetProvider;
 import com.techsenger.tabshell.registrars.EditMenuRegistrar;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -41,7 +41,7 @@ public class Demo extends Application {
             Platform.exit();
         });
 
-        var view = new DefaultTabShellView(stage, IconsProvider.getAllIcons(), viewModel);
+        var view = new DefaultTabShellView(stage, IconStylesheetProvider.createForAll(), viewModel);
         view.initialize();
 
         //adding menu
