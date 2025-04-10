@@ -22,6 +22,7 @@ import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuKeys;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuRegistrar;
+import com.techsenger.tabshell.demos.core.settings.DemoSettings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -35,7 +36,7 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultTabShellViewModel(new DemoSettings(), new DemoHistoryManager());
+        var viewModel = new DefaultTabShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
         viewModel.setTitle("TabShell Core Demo");
         viewModel.setOnClosed(() -> {
             Platform.exit();
