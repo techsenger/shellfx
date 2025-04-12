@@ -191,7 +191,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         return selectedText;
     }
 
-    ObservableSource<Boolean> getFocusRequired() {
+    ObservableSource<Boolean> focusRequiredSource() {
         return focusRequired;
     }
 

@@ -186,7 +186,7 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     protected void addListeners(TerminalTabViewModel viewModel) {
         super.addListeners(viewModel);
         viewModel.addListeners();
-        viewModel.getFocusRequired().addListener((value) -> {
+        viewModel.focusRequiredSource().addListener((value) -> {
             if (value) {
                 requestFocusSimply();
             }

@@ -201,7 +201,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
             viewModel.caretVisibleProperty().setValue(caretVisible);
         });
 
-        viewModel.getContentSource().addListener((t) -> {
+        viewModel.contentSource().addListener((t) -> {
             textArea.clear();
             //when text area appends a text it scrolls to bottom; to disable scrolling to bottom we use this hack
             textArea.appendText("\n"); //this \n will be deleted in change

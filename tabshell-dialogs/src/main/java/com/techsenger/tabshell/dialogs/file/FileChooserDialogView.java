@@ -356,12 +356,12 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
                 viewModel.selectedFileIndexProperty().set(newV.intValue());
             }
         });
-        viewModel.getSortRequired().addListener((v) -> {
+        viewModel.sortRequiredSource().addListener((v) -> {
             if (Boolean.TRUE.equals(v)) {
                 this.fileTableView.sort();
             }
         });
-        viewModel.getListRefreshRequired().addListener((v) -> {
+        viewModel.listRefreshRequiredSource().addListener((v) -> {
             if (Boolean.TRUE.equals(v) && this.fileListView != null) {
                 this.fileListView.refresh();
             }

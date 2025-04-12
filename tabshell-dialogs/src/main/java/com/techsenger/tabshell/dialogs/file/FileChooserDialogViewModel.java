@@ -440,11 +440,11 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         }
     }
 
-    ObservableSource<Boolean> getSortRequired() {
+    ObservableSource<Boolean> sortRequiredSource() {
         return sortRequired;
     }
 
-    ObservableSource<Boolean> getListRefreshRequired() {
+    ObservableSource<Boolean> listRefreshRequiredSource() {
         return listRefreshRequired;
     }
 

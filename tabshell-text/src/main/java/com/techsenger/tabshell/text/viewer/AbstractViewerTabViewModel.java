@@ -445,7 +445,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         this.findMatchesResetPolicy = findMatchesResetPolicy;
     }
 
-    ObservableSource<String> getContentSource() {
+    ObservableSource<String> contentSource() {
         return content;
     }
 
