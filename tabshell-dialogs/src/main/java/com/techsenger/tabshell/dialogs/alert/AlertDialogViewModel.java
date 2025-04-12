@@ -74,6 +74,14 @@ public class AlertDialogViewModel extends AbstractSimpleDialogViewModel {
         return this.message;
     }
 
+    public String getMessage() {
+        return this.message.get();
+    }
+
+    public void setMessage(String message) {
+        this.message.set(message);
+    }
+
     public String getMessageIcon() {
         return messageIcon;
     }

@@ -36,6 +36,10 @@ public abstract class AbstractPaneView<T extends AbstractPaneViewModel> extends 
         return this.getNode().sceneProperty();
     }
 
+    protected Scene getScene() {
+        return sceneProperty().get();
+    }
+
     @Override
     protected void postInitialize(T viewModel) {
         super.postInitialize(viewModel);

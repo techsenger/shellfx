@@ -38,7 +38,7 @@ public class FindPaneViewModel extends AbstractFindPaneViewModel {
 
     private TerminalTextBuffer textBuffer;
 
-    private ObjectProperty<FindResult> result = new SimpleObjectProperty<>();
+    private final ObjectProperty<FindResult> result = new SimpleObjectProperty<>();
 
     public FindPaneViewModel(HistoryManager historyManager, String selectedText) {
         findTextProperty().set(selectedText);
@@ -99,6 +99,14 @@ public class FindPaneViewModel extends AbstractFindPaneViewModel {
 
     public ObjectProperty<FindResult> resultProperty() {
         return result;
+    }
+
+    public FindResult getResult() {
+        return result.get();
+    }
+
+    public void setResult(FindResult result) {
+        this.result.set(result);
     }
 
     protected void updateResultText() {

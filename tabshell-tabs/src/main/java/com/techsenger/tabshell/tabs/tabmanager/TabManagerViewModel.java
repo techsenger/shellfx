@@ -62,7 +62,7 @@ public class TabManagerViewModel extends AbstractPaneViewModel implements MenuAw
      */
     private final BooleanProperty tabHeaderAutoHide = new SimpleBooleanProperty(false);
 
-    private BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
+    private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
 
     public TabManagerViewModel(PaneKey key) {
         super();
@@ -167,6 +167,14 @@ public class TabManagerViewModel extends AbstractPaneViewModel implements MenuAw
         return tabHeaderAutoHide;
     }
 
+    public boolean isTabHeaderAutoHide() {
+        return tabHeaderAutoHide.get();
+    }
+
+    public void setTabHeaderAutoHide(boolean value) {
+        this.tabHeaderAutoHide.set(value);
+    }
+
     ReadOnlyObjectWrapper<TabViewModel> selectedTabWrapper() {
         return this.selectedTab;
     }
@@ -183,11 +191,19 @@ public class TabManagerViewModel extends AbstractPaneViewModel implements MenuAw
         return tabHeaderVisible;
     }
 
+    boolean isTabHeaderVisible() {
+        return tabHeaderVisible.get();
+    }
+
+    void setTabHeaderVisible(boolean value) {
+        this.tabHeaderVisible.set(value);
+    }
+
     private void resolveTabHeaderVisibility() {
         if (this.modifiableTabs.size() == 1) {
-            this.tabHeaderVisible.set(false);
+            setTabHeaderVisible(false);
         } else {
-            this.tabHeaderVisible.set(true);
+            setTabHeaderVisible(true);
         }
     }
 }

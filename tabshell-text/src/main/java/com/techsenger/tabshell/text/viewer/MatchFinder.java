@@ -54,8 +54,24 @@ public class MatchFinder {
         return matchRange;
     }
 
+    public MatchRange getMatchRange() {
+        return matchRange.get();
+    }
+
+    public void setMatchRange(MatchRange range) {
+        this.matchRange.set(range);
+    }
+
     public BooleanProperty matchesResetProperty() {
         return matchesReset;
+    }
+
+    public boolean areMatchesReset() {
+        return matchesReset.get();
+    }
+
+    public void setMatchesReset(boolean value) {
+        this.matchesReset.set(value);
     }
 
     public boolean hasNextMatch() {

@@ -17,10 +17,10 @@
 package com.techsenger.tabshell.text.editor;
 
 import com.techsenger.tabshell.core.TabShellViewModel;
-import com.techsenger.tabshell.storage.GenericFile;
-import com.techsenger.tabshell.storage.UriUtils;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
+import com.techsenger.tabshell.storage.GenericFile;
+import com.techsenger.tabshell.storage.UriUtils;
 import com.techsenger.tabshell.text.viewer.AbstractViewerTabViewModel;
 import java.util.regex.Pattern;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -123,12 +123,28 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
         return positionText;
     }
 
+    protected String getPositionText() {
+        return positionText.get();
+    }
+
+    protected void setPositionText(String text) {
+        this.positionText.set(text);
+    }
+
     protected ReadOnlyIntegerProperty currentParagraphProperty() {
         return currentParagraph.getReadOnlyProperty();
     }
 
+    protected int getCurrentParagraph() {
+        return currentParagraphProperty().get();
+    }
+
     protected ReadOnlyIntegerProperty currentColumnProperty() {
         return currentColumn.getReadOnlyProperty();
+    }
+
+    protected int getCurrentColumn() {
+        return currentColumnProperty().get();
     }
 
     protected Pattern getTabOrSpacePattern() {

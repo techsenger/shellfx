@@ -157,7 +157,7 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
         return cancelText.get();
     }
 
-    public void getCancelText(String text) {
+    public void setCancelText(String text) {
         this.cancelText.set(text);
     }
 

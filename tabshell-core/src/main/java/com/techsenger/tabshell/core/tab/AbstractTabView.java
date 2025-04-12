@@ -146,6 +146,10 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
         return getContentPane().sceneProperty();
     }
 
+    protected Scene getScene() {
+        return sceneProperty().get();
+    }
+
     protected StackPane getWrapperPane() {
         return wrapperPane;
     }

@@ -46,10 +46,16 @@ public class ViewerTabHelper<T extends AbstractViewerTabView<?>>
                 viewModel.setHistoryPolicy(HistoryPolicy.DATA); //before closing
                 viewModel.requestClose();
                 var line = viewModel.getLine();
+                if (line == null) {
+                    line = 0;
+                }
                 if (line > 0) {
                     line--;
                 }
                 var column = viewModel.getColumn();
+                if (column == null) {
+                    column = 0;
+                }
                 if (column > 0) {
                     column--;
                 }

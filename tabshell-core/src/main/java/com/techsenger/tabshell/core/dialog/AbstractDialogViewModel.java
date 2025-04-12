@@ -95,8 +95,16 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
         return width.getReadOnlyProperty();
     }
 
+    public double getWidth() {
+        return width.get();
+    }
+
     public ReadOnlyDoubleProperty heightProperty() {
         return height.getReadOnlyProperty();
+    }
+
+    public double getHeight() {
+        return height.get();
     }
 
     public DoubleProperty prefWidthProperty() {
@@ -217,6 +225,14 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
         return closeAction;
     }
 
+    public Runnable getCloseAction() {
+        return closeAction.get();
+    }
+
+    public void setCloseAction(Runnable value) {
+        this.closeAction.set(value);
+    }
+
     public boolean isOutOfBoundsAllowed() {
         return outOfBoundsAllowed;
     }
@@ -233,7 +249,7 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
         this.waiting.set(waiting);
     }
 
-    public boolean getWaiting() {
+    public boolean isWaiting() {
         return waiting.get();
     }
 

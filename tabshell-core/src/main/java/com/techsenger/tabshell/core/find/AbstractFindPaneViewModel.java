@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.core.find;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.history.HistoryUtils;
+import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -73,48 +73,144 @@ public abstract class AbstractFindPaneViewModel extends AbstractPaneViewModel {
         return this.text;
     }
 
+    public String getText() {
+        return this.text.get();
+    }
+
+    public void setText(String text) {
+        this.text.set(text);
+    }
+
     public StringProperty findTextProperty() {
         return this.findText;
+    }
+
+    public String getFindText() {
+        return this.findText.get();
+    }
+
+    public void setFindText(String text) {
+        this.findText.set(text);
     }
 
     public BooleanProperty notFoundProperty() {
         return this.notFound;
     }
 
+    public boolean isNotFound() {
+        return this.notFound.get();
+    }
+
+    public void setNotFound(boolean value) {
+        this.notFound.set(value);
+    }
+
     public BooleanProperty caseSelectedProperty() {
         return caseSelected;
+    }
+
+    public boolean isCaseSelected() {
+        return caseSelected.get();
+    }
+
+    public void setCaseSelected(boolean value) {
+        this.caseSelected.set(value);
     }
 
     public BooleanProperty wholeWordSelectedProperty() {
         return wholeWordSelected;
     }
 
+    public boolean isWholeWordSelected() {
+        return wholeWordSelected.get();
+    }
+
+    public void setWholeWordSelected(boolean value) {
+        this.wholeWordSelected.set(value);
+    }
+
     public BooleanProperty wholeWordDisableProperty() {
         return wholeWordDisable;
+    }
+
+    public boolean isWholeWordDisable() {
+        return wholeWordDisable.get();
+    }
+
+    public void setWholeWordDisable(boolean value) {
+        this.wholeWordDisable.set(value);
     }
 
     public BooleanProperty regExpSelectedProperty() {
         return regExpSelected;
     }
 
+    public boolean isRegExpSelected() {
+        return regExpSelected.get();
+    }
+
+    public void setRegExpSelected(boolean value) {
+        this.regExpSelected.set(value);
+    }
+
     public BooleanProperty regExpDisableProperty() {
         return regExpDisable;
+    }
+
+    public boolean isRegExpDisable() {
+        return regExpDisable.get();
+    }
+
+    public void setRegExpDisable(boolean value) {
+        this.regExpDisable.set(value);
     }
 
     public BooleanProperty highlightSelectedProperty() {
         return highlightSelected;
     }
 
+    public boolean isHighlightSelected() {
+        return highlightSelected.get();
+    }
+
+    public void setHighlightSelected(boolean value) {
+        this.highlightSelected.set(value);
+    }
+
     public StringProperty resultTextProperty() {
         return resultText;
+    }
+
+    public String getResultText() {
+        return resultText.get();
+    }
+
+    public void setResultText(String text) {
+        this.resultText.set(text);
     }
 
     public BooleanProperty resultTextVisibleProperty() {
         return resultTextVisible;
     }
 
+    public boolean isResultTextVisible() {
+        return resultTextVisible.get();
+    }
+
+    public void setResultTextVisible(boolean value) {
+        this.resultTextVisible.set(value);
+    }
+
     public ObjectProperty<Runnable> closeActionProperty() {
         return closeAction;
+    }
+
+    public Runnable getCloseAction() {
+        return closeAction.get();
+    }
+
+    public void setCloseAction(Runnable value) {
+        this.closeAction.set(value);
     }
 
     public ObservableList<String> getFindTexts() {
@@ -123,6 +219,14 @@ public abstract class AbstractFindPaneViewModel extends AbstractPaneViewModel {
 
     public BooleanProperty historyUpdatedProperty() {
         return historyUpdated;
+    }
+
+    public boolean isHistoryUpdated() {
+        return historyUpdated.get();
+    }
+
+    public void setHistoryUpdated(boolean value) {
+        this.historyUpdated.set(value);
     }
 
     protected void addFindText() {

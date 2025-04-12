@@ -194,6 +194,30 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         initialFileName.set(name);
     }
 
+    public BooleanProperty listSelectedProperty() {
+        return listSelected;
+    }
+
+    public boolean isListSelected() {
+        return listSelected.get();
+    }
+
+    public void setListSelected(boolean value) {
+        this.listSelected.set(value);
+    }
+
+    public BooleanProperty detailsSelectedProperty() {
+        return detailsSelected;
+    }
+
+    public boolean isDetailsSelected() {
+        return detailsSelected.get();
+    }
+
+    public void setDetailsSelected(boolean value) {
+        this.detailsSelected.set(value);
+    }
+
     public IntegerProperty selectedFileIndexProperty() {
         return selectedFileIndex;
     }
@@ -448,14 +472,6 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         return listRefreshRequired;
     }
 
-    BooleanProperty listSelectedProperty() {
-        return listSelected;
-    }
-
-    BooleanProperty detailsSelectedProperty() {
-        return detailsSelected;
-    }
-
     TableHistory getTableHistory() {
         return tableHistory;
     }
@@ -466,6 +482,14 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
 
     ObjectProperty<Location> locationProperty() {
         return location;
+    }
+
+    Location getLocation() {
+        return location.get();
+    }
+
+    void setLocation(Location value) {
+        this.location.set(value);
     }
 
     StringProperty fileNameWrapper() {

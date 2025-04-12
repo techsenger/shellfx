@@ -25,8 +25,8 @@ import com.techsenger.tabshell.core.TabShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
-import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.tabshell.material.icon.FontIcon;
+import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.net.URI;
@@ -61,9 +61,9 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
 
     private final ReadOnlyStringWrapper selectedText = new ReadOnlyStringWrapper();
 
-    private final BooleanProperty copyButtonDisabled = new SimpleBooleanProperty(true);
+    private final BooleanProperty copyDisable = new SimpleBooleanProperty(true);
 
-    private final BooleanProperty openUrlButtonDisabled = new SimpleBooleanProperty(true);
+    private final BooleanProperty openUrlDisable = new SimpleBooleanProperty(true);
 
     private final ObservableList<TerminalPaletteType> paletteTypes = FXCollections.observableArrayList(
             Arrays.asList(TerminalPaletteType.values()));
@@ -93,16 +93,44 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         return this.paletteType;
     }
 
+    public TerminalPaletteType getPaletteType() {
+        return this.paletteType.get();
+    }
+
+    public void setPaletteType(TerminalPaletteType type) {
+        this.paletteType.set(type);
+    }
+
     public ReadOnlyStringProperty selectedTextProperty() {
         return this.selectedText.getReadOnlyProperty();
     }
 
-    public BooleanProperty copyButtonDisabledProperty() {
-        return copyButtonDisabled;
+    public String getSelectedText() {
+        return selectedTextProperty().get();
     }
 
-    public BooleanProperty openUrlButtonDisabledProperty() {
-        return openUrlButtonDisabled;
+    public BooleanProperty copyDisableProperty() {
+        return copyDisable;
+    }
+
+    public boolean isCopyDisable() {
+        return copyDisable.get();
+    }
+
+    public void setCopyDisable(boolean value) {
+        this.copyDisable.set(value);
+    }
+
+    public BooleanProperty openUrlDisableProperty() {
+        return openUrlDisable;
+    }
+
+    public boolean isOpenUrlDisable() {
+        return openUrlDisable.get();
+    }
+
+    public void setOpenUrlDisable(boolean value) {
+        this.openUrlDisable.set(value);
     }
 
     @Override
@@ -174,8 +202,8 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
             this.focusRequired.next(true);
         });
         this.selectedText.addListener((ov, oldV, newV) -> {
-            this.copyButtonDisabled.set(newV == null);
-            this.openUrlButtonDisabled.set(!isTextUrl(newV));
+            this.copyDisable.set(newV == null);
+            this.openUrlDisable.set(!isTextUrl(newV));
         });
     }
 

@@ -177,8 +177,8 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     protected void bind(TerminalTabViewModel viewModel) {
         super.bind(viewModel);
         this.paletteTypesComboBox.valueProperty().bindBidirectional(viewModel.paletteTypeProperty());
-        this.copyButton.disableProperty().bind(viewModel.copyButtonDisabledProperty());
-        this.openUrlButton.disableProperty().bind(viewModel.openUrlButtonDisabledProperty());
+        this.copyButton.disableProperty().bind(viewModel.copyDisableProperty());
+        this.openUrlButton.disableProperty().bind(viewModel.openUrlDisableProperty());
         viewModel.selectedTextWrapper().bind(this.widget.getTerminalPanel().selectedTextProperty());
     }
 

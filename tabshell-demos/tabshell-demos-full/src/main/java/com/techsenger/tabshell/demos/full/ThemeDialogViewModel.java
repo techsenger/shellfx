@@ -61,4 +61,12 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
     public ObjectProperty<TabShellTheme> themeProperty() {
         return theme;
     }
+
+    public TabShellTheme getTheme() {
+        return theme.get();
+    }
+
+    public void setTheme(TabShellTheme theme) {
+        this.theme.set(theme);
+    }
 }

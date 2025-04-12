@@ -72,7 +72,7 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
 
     private final ObjectProperty<IndexRange> selection = new SimpleObjectProperty<>();
 
-    private final BooleanProperty highlightingActive = new SimpleBooleanProperty(false);
+    private final BooleanProperty highlightActive = new SimpleBooleanProperty(false);
 
     DefaultFindPaneViewModel(FindMatchesResetPolicy resetPolicy, HistoryManager historyManager) {
         super();
@@ -80,9 +80,9 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
         regExpSelectedProperty().addListener((ov, oldV, newV) -> wholeWordDisableProperty().set(newV));
         highlightSelectedProperty().addListener((ov, oldV, newV) -> {
             if (newV && !this.finder.getMatchRanges().isEmpty()) {
-                highlightingActive.set(true);
+                highlightActive.set(true);
             } else {
-                highlightingActive.set(false);
+                highlightActive.set(false);
             }
         });
         setHistoryPolicy(HistoryPolicy.ALL);
@@ -96,6 +96,14 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
 
     public BooleanProperty replaceModeProperty() {
         return replaceMode;
+    }
+
+    public boolean isReplaceMode() {
+        return replaceMode.get();
+    }
+
+    public void setReplaceMode(boolean value) {
+        this.replaceMode.set(value);
     }
 
     @Override
@@ -128,33 +136,81 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
     public void resetMatches() {
         if (this.finder.resetMatches()) {
             notFoundProperty().set(false);
-            highlightingActive.set(false);
+            highlightActive.set(false);
             resultTextVisibleProperty().set(false);
         }
     }
 
-    public BooleanProperty highlightingActiveProperty() {
-        return highlightingActive;
+    public BooleanProperty highlightActiveProperty() {
+        return highlightActive;
+    }
+
+    public boolean isHighlightActive() {
+        return highlightActive.get();
+    }
+
+    public void setHighlightActive(boolean value) {
+        this.highlightActive.set(value);
     }
 
     StringProperty replaceTextProperty() {
         return this.replaceText;
     }
 
+    String getReplaceText() {
+        return this.replaceText.get();
+    }
+
+    void setReplaceText(String value) {
+        this.replaceText.set(value);
+    }
+
     BooleanProperty textAreaEditableProperty() {
         return textAreaEditable;
+    }
+
+    boolean isTextAreaEditable() {
+        return textAreaEditable.get();
+    }
+
+    void setTextAreaEditable(boolean value) {
+        this.textAreaEditable.set(value);
     }
 
     ObjectProperty<Integer> caretPositionProperty() {
         return caretPosition;
     }
 
+    Integer getCaretPosition() {
+        return caretPosition.get();
+    }
+
+    void setCaretPosition(Integer value) {
+        this.caretPosition.set(value);
+    }
+
     ObjectProperty<Integer> textLengthProperty() {
         return textLength;
     }
 
+    Integer getTextLength() {
+        return textLength.get();
+    }
+
+    void setTextLength(Integer value) {
+        this.textLength.set(value);
+    }
+
     ObjectProperty<IndexRange> selectionProperty() {
         return selection;
+    }
+
+    IndexRange getSelection() {
+        return selection.get();
+    }
+
+    void setSelection(IndexRange value) {
+        this.selection.set(value);
     }
 
     /**
@@ -164,7 +220,7 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
      */
     void find() {
         if (highlightSelectedProperty().get()) {
-            highlightingActiveProperty().set(false);
+            setHighlightActive(false);
         }
         var wholeText = textProperty().get();
         var findText = findTextProperty().get();
@@ -177,8 +233,8 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
         //we find all ranges, but we start not from the beginning of the file, but from caret position
         if (!this.finder.getMatchRanges().isEmpty()) {
             notFoundProperty().set(false);
-            if (highlightSelectedProperty().get()) {
-                highlightingActiveProperty().set(true);
+            if (isHighlightSelected()) {
+                setHighlightActive(true);
             }
         } else {
             notFoundProperty().set(true);
@@ -252,6 +308,14 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
 
     BooleanProperty matchesResetProperty() {
         return finder.matchesResetProperty();
+    }
+
+    boolean isMatchesReset() {
+        return matchesResetProperty().get();
+    }
+
+    void setMatchesReset(boolean value) {
+        matchesResetProperty().set(value);
     }
 
     private void updateInfoLabel(MatchRange range) {

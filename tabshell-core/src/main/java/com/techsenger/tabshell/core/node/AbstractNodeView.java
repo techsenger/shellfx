@@ -35,4 +35,8 @@ public abstract class AbstractNodeView<T extends AbstractNodeViewModel> extends 
     protected ReadOnlyObjectProperty<Scene> sceneProperty() {
         return getNode().sceneProperty();
     }
+
+    protected Scene getScene() {
+        return sceneProperty().get();
+    }
 }

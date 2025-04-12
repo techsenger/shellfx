@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.tabs.workertab;
 
-import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.tabs.CoreComponentKeys;
 import com.techsenger.tabshell.tabs.splittab.AbstractSplitTabViewModel;
 import com.techsenger.tabshell.tabs.tabmanager.TabManagerViewModel;
@@ -102,6 +102,10 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
 
     ReadOnlyIntegerProperty workerCountProperty() {
         return this.workerCount.getReadOnlyProperty();
+    }
+
+    int getWorkerCount() {
+        return this.workerCount.get();
     }
 
     ObservableList<TabWorker<?>> getWorkers() {

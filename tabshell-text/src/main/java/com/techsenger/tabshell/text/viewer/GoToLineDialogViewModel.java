@@ -62,8 +62,24 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
         return line;
     }
 
+    public Integer getLine() {
+        return line.get();
+    }
+
+    public void setLine(Integer value) {
+        this.line.set(value);
+    }
+
     public ObjectProperty<Integer> columnProperty() {
         return column;
+    }
+
+    public Integer getColumn() {
+        return column.get();
+    }
+
+    public void setColumn(Integer value) {
+        this.column.set(value);
     }
 
     public ObservableList<Integer> getLines() {
@@ -72,22 +88,6 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
 
     public ObservableList<Integer> getColumns() {
         return columns;
-    }
-
-    public int getLine() {
-        var l = this.lineProperty().get();
-        if (l == null) {
-            l = 0;
-        }
-        return l;
-    }
-
-    public int getColumn() {
-        var c = this.column.get();
-        if (c == null) {
-            c = 0;
-        }
-        return c;
     }
 
     @Override

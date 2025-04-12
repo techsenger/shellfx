@@ -72,8 +72,24 @@ public abstract class AbstractSplitTabViewModel extends AbstractShellTabViewMode
             return this.padding;
         }
 
+        Insets getPadding() {
+            return this.padding.get();
+        }
+
+        void setPadding(Insets padding) {
+            this.padding.set(padding);
+        }
+
         DoubleProperty positionProperty() {
             return this.position;
+        }
+
+        double getPosition() {
+            return this.position.get();
+        }
+
+        void setPosition(double value) {
+            this.position.set(value);
         }
 
         void setHistoryPosition(double historyPostion) {

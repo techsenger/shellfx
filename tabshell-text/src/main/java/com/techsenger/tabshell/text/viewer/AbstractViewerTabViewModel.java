@@ -232,6 +232,10 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return (ViewerTabHelper) super.getComponentHelper();
     }
 
+    public ObjectProperty<GenericFile> fileProperty() {
+        return this.file;
+    }
+
     @Override
     public GenericFile getFile() {
         return this.file.get();
@@ -327,10 +331,6 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return new TextFileTaskProvider(getCharset());
     }
 
-    public ObjectProperty<GenericFile> fileProperty() {
-        return this.file;
-    }
-
     public Charset getCharset() {
         return charset.get();
     }
@@ -347,6 +347,10 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return this.modified.get();
     }
 
+    public ReadOnlyBooleanProperty modifiedProperty() {
+        return modified.getReadOnlyProperty();
+    }
+
     public String getContent() {
         getUndoManager().mark();
         return this.text.get();
@@ -356,16 +360,20 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         this.content.next(content);
     }
 
-    public ReadOnlyBooleanProperty modifiedProperty() {
-        return modified.getReadOnlyProperty();
-    }
-
     public ReadOnlyBooleanProperty textFocusedProperty() {
         return textFocused.getReadOnlyProperty();
     }
 
+    public boolean isTextFocused() {
+        return textFocusedProperty().get();
+    }
+
     public ReadOnlyStringProperty selectedTextProperty() {
         return selectedText.getReadOnlyProperty();
+    }
+
+    public String getSelectedText() {
+        return selectedTextProperty().get();
     }
 
     public ReadOnlyStringProperty textProperty() {
@@ -389,20 +397,52 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return wrapText;
     }
 
+    public boolean isWrapText() {
+        return wrapText.get();
+    }
+
+    public void setWrapText(boolean value) {
+        this.wrapText.set(value);
+    }
+
     public BooleanProperty editableProperty() {
         return editable;
+    }
+
+    public boolean isEditable() {
+        return editable.get();
+    }
+
+    public void setEditable(boolean value) {
+        this.editable.set(value);
     }
 
     public BooleanProperty caretVisibleProperty() {
         return caretVisible;
     }
 
+    public boolean isCaretVisible() {
+        return caretVisible.get();
+    }
+
+    public void setCaretVisible(boolean value) {
+        this.caretVisible.set(value);
+    }
+
     public ReadOnlyObjectProperty<IndexRange> selectionProperty() {
         return selection.getReadOnlyProperty();
     }
 
+    public IndexRange getSelection() {
+        return selectionProperty().get();
+    }
+
     public ReadOnlyIntegerProperty caretPositionProperty() {
         return caretPosition.getReadOnlyProperty();
+    }
+
+    public int getCaretPosition() {
+        return caretPositionProperty().get();
     }
 
     public FindPaneViewModel getFind() {
@@ -435,6 +475,10 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     protected ReadOnlyIntegerProperty textLengthProperty() {
         return textLength.getReadOnlyProperty();
+    }
+
+    protected int getTextLength() {
+        return textLengthProperty().get();
     }
 
     protected FindMatchesResetPolicy getFindMatchesResetPolicy() {

@@ -240,4 +240,12 @@ public class YesNoDialogViewModel extends AbstractDialogViewModel {
     public StringProperty messageProperty() {
         return this.message;
     }
+
+    public String getMessage() {
+        return this.message.get();
+    }
+
+    public void setMessage(String message) {
+        this.message.set(message);
+    }
 }

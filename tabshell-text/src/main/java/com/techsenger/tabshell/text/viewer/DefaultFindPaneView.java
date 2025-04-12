@@ -169,7 +169,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
                 this.textArea.deselect();
             }
         });
-        viewModel.highlightingActiveProperty().addListener((ov, oldV, newV) -> {
+        viewModel.highlightActiveProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
                 addHighlighting();
             } else {
@@ -236,7 +236,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     @Override
     protected void preDeinitialize(DefaultFindPaneViewModel viewModel) {
         super.preDeinitialize(viewModel);
-        if (this.getViewModel().highlightingActiveProperty().get()) {
+        if (viewModel.isHighlightActive()) {
             this.removeAllHighlighting();
         }
     }
@@ -359,7 +359,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     private void doOnTextChange(RichTextChange<Collection<String>, String, Collection<TextAreaStyle>> c) {
         if (!this.textArea.isStyleOnlyChange(c)) {
             var viewModel = this.getViewModel();
-            if (viewModel.highlightingActiveProperty().get()) {
+            if (viewModel.isHighlightActive()) {
                 this.removeHighlighting(c);
             }
             //model is updated only after removing highlight

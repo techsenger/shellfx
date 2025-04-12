@@ -73,12 +73,36 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
         return newValid;
     }
 
+    public boolean isNewValid() {
+        return newValid.get();
+    }
+
+    public void setNewValid(boolean value) {
+        this.newValid.set(value);
+    }
+
     public BooleanProperty exitIncludedProperty() {
         return exitIncluded;
     }
 
+    public boolean isExitIncluded() {
+        return exitIncluded.get();
+    }
+
+    public void setExitIncluded(boolean value) {
+        this.exitIncluded.set(value);
+    }
+
     public BooleanProperty exitValidProperty() {
         return exitValid;
+    }
+
+    public boolean isExitValid() {
+        return exitValid.get();
+    }
+
+    public void setExitValid(boolean value) {
+        this.exitValid.set(value);
     }
 
     void openDialog(DialogScope scope) {
