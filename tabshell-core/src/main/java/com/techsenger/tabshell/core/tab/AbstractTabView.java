@@ -17,9 +17,11 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.mvvm4fx.core.AbstractChildView;
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -41,6 +43,8 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     private final StackPane wrapperPane = new StackPane(contentPane);
 
+    private final ReadOnlyObjectWrapper<TabHostView<?>> tabHost = new ReadOnlyObjectWrapper<>();
+
     public AbstractTabView(T viewModel) {
         super(viewModel);
     }
@@ -58,6 +62,35 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
     @Override
     public ComponentTab getNode() {
         return root;
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<TabHostView<?>> tabHostProperty() {
+        return this.tabHost.getReadOnlyProperty();
+    }
+
+    @Override
+    public TabHostView<?> getTabHost() {
+        return this.tabHost.get();
+    }
+
+    public void setTabHost(TabHostView<?> value) {
+        this.tabHost.set(value);
+    }
+
+    @Override
+    public void close() {
+        ((TabHostView<AbstractTabView<T>>) getTabHost()).closeTab(this);
+    }
+
+    @Override
+    public boolean doOnCloseAttempt(CloseScope scope, Runnable retryCallback) {
+        if (getViewModel().isReadyToClose()) {
+            return true;
+        } else {
+            getViewModel().prepareForClose(scope, retryCallback);
+            return false;
+        }
     }
 
     protected VBox getContentPane() {
@@ -99,6 +132,11 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
                 bgPane.setCursor(Cursor.WAIT);
             } else {
                 wrapperPane.getChildren().remove(wrapperPane.getChildren().size() - 1);
+            }
+        });
+        viewModel.closeSource().addListener((v) -> {
+            if (Boolean.TRUE.equals(v)) {
+                close();
             }
         });
     }

@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.tabs.workertab;
 
-import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.TabKey;
+import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.tabs.CoreComponentKeys;
 import javafx.collections.ObservableList;
 

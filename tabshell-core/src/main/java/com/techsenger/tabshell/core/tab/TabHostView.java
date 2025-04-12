@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This interface contains methods that can be used in component view, that contains TabPane.
+ * This interface contains methods that can be used in the component view, that contains a TabPane.
  *
  * @author Pavel Castornii
  */
-public interface TabPaneHolderView<T extends TabView<?>> {
+public interface TabHostView<T extends TabView<?>> {
 
     /**
      * Opens tabs and makes it selected.

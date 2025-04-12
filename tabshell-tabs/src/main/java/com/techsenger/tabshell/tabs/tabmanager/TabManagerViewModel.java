@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.core.tab.TabPaneHolderViewModel;
+import com.techsenger.tabshell.core.tab.TabHostViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public class TabManagerViewModel extends AbstractPaneViewModel implements MenuAware,
-        TabPaneHolderViewModel<TabViewModel> {
+        TabHostViewModel<TabViewModel> {
 
     private static final Logger logger = LoggerFactory.getLogger(TabManagerViewModel.class);
 
@@ -71,6 +71,7 @@ public class TabManagerViewModel extends AbstractPaneViewModel implements MenuAw
             if (this.tabHeaderAutoHide.get()) {
                 resolveTabHeaderVisibility();
             }
+
         });
         this.tabHeaderAutoHide.addListener((ov, oldV, newV) -> {
             if (newV) {

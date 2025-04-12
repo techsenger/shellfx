@@ -18,22 +18,41 @@ package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.mvvm4fx.core.ChildView;
 import com.techsenger.tabshell.core.CloseScope;
+import com.techsenger.tabshell.core.CloseableView;
 import com.techsenger.tabshell.core.SelectableView;
+import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
  * A view for components that has a root with JavaFX Tab class.
  *
  * @author Pavel Castornii
  */
-public interface TabView<T extends TabViewModel> extends ChildView<T>, SelectableView {
+public interface TabView<T extends TabViewModel> extends ChildView<T>, SelectableView, CloseableView {
 
     /**
-     * Called when tab is closed.
+     * The property for the component that contains the TabPane with this tab.
+     *
+     * @return
+     */
+    ReadOnlyObjectProperty<TabHostView<?>> tabHostProperty();
+
+    /**
+     * Return the component that contains the TabPane with this tab.
+     *
+     * @return
+     */
+    TabHostView<?> getTabHost();
+
+    /**
+     * Is called when there is a new attempt to close the tab or the shell.
      *
      * @return true if it can be closed. Otherwise returns false.
      */
-    boolean doOnCloseRequest(CloseScope scope);
+    boolean doOnCloseAttempt(CloseScope scope, Runnable repeatCallback);
 
     @Override
     ComponentTab getNode();
+
+    @Override
+    void close();
 }

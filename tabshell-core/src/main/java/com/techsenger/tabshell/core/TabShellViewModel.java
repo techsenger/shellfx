@@ -23,7 +23,7 @@ import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
-import com.techsenger.tabshell.core.tab.TabPaneHolderViewModel;
+import com.techsenger.tabshell.core.tab.TabHostViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -35,18 +35,18 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public interface TabShellViewModel extends ViewModel, TabPaneHolderViewModel<ShellTabViewModel>, MenuAware,
-        IconedViewModel {
+public interface TabShellViewModel extends ViewModel, TabHostViewModel<ShellTabViewModel>, MenuAware,
+        IconedViewModel, CloseableViewModel {
 
     /**
-     * Defines a function to be called after closing stage. It is not property.
+     * Defines a function to be called after closing stage.
      *
      * @param onClose
      */
     void setOnClosed(TabShellClosedCallback onClose);
 
     /**
-     * Returns a function to be called after closing stage. It is not property.
+     * Returns a function to be called after closing stage.
      *
      * @return
      */
@@ -178,8 +178,6 @@ public interface TabShellViewModel extends ViewModel, TabPaneHolderViewModel<She
      */
     void removeMenuItemHelpers(MenuItemKey... itemKeys);
 
-    /**
-     * Requests the View to close itself.
-     */
+    @Override
     void requestClose();
 }

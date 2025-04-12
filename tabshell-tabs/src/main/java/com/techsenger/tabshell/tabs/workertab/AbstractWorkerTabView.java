@@ -16,12 +16,11 @@
 
 package com.techsenger.tabshell.tabs.workertab;
 
-import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.TabShellView;
-import com.techsenger.tabshell.tabs.splittab.AbstractSplitTabView;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.tabs.tabmanager.TabManagerView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.tabs.splittab.AbstractSplitTabView;
+import com.techsenger.tabshell.tabs.tabmanager.TabManagerView;
 import javafx.geometry.Pos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
@@ -42,12 +41,6 @@ public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel
     public AbstractWorkerTabView(TabShellView<?> tabShell, T viewModel) {
         super(tabShell, viewModel);
         this.bottomTabManager = new TabManagerView(viewModel.getBottomTabManager());
-    }
-
-    @Override
-    public boolean doOnCloseRequest(CloseScope scope) {
-        getViewModel().cancelAllWorkers();
-        return true;
     }
 
     @Override
@@ -76,6 +69,12 @@ public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel
         super.addListeners(viewModel);
         viewModel.workerCountProperty().addListener((ov, oldV, newV) ->
                 this.workerCountLink.setText(Integer.toString(newV.intValue())));
+    }
+
+    @Override
+    protected void preDeinitialize(T viewModel) {
+        super.preDeinitialize(viewModel);
+        getViewModel().cancelAllWorkers();
     }
 
     @Override

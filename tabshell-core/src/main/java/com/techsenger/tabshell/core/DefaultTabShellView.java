@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.AbstractParentView;
 import com.techsenger.stagepro.core.StageResizeEvent;
 import com.techsenger.stagepro.core.StandardStageController;
+import static com.techsenger.tabshell.core.CloseScope.SHELL;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogScope;
@@ -29,9 +30,11 @@ import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.Stylesheet;
+import com.techsenger.tabshell.core.tab.AbstractShellTabView;
+import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabView;
-import com.techsenger.tabshell.core.tab.TabPaneHolderViewUtils;
+import com.techsenger.tabshell.core.tab.TabHostViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.material.icon.IconViewBox;
@@ -171,7 +174,8 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
             var allCanBeClosed = true;
             for (var tab: tabPane.getTabs()) {
                 var view = ((ComponentTab) tab).getView();
-                if (!view.doOnCloseRequest(CloseScope.SHELL)) {
+                var callback = createCloseCallback(SHELL, null);
+                if (!view.doOnCloseAttempt(CloseScope.SHELL, callback)) {
                     allCanBeClosed = false;
                     break;
                 }
@@ -249,7 +253,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
 
     @Override
     public void closeTab(ShellTabView<?> tabView) {
-        if (tabView.doOnCloseRequest(CloseScope.TAB)) {
+        if (tabView.doOnCloseAttempt(CloseScope.TAB, createCloseCallback(CloseScope.TAB, tabView))) {
             this.doCloseTab(tabView);
         }
     }
@@ -313,7 +317,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
         tabPane.getStyleClass().addAll("shell-tab-pane", Styles.TABS_FLOATING, Styles.DENSE);
         VBox.setVgrow(tabPane, Priority.ALWAYS);
         this.contentPane.getChildren().add(tabPane);
-        TabPaneHolderViewUtils.initTabPane(tabPane, this);
+        TabHostViewUtils.initTabPane(tabPane, this);
         stageController.contentProperty().set(this.contentPane);
         //we add stackpane behind stage root
         stackPane.getChildren().add(stage.getScene().getRoot());
@@ -352,13 +356,19 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
                 if (change.wasAdded()) {
                     for (Tab tab : change.getAddedSubList()) {
                         ShellTabView<?> tabView = (ShellTabView<?>) ((ComponentTab) tab).getView();
-                        viewModel.getModifiableTabs().add(tabView.getViewModel());
+                        ((AbstractShellTabView<?>) tabView).setTabHost(this);
+                        var tabViewModel = tabView.getViewModel();
+                        viewModel.getModifiableTabs().add(tabViewModel);
+                        ((AbstractShellTabViewModel) tabViewModel).setTabHost(viewModel);
                     }
                 }
                 if (change.wasRemoved()) {
                     for (Tab tab : change.getRemoved()) {
                         ShellTabView<?> tabView = (ShellTabView<?>) ((ComponentTab) tab).getView();
-                        viewModel.getModifiableTabs().remove(tabView.getViewModel());
+                        ((AbstractShellTabView<?>) tabView).setTabHost(null);
+                        var tabViewModel = tabView.getViewModel();
+                        viewModel.getModifiableTabs().remove(tabViewModel);
+                        ((AbstractShellTabViewModel) tabViewModel).setTabHost(null);
                     }
                 }
             }
@@ -457,5 +467,16 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
                 new Stylesheet(TabShellTheme.PRIMER_DARK, Stylesheet.class.getResource("core-primer-dark.css")),
                 new Stylesheet(TabShellTheme.PRIMER_LIGHT, Stylesheet.class.getResource("core-primer-light.css"))
         );
+    }
+
+    private Runnable createCloseCallback(CloseScope scope, ShellTabView<?> tab) {
+        switch (scope) {
+            case SHELL:
+                return () -> close();
+            case TAB:
+                return () -> closeTab(tab);
+            default:
+                throw new AssertionError();
+        }
     }
 }

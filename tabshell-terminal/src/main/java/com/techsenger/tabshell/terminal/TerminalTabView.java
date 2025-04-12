@@ -20,7 +20,6 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
 import com.techsenger.mvvm4fx.core.ComponentHelper;
-import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -95,13 +94,6 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
         });
         widget.setTtyConnector(viewModel.getTtyConnector());
         widget.addHyperlinkFilter(new DefaultHyperlinkFilter());
-    }
-
-    @Override
-    public boolean doOnCloseRequest(CloseScope scope) {
-        widget.close();
-        widget.getTtyConnector().close();
-        return true;
     }
 
     @Override
@@ -259,8 +251,8 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     }
 
     @Override
-    protected void postDeinitialize(TerminalTabViewModel viewModel) {
-        super.postDeinitialize(viewModel);
+    protected void preDeinitialize(TerminalTabViewModel viewModel) {
+        super.preDeinitialize(viewModel);
         widget.close();
         widget.getTtyConnector().close();
     }

@@ -34,6 +34,18 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
      * @param storages the storages or null.
      */
     default void openFile(DialogScope scope, List<FileStorage> storages) {
+
+    }
+
+    /**
+     * Opens a file by displaying a file chooser dialog and reading the selected file.
+     *
+     * @param scope the scope of the dialog.
+     * @param storages the storages or null.
+     * @param okCallback the callback that will be called if the user clicks the OK button.
+     * @param cancelCallback the callback that will be called if the user clicks the cancel or close button.
+     */
+    default void openFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
         var viewModel = new FileChooserDialogViewModel(scope, FileChooserType.OPEN,
                 getTabShell().getSettings().getAppearance(), storages,
@@ -55,8 +67,19 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
                 viewModel.requestClose();
                 setFile(resultFile);
                 readFile();
+                if (okCallback != null) {
+                    okCallback.run();
+                }
             }
         });
+        Runnable cancelAndCloseAction = () -> {
+            viewModel.requestClose();
+            if (cancelCallback != null) {
+                cancelCallback.run();
+            }
+        };
+        viewModel.cancelActionProperty().set(cancelAndCloseAction);
+        viewModel.closeActionProperty().set(cancelAndCloseAction);
         getComponentHelper().openFileChooserDialog(viewModel);
     }
 

@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.TabShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
@@ -25,6 +26,7 @@ import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.settings.ViewerSettings;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.confirmation.ConfirmationDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.storage.FileStorages;
@@ -98,11 +100,15 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     private final ReadOnlyBooleanWrapper persisted = new ReadOnlyBooleanWrapper();
 
+    private final ReadOnlyObjectWrapper<UndoManager<?>> undoManager = new ReadOnlyObjectWrapper<>();
+
     private FindMatchesResetPolicy findMatchesResetPolicy = FindMatchesResetPolicy.AUTOMATIC;
 
     private DefaultFindPaneViewModel find;
 
-    private UndoManager undoManager;
+    private long textStateId = 0;
+
+    private long closeTextSateId = -1;
 
     /**
      * Constructor.
@@ -111,6 +117,15 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     public AbstractViewerTabViewModel(TabShellViewModel tabShell, GenericFile file) {
         super(tabShell);
         this.file.set(file);
+        this.undoManager.addListener((ov, oldV, newV) -> {
+            if (newV != null) {
+                //we check if position is equal to the position we marked
+                newV.atMarkedPositionProperty().addListener((o, t, t1) -> {
+                    modified.set(!t1);
+                });
+            }
+        });
+        this.text.addListener((ov, oldV, newV) -> textStateId++);
         addMenuHelpers(new SimpleMenuHelper(EditMenuKeys.EDIT, Boolean.TRUE));
         addMenuItemHelpers(
             //file
@@ -249,6 +264,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         this.submitWorker(task);
     }
 
+    @Override
     public void writeFile() {
         var file = getFile();
         if (file == null || file.getUri() == null) {
@@ -268,6 +284,42 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             }
         });
         this.submitWorker(task);
+    }
+
+    @Override
+    public boolean isReadyToClose() {
+        if (!isModified()) {
+            return true;
+        }
+        return this.textStateId == this.closeTextSateId;
+    }
+
+    @Override
+    public void prepareForClose(CloseScope scope, Runnable retryCallback) {
+        var message = "Save changes to file '" + getFile().getName() + "' before closing?";
+        var confirm = new ConfirmationDialogViewModel(DialogScope.TAB, message);
+        confirm.setConfirmText("Save");
+        confirm.setDenyText("Discard");
+        confirm.setCancelVisible(true);
+        confirm.setButtonWidthEqual(true);
+        Runnable readyToClose = () -> {
+            this.closeTextSateId = this.textStateId;
+            retryCallback.run();
+        };
+        confirm.setConfirmAction(() -> {
+            confirm.requestClose();
+            if (isPersisted()) {
+                writeFile();
+                readyToClose.run();
+            } else {
+                saveFile(DialogScope.TAB, FileStorages.getAll(true), readyToClose, null);
+            }
+        });
+        confirm.setDenyAction(() -> {
+            confirm.requestClose();
+            readyToClose.run();
+        });
+        getComponentHelper().openConfirmationDialog(confirm);
     }
 
     public FileTaskProvider<String> createFileTaskProvider() {
@@ -295,7 +347,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     }
 
     public String getContent() {
-        this.undoManager.mark();
+        getUndoManager().mark();
         return this.text.get();
     }
 
@@ -317,6 +369,19 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     public ReadOnlyStringProperty textProperty() {
         return text.getReadOnlyProperty();
+    }
+
+    public String getText() {
+        return this.text.get();
+    }
+
+    /**
+     * Returns the text state id. Every time the text changes, the stateId is incremented by one.
+     *
+     * @return
+     */
+    public long getTextStateId() {
+        return this.textStateId;
     }
 
     public BooleanProperty wrapTextProperty() {
@@ -343,8 +408,8 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return find;
     }
 
-    public UndoManager getUndoManager() {
-        return undoManager;
+    public UndoManager<?> getUndoManager() {
+        return undoManager.get();
     }
 
     public ViewerSettings getSettings() {
@@ -395,10 +460,6 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return text;
     }
 
-    ReadOnlyBooleanWrapper modifiedWrapper() {
-        return modified;
-    }
-
     ReadOnlyIntegerWrapper textLengthWrapper() {
         return textLength;
     }
@@ -411,7 +472,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         return caretPosition;
     }
 
-    void setUndoManager(UndoManager undoManager) {
-        this.undoManager = undoManager;
+    ReadOnlyObjectWrapper<UndoManager<?>> undoManagerWrapper() {
+        return this.undoManager;
     }
 }

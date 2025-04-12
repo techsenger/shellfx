@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ShellTabView;
-import com.techsenger.tabshell.core.tab.TabPaneHolderView;
+import com.techsenger.tabshell.core.tab.TabHostView;
 import java.util.List;
 
 /**
@@ -29,7 +29,8 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface TabShellView<T extends TabShellViewModel> extends View<T>, TabPaneHolderView<ShellTabView<?>> {
+public interface TabShellView<T extends TabShellViewModel> extends View<T>, TabHostView<ShellTabView<?>>,
+        CloseableView {
 
     @Override
     void openTab(ShellTabView<?> tabView);
@@ -80,9 +81,6 @@ public interface TabShellView<T extends TabShellViewModel> extends View<T>, TabP
      */
     void removeStylesheets(List<Stylesheet> sheets);
 
-    /**
-     * Closes tab shell.
-     *
-     */
+    @Override
     void close();
 }

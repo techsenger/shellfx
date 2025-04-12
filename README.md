@@ -107,6 +107,16 @@ types of components:
 * Pane component, which represents a rectangular area.
 * Node component, which is used for the simplest and smallest elements.
 
+When working with components, there are a few key points to remember:
+
+1. A component is initialized manually (by calling the `initialize()` method) and deinitialized automatically (by
+calling the `deinitialize()` method). This is because the developer may need to perform certain actions with the
+component after initialization but before passing it to the parent component.
+
+2. The following components can be closed: `TabShell`, `ShellTab`, `Tab`, `Dialog`. Each of these components has
+a `requestClose()` method in its `ViewModel` and a `close()` method in its `View`. In all components, when the
+`ViewModel#requestClose()` method is called, it triggers the `View#close()` method via a listener.
+
 ### TabShell <a name="usage-tabshell"></a>
 
 `TabShell` is the main component and it is responsible for the following tasks:
@@ -145,6 +155,10 @@ It is also important to remember that the `MenuManager` also interacts with Menu
 To gain a complete understanding of working with the menu, it is recommended to familiarize yourself with the
 `MenuAware` interface, experiment with the menu in the demo, and pay attention to log messages at the debug level.
 
+Regarding `TabShell` closure, it should be noted that as the top-level component (i.e., having no parent component),
+`TabShell` is unique in self-managing its own closure process (whereas all other components are closed by their
+parent components).
+
 ### Tab <a name="usage-tab"></a>
 
 There are two types of tabs: `ShellTab` and `Tab`. A `ShellTab` component can be opened through the `TabShell`, so
@@ -152,13 +166,60 @@ There are two types of tabs: `ShellTab` and `Tab`. A `ShellTab` component can be
 
 A `Tab` component cannot be opened directly through the `TabShell`, so it always resides inside a `ShellTab`.
 
+The `ShellTab` a `Tab` components are closed in the following way. When the `View#close()` method is called, control is
+transferred to their parent component (e.g., `TabShell`, `TabManager`), which is responsible for their actual closure.
+Thus, these tabs can also be closed directly through their parent if a reference to the tab is available.
+
+The tab closing procedure is largely determined by the asynchronous nature of dialogs in the TabShell project and
+consists of the following steps:
+
+1. The parent component calls the tab's `boolean View#doOnCloseAttempt(CloseScope, Runnable)` method.
+2. By default, this method calls two ViewModel methods: `ViewModel#isReadyToClose()` and
+`ViewModel#prepareForClose(CloseScope, Runnable)`:
+
+```
+boolean onCloseAttempt(CloseScope scope, Runnable retryCallback) {
+    if (getViewModel().isReadyToClose()) {
+        return true;
+    } else {
+        getViewModel().prepareForClose(scope, retryCallback);
+        return false;
+    }
+}
+```
+3. If `ViewModel#prepareForClose(CloseScope, Runnable)` successfully prepares the component for closure, it invokes
+the provided callback to restart the closing process. If preparation fails, the closing process is silently aborted.
+
 ### Dialog <a name="usage-dialog"></a>
-All dialogs in `TabShell` have a scope that affects what will be blocked when the dialog is open. There are two types of
-scope: `Shell` and `Tab`. If a dialog has a `Shell` scope, the user will not be able to do anything in `TabShell`
-while this dialog is displayed until it is closed. If a dialog has a `Tab` scope, only the tab that triggered the
-dialog will be blocked when it is displayed. All other tabs, the main menu, etc., will be available to the user.
+
+All dialogs in `TabShell` are `inline`, `asynchronous` and have a `scope` that affects what will be blocked when the
+dialog is open.
+
+Inline dialogs are UI elements that appear embedded within the current application window, typically overlaid on top
+of the existing content with a semi-transparent backdrop to focus attention. They are contextually tied to a specific
+section (e.g., a tab or component) and do not create a separate OS-level window. In contrast, [modal] window dialogs
+(or native dialogs) open as standalone OS-managed windows with their own frames and system controls, completely
+independent of the parent UI.
+
+Asynchronous dialogs allow the program to continue running while the dialog is open, relying on callbacks, promises,
+or event listeners. These avoid UI freezes and enable background tasks but require handling user responses indirectly,
+often via lambda functions or observable states. Synchronous dialogs, conversely, block the application's execution
+flow until the user responds, pausing all other interactions (e.g., showAndWait() in JavaFX). They simplify code logic
+by enforcing a linear sequence but risk freezing the UI during operation. The key distinction lies in control flow:
+asynchronous dialogs prioritize responsiveness, deferring action until the user completes the interaction, while
+synchronous ones enforce immediate resolution. Modern UI design increasingly favors async approaches for scalability
+and user experience.
+
+There are two types of scope: `Shell` and `Tab`. If a dialog has a `Shell` scope, the user will not be able to do
+anything in `TabShell` while this dialog is displayed until it is closed. If a dialog has a `Tab` scope, only the
+tab that triggered the dialog will be blocked when it is displayed. All other tabs, the main menu, etc., will be
+available to the user.
 
 Dialogs are invoked from the `ViewModel` using `ComponentHelper`.
+
+The `Dialog` component is closed in the following way. When the `View#close()` method is called on a `Dialog`, control
+is delegated to the `DialogManager`, which handles its actual closure. Therefore, a `Dialog` can also be closed
+directly through the `DialogManager` when holding a reference to the dialog instance.
 
 ## Code Building <a name="code-building"></a>
 

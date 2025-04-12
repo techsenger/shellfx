@@ -19,9 +19,11 @@ package com.techsenger.tabshell.tabs.tabmanager;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.core.tab.AbstractTabView;
+import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.ComponentTab;
-import com.techsenger.tabshell.core.tab.TabPaneHolderView;
-import com.techsenger.tabshell.core.tab.TabPaneHolderViewUtils;
+import com.techsenger.tabshell.core.tab.TabHostView;
+import com.techsenger.tabshell.core.tab.TabHostViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +40,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implements TabPaneHolderView<TabView<?>> {
+public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implements TabHostView<TabView<?>> {
 
     private final TabPane root = new TabPane();
 
@@ -60,7 +62,7 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
 
     @Override
     public void closeTab(TabView<?> tabView) {
-        if (tabView.doOnCloseRequest(CloseScope.TAB)) {
+        if (tabView.doOnCloseAttempt(CloseScope.TAB, () -> closeTab(tabView))) {
             root.getTabs().remove(tabView.getNode());
             tabView.deinitialize();
             var closedCallback = tabView.getViewModel().getOnClosed();
@@ -100,7 +102,7 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
     @Override
     protected void build(TabManagerViewModel viewModel) {
         super.build(viewModel);
-        TabPaneHolderViewUtils.initTabPane(root, this);
+        TabHostViewUtils.initTabPane(root, this);
         VBox.setVgrow(this.root, Priority.ALWAYS);
     }
 
@@ -132,13 +134,19 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
             while (change.next()) {
                 if (change.wasAdded()) {
                     for (Tab tab : change.getAddedSubList()) {
-                        var tabViewModel = ((ComponentTab) tab).getView().getViewModel();
+                        var tabView = ((ComponentTab) tab).getView();
+                        ((AbstractTabView<?>) tabView).setTabHost(this);
+                        var tabViewModel = tabView.getViewModel();
+                        ((AbstractTabViewModel) tabViewModel).setTabHost(viewModel);
                         viewModel.getModifiableTabs().add(tabViewModel);
                     }
                 }
                 if (change.wasRemoved()) {
                     for (Tab tab : change.getRemoved()) {
-                        var tabViewModel = ((ComponentTab) tab).getView().getViewModel();
+                        var tabView = ((ComponentTab) tab).getView();
+                        ((AbstractTabView<?>) tabView).setTabHost(null);
+                        var tabViewModel = tabView.getViewModel();
+                        ((AbstractTabViewModel) tabViewModel).setTabHost(null);
                         viewModel.getModifiableTabs().remove(tabViewModel);
                     }
                 }

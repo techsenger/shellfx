@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
-
-import com.techsenger.tabshell.core.CloseableView;
-import com.techsenger.tabshell.core.pane.PaneView;
-import javafx.scene.layout.VBox;
+package com.techsenger.tabshell.core;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogView<T extends DialogViewModel> extends PaneView<T>, CloseableView {
+public interface CloseableViewModel {
 
-    @Override
-    VBox getNode();
-
-    @Override
-    void close();
+    /**
+     * Initiates the component's closure process.
+     *
+     * <p>When called, this method will trigger the {@link CloseableView#close()} method
+     * on the corresponding View through a registered listener. The actual closure
+     * is delegated to the parent component (like {@code TabShell} or {@code DialogManager})
+     * if the View is not a top-level component.
+     */
+    void requestClose();
 }

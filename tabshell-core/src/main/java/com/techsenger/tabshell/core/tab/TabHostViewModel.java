@@ -24,7 +24,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public interface TabPaneHolderViewModel<T extends TabViewModel> {
+public interface TabHostViewModel<T extends TabViewModel> {
 
     /**
      * Selected tab property.

@@ -34,6 +34,19 @@ public interface FileSaverViewModel extends DialogClientViewModel {
      * @param storages the storages or null.
      */
     default void saveFile(DialogScope scope, List<FileStorage> storages) {
+        saveFile(scope, storages, null, null);
+    }
+
+
+    /**
+     * Saves a file by displaying a file chooser dialog and writing the selected file.
+     *
+     * @param scope the scope of dialog
+     * @param storages the storages or null.
+     * @param okCallback the callback that will be called if the user clicks the OK button.
+     * @param cancelCallback the callback that will be called if the user clicks the cancel or close button.
+     */
+    default void saveFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
         var viewModel = new FileChooserDialogViewModel(scope, FileChooserType.SAVE_AS,
                 getTabShell().getSettings().getAppearance(), storages,
@@ -55,8 +68,19 @@ public interface FileSaverViewModel extends DialogClientViewModel {
                 viewModel.requestClose();
                 setFile(resultFile);
                 writeFile();
+                if (okCallback != null) {
+                    okCallback.run();
+                }
             }
         });
+        Runnable cancelAndCloseAction = () -> {
+            viewModel.requestClose();
+            if (cancelCallback != null) {
+                cancelCallback.run();
+            }
+        };
+        viewModel.cancelActionProperty().set(cancelAndCloseAction);
+        viewModel.closeActionProperty().set(cancelAndCloseAction);
         getComponentHelper().openFileChooserDialog(viewModel);
     }
 

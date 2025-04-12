@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demos.core.tab;
 
 import com.techsenger.mvvm4fx.core.ComponentHelper;
-import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -56,11 +55,6 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
     @Override
     public void requestFocus() {
 
-    }
-
-    @Override
-    public boolean doOnCloseRequest(CloseScope scope) {
-        return true;
     }
 
     @Override

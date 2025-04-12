@@ -29,12 +29,12 @@ import javafx.scene.control.TabPane;
  *
  * @author Pavel Castornii
  */
-public final class TabPaneHolderViewUtils {
+public final class TabHostViewUtils {
 
     /**
      * Tab can be closed via close button and via model. In both cases doOnCloseRequest is called.
      */
-    public static void initTabPane(TabPane tabPane, TabPaneHolderView view) {
+    public static void initTabPane(TabPane tabPane, TabHostView view) {
         tabPane.getTabs().addListener((ListChangeListener<? super Tab>) (change)  -> {
             while (change.next()) {
                 if (change.wasAdded()) {
@@ -60,7 +60,7 @@ public final class TabPaneHolderViewUtils {
     }
 
     private static ContextMenu createTabContextMenu(ObservableList<ComponentTab> tabs, ComponentTab tab,
-            TabPaneHolderView view) {
+            TabHostView view) {
         MenuItem close = new MenuItem("Close", new Label(" "));
         close.setOnAction((e) -> view.closeTab(tab));
         MenuItem closeAll = new MenuItem("Close All");
@@ -107,7 +107,7 @@ public final class TabPaneHolderViewUtils {
         return contextMenu;
     }
 
-    private TabPaneHolderViewUtils() {
+    private TabHostViewUtils() {
         //empty
     }
 }

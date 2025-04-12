@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.tabshell.core.CloseableViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.TitledViewModel;
 import com.techsenger.tabshell.core.pane.PaneViewModel;
@@ -24,15 +25,13 @@ import com.techsenger.tabshell.core.pane.PaneViewModel;
  *
  * @author Pavel Castornii
  */
-public interface DialogViewModel extends PaneViewModel, TitledViewModel, IconedViewModel {
+public interface DialogViewModel extends PaneViewModel, TitledViewModel, IconedViewModel, CloseableViewModel {
 
     @Override
     DialogKey getKey();
 
     DialogScope getScope();
 
-    /**
-     * Requests the View to close itself.
-     */
+    @Override
     void requestClose();
 }

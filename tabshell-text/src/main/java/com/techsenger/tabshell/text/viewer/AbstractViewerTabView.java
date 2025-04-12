@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.ComponentHelper;
-import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.TabShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -136,13 +135,6 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
-    public boolean doOnCloseRequest(CloseScope scope) {
-        super.doOnCloseRequest(scope);
-        //TODO
-        return true;
-    }
-
-    @Override
     protected ComponentHelper<?> createComponentHelper() {
         return new ViewerTabHelper(this);
     }
@@ -150,7 +142,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     @Override
     protected void preInitialize(T viewModel) {
         super.preInitialize(viewModel);
-        viewModel.setUndoManager(this.textArea.getUndoManager());
+        viewModel.undoManagerWrapper().set(this.textArea.getUndoManager());
     }
 
     @Override
@@ -207,10 +199,6 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         textArea.showCaretProperty().addListener((ov, t, t1) -> {
             var caretVisible = (t1 != Caret.CaretVisibility.OFF && textArea.isEditable() && textArea.isFocused());
             viewModel.caretVisibleProperty().setValue(caretVisible);
-        });
-        //we check if position is equal to the position we marked
-        textArea.getUndoManager().atMarkedPositionProperty().addListener((ov, t, t1) -> {
-            viewModel.modifiedWrapper().set(!t1);
         });
 
         viewModel.getContentSource().addListener((t) -> {

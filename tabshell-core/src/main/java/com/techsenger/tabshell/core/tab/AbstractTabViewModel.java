@@ -17,17 +17,22 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.mvvm4fx.core.AbstractChildViewModel;
+import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.toolkit.fx.value.ObservableSource;
+import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -52,6 +57,10 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     private final BooleanProperty waiting = new SimpleBooleanProperty(false);
 
     private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper();
+
+    private final ReadOnlyObjectWrapper<TabHostViewModel<?>> tabHost = new ReadOnlyObjectWrapper<>();
+
+    private final ObservableSource<Boolean> close = new SimpleObservableSource<>();
 
     private TabClosedCallback onClosed;
 
@@ -144,6 +153,36 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
         return this.onClosed;
     }
 
+    @Override
+    public boolean isReadyToClose() {
+        return true;
+    }
+
+    /**
+     * Default implementation throws UnsupportedOperationException.
+     *
+     * @param scope
+     * @param retryCallback
+     */
+    @Override
+    public void prepareForClose(CloseScope scope, Runnable retryCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<TabHostViewModel<?>> tabHostProperty() {
+        return this.tabHost.getReadOnlyProperty();
+    }
+
+    @Override
+    public TabHostViewModel<?> getTabHost() {
+        return this.tabHost.get();
+    }
+
+    public void setTabHost(TabHostViewModel<?> value) {
+        this.tabHost.set(value);
+    }
+
     public BooleanProperty waitingProperty() {
         return waiting;
     }
@@ -154,6 +193,11 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
 
     public boolean getWaiting() {
         return waiting.get();
+    }
+
+    @Override
+    public void requestClose() {
+        this.close.next(Boolean.TRUE);
     }
 
     protected Map<MenuKey, MenuHelper> getMenuHelpersByKey() {
@@ -190,5 +234,9 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
 
     ReadOnlyBooleanWrapper selectedWrapper() {
         return selected;
+    }
+
+    ObservableSource<Boolean> closeSource() {
+        return close;
     }
 }

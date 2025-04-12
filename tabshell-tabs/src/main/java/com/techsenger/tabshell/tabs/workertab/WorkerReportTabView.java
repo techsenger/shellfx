@@ -16,10 +16,9 @@
 
 package com.techsenger.tabshell.tabs.workertab;
 
-import com.techsenger.tabshell.core.tab.TabWorker;
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
+import com.techsenger.tabshell.core.tab.TabWorker;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -43,11 +42,6 @@ public class WorkerReportTabView extends AbstractTabView<WorkerReportTabViewMode
     @Override
     public void requestFocus() {
         table.requestFocus();
-    }
-
-    @Override
-    public boolean doOnCloseRequest(CloseScope scope) {
-        return true;
     }
 
     @Override
