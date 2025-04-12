@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.confirmation;
+package com.techsenger.tabshell.dialogs.yesno;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
 import com.techsenger.tabshell.core.dialog.DialogKey;
@@ -31,25 +31,25 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public class ConfirmationDialogViewModel extends AbstractDialogViewModel {
+public class YesNoDialogViewModel extends AbstractDialogViewModel {
 
     private StringProperty message = new SimpleStringProperty();
 
-    private final ObjectProperty<Runnable> confirmAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
+    private final ObjectProperty<Runnable> yesAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
 
-    private final BooleanProperty confirmDisable = new SimpleBooleanProperty();
+    private final BooleanProperty yesDisable = new SimpleBooleanProperty();
 
-    private final BooleanProperty confirmDefault = new SimpleBooleanProperty(true);
+    private final BooleanProperty yesDefault = new SimpleBooleanProperty(true);
 
-    private final StringProperty confirmText = new SimpleStringProperty("Confirm");
+    private final StringProperty yesText = new SimpleStringProperty("Yes");
 
-    private final ObjectProperty<Runnable> denyAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
+    private final ObjectProperty<Runnable> noAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
 
-    private final BooleanProperty denyDisable = new SimpleBooleanProperty();
+    private final BooleanProperty noDisable = new SimpleBooleanProperty();
 
-    private final BooleanProperty denyDefault = new SimpleBooleanProperty();
+    private final BooleanProperty noDefault = new SimpleBooleanProperty();
 
-    private final StringProperty denyText = new SimpleStringProperty("Deny");
+    private final StringProperty noText = new SimpleStringProperty("No");
 
     private final ObjectProperty<Runnable> cancelAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
 
@@ -61,117 +61,116 @@ public class ConfirmationDialogViewModel extends AbstractDialogViewModel {
 
     private final BooleanProperty cancelVisible = new SimpleBooleanProperty(false);
 
-    public ConfirmationDialogViewModel(DialogScope scope, String message) {
+    public YesNoDialogViewModel(DialogScope scope, String message) {
         super(scope, false);
         this.message.set(message);
         prefWidthProperty().set(600);
-        this.titleProperty().set("Confirmation");
         setButtonWidthEqual(true);
     }
 
     @Override
     public DialogKey getKey() {
-        return DialogComponentKeys.CONFIRMATION_DIALOG;
+        return DialogComponentKeys.YES_NO_DIALOG;
     }
 
-    /* *********************************************** confirm button *********************************************** */
+    /* ************************************************* yes button ************************************************* */
 
-    public ObjectProperty<Runnable> confirmActionProperty() {
-        return confirmAction;
+    public ObjectProperty<Runnable> yesActionProperty() {
+        return yesAction;
     }
 
-    public Runnable getConfirmAction() {
-        return confirmAction.get();
+    public Runnable getYesAction() {
+        return yesAction.get();
     }
 
-    public void setConfirmAction(Runnable action) {
-        this.confirmAction.set(action);
+    public void setYesAction(Runnable action) {
+        this.yesAction.set(action);
     }
 
-    public BooleanProperty confirmDisableProperty() {
-        return confirmDisable;
+    public BooleanProperty yesDisableProperty() {
+        return yesDisable;
     }
 
-    public boolean isConfirmDisable() {
-        return confirmDisable.get();
+    public boolean isYesDisable() {
+        return yesDisable.get();
     }
 
-    public void setConfirmDisable(boolean disable) {
-        this.confirmDisable.set(disable);
+    public void setYesDisable(boolean disable) {
+        this.yesDisable.set(disable);
     }
 
-    public BooleanProperty confirmDefaultProperty() {
-        return confirmDefault;
+    public BooleanProperty yesDefaultProperty() {
+        return yesDefault;
     }
 
-    public boolean isConfirmDefault() {
-        return confirmDefault.get();
+    public boolean isYesDefault() {
+        return yesDefault.get();
     }
 
-    public void setConfirmDefault(boolean confirmDefault) {
-        this.confirmDefault.set(confirmDefault);
+    public void setYesDefault(boolean yesDefault) {
+        this.yesDefault.set(yesDefault);
     }
 
-    public StringProperty confirmTextProperty() {
-        return confirmText;
+    public StringProperty yesTextProperty() {
+        return yesText;
     }
 
-    public String getConfirmText() {
-        return confirmText.get();
+    public String getYesText() {
+        return yesText.get();
     }
 
-    public void setConfirmText(String text) {
-        this.confirmText.set(text);
+    public void setYesText(String text) {
+        this.yesText.set(text);
     }
 
-    /* ************************************************* deny button ************************************************ */
+    /* ************************************************** no button ************************************************* */
 
-    public ObjectProperty<Runnable> denyActionProperty() {
-        return denyAction;
+    public ObjectProperty<Runnable> noActionProperty() {
+        return noAction;
     }
 
-    public Runnable getDenyAction() {
-        return denyAction.get();
+    public Runnable getNoAction() {
+        return noAction.get();
     }
 
-    public void setDenyAction(Runnable action) {
-        this.denyAction.set(action);
+    public void setNoAction(Runnable action) {
+        this.noAction.set(action);
     }
 
-    public BooleanProperty denyDisableProperty() {
-        return denyDisable;
+    public BooleanProperty noDisableProperty() {
+        return noDisable;
     }
 
-    public boolean isDenyDisable() {
-        return denyDisable.get();
+    public boolean isNoDisable() {
+        return noDisable.get();
     }
 
-    public void setDenyDisable(boolean disable) {
-        this.denyDisable.set(disable);
+    public void setNoDisable(boolean disable) {
+        this.noDisable.set(disable);
     }
 
-    public BooleanProperty denyDefaultProperty() {
-        return denyDefault;
+    public BooleanProperty noDefaultProperty() {
+        return noDefault;
     }
 
-    public boolean isDenyDefault() {
-        return denyDefault.get();
+    public boolean isNoDefault() {
+        return noDefault.get();
     }
 
-    public void setDenyDefault(boolean denyDefault) {
-        this.denyDefault.set(denyDefault);
+    public void setNoDefault(boolean noDefault) {
+        this.noDefault.set(noDefault);
     }
 
-    public StringProperty denyTextProperty() {
-        return denyText;
+    public StringProperty noTextProperty() {
+        return noText;
     }
 
-    public String getDenyText() {
-        return denyText.get();
+    public String getNoText() {
+        return noText.get();
     }
 
-    public void setDenyText(String text) {
-        this.denyText.set(text);
+    public void setNoText(String text) {
+        this.noText.set(text);
     }
 
     /* *********************************************** cancel button ************************************************ */

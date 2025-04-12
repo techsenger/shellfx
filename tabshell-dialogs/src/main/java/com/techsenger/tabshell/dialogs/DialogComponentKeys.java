@@ -26,7 +26,7 @@ public interface DialogComponentKeys {
 
     DialogKey ALERT_DIALOG = new DialogKey("Alert Dialog");
 
-    DialogKey CONFIRMATION_DIALOG = new DialogKey("Confirmation Dialog");
+    DialogKey YES_NO_DIALOG = new DialogKey("Yes-No Dialog");
 
     DialogKey FILE_CHOOSER_DIALOG = new DialogKey("File Chooser Dialog");
 }

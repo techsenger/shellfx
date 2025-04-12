@@ -26,9 +26,9 @@ import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.settings.ViewerSettings;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
-import com.techsenger.tabshell.dialogs.confirmation.ConfirmationDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 import com.techsenger.tabshell.storage.FileStorages;
 import com.techsenger.tabshell.storage.FileTaskProvider;
 import com.techsenger.tabshell.storage.GenericFile;
@@ -297,17 +297,18 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     @Override
     public void prepareForClose(CloseScope scope, Runnable retryCallback) {
         var message = "Save changes to file '" + getFile().getName() + "' before closing?";
-        var confirm = new ConfirmationDialogViewModel(DialogScope.TAB, message);
-        confirm.setConfirmText("Save");
-        confirm.setDenyText("Discard");
-        confirm.setCancelVisible(true);
-        confirm.setButtonWidthEqual(true);
+        var yesNo = new YesNoDialogViewModel(DialogScope.TAB, message);
+        yesNo.setTitle("Save File?");
+        yesNo.setYesText("Save");
+        yesNo.setNoText("Discard");
+        yesNo.setCancelVisible(true);
+        yesNo.setButtonWidthEqual(true);
         Runnable readyToClose = () -> {
             this.closeTextSateId = this.textStateId;
             retryCallback.run();
         };
-        confirm.setConfirmAction(() -> {
-            confirm.requestClose();
+        yesNo.setYesAction(() -> {
+            yesNo.requestClose();
             if (isPersisted()) {
                 writeFile();
                 readyToClose.run();
@@ -315,11 +316,11 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 saveFile(DialogScope.TAB, FileStorages.getAll(true), readyToClose, null);
             }
         });
-        confirm.setDenyAction(() -> {
-            confirm.requestClose();
+        yesNo.setNoAction(() -> {
+            yesNo.requestClose();
             readyToClose.run();
         });
-        getComponentHelper().openConfirmationDialog(confirm);
+        getComponentHelper().openYesNoDialog(yesNo);
     }
 
     public FileTaskProvider<String> createFileTaskProvider() {

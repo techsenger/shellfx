@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.confirmation;
+package com.techsenger.tabshell.dialogs.yesno;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.ActionUtils;
@@ -38,7 +38,7 @@ import javafx.scene.layout.HBox;
  *
  * @author Pavel Castornii
  */
-public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialogViewModel> {
+public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
 
     private final FontIconView messageIconView = new FontIconView();
 
@@ -46,15 +46,15 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
 
     private final HBox messageBox = new HBox(messageIconView, messageLabel);
 
-    private final Button confirmButton = new Button();
+    private final Button yesButton = new Button();
 
-    private final Button denyButton = new Button();
+    private final Button noButton = new Button();
 
     private final Button cancelButton = new Button();
 
     private final HBox buttonBox = new HBox();
 
-    public ConfirmationDialogView(ConfirmationDialogViewModel viewModel) {
+    public YesNoDialogView(YesNoDialogViewModel viewModel) {
         super(viewModel);
     }
 
@@ -64,11 +64,11 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
     }
 
     @Override
-    protected void build(ConfirmationDialogViewModel viewModel) {
+    protected void build(YesNoDialogViewModel viewModel) {
         super.build(viewModel);
         getContentPane().getStylesheets()
-                .add(ConfirmationDialogView.class.getResource("confirmation.css").toExternalForm());
-        messageIconView.getStyleClass().addAll(DialogIcons.CONFIRMATION, "message-icon-view", Styles.WARNING);
+                .add(YesNoDialogView.class.getResource("yesno.css").toExternalForm());
+        messageIconView.getStyleClass().addAll(DialogIcons.QUESTION, "message-icon-view", Styles.WARNING);
         messageLabel.textProperty().bind(viewModel.messageProperty());
         messageLabel.getStyleClass().add("message-label");
 
@@ -78,21 +78,21 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
         this.buttonBox.setPadding(new Insets(SizeConstants.INSET));
         buttonBox.setAlignment(Pos.BOTTOM_RIGHT);
         buttonBox.setSpacing(SizeConstants.INSET);
-        buttonBox.getChildren().addAll(cancelButton, denyButton, confirmButton);
+        buttonBox.getChildren().addAll(cancelButton, noButton, yesButton);
 
         getContentPane().getChildren().addAll(messageBox, getButtonBox());
     }
 
     @Override
-    protected void bind(ConfirmationDialogViewModel viewModel) {
+    protected void bind(YesNoDialogViewModel viewModel) {
         super.bind(viewModel);
-        confirmButton.disableProperty().bind(viewModel.confirmDisableProperty());
-        confirmButton.defaultButtonProperty().bind(viewModel.confirmDefaultProperty());
-        confirmButton.textProperty().bind(viewModel.confirmTextProperty());
+        yesButton.disableProperty().bind(viewModel.yesDisableProperty());
+        yesButton.defaultButtonProperty().bind(viewModel.yesDefaultProperty());
+        yesButton.textProperty().bind(viewModel.yesTextProperty());
 
-        denyButton.disableProperty().bind(viewModel.denyDisableProperty());
-        denyButton.defaultButtonProperty().bind(viewModel.denyDefaultProperty());
-        denyButton.textProperty().bind(viewModel.denyTextProperty());
+        noButton.disableProperty().bind(viewModel.noDisableProperty());
+        noButton.defaultButtonProperty().bind(viewModel.noDefaultProperty());
+        noButton.textProperty().bind(viewModel.noTextProperty());
 
         cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
         cancelButton.defaultButtonProperty().bind(viewModel.cancelDefaultProperty());
@@ -101,10 +101,10 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
     }
 
     @Override
-    protected void addHandlers(ConfirmationDialogViewModel viewModel) {
+    protected void addHandlers(YesNoDialogViewModel viewModel) {
         super.addHandlers(viewModel);
-        confirmButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.confirmActionProperty()));
-        denyButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.denyActionProperty()));
+        yesButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.yesActionProperty()));
+        noButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.noActionProperty()));
         cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.cancelActionProperty()));
     }
 
@@ -119,11 +119,11 @@ public class ConfirmationDialogView extends AbstractDialogView<ConfirmationDialo
     }
 
     protected Button getConfirmButton() {
-        return confirmButton;
+        return yesButton;
     }
 
     protected Button getDenyButton() {
-        return denyButton;
+        return noButton;
     }
 
     protected Button getCancelButton() {

@@ -24,8 +24,8 @@ import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
-import com.techsenger.tabshell.dialogs.confirmation.ConfirmationDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabViewModel;
@@ -75,12 +75,13 @@ public class EditorTabViewModel extends AbstractEditorTabViewModel {
         getComponentHelper().openAlertDialog(viewModel);
     }
 
-    void showConfirmationDialog() {
-        var viewModel = new ConfirmationDialogViewModel(DialogScope.SHELL,
+    void showYesNoDialog() {
+        var viewModel = new YesNoDialogViewModel(DialogScope.SHELL,
                 "This choice will determine the fate of the world! Are you sure?");
-        viewModel.setConfirmText("Yes");
-        viewModel.setDenyText("No");
-        getComponentHelper().openConfirmationDialog(viewModel);
+        viewModel.setTitle("Confirm");
+        viewModel.setYesText("Yes");
+        viewModel.setNoText("No");
+        getComponentHelper().openYesNoDialog(viewModel);
     }
 
     @Override

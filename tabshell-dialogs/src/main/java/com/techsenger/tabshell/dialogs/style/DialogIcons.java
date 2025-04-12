@@ -28,7 +28,7 @@ public interface DialogIcons {
 
     String WARNING = "tabshell-warning-icon";
 
-    String CONFIRMATION = "tabshell-confirmation-icon";
+    String QUESTION = "tabshell-question-icon";
 
     String DIRECTORY_UP = "tabshell-directory-up-icon";
 

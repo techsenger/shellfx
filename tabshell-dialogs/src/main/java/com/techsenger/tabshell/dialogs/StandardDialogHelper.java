@@ -20,10 +20,10 @@ import com.techsenger.mvvm4fx.core.ParentView;
 import com.techsenger.tabshell.core.dialog.DialogHelper;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
-import com.techsenger.tabshell.dialogs.confirmation.ConfirmationDialogView;
-import com.techsenger.tabshell.dialogs.confirmation.ConfirmationDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogView;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogView;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 
 /**
  * This dialog helper is used to open standard dialogs, like alert, info etc.
@@ -38,8 +38,8 @@ public interface StandardDialogHelper<T extends ParentView<?>> extends DialogHel
         openDialog(view);
     }
 
-    default void openConfirmationDialog(ConfirmationDialogViewModel viewModel) {
-        var view = new ConfirmationDialogView(viewModel);
+    default void openYesNoDialog(YesNoDialogViewModel viewModel) {
+        var view = new YesNoDialogView(viewModel);
         view.initialize();
         openDialog(view);
     }
