@@ -34,7 +34,7 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
      * @param storages the storages or null.
      */
     default void openFile(DialogScope scope, List<FileStorage> storages) {
-
+        openFile(scope, storages, null, null);
     }
 
     /**
