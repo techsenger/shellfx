@@ -22,6 +22,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -35,6 +37,8 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
 
     private final BooleanProperty okDefault = new SimpleBooleanProperty(true);
 
+    private final StringProperty okText = new SimpleStringProperty("OK");
+
     private final ObjectProperty<Runnable> cancelAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
 
     private final BooleanProperty cancelDisable = new SimpleBooleanProperty();
@@ -42,6 +46,8 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
     private final BooleanProperty cancelDefault = new SimpleBooleanProperty();
 
     private final BooleanProperty cancelVisible = new SimpleBooleanProperty();
+
+    private final StringProperty cancelText = new SimpleStringProperty("Cancel");
 
     public AbstractSimpleDialogViewModel(DialogScope scope, boolean resizable) {
         super(scope, resizable);
@@ -81,6 +87,18 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
 
     public void okDefault(boolean okDefault) {
         this.okDefault.set(okDefault);
+    }
+
+    public StringProperty okTextProperty() {
+        return okText;
+    }
+
+    public String getOkText() {
+        return okText.get();
+    }
+
+    public void setOkText(String text) {
+        this.okText.set(text);
     }
 
     public BooleanProperty cancelDisableProperty() {
@@ -129,6 +147,18 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
 
     public void setCancelVisible(boolean value) {
         cancelVisible.set(value);
+    }
+
+    public StringProperty cancelTextProperty() {
+        return cancelText;
+    }
+
+    public String getCancelText() {
+        return cancelText.get();
+    }
+
+    public void getCancelText(String text) {
+        this.cancelText.set(text);
     }
 
     @Override

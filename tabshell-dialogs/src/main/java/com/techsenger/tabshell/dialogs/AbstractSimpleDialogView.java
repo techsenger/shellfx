@@ -33,9 +33,9 @@ import javafx.scene.layout.HBox;
  */
 public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogViewModel> extends AbstractDialogView<T> {
 
-    private final Button okButton = new Button("OK");
+    private final Button okButton = new Button();
 
-    private final Button cancelButton = new Button("Cancel");
+    private final Button cancelButton = new Button();
 
     private final HBox buttonBox = new HBox();
 
@@ -55,13 +55,20 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
-        okButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
         okButton.disableProperty().bind(viewModel.okDisableProperty());
         okButton.defaultButtonProperty().bind(viewModel.okDefault());
-        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
+        okButton.textProperty().bind(viewModel.okTextProperty());
         cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
         cancelButton.defaultButtonProperty().bind(viewModel.cancelDefaultProperty());
         cancelButton.visibleProperty().bind(viewModel.cancelVisibleProperty());
+        cancelButton.textProperty().bind(viewModel.cancelTextProperty());
+    }
+
+    @Override
+    protected void addHandlers(T viewModel) {
+        super.addHandlers(viewModel);
+        okButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
+        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
     }
 
     protected Button getOkButton() {
