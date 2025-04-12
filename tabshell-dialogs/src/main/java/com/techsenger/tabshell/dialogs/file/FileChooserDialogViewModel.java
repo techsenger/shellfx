@@ -158,6 +158,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         setHistoryProvider(() -> historyManager.getHistory(FileChooserDialogHistory.class,
                 FileChooserDialogHistory::new));
         setButtonWidthEqual(true);
+        setCancelVisible(true);
     }
 
     @Override
