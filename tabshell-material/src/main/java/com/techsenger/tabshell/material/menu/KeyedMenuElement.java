@@ -22,7 +22,7 @@ import com.techsenger.toolkit.core.Key;
  *
  * @author Pavel Castornii
  */
-public interface KeyedMenuElement<T extends Key> {
+public interface KeyedMenuElement<T extends Key> extends Positionable {
 
     /**
      * Key class.

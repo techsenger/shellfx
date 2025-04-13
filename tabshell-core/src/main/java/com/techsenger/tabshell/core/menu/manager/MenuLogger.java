@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
+import com.techsenger.tabshell.material.menu.KeyedMenuGroup;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
 import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
 import javafx.collections.ObservableList;
@@ -91,14 +92,27 @@ final class MenuLogger {
         builder.append(menu.isValidatable());
         builder.append(", updatable: ");
         builder.append(menu.isUpdatable());
+        builder.append(", position: ");
+        builder.append(menu.getPosition());
         var tab1 = tab.repeat(depth + 1);
+        var tab2 = tab.repeat(depth + 2);
+        KeyedMenuGroup group = null;
         for (var m : menu.getItems()) {
             if (m instanceof KeyedMenu) {
-                logMenu((KeyedMenu) m, depth + 1, builder);
+                var keyedMenu = (KeyedMenu) m;
+                if (keyedMenu.getGroup() != group) {
+                    group = keyedMenu.getGroup();
+                    logGroup(group, builder, tab);
+                }
+                logMenu(keyedMenu, depth + 2, builder);
             } else if (m instanceof KeyedMenuItem) {
                 var keyedItem = (KeyedMenuItem) m;
+                if (keyedItem.getGroup() != group) {
+                    group = keyedItem.getGroup();
+                    logGroup(group, builder, tab);
+                }
                 builder.append(System.lineSeparator());
-                builder.append(tab1);
+                builder.append(tab2);
                 builder.append("MenuItem: ");
                 builder.append(keyedItem.getText().replace("_", ""));
                 builder.append(", optional: ");
@@ -107,12 +121,24 @@ final class MenuLogger {
                 builder.append(keyedItem.isValidatable());
                 builder.append(", updatable: ");
                 builder.append(keyedItem.isUpdatable());
+                builder.append(", position: ");
+                builder.append(keyedItem.getPosition());
                 if (keyedItem.getAccelerator() != null) {
                     builder.append(", hotkey: ");
                     builder.append(keyedItem.getAccelerator());
                 }
             }
         }
+    }
+
+    private static void logGroup(KeyedMenuGroup group, StringBuilder builder, String tab) {
+        if (group == null) {
+            return;
+        }
+        builder.append(System.lineSeparator());
+        builder.append(tab);
+        builder.append("Group: ");
+        builder.append(group.getName());
     }
 
     private MenuLogger() {

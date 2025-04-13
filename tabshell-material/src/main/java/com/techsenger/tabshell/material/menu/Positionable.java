@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.registry;
-
-import com.techsenger.tabshell.material.menu.KeyedMenuGroup;
-import com.techsenger.tabshell.material.menu.MenuKey;
+package com.techsenger.tabshell.material.menu;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuGroupRegistration extends AbstractMenuRegistration<KeyedMenuGroup> {
+public interface Positionable {
 
-    private final MenuKey menuKey;
-
-    MenuGroupRegistration(MenuKey menuKey, ControlFactory<KeyedMenuGroup> factory) {
-        super(MenuElementType.GROUP, factory);
-        this.menuKey = menuKey;
-    }
-
-    public MenuKey getMenuKey() {
-        return menuKey;
-    }
+    /**
+     * Returns the position this element requires.
+     *
+     * @return
+     */
+    int getPosition();
 }

@@ -27,8 +27,8 @@ class MenuItemRegistration extends AbstractMenuRegistration<KeyedMenuItem> {
 
     private final MenuGroupKey groupKey;
 
-    MenuItemRegistration(MenuGroupKey groupKey, ControlFactory<KeyedMenuItem> factory, int position) {
-        super(MenuElementType.ITEM, factory, position);
+    MenuItemRegistration(MenuGroupKey groupKey, ControlFactory<KeyedMenuItem> factory) {
+        super(MenuElementType.ITEM, factory);
         this.groupKey = groupKey;
     }
 

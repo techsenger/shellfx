@@ -52,23 +52,23 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
 
     protected void registerDemoMenu() {
         ControlFactory<KeyedMenu> f = (v) -> {
-            return new KeyedMenu(DemoMenuKeys.DEMO, "_Demo");
+            return new KeyedMenu(DemoMenuKeys.DEMO, "_Demo", 100);
         };
-        addRegistration(getRegistry().registerMenu(TabShellKey.INSTANCE, null, f, 100));
+        addRegistration(getRegistry().registerMenu(TabShellKey.INSTANCE, null, f));
     }
 
     protected void registerGroupOne() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(DemoMenuKeys.ONE);
+            return new KeyedMenuGroup(DemoMenuKeys.ONE, "One", 100);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, DemoMenuKeys.DEMO, f, 100));
+        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, DemoMenuKeys.DEMO, f));
     }
 
     protected void registerGroupTwo() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(DemoMenuKeys.TWO);
+            return new KeyedMenuGroup(DemoMenuKeys.TWO, "Two", 200);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, DemoMenuKeys.DEMO, f, 200));
+        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, DemoMenuKeys.DEMO, f));
     }
 
     /**
@@ -76,7 +76,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
      */
     protected void registerNewItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoMenuKeys.NEW, false, true, false, "_New");
+            var item = new KeyedMenuItem(DemoMenuKeys.NEW, false, true, false, "_New", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var tabShellView  = (TabShellView<?>) v;
@@ -88,7 +88,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, DemoMenuKeys.ONE, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, DemoMenuKeys.ONE, f));
     }
 
     /**
@@ -96,12 +96,12 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
      */
     protected void registerExitItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoMenuKeys.EXIT, true, true, false, "E_xit");
+            var item = new KeyedMenuItem(DemoMenuKeys.EXIT, true, true, false, "E_xit", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> ((TabShellView<?>) v).close());
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, DemoMenuKeys.TWO, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, DemoMenuKeys.TWO, f));
     }
 }

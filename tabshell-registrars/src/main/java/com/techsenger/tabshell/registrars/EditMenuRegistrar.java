@@ -66,43 +66,43 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
 
     protected void registerMenu() {
         ControlFactory<KeyedMenu> f = (v) -> {
-            return new KeyedMenu(EditMenuKeys.EDIT, true, false, false, "_Edit");
+            return new KeyedMenu(EditMenuKeys.EDIT, true, false, false, "_Edit", 200);
         };
-        addRegistration(getRegistry().registerMenu(TabShellKey.INSTANCE, null, f, 200));
+        addRegistration(getRegistry().registerMenu(TabShellKey.INSTANCE, null, f));
     }
 
     protected void registerHistoryGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(EditMenuKeys.HISTORY);
+            return new KeyedMenuGroup(EditMenuKeys.HISTORY, "History", 100);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f, 100));
+        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f));
     }
 
     protected void registerClipboardGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(EditMenuKeys.CLIPBOARD);
+            return new KeyedMenuGroup(EditMenuKeys.CLIPBOARD, "Clipboard", 200);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f, 200));
+        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f));
     }
 
     protected void registerFindReplaceGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(EditMenuKeys.FIND_REPLACE);
+            return new KeyedMenuGroup(EditMenuKeys.FIND_REPLACE, "Find Replace", 300);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f, 300));
+        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f));
     }
 
     protected void registerDefaultGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(EditMenuKeys.DEFAULT);
+            return new KeyedMenuGroup(EditMenuKeys.DEFAULT, "Default", 10000);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f, 10000));
+        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f));
     }
 
     protected void registerUndoItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(EditMenuKeys.UNDO, false, true, false, "_Undo",
-                    new FontIconView(CoreIcons.UNDO));
+                    new FontIconView(CoreIcons.UNDO), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -112,13 +112,13 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.HISTORY, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.HISTORY, f));
     }
 
     protected void registerRedoItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(EditMenuKeys.REDO, false, true, false, "_Redo",
-                    new FontIconView(CoreIcons.REDO));
+                    new FontIconView(CoreIcons.REDO), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -128,13 +128,13 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.HISTORY, f, 200));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.HISTORY, f));
     }
 
     protected void registerCutItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(EditMenuKeys.CUT, false, true, false, "Cu_t",
-                    new FontIconView(CoreIcons.CUT));
+                    new FontIconView(CoreIcons.CUT), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -144,13 +144,13 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
     }
 
     protected void registerCopyItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(EditMenuKeys.COPY, false, true, false, "Cop_y",
-                    new FontIconView(CoreIcons.COPY));
+                    new FontIconView(CoreIcons.COPY), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -160,13 +160,13 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f, 200));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
     }
 
     protected void registerPasteItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(EditMenuKeys.PASTE, false, true, false, "_Paste",
-                    new FontIconView(CoreIcons.PASTE));
+                    new FontIconView(CoreIcons.PASTE), 300);
             item.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -176,13 +176,13 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f, 300));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
     }
 
     protected void registerFindItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(EditMenuKeys.FIND, false, true, false, "_Find",
-                    new FontIconView(CoreIcons.FIND));
+                    new FontIconView(CoreIcons.FIND), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -193,13 +193,13 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerReplaceItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(EditMenuKeys.REPLACE, false, true, false, "R_eplace",
-                    new FontIconView(CoreIcons.REPLACE));
+                    new FontIconView(CoreIcons.REPLACE), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -210,12 +210,12 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f, 200));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerFindSelectionItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(EditMenuKeys.FIND_SELECTION, false, true, false, "Find _Selection", null);
+            var item = new KeyedMenuItem(EditMenuKeys.FIND_SELECTION, false, true, false, "Find _Selection", null, 300);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F3, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -239,12 +239,12 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f, 300));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerFindNextItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(EditMenuKeys.FIND_NEXT, false, true, false, "Find Ne_xt", null);
+            var item = new KeyedMenuItem(EditMenuKeys.FIND_NEXT, false, true, false, "Find Ne_xt", null, 400);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F3));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -259,12 +259,12 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f, 400));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerFindPreviousItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(EditMenuKeys.FIND_PREVIOUS, false, true, false, "Find Pre_vious", null);
+            var item = new KeyedMenuItem(EditMenuKeys.FIND_PREVIOUS, false, true, false, "Find Pre_vious", null, 500);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F3, KeyCombination.SHIFT_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -278,12 +278,12 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f, 500));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerGoToLineItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(EditMenuKeys.GO_TO_LINE, false, true, false, "Go to _Line", null);
+            var item = new KeyedMenuItem(EditMenuKeys.GO_TO_LINE, false, true, false, "Go to _Line", null, 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((TabShellView<?>) v).getSelectedTab();
@@ -293,6 +293,6 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.DEFAULT, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.DEFAULT, f));
     }
 }

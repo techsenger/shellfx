@@ -48,34 +48,34 @@ public class ControlRegistry {
     /**
      * Registers a menu in the specified group. Note - there can be only one menu bar in the component.
      *
-     * @param component
+     * @param componentKey
      * @param groupKey the key of the group that this menu will belong to. Null for root menus in the MenuBar
      * @param factory
-     * @param position
      * @return
      */
-    public Registration registerMenu(ComponentKey component, MenuGroupKey groupKey,
-            ControlFactory<KeyedMenu> factory, int position) {
-        var menus = getMenusFor(component);
-        var reg = new MenuRegistration(groupKey, factory, position);
+    public Registration registerMenu(ComponentKey componentKey, MenuGroupKey groupKey,
+            ControlFactory<KeyedMenu> factory) {
+        var menus = getMenusFor(componentKey);
+        var reg = new MenuRegistration(groupKey, factory);
         menus.add(reg);
-        reg.setUnregister(() -> menus.remove(reg));
+        reg.setUnregister(() -> {
+            menus.remove(reg);
+        });
         return reg;
     }
 
     /**
      * Registers a menu group.
      *
-     * @param component
+     * @param componentKey
      * @param menuKey the key of the menu this group will belong to.
      * @param factory
-     * @param position
      * @return
      */
-    public Registration registerMenuGroup(ComponentKey component, MenuKey menuKey,
-            ControlFactory<KeyedMenuGroup> factory, int position) {
-        var menus = getMenusFor(component);
-        var reg = new MenuGroupRegistration(menuKey, factory, position);
+    public Registration registerMenuGroup(ComponentKey componentKey, MenuKey menuKey,
+            ControlFactory<KeyedMenuGroup> factory) {
+        var menus = getMenusFor(componentKey);
+        var reg = new MenuGroupRegistration(menuKey, factory);
         menus.add(reg);
         reg.setUnregister(() -> menus.remove(reg));
         return reg;
@@ -84,16 +84,15 @@ public class ControlRegistry {
     /**
      * Registers a menu item in the specified group.
      *
-     * @param component
+     * @param componentKey
      * @param groupKey
      * @param factory
-     * @param position
      * @return
      */
-    public Registration registerMenuItem(ComponentKey component, MenuGroupKey groupKey,
-            ControlFactory<KeyedMenuItem> factory, int position) {
-        var menus = getMenusFor(component);
-        var reg = new MenuItemRegistration(groupKey, factory, position);
+    public Registration registerMenuItem(ComponentKey componentKey, MenuGroupKey groupKey,
+            ControlFactory<KeyedMenuItem> factory) {
+        var menus = getMenusFor(componentKey);
+        var reg = new MenuItemRegistration(groupKey, factory);
         menus.add(reg);
         reg.setUnregister(() -> menus.remove(reg));
         return reg;

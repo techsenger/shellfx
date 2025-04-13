@@ -24,15 +24,12 @@ abstract class AbstractMenuRegistration<T> implements ControlRegistry.Registrati
 
     private final MenuElementType type;
 
-    private final int position;
-
     private final ControlFactory<T> factory;
 
     private Runnable unregister;
 
-    AbstractMenuRegistration(MenuElementType type, ControlFactory<T> factory, int position) {
+    AbstractMenuRegistration(MenuElementType type, ControlFactory<T> factory) {
         this.type = type;
-        this.position = position;
         this.factory = factory;
     }
 
@@ -43,10 +40,6 @@ abstract class AbstractMenuRegistration<T> implements ControlRegistry.Registrati
 
     public MenuElementType getType() {
         return type;
-    }
-
-    public int getPosition() {
-        return position;
     }
 
     public ControlFactory<T> getFactory() {

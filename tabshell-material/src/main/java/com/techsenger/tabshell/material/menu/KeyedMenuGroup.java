@@ -16,25 +16,35 @@
 
 package com.techsenger.tabshell.material.menu;
 
-import com.techsenger.toolkit.core.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class KeyedMenuGroup {
+public class KeyedMenuGroup implements Positionable {
 
     private final MenuGroupKey key;
 
-    private final List<Pair<Integer, MenuItem>> itemsAndPositions = new ArrayList<>();
+    private final String name;
 
-    public KeyedMenuGroup(MenuGroupKey key) {
+    private final int position;
+
+    private final List<MenuItem> items = new ArrayList<>();
+
+    /**
+     * Group doesn't have a text, but it has a name.
+     *
+     * @param key
+     * @param name
+     */
+    public KeyedMenuGroup(MenuGroupKey key, String name, int position) {
         this.key = key;
+        this.name = name;
+        this.position = position;
     }
 
     public MenuGroupKey getKey() {
@@ -42,26 +52,38 @@ public class KeyedMenuGroup {
     }
 
     /**
-     * Returns items.
+     * Returns the name.
+     *
+     * @return
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the items.
      *
      * @return
      */
     public List<MenuItem> getItems() {
-        return itemsAndPositions.stream().map(p -> p.getSecond()).collect(Collectors.toList());
+        return items;
     }
 
     /**
-     * Sorts group.
+     * Returns the position.
+     *
+     * @return
+     */
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
+    /**
+     * Sorts the group.
      */
     public void sort() {
-        Collections.sort(itemsAndPositions, (o1, o2) -> Integer.compare(o1.getFirst(), o2.getFirst()));
-    }
-
-    public void addItem(Integer position, MenuItem item) {
-        itemsAndPositions.add(new Pair<>(position, item));
-    }
-
-    public boolean isEmpty() {
-        return itemsAndPositions.isEmpty();
+        Collections.sort(items, (o1, o2) ->
+                Integer.compare(((Positionable) o1).getPosition(), ((Positionable) o2).getPosition()));
     }
 }

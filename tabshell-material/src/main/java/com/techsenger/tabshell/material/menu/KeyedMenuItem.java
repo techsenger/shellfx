@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.material.menu;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 
@@ -35,37 +37,31 @@ public class KeyedMenuItem extends MenuItem implements KeyedMenuElement<MenuItem
 
     private final boolean updatable;
 
-    public KeyedMenuItem(MenuItemKey key, String text) {
-        super(text);
-        this.key = key;
-        this.optional = false;
-        this.validatable = false;
-        this.updatable = false;
-    }
+    private final int position;
 
-    public KeyedMenuItem(MenuItemKey key, boolean optional, boolean validatable, boolean updatable, String text) {
-        super(text);
-        this.optional = optional;
-        this.validatable = validatable;
-        this.updatable = updatable;
-        this.key = key;
-    }
+    private final ObjectProperty<KeyedMenuGroup> group = new SimpleObjectProperty<>();
 
-    public KeyedMenuItem(MenuItemKey key, String text, Node node) {
-        super(text, node);
-        this.key = key;
-        this.optional = false;
-        this.validatable = false;
-        this.updatable = false;
+    public KeyedMenuItem(MenuItemKey key, String text, int position) {
+        this(key, false, false, false, text, null, position);
     }
 
     public KeyedMenuItem(MenuItemKey key, boolean optional, boolean validatable, boolean updatable, String text,
-            Node node) {
+            int position) {
+        this(key, optional, validatable, updatable, text, null, position);
+    }
+
+    public KeyedMenuItem(MenuItemKey key, String text, Node node, int position) {
+        this(key, false, false, false, text, node, position);
+    }
+
+    public KeyedMenuItem(MenuItemKey key, boolean optional, boolean validatable, boolean updatable, String text,
+            Node node, int position) {
         super(text, node);
+        this.key = key;
         this.optional = optional;
         this.validatable = validatable;
         this.updatable = updatable;
-        this.key = key;
+        this.position = position;
     }
 
     @Override
@@ -86,5 +82,37 @@ public class KeyedMenuItem extends MenuItem implements KeyedMenuElement<MenuItem
     @Override
     public boolean isUpdatable() {
         return updatable;
+    }
+
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
+    /**
+     * Returns the group this item belongs to or null.
+     *
+     * @return
+     */
+    public ObjectProperty<KeyedMenuGroup> groupProperty() {
+        return this.group;
+    }
+
+    /**
+     * Returns the group this item belongs to or null.
+     *
+     * @return
+     */
+    public KeyedMenuGroup getGroup() {
+        return group.get();
+    }
+
+    /**
+     * Sets the group this item belongs to or null.
+     *
+     * @return
+     */
+    public void setGroup(KeyedMenuGroup group) {
+        this.group.set(group);
     }
 }

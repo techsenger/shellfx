@@ -55,7 +55,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
 
     protected void registerEditorItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.EDITOR, "E_ditor", new FontIconView(TextIcons.EDITOR));
+            var item = new KeyedMenuItem(DemoFileMenuKeys.EDITOR, "E_ditor", new FontIconView(TextIcons.EDITOR), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var tabShell = (TabShellView<?>) v;
@@ -71,13 +71,13 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 100));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
     protected void registerTerminalItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(DemoFileMenuKeys.TERMINAL, "_Terminal",
-                    new FontIconView(TerminalIcons.TERMINAL));
+                    new FontIconView(TerminalIcons.TERMINAL), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var tabShell = (TabShellView<?>) v;
@@ -89,12 +89,12 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 200));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
     protected void registerThemeItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.THEME, "_Theme");
+            var item = new KeyedMenuItem(DemoFileMenuKeys.THEME, "_Theme", 300);
             item.setOnAction((e) -> {
                 var tabShell = (TabShellView<?>) v;
                 var appearance = tabShell.getViewModel().getSettings().getAppearance();
@@ -109,7 +109,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f, 300));
+        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
 }

@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -45,13 +44,10 @@ public class ControlBuilder {
 
         private final MenuGroupKey groupKey;
 
-        private final int position;
-
         private final KeyedMenu menu;
 
-        MenuDescriptor(MenuGroupKey groupKey, int position, KeyedMenu menu) {
+        MenuDescriptor(MenuGroupKey groupKey, KeyedMenu menu) {
             this.groupKey = groupKey;
-            this.position = position;
             this.menu = menu;
         }
     }
@@ -60,13 +56,10 @@ public class ControlBuilder {
 
         private final MenuKey menuKey;
 
-        private final int position;
-
         private final KeyedMenuGroup group;
 
-        GroupDescriptor(MenuKey menuKey, int position, KeyedMenuGroup group) {
+        GroupDescriptor(MenuKey menuKey, KeyedMenuGroup group) {
             this.menuKey = menuKey;
-            this.position = position;
             this.group = group;
         }
     }
@@ -75,13 +68,10 @@ public class ControlBuilder {
 
         private final MenuGroupKey groupKey;
 
-        private final int position;
-
         private final KeyedMenuItem item;
 
-        ItemDescriptor(MenuGroupKey groupKey, int position, KeyedMenuItem item) {
+        ItemDescriptor(MenuGroupKey groupKey, KeyedMenuItem item) {
             this.groupKey = groupKey;
-            this.position = position;
             this.item = item;
         }
     }
@@ -103,18 +93,19 @@ public class ControlBuilder {
         //we clone collections because there can not be changes during building
         var registrations = new ArrayList<>(registry.getBarMenuRegistrations(componentKey));
         buildBarElements(view, registrations);
-        List<Pair<Integer, Menu>> positionAndTopMenus = new ArrayList<>();
+        List<KeyedMenu> topMenus = new ArrayList<>();
         Map<MenuKey, Pair<KeyedMenu, List<GroupDescriptor>>> menusAndGroupsByMenuKey = new HashMap<>();
         //0. adding menus to menu bar or to groups
         for (var entry : this.barMenusByKey.entrySet()) {
             var key = entry.getKey();
             var menuDescriptor = entry.getValue();
             if (menuDescriptor.groupKey == null) {
-                positionAndTopMenus.add(new Pair<>(menuDescriptor.position, menuDescriptor.menu));
+                topMenus.add(menuDescriptor.menu);
             } else {
                 var groupDescriptor = this.barGroupsByKey.get(menuDescriptor.groupKey);
                 if (groupDescriptor != null) {
-                    groupDescriptor.group.addItem(menuDescriptor.position, menuDescriptor.menu);
+                    groupDescriptor.group.getItems().add(menuDescriptor.menu);
+                    menuDescriptor.menu.setGroup(groupDescriptor.group);
                 }
             }
             menusAndGroupsByMenuKey.put(key, new Pair<>(menuDescriptor.menu, new ArrayList<>()));
@@ -125,7 +116,8 @@ public class ControlBuilder {
             var itemDescriptor = entry.getValue();
             var groupDescriptor = this.barGroupsByKey.get(itemDescriptor.groupKey);
             if (groupDescriptor != null) {
-                groupDescriptor.group.addItem(itemDescriptor.position, itemDescriptor.item);
+                groupDescriptor.group.getItems().add(itemDescriptor.item);
+                itemDescriptor.item.setGroup(groupDescriptor.group);
             }
         }
         //2. adding groups to menu content
@@ -141,10 +133,10 @@ public class ControlBuilder {
             var menu = entry.getValue().getFirst();
             var groups = entry.getValue().getSecond();
             List<MenuItem> menuElements = new ArrayList<>();
-            Collections.sort(groups, (o1, o2) -> Integer.compare(o1.position, o2.position));
+            Collections.sort(groups, (o1, o2) -> Integer.compare(o1.group.getPosition(), o2.group.getPosition()));
             for (var i = 0; i < groups.size(); i++) {
                 var group = groups.get(i).group;
-                if (group.isEmpty()) {
+                if (group.getItems().isEmpty()) {
                     continue;
                 }
                 if (i != 0) {
@@ -157,15 +149,11 @@ public class ControlBuilder {
             }
             menu.getItems().addAll(menuElements);
         }
-        Collections.sort(positionAndTopMenus, (p1, p2) -> Integer.compare(p1.getFirst(), p2.getFirst()));
-        var menus = positionAndTopMenus
-                .stream()
-                .map(p -> p.getSecond())
-                .collect(Collectors.toCollection((ArrayList::new)));
+        Collections.sort(topMenus, (p1, p2) -> Integer.compare(p1.getPosition(), p2.getPosition()));
         //the problem is that group can contain other menus that will be built later
         //4. removing empty menus
-        removeEmptyMenus(menus);
-        return menus;
+        removeEmptyMenus(topMenus);
+        return (List) topMenus;
     }
 
     /**
@@ -180,19 +168,19 @@ public class ControlBuilder {
                 case MENU:
                     var mr = (MenuRegistration) r;
                     var menu = mr.getFactory().create(view);
-                    var md = new MenuDescriptor(mr.getGroupKey(), mr.getPosition(), menu);
+                    var md = new MenuDescriptor(mr.getGroupKey(), menu);
                     barMenusByKey.put(menu.getKey(), md);
                     break;
                 case GROUP:
                     var gr = (MenuGroupRegistration) r;
                     var group = gr.getFactory().create(view);
-                    var gd = new GroupDescriptor(gr.getMenuKey(), gr.getPosition(), group);
+                    var gd = new GroupDescriptor(gr.getMenuKey(), group);
                     barGroupsByKey.put(group.getKey(), gd);
                     break;
                 case ITEM:
                     var ir = (MenuItemRegistration) r;
                     var item = ir.getFactory().create(view);
-                    var id = new ItemDescriptor(ir.getGroupKey(), ir.getPosition(), item);
+                    var id = new ItemDescriptor(ir.getGroupKey(), item);
                     barItemsByKey.put(item.getKey(), id);
                     break;
                 default:
@@ -201,8 +189,8 @@ public class ControlBuilder {
         }
     }
 
-    private void removeEmptyMenus(List<Menu> menus) {
-        for (Iterator<Menu> iterator = menus.iterator(); iterator.hasNext();) {
+    private void removeEmptyMenus(List<KeyedMenu> menus) {
+        for (Iterator<KeyedMenu> iterator = menus.iterator(); iterator.hasNext();) {
             Menu menu = iterator.next();
             if (removeEmptyMenus(menu)) {
                 iterator.remove();
