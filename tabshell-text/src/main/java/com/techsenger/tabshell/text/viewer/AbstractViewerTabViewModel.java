@@ -301,18 +301,18 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     @Override
     public void prepareForClose(CloseScope scope, Runnable retryCallback) {
         var message = "Save changes to file '" + getFile().getName() + "' before closing?";
-        var yesNo = new YesNoDialogViewModel(DialogScope.TAB, message);
-        yesNo.setTitle("Save File?");
-        yesNo.setYesText("Save");
-        yesNo.setNoText("Discard");
-        yesNo.setCancelVisible(true);
-        yesNo.setButtonWidthEqual(true);
+        var yesNoDialog = new YesNoDialogViewModel(DialogScope.TAB, message);
+        yesNoDialog.setTitle("Save File?");
+        yesNoDialog.setYesText("Save");
+        yesNoDialog.setNoText("Discard");
+        yesNoDialog.setCancelVisible(true);
+        yesNoDialog.setButtonWidthEqual(true);
         Runnable readyToClose = () -> {
             this.closeTextSateId = this.textStateId;
             retryCallback.run();
         };
-        yesNo.setYesAction(() -> {
-            yesNo.requestClose();
+        yesNoDialog.setYesAction(() -> {
+            yesNoDialog.requestClose();
             if (isPersisted()) {
                 writeFile();
                 readyToClose.run();
@@ -320,11 +320,11 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 saveFile(DialogScope.TAB, FileStorages.getAll(true), readyToClose, null);
             }
         });
-        yesNo.setNoAction(() -> {
-            yesNo.requestClose();
+        yesNoDialog.setNoAction(() -> {
+            yesNoDialog.requestClose();
             readyToClose.run();
         });
-        getComponentHelper().openYesNoDialog(yesNo);
+        getComponentHelper().openYesNoDialog(yesNoDialog);
     }
 
     public FileTaskProvider<String> createFileTaskProvider() {
