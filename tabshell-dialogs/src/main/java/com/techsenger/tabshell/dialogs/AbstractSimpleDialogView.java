@@ -68,7 +68,7 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     protected void addHandlers(T viewModel) {
         super.addHandlers(viewModel);
         okButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
-        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
+        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.cancelActionProperty()));
     }
 
     protected Button getOkButton() {
