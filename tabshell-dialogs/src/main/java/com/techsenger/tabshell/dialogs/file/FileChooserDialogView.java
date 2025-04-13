@@ -178,6 +178,7 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
     @Override
     protected void build(FileChooserDialogViewModel viewModel) {
         super.build(viewModel);
+        locationLabel.setMinWidth(Region.USE_PREF_SIZE);
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.getStyleClass().add(Styles.DENSE);
         locationComboBox.setMaxWidth(Double.MAX_VALUE);
