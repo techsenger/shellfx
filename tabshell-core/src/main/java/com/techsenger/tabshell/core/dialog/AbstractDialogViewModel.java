@@ -290,6 +290,6 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
     }
 
     ReadOnlyDoubleWrapper heightWrapper() {
-        return width;
+        return height;
     }
 }
