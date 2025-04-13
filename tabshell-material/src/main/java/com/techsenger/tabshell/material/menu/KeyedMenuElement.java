@@ -16,17 +16,20 @@
 
 package com.techsenger.tabshell.material.menu;
 
+import com.techsenger.tabshell.material.Keyed;
+import com.techsenger.tabshell.material.Positioned;
 import com.techsenger.toolkit.core.Key;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface KeyedMenuElement<T extends Key> extends Positionable {
+public interface KeyedMenuElement<T extends Key> extends Keyed, Positioned {
 
     /**
      * Key class.
      */
+    @Override
     T getKey();
 
     /**

@@ -17,28 +17,28 @@
 package com.techsenger.tabshell.material.table;
 
 import com.techsenger.tabshell.material.Keyed;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.TreeTableColumn;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class KeyedTableColumn<S, T> extends TableColumn<S, T> implements Keyed {
+public class KeyedTreeTableColumn<S, T> extends TreeTableColumn<S, T> implements Keyed {
 
-    private final TableColumnKey key;
+    private final TreeTableColumnKey key;
 
-    public KeyedTableColumn(TableColumnKey key) {
+    public KeyedTreeTableColumn(TreeTableColumnKey key) {
         super();
         this.key = key;
     }
 
-    public KeyedTableColumn(TableColumnKey key, String string) {
+    public KeyedTreeTableColumn(TreeTableColumnKey key, String string) {
         super(string);
         this.key = key;
     }
 
     @Override
-    public TableColumnKey getKey() {
+    public TreeTableColumnKey getKey() {
         return key;
     }
 }

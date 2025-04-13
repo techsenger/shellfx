@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.table;
-
-import javafx.scene.control.TreeTableColumn;
+package com.techsenger.tabshell.material;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TreeTableKeyedColumn<S, T> extends TreeTableColumn<S, T> {
+public interface Positioned {
 
-    private final TreeTableColumnKey key;
-
-    public TreeTableKeyedColumn(TreeTableColumnKey key) {
-        super();
-        this.key = key;
-    }
-
-    public TreeTableKeyedColumn(TreeTableColumnKey key, String string) {
-        super(string);
-        this.key = key;
-    }
-
-    public TreeTableColumnKey getKey() {
-        return key;
-    }
+    /**
+     * Returns the position this node/element requires.
+     *
+     * @return
+     */
+    int getPosition();
 }

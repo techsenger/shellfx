@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.menu;
+package com.techsenger.tabshell.material;
+
+import com.techsenger.toolkit.core.Key;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface Positionable {
+public interface Keyed {
 
     /**
-     * Returns the position this element requires.
+     * Returns the key of the node/element.
      *
      * @return
      */
-    int getPosition();
+    Key getKey();
 }

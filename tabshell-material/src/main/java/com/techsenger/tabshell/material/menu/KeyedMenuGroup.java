@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.material.menu;
 
+import com.techsenger.tabshell.material.Keyed;
+import com.techsenger.tabshell.material.Positioned;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +27,7 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public class KeyedMenuGroup implements Positionable {
+public class KeyedMenuGroup implements Keyed, Positioned {
 
     private final MenuGroupKey key;
 
@@ -47,6 +49,7 @@ public class KeyedMenuGroup implements Positionable {
         this.position = position;
     }
 
+    @Override
     public MenuGroupKey getKey() {
         return key;
     }
@@ -84,6 +87,6 @@ public class KeyedMenuGroup implements Positionable {
      */
     public void sort() {
         Collections.sort(items, (o1, o2) ->
-                Integer.compare(((Positionable) o1).getPosition(), ((Positionable) o2).getPosition()));
+                Integer.compare(((Positioned) o1).getPosition(), ((Positioned) o2).getPosition()));
     }
 }
