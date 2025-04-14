@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.tabs.workertab;
 
-import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.tabs.CoreComponentKeys;
 import com.techsenger.tabshell.tabs.splittab.AbstractSplitTabViewModel;
@@ -45,8 +45,8 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
 
     private final TabManagerViewModel bottomTabManager;
 
-    public AbstractWorkerTabViewModel(TabShellViewModel tabShell) {
-        super(tabShell);
+    public AbstractWorkerTabViewModel(ShellViewModel shell) {
+        super(shell);
         this.bottomTabManager = new TabManagerViewModel(CoreComponentKeys.BOTTOM_TABS);
         this.workers.addListener((InvalidationListener) (change) -> this.workerCount.set(workers.size()));
         this.bottomTabManager.getTabs().addListener((InvalidationListener) (change) -> {

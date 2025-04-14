@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.core.DefaultTabShellView;
+import com.techsenger.tabshell.core.DefaultShellView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
@@ -50,7 +50,7 @@ public class MenuManager {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuManager.class);
 
-    private final DefaultTabShellView shellView;
+    private final DefaultShellView shellView;
 
     private final MenuBar menuBar;
 
@@ -59,7 +59,7 @@ public class MenuManager {
     private final ListChangeListener<MenuItem> menuItemsListener =
             (ListChangeListener.Change<? extends MenuItem> c) -> processMenuListChange(c);
 
-    public MenuManager(DefaultTabShellView shellView, MenuBar menuBar) {
+    public MenuManager(DefaultShellView shellView, MenuBar menuBar) {
         this.shellView = shellView;
         this.menuBar = menuBar;
         //listener if menus are added/removed dinamically to/from menu bar(!)

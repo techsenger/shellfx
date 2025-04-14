@@ -16,8 +16,7 @@
 
 package com.techsenger.tabshell.registrars;
 
-import com.techsenger.tabshell.core.TabShellKey;
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellKey;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
@@ -33,6 +32,7 @@ import com.techsenger.tabshell.text.viewer.AbstractViewerTabViewModel;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import com.techsenger.tabshell.core.ShellView;
 
 /**
  *
@@ -68,35 +68,35 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<KeyedMenu> f = (v) -> {
             return new KeyedMenu(EditMenuKeys.EDIT, true, false, false, "_Edit", 200);
         };
-        addRegistration(getRegistry().registerMenu(TabShellKey.INSTANCE, null, f));
+        addRegistration(getRegistry().registerMenu(ShellKey.INSTANCE, null, f));
     }
 
     protected void registerHistoryGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
             return new KeyedMenuGroup(EditMenuKeys.HISTORY, "History", 100);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f));
+        addRegistration(getRegistry().registerMenuGroup(ShellKey.INSTANCE, EditMenuKeys.EDIT, f));
     }
 
     protected void registerClipboardGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
             return new KeyedMenuGroup(EditMenuKeys.CLIPBOARD, "Clipboard", 200);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f));
+        addRegistration(getRegistry().registerMenuGroup(ShellKey.INSTANCE, EditMenuKeys.EDIT, f));
     }
 
     protected void registerFindReplaceGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
             return new KeyedMenuGroup(EditMenuKeys.FIND_REPLACE, "Find Replace", 300);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f));
+        addRegistration(getRegistry().registerMenuGroup(ShellKey.INSTANCE, EditMenuKeys.EDIT, f));
     }
 
     protected void registerDefaultGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
             return new KeyedMenuGroup(EditMenuKeys.DEFAULT, "Default", 10000);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, EditMenuKeys.EDIT, f));
+        addRegistration(getRegistry().registerMenuGroup(ShellKey.INSTANCE, EditMenuKeys.EDIT, f));
     }
 
     protected void registerUndoItem() {
@@ -105,14 +105,14 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.UNDO), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractEditorTabView) {
                     ((AbstractEditorTabView) tab).undo();
                 }
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.HISTORY, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.HISTORY, f));
     }
 
     protected void registerRedoItem() {
@@ -121,14 +121,14 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.REDO), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractEditorTabView) {
                     ((AbstractEditorTabView) tab).redo();
                 }
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.HISTORY, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.HISTORY, f));
     }
 
     protected void registerCutItem() {
@@ -137,14 +137,14 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.CUT), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractEditorTabView) {
                     ((AbstractEditorTabView) tab).cut();
                 }
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
     }
 
     protected void registerCopyItem() {
@@ -153,14 +153,14 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.COPY), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView) {
                     ((AbstractViewerTabView) tab).copy();
                 }
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
     }
 
     protected void registerPasteItem() {
@@ -169,14 +169,14 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.PASTE), 300);
             item.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractEditorTabView) {
                     ((AbstractEditorTabView) tab).paste();
                 }
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.CLIPBOARD, f));
     }
 
     protected void registerFindItem() {
@@ -185,7 +185,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.FIND), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView) {
                     var textView = (AbstractViewerTabView) tab;
                     ((AbstractViewerTabViewModel) textView.getViewModel()).addFindPane(false);
@@ -193,7 +193,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerReplaceItem() {
@@ -202,7 +202,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.REPLACE), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView) {
                     var textView = (AbstractViewerTabView) tab;
                     ((AbstractViewerTabViewModel) textView.getViewModel()).addFindPane(true);
@@ -210,7 +210,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerFindSelectionItem() {
@@ -218,7 +218,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             var item = new KeyedMenuItem(EditMenuKeys.FIND_SELECTION, false, true, false, "Find _Selection", null, 300);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F3, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView) {
                     var textView = (AbstractViewerTabView) tab;
                     var find = textView.getFind();
@@ -239,7 +239,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerFindNextItem() {
@@ -247,7 +247,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             var item = new KeyedMenuItem(EditMenuKeys.FIND_NEXT, false, true, false, "Find Ne_xt", null, 400);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F3));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView) {
                     var textView = (AbstractViewerTabView) tab;
                     var find = textView.getFind();
@@ -259,7 +259,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerFindPreviousItem() {
@@ -267,7 +267,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             var item = new KeyedMenuItem(EditMenuKeys.FIND_PREVIOUS, false, true, false, "Find Pre_vious", null, 500);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F3, KeyCombination.SHIFT_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView) {
                     var find = ((AbstractViewerTabView<AbstractViewerTabViewModel>) tab).getFind();
                     if (find != null) {
@@ -278,7 +278,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.FIND_REPLACE, f));
     }
 
     protected void registerGoToLineItem() {
@@ -286,13 +286,13 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             var item = new KeyedMenuItem(EditMenuKeys.GO_TO_LINE, false, true, false, "Go to _Line", null, 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
-                var tab = ((TabShellView<?>) v).getSelectedTab();
+                var tab = ((ShellView<?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView) {
                     ((AbstractViewerTabView<AbstractViewerTabViewModel>) tab).getViewModel().openGoToLineDialog();
                 }
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, EditMenuKeys.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, EditMenuKeys.DEFAULT, f));
     }
 }

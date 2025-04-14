@@ -35,7 +35,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public interface TabShellViewModel extends ViewModel, TabHostViewModel<ShellTabViewModel>, MenuAware,
+public interface ShellViewModel extends ViewModel, TabHostViewModel<ShellTabViewModel>, MenuAware,
         IconedViewModel, CloseableViewModel {
 
     /**
@@ -43,14 +43,14 @@ public interface TabShellViewModel extends ViewModel, TabHostViewModel<ShellTabV
      *
      * @param onClose
      */
-    void setOnClosed(TabShellClosedCallback onClose);
+    void setOnClosed(ShellClosedCallback onClose);
 
     /**
      * Returns a function to be called after closing stage.
      *
      * @return
      */
-    TabShellClosedCallback getOnClosed();
+    ShellClosedCallback getOnClosed();
 
     /**
      * Returns shell current width property.

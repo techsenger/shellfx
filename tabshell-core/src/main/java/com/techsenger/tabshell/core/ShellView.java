@@ -25,11 +25,11 @@ import com.techsenger.tabshell.core.tab.TabHostView;
 import java.util.List;
 
 /**
- * There can be only one instance of TabShell in VirtualMachine.
+ * There can be only one instance of Shell in VirtualMachine.
  *
  * @author Pavel Castornii
  */
-public interface TabShellView<T extends TabShellViewModel> extends View<T>, TabHostView<ShellTabView<?>>,
+public interface ShellView<T extends ShellViewModel> extends View<T>, TabHostView<ShellTabView<?>>,
         CloseableView {
 
     @Override

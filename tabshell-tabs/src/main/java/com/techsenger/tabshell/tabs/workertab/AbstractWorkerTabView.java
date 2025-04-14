@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.tabs.workertab;
 
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.tabs.splittab.AbstractSplitTabView;
@@ -38,8 +38,8 @@ public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel
 
     private final TabManagerView bottomTabManager;
 
-    public AbstractWorkerTabView(TabShellView<?> tabShell, T viewModel) {
-        super(tabShell, viewModel);
+    public AbstractWorkerTabView(ShellView<?> shell, T viewModel) {
+        super(shell, viewModel);
         this.bottomTabManager = new TabManagerView(viewModel.getBottomTabManager());
     }
 

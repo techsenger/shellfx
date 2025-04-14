@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.tabs.splittab;
 
-import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -114,8 +114,8 @@ public abstract class AbstractSplitTabViewModel extends AbstractShellTabViewMode
 
     private final Divider bottomDivider;
 
-    public AbstractSplitTabViewModel(TabShellViewModel tabShell) {
-        super(tabShell);
+    public AbstractSplitTabViewModel(ShellViewModel shell) {
+        super(shell);
         this.leftDivider = new Divider(0);
         this.rightDivider = new Divider(1.0);
         this.bottomDivider = new Divider(1.0);

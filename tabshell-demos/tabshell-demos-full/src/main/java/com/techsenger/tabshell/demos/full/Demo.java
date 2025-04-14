@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.tabshell.core.DefaultTabShellView;
-import com.techsenger.tabshell.core.DefaultTabShellViewModel;
+import com.techsenger.tabshell.core.DefaultShellView;
+import com.techsenger.tabshell.core.DefaultShellViewModel;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
 import com.techsenger.tabshell.icons.IconStylesheetProvider;
@@ -35,13 +35,13 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultTabShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
+        var viewModel = new DefaultShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
         viewModel.setTitle("TabShell Full Demo");
         viewModel.setOnClosed(() -> {
             Platform.exit();
         });
 
-        var view = new DefaultTabShellView(stage, IconStylesheetProvider.createForAll(), viewModel);
+        var view = new DefaultShellView(stage, IconStylesheetProvider.createForAll(), viewModel);
         view.initialize();
 
         //adding menu

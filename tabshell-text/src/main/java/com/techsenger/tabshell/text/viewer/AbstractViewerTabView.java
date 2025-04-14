@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.ComponentHelper;
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -115,8 +115,8 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         }
     };
 
-    public AbstractViewerTabView(TabShellView<?> tabShell, T viewModel, ExtendedTextArea textArea) {
-        super(tabShell, viewModel);
+    public AbstractViewerTabView(ShellView<?> shell, T viewModel, ExtendedTextArea textArea) {
+        super(shell, viewModel);
         this.textArea = textArea;
         this.textScrollPane = new VirtualizedScrollPane(textArea);
     }

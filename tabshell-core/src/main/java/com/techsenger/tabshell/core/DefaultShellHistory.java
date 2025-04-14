@@ -22,7 +22,7 @@ import com.techsenger.mvvm4fx.core.AbstractHistory;
  *
  * @author Pavel Castornii
  */
-public class DefaultTabShellHistory extends AbstractHistory<DefaultTabShellViewModel> {
+public class DefaultShellHistory extends AbstractHistory<DefaultShellViewModel> {
 
     private double width;
 
@@ -38,7 +38,7 @@ public class DefaultTabShellHistory extends AbstractHistory<DefaultTabShellViewM
     }
 
     @Override
-    public void restoreAppearance(DefaultTabShellViewModel viewModel) {
+    public void restoreAppearance(DefaultShellViewModel viewModel) {
         super.restoreAppearance(viewModel);
         viewModel.setDefaultWidth(width);
         viewModel.setDefaultHeight(height);
@@ -46,7 +46,7 @@ public class DefaultTabShellHistory extends AbstractHistory<DefaultTabShellViewM
     }
 
     @Override
-    public void saveAppearance(DefaultTabShellViewModel viewModel) {
+    public void saveAppearance(DefaultShellViewModel viewModel) {
         super.saveAppearance(viewModel);
         this.width = viewModel.getDefaultWidth();
         this.height = viewModel.getDefaultHeight();

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabView;
 import javafx.geometry.Orientation;
@@ -37,8 +37,8 @@ public class EditorTabView extends AbstractEditorTabView<EditorTabViewModel> {
 
     private final Button yesNoButton = new Button("YesNo");
 
-    EditorTabView(TabShellView<?> tabShell, EditorTabViewModel viewModel) {
-        super(tabShell, viewModel, new ExtendedTextArea());
+    EditorTabView(ShellView<?> shell, EditorTabViewModel viewModel) {
+        super(shell, viewModel, new ExtendedTextArea());
     }
 
     @Override

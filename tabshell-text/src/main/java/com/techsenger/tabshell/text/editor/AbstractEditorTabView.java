@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text.editor;
 
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -82,8 +82,8 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
         this.getViewModel().updateTextTabValues();
     };
 
-    public AbstractEditorTabView(TabShellView<?> tabShell, T viewModel, ExtendedTextArea textArea) {
-        super(tabShell, viewModel, textArea);
+    public AbstractEditorTabView(ShellView<?> shell, T viewModel, ExtendedTextArea textArea) {
+        super(shell, viewModel, textArea);
     }
 
     public void undo() {

@@ -49,8 +49,8 @@ public interface FileSaverViewModel extends DialogClientViewModel {
     default void saveFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
         var viewModel = new FileChooserDialogViewModel(scope, FileChooserType.SAVE_AS,
-                getTabShell().getSettings().getAppearance(), storages,
-                getTabShell().getHistoryManager());
+                getShell().getSettings().getAppearance(), storages,
+                getShell().getHistoryManager());
         var filters = createSaveExtensionFilters();
         if (filters != null) {
             viewModel.getExtensionFilters().addAll(filters);

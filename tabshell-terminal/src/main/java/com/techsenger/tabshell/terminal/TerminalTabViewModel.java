@@ -21,7 +21,7 @@ import com.pty4j.PtyProcessBuilder;
 import com.techsenger.jeditermfx.core.util.Platform;
 import com.techsenger.jeditermfx.ui.settings.SettingsProvider;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
@@ -75,13 +75,13 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
 
     private FindPaneViewModel find;
 
-    public TerminalTabViewModel(TabShellViewModel tabShell, String directory) {
-        super(tabShell);
+    public TerminalTabViewModel(ShellViewModel shell, String directory) {
+        super(shell);
         this.ttyConnector = createTtyConnector(directory);
         this.setIcon(new FontIcon(TerminalIcons.TERMINAL));
         this.setTitle("Terminal");
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> tabShell.getHistoryManager().getHistory(TerminalHistory.class, TerminalHistory::new));
+        setHistoryProvider(() -> shell.getHistoryManager().getHistory(TerminalHistory.class, TerminalHistory::new));
     }
 
     @Override
@@ -136,12 +136,12 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
     @Override
     protected void postHistoryRestore() {
         super.postHistoryRestore();
-        this.terminalPalette = new TerminalPalette(getTabShell().getSettings().getAppearance().getTheme(),
+        this.terminalPalette = new TerminalPalette(getShell().getSettings().getAppearance().getTheme(),
                 paletteType.get());
     }
 
     protected SettingsProvider createSettingsProvider() {
-        var settings = getTabShell().getSettings();
+        var settings = getShell().getSettings();
         return new TerminalSettingsProvider(settings.getAppearance().getMonospaceFont(), terminalPalette);
     }
 
@@ -173,7 +173,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         if (this.find != null) {
             return;
         }
-        this.find = new FindPaneViewModel(getTabShell().getHistoryManager(), selectedText.get());
+        this.find = new FindPaneViewModel(getShell().getHistoryManager(), selectedText.get());
         this.find.closeActionProperty().set(() -> hideFind());
         getComponentHelper().showFindPane(this.find);
     }
@@ -196,7 +196,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
     }
 
     void addListeners() {
-        getTabShell().getSettings().getAppearance().themeProperty().addListener(themeListener);
+        getShell().getSettings().getAppearance().themeProperty().addListener(themeListener);
         this.paletteType.addListener((ov, oldV, newV) -> {
             this.terminalPalette.setPaletteType(newV);
             this.focusRequired.next(true);
@@ -208,7 +208,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
     }
 
     void removeListeners() {
-        getTabShell().getSettings().getAppearance().themeProperty().removeListener(themeListener);
+        getShell().getSettings().getAppearance().themeProperty().removeListener(themeListener);
     }
 
     ObservableList<TerminalPaletteType> getPaletteTypes() {

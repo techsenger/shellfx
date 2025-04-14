@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DialogManager;
-import com.techsenger.tabshell.core.TabShellView;
 
 /**
  * This is the tab that is added to Shell.
@@ -28,5 +28,5 @@ public interface ShellTabView<T extends ShellTabViewModel> extends TabView<T> {
 
     DialogManager getDialogManager();
 
-    TabShellView<?> getTabShell();
+    ShellView<?> getShell();
 }

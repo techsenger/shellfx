@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demos.core.tab;
 
 import com.techsenger.mvvm4fx.core.ComponentHelper;
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
@@ -48,8 +48,8 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
 
     private final HBox hBox = new HBox(vBox);
 
-    public DemoTabView(TabShellView<?> tabShell, DemoTabViewModel viewModel) {
-        super(tabShell, viewModel);
+    public DemoTabView(ShellView<?> shell, DemoTabViewModel viewModel) {
+        super(shell, viewModel);
     }
 
     @Override

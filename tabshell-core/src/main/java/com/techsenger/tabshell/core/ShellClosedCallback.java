@@ -20,7 +20,7 @@ package com.techsenger.tabshell.core;
  *
  * @author Pavel Castornii
  */
-public interface TabShellClosedCallback {
+public interface ShellClosedCallback {
 
     void call();
 }

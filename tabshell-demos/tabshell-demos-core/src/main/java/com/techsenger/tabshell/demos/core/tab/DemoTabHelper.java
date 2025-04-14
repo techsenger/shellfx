@@ -37,7 +37,7 @@ public class DemoTabHelper extends AbstractComponentHelper<DemoTabView> {
         dialogView.initialize(); //dont' forget!
         DialogManager dialogManager = null;
         if (dialogViewModel.getScope() == DialogScope.SHELL) {
-            dialogManager = getView().getTabShell().getDialogManager();
+            dialogManager = getView().getShell().getDialogManager();
         } else {
             dialogManager = getView().getDialogManager();
         }

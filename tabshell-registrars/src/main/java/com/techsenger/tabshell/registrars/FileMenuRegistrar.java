@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.registrars;
 
-import com.techsenger.tabshell.core.TabShellKey;
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellKey;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
@@ -56,31 +56,31 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<KeyedMenu> f = (v) -> {
             return new KeyedMenu(FileMenuKeys.FILE, "_File", 100);
         };
-        addRegistration(getRegistry().registerMenu(TabShellKey.INSTANCE, null, f));
+        addRegistration(getRegistry().registerMenu(ShellKey.INSTANCE, null, f));
     }
 
     protected void registerFileActionsGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
             return new KeyedMenuGroup(FileMenuKeys.FILE_ACTIONS, "File Actions", 100);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, FileMenuKeys.FILE, f));
+        addRegistration(getRegistry().registerMenuGroup(ShellKey.INSTANCE, FileMenuKeys.FILE, f));
     }
 
     protected void registerDefaultGroup() {
         ControlFactory<KeyedMenuGroup> f = (v) -> {
             return new KeyedMenuGroup(FileMenuKeys.DEFAULT, "Default", 10000);
         };
-        addRegistration(getRegistry().registerMenuGroup(TabShellKey.INSTANCE, FileMenuKeys.FILE, f));
+        addRegistration(getRegistry().registerMenuGroup(ShellKey.INSTANCE, FileMenuKeys.FILE, f));
     }
 
     protected void registerOpenFileItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var tabShellView = (TabShellView<?>) v;
+            var shellView = (ShellView<?>) v;
             var item = new KeyedMenuItem(FileMenuKeys.OPEN, true, true, false, "_Open",
                     new FontIconView(CoreIcons.OPEN), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
-                var view = tabShellView.getSelectedTab();
+                var view = shellView.getSelectedTab();
                 var viewModel = view.getViewModel();
                 var helper = viewModel.getMenuItemHelper(item.getKey());
                 helper.doOnItemAction();
@@ -88,17 +88,17 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
     protected void registerSaveFileItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var tabShellView = (TabShellView<?>) v;
+            var shellView = (ShellView<?>) v;
             var item = new KeyedMenuItem(FileMenuKeys.SAVE, true, true, false, "_Save",
                     new FontIconView(CoreIcons.SAVE), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
-                var view = tabShellView.getSelectedTab();
+                var view = shellView.getSelectedTab();
                 var viewModel = view.getViewModel();
                 var helper = viewModel.getMenuItemHelper(item.getKey());
                 helper.doOnItemAction();
@@ -106,33 +106,33 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
     protected void registerSaveFileAsItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var tabShellView = (TabShellView<?>) v;
+            var shellView = (ShellView<?>) v;
             var item = new KeyedMenuItem(FileMenuKeys.SAVE_AS, true, true, false, "Sa_ve As",
                     new FontIconView(CoreIcons.SAVE_AS), 300);
             item.setOnAction((e) -> {
-                var view = tabShellView.getSelectedTab();
+                var view = shellView.getSelectedTab();
                 var viewModel = view.getViewModel();
                 var helper = viewModel.getMenuItemHelper(item.getKey());
                 helper.doOnItemAction();
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
     protected void registerExitItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var tabShellView = (TabShellView<?>) v;
+            var shellView = (ShellView<?>) v;
             var item = new KeyedMenuItem(FileMenuKeys.EXIT, "E_xit", new FontIconView(CoreIcons.EXIT), 10000);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> ((TabShellView<?>) v).close());
+            item.setOnAction((e) -> ((ShellView<?>) v).close());
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.DEFAULT, f));
     }
 }

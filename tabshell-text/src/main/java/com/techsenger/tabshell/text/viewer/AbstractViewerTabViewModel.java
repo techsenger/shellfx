@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.core.CloseScope;
-import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.FileMenuKeys;
@@ -114,8 +114,8 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
      * Constructor.
      *
      */
-    public AbstractViewerTabViewModel(TabShellViewModel tabShell, GenericFile file) {
-        super(tabShell);
+    public AbstractViewerTabViewModel(ShellViewModel shell, GenericFile file) {
+        super(shell);
         this.file.set(file);
         this.undoManager.addListener((ov, oldV, newV) -> {
             if (newV != null) {
@@ -197,7 +197,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     }
 
     public void openGoToLineDialog() {
-        var viewModel = new GoToLineDialogViewModel(getTabShell().getHistoryManager());
+        var viewModel = new GoToLineDialogViewModel(getShell().getHistoryManager());
         getComponentHelper().openGoToLineDialog(viewModel);
     }
 
@@ -208,7 +208,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
      */
     public void addFindPane(boolean replaceMode) {
         if (this.find == null) {
-            this.find = new DefaultFindPaneViewModel(getFindMatchesResetPolicy(), getTabShell().getHistoryManager());
+            this.find = new DefaultFindPaneViewModel(getFindMatchesResetPolicy(), getShell().getHistoryManager());
             this.find.closeActionProperty().set(() -> {
                 this.removeFindPane();
             });
@@ -454,7 +454,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     }
 
     public ViewerSettings getSettings() {
-        return getTabShell().getSettings().getViewer();
+        return getShell().getSettings().getViewer();
     }
 
     public ReadOnlyBooleanProperty persistedProperty() {

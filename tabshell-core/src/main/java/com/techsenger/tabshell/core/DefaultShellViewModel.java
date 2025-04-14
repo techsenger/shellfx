@@ -54,11 +54,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultTabShellViewModel extends AbstractParentViewModel implements TabShellViewModel {
+public class DefaultShellViewModel extends AbstractParentViewModel implements ShellViewModel {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultTabShellViewModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultShellViewModel.class);
 
-    private TabShellClosedCallback onClosed;
+    private ShellClosedCallback onClosed;
 
     private final ReadOnlyObjectWrapper<ShellTabViewModel> selectedTab = new ReadOnlyObjectWrapper<>();
 
@@ -101,21 +101,21 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
      */
     private double defaultHeight;
 
-    public DefaultTabShellViewModel(Settings settings, HistoryManager historyManager) {
+    public DefaultShellViewModel(Settings settings, HistoryManager historyManager) {
         super();
         this.settings = settings;
         this.historyManager = historyManager;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> historyManager.getHistory(DefaultTabShellHistory.class, DefaultTabShellHistory::new));
+        setHistoryProvider(() -> historyManager.getHistory(DefaultShellHistory.class, DefaultShellHistory::new));
     }
 
     @Override
-    public TabShellClosedCallback getOnClosed() {
+    public ShellClosedCallback getOnClosed() {
         return onClosed;
     }
 
     @Override
-    public void setOnClosed(TabShellClosedCallback onClose) {
+    public void setOnClosed(ShellClosedCallback onClose) {
         this.onClosed = onClose;
     }
 
@@ -161,7 +161,7 @@ public class DefaultTabShellViewModel extends AbstractParentViewModel implements
 
     @Override
     public ComponentKey getKey() {
-        return TabShellKey.INSTANCE;
+        return ShellKey.INSTANCE;
     }
 
     @Override

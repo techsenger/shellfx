@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demos.full;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
@@ -38,12 +38,12 @@ import java.util.List;
  */
 public class EditorTabViewModel extends AbstractEditorTabViewModel {
 
-    EditorTabViewModel(TabShellViewModel tabShell, GenericFile file) {
-        super(tabShell, file);
+    EditorTabViewModel(ShellViewModel shell, GenericFile file) {
+        super(shell, file);
         //the initial history is created using a factory instead of reflection in the history manager to avoid
         //access issues with hidden packages
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> tabShell.getHistoryManager()
+        setHistoryProvider(() -> shell.getHistoryManager()
                 .getHistory(EditorTabHistory.class, EditorTabHistory::new));
         setIcon(new FontIcon(TextIcons.EDITOR));
 

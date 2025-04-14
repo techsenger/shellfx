@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
@@ -40,8 +40,8 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
 
     private final BooleanProperty exitValid = new SimpleBooleanProperty();
 
-    public DemoTabViewModel(TabShellViewModel tabShell) {
-        super(tabShell);
+    public DemoTabViewModel(ShellViewModel shell) {
+        super(shell);
         setTitle("Tab");
         addMenuItemHelpers(
             new SimpleMenuItemHelper(DemoMenuKeys.NEW) {

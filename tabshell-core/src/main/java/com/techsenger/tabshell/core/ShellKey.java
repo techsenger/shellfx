@@ -20,11 +20,11 @@ package com.techsenger.tabshell.core;
  *
  * @author Pavel Castornii
  */
-public final class TabShellKey extends AbstractComponentKey {
+public final class ShellKey extends AbstractComponentKey {
 
-    public static final TabShellKey INSTANCE = new TabShellKey("Tab Shell");
+    public static final ShellKey INSTANCE = new ShellKey("Shell");
 
-    private TabShellKey(String text) {
+    private ShellKey(String text) {
         super(text);
     }
 }

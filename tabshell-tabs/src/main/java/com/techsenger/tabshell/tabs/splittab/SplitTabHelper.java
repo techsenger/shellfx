@@ -34,7 +34,7 @@ public class SplitTabHelper<T extends AbstractSplitTabView<?>> extends AbstractD
     public void openDialog(DialogView<?> dialog) {
         var scope = dialog.getViewModel().getScope();
         if (scope == DialogScope.SHELL) {
-            getView().getTabShell().getDialogManager().openDialog(dialog);
+            getView().getShell().getDialogManager().openDialog(dialog);
         } else {
             getView().getDialogManager().openDialog(dialog);
         }

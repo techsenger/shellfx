@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogScope;
@@ -30,11 +30,11 @@ public abstract class AbstractShellTabView<T extends AbstractShellTabViewModel> 
 
     private final DialogManager dialogManager;
 
-    private final TabShellView<?> tabShell;
+    private final ShellView<?> shell;
 
-    public AbstractShellTabView(TabShellView<?> tabShell, T viewModel) {
+    public AbstractShellTabView(ShellView<?> shell, T viewModel) {
         super(viewModel);
-        this.tabShell = tabShell;
+        this.shell = shell;
         this.dialogManager = new DefaultDialogManager(DialogScope.TAB, getWrapperPane(), getContentPane(),
                 viewModel.dialogCountWrapper());
     }
@@ -45,8 +45,8 @@ public abstract class AbstractShellTabView<T extends AbstractShellTabViewModel> 
     }
 
     @Override
-    public TabShellView<?> getTabShell() {
-        return this.tabShell;
+    public ShellView<?> getShell() {
+        return this.shell;
     }
 
     @Override

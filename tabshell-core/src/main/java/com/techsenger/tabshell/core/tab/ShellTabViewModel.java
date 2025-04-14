@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.ShellViewModel;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 
 /**
@@ -28,7 +28,7 @@ public interface ShellTabViewModel extends TabViewModel {
     @Override
     ShellTabKey getKey();
 
-    TabShellViewModel getTabShell();
+    ShellViewModel getShell();
 
     /**
      * Property that shows the count of open dialogs.

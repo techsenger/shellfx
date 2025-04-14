@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.tabshell.core.TabShellKey;
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellKey;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
@@ -58,20 +58,20 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             var item = new KeyedMenuItem(DemoFileMenuKeys.EDITOR, "E_ditor", new FontIconView(TextIcons.EDITOR), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
-                var tabShell = (TabShellView<?>) v;
+                var shell = (ShellView<?>) v;
                 //editor
                 var stogages = FileStorages.getDefault(true);
                 var homeDir = GenericFile.getHome(stogages);
                 var file = GenericFile.getChild(homeDir, "Lorem Ipsum.txt", FileType.FILE);
-                var editorViewModel = new EditorTabViewModel(tabShell.getViewModel(), file);
-                var editorView = new EditorTabView(tabShell, editorViewModel);
+                var editorViewModel = new EditorTabViewModel(shell.getViewModel(), file);
+                var editorView = new EditorTabView(shell, editorViewModel);
                 editorView.initialize();
                 editorViewModel.setContent(Text.INSTANCE);
-                tabShell.openTab(editorView);
+                shell.openTab(editorView);
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
     protected void registerTerminalItem() {
@@ -80,24 +80,24 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
                     new FontIconView(TerminalIcons.TERMINAL), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
-                var tabShell = (TabShellView<?>) v;
+                var shell = (ShellView<?>) v;
                 //terminal
-                var terminalViewModel = new TerminalTabViewModel(tabShell.getViewModel(), null);
-                var terminalView = new TerminalTabView(tabShell, terminalViewModel);
+                var terminalViewModel = new TerminalTabViewModel(shell.getViewModel(), null);
+                var terminalView = new TerminalTabView(shell, terminalViewModel);
                 terminalView.initialize();
-                tabShell.openTab(terminalView);
+                shell.openTab(terminalView);
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
     protected void registerThemeItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(DemoFileMenuKeys.THEME, "_Theme", 300);
             item.setOnAction((e) -> {
-                var tabShell = (TabShellView<?>) v;
-                var appearance = tabShell.getViewModel().getSettings().getAppearance();
+                var shell = (ShellView<?>) v;
+                var appearance = shell.getViewModel().getSettings().getAppearance();
                 var dialogViewModel = new ThemeDialogViewModel(appearance.getTheme());
                 dialogViewModel.okActionProperty().set(() -> {
                     appearance.themeProperty().set(dialogViewModel.themeProperty().get());
@@ -105,11 +105,11 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
                 });
                 var dialogView = new ThemeDialogView(dialogViewModel);
                 dialogView.initialize();
-                tabShell.getDialogManager().openDialog(dialogView);
+                shell.getDialogManager().openDialog(dialogView);
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(TabShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
 
 }

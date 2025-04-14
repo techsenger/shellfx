@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.tabs.splittab;
 
 import com.techsenger.mvvm4fx.core.PulseListenerTiming;
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +55,8 @@ public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel> 
 
     private final VBox rightPane = new VBox();
 
-    public AbstractSplitTabView(TabShellView<?> tabShell, T viewModel) {
-        super(tabShell, viewModel);
+    public AbstractSplitTabView(ShellView<?> shell, T viewModel) {
+        super(shell, viewModel);
     }
 
     protected VBox getLeftPane() {

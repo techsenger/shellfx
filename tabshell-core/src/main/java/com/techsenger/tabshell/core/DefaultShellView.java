@@ -67,10 +67,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewModel> implements
-        TabShellView<DefaultTabShellViewModel> {
+public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> implements
+        ShellView<DefaultShellViewModel> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultTabShellView.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultShellView.class);
 
     private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");
 
@@ -221,11 +221,11 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
 
     private final ControlRegistry controlRegistry = new ControlRegistry();
 
-    public DefaultTabShellView(List<Stylesheet> stylesheets, DefaultTabShellViewModel viewModel) {
+    public DefaultShellView(List<Stylesheet> stylesheets, DefaultShellViewModel viewModel) {
         this(new Stage(), stylesheets, viewModel);
     }
 
-    public DefaultTabShellView(Stage stage, List<Stylesheet> stylesheets, DefaultTabShellViewModel viewModel) {
+    public DefaultShellView(Stage stage, List<Stylesheet> stylesheets, DefaultShellViewModel viewModel) {
         super(viewModel);
         this.stage = stage;
         stageController = new ShellStageController(stage, viewModel.getDefaultWidth(),
@@ -311,7 +311,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
     }
 
     @Override
-    protected void build(DefaultTabShellViewModel viewModel) {
+    protected void build(DefaultShellViewModel viewModel) {
         super.build(viewModel);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
         tabPane.getStyleClass().addAll("shell-tab-pane", Styles.TABS_FLOATING, Styles.DENSE);
@@ -328,7 +328,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
     }
 
     @Override
-    protected void bind(DefaultTabShellViewModel viewModel) {
+    protected void bind(DefaultShellViewModel viewModel) {
         super.bind(viewModel);
         viewModel.widthWrapper().bind(this.contentPane.widthProperty());
         viewModel.heightWrapper().bind(this.contentPane.heightProperty());
@@ -338,7 +338,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
     }
 
     @Override
-    protected void addListeners(DefaultTabShellViewModel viewModel) {
+    protected void addListeners(DefaultShellViewModel viewModel) {
         super.addListeners(viewModel);
         this.tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV != null) {
@@ -385,7 +385,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
     }
 
     @Override
-    protected void addHandlers(DefaultTabShellViewModel viewModel) {
+    protected void addHandlers(DefaultShellViewModel viewModel) {
         super.addHandlers(viewModel);
         this.stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::fixAcceleratorKeyPressed);
         stage.setOnCloseRequest((e) -> {
@@ -400,7 +400,7 @@ public class DefaultTabShellView extends AbstractParentView<DefaultTabShellViewM
     }
 
     @Override
-    protected void postDeinitialize(DefaultTabShellViewModel viewModel) {
+    protected void postDeinitialize(DefaultShellViewModel viewModel) {
         super.postDeinitialize(viewModel);
     }
 

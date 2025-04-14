@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.core.DefaultTabShellView;
+import com.techsenger.tabshell.core.DefaultShellView;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
 import javafx.event.ActionEvent;
@@ -32,7 +32,7 @@ class MenuItemActionInterceptor implements ActionInterceptor {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuItemActionInterceptor.class);
 
-    private final DefaultTabShellView shellView;
+    private final DefaultShellView shellView;
 
     private final EventHandler<ActionEvent> action;
 
@@ -40,7 +40,7 @@ class MenuItemActionInterceptor implements ActionInterceptor {
 
     private final KeyedMenuItem item;
 
-    MenuItemActionInterceptor(DefaultTabShellView shellView, KeyedMenu menu, KeyedMenuItem item) {
+    MenuItemActionInterceptor(DefaultShellView shellView, KeyedMenu menu, KeyedMenuItem item) {
         this.shellView = shellView;
         this.action = item.getOnAction();
         this.menu = menu;

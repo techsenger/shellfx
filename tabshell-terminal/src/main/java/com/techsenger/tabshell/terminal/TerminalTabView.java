@@ -20,7 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
 import com.techsenger.mvvm4fx.core.ComponentHelper;
-import com.techsenger.tabshell.core.TabShellView;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
@@ -83,8 +83,8 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
 
     private final KitJediTermFxWidget widget;
 
-    public TerminalTabView(TabShellView<?> tabShell, TerminalTabViewModel viewModel) {
-        super(tabShell, viewModel);
+    public TerminalTabView(ShellView<?> shell, TerminalTabViewModel viewModel) {
+        super(shell, viewModel);
         this.widget = new KitJediTermFxWidget(80, 24, viewModel.createSettingsProvider(), () -> {
             if (this.find == null) {
                 viewModel.showFind();

@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.demos.core;
 
-import com.techsenger.tabshell.core.DefaultTabShellView;
-import com.techsenger.tabshell.core.DefaultTabShellViewModel;
+import com.techsenger.tabshell.core.DefaultShellView;
+import com.techsenger.tabshell.core.DefaultShellViewModel;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuKeys;
@@ -36,14 +36,14 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultTabShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
+        var viewModel = new DefaultShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
         viewModel.setTitle("TabShell Core Demo");
         viewModel.setOnClosed(() -> {
             Platform.exit();
         });
         //this helper will be used when there are no tabs
         viewModel.addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuKeys.NEW, null, Boolean.TRUE));
-        var view = new DefaultTabShellView(stage, null, viewModel);
+        var view = new DefaultShellView(stage, null, viewModel);
         view.initialize();
 
         //adding menu

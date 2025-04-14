@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text.editor;
 
-import com.techsenger.tabshell.core.TabShellViewModel;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.storage.GenericFile;
@@ -61,8 +61,8 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
 
     private SimpleStringProperty positionText = new SimpleStringProperty();
 
-    public AbstractEditorTabViewModel(TabShellViewModel tabShell, GenericFile file) {
-        super(tabShell, file);
+    public AbstractEditorTabViewModel(ShellViewModel shell, GenericFile file) {
+        super(shell, file);
         this.updateTextTabValues();
         this.currentParagraph.addListener((ov, oldV, newV)
                 -> this.updatePosition(newV.intValue(), this.currentColumn.get()));

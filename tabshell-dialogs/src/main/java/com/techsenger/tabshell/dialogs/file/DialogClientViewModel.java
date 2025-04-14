@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.core.TabShellViewModel;
-import com.techsenger.tabshell.storage.GenericFile;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.dialogs.StandardDialogHelper;
+import com.techsenger.tabshell.storage.GenericFile;
 
 /**
  *
@@ -26,7 +26,7 @@ import com.techsenger.tabshell.dialogs.StandardDialogHelper;
  */
 public interface DialogClientViewModel {
 
-    TabShellViewModel getTabShell();
+    ShellViewModel getShell();
 
     StandardDialogHelper<?> getComponentHelper();
 
