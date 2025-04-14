@@ -17,6 +17,9 @@
 package com.techsenger.tabshell.tabs.tabmanager;
 
 import com.techsenger.tabshell.core.CloseScope;
+import com.techsenger.tabshell.core.menu.MenuAware;
+import com.techsenger.tabshell.core.menu.MenuHelper;
+import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
@@ -25,6 +28,8 @@ import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabHostView;
 import com.techsenger.tabshell.core.tab.TabHostViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.material.menu.MenuKey;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -40,7 +45,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implements TabHostView<TabView<?>> {
+public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implements TabHostView<TabView<?>>,
+        MenuAware {
 
     private final TabPane root = new TabPane();
 
@@ -97,6 +103,42 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
     @Override
     public TabPane getNode() {
         return this.root;
+    }
+
+    @Override
+    public void doOnMenuShowing(MenuKey menuKey) {
+        var tab = this.selectedTab.get();
+        if (tab != null) {
+            tab.doOnMenuShowing(menuKey);
+        }
+    }
+
+    @Override
+    public void doOnMenuHiding(MenuKey menuKey) {
+        var tab = this.selectedTab.get();
+        if (tab != null) {
+            tab.doOnMenuHiding(menuKey);
+        }
+    }
+
+    @Override
+    public MenuHelper getMenuHelper(MenuKey menuKey) {
+        var tab = this.selectedTab.get();
+        if (tab != null) {
+            return tab.getMenuHelper(menuKey);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
+        var tab = this.selectedTab.get();
+        if (tab != null) {
+            return tab.getMenuItemHelper(menuItemKey);
+        } else {
+            return null;
+        }
     }
 
     @Override

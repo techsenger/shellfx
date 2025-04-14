@@ -16,15 +16,10 @@
 
 package com.techsenger.tabshell.tabs.tabmanager;
 
-import com.techsenger.tabshell.core.menu.MenuAware;
-import com.techsenger.tabshell.core.menu.MenuHelper;
-import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.core.tab.TabHostViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -41,8 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class TabManagerViewModel extends AbstractPaneViewModel implements MenuAware,
-        TabHostViewModel<TabViewModel> {
+public class TabManagerViewModel extends AbstractPaneViewModel implements TabHostViewModel<TabViewModel> {
 
     private static final Logger logger = LoggerFactory.getLogger(TabManagerViewModel.class);
 
@@ -85,42 +79,6 @@ public class TabManagerViewModel extends AbstractPaneViewModel implements MenuAw
     @Override
     public PaneKey getKey() {
         return this.key;
-    }
-
-    @Override
-    public void doOnMenuShowing(MenuKey menuKey) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            tab.doOnMenuShowing(menuKey);
-        }
-    }
-
-    @Override
-    public void doOnMenuHiding(MenuKey menuKey) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            tab.doOnMenuHiding(menuKey);
-        }
-    }
-
-    @Override
-    public MenuHelper getMenuHelper(MenuKey menuKey) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            return tab.getMenuHelper(menuKey);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
-        var tab = this.selectedTab.get();
-        if (tab != null) {
-            return tab.getMenuItemHelper(menuItemKey);
-        } else {
-            return null;
-        }
     }
 
     @Override

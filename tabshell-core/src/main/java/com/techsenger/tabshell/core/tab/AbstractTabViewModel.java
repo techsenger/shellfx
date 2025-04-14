@@ -124,26 +124,6 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     }
 
     @Override
-    public void doOnMenuShowing(MenuKey menuKey) {
-
-    }
-
-    @Override
-    public void doOnMenuHiding(MenuKey menuKey) {
-
-    }
-
-    @Override
-    public MenuHelper getMenuHelper(MenuKey menuKey) {
-        return menuHelpersByKey.get(menuKey);
-    }
-
-    @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
-        return menuItemHelpersByKey.get(menuItemKey);
-    }
-
-    @Override
     public void setOnClosed(TabClosedCallback closedCallback) {
         this.onClosed = closedCallback;
     }

@@ -47,7 +47,7 @@ class MenuActionInterceptor implements ActionInterceptor {
 
     @Override
     public void handle(ActionEvent t) {
-        var menuAware = shellView.getViewModel().getCurrentMenuAware();
+        var menuAware = shellView.getCurrentMenuAware();
         var helper = menuAware.getMenuHelper(menu.getKey());
         var included = true;
         var valid = false;

@@ -20,6 +20,7 @@ import com.techsenger.mvvm4fx.core.ChildView;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.CloseableView;
 import com.techsenger.tabshell.core.SelectableView;
+import com.techsenger.tabshell.core.menu.MenuAware;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
@@ -27,7 +28,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
  *
  * @author Pavel Castornii
  */
-public interface TabView<T extends TabViewModel> extends ChildView<T>, SelectableView, CloseableView {
+public interface TabView<T extends TabViewModel> extends ChildView<T>, SelectableView, CloseableView, MenuAware {
 
     /**
      * The property for the component that contains the TabPane with this tab.

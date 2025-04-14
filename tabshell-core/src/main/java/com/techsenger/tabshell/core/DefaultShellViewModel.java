@@ -20,7 +20,6 @@ import com.techsenger.mvvm4fx.core.AbstractParentViewModel;
 import com.techsenger.mvvm4fx.core.ComponentKey;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.settings.Settings;
@@ -247,31 +246,6 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
     @Override
     public int getDialogCount() {
         return this.dialogCount.get();
-    }
-
-    @Override
-    public MenuHelper getMenuHelper(MenuKey menuKey) {
-        return menuHelpersByKey.get(menuKey);
-    }
-
-    @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
-        return menuItemHelpersByKey.get(menuItemKey);
-    }
-
-    @Override
-    public void doOnMenuShowing(MenuKey menuKey) { }
-
-    @Override
-    public void doOnMenuHiding(MenuKey menuKey) { }
-
-    public MenuAware getCurrentMenuAware() {
-        var selectedTab = getSelectedTab();
-        if (selectedTab != null) {
-            return selectedTab;
-        } else {
-            return this;
-        }
     }
 
     @Override

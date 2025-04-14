@@ -22,7 +22,6 @@ import com.techsenger.tabshell.core.CloseableViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.SelectableViewModel;
 import com.techsenger.tabshell.core.TitledViewModel;
-import com.techsenger.tabshell.core.menu.MenuAware;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
 
@@ -30,7 +29,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedViewModel, SelectableViewModel, MenuAware,
+public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedViewModel, SelectableViewModel,
         CloseableViewModel {
 
     /**

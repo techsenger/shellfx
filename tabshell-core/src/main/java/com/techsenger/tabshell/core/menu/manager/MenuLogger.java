@@ -62,7 +62,7 @@ final class MenuLogger {
             StringBuilder logMessageBuilder) {
         if (logMessageBuilder != null) {
             logger.atLevel(CONFIGURED_MENU_LOG_LEVEL).log("Configuration of '{}' menu for '{}' component: {}",
-                menuName.replace("_", ""), menuAware.getKey(), logMessageBuilder.toString());
+                menuName.replace("_", ""), menuAware.getViewModel().getKey(), logMessageBuilder.toString());
         }
     }
 

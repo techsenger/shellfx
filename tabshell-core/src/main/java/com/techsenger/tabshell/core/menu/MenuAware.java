@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.mvvm4fx.core.ComponentKey;
+import com.techsenger.mvvm4fx.core.ViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
 
@@ -28,13 +28,15 @@ import com.techsenger.tabshell.material.menu.MenuKey;
 public interface MenuAware {
 
     /**
-     * Returns the key of the component.
+     * Returns the view model.
+     *
      * @return
      */
-    ComponentKey getKey();
+    ViewModel getViewModel();
 
     /**
      * Returns the helper for a specific menu.
+     *
      * @param menuKey
      * @return
      */

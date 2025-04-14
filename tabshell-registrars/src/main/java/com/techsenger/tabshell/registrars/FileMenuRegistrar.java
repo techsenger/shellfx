@@ -81,8 +81,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             item.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
-                var viewModel = view.getViewModel();
-                var helper = viewModel.getMenuItemHelper(item.getKey());
+                var helper = view.getMenuItemHelper(item.getKey());
                 helper.doOnItemAction();
             });
             return item;
@@ -99,8 +98,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             item.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
-                var viewModel = view.getViewModel();
-                var helper = viewModel.getMenuItemHelper(item.getKey());
+                var helper = view.getMenuItemHelper(item.getKey());
                 helper.doOnItemAction();
 
             });
@@ -116,8 +114,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                     new FontIconView(CoreIcons.SAVE_AS), 300);
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
-                var viewModel = view.getViewModel();
-                var helper = viewModel.getMenuItemHelper(item.getKey());
+                var helper = view.getMenuItemHelper(item.getKey());
                 helper.doOnItemAction();
             });
             return item;

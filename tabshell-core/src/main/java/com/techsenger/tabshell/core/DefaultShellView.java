@@ -25,6 +25,9 @@ import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.dialog.DialogView;
+import com.techsenger.tabshell.core.menu.MenuAware;
+import com.techsenger.tabshell.core.menu.MenuHelper;
+import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
@@ -38,6 +41,8 @@ import com.techsenger.tabshell.core.tab.TabHostViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.material.menu.MenuKey;
 import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -285,7 +290,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     @Override
     public void updateMenuBar() {
-        this.menuManager.updateMenuBar(getViewModel().getCurrentMenuAware());
+        this.menuManager.updateMenuBar(getCurrentMenuAware());
         logger.debug("Menu bar updated");
     }
 
@@ -308,6 +313,31 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
     @Override
     public void removeStylesheets(List<Stylesheet> sheets) {
         this.stylesheets.removeAll(sheets);
+    }
+
+    @Override
+    public MenuHelper getMenuHelper(MenuKey menuKey) {
+        return getViewModel().getMenuHelpersByKey().get(menuKey);
+    }
+
+    @Override
+    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
+        return getViewModel().getMenuItemHelpersByKey().get(menuItemKey);
+    }
+
+    @Override
+    public void doOnMenuShowing(MenuKey menuKey) { }
+
+    @Override
+    public void doOnMenuHiding(MenuKey menuKey) { }
+
+    public MenuAware getCurrentMenuAware() {
+        var selectedTab = getSelectedTab();
+        if (selectedTab != null) {
+            return selectedTab;
+        } else {
+            return this;
+        }
     }
 
     @Override
@@ -447,7 +477,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         if (oldTab != null) {
             oldTab.getView().doOnDeselected();
         }
-        this.menuManager.updateMenuBar(getViewModel().getCurrentMenuAware());
+        this.menuManager.updateMenuBar(getCurrentMenuAware());
         if (newTab != null) {
             newTab.getView().doOnSelected();
         }

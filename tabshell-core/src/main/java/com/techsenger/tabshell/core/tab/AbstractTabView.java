@@ -18,7 +18,11 @@ package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.mvvm4fx.core.AbstractChildView;
 import com.techsenger.tabshell.core.CloseScope;
+import com.techsenger.tabshell.core.menu.MenuHelper;
+import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.material.menu.MenuKey;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -76,6 +80,26 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     public void setTabHost(TabHostView<?> value) {
         this.tabHost.set(value);
+    }
+
+    @Override
+    public void doOnMenuShowing(MenuKey menuKey) {
+
+    }
+
+    @Override
+    public void doOnMenuHiding(MenuKey menuKey) {
+
+    }
+
+    @Override
+    public MenuHelper getMenuHelper(MenuKey menuKey) {
+        return getViewModel().getMenuHelpersByKey().get(menuKey);
+    }
+
+    @Override
+    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
+        return getViewModel().getMenuItemHelpersByKey().get(menuItemKey);
     }
 
     @Override

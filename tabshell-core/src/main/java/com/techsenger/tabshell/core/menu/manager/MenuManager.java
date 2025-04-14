@@ -158,7 +158,7 @@ public class MenuManager {
     }
 
     private void doOnMenuShowing(KeyedMenu menu, MenuUpdateHelper updateHelper) {
-        var menuAware = this.shellView.getViewModel().getCurrentMenuAware();
+        var menuAware = this.shellView.getCurrentMenuAware();
         menuAware.doOnMenuShowing(menu.getKey());
         StringBuilder logMessageBuilder = null;
         if (logger.isEnabledForLevel(MenuLogger.CONFIGURED_MENU_LOG_LEVEL)) {
@@ -212,8 +212,7 @@ public class MenuManager {
     private void doOnMenuHiding(KeyedMenu menu, MenuUpdateHelper updateHelper) {
         var selectedTab = this.shellView.getSelectedTab();
         if (selectedTab != null) {
-            var viewModel = selectedTab.getViewModel();
-            viewModel.doOnMenuHiding(menu.getKey());
+            selectedTab.doOnMenuHiding(menu.getKey());
         }
         for (var item : menu.getItems()) {
             if (item instanceof KeyedMenu) {

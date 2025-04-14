@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.mvvm4fx.core.View;
 import com.techsenger.tabshell.core.dialog.DialogManager;
+import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ShellTabView;
@@ -29,7 +30,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface ShellView<T extends ShellViewModel> extends View<T>, TabHostView<ShellTabView<?>>,
+public interface ShellView<T extends ShellViewModel> extends View<T>, TabHostView<ShellTabView<?>>, MenuAware,
         CloseableView {
 
     @Override

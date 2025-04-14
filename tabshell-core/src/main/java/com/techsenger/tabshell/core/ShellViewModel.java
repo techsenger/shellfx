@@ -18,7 +18,6 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.mvvm4fx.core.ViewModel;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.settings.Settings;
@@ -35,8 +34,8 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public interface ShellViewModel extends ViewModel, TabHostViewModel<ShellTabViewModel>, MenuAware,
-        IconedViewModel, CloseableViewModel {
+public interface ShellViewModel extends ViewModel, TabHostViewModel<ShellTabViewModel>, IconedViewModel,
+        CloseableViewModel {
 
     /**
      * Defines a function to be called after closing stage.
