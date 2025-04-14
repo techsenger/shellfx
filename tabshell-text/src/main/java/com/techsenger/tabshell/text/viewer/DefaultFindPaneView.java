@@ -24,6 +24,7 @@ import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
 import com.techsenger.tabshell.material.textarea.TextAreaStyleKeys;
 import com.techsenger.toolkit.core.collection.ListUtils;
+import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,11 +35,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
@@ -65,7 +66,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
 
     private final Button replaceAllButton = new Button("Replace All");
 
-    private final ToolBar replaceToolBar = new ToolBar();
+    private final HBox replaceToolBox = new HBox();
 
     private final ExtendedTextArea textArea;
 
@@ -127,7 +128,6 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     protected void build(DefaultFindPaneViewModel viewModel) {
         super.build(viewModel);
         this.replaceLabel.setMinWidth(Label.USE_PREF_SIZE);
-        this.replaceLabelWrapper.getStyleClass().add(TOOLBAR_LIKE_STYLE_CLASS);
         // 3 = 2(padding) + 1(bg-insetts)
         this.replaceLabelWrapper.setPadding(new Insets(2, SizeConstants.INSET, 3, SizeConstants.INSET));
         this.replaceLabelWrapper.setAlignment(Pos.CENTER_RIGHT);
@@ -135,14 +135,18 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
         this.replaceComboBox.getStyleClass().addAll(Styles.DENSE, StyleClasses.NO_SELECTED);
         HBox.setHgrow(this.replaceComboBox, Priority.ALWAYS);
         this.replaceComboBox.setItems(viewModel.getReplaceTexts());
-        this.replaceComboBoxWrapper.getStyleClass().add(TOOLBAR_LIKE_STYLE_CLASS);
         this.replaceComboBoxWrapper.setAlignment(Pos.CENTER_LEFT);
+        this.replaceComboBoxWrapper.setPadding(new Insets(SizeConstants.SIXTH_INSET, 0,
+                SizeConstants.SIXTH_INSET, 0));
         this.replaceButton.setFocusTraversable(false);
         this.replaceAllButton.setFocusTraversable(false);
-        this.replaceToolBar.setPadding(new Insets(0, 0, 0, SizeConstants.INSET));
-        this.replaceToolBar.getItems().addAll(this.replaceButton, this.replaceAllButton);
-        this.replaceToolBar.setMinWidth(ToolBar.USE_PREF_SIZE);
-        this.replaceToolBar.getStyleClass().add(Styles.DENSE);
+        this.replaceToolBox.setPadding(new Insets(0, 0, 0, SizeConstants.INSET));
+        this.replaceToolBox.getChildren().addAll(this.replaceButton, this.replaceAllButton);
+        ButtonUtils.makeEqualWidthByText(this.replaceButton, this.replaceAllButton);
+        this.replaceToolBox.setMinWidth(Region.USE_PREF_SIZE);
+        this.replaceToolBox.getStyleClass().add(Styles.DENSE);
+        this.replaceToolBox.setSpacing(SizeConstants.THIRD_INSET);
+        this.replaceToolBox.setAlignment(Pos.CENTER_LEFT);
         if (viewModel.replaceModeProperty().get()) {
             this.manageReplaceControls(true);
         }
@@ -344,10 +348,10 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
         if (visible) {
             gridPane.add(this.replaceLabelWrapper, 0, 1);
             gridPane.add(this.replaceComboBoxWrapper, 1, 1);
-            gridPane.add(this.replaceToolBar, 2, 1);
+            gridPane.add(this.replaceToolBox, 2, 1);
         } else {
             gridPane.getChildren().removeAll(this.replaceLabelWrapper, this.replaceComboBoxWrapper,
-                    this.replaceToolBar);
+                    this.replaceToolBox);
         }
         if (getFocusTrap().isActivated()) {
             getFocusTrap().update();

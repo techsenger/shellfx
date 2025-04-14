@@ -18,8 +18,8 @@ package com.techsenger.tabshell.core.find;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
-import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.CoreIcons;
+import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.FocusTrap;
@@ -31,7 +31,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -45,8 +44,6 @@ import javafx.scene.layout.StackPane;
  * @author Pavel Castornii
  */
 public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> extends AbstractPaneView<T> {
-
-    protected static final String TOOLBAR_LIKE_STYLE_CLASS = "tool-bar-like";
 
     protected static final String FOUND_STYLE_CLASS = "found";
 
@@ -78,7 +75,7 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
 
     private final Button closeButton = new Button();
 
-    private final ToolBar findToolBar = new ToolBar();
+    private final HBox toolBox = new HBox();
 
     private final FocusTrap focusTrap = new FocusTrap(gridPane);
 
@@ -110,6 +107,7 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
         super.build(viewModel);
         var css = AbstractFindPaneView.class.getResource("find.css").toExternalForm();
         this.gridPane.getStylesheets().add(css);
+        this.gridPane.getStyleClass().add("find");
 
         ColumnConstraints column0 = new ColumnConstraints();
         column0.setHgrow(Priority.NEVER);
@@ -122,7 +120,6 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
         this.findLabel.setMinWidth(Label.USE_PREF_SIZE);
         // 3 = 2(padding) + 1(bg-insetts)
         this.findLabelWrapper.setPadding(new Insets(2, SizeConstants.INSET, 3, SizeConstants.INSET));
-        this.findLabelWrapper.getStyleClass().add(TOOLBAR_LIKE_STYLE_CLASS);
         this.findLabelWrapper.setAlignment(Pos.CENTER_LEFT);
         GridPane.setVgrow(this.findLabelWrapper, Priority.ALWAYS);
         this.findComboBox.setEditable(true);
@@ -130,37 +127,45 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
         this.findComboBox.setItems(viewModel.getFindTexts());
         this.resultLabel.getStyleClass().add(RESULT_LABEL_STYLE_CLASS);
         StackPane.setMargin(this.resultLabel, new Insets(0, SizeConstants.INSET * 2, 0, 0));
-        this.findComboBoxWrapper.getStyleClass().add(TOOLBAR_LIKE_STYLE_CLASS);
         this.findComboBoxWrapper.setAlignment(Pos.CENTER_RIGHT);
         this.findComboBoxWrapper.setPadding(new Insets(SizeConstants.SIXTH_INSET, 0,
                 SizeConstants.SIXTH_INSET, 0));
         GridPane.setVgrow(this.findComboBoxWrapper, Priority.ALWAYS);
         this.findPreviousButton.setTooltip(new Tooltip("Previous"));
-        this.findPreviousButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
-
+        this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
+        this.findPreviousButton.setFocusTraversable(false);
         this.findNextButton.setTooltip(new Tooltip("Next"));
-        this.findNextButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
+        this.findNextButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
+        this.findNextButton.setFocusTraversable(false);
+
         this.caseButton.setTooltip(new Tooltip("Match Case"));
         this.caseButton.setSelected(false);
-        this.caseButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
-
+        this.caseButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
+        this.caseButton.setFocusTraversable(false);
         this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
-        this.wholeWordButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
-
+        this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
+        this.wholeWordButton.setFocusTraversable(false);
         this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
-        this.regExpButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
+        this.regExpButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
+        this.regExpButton.setFocusTraversable(false);
         this.highlightButton.setTooltip(new Tooltip("Highlight All"));
-        this.highlightButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
+        this.highlightButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
+        this.highlightButton.setFocusTraversable(false);
         this.closeButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
-        this.findToolBar.getItems().addAll(this.findPreviousButton, this.findNextButton, this.caseButton,
+        this.closeButton.setFocusTraversable(false);
+
+        this.toolBox.getChildren().addAll(this.findPreviousButton, this.findNextButton, this.caseButton,
                 this.wholeWordButton, this.regExpButton, this.highlightButton,
                 new Spacer(SizeConstants.INSET - SizeConstants.THIRD_INSET * 2), this.closeButton);
-        this.findToolBar.getStyleClass().add(Styles.DENSE);
-        GridPane.setVgrow(this.findToolBar, Priority.ALWAYS);
+        this.toolBox.getStyleClass().add(Styles.DENSE);
+        this.toolBox.setSpacing(SizeConstants.THIRD_INSET);
+        this.toolBox.setAlignment(Pos.CENTER_LEFT);
+        this.toolBox.setPadding(new Insets(0, SizeConstants.INSET, 0, SizeConstants.THIRD_INSET));
+        GridPane.setVgrow(this.toolBox, Priority.ALWAYS);
 
         gridPane.add(this.findLabelWrapper, 0, 0);
         gridPane.add(this.findComboBoxWrapper, 1, 0);
-        gridPane.add(this.findToolBar, 2, 0);
+        gridPane.add(this.toolBox, 2, 0);
     }
 
     @Override

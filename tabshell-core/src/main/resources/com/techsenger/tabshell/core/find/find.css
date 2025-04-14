@@ -18,9 +18,9 @@
     Author: Pavel Castornii
 */
 
-.tool-bar-like {
-  -fx-background-color: -color-border-muted, -color-bg-subtle;
-  -fx-background-insets: 0, 0 0 1 0;
+GridPane.find {
+    -fx-border-color: -color-border-muted;
+    -fx-border-width: 1px 0 0 0;
 }
 
 .label.result {
