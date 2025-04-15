@@ -75,5 +75,6 @@
 }
 
 .column-list-view .column .cell:selected {
-    -fx-background-color: -color-accent-subtle;
+    /* it seems that -color-accent-subtle is used with some opacity ??? */
+    -fx-background-color: rgba(149, 128, 255, 0.623);
 }
