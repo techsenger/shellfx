@@ -31,14 +31,14 @@ import javafx.scene.text.Font;
 public final class DemoSettings {
 
     public static Settings createSettings() {
-        var regularFont = Font.font("Ubuntu", 14);
-        var monospaceFont = Font.font("Ubuntu Mono", 14);
+        var regularFont = Font.font("System", 14);
+        var monospaceFont = Font.font("Monospace", 14);
         var tabSymbol = new XmlTabSymbolSettings();
         tabSymbol.setSize(4);
         tabSymbol.setUseSpaces(true);
         var appearance = new XmlAppearanceSettings(regularFont, monospaceFont);
         appearance.setTheme(TabShellTheme.CUPERTINO_DARK);
-        var viewer = new XmlViewerSettings(regularFont, tabSymbol);
+        var viewer = new XmlViewerSettings(monospaceFont, tabSymbol);
         var settings = new XmlSettings(appearance, viewer);
         return settings;
     }
