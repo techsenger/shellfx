@@ -26,7 +26,6 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
-import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabViewModel;
 import com.techsenger.tabshell.text.style.TextIcons;
@@ -45,7 +44,7 @@ public class EditorTabViewModel extends AbstractEditorTabViewModel {
         setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> shell.getHistoryManager()
                 .getHistory(EditorTabHistory.class, EditorTabHistory::new));
-        setIcon(new FontIcon(TextIcons.EDITOR));
+        setIcon(TextIcons.EDITOR);
 
         //these validators will be used when menu is shown
         addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuKeys.REPLACE, null, true));

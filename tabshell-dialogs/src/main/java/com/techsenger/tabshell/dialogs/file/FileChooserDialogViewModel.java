@@ -27,7 +27,7 @@ import com.techsenger.tabshell.dialogs.DialogComponentKeys;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
-import com.techsenger.tabshell.material.icon.FontIcon;
+import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import com.techsenger.tabshell.material.table.TableHistory;
 import com.techsenger.tabshell.storage.FileStorage;
 import static com.techsenger.tabshell.storage.FileStorageType.BASE;
@@ -143,12 +143,12 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         switch (type) {
             case OPEN:
                 setTitle("Open");
-                setIcon(new FontIcon(CoreIcons.OPEN));
+                setIcon(CoreIcons.OPEN);
                 setLocationText("Look In");
                 break;
             case SAVE_AS:
                 setTitle("Save As");
-                setIcon(new FontIcon(CoreIcons.SAVE_AS));
+                setIcon(CoreIcons.SAVE_AS);
                 setLocationText("Save In");
                 break;
             default:
@@ -519,7 +519,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
                     var segment = segments.get(i);
                     var segmentUri = UriUtils.resolvePath(previousUri, segment);
                     var directoryLocation = new Location(
-                            new FontIcon(CoreIcons.DIRECTORY),
+                            CoreIcons.DIRECTORY,
                             segment,
                             i + 1,
                             storage,
@@ -568,7 +568,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
             l = createLocation(storage.get());
         } else {
             l = new Location(
-                    new FontIcon(CoreIcons.DIRECTORY),
+                    CoreIcons.DIRECTORY,
                     segments.get(segments.size() - 1),
                     segments.size(),
                     storage.get(),
@@ -583,19 +583,19 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
     }
 
     private Location createLocation(FileStorage storage) {
-        FontIcon icon = null;
+        StyleFontIcon icon = null;
         switch (storage.getType()) {
             case BASE:
-                icon = new FontIcon(DialogIcons.BASE_DISK);
+                icon = DialogIcons.BASE_DISK;
                 break;
             case NETWORK:
-                icon = new FontIcon(DialogIcons.NETWORK_DISK);
+                icon = DialogIcons.NETWORK_DISK;
                 break;
             case FLOPPY:
-                icon = new FontIcon(DialogIcons.FLOPPY);
+                icon = DialogIcons.FLOPPY;
                 break;
             case OPTICAL:
-                icon = new FontIcon(DialogIcons.DISC);
+                icon = DialogIcons.DISC;
                 break;
             default:
                 throw new AssertionError();

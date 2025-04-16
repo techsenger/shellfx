@@ -16,37 +16,39 @@
 
 package com.techsenger.tabshell.dialogs.style;
 
+import com.techsenger.tabshell.material.icon.StyleFontIcon;
+
 /**
  *
  * @author Pavel Castornii
  */
 public interface DialogIcons {
 
-    String INFO = "tabshell-info-icon";
+    StyleFontIcon INFO = new StyleFontIcon("tabshell-info-icon");
 
-    String ERROR = "tabshell-error-icon";
+    StyleFontIcon ERROR = new StyleFontIcon("tabshell-error-icon");
 
-    String WARNING = "tabshell-warning-icon";
+    StyleFontIcon WARNING = new StyleFontIcon("tabshell-warning-icon");
 
-    String QUESTION = "tabshell-question-icon";
+    StyleFontIcon QUESTION = new StyleFontIcon("tabshell-question-icon");
 
-    String DIRECTORY_UP = "tabshell-directory-up-icon";
+    StyleFontIcon DIRECTORY_UP = new StyleFontIcon("tabshell-directory-up-icon");
 
-    String HOME = "tabshell-home-icon";
+    StyleFontIcon HOME = new StyleFontIcon("tabshell-home-icon");
 
-    String ADD_DIRECTORY = "tabshell-add-directory-icon";
+    StyleFontIcon ADD_DIRECTORY = new StyleFontIcon("tabshell-add-directory-icon");
 
-    String LIST_VIEW = "tabshell-list-view-icon";
+    StyleFontIcon LIST_VIEW = new StyleFontIcon("tabshell-list-view-icon");
 
-    String GRID_VIEW = "tabshell-grid-view-icon";
+    StyleFontIcon GRID_VIEW = new StyleFontIcon("tabshell-grid-view-icon");
 
-    String DISC = "tabshell-disc-icon";
+    StyleFontIcon DISC = new StyleFontIcon("tabshell-disc-icon");
 
-    String FLOPPY = "tabshell-floppy-icon";
+    StyleFontIcon FLOPPY = new StyleFontIcon("tabshell-floppy-icon");
 
-    String BASE_DISK = "tabshell-base-disk-icon";
+    StyleFontIcon BASE_DISK = new StyleFontIcon("tabshell-base-disk-icon");
 
-    String NETWORK_DISK = "tabshell-network-disk-icon";
+    StyleFontIcon NETWORK_DISK = new StyleFontIcon("tabshell-network-disk-icon");
 
 }
 

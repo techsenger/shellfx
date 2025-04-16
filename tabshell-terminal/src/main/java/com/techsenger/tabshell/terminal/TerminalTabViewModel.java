@@ -25,7 +25,6 @@ import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
-import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -78,7 +77,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
     public TerminalTabViewModel(ShellViewModel shell, String directory) {
         super(shell);
         this.ttyConnector = createTtyConnector(directory);
-        this.setIcon(new FontIcon(TerminalIcons.TERMINAL));
+        this.setIcon(TerminalIcons.TERMINAL);
         this.setTitle("Terminal");
         setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> shell.getHistoryManager().getHistory(TerminalHistory.class, TerminalHistory::new));

@@ -19,26 +19,12 @@ package com.techsenger.tabshell.material.icon;
 import javafx.scene.image.Image;
 
 /**
- * Image icon has either an image or a style class. This icon will be displayed in {@link ImageIconView}.
  *
  * @author Pavel Castornii
  */
-public class ImageIcon extends AbstractIcon<Image> {
-
-    private final Image content;
+public final class ImageIcon extends AbstractIcon<Image> implements GenericImageIcon<Image> {
 
     public ImageIcon(Image content) {
-        super(null);
-        this.content = content;
-    }
-
-    public ImageIcon(String styleClass) {
-        super(styleClass);
-        this.content = null;
-    }
-
-    @Override
-    public Image getContent() {
-        return content;
+        super(content);
     }
 }

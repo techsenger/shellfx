@@ -16,67 +16,69 @@
 
 package com.techsenger.tabshell.core.style;
 
+import com.techsenger.tabshell.material.icon.StyleFontIcon;
+
 /**
  *
  * @author Pavel Castornii
  */
 public interface CoreIcons {
 
-    String OPEN = "tabshell-open-icon";
+    StyleFontIcon OPEN = new StyleFontIcon("tabshell-open-icon");
 
-    String OPEN_IN_NEW = "tabshell-open-in-new-icon";
+    StyleFontIcon OPEN_IN_NEW = new StyleFontIcon("tabshell-open-in-new-icon");
 
-    String SAVE = "tabshell-save-icon";
+    StyleFontIcon SAVE = new StyleFontIcon("tabshell-save-icon");
 
-    String SAVE_AS = "tabshell-save-as-icon";
+    StyleFontIcon SAVE_AS = new StyleFontIcon("tabshell-save-as-icon");
 
-    String SETTINGS = "tabshell-settings-icon";
+    StyleFontIcon SETTINGS = new StyleFontIcon("tabshell-settings-icon");
 
-    String EXIT = "tabshell-exit-icon";
+    StyleFontIcon EXIT = new StyleFontIcon("tabshell-exit-icon");
 
-    String UNDO = "tabshell-undo-icon";
+    StyleFontIcon UNDO = new StyleFontIcon("tabshell-undo-icon");
 
-    String REDO = "tabshell-redo-icon";
+    StyleFontIcon REDO = new StyleFontIcon("tabshell-redo-icon");
 
-    String HELP = "tabshell-help-icon";
+    StyleFontIcon HELP = new StyleFontIcon("tabshell-help-icon");
 
-    String PROCESS = "tabshell-process-icon";
+    StyleFontIcon PROCESS = new StyleFontIcon("tabshell-process-icon");
 
-    String ADD = "tabshell-add-icon";
+    StyleFontIcon ADD = new StyleFontIcon("tabshell-add-icon");
 
-    String REMOVE = "tabshell-remove-icon";
+    StyleFontIcon REMOVE = new StyleFontIcon("tabshell-remove-icon");
 
-    String CHEVRON_UP = "tabshell-chevron-up-icon";
+    StyleFontIcon CHEVRON_UP = new StyleFontIcon("tabshell-chevron-up-icon");
 
-    String CHEVRON_DOWN = "tabshell-chevron-down-icon";
+    StyleFontIcon CHEVRON_DOWN = new StyleFontIcon("tabshell-chevron-down-icon");
 
-    String CHEVRON_DOUBLE_UP = "tabshell-chevron-double-up-icon";
+    StyleFontIcon CHEVRON_DOUBLE_UP = new StyleFontIcon("tabshell-chevron-double-up-icon");
 
-    String CHEVRON_DOUBLE_DOWN = "tabshell-chevron-double-down-icon";
+    StyleFontIcon CHEVRON_DOUBLE_DOWN = new StyleFontIcon("tabshell-chevron-double-down-icon");
 
-    String CUT = "tabshell-cut-icon";
+    StyleFontIcon CUT = new StyleFontIcon("tabshell-cut-icon");
 
-    String COPY = "tabshell-copy-icon";
+    StyleFontIcon COPY = new StyleFontIcon("tabshell-copy-icon");
 
-    String PASTE = "tabshell-paste-icon";
+    StyleFontIcon PASTE = new StyleFontIcon("tabshell-paste-icon");
 
-    String CLEAR = "tabshell-clear-icon";
+    StyleFontIcon CLEAR = new StyleFontIcon("tabshell-clear-icon");
 
-    String MATCH_CASE = "tabshell-match-case-icon";
+    StyleFontIcon MATCH_CASE = new StyleFontIcon("tabshell-match-case-icon");
 
-    String WHOLE_WORD = "tabshell-whole-word-icon";
+    StyleFontIcon WHOLE_WORD = new StyleFontIcon("tabshell-whole-word-icon");
 
-    String REG_EXP = "tabshell-reg-exp-icon";
+    StyleFontIcon REG_EXP = new StyleFontIcon("tabshell-reg-exp-icon");
 
-    String HIGHLIGHT = "tabshell-highlight-icon";
+    StyleFontIcon HIGHLIGHT = new StyleFontIcon("tabshell-highlight-icon");
 
-    String FIND = "tabshell-find-icon";
+    StyleFontIcon FIND = new StyleFontIcon("tabshell-find-icon");
 
-    String REPLACE = "tabshell-replace-icon";
+    StyleFontIcon REPLACE = new StyleFontIcon("tabshell-replace-icon");
 
-    String SELECT_ALL = "tabshell-select-all-icon";
+    StyleFontIcon SELECT_ALL = new StyleFontIcon("tabshell-select-all-icon");
 
-    String DIRECTORY = "tabshell-directory-icon";
+    StyleFontIcon DIRECTORY = new StyleFontIcon("tabshell-directory-icon");
 
-    String FILE = "tabshell-file-icon";
+    StyleFontIcon FILE = new StyleFontIcon("tabshell-file-icon");
 }

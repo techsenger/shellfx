@@ -16,7 +16,8 @@
 
 package com.techsenger.tabshell.material.icon;
 
-import javafx.scene.image.Image;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.ImageView;
 
 /**
@@ -25,22 +26,46 @@ import javafx.scene.image.ImageView;
  */
 public class ImageIconView extends ImageView {
 
-    public ImageIconView(Image image) {
-        this((String) null);
-        setImage(image);
+    private final ObjectProperty<GenericImageIcon<?>> icon = new SimpleObjectProperty<>();
+
+    public ImageIconView(GenericImageIcon<?> icon) {
+        this();
+        setIcon(icon);
     }
 
-    public ImageIconView(String iconStyleClass) {
+    public ImageIconView() {
         getStyleClass().add("image-icon-view");
-        if (iconStyleClass != null) {
-            getStyleClass().add(iconStyleClass);
-        }
+        this.icon.addListener((ov, oldV, newV) -> {
+            if (oldV != null) {
+                if (oldV instanceof StyleImageIcon) {
+                    var i = (StyleImageIcon) oldV;
+                    getStyleClass().remove(i.getContent());
+                } else {
+                    setImage(null);
+                }
+            }
+            if (newV != null) {
+                if (newV instanceof StyleImageIcon) {
+                    var i = (StyleImageIcon) newV;
+                    getStyleClass().add(i.getContent());
+                } else {
+                    var i = (ImageIcon) newV;
+                    setImage(i.getContent());
+                }
+            }
+        });
     }
 
-    public ImageIconView(ImageIcon icon) {
-        this((String) icon.getStyleClass());
-        if (icon.getContent() != null) {
-            setImage(icon.getContent());
-        }
+    public ObjectProperty<GenericImageIcon<?>> iconProperty() {
+        return this.icon;
     }
+
+    public GenericImageIcon<?> getIcon() {
+        return this.icon.get();
+    }
+
+    public void setIcon(GenericImageIcon<?> icon) {
+        this.icon.set(icon);
+    }
+
 }

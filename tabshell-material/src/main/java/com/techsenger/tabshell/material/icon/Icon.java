@@ -17,21 +17,14 @@
 package com.techsenger.tabshell.material.icon;
 
 /**
- * The implementation of this interface must have one non null value - either styleClass or content.
+ * All icons are immutable.
  *
  * @author Pavel Castornii
  */
 public interface Icon<T> {
 
     /**
-     * Returns the style class of this icon or null.
-     *
-     * @return
-     */
-    String getStyleClass();
-
-    /**
-     * Returns the content this icon (image, codePoint) or null.
+     * Returns the content this icon (image, codePoint, styleClass).
      *
      * @return
      */

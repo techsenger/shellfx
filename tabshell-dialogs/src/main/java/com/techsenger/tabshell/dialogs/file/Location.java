@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
+import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import com.techsenger.tabshell.storage.FileStorage;
-import com.techsenger.tabshell.material.icon.FontIcon;
 import java.net.URI;
 
 /**
@@ -26,7 +26,7 @@ import java.net.URI;
  */
 class Location {
 
-    private final FontIcon icon;
+    private final StyleFontIcon icon;
 
     private final String name;
 
@@ -36,7 +36,7 @@ class Location {
 
     private final URI uri;
 
-    Location(FontIcon icon, String name, int level, FileStorage storage, URI uri) {
+    Location(StyleFontIcon icon, String name, int level, FileStorage storage, URI uri) {
         this.icon = icon;
         this.name = name;
         this.level = level;
@@ -44,7 +44,7 @@ class Location {
         this.uri = uri;
     }
 
-    public FontIcon getIcon() {
+    public StyleFontIcon getIcon() {
         return icon;
     }
 

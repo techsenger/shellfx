@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.text.style;
-
-import com.techsenger.tabshell.material.icon.StyleFontIcon;
+package com.techsenger.tabshell.material.icon;
 
 /**
+ * This class uses style class as content.
  *
  * @author Pavel Castornii
  */
-public interface TextIcons {
+public final class StyleFontIcon extends AbstractIcon<String> implements GenericFontIcon<String> {
 
-    StyleFontIcon WRAP = new StyleFontIcon("tabshell-wrap-icon");
-
-    StyleFontIcon EDITOR = new StyleFontIcon("tabshell-editor-icon");
+    public StyleFontIcon(String content) {
+        super(content);
+    }
 }

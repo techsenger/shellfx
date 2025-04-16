@@ -18,6 +18,8 @@ package com.techsenger.tabshell.material.icon;
 
 import java.util.List;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableIntegerProperty;
 import javafx.css.StyleableIntegerProperty;
@@ -58,33 +60,40 @@ public class FontIconView extends Label {
     private final StyleableIntegerProperty codePoint =
             new SimpleStyleableIntegerProperty(Css.CODE_POINT, this, "codePoint");
 
+    private final ObjectProperty<GenericFontIcon<?>> icon = new SimpleObjectProperty<>();
+
+    public FontIconView(GenericFontIcon<?> icon) {
+        this();
+        setIcon(icon);
+    }
+
     public FontIconView() {
-        this((String) null);
-    }
-
-    public FontIconView(int codePoint) {
-        this((String) null);
-        this.codePoint.set(codePoint);
-    }
-
-    public FontIconView(FontIcon icon) {
-        this(icon.getStyleClass());
-        if (icon.getContent() != null) {
-            this.codePoint.set(icon.getContent());
-        }
-    }
-
-    public FontIconView(String iconStyleClass) {
         getStyleClass().add("font-icon-view");
-        if (iconStyleClass != null) {
-            getStyleClass().add(iconStyleClass);
-        }
         codePoint.addListener((ov, oldV, newV) -> {
-            if (newV != null) {
+            if (newV != null && newV.intValue() != 0) {
                 var iconStr = new String(Character.toChars(newV.intValue()));
                 setText(iconStr);
             } else {
                 setText(null);
+            }
+        });
+        this.icon.addListener((ov, oldV, newV) -> {
+            if (oldV != null) {
+                if (oldV instanceof StyleFontIcon) {
+                    var i = (StyleFontIcon) oldV;
+                    getStyleClass().remove(i.getContent());
+                } else {
+                    setCodePoint(0);
+                }
+            }
+            if (newV != null) {
+                if (newV instanceof StyleFontIcon) {
+                    var i = (StyleFontIcon) newV;
+                    getStyleClass().add(i.getContent());
+                } else {
+                    var i = (FontIcon) newV;
+                    setCodePoint(i.getContent());
+                }
             }
         });
     }
@@ -104,5 +113,17 @@ public class FontIconView extends Label {
 
     public void setCodePoint(int codePoint) {
         this.codePoint.set(codePoint);
+    }
+
+    public ObjectProperty<GenericFontIcon<?>> iconProperty() {
+        return this.icon;
+    }
+
+    public GenericFontIcon<?> getIcon() {
+        return this.icon.get();
+    }
+
+    public void setIcon(GenericFontIcon<?> icon) {
+        this.icon.set(icon);
     }
 }

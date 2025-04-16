@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2025 Pavel Castornii.
+ * Copyright 2025 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.text.style;
-
-import com.techsenger.tabshell.material.icon.StyleFontIcon;
+package com.techsenger.tabshell.material.icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TextIcons {
+public interface GenericFontIcon<T> extends Icon<T> {
 
-    StyleFontIcon WRAP = new StyleFontIcon("tabshell-wrap-icon");
-
-    StyleFontIcon EDITOR = new StyleFontIcon("tabshell-editor-icon");
 }

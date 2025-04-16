@@ -21,22 +21,9 @@ package com.techsenger.tabshell.material.icon;
  *
  * @author Pavel Castornii
  */
-public class FontIcon extends AbstractIcon<Integer> {
-
-    private final Integer content;
-
-    public FontIcon(String styleClass) {
-        super(styleClass);
-        this.content = null;
-    }
+public final class FontIcon extends AbstractIcon<Integer> implements GenericFontIcon<Integer> {
 
     public FontIcon(Integer content) {
-        super(null);
-        this.content = content;
-    }
-
-    @Override
-    public Integer getContent() {
-        return content;
+        super(content);
     }
 }

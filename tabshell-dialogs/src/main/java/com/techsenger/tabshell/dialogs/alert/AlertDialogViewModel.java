@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.DialogComponentKeys;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
+import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -34,7 +35,7 @@ public class AlertDialogViewModel extends AbstractSimpleDialogViewModel {
 
     private StringProperty message = new SimpleStringProperty();
 
-    private final String messageIcon;
+    private final StyleFontIcon messageIcon;
 
     public AlertDialogViewModel(DialogScope scope, AlertDialogType dialogType, String message) {
         super(scope, false);
@@ -82,7 +83,7 @@ public class AlertDialogViewModel extends AbstractSimpleDialogViewModel {
         this.message.set(message);
     }
 
-    public String getMessageIcon() {
+    public StyleFontIcon getMessageIcon() {
         return messageIcon;
     }
 }

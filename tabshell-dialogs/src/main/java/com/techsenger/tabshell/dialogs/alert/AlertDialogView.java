@@ -52,7 +52,8 @@ public class AlertDialogView<T extends AlertDialogViewModel> extends AbstractSim
         super.build(viewModel);
         getButtonBox().getChildren().addAll(getCancelButton(), getOkButton());
         getContentPane().getStylesheets().add(AlertDialogView.class.getResource("alert.css").toExternalForm());
-        messageIconView.getStyleClass().addAll(viewModel.getMessageIcon(), "message-icon-view");
+        messageIconView.getStyleClass().add("message-icon-view");
+        messageIconView.setIcon(viewModel.getMessageIcon());
         switch (viewModel.getDialogType()) {
             case INFO:
                 this.messageIconView.getStyleClass().add(Styles.ACCENT);

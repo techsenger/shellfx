@@ -68,7 +68,8 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
         super.build(viewModel);
         getContentPane().getStylesheets()
                 .add(YesNoDialogView.class.getResource("yesno.css").toExternalForm());
-        messageIconView.getStyleClass().addAll(DialogIcons.QUESTION, "message-icon-view", Styles.WARNING);
+        messageIconView.setIcon(DialogIcons.QUESTION);
+        messageIconView.getStyleClass().addAll("message-icon-view", Styles.WARNING);
         messageLabel.textProperty().bind(viewModel.messageProperty());
         messageLabel.getStyleClass().add("message-label");
 

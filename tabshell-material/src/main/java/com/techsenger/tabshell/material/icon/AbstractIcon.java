@@ -22,14 +22,14 @@ package com.techsenger.tabshell.material.icon;
  */
 abstract class AbstractIcon<T> implements Icon<T> {
 
-    private final String styleClass;
+    private final T content;
 
-    AbstractIcon(String styleClass) {
-        this.styleClass = styleClass;
+    AbstractIcon(T content) {
+        this.content = content;
     }
 
     @Override
-    public String getStyleClass() {
-        return styleClass;
+    public T getContent() {
+        return this.content;
     }
 }

@@ -16,11 +16,13 @@
 
 package com.techsenger.tabshell.terminal.style;
 
+import com.techsenger.tabshell.material.icon.StyleFontIcon;
+
 /**
  *
  * @author Pavel Castornii
  */
 public interface TerminalIcons {
 
-    String TERMINAL = "tabshell-terminal-icon";
+    StyleFontIcon TERMINAL = new StyleFontIcon("tabshell-terminal-icon");
 }

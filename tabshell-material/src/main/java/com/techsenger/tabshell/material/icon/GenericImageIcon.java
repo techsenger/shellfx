@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.text.style;
-
-import com.techsenger.tabshell.material.icon.StyleFontIcon;
+package com.techsenger.tabshell.material.icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TextIcons {
+public interface GenericImageIcon<T> extends Icon<T> {
 
-    StyleFontIcon WRAP = new StyleFontIcon("tabshell-wrap-icon");
-
-    StyleFontIcon EDITOR = new StyleFontIcon("tabshell-editor-icon");
 }
