@@ -111,7 +111,7 @@ public final class GenericFile {
      * @param storages
      * @return
      */
-    public static GenericFile convert(File file, List<FileStorage> storages) {
+    public static GenericFile convert(File file, List<FileStorage> storages) throws InvalidFileException {
         var uri = file.toURI();
         var storage = FileStorages.findByUri(storages, uri);
         if (storage == null) {
@@ -214,24 +214,29 @@ public final class GenericFile {
         }
     }
 
-    static GenericFile createFile(GenericFile.Builder builder, File file, URI uri, FileStorage storage) {
-        var filePath = file.toPath();
-        builder.storage(storage);
-        builder.name(file.getName());
-        builder.uri(uri);
-        builder.lastModified(file.lastModified());
-        if (file.isDirectory()) {
-            builder.type(FileType.DIRECTORY);
-        } else {
-            var fileType = FileType.FILE;
-            if (Files.isSymbolicLink(filePath)) {
-                fileType = FileType.SYMBOLIC_LINK;
+    static GenericFile createFile(GenericFile.Builder builder, File file, URI uri, FileStorage storage)
+            throws InvalidFileException {
+        try {
+            var filePath = file.toPath();
+            builder.storage(storage);
+            builder.name(file.getName());
+            builder.uri(uri);
+            builder.lastModified(file.lastModified());
+            if (file.isDirectory()) {
+                builder.type(FileType.DIRECTORY);
+            } else {
+                var fileType = FileType.FILE;
+                if (Files.isSymbolicLink(filePath)) {
+                    fileType = FileType.SYMBOLIC_LINK;
+                }
+                builder.type(fileType);
+                builder.size(file.length());
             }
-            builder.type(fileType);
-            builder.size(file.length());
+            builder.virtual(false);
+            return builder.build();
+        } catch (Exception ex) {
+            throw new InvalidFileException(ex);
         }
-        builder.virtual(false);
-        return builder.build();
     }
 
     private final FileStorage storage;

@@ -32,12 +32,16 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractDefaultFileStorage.class);
 
     public AbstractDefaultFileStorage(FileStorageType type, String displayName, URI rootUri) {
         super(type, displayName, rootUri, true);
@@ -51,8 +55,13 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
         GenericFile.Builder builder = new GenericFile.Builder();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
             for (Path entry : stream) {
-                var file = entry.toFile();
-                result.add(GenericFile.createFile(builder, file, file.toURI(), this));
+                try {
+                    var file = entry.toFile();
+                    var createdFile = GenericFile.createFile(builder, file, file.toURI(), this);
+                    result.add(createdFile);
+                } catch (InvalidFileException ex) {
+                    logger.error("Couldn't create GenericFile from {}", entry, ex);
+                }
             }
         } catch (SecurityException | AccessDeniedException e) {
             throw new AccessDeniedException("No access to directory: " + path);
@@ -61,7 +70,8 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
     }
 
     @Override
-    public GenericFile getFile(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+    public GenericFile getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException,
+            IOException {
         var path = toPath(uri);
         checkExists(path);
         var file = path.toFile();

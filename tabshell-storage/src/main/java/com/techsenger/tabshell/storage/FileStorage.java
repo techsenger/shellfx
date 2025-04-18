@@ -75,9 +75,11 @@ public interface FileStorage {
      * @return
      * @throws NoSuchFileException
      * @throws AccessDeniedException
+     * @throws InvalidFileException if file is invalid for this filesystem (e.g., Thumbs.db:encryptable file from Linux
+     * storage in Windows)
      * @throws IOException
      */
-    GenericFile getFile(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    GenericFile getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException;
 
     /**
      * Creates one directory.
