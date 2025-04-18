@@ -16,9 +16,8 @@
 
 package com.techsenger.tabshell.storage;
 
+import com.sun.jna.platform.win32.Kernel32;
 import com.techsenger.toolkit.core.os.OsUtils;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
@@ -27,13 +26,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.swing.filechooser.FileSystemView;
@@ -132,19 +127,22 @@ public final class FileStorages {
         FileSystemView fsv = FileSystemView.getFileSystemView();
         List<Path> rootPaths = new ArrayList<>();
         FileSystems.getDefault().getRootDirectories().forEach(r -> rootPaths.add(r));
-        Set<String> networkDrives = getNetworkDrives();
         for (var rootPath : rootPaths) {
             var file = rootPath.toFile();
             var str = rootPath.toString();
             FileStorageType type = null;
-            if (networkDrives.contains(str)) {
-                type = FileStorageType.NETWORK;
-            } else if (fsv.isFloppyDrive(file)) {
-                type = FileStorageType.FLOPPY;
-            } else if (isOptical(rootPath)) {
-                type = FileStorageType.OPTICAL;
-            } else {
-                type = FileStorageType.BASE;
+            switch (Kernel32.INSTANCE.GetDriveType(str)) {
+                case 2:
+                    type = FileStorageType.FLOPPY;
+                    break;
+                case 4:
+                    type = FileStorageType.NETWORK;
+                    break;
+                case 5:
+                    type = FileStorageType.OPTICAL;
+                    break;
+                default:
+                    type = FileStorageType.BASE;
             }
             var storage = new WindowsFileStorage(type, fsv.getSystemDisplayName(file), rootPath.toUri());
             var resultStorage = selectOldOrNew(storage);
@@ -183,26 +181,6 @@ public final class FileStorages {
         } else {
             return newStorage;
         }
-    }
-
-    private static Set<String> getNetworkDrives() {
-        Set<String> driveLetters = new HashSet<>();
-        Pattern pattern = Pattern.compile("\\s*([A-Z]:)\\s*");
-        try {
-            Process process = new ProcessBuilder("cmd", "/c", "net use").start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    driveLetters.add(matcher.group(1) + "\\");
-                }
-            }
-            process.waitFor();
-        } catch (Exception ex) {
-            logger.error("Error getting network drives", ex);
-        }
-        return driveLetters;
     }
 
     private static boolean isOptical(Path p) {

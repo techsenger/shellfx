@@ -21,6 +21,8 @@ module com.techsenger.tabshell.storage {
     requires com.techsenger.tabshell.core;
     requires javafx.controls;
     requires javafx.swing;
+    requires com.sun.jna;
+    requires com.sun.jna.platform;
 
     exports com.techsenger.tabshell.storage;
 
