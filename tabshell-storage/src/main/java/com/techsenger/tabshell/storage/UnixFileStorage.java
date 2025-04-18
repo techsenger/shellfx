@@ -22,9 +22,9 @@ import java.net.URI;
  *
  * @author Pavel Castornii
  */
-public class LinuxFileStorage extends AbstractDefaultFileStorage {
+public class UnixFileStorage extends AbstractDefaultFileStorage {
 
-    public LinuxFileStorage(FileStorageType type, String displayName, URI rootUri) {
+    public UnixFileStorage(FileStorageType type, String displayName, URI rootUri) {
         super(type, displayName, rootUri);
     }
 

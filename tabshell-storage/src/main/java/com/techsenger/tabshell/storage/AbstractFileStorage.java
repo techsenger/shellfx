@@ -31,11 +31,6 @@ public abstract class AbstractFileStorage implements FileStorage {
 
     private final URI rootUri;
 
-    /**
-     * For performance uri is used as a string.
-     */
-    private final String rootUriAsString;
-
     private final boolean isDefault;
 
     public AbstractFileStorage(FileStorageType type, String displayName, URI rootUri) {
@@ -47,7 +42,6 @@ public abstract class AbstractFileStorage implements FileStorage {
         this.displayName = displayName;
         var normalized = rootUri.normalize();
         this.rootUri = normalized;
-        this.rootUriAsString = normalized.toString();
         this.isDefault = isDefault;
     }
 
@@ -76,7 +70,7 @@ public abstract class AbstractFileStorage implements FileStorage {
         int hash = 7;
         hash = 79 * hash + Objects.hashCode(this.type);
         hash = 79 * hash + Objects.hashCode(this.displayName);
-        hash = 79 * hash + Objects.hashCode(this.rootUriAsString);
+        hash = 79 * hash + Objects.hashCode(this.rootUri.toString());
         hash = 79 * hash + (this.isDefault ? 1 : 0);
         return hash;
     }
@@ -99,13 +93,9 @@ public abstract class AbstractFileStorage implements FileStorage {
         if (!Objects.equals(this.displayName, other.displayName)) {
             return false;
         }
-        if (!Objects.equals(this.rootUriAsString, other.rootUriAsString)) {
+        if (!Objects.equals(this.rootUri.toString(), other.rootUri.toString())) {
             return false;
         }
         return this.type == other.type;
-    }
-
-    String getRootUriAsString() {
-        return rootUriAsString;
     }
 }

@@ -41,13 +41,45 @@ import org.slf4j.LoggerFactory;
  */
 public final class FileStorages {
 
+    public interface StorageFactory {
+
+        FileStorage createFactory(FileStorageType type, String displayName, URI rootUri);
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(FileStorages.class);
 
-    private static List<FileStorage> defaultStorages = null;
+    private static volatile List<FileStorage> defaultStorages = null;
 
-    private static List<FileStorage> customStorages = new CopyOnWriteArrayList<>();
+    private static final List<FileStorage> customStorages = new CopyOnWriteArrayList<>();
 
     private static final Map<String, FileStorage> storagesByUri = new HashMap<>();
+
+    private static volatile StorageFactory storageFactory = (FileStorageType type, String displayName, URI rootUri) -> {
+        if (OsUtils.isWindows()) {
+            return new WindowsFileStorage(type, displayName, rootUri);
+        } else {
+            return new UnixFileStorage(type, displayName, rootUri);
+        }
+    };
+
+    /**
+     * Returns the factory that is used for creating default factories.
+     *
+     * @return
+     */
+    public static StorageFactory getStorageFactory() {
+        return storageFactory;
+    }
+
+    /**
+     * Sets the factory that is used for creating default factories. Use this method if you have your custom
+     * implementations of FileStorage and want to use them for the default storages.
+     *
+     * @param storageFactory
+     */
+    public static void setStorageFactory(StorageFactory storageFactory) {
+        FileStorages.storageFactory = storageFactory;
+    }
 
     /**
      * Returns an unmodifiable list of all default file storages for this machine.
@@ -144,7 +176,7 @@ public final class FileStorages {
                 default:
                     type = FileStorageType.BASE;
             }
-            var storage = new WindowsFileStorage(type, fsv.getSystemDisplayName(file), rootPath.toUri());
+            var storage = storageFactory.createFactory(type, fsv.getSystemDisplayName(file), rootPath.toUri());
             var resultStorage = selectOldOrNew(storage);
             result.add(resultStorage);
         }
@@ -159,7 +191,8 @@ public final class FileStorages {
         FileSystems.getDefault().getRootDirectories().forEach(r -> rootPaths.add(r));
         for (var rootPath : rootPaths) {
             var file = rootPath.toFile();
-            var storage = new LinuxFileStorage(FileStorageType.BASE, fsv.getSystemDisplayName(file), rootPath.toUri());
+            var storage = storageFactory
+                    .createFactory(FileStorageType.BASE, fsv.getSystemDisplayName(file), rootPath.toUri());
             var resultStorage = selectOldOrNew(storage);
             result.add(resultStorage);
         }
@@ -170,12 +203,12 @@ public final class FileStorages {
     private static void updateStoragesByUri(List<AbstractFileStorage> storages) {
         storagesByUri.clear();
         for (var s : storages) {
-            storagesByUri.put(s.getRootUriAsString(), s);
+            storagesByUri.put(s.getRootUri().toString(), s);
         }
     }
 
-    private static FileStorage selectOldOrNew(AbstractDefaultFileStorage newStorage) {
-        var oldStorage = storagesByUri.get(newStorage.getRootUriAsString());
+    private static FileStorage selectOldOrNew(FileStorage newStorage) {
+        var oldStorage = storagesByUri.get(newStorage.getRootUri().toString());
         if (oldStorage != null && oldStorage.equals(newStorage)) {
             return oldStorage;
         } else {
