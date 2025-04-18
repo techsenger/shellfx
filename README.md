@@ -40,9 +40,15 @@ final application.
 
 ### Text Editor <a name="demo-text-editor"></a>
 
+![TabShell Text Editor](https://github.com/user-attachments/assets/42b61472-3ce6-4309-91fe-8ecd188f494f)
+
 ### Terminal <a name="demo-terminal"></a>
 
+![TabShell Terminal](https://github.com/user-attachments/assets/07a4bae8-a418-4e88-8bd4-90bb899c8ed9)
+
 ### Dialogs <a name="demo-dialogs"></a>
+
+![TabShell Dialogs](https://github.com/user-attachments/assets/4adbd461-626a-4470-9436-dbb5710fb64e)
 
 ## Features <a name="features"></a>
 
