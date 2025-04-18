@@ -421,7 +421,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         stage.setOnCloseRequest((e) -> {
             close();
         });
-        stage.addEventHandler(StageResizeEvent.STAGE_RESIZING_FINISHED, e -> {
+        stage.addEventHandler(StageResizeEvent.STAGE_RESIZE_FINISHED, e -> {
             if (!stage.isMaximized()) {
                 viewModel.setDefaultWidth(stage.getWidth());
                 viewModel.setDefaultHeight(stage.getHeight());
