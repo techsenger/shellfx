@@ -48,7 +48,7 @@ final application.
 
 ### Dialogs <a name="demo-dialogs"></a>
 
-![TabShell Dialogs](https://github.com/user-attachments/assets/fe216787-8b51-41c5-9715-d641a72b7448)
+![TabShell Dialogs](https://github.com/user-attachments/assets/83be533a-08fb-437a-aeb7-38b48ebe2291)
 
 ## Features <a name="features"></a>
 
