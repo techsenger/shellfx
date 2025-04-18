@@ -59,27 +59,31 @@ public class EditorTabViewModel extends AbstractEditorTabViewModel {
     void showInfoDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
                 "All done! Time for coffee.");
+        viewModel.setPrefWidth(400);
         getComponentHelper().openAlertDialog(viewModel);
     }
 
     void showWarningDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
                 "Attention! You shouldn't do it!");
+        viewModel.setPrefWidth(400);
         getComponentHelper().openAlertDialog(viewModel);
     }
 
     void showErrorDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
                 "Oops! That didn’t work.");
+        viewModel.setPrefWidth(400);
         getComponentHelper().openAlertDialog(viewModel);
     }
 
     void showYesNoDialog() {
         var viewModel = new YesNoDialogViewModel(DialogScope.SHELL,
-                "This choice will determine the fate of the world! Are you sure?");
+                "Are you really sure?");
         viewModel.setTitle("Confirm");
         viewModel.setYesText("Yes");
         viewModel.setNoText("No");
+        viewModel.setPrefWidth(400);
         getComponentHelper().openYesNoDialog(viewModel);
     }
 
