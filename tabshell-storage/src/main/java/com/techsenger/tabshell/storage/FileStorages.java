@@ -135,7 +135,7 @@ public final class FileStorages {
     }
 
     /**
-     * Finds the storages for the given uri.
+     * Finds the storage for the given uri.
      *
      * @param storages
      * @param uri
