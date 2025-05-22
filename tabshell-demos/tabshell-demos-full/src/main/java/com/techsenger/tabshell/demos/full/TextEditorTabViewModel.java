@@ -35,15 +35,15 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class EditorTabViewModel extends AbstractEditorTabViewModel {
+public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
 
-    EditorTabViewModel(ShellViewModel shell, GenericFile file) {
+    TextEditorTabViewModel(ShellViewModel shell, GenericFile file) {
         super(shell, file);
         //the initial history is created using a factory instead of reflection in the history manager to avoid
         //access issues with hidden packages
         setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> shell.getHistoryManager()
-                .getHistory(EditorTabHistory.class, EditorTabHistory::new));
+                .getHistory(TextEditorTabHistory.class, TextEditorTabHistory::new));
         setIcon(TextIcons.EDITOR);
 
         //these validators will be used when menu is shown

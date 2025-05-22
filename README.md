@@ -87,6 +87,7 @@ and develop custom components. See [Core Demo](#running-core-demo) for details.
 working with the OS's default storage systems.
 * Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation etc.
 * Text — contains text viewer and editor components.
+* Hex — contains hex editor.
 * Terminal — includes a terminal emulator component.
 * Registrars — provides default registrars (for menu items, etc.).
 * Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use

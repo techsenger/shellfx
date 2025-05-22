@@ -95,7 +95,7 @@ public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel> 
         this.verticalSplitPane.setOrientation(Orientation.VERTICAL);
         this.verticalSplitPane.getDividers().get(0).positionProperty()
                 .bindBidirectional(viewModel.getBottomDivider().positionProperty());
-        this.getContentPane().getChildren().addAll(horizontalSplitPane);
+        this.getContentPane().getChildren().add(horizontalSplitPane);
         VBox.setVgrow(horizontalSplitPane, Priority.ALWAYS);
     }
 

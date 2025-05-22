@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
-
-import com.techsenger.tabshell.core.menu.FileMenuKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
+package com.techsenger.tabshell.hex.editor;
 
 /**
- * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
- * for example, during validation in a tab.
  *
  * @author Pavel Castornii
  */
-public interface DemoFileMenuKeys extends FileMenuKeys {
+public enum EditorPanel {
 
-    MenuItemKey TEXT_EDITOR = new MenuItemKey();
+    HEX, ASCII;
 
-    MenuItemKey HEX_EDITOR = new MenuItemKey();
-
-    MenuItemKey TERMINAL = new MenuItemKey();
-
-    MenuItemKey THEME = new MenuItemKey();
+    public EditorPanel opposite() {
+        if (this == HEX) {
+            return ASCII;
+        } else {
+            return HEX;
+        }
+    }
 }

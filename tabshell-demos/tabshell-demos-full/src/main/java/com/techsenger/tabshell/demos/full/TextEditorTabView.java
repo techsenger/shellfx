@@ -27,7 +27,7 @@ import javafx.scene.control.Separator;
  *
  * @author Pavel Castornii
  */
-public class EditorTabView extends AbstractEditorTabView<EditorTabViewModel> {
+public class TextEditorTabView extends AbstractEditorTabView<TextEditorTabViewModel> {
 
     private final Button infoButton = new Button("Info");
 
@@ -37,12 +37,12 @@ public class EditorTabView extends AbstractEditorTabView<EditorTabViewModel> {
 
     private final Button yesNoButton = new Button("YesNo");
 
-    EditorTabView(ShellView<?> shell, EditorTabViewModel viewModel) {
+    TextEditorTabView(ShellView<?> shell, TextEditorTabViewModel viewModel) {
         super(shell, viewModel, new ExtendedTextArea());
     }
 
     @Override
-    protected void build(EditorTabViewModel viewModel) {
+    protected void build(TextEditorTabViewModel viewModel) {
         super.build(viewModel);
         getToolBar().getItems().addAll(getClearButton(), getCopyButton(), getCutButton(), getPasteButton(),
                 getUndoButton(), getRedoButton(), getWrapTextButton(), new Separator(Orientation.VERTICAL),
@@ -52,7 +52,7 @@ public class EditorTabView extends AbstractEditorTabView<EditorTabViewModel> {
     }
 
     @Override
-    protected void addHandlers(EditorTabViewModel viewModel) {
+    protected void addHandlers(TextEditorTabViewModel viewModel) {
         super.addHandlers(viewModel);
         infoButton.setOnAction(e -> viewModel.showInfoDialog());
         warningButton.setOnAction(e -> viewModel.showWarningDialog());

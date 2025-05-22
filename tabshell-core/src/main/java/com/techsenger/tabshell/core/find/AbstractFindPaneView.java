@@ -128,8 +128,8 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
         this.resultLabel.getStyleClass().add(RESULT_LABEL_STYLE_CLASS);
         StackPane.setMargin(this.resultLabel, new Insets(0, SizeConstants.INSET * 2, 0, 0));
         this.findComboBoxWrapper.setAlignment(Pos.CENTER_RIGHT);
-        this.findComboBoxWrapper.setPadding(new Insets(SizeConstants.SIXTH_INSET, 0,
-                SizeConstants.SIXTH_INSET, 0));
+        this.findComboBoxWrapper.setPadding(new Insets(SizeConstants.THIRD_INSET, 0,
+                SizeConstants.THIRD_INSET, 0));
         GridPane.setVgrow(this.findComboBoxWrapper, Priority.ALWAYS);
         this.findPreviousButton.setTooltip(new Tooltip("Previous"));
         this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);

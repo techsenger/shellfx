@@ -62,6 +62,15 @@ public final class IconStylesheetProvider {
     }
 
     /**
+     * Creates and returns the stylesheet with icons for the 'hex' module.
+     *
+     * @return
+     */
+    public static Stylesheet createForHex() {
+        return new Stylesheet(IconStylesheetProvider.class.getResource("hex.css"));
+    }
+
+    /**
      * Creates and returns the stylesheet with icons for the all modules.
      *
      * @return
@@ -70,7 +79,8 @@ public final class IconStylesheetProvider {
         return List.of(createForCore(),
                 createForDialogs(),
                 createForTerminal(),
-                createForText());
+                createForText(),
+                createForHex());
     }
 
     private IconStylesheetProvider() {

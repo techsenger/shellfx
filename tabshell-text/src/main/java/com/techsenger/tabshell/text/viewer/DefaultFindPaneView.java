@@ -136,8 +136,8 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
         HBox.setHgrow(this.replaceComboBox, Priority.ALWAYS);
         this.replaceComboBox.setItems(viewModel.getReplaceTexts());
         this.replaceComboBoxWrapper.setAlignment(Pos.CENTER_LEFT);
-        this.replaceComboBoxWrapper.setPadding(new Insets(SizeConstants.SIXTH_INSET, 0,
-                SizeConstants.SIXTH_INSET, 0));
+        //top padding is 0, as the previous row bottom padding is used
+        this.replaceComboBoxWrapper.setPadding(new Insets(0, 0, SizeConstants.THIRD_INSET, 0));
         this.replaceButton.setFocusTraversable(false);
         this.replaceAllButton.setFocusTraversable(false);
         this.replaceToolBox.setPadding(new Insets(0, 0, 0, SizeConstants.INSET));
@@ -146,7 +146,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
         this.replaceToolBox.setMinWidth(Region.USE_PREF_SIZE);
         this.replaceToolBox.getStyleClass().add(Styles.DENSE);
         this.replaceToolBox.setSpacing(SizeConstants.THIRD_INSET);
-        this.replaceToolBox.setAlignment(Pos.CENTER_LEFT);
+        this.replaceToolBox.setAlignment(Pos.TOP_LEFT);
         if (viewModel.replaceModeProperty().get()) {
             this.manageReplaceControls(true);
         }

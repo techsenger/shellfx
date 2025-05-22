@@ -84,6 +84,11 @@ public interface FileSaverViewModel extends DialogClientViewModel {
         getComponentHelper().openFileChooserDialog(viewModel);
     }
 
+    /**
+     * Returns the list of filters or null.
+     *
+     * @return
+     */
     List<ExtensionFilter> createSaveExtensionFilters();
 
     void writeFile();

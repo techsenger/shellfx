@@ -1,0 +1,50 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+    Author: Pavel Castornii
+*/
+
+.offset-label {
+    -fx-padding: 0 6 0 6;/* 6 - SizeConstants.HALF_INSET */
+    -fx-font-size: 1em;
+    -fx-background-color: -color-bg-inset;
+    -fx-fill: -color-fg-muted;
+}
+
+.content-box {
+    -fx-font-size: 1em;
+}
+
+.content-box .text {
+    -fx-fill: -color-fg-default;
+}
+
+.hex-box > .line {
+    -fx-background-color: -color-fg-default;
+    -fx-pref-width: 1;
+    -fx-min-width: 1;
+    -fx-max-width: 1;
+    -fx-padding: 0 6 0 0;/* 6 - SizeConstants.HALF_INSET */
+}
+
+.caret-pane > .caret {
+    -fx-fill: -color-fg-default;
+}
+
+.caret-pane > .indicator {
+    -fx-fill: -color-danger-5;
+}

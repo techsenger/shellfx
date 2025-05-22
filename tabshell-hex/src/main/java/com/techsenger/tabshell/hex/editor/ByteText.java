@@ -14,24 +14,39 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.core.menu.FileMenuKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
+import javafx.scene.text.Text;
 
 /**
- * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
- * for example, during validation in a tab.
+ * This class represents the text for a single byte.
  *
  * @author Pavel Castornii
  */
-public interface DemoFileMenuKeys extends FileMenuKeys {
+class ByteText  extends Text {
 
-    MenuItemKey TEXT_EDITOR = new MenuItemKey();
+    private ByteTextPair pair;
 
-    MenuItemKey HEX_EDITOR = new MenuItemKey();
+    ByteText() {
+        setSmooth(false);
+    }
 
-    MenuItemKey TERMINAL = new MenuItemKey();
+    public ByteTextPair getPair() {
+        return pair;
+    }
 
-    MenuItemKey THEME = new MenuItemKey();
+    public void setPair(ByteTextPair pair) {
+        this.pair = pair;
+    }
+
+    public BytePart getPartAt(double x) {
+        double textWidth = getLayoutBounds().getWidth();
+        double widthHalf = textWidth / 2;
+        if (x < widthHalf) {
+            return BytePart.HIGH;
+        } else {
+            return BytePart.LOW;
+        }
+    }
 }
+

@@ -21,6 +21,9 @@ import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.hex.editor.HexEditorTabView;
+import com.techsenger.tabshell.hex.editor.HexEditorTabViewModel;
+import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
 import com.techsenger.tabshell.registrars.FileMenuRegistrar;
@@ -31,6 +34,10 @@ import com.techsenger.tabshell.terminal.TerminalTabView;
 import com.techsenger.tabshell.terminal.TerminalTabViewModel;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.tabshell.text.style.TextIcons;
+import java.io.File;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -48,14 +55,16 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
     @Override
     public void register() {
         super.register();
-        registerEditorItem(); //file actions group
+        registerTextEditorItem(); //file actions group
+        registerHexEditorItem(); //file actions group
         registerTerminalItem(); //file actions group
         registerThemeItem(); //file actions group
     }
 
-    protected void registerEditorItem() {
+    protected void registerTextEditorItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.EDITOR, "E_ditor", new FontIconView(TextIcons.EDITOR), 100);
+            var item = new KeyedMenuItem(DemoFileMenuKeys.TEXT_EDITOR, "_Text Editor",
+                    new FontIconView(TextIcons.EDITOR), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
@@ -63,10 +72,37 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
                 var stogages = FileStorages.getDefault(true);
                 var homeDir = GenericFile.getHome(stogages);
                 var file = GenericFile.getChild(homeDir, "Lorem Ipsum.txt", FileType.FILE);
-                var editorViewModel = new EditorTabViewModel(shell.getViewModel(), file);
-                var editorView = new EditorTabView(shell, editorViewModel);
+                var editorViewModel = new TextEditorTabViewModel(shell.getViewModel(), file);
+                var editorView = new TextEditorTabView(shell, editorViewModel);
                 editorView.initialize();
                 editorViewModel.setContent(Text.INSTANCE);
+                shell.openTab(editorView);
+            });
+            return item;
+        };
+        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+    }
+
+    protected void registerHexEditorItem() {
+        ControlFactory<KeyedMenuItem> f = (v) -> {
+            var item = new KeyedMenuItem(DemoFileMenuKeys.HEX_EDITOR, "_Hex Editor",
+                    new FontIconView(HexIcons.EDITOR), 200);
+            item.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
+            item.setOnAction((e) -> {
+                var shell = (ShellView<?>) v;
+                Path currentPath = Paths.get(System.getProperty("user.dir"));
+                URI fileUri = currentPath.resolve("src" + File.separator + "main" + File.separator
+                        + "resources" + File.separator + "hex.png").toUri();
+                //editor
+                var storage = FileStorages.findByUri(FileStorages.getDefault(true), fileUri);
+                var file = new GenericFile.Builder()
+                        .storage(storage)
+                        .uri(fileUri)
+                        .type(FileType.FILE)
+                        .build();
+                var editorViewModel = new HexEditorTabViewModel(shell.getViewModel(), file);
+                var editorView = new HexEditorTabView(shell, editorViewModel);
+                editorView.initialize();
                 shell.openTab(editorView);
             });
             return item;
@@ -77,7 +113,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
     protected void registerTerminalItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
             var item = new KeyedMenuItem(DemoFileMenuKeys.TERMINAL, "_Terminal",
-                    new FontIconView(TerminalIcons.TERMINAL), 200);
+                    new FontIconView(TerminalIcons.TERMINAL), 300);
             item.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
@@ -94,7 +130,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
 
     protected void registerThemeItem() {
         ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.THEME, "_Theme", 300);
+            var item = new KeyedMenuItem(DemoFileMenuKeys.THEME, "_Theme", 400);
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
                 var appearance = shell.getViewModel().getSettings().getAppearance();

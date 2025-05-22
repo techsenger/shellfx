@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-module com.techsenger.tabshell.demos.full {
-    requires com.techsenger.toolkit.core;
-    requires com.techsenger.toolkit.fx;
-    requires com.techsenger.tabshell.core;
+module com.techsenger.tabshell.hex {
+    requires org.slf4j;
     requires com.techsenger.tabshell.material;
-    requires com.techsenger.mvvm4fx.core;
-    requires com.techsenger.tabshell.text;
-    requires com.techsenger.tabshell.hex;
+    requires com.techsenger.tabshell.core;
+    requires com.techsenger.tabshell.tabs;
     requires com.techsenger.tabshell.storage;
     requires com.techsenger.tabshell.dialogs;
-    requires com.techsenger.tabshell.terminal;
-    requires com.techsenger.tabshell.registrars;
-    requires com.techsenger.tabshell.icons;
-    requires com.techsenger.tabshell.demos.core;
-
-    requires org.slf4j;
+    requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.toolkit.core;
+    requires com.techsenger.toolkit.fx;
+    requires org.fxmisc.flowless;
     requires javafx.base;
-    requires javafx.graphics;
     requires javafx.controls;
-    requires atlantafx.base;
+    requires javafx.graphics;
 
-    opens com.techsenger.tabshell.demos.full;
+    exports com.techsenger.tabshell.hex.editor;
+    exports com.techsenger.tabshell.hex.style;
 }

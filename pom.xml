@@ -43,6 +43,7 @@
 
     <properties>
         <publishing.plugin.exclusions>tabshell-demos-core,tabshell-demos-all</publishing.plugin.exclusions>
+        <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
     <dependencyManagement>
@@ -116,11 +117,12 @@
     <modules>
         <module>tabshell-material</module>
         <module>tabshell-core</module>
+        <module>tabshell-storage</module>
+        <module>tabshell-tabs</module>
         <module>tabshell-text</module>
         <module>tabshell-terminal</module>
-        <module>tabshell-storage</module>
         <module>tabshell-dialogs</module>
-        <module>tabshell-tabs</module>
+        <module>tabshell-hex</module>
         <module>tabshell-registrars</module>
         <module>tabshell-icons</module>
         <module>tabshell-demos</module>

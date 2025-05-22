@@ -83,6 +83,11 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
         getComponentHelper().openFileChooserDialog(viewModel);
     }
 
+    /**
+     * Returns the list of filters or null.
+     *
+     * @return
+     */
     List<ExtensionFilter> createOpenExtensionFilters();
 
     void readFile();

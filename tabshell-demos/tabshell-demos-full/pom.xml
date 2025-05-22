@@ -56,6 +56,10 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
+            <artifactId>tabshell-hex</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-registrars</artifactId>
         </dependency>
         <dependency>

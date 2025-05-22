@@ -335,8 +335,9 @@
     Toolbar
 */
 .tool-bar {
-    -fx-padding: 2 4 2 4;
+    -fx-padding: 4 4 5 4; /*bottom padding is 5 = 4 + 1 because of the botttom line */
     -fx-alignment: center-left;
+    -fx-spacing: 6px;
 }
 
 .tool-bar .button,
@@ -359,7 +360,7 @@
 .tool-bar .button .font-icon-view,
 .tool-bar .toggle-button .font-icon-view {
     -fx-padding: 0;
-    -fx-font-size: 1.8em;
+    -fx-font-size: 1.65em;
 }
 
 .tool-bar .separator:vertical {
@@ -449,6 +450,11 @@
 /*
     TabPane
 */
+/* When floating tabs are used the top 1px of the content is not displayed (AtlantaFX bug?). We fix it via padding. */
+.tab-pane.floating  > .tab-content-area {
+    -fx-padding: 1 0 0 0;
+}
+
 .tab-pane.hidden-tabs {
     -fx-tab-max-height: 0;
 }
