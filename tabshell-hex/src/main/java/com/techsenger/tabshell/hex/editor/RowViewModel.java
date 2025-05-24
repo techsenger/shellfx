@@ -23,14 +23,14 @@ import com.techsenger.tabshell.core.node.NodeKey;
  *
  * @author Pavel Castornii
  */
-class RowViewModel extends AbstractNodeViewModel {
+public class RowViewModel extends AbstractNodeViewModel {
 
     private static final NodeKey HEX_EDITOR_ROW_KEY = new NodeKey("Hex Editor Row");
 
-    private final HexEditorTabViewModel editor;
+    private final AbstractHexEditorTabViewModel editor;
 
     /**
-     * The count of column when layout was built.
+     * The count of columns when layout was built.
      */
     private int columnCount;
 
@@ -38,7 +38,7 @@ class RowViewModel extends AbstractNodeViewModel {
 
     private boolean focused;
 
-    RowViewModel(HexEditorTabViewModel editor, RowModel model) {
+    RowViewModel(AbstractHexEditorTabViewModel editor, RowModel model) {
         this.model = model;
         this.editor = editor;
     }
@@ -76,7 +76,7 @@ class RowViewModel extends AbstractNodeViewModel {
         return this.columnCount != editor.getColumnCount();
     }
 
-    HexEditorTabViewModel getEditor() {
+    AbstractHexEditorTabViewModel getEditor() {
         return editor;
     }
 }

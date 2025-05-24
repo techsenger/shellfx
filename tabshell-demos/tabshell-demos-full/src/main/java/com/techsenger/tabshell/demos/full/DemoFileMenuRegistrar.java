@@ -21,8 +21,6 @@ import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.menu.FileMenuKeys;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.hex.editor.HexEditorTabView;
-import com.techsenger.tabshell.hex.editor.HexEditorTabViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;

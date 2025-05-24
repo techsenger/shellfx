@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -35,9 +36,9 @@ import org.fxmisc.flowless.Cell;
  *
  * @author Pavel Castornii
  */
-class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, Node> {
+public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, Node> {
 
-    private final HexEditorTabView editor;
+    private final AbstractHexEditorTabView<?> editor;
 
     /**
      * This flow has only one text node.
@@ -45,9 +46,9 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
     private final Label offsetLabel = new Label();
 
     /**
-     * This pane is used for showing mouse position.
+     * This canvas is used for background color, selection etc.
      */
-    private final Pane mousePane = new Pane();
+    private final Canvas canvas = new Canvas();
 
     /**
      * For caret and its indicator one pane is used.
@@ -55,22 +56,27 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
     private final Pane caretPane = new Pane();
 
     /**
-     * This box has text nodes (with spaces and with byte values) and lines.
+     * This box contains text nodes (with spaces and with byte values) and lines.
      */
     private final HBox hexBox = new HBox();
 
     /**
+     * This box contains text nodes (with spaces and with byte values) and lines.
+     */
+    private final HBox asciiBox = new HBox();
+
+    /**
      * Contains {@link #hexBox} and ASCII text nodes.
      */
-    private final HBox contentBox = new HBox();
+    private final HBox contentBox = new HBox(hexBox, asciiBox);
 
     /**
      * Contains all panes for content and working with it.
      */
-    private final StackPane stackPane = new StackPane(mousePane, caretPane, contentBox);
+    private final StackPane stackPane = new StackPane(canvas, caretPane, contentBox);
 
     /**
-     * Only texts that represent bytes.
+     * Only texts that represent bytes. Its size is always equal to max rowByteCount.
      */
     private final List<ByteTextPair> byteTextPairs = new ArrayList<>();
 
@@ -79,7 +85,7 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
      */
     private final HBox root = new HBox(offsetLabel, stackPane);
 
-    RowView(RowViewModel viewModel, HexEditorTabView editor) {
+    RowView(RowViewModel viewModel, AbstractHexEditorTabView<?> editor) {
         super(viewModel);
         this.editor = editor;
     }
@@ -146,6 +152,8 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
         this.caretPane.getStyleClass().add("caret-pane");
         HBox.setHgrow(this.hexBox, Priority.ALWAYS);
         this.hexBox.getStyleClass().add("hex-box");
+        HBox.setHgrow(this.asciiBox, Priority.ALWAYS);
+        this.asciiBox.getStyleClass().add("ascii-box");
         this.contentBox.getStyleClass().add("content-box");
         this.root.getStyleClass().add(StyleClasses.MONOSPACE);
     }
@@ -173,6 +181,10 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
         updateItem(viewModel.getModel().getOffset());
     }
 
+    HBox getHexBox() {
+        return hexBox;
+    }
+
     List<ByteTextPair> getByteTextPairs() {
         return byteTextPairs;
     }
@@ -184,25 +196,14 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
     void addCaret() {
         if (getViewModel().isFocused()) {
             var caret = editor.getCaret();
-            var caretVM = caret.getViewModel();
             caret.getNode().setTranslateX(caret.getViewModel().getX());
+            caret.getIndicator().setTranslateX(caret.getViewModel().getIndicatorX());
             this.caretPane.getChildren().add(caret.getNode());
             this.caretPane.getChildren().add(caret.getIndicator());
-            caret.getIndicator().setHeight(this.root.getHeight());
         }
     }
 
-    void removeMousePairHighlighter() {
-        this.mousePane.getChildren().clear();
-    }
-
-    void addMousePairHighlighter() {
-//        if (getViewModel().isFocused()) {
-//            this.caretHightlightPane.getChildren().add(getEditor().ge)
-//        }
-    }
-
-    HexEditorTabView getEditor() {
+    AbstractHexEditorTabView<?> getEditor() {
         return editor;
     }
 
@@ -217,23 +218,22 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
     private void updateRowPanes() {
         getViewModel().setColumnCount(getViewModel().getEditor().getColumnCount());
         this.hexBox.getChildren().clear();
-        this.contentBox.getChildren().clear();
-        this.mousePane.getChildren().clear();
+        this.asciiBox.getChildren().clear();
         this.caretPane.getChildren().clear();
 
         this.byteTextPairs.clear();
         var charWidth = getViewModel().getEditor().getCharWidth();
-        hexBox.setPadding(new Insets(0, charWidth, 0, charWidth));
+        hexBox.setPadding(new Insets(0, 0, 0, charWidth));
         hexBox.setSpacing(charWidth);
         List<Text> asciiTexts = new ArrayList<>();
         for (var c = 0; c < getViewModel().getColumnCount(); c++) {
-            for (var i = 0; i < HexEditorTabViewModel.COLUMN_BYTE_COUNT; i++) {
+            for (var i = 0; i < AbstractHexEditorTabViewModel.COLUMN_BYTE_COUNT; i++) {
                 var hexText = createByteHexText();
                 hexBox.getChildren().add(hexText);
                 var asciiText = createByteAsciiText();
                 asciiTexts.add(asciiText);
                 this.byteTextPairs.add(new ByteTextPair(this, hexText, asciiText));
-                if (i + 1 == HexEditorTabViewModel.COLUMN_BYTE_COUNT) {
+                if (i + 1 == AbstractHexEditorTabViewModel.COLUMN_BYTE_COUNT) {
                     //we use regions as they stretch
                     var line = new Region();
                     line.getStyleClass().add("line");
@@ -241,8 +241,8 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
                 }
             }
         }
-        this.contentBox.getChildren().add(this.hexBox);
-        this.contentBox.getChildren().addAll(asciiTexts);
+        this.asciiBox.setPadding(new Insets(0, 0, 0, charWidth));
+        this.asciiBox.getChildren().addAll(asciiTexts);
     }
 
     private ByteText createByteHexText() {

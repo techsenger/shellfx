@@ -16,37 +16,18 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import javafx.scene.text.Text;
+import com.techsenger.tabshell.dialogs.StandardDialogHelper;
+import com.techsenger.tabshell.tabs.workertab.WorkerTabHelper;
 
 /**
- * This class represents the text for a single byte.
  *
  * @author Pavel Castornii
  */
-class ByteText extends Text {
+public abstract class AbstractHexEditorTabHelper<T extends AbstractHexEditorTabView<?>> extends WorkerTabHelper<T>
+        implements StandardDialogHelper<T> {
 
-    private ByteTextPair pair;
-
-    ByteText() {
-        setSmooth(false);
+    public AbstractHexEditorTabHelper(T view) {
+        super(view);
     }
 
-    public ByteTextPair getPair() {
-        return pair;
-    }
-
-    public void setPair(ByteTextPair pair) {
-        this.pair = pair;
-    }
-
-    public BytePosition getPartAt(double x) {
-        double textWidth = getLayoutBounds().getWidth();
-        double widthHalf = textWidth / 2;
-        if (x < widthHalf) {
-            return BytePosition.FIRST;
-        } else {
-            return BytePosition.SECOND;
-        }
-    }
 }
-

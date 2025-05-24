@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.demos.full;
+
+import com.techsenger.tabshell.hex.editor.AbstractHexEditorTabHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum BytePart {
+public class HexEditorTabHistory extends AbstractHexEditorTabHistory<HexEditorTabViewModel> {
 
-    HIGH, LOW;
-
-    public BytePart opposite() {
-        if (this == HIGH) {
-            return LOW;
-        } else {
-            return HIGH;
-        }
-    }
 }

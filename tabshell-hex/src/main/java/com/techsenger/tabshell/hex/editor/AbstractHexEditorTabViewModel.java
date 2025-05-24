@@ -16,15 +16,12 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleUtils;
-import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
-import com.techsenger.tabshell.hex.HexComponentKeys;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabViewModel;
@@ -48,10 +45,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabViewModel extends AbstractWorkerTabViewModel
+public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabViewModel
         implements FileOpenerViewModel, FileSaverViewModel {
 
-    private static final Logger logger = LoggerFactory.getLogger(HexEditorTabViewModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractHexEditorTabViewModel.class);
 
     static final int COLUMN_BYTE_COUNT = 4;
 
@@ -68,7 +65,7 @@ public class HexEditorTabViewModel extends AbstractWorkerTabViewModel
     /**
      * Observable list is created only when file content is loaded, because it works faster.
      */
-    private ObservableList<Integer> offsets;
+    private ObservableList<Integer> offsets = FXCollections.observableArrayList();
 
     private ReadOnlyBooleanWrapper contentModified = new ReadOnlyBooleanWrapper(false);
 
@@ -76,26 +73,20 @@ public class HexEditorTabViewModel extends AbstractWorkerTabViewModel
 
     private ReadOnlyIntegerWrapper rowByteCount = new ReadOnlyIntegerWrapper();
 
+    private ReadOnlyIntegerWrapper lastRowByteCount = new ReadOnlyIntegerWrapper();
+
     private ReadOnlyDoubleWrapper charWidth = new ReadOnlyDoubleWrapper();
 
-    public HexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
+    public AbstractHexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
         super(tabShell);
         this.document = new HexDocument(file);
         setIcon(HexIcons.EDITOR);
         setTitle("Hex Editor");
-        setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> tabShell.getHistoryManager().getHistory(HexEditorTabHistory.class,
-                HexEditorTabHistory::new));
     }
 
     @Override
-    public ShellTabKey getKey() {
-        return HexComponentKeys.HEX_EDITOR;
-    }
-
-    @Override
-    public HexEditorTabHelper getComponentHelper() {
-        return (HexEditorTabHelper) super.getComponentHelper();
+    public AbstractHexEditorTabHelper<?> getComponentHelper() {
+        return (AbstractHexEditorTabHelper) super.getComponentHelper();
     }
 
     @Override
@@ -114,10 +105,20 @@ public class HexEditorTabViewModel extends AbstractWorkerTabViewModel
 
     @Override
     public void readFile() {
+        this.caret.setDisabled(true);
         if (this.document.readFile()) {
-            calculateColumnCount();
+            calculateLayout();
             this.offsets = createOffsets();
+            this.caret.setPanel(EditorPanel.HEX);
+            this.caret.setRowOffset(0);
+            this.caret.setRowIndex(0);
+            this.caret.setByteIndex(0);
+            this.caret.setBytePosition(BytePosition.FIRST);
+            //when file is opened the position of the caret is calculated by char width as there can be no bytes
+            this.caret.setX(getCharWidth());
+            this.caret.setIndicatorX(-1); //the x is resolved on the first caret blink - see timeline key frames.
             this.contentLoaded.next(true);
+            this.caret.setDisabled(false);
         }
     }
 
@@ -172,6 +173,20 @@ public class HexEditorTabViewModel extends AbstractWorkerTabViewModel
         return this.rowByteCount.get();
     }
 
+    public ReadOnlyIntegerProperty lastRowByteCountProperty() {
+        return lastRowByteCount.getReadOnlyProperty();
+    }
+
+    public int getLastRowByteCount() {
+        return this.lastRowByteCount.get();
+    }
+
+//    public double getColumnWidth() {
+//        var charCount = (COLUMN_BYTE_COUNT * 2) + 5;
+//        var columnWidth = (charCount * getCharWidth()) + 1; //1 - lineWidth
+//        return columnWidth;
+//    }
+
     ObservableList<Integer> getOffsets() {
         return this.offsets;
     }
@@ -224,12 +239,12 @@ public class HexEditorTabViewModel extends AbstractWorkerTabViewModel
         for (var offset = 0; offset < content.length; offset += getRowByteCount()) {
             tempOffsets.add(offset);
         }
-        var offsets = FXCollections.observableList(tempOffsets);
+        this.offsets.addAll(tempOffsets);
         logger.debug("Offsets list size: {}", offsets.size());
         return offsets;
     }
 
-    private void calculateColumnCount() {
+    private void calculateLayout() {
         this.charWidth.set(StyleUtils.getMonospaceCharWidth(getShell().getSettings().getAppearance()
                 .getMonospaceFont()));
         //4 * 2 bytes, 5 spaces, 4 ascii chars
@@ -256,5 +271,10 @@ public class HexEditorTabViewModel extends AbstractWorkerTabViewModel
             }
         } while (true);
         this.rowByteCount.set(COLUMN_BYTE_COUNT * getColumnCount());
+        var lastRowBCount = this.document.getContent().length % getRowByteCount();
+        if (lastRowBCount == 0 && this.document.getContent().length > 0) {
+            lastRowBCount = getRowByteCount();
+        }
+        this.lastRowByteCount.set(lastRowBCount);
     }
 }

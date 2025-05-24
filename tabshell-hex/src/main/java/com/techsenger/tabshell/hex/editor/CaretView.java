@@ -17,8 +17,14 @@
 package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.tabshell.core.node.AbstractNodeView;
+import static com.techsenger.tabshell.hex.editor.CaretShape.BAR;
+import static com.techsenger.tabshell.hex.editor.CaretShape.BLOCK;
+import static com.techsenger.tabshell.hex.editor.CaretShape.UNDERSCORE;
+import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -30,7 +36,10 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
 
     private RowView row;
 
-    private final Rectangle bar = new Rectangle();
+    /**
+     * Region is not use used because it can't always have 1 px width, but we don't need as the height is set via timer.
+     */
+    private final Rectangle caret = new Rectangle();
 
     private final Rectangle indicator = new Rectangle();
 
@@ -42,7 +51,7 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
 
     @Override
     public Rectangle getNode() {
-        return bar;
+        return caret;
     }
 
     public Rectangle getIndicator() {
@@ -52,25 +61,48 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
     @Override
     protected void build(CaretViewModel viewModel) {
         super.build(viewModel);
-        this.bar.setWidth(1);
-        this.bar.getStyleClass().add("caret");
-        this.bar.setSmooth(true);
-        this.bar.setManaged(false);
-
+        this.caret.getStyleClass().add("caret");
+        this.caret.setSmooth(false);
+        this.caret.setManaged(false);
         this.indicator.getStyleClass().add("indicator");
-        this.indicator.setHeight(10);
-        this.indicator.setManaged(false);
         this.indicator.setSmooth(false);
+        this.indicator.setManaged(false);
 
-        this.timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500),
-                e -> viewModel.setVisible(!viewModel.isVisible())));
+        this.timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), e -> {
+            this.caret.setVisible(!this.caret.isVisible());
+            if (this.row != null && this.caret.isVisible()) {
+                var charWidth = this.row.getViewModel().getEditor().getCharWidth();
+                //setting caret width and height
+                switch (viewModel.getShape()) {
+                    case BAR:
+                        this.caret.setHeight(this.row.getNode().getHeight());
+                        break;
+                    case BLOCK:
+                        this.caret.setHeight(this.row.getNode().getHeight());
+                        this.caret.setWidth(charWidth);
+                        break;
+                    case UNDERSCORE:
+                        this.caret.setTranslateY(this.row.getNode().getHeight() - 1);
+                        this.caret.setWidth(charWidth);
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+
+                //setting indicator width, height, x
+                this.indicator.setHeight(this.row.getNode().getHeight());
+                var k = 1;
+                if (viewModel.getPanel() == EditorPanel.ASCII) {
+                    k = 2;
+                }
+                this.indicator.setWidth(charWidth * k);
+                if (viewModel.getIndicatorX() < 0) {
+                    viewModel.setIndicatorX(row.getHexBox().getWidth() + charWidth);
+                    this.indicator.setTranslateX(viewModel.getIndicatorX());
+                }
+            }
+        }));
         this.timeline.setCycleCount(Timeline.INDEFINITE);
-    }
-
-    @Override
-    protected void bind(CaretViewModel viewModel) {
-        super.bind(viewModel);
-        this.bar.visibleProperty().bind(viewModel.visibleProperty());
     }
 
     @Override
@@ -79,10 +111,29 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
         viewModel.disabledProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
                 this.timeline.pause();
-                viewModel.setVisible(false);
+                this.caret.setVisible(false);
+                this.indicator.setVisible(false);
             } else {
-                viewModel.setVisible(true);
+                this.caret.setVisible(true);
+                this.indicator.setVisible(true);
                 this.timeline.play();
+            }
+        });
+        ValueUtils.callAndAddListener(viewModel.shapeProperty(), (ov, oldV, newV) -> {
+            switch (newV) {
+                case BAR:
+                    VBox.setVgrow(caret, Priority.ALWAYS);
+                    this.caret.setWidth(1);
+                    this.caret.setTranslateY(0);
+                    break;
+                case BLOCK:
+                    this.caret.setTranslateY(0);
+                    break;
+                case UNDERSCORE:
+                    this.caret.setHeight(1);
+                    break;
+                default:
+                    throw new AssertionError();
             }
         });
     }

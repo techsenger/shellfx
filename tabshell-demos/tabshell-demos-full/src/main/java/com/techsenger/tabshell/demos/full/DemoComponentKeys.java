@@ -29,6 +29,8 @@ public final class DemoComponentKeys {
 
     public static final ShellTabKey EDITOR_TAB = new ShellTabKey("Demo Editor Tab");
 
+    public static final ShellTabKey HEX_EDITOR = new ShellTabKey("Demo Hex Editor");
+
     public static final DialogKey THEME_DIALOG = new DialogKey("Theme Dialog");
 
     private DemoComponentKeys() {

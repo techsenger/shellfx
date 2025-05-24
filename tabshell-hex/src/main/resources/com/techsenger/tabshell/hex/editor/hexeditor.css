@@ -29,16 +29,20 @@
     -fx-font-size: 1em;
 }
 
-.content-box .text {
+.content-box > .hex-box > .text {
     -fx-fill: -color-fg-default;
 }
 
-.hex-box > .line {
+.content-box > .hex-box > .line {
     -fx-background-color: -color-fg-default;
     -fx-pref-width: 1;
     -fx-min-width: 1;
     -fx-max-width: 1;
     -fx-padding: 0 6 0 0;/* 6 - SizeConstants.HALF_INSET */
+}
+
+.content-box > .ascii-box > .text {
+    -fx-fill: red;
 }
 
 .caret-pane > .caret {

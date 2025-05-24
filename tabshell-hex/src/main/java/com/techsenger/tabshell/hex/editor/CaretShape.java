@@ -16,12 +16,15 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabHistory;
-
 /**
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabHistory extends AbstractWorkerTabHistory<HexEditorTabViewModel> {
+public enum CaretShape {
 
+    BAR,
+
+    BLOCK,
+
+    UNDERSCORE
 }

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.mvvm4fx.core.ComponentHelper;
 import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
@@ -25,13 +24,12 @@ import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabView;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.application.Platform;
-import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import static javafx.scene.input.KeyCode.DOWN;
+import static javafx.scene.input.KeyCode.END;
 import static javafx.scene.input.KeyCode.HOME;
 import static javafx.scene.input.KeyCode.LEFT;
 import static javafx.scene.input.KeyCode.PAGE_DOWN;
@@ -48,7 +46,8 @@ import org.fxmisc.flowless.VirtualizedScrollPane;
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewModel> {
+public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabViewModel>
+        extends AbstractWorkerTabView<T> {
 
     /**
      * Contains information for pageUp and pageDown navigation.
@@ -73,10 +72,7 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
 
     private final Button replaceButton = new Button(null, new FontIconView(CoreIcons.REPLACE));
 
-    private final ToolBar toolBar = new ToolBar(
-            newButton, clearButton, new Separator(Orientation.VERTICAL),  cutButton, copyButton, pasteButton,
-            new Separator(Orientation.VERTICAL),  undoButton, redoButton, new Separator(Orientation.VERTICAL),
-            findButton, replaceButton);
+    private final ToolBar toolBar = new ToolBar();
 
     /**
      * Integer is row index.
@@ -87,7 +83,7 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
 
     private final CaretView caret;
 
-    public HexEditorTabView(ShellView<?> tabShell, HexEditorTabViewModel viewModel) {
+    public AbstractHexEditorTabView(ShellView<?> tabShell, T viewModel) {
         super(tabShell, viewModel);
         this.caret = new CaretView(viewModel.getCaret());
     }
@@ -108,7 +104,7 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
     }
 
     @Override
-    protected void build(HexEditorTabViewModel viewModel) {
+    protected void build(T viewModel) {
         super.build(viewModel);
         newButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
         newButton.setTooltip(new Tooltip("New"));
@@ -129,58 +125,112 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
         replaceButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
         replaceButton.setTooltip(new Tooltip("Replace"));
 
-        var css = HexEditorTabView.class.getResource("hexeditor.css").toExternalForm();
+        var css = AbstractHexEditorTabView.class.getResource("hexeditor.css").toExternalForm();
         getTopPane().getStylesheets().add(css);
-        getTopPane().getChildren().add(toolBar);
+        virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
+                var rowViewModel = viewModel.createRow(offset);
+                var rowView = new RowView(rowViewModel, this);
+                rowView.initialize();
+                return rowView;
+        });
+        virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
+        this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        VBox.setVgrow(virtualScrollPane, Priority.ALWAYS);
     }
 
     @Override
-    protected void addListeners(HexEditorTabViewModel viewModel) {
+    protected void addHandlers(T viewModel) {
+        super.addHandlers(viewModel);
+        virtualFlow.setOnMousePressed(e -> virtualFlow.requestFocus());
+        virtualFlow.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            switch (e.getCode()) {
+                case UP: moveCaretUp(); break;
+                case DOWN: moveCaretDown(); break;
+                case LEFT: moveCaretLeft(); break;
+                case RIGHT: moveCaretRight(); break;
+                case PAGE_UP: moveCaretPageUp(); break;
+                case PAGE_DOWN: moveCaretPageDown(); break;
+                case HOME: moveCaretHome(); break;
+                case END: moveCaretEnd(); break;
+            }
+            e.consume();
+        });
+    }
+
+    @Override
+    protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         viewModel.contentLoadedSource().addListener((newV) -> {
-            this.caret.getViewModel().setDisabled(true);
-            virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(),
-                    offset -> {
-                        var rowViewModel = viewModel.createRow(offset);
-                        var rowView = new RowView(rowViewModel, this);
-                        rowView.initialize();
-                        return rowView;
-                    });
-            virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
-            this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-            VBox.setVgrow(virtualScrollPane, Priority.ALWAYS);
-            getTopPane().getChildren().add(virtualScrollPane);
-            virtualFlow.setOnMousePressed(e -> virtualFlow.requestFocus());
-            virtualFlow.addEventFilter(KeyEvent.KEY_PRESSED, e -> handleKeyPressed(e));
+            this.virtualFlow.showAsFirst(0); //after clearing and adding new items flow is scrolled to the end
+            var row = this.virtualFlow.getCell(0);
+            updateCaretRow(row);
+            completeCaretMove();
             addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
-                var row = this.virtualFlow.getCell(0);
-                moveCaretTo(EditorPanel.HEX, row, 0, 0, BytePart.HIGH);
                 NodeUtils.requestFocus(virtualFlow);
-                this.caret.getViewModel().setDisabled(false);
                 return false;
             });
         });
-        viewModel.getCaret().byteIndexProperty().addListener((ov, oldV, newV) -> {
-            updateIndicatorX();
-        });
     }
 
     @Override
-    protected void postInitialize(HexEditorTabViewModel viewModel) {
+    protected void postInitialize(T viewModel) {
         super.postInitialize(viewModel);
         this.caret.initialize();
         viewModel.readFile();
     }
 
     @Override
-    protected void preDeinitialize(HexEditorTabViewModel viewModel) {
+    protected void preDeinitialize(T viewModel) {
         super.preDeinitialize(viewModel);
         this.caret.deinitialize();
     }
 
-    @Override
-    protected ComponentHelper<?> createComponentHelper() {
-        return new HexEditorTabHelper(this);
+    protected Button getNewButton() {
+        return newButton;
+    }
+
+    protected Button getClearButton() {
+        return clearButton;
+    }
+
+    protected Button getCutButton() {
+        return cutButton;
+    }
+
+    protected Button getCopyButton() {
+        return copyButton;
+    }
+
+    protected Button getPasteButton() {
+        return pasteButton;
+    }
+
+    protected Button getUndoButton() {
+        return undoButton;
+    }
+
+    protected Button getRedoButton() {
+        return redoButton;
+    }
+
+    protected Button getFindButton() {
+        return findButton;
+    }
+
+    protected Button getReplaceButton() {
+        return replaceButton;
+    }
+
+    protected ToolBar getToolBar() {
+        return toolBar;
+    }
+
+    protected VirtualFlow<Integer, RowView> getVirtualFlow() {
+        return virtualFlow;
+    }
+
+    protected VirtualizedScrollPane<VirtualFlow<Integer, RowView>> getVirtualScrollPane() {
+        return virtualScrollPane;
     }
 
     RowView scrollUpTo(int rowIndex) {
@@ -211,30 +261,16 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
         return row;
     }
 
-    void moveCaretTo(EditorPanel panel, RowView row, int rowIndex, int byteIndex, BytePart part) {
+    void moveCaretTo(EditorPanel panel, RowView row, int rowIndex, int byteIndex, BytePosition position) {
         var caretVewModel = getViewModel().getCaret();
         updateCaretRow(row);
         caretVewModel.setPanel(panel);
         caretVewModel.setRowOffset(row.getViewModel().getModel().getOffset());
         caretVewModel.setRowIndex(rowIndex);
         caretVewModel.setByteIndex(byteIndex);
-        caretVewModel.setBytePart(part);
+        caretVewModel.setBytePosition(position);
         updateCaretX();
         completeCaretMove();
-    }
-
-    private void handleKeyPressed(KeyEvent e) {
-        switch (e.getCode()) {
-            case UP: moveCaretUp(); break;
-            case DOWN: moveCaretDown(); break;
-            case LEFT: moveCaretLeft(); break;
-            case RIGHT: moveCaretRight(); break;
-            case PAGE_UP: moveCaretPageUp(); break;
-            case PAGE_DOWN: moveCaretPageDown(); break;
-            case HOME: moveCaretHome(); break;
-            case END: moveCaretEnd(); break;
-        }
-        e.consume();
     }
 
     private void moveCaretTo(RowView row, int rowIndex) {
@@ -410,14 +446,15 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
     private void moveCaretLeft() {
         var caretViewModel = getViewModel().getCaret();
         if (caretViewModel.getByteIndex() - 1 < 0) {
-            if ((caretViewModel.getPanel() == EditorPanel.HEX && caretViewModel.getBytePart() == BytePart.HIGH)
+            if ((caretViewModel.getPanel() == EditorPanel.HEX && caretViewModel.getBytePosition() == BytePosition.FIRST)
                     || caretViewModel.getPanel() == EditorPanel.ASCII) {
                 var rowIndex = getViewModel().calculateRowIndex(caretViewModel.getRowOffset());
                 rowIndex--;
                 if (rowIndex >= 0) {
                     var row = scrollUpTo(rowIndex);
-                    moveCaretTo(caretViewModel.getPanel(), row, rowIndex, row.getByteTextPairs().size() - 1,
-                            BytePart.LOW);
+                    moveCaretTo(caretViewModel.getPanel(), row, rowIndex,
+                            row.getViewModel().getModel().getByteCount() - 1,
+                            BytePosition.SECOND);
                 }
             } else {
                 doMoveCaretLeft();
@@ -428,15 +465,15 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
     }
 
     private void moveCaretRight() {
-        var caretViewModel = getViewModel().getCaret();
-        if (caretViewModel.getByteIndex() + 1 == getViewModel().getRowByteCount()) {
-            if ((caretViewModel.getPanel() == EditorPanel.HEX && caretViewModel.getBytePart() == BytePart.LOW)
-                    || caretViewModel.getPanel() == EditorPanel.ASCII) {
-                var rowIndex = getViewModel().calculateRowIndex(caretViewModel.getRowOffset());
+        var caretVM = getViewModel().getCaret();
+        if (caretVM.getByteIndex() + 1 == getViewModel().getRowByteCount()) {
+            if ((caretVM.getPanel() == EditorPanel.HEX && caretVM.getBytePosition() == BytePosition.SECOND)
+                    || caretVM.getPanel() == EditorPanel.ASCII) {
+                var rowIndex = getViewModel().calculateRowIndex(caretVM.getRowOffset());
                 rowIndex++;
                 if (rowIndex < getViewModel().getOffsets().size()) {
                     var row = scrollDownTo(rowIndex);
-                    moveCaretTo(caretViewModel.getPanel(), row, rowIndex, 0, BytePart.HIGH);
+                    moveCaretTo(caretVM.getPanel(), row, rowIndex, 0, BytePosition.FIRST);
                 }
             } else {
                 doMoveCaretRight();
@@ -447,11 +484,11 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
     }
 
     private void moveCaretHome() {
-        var caretViewModel = getViewModel().getCaret();
-        if (caretViewModel.getByteIndex() != 0
-                || (caretViewModel.getPanel() == EditorPanel.HEX && caretViewModel.getBytePart() == BytePart.LOW)) {
-            caretViewModel.setByteIndex(0);
-            caretViewModel.setBytePart(BytePart.HIGH);
+        var caretVM = getViewModel().getCaret();
+        if (caretVM.getByteIndex() != 0
+                || (caretVM.getPanel() == EditorPanel.HEX && caretVM.getBytePosition() == BytePosition.SECOND)) {
+            caretVM.setByteIndex(0);
+            caretVM.setBytePosition(BytePosition.FIRST);
             updateCaretX();
             completeCaretMove();
         }
@@ -459,13 +496,10 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
 
     private void moveCaretEnd() {
         var caretViewModel = getViewModel().getCaret();
-        if (caretViewModel.getByteIndex()  + 1 != this.caret.getRow().getByteTextPairs().size()
-                || (caretViewModel.getPanel() == EditorPanel.HEX && caretViewModel.getBytePart() == BytePart.HIGH)) {
-            caretViewModel.setByteIndex(this.caret.getRow().getByteTextPairs().size() - 1);
-            caretViewModel.setBytePart(BytePart.HIGH);
-            updateCaretX();
-            completeCaretMove();
-        }
+        caretViewModel.setByteIndex(this.caret.getRow().getViewModel().getModel().getByteCount() - 1);
+        caretViewModel.setBytePosition(BytePosition.FIRST);
+        updateCaretX();
+        completeCaretMove();
     }
 
     /**
@@ -476,7 +510,7 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
         var bytePair = this.caret.getRow().getByteTextPairs().get(caretViewModel.getByteIndex());
         if (caretViewModel.getPanel() == EditorPanel.HEX) {
             var text = bytePair.getHexText();
-            if (caretViewModel.getBytePart() == BytePart.HIGH) {
+            if (caretViewModel.getBytePosition() == BytePosition.FIRST) {
                 caretViewModel.setX(text.getBoundsInParent().getMinX());
             } else {
                 double textWidth = text.getLayoutBounds().getWidth();
@@ -485,38 +519,39 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
             }
         } else {
             var text = bytePair.getAsciiText();
-            caretViewModel.setX(text.getBoundsInParent().getMinX());
+            caretViewModel.setX(text.getBoundsInParent().getMinX() + this.caret.getRow().getHexBox().getWidth());
         }
         updateIndicatorX();
     }
 
     private void updateIndicatorX() {
         var row = this.caret.getRow();
-        if (row != null) {
-            var caretVM = this.caret.getViewModel();
-            var text = row.getText(caretVM.getPanel().opposite(), caretVM.getByteIndex());
-            var textBounds = text.getBoundsInParent();
-            this.caret.getIndicator().setTranslateX(textBounds.getMinX());
-            this.caret.getIndicator().setWidth(textBounds.getMaxX() - textBounds.getMinX());
+        var caretVM = this.caret.getViewModel();
+        var text = row.getText(caretVM.getPanel().opposite(), caretVM.getByteIndex());
+        var textBounds = text.getBoundsInParent();
+        if (getViewModel().getCaret().getPanel() == EditorPanel.HEX) {
+            caretVM.setIndicatorX(textBounds.getMinX() + row.getHexBox().getWidth());
+        } else {
+            caretVM.setIndicatorX(textBounds.getMinX());
         }
     }
 
     private void doMoveCaretLeft() {
-        var caretViewModel = getViewModel().getCaret();
-        if (caretViewModel.getPanel() == EditorPanel.HEX) {
-            if (!(caretViewModel.getByteIndex() == 0 && caretViewModel.getBytePart() == BytePart.HIGH)) {
-                if (caretViewModel.getBytePart() == BytePart.HIGH) {
-                    caretViewModel.setByteIndex(caretViewModel.getByteIndex() - 1);
-                    caretViewModel.setBytePart(BytePart.LOW);
+        var caretVM = getViewModel().getCaret();
+        if (caretVM.getPanel() == EditorPanel.HEX) {
+            if (!(caretVM.getByteIndex() == 0 && caretVM.getBytePosition() == BytePosition.FIRST)) {
+                if (caretVM.getBytePosition() == BytePosition.FIRST) {
+                    caretVM.setByteIndex(caretVM.getByteIndex() - 1);
+                    caretVM.setBytePosition(BytePosition.SECOND);
                     updateCaretX();
                 } else {
-                    caretViewModel.setBytePart(BytePart.HIGH);
+                    caretVM.setBytePosition(BytePosition.FIRST);
                     updateCaretX();
                 }
             }
         } else {
-            if (caretViewModel.getByteIndex() != 0) {
-                caretViewModel.setByteIndex(caretViewModel.getByteIndex() - 1);
+            if (caretVM.getByteIndex() != 0) {
+                caretVM.setByteIndex(caretVM.getByteIndex() - 1);
                 updateCaretX();
             }
         }
@@ -524,25 +559,25 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
     }
 
     private void doMoveCaretRight() {
-        var caretViewModel = getViewModel().getCaret();
-        if (caretViewModel.getPanel() == EditorPanel.HEX) {
-            if (!(caretViewModel.getByteIndex() + 1 == this.caret.getRow().getByteTextPairs().size()
-                    && caretViewModel.getBytePart() == BytePart.LOW)) {
-                if (caretViewModel.getBytePart() == BytePart.HIGH) {
-                        caretViewModel.setBytePart(BytePart.LOW);
+        var caretVM = getViewModel().getCaret();
+        if (caretVM.getPanel() == EditorPanel.HEX) {
+            if (!(caretVM.getByteIndex() + 1 == this.caret.getRow().getViewModel().getModel().getByteCount()
+                    && caretVM.getBytePosition() == BytePosition.SECOND)) {
+                if (caretVM.getBytePosition() == BytePosition.FIRST) {
+                        caretVM.setBytePosition(BytePosition.SECOND);
                         updateCaretX();
                 } else {
-                    caretViewModel.setByteIndex(caretViewModel.getByteIndex() + 1);
-                    var bytePair = this.caret.getRow().getByteTextPairs().get(caretViewModel.getByteIndex());
+                    caretVM.setByteIndex(caretVM.getByteIndex() + 1);
+                    var bytePair = this.caret.getRow().getByteTextPairs().get(caretVM.getByteIndex());
                     if (!bytePair.isEmpty()) {
-                        caretViewModel.setBytePart(BytePart.HIGH);
+                        caretVM.setBytePosition(BytePosition.FIRST);
                         updateCaretX();
                     }
                 }
             }
         } else {
-            if (caretViewModel.getByteIndex() + 1 != this.caret.getRow().getByteTextPairs().size()) {
-                caretViewModel.setByteIndex(caretViewModel.getByteIndex() + 1);
+            if (caretVM.getByteIndex() + 1 != this.caret.getRow().getViewModel().getModel().getByteCount()) {
+                caretVM.setByteIndex(caretVM.getByteIndex() + 1);
                 updateCaretX();
             }
         }
@@ -556,7 +591,6 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
             caretRow.removeCaret();
         }
         this.caret.setRow(newRow);
-        this.caret.getNode().setHeight(newRow.getNode().getHeight());
         this.caret.getViewModel().setRow(newRow.getViewModel());
     }
 
@@ -567,7 +601,7 @@ public class HexEditorTabView extends AbstractWorkerTabView<HexEditorTabViewMode
         caretRow.addCaret();
         //when cursor is moved it must always be visible
         if (!this.caret.getViewModel().isDisabled()) {
-            this.caret.getViewModel().setVisible(true);
+            this.caret.getNode().setVisible(true);
         }
     }
 }

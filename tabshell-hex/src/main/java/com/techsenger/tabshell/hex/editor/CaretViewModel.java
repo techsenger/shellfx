@@ -18,12 +18,14 @@ package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.tabshell.core.node.AbstractNodeViewModel;
 import com.techsenger.tabshell.core.node.NodeKey;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  *
@@ -50,15 +52,17 @@ public class CaretViewModel extends AbstractNodeViewModel {
     /**
      * It is used only for hex panel.
      */
-    private final ReadOnlyObjectWrapper<BytePart> bytePart = new ReadOnlyObjectWrapper<>(BytePart.HIGH);
+    private final ReadOnlyObjectWrapper<BytePosition> bytePosition = new ReadOnlyObjectWrapper<>(BytePosition.FIRST);
 
     private final ReadOnlyObjectWrapper<EditorPanel> panel = new ReadOnlyObjectWrapper<>(EditorPanel.HEX);
 
     private final ReadOnlyBooleanWrapper disabled = new ReadOnlyBooleanWrapper(true);
 
-    private final ReadOnlyBooleanWrapper visible = new ReadOnlyBooleanWrapper(false);
+    private final ObjectProperty<CaretShape> shape = new SimpleObjectProperty<>(CaretShape.BAR);
 
     private double x;
+
+    private double indicatorX;
 
     CaretViewModel() {
 
@@ -93,12 +97,12 @@ public class CaretViewModel extends AbstractNodeViewModel {
         return byteIndex.get();
     }
 
-    public ReadOnlyObjectProperty<BytePart> bytePartProperty() {
-        return bytePart.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<BytePosition> bytePositionProperty() {
+        return bytePosition.getReadOnlyProperty();
     }
 
-    public BytePart getBytePart() {
-        return bytePart.get();
+    public BytePosition getBytePosition() {
+        return bytePosition.get();
     }
 
     public ReadOnlyObjectProperty<EditorPanel> panelProperty() {
@@ -117,12 +121,16 @@ public class CaretViewModel extends AbstractNodeViewModel {
         return disabled.get();
     }
 
-    public ReadOnlyBooleanProperty visibleProperty() {
-        return visible.getReadOnlyProperty();
+    public ObjectProperty<CaretShape> shapeProperty() {
+        return shape;
     }
 
-    public boolean isVisible() {
-        return visible.get();
+    public CaretShape getShape() {
+        return shape.get();
+    }
+
+    public void setShape(CaretShape shape) {
+        this.shape.set(shape);
     }
 
     void setRowIndex(int index) {
@@ -137,16 +145,12 @@ public class CaretViewModel extends AbstractNodeViewModel {
         this.byteIndex.set(index);
     }
 
-    void setBytePart(BytePart part) {
-        this.bytePart.set(part);
+    void setBytePosition(BytePosition position) {
+        this.bytePosition.set(position);
     }
 
     void setPanel(EditorPanel panel) {
         this.panel.set(panel);
-    }
-
-    void setVisible(boolean value) {
-        this.visible.set(value);
     }
 
     void setDisabled(boolean value) {
@@ -167,5 +171,13 @@ public class CaretViewModel extends AbstractNodeViewModel {
 
     void setX(double x) {
         this.x = x;
+    }
+
+    double getIndicatorX() {
+        return indicatorX;
+    }
+
+    void setIndicatorX(double indicatorX) {
+        this.indicatorX = indicatorX;
     }
 }

@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-class RowModel {
+public class RowModel {
 
     private final int offset;
 
@@ -53,5 +53,13 @@ class RowModel {
 
     public List<String> getAsciis() {
         return asciis;
+    }
+
+    /**
+     * Returns the count of bytes in this row.
+     * @return
+     */
+    public int getByteCount() {
+        return this.hexes.size();
     }
 }

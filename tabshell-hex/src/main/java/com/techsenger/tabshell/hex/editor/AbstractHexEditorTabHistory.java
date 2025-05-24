@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex;
+package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.core.tab.ShellTabKey;
+import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface HexComponentKeys {
-
-    ShellTabKey HEX_EDITOR = new ShellTabKey("Hex Editor");
+public abstract class AbstractHexEditorTabHistory<T extends AbstractHexEditorTabViewModel>
+        extends AbstractWorkerTabHistory<T> {
 
 }
