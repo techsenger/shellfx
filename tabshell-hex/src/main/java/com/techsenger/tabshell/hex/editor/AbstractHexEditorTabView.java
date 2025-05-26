@@ -85,7 +85,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     public AbstractHexEditorTabView(ShellView<?> tabShell, T viewModel) {
         super(tabShell, viewModel);
-        this.caret = new CaretView(viewModel.getCaret());
+        this.caret = new CaretView(this, viewModel.getCaret());
     }
 
     @Override
@@ -519,7 +519,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
             }
         } else {
             var text = bytePair.getAsciiText();
-            caretViewModel.setX(text.getBoundsInParent().getMinX() + this.caret.getRow().getHexBox().getWidth());
+            caretViewModel.setX(text.getBoundsInParent().getMinX());
         }
         updateIndicatorX();
     }
@@ -530,7 +530,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         var text = row.getText(caretVM.getPanel().opposite(), caretVM.getByteIndex());
         var textBounds = text.getBoundsInParent();
         if (getViewModel().getCaret().getPanel() == EditorPanel.HEX) {
-            caretVM.setIndicatorX(textBounds.getMinX() + row.getHexBox().getWidth());
+            caretVM.setIndicatorX(textBounds.getMinX());
         } else {
             caretVM.setIndicatorX(textBounds.getMinX());
         }

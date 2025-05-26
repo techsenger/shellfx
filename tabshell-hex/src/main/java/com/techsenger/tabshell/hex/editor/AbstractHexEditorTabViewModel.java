@@ -56,8 +56,6 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     private final HexFormat hexFormat = HexFormat.of().withUpperCase();
 
-    private final CaretViewModel caret = new CaretViewModel();
-
     private final ObservableSource<Boolean> contentLoaded = new SimpleObservableSource<>();
 
     private final HexDocument document;
@@ -76,6 +74,11 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     private ReadOnlyIntegerWrapper lastRowByteCount = new ReadOnlyIntegerWrapper();
 
     private ReadOnlyDoubleWrapper charWidth = new ReadOnlyDoubleWrapper();
+
+    /**
+     * Caret uses {@link #charWidth}, so, it is declared after it.
+     */
+    private final CaretViewModel caret = new CaretViewModel(this);
 
     public AbstractHexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
         super(tabShell);
@@ -116,7 +119,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
             this.caret.setBytePosition(BytePosition.FIRST);
             //when file is opened the position of the caret is calculated by char width as there can be no bytes
             this.caret.setX(getCharWidth());
-            this.caret.setIndicatorX(-1); //the x is resolved on the first caret blink - see timeline key frames.
+            this.caret.setIndicatorX(getCharWidth());
             this.contentLoaded.next(true);
             this.caret.setDisabled(false);
         }

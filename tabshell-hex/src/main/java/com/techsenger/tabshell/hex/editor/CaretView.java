@@ -45,8 +45,11 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
 
     private final Timeline timeline = new Timeline();
 
-    CaretView(CaretViewModel viewModel) {
+    private final AbstractHexEditorTabView<?> editor;
+
+    CaretView(AbstractHexEditorTabView<?> editor, CaretViewModel viewModel) {
         super(viewModel);
+        this.editor = editor;
     }
 
     @Override
@@ -67,23 +70,35 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
         this.indicator.getStyleClass().add("indicator");
         this.indicator.setSmooth(false);
         this.indicator.setManaged(false);
+        this.timeline.setCycleCount(Timeline.INDEFINITE);
+    }
 
+    @Override
+    protected void bind(CaretViewModel viewModel) {
+        super.bind(viewModel);
+        this.caret.widthProperty().bind(viewModel.widthProperty());
+        this.indicator.widthProperty().bind(viewModel.indicatorWidthProperty());
+        this.caret.translateXProperty().bind(viewModel.xProperty());
+        this.indicator.translateXProperty().bind(viewModel.indicatorXProperty());
+    }
+
+    @Override
+    protected void addHandlers(CaretViewModel viewModel) {
+        super.addHandlers(viewModel);
         this.timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), e -> {
             this.caret.setVisible(!this.caret.isVisible());
             if (this.row != null && this.caret.isVisible()) {
-                var charWidth = this.row.getViewModel().getEditor().getCharWidth();
-                //setting caret width and height
+                //setting caret width and height, for example, when font changes,
+                //while we can calculate char width we can't calculate row width
                 switch (viewModel.getShape()) {
                     case BAR:
                         this.caret.setHeight(this.row.getNode().getHeight());
                         break;
                     case BLOCK:
                         this.caret.setHeight(this.row.getNode().getHeight());
-                        this.caret.setWidth(charWidth);
                         break;
                     case UNDERSCORE:
                         this.caret.setTranslateY(this.row.getNode().getHeight() - 1);
-                        this.caret.setWidth(charWidth);
                         break;
                     default:
                         throw new AssertionError();
@@ -91,18 +106,8 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
 
                 //setting indicator width, height, x
                 this.indicator.setHeight(this.row.getNode().getHeight());
-                var k = 1;
-                if (viewModel.getPanel() == EditorPanel.ASCII) {
-                    k = 2;
-                }
-                this.indicator.setWidth(charWidth * k);
-                if (viewModel.getIndicatorX() < 0) {
-                    viewModel.setIndicatorX(row.getHexBox().getWidth() + charWidth);
-                    this.indicator.setTranslateX(viewModel.getIndicatorX());
-                }
             }
         }));
-        this.timeline.setCycleCount(Timeline.INDEFINITE);
     }
 
     @Override
@@ -120,17 +125,20 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
             }
         });
         ValueUtils.callAndAddListener(viewModel.shapeProperty(), (ov, oldV, newV) -> {
+                this.caret.getStyleClass().clear();
             switch (newV) {
                 case BAR:
                     VBox.setVgrow(caret, Priority.ALWAYS);
-                    this.caret.setWidth(1);
                     this.caret.setTranslateY(0);
+                    this.caret.getStyleClass().addAll("caret", "bar");
                     break;
                 case BLOCK:
                     this.caret.setTranslateY(0);
+                    this.caret.getStyleClass().addAll("caret", "block");
                     break;
                 case UNDERSCORE:
                     this.caret.setHeight(1);
+                    this.caret.getStyleClass().addAll("caret", "underscore");
                     break;
                 default:
                     throw new AssertionError();

@@ -21,6 +21,8 @@ import com.techsenger.tabshell.core.node.NodeKey;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -60,12 +62,22 @@ public class CaretViewModel extends AbstractNodeViewModel {
 
     private final ObjectProperty<CaretShape> shape = new SimpleObjectProperty<>(CaretShape.BAR);
 
-    private double x;
+    private final ReadOnlyDoubleWrapper x = new ReadOnlyDoubleWrapper();
 
-    private double indicatorX;
+    private final ReadOnlyDoubleWrapper indicatorX = new ReadOnlyDoubleWrapper();
 
-    CaretViewModel() {
+    private final ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper();
 
+    private final ReadOnlyDoubleWrapper indicatorWidth = new ReadOnlyDoubleWrapper();
+
+    private final AbstractHexEditorTabViewModel editor;
+
+    CaretViewModel(AbstractHexEditorTabViewModel editor) {
+        this.editor = editor;
+        shape.addListener((ov, oldV, newV) -> updateWidhts(newV, getPanel(), editor.getCharWidth()));
+        panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV, editor.getCharWidth()));
+        editor.charWidthProperty().addListener((ov, oldV, newV) -> updateWidhts(getShape(), getPanel(),
+                newV.doubleValue()));
     }
 
     @Override
@@ -133,6 +145,38 @@ public class CaretViewModel extends AbstractNodeViewModel {
         this.shape.set(shape);
     }
 
+    public double getX() {
+        return x.doubleValue();
+    }
+
+    public ReadOnlyDoubleProperty xProperty() {
+        return x.getReadOnlyProperty();
+    }
+
+    public ReadOnlyDoubleProperty indicatorXProperty() {
+        return indicatorX.getReadOnlyProperty();
+    }
+
+    public double getIndicatorX() {
+        return indicatorX.get();
+    }
+
+    public ReadOnlyDoubleProperty widthProperty() {
+        return width.getReadOnlyProperty();
+    }
+
+    public double getWidth() {
+        return width.get();
+    }
+
+    public ReadOnlyDoubleProperty indicatorWidthProperty() {
+        return indicatorWidth.getReadOnlyProperty();
+    }
+
+    public double getIndicatorWidth() {
+        return indicatorWidth.get();
+    }
+
     void setRowIndex(int index) {
         this.rowIndex.set(index);
     }
@@ -165,19 +209,40 @@ public class CaretViewModel extends AbstractNodeViewModel {
         return row;
     }
 
-    double getX() {
-        return x;
+    ReadOnlyDoubleWrapper xWrapper() {
+        return this.x;
+    }
+
+    ReadOnlyDoubleWrapper indicatorXWrapper() {
+        return this.x;
     }
 
     void setX(double x) {
-        this.x = x;
-    }
-
-    double getIndicatorX() {
-        return indicatorX;
+        this.x.set(x);
     }
 
     void setIndicatorX(double indicatorX) {
-        this.indicatorX = indicatorX;
+        this.indicatorX.set(indicatorX);
+    }
+
+    private void updateWidhts(CaretShape shape, EditorPanel panel, double charWidth) {
+        switch (shape) {
+            case BAR:
+                this.width.set(1);
+                break;
+            case BLOCK:
+                this.width.set(charWidth);
+                break;
+            case UNDERSCORE:
+                this.width.set(charWidth);
+                break;
+            default:
+                throw new AssertionError();
+        }
+        if (panel == EditorPanel.HEX) {
+            this.indicatorWidth.set(charWidth);
+        } else {
+            this.indicatorWidth.set(charWidth * 2);
+        }
     }
 }

@@ -22,13 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.fxmisc.flowless.Cell;
 
@@ -46,34 +43,14 @@ public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Inte
     private final Label offsetLabel = new Label();
 
     /**
-     * This canvas is used for background color, selection etc.
+     * Stack pane for hex panel.
      */
-    private final Canvas canvas = new Canvas();
+    private final PanelRowPane hexPane = new PanelRowPane();
 
     /**
-     * For caret and its indicator one pane is used.
+     * Stack pane for ascii panel.
      */
-    private final Pane caretPane = new Pane();
-
-    /**
-     * This box contains text nodes (with spaces and with byte values) and lines.
-     */
-    private final HBox hexBox = new HBox();
-
-    /**
-     * This box contains text nodes (with spaces and with byte values) and lines.
-     */
-    private final HBox asciiBox = new HBox();
-
-    /**
-     * Contains {@link #hexBox} and ASCII text nodes.
-     */
-    private final HBox contentBox = new HBox(hexBox, asciiBox);
-
-    /**
-     * Contains all panes for content and working with it.
-     */
-    private final StackPane stackPane = new StackPane(canvas, caretPane, contentBox);
+    private final PanelRowPane asciiPane = new PanelRowPane();
 
     /**
      * Only texts that represent bytes. Its size is always equal to max rowByteCount.
@@ -83,7 +60,7 @@ public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Inte
     /**
      * The root node of the row.
      */
-    private final HBox root = new HBox(offsetLabel, stackPane);
+    private final HBox root = new HBox(offsetLabel, hexPane, asciiPane);
 
     RowView(RowViewModel viewModel, AbstractHexEditorTabView<?> editor) {
         super(viewModel);
@@ -148,13 +125,11 @@ public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Inte
         super.build(viewModel);
         this.offsetLabel.getStyleClass().add("offset-label");
         this.offsetLabel.setMinWidth(Region.USE_PREF_SIZE);
-        this.caretPane.setMouseTransparent(true);
-        this.caretPane.getStyleClass().add("caret-pane");
-        HBox.setHgrow(this.hexBox, Priority.ALWAYS);
-        this.hexBox.getStyleClass().add("hex-box");
-        HBox.setHgrow(this.asciiBox, Priority.ALWAYS);
-        this.asciiBox.getStyleClass().add("ascii-box");
-        this.contentBox.getStyleClass().add("content-box");
+
+        this.hexPane.getStyleClass().add("hex-pane");
+        this.asciiPane.getStyleClass().add("ascii-pane");
+        HBox.setHgrow(this.asciiPane, Priority.ALWAYS);
+
         this.root.getStyleClass().add(StyleClasses.MONOSPACE);
     }
 
@@ -181,25 +156,25 @@ public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Inte
         updateItem(viewModel.getModel().getOffset());
     }
 
-    HBox getHexBox() {
-        return hexBox;
-    }
-
     List<ByteTextPair> getByteTextPairs() {
         return byteTextPairs;
     }
 
     void removeCaret() {
-        this.caretPane.getChildren().clear();
+        this.hexPane.getCaretPane().getChildren().clear();
+        this.asciiPane.getCaretPane().getChildren().clear();
     }
 
     void addCaret() {
         if (getViewModel().isFocused()) {
             var caret = editor.getCaret();
-            caret.getNode().setTranslateX(caret.getViewModel().getX());
-            caret.getIndicator().setTranslateX(caret.getViewModel().getIndicatorX());
-            this.caretPane.getChildren().add(caret.getNode());
-            this.caretPane.getChildren().add(caret.getIndicator());
+            if (caret.getViewModel().getPanel() == EditorPanel.HEX) {
+                this.hexPane.getCaretPane().getChildren().add(caret.getNode());
+                this.asciiPane.getCaretPane().getChildren().add(caret.getIndicator());
+            } else {
+                this.hexPane.getCaretPane().getChildren().add(caret.getIndicator());
+                this.asciiPane.getCaretPane().getChildren().add(caret.getNode());
+            }
         }
     }
 
@@ -216,20 +191,20 @@ public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Inte
     }
 
     private void updateRowPanes() {
-        getViewModel().setColumnCount(getViewModel().getEditor().getColumnCount());
-        this.hexBox.getChildren().clear();
-        this.asciiBox.getChildren().clear();
-        this.caretPane.getChildren().clear();
-
+        getViewModel().updateColumnCount();
+        this.hexPane.clear();
+        this.asciiPane.clear();
         this.byteTextPairs.clear();
+
+        var hexContentBox = this.hexPane.getContentBox();
         var charWidth = getViewModel().getEditor().getCharWidth();
-        hexBox.setPadding(new Insets(0, 0, 0, charWidth));
-        hexBox.setSpacing(charWidth);
+        hexContentBox.setPadding(new Insets(0, 0, 0, charWidth));
+        hexContentBox.setSpacing(charWidth);
         List<Text> asciiTexts = new ArrayList<>();
         for (var c = 0; c < getViewModel().getColumnCount(); c++) {
             for (var i = 0; i < AbstractHexEditorTabViewModel.COLUMN_BYTE_COUNT; i++) {
                 var hexText = createByteHexText();
-                hexBox.getChildren().add(hexText);
+                hexContentBox.getChildren().add(hexText);
                 var asciiText = createByteAsciiText();
                 asciiTexts.add(asciiText);
                 this.byteTextPairs.add(new ByteTextPair(this, hexText, asciiText));
@@ -237,12 +212,14 @@ public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Inte
                     //we use regions as they stretch
                     var line = new Region();
                     line.getStyleClass().add("line");
-                    hexBox.getChildren().add(line);
+                    hexContentBox.getChildren().add(line);
                 }
             }
         }
-        this.asciiBox.setPadding(new Insets(0, 0, 0, charWidth));
-        this.asciiBox.getChildren().addAll(asciiTexts);
+
+        var asciiContentBox = this.asciiPane.getContentBox();
+        asciiContentBox.setPadding(new Insets(0, 0, 0, charWidth));
+        asciiContentBox.getChildren().addAll(asciiTexts);
     }
 
     private ByteText createByteHexText() {

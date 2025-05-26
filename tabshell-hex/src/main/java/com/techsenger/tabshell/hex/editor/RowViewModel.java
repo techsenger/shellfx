@@ -52,23 +52,19 @@ public class RowViewModel extends AbstractNodeViewModel {
         return columnCount;
     }
 
-    public void setColumnCount(int columnCount) {
-        this.columnCount = columnCount;
-    }
-
     public RowModel getModel() {
         return model;
-    }
-
-    public void setModel(RowModel model) {
-        this.model = model;
     }
 
     public boolean isFocused() {
         return focused;
     }
 
-    public void setFocused(boolean focused) {
+    void setModel(RowModel model) {
+        this.model = model;
+    }
+
+    void setFocused(boolean focused) {
         this.focused = focused;
     }
 
@@ -76,7 +72,15 @@ public class RowViewModel extends AbstractNodeViewModel {
         return this.columnCount != editor.getColumnCount();
     }
 
+    void setColumnCount(int columnCount) {
+        this.columnCount = columnCount;
+    }
+
     AbstractHexEditorTabViewModel getEditor() {
         return editor;
+    }
+
+    void updateColumnCount() {
+        setColumnCount(this.editor.getColumnCount());
     }
 }
