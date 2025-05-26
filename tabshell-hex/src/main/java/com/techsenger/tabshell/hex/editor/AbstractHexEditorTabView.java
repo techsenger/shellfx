@@ -339,7 +339,22 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
             newCaretRow = this.virtualFlow.visibleCells().get(endCaretRowIndex);
             newCaretRowIndex = viewModel.calculateRowIndex(newCaretRow.getViewModel());
         }
+        correctLastRowPosition(newCaretRow);
         moveCaretTo(newCaretRow, newCaretRowIndex);
+    }
+
+    private void correctLastRowPosition(RowView row) {
+        var rowModel = row.getViewModel().getModel();
+        var caretViewModel = this.caret.getViewModel();
+        if (caretViewModel.getByteIndex() >= rowModel.getByteCount()) {
+            caretViewModel.setByteIndex(rowModel.getByteCount() - 1);
+            if (caretViewModel.getShape() == CaretShape.BAR) {
+                caretViewModel.setBytePosition(BytePosition.THIRD);
+            } else {
+                caretViewModel.setBytePosition(BytePosition.SECOND);
+            }
+            updateCaretX();
+        }
     }
 
     /**
@@ -439,6 +454,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
             updateCaretRow(row);
             caretViewModel.setRowIndex(rowIndex);
             caretViewModel.setRowOffset(row.getViewModel().getModel().getOffset());
+            correctLastRowPosition(row);
             completeCaretMove();
         }
     }
@@ -497,7 +513,11 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     private void moveCaretEnd() {
         var caretViewModel = getViewModel().getCaret();
         caretViewModel.setByteIndex(this.caret.getRow().getViewModel().getModel().getByteCount() - 1);
-        caretViewModel.setBytePosition(BytePosition.FIRST);
+        if (caretViewModel.getShape() == CaretShape.BAR) {
+            caretViewModel.setBytePosition(BytePosition.THIRD);
+        } else {
+            caretViewModel.setBytePosition(BytePosition.SECOND);
+        }
         updateCaretX();
         completeCaretMove();
     }
@@ -510,12 +530,20 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         var bytePair = this.caret.getRow().getByteTextPairs().get(caretViewModel.getByteIndex());
         if (caretViewModel.getPanel() == EditorPanel.HEX) {
             var text = bytePair.getHexText();
-            if (caretViewModel.getBytePosition() == BytePosition.FIRST) {
-                caretViewModel.setX(text.getBoundsInParent().getMinX());
-            } else {
-                double textWidth = text.getLayoutBounds().getWidth();
-                double widthHalf = textWidth / 2;
-                caretViewModel.setX(text.getBoundsInParent().getMinX() + widthHalf);
+            switch (caretViewModel.getBytePosition()) {
+                case FIRST:
+                    caretViewModel.setX(text.getBoundsInParent().getMinX());
+                    break;
+                case SECOND:
+                    double textWidth = text.getLayoutBounds().getWidth();
+                    double widthHalf = textWidth / 2;
+                    caretViewModel.setX(text.getBoundsInParent().getMinX() + widthHalf);
+                    break;
+                case THIRD:
+                    caretViewModel.setX(text.getBoundsInParent().getMaxX());
+                    break;
+                default:
+                    throw new AssertionError();
             }
         } else {
             var text = bytePair.getAsciiText();
