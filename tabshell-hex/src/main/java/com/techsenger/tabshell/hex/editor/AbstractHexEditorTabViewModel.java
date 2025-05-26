@@ -184,12 +184,6 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return this.lastRowByteCount.get();
     }
 
-//    public double getColumnWidth() {
-//        var charCount = (COLUMN_BYTE_COUNT * 2) + 5;
-//        var columnWidth = (charCount * getCharWidth()) + 1; //1 - lineWidth
-//        return columnWidth;
-//    }
-
     ObservableList<Integer> getOffsets() {
         return this.offsets;
     }
