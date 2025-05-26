@@ -38,15 +38,5 @@ class ByteText extends Text {
     public void setPair(ByteTextPair pair) {
         this.pair = pair;
     }
-
-    public BytePosition getPartAt(double x) {
-        double textWidth = getLayoutBounds().getWidth();
-        double widthHalf = textWidth / 2;
-        if (x < widthHalf) {
-            return BytePosition.FIRST;
-        } else {
-            return BytePosition.SECOND;
-        }
-    }
 }
 

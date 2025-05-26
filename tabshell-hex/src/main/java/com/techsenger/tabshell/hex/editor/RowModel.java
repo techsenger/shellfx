@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class RowModel {
+class RowModel {
 
     private final int offset;
 

@@ -23,7 +23,7 @@ import com.techsenger.tabshell.core.node.NodeKey;
  *
  * @author Pavel Castornii
  */
-public class RowViewModel extends AbstractNodeViewModel {
+class RowViewModel extends AbstractNodeViewModel {
 
     private static final NodeKey HEX_EDITOR_ROW_KEY = new NodeKey("Hex Editor Row");
 
@@ -58,6 +58,25 @@ public class RowViewModel extends AbstractNodeViewModel {
 
     public boolean isFocused() {
         return focused;
+    }
+
+    /**
+     * Returns true if this row is the first one among all visible and non-visible rows.
+     *
+     * @return true if this is the first row; false otherwise.
+     */
+    public boolean isFirst() {
+        return this.model.getOffset() == 0;
+    }
+
+    /**
+     * Returns true if this row is the last one among all visible and non-visible rows.
+     *
+     * @return true if this is the last row; false otherwise.
+     */
+    public boolean isLast() {
+        var offsets = this.editor.getOffsets();
+        return offsets.get(offsets.size() - 1) == this.model.getOffset();
     }
 
     void setModel(RowModel model) {

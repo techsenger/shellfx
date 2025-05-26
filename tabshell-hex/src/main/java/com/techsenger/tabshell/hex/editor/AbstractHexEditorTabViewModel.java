@@ -48,9 +48,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabViewModel
         implements FileOpenerViewModel, FileSaverViewModel {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractHexEditorTabViewModel.class);
-
     static final int COLUMN_BYTE_COUNT = 4;
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractHexEditorTabViewModel.class);
 
     private static final String INVALID_CHAR = "\u2022";
 
@@ -63,28 +63,31 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     /**
      * Observable list is created only when file content is loaded, because it works faster.
      */
-    private ObservableList<Integer> offsets = FXCollections.observableArrayList();
+    private final ObservableList<Integer> offsets = FXCollections.observableArrayList();
 
-    private ReadOnlyBooleanWrapper contentModified = new ReadOnlyBooleanWrapper(false);
+    private final ReadOnlyBooleanWrapper contentModified = new ReadOnlyBooleanWrapper(false);
 
-    private ReadOnlyIntegerWrapper columnCount = new ReadOnlyIntegerWrapper();
+    private final ReadOnlyIntegerWrapper columnCount = new ReadOnlyIntegerWrapper();
 
-    private ReadOnlyIntegerWrapper rowByteCount = new ReadOnlyIntegerWrapper();
+    private final ReadOnlyIntegerWrapper rowByteCount = new ReadOnlyIntegerWrapper();
 
-    private ReadOnlyIntegerWrapper lastRowByteCount = new ReadOnlyIntegerWrapper();
+    private final ReadOnlyIntegerWrapper lastRowByteCount = new ReadOnlyIntegerWrapper();
 
-    private ReadOnlyDoubleWrapper charWidth = new ReadOnlyDoubleWrapper();
+    private final ReadOnlyDoubleWrapper charWidth = new ReadOnlyDoubleWrapper();
 
     /**
      * Caret uses {@link #charWidth}, so, it is declared after it.
      */
     private final CaretViewModel caret = new CaretViewModel(this);
 
+    private final ObservableSource<Integer> moveRequest = new SimpleObservableSource<>();
+
     public AbstractHexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
         super(tabShell);
         this.document = new HexDocument(file);
         setIcon(HexIcons.EDITOR);
         setTitle("Hex Editor");
+        this.caret.shapeProperty().addListener((ov, oldV, newV) -> adjustCaretOnShapeChange(oldV, newV));
     }
 
     @Override
@@ -111,15 +114,10 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         this.caret.setDisabled(true);
         if (this.document.readFile()) {
             calculateLayout();
-            this.offsets = createOffsets();
+            createOffsets();
             this.caret.setPanel(EditorPanel.HEX);
-            this.caret.setRowOffset(0);
-            this.caret.setRowIndex(0);
             this.caret.setByteIndex(0);
-            this.caret.setBytePosition(BytePosition.FIRST);
-            //when file is opened the position of the caret is calculated by char width as there can be no bytes
-            this.caret.setX(getCharWidth());
-            this.caret.setIndicatorX(getCharWidth());
+            this.caret.setBytePosition(CaretBytePosition.FIRST);
             this.contentLoaded.next(true);
             this.caret.setDisabled(false);
         }
@@ -193,12 +191,12 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     }
 
     int calculateRowIndex(int offset) {
-        int rowIndex = offset / (getRowByteCount());
+        int rowIndex = offset / getRowByteCount();
         return rowIndex;
     }
 
     int calculateRowIndex(RowViewModel row) {
-        int rowIndex = row.getModel().getOffset() / (getRowByteCount());
+        int rowIndex = row.getModel().getOffset() / getRowByteCount();
         return rowIndex;
     }
 
@@ -230,7 +228,158 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return new RowModel(offset, hexFormat.toHexDigits(offset), hexes, asciis);
     }
 
-    private ObservableList<Integer> createOffsets() {
+    ObservableSource<Integer> moveRequestSource() {
+        return moveRequest;
+    }
+
+    void moveCaretUp() {
+        var rowIndex = calculateRowIndex(caret.getRowOffset());
+        rowIndex--;
+        if (rowIndex >= 0) {
+            this.moveRequest.next(rowIndex);
+        }
+    }
+
+    void moveCaretDown() {
+        var rowIndex = calculateRowIndex(caret.getRowOffset());
+        rowIndex++;
+        if (rowIndex < this.offsets.size()) {
+            adjustCaretDownForLastRow(rowIndex);
+            this.moveRequest.next(rowIndex);
+        }
+    }
+
+    void moveCaretLeft() {
+        var atFirstByte = caret.getByteIndex() == 0;
+        var notAtFirstRow = !caret.getRow().isFirst();
+        var canChangeRow = ((caret.getPanel() == EditorPanel.HEX && caret.getBytePosition() == CaretBytePosition.FIRST)
+                    || caret.getPanel() == EditorPanel.ASCII && caret.getBytePosition() != CaretBytePosition.THIRD);
+
+        if (atFirstByte && notAtFirstRow && canChangeRow) {
+            //previous row
+            caret.setByteIndex(getRowByteCount() - 1);
+            caret.setBytePosition(CaretBytePosition.SECOND);
+            this.moveRequest.next(caret.getRowIndex() - 1);
+        } else {
+            //same row
+            if (caret.getPanel() == EditorPanel.HEX) {
+                if (!(caret.getByteIndex() == 0 && caret.getBytePosition() == CaretBytePosition.FIRST)) {
+                    if (caret.getBytePosition() == CaretBytePosition.FIRST) {
+                        caret.setByteIndex(caret.getByteIndex() - 1);
+                        caret.setBytePosition(CaretBytePosition.SECOND);
+                    } else if (caret.getBytePosition() == CaretBytePosition.SECOND) {
+                        caret.setBytePosition(CaretBytePosition.FIRST);
+                    } else if (caret.getBytePosition() == CaretBytePosition.THIRD) {
+                        caret.setBytePosition(CaretBytePosition.SECOND);
+                    }
+                    this.moveRequest.next(null);
+                }
+            } else {
+                if (caret.getByteIndex() != 0) {
+                    if (caret.getBytePosition() != CaretBytePosition.THIRD) {
+                        caret.setByteIndex(caret.getByteIndex() - 1);
+                        caret.setBytePosition(CaretBytePosition.FIRST);
+                        this.moveRequest.next(null);
+                    } else {
+                        caret.setBytePosition(CaretBytePosition.FIRST);
+                        this.moveRequest.next(null);
+                    }
+                }
+            }
+        }
+    }
+
+    void moveCaretRight() {
+        var atLastByte = caret.getByteIndex() + 1 >= caret.getRow().getModel().getByteCount();
+        var notAtLastRow = !caret.getRow().isLast();
+        var canChangeRow = ((caret.getPanel() == EditorPanel.HEX && caret.getBytePosition() != CaretBytePosition.FIRST)
+                    || caret.getPanel() == EditorPanel.ASCII);
+
+        if (atLastByte && notAtLastRow && canChangeRow) {
+            //next row
+            caret.setByteIndex(0);
+            caret.setBytePosition(CaretBytePosition.FIRST);
+            this.moveRequest.next(caret.getRowIndex() + 1);
+        } else {
+            //same row
+            if (caret.getBytePosition() == CaretBytePosition.THIRD
+                    && caret.getByteIndex() == caret.getRow().getModel().getByteCount() - 1) {
+                return;
+            }
+            if (caret.getPanel() == EditorPanel.HEX) {
+                if (!(caret.getByteIndex() + 1 >= this.caret.getRow().getModel().getByteCount()
+                        && caret.getBytePosition() == CaretBytePosition.SECOND)) {
+                    if (caret.getBytePosition() == CaretBytePosition.FIRST) {
+                        caret.setBytePosition(CaretBytePosition.SECOND);
+                    } else {
+                        caret.setByteIndex(caret.getByteIndex() + 1);
+                        caret.setBytePosition(CaretBytePosition.FIRST);
+    //                    var bytePair = this.caret.getRow().getByteTextPairs().get(caret.getByteIndex());
+    //                    if (!bytePair.isEmpty()) {
+    //                        caret.setCaretBytePosition(CaretBytePosition.FIRST);
+    //                    }
+                    }
+                    this.moveRequest.next(null);
+                } else {
+                    if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().isLast()) {
+                        this.caret.setBytePosition(CaretBytePosition.THIRD);
+                        this.moveRequest.next(null);
+                    }
+                }
+            } else {
+                if (caret.getByteIndex() + 1 != this.caret.getRow().getModel().getByteCount()) {
+                    caret.setByteIndex(caret.getByteIndex() + 1);
+                    this.moveRequest.next(null);
+                } else {
+                    if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().isLast()) {
+                        this.caret.setBytePosition(CaretBytePosition.THIRD);
+                        this.moveRequest.next(null);
+                    }
+                }
+            }
+        }
+    }
+
+    void moveCaretHome() {
+        if (caret.getByteIndex() != 0
+                || (caret.getPanel() == EditorPanel.HEX && caret.getBytePosition() == CaretBytePosition.SECOND)) {
+            caret.setByteIndex(0);
+            caret.setBytePosition(CaretBytePosition.FIRST);
+            this.moveRequest.next(null);
+        }
+    }
+
+    void moveCaretEnd() {
+        caret.setByteIndex(caret.getRow().getModel().getByteCount() - 1);
+        if (this.caret.getShape() == CaretShape.BAR) {
+            caret.setBytePosition(CaretBytePosition.THIRD);
+        } else {
+            caret.setBytePosition(CaretBytePosition.SECOND);
+        }
+        this.moveRequest.next(null);
+    }
+
+    void adjustCaretDownForLastRow(int newRowIndex) {
+        if (newRowIndex == this.offsets.size() - 1) {
+            if (this.caret.getByteIndex() >= getLastRowByteCount()) {
+                this.caret.setByteIndex(getLastRowByteCount() - 1);
+                if (this.caret.getShape() == CaretShape.BAR) {
+                    this.caret.setBytePosition(CaretBytePosition.THIRD);
+                } else {
+                    this.caret.setBytePosition(CaretBytePosition.SECOND);
+                }
+            }
+        }
+    }
+
+    private void adjustCaretOnShapeChange(CaretShape oldShape, CaretShape newShape) {
+        if (oldShape == CaretShape.BAR && this.caret.getBytePosition() == CaretBytePosition.THIRD) {
+            this.caret.setBytePosition(CaretBytePosition.SECOND);
+            this.moveRequest.next(null);
+        }
+    }
+
+    private void createOffsets() {
         List<Integer> tempOffsets = new ArrayList<>();
         var content = this.document.getContent();
         for (var offset = 0; offset < content.length; offset += getRowByteCount()) {
@@ -238,7 +387,6 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         }
         this.offsets.addAll(tempOffsets);
         logger.debug("Offsets list size: {}", offsets.size());
-        return offsets;
     }
 
     private void calculateLayout() {

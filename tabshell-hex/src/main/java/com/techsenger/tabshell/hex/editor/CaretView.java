@@ -29,12 +29,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 /**
+ * The caret is responsible only for rendering and performing movement. The coordinates and movement commands
+ * are determined by the editor and sometimes a row.
  *
  * @author Pavel Castornii
  */
-public class CaretView extends AbstractNodeView<CaretViewModel> {
-
-    private RowView row;
+public final class CaretView extends AbstractNodeView<CaretViewModel> {
 
     /**
      * Region is not use used because it can't always have 1 px width, but we don't need as the height is set via timer.
@@ -47,6 +47,8 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
 
     private final AbstractHexEditorTabView<?> editor;
 
+    private RowView row;
+
     CaretView(AbstractHexEditorTabView<?> editor, CaretViewModel viewModel) {
         super(viewModel);
         this.editor = editor;
@@ -57,8 +59,9 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
         return caret;
     }
 
-    public Rectangle getIndicator() {
-        return indicator;
+    @Override
+    public void requestFocus() {
+
     }
 
     @Override
@@ -154,16 +157,88 @@ public class CaretView extends AbstractNodeView<CaretViewModel> {
         }
     }
 
-    @Override
-    public void requestFocus() {
-
+    Rectangle getIndicator() {
+        return indicator;
     }
 
     RowView getRow() {
         return row;
     }
 
-    void setRow(RowView row) {
+    void move() {
+        moveTo(this.row);
+    }
+
+    void moveTo(RowView row) {
+        var viewModel = getViewModel();
+        viewModel.setRow(row.getViewModel());
+        var oldRow = this.row;
         this.row = row;
+        updatePositions();
+        updateRow(oldRow, this.row);
+    }
+
+    private void updatePositions() {
+        var viewModel = getViewModel();
+        //when file is opened the position of the caret is calculated by char width as there can be no bytes
+        if (viewModel.getByteIndex() == 0 && viewModel.getBytePosition() == CaretBytePosition.FIRST
+                && viewModel.getRowIndex() == 0) {
+            var charWidth = this.editor.getViewModel().getCharWidth();
+            viewModel.setX(charWidth);
+            viewModel.setIndicatorX(charWidth);
+            return;
+        }
+        var bytePair = this.row.getByteTextPairs().get(viewModel.getByteIndex());
+        if (viewModel.getPanel() == EditorPanel.HEX) {
+            //caret
+            var text = bytePair.getHexText();
+            switch (viewModel.getBytePosition()) {
+                case FIRST:
+                    viewModel.setX(text.getBoundsInParent().getMinX());
+                    break;
+                case SECOND:
+                    double textWidth = text.getLayoutBounds().getWidth();
+                    double widthHalf = textWidth / 2;
+                    viewModel.setX(text.getBoundsInParent().getMinX() + widthHalf);
+                    break;
+                case THIRD:
+                    viewModel.setX(text.getBoundsInParent().getMaxX());
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            //indicator
+            text = bytePair.getAsciiText();
+            viewModel.setIndicatorX(text.getBoundsInParent().getMinX());
+        } else {
+            //caret
+            var text = bytePair.getAsciiText();
+            if (viewModel.getBytePosition() == CaretBytePosition.THIRD) {
+                viewModel.setX(text.getBoundsInParent().getMaxX());
+            } else {
+                viewModel.setX(text.getBoundsInParent().getMinX());
+            }
+            //indicator
+            text = bytePair.getHexText();
+            viewModel.setIndicatorX(text.getBoundsInParent().getMinX());
+        }
+    }
+
+    private void updateRow(RowView oldRow, RowView newRow) {
+        if (oldRow != newRow) {
+            if (oldRow != null) {
+                oldRow.removeCaret();
+                oldRow.getViewModel().setFocused(false);
+            }
+            newRow.getViewModel().setFocused(true);
+        }
+        // The caret is added to the row in two cases: when this method is called and when row.updateItem(..) is called.
+        // That's why we always remove the caret first to avoid a 'duplicate children added' exception.
+        newRow.removeCaret();
+        newRow.addCaret();
+        //when cursor is moved it must always be visible
+        if (!getViewModel().isDisabled()) {
+            this.caret.setVisible(true);
+        }
     }
 }

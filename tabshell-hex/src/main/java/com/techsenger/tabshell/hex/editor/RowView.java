@@ -33,7 +33,7 @@ import org.fxmisc.flowless.Cell;
  *
  * @author Pavel Castornii
  */
-public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, Node> {
+class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, Node> {
 
     private final AbstractHexEditorTabView<?> editor;
 
@@ -225,21 +225,64 @@ public class RowView extends AbstractNodeView<RowViewModel> implements Cell<Inte
     private ByteText createByteHexText() {
         var text = createByteText();
         text.setOnMouseClicked(e -> {
-            var rowIndex = getViewModel().getEditor().calculateRowIndex(getViewModel().getModel().getOffset());
-            this.editor.moveCaretTo(EditorPanel.HEX, this, rowIndex, text.getPair().getIndex(),
-                    text.getPartAt(e.getX()));
+            var caretV = this.editor.getCaret();
+            var caretVM = caretV.getViewModel();
+            caretVM.setByteIndex(text.getPair().getIndex());
+            var position = resolveHexPosition(text, e.getX(), caretVM.getShape());
+            caretVM.setBytePosition(position);
+            caretVM.setPanel(EditorPanel.HEX);
+            caretV.moveTo(this);
         });
         return text;
+    }
+
+    private CaretBytePosition resolveHexPosition(ByteText text, double x, CaretShape shape) {
+        double textWidth = text.getLayoutBounds().getWidth();
+        double widthHalf = textWidth / 2;
+        if (x < widthHalf) {
+            return CaretBytePosition.FIRST;
+        } else {
+            if (shape != CaretShape.BAR) {
+                return CaretBytePosition.SECOND;
+            }
+            if (x < widthHalf + (widthHalf / 2)) {
+                return CaretBytePosition.SECOND;
+            } else {
+                return CaretBytePosition.THIRD;
+            }
+        }
     }
 
     private ByteText createByteAsciiText() {
         var text = createByteText();
         text.setOnMouseClicked(e -> {
-            var x = text.getBoundsInParent().getMinX();
-            var rowIndex = getViewModel().getEditor().calculateRowIndex(getViewModel().getModel().getOffset());
-            this.editor.moveCaretTo(EditorPanel.ASCII, this, rowIndex, text.getPair().getIndex(), null);
+            var caretV = this.editor.getCaret();
+            var caretVM = caretV.getViewModel();
+            caretVM.setByteIndex(text.getPair().getIndex());
+            var position = resolveAsciiPosition(text, e.getX(), caretVM.getShape(),
+                    caretVM.getByteIndex() == caretVM.getRow().getModel().getByteCount() - 1);
+            caretVM.setBytePosition(position);
+            caretVM.setPanel(EditorPanel.ASCII);
+            caretV.moveTo(this);
         });
         return text;
+    }
+
+    private CaretBytePosition resolveAsciiPosition(ByteText text, double x, CaretShape shape, boolean lastByte) {
+        if (shape != CaretShape.BAR) {
+            return CaretBytePosition.FIRST;
+        }
+        double textWidth = text.getLayoutBounds().getWidth();
+        double widthHalf = textWidth / 2;
+        if (lastByte) {
+            if (x < widthHalf) {
+                return CaretBytePosition.FIRST;
+            } else {
+                return CaretBytePosition.THIRD;
+            }
+        } else {
+            return CaretBytePosition.FIRST;
+        }
     }
 
     private ByteText createByteText() {

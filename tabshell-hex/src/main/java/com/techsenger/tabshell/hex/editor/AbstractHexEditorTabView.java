@@ -49,10 +49,12 @@ import org.fxmisc.flowless.VirtualizedScrollPane;
 public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabViewModel>
         extends AbstractWorkerTabView<T> {
 
+    private static final double ROW_VISIBILITY_TOLERANCE = 2.0;
+
     /**
-     * Contains information for pageUp and pageDown navigation.
+     * Contains information for pageUp and pageDown scroll.
      */
-    private record PageNavigation(int firstRowIndex, double rowHeiht, int caretVisibleRowIndex, int scrollRowCount) { }
+    private record PageScroll(int firstRowIndex, double rowHeiht, int caretVisibleRowIndex, int scrollRowCount) { }
 
     private final Button newButton = new Button(null, new FontIconView(CoreIcons.ADD));
 
@@ -75,7 +77,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     private final ToolBar toolBar = new ToolBar();
 
     /**
-     * Integer is row index.
+     * Integer is a row index.
      */
     private VirtualFlow<Integer, RowView> virtualFlow;
 
@@ -143,17 +145,20 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         super.addHandlers(viewModel);
         virtualFlow.setOnMousePressed(e -> virtualFlow.requestFocus());
         virtualFlow.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+            e.consume();
+            if (viewModel.getOffsets().isEmpty()) {
+                return;
+            }
             switch (e.getCode()) {
-                case UP: moveCaretUp(); break;
-                case DOWN: moveCaretDown(); break;
-                case LEFT: moveCaretLeft(); break;
-                case RIGHT: moveCaretRight(); break;
+                case UP: viewModel.moveCaretUp(); break;
+                case DOWN: viewModel.moveCaretDown(); break;
+                case LEFT: viewModel.moveCaretLeft(); break;
+                case RIGHT: viewModel.moveCaretRight(); break;
+                case HOME: viewModel.moveCaretHome(); break;
+                case END: viewModel.moveCaretEnd(); break;
                 case PAGE_UP: moveCaretPageUp(); break;
                 case PAGE_DOWN: moveCaretPageDown(); break;
-                case HOME: moveCaretHome(); break;
-                case END: moveCaretEnd(); break;
             }
-            e.consume();
         });
     }
 
@@ -163,13 +168,13 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         viewModel.contentLoadedSource().addListener((newV) -> {
             this.virtualFlow.showAsFirst(0); //after clearing and adding new items flow is scrolled to the end
             var row = this.virtualFlow.getCell(0);
-            updateCaretRow(row);
-            completeCaretMove();
+            this.caret.moveTo(row);
             addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
                 NodeUtils.requestFocus(virtualFlow);
                 return false;
             });
         });
+        viewModel.moveRequestSource().addListener((row) -> onMoveRequest(row));
     }
 
     @Override
@@ -233,7 +238,22 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         return virtualScrollPane;
     }
 
-    RowView scrollUpTo(int rowIndex) {
+    private void onMoveRequest(Integer newRow) {
+        if (newRow == null) {
+            this.caret.move();
+        } else {
+            var currentRow = this.caret.getViewModel().getRowIndex();
+            RowView row;
+            if (newRow > currentRow) {
+                row = scrollDownTo(newRow);
+            } else {
+                row = scrollUpTo(newRow);
+            }
+            this.caret.moveTo(row);
+        }
+    }
+
+    private RowView scrollUpTo(int rowIndex) {
         var row = virtualFlow.getCellIfVisible(rowIndex).orElse(null);
         if (row == null) {
             virtualFlow.showAsFirst(rowIndex);
@@ -247,7 +267,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         return row;
     }
 
-    RowView scrollDownTo(int rowIndex) {
+    private RowView scrollDownTo(int rowIndex) {
         var row = virtualFlow.getCellIfVisible(rowIndex).orElse(null);
         if (row == null) {
             virtualFlow.showAsLast(rowIndex);
@@ -259,102 +279,6 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
             }
         }
         return row;
-    }
-
-    void moveCaretTo(EditorPanel panel, RowView row, int rowIndex, int byteIndex, BytePosition position) {
-        var caretVewModel = getViewModel().getCaret();
-        updateCaretRow(row);
-        caretVewModel.setPanel(panel);
-        caretVewModel.setRowOffset(row.getViewModel().getModel().getOffset());
-        caretVewModel.setRowIndex(rowIndex);
-        caretVewModel.setByteIndex(byteIndex);
-        caretVewModel.setBytePosition(position);
-        updateCaretX();
-        completeCaretMove();
-    }
-
-    private void moveCaretTo(RowView row, int rowIndex) {
-        var caretVewModel = getViewModel().getCaret();
-        updateCaretRow(row);
-        caretVewModel.setRowOffset(row.getViewModel().getModel().getOffset());
-        caretVewModel.setRowIndex(rowIndex);
-        completeCaretMove();
-    }
-
-    private PageNavigation createPageNavigation() {
-        var viewModel = getViewModel();
-        var charSize = viewModel.getShell().getSettings().getAppearance().getMonospaceFont().getSize();
-
-        //resolving which row is fully visible and which is not
-        var firstRow = this.virtualFlow.visibleCells().get(0);
-        var firstRowIndex = viewModel.calculateRowIndex(firstRow.getViewModel());
-        var charTopPadding = (firstRow.getNode().getHeight() - charSize) / 2;
-        double firstRowFlowOffset = Math.max(0, -firstRow.getNode().getBoundsInParent().getMinY());
-        boolean firstRowFullyVisible = charTopPadding >= firstRowFlowOffset;
-
-        var visibleRowTotalHeight = this.virtualFlow.visibleCells().size() * firstRow.getNode().getHeight();
-        visibleRowTotalHeight -= firstRowFlowOffset;
-        boolean lastRowFullyVisible = charTopPadding >= (visibleRowTotalHeight - this.virtualFlow.getHeight());
-
-        //calculating caret row index diff
-        var caretRowIndex = this.caret.getViewModel().getRowIndex();
-        //the index of the visible row owning the caret
-        var caretVisibleRowIndex = caretRowIndex - firstRowIndex;
-
-        int scrollRowCount;
-        if (firstRowFullyVisible) {
-            if (lastRowFullyVisible) {
-                scrollRowCount = this.virtualFlow.visibleCells().size();
-            } else {
-                scrollRowCount = this.virtualFlow.visibleCells().size() - 1;
-            }
-        } else {
-            if (lastRowFullyVisible) {
-                scrollRowCount = this.virtualFlow.visibleCells().size() - 1;
-            } else {
-                if (this.virtualFlow.visibleCells().size() >= 2) {
-                    scrollRowCount = this.virtualFlow.visibleCells().size() - 2;
-                } else {
-                    scrollRowCount = this.virtualFlow.visibleCells().size() - 1;
-                }
-            }
-        }
-
-        return new PageNavigation(firstRowIndex, firstRow.getNode().getHeight(), caretVisibleRowIndex, scrollRowCount);
-    }
-
-    private void moveCaretOnPagination(int calculatedNewFirstRowIndex, int caretVisibleRowIndex, int endCaretRowIndex) {
-        var viewModel = getViewModel();
-        RowView newCaretRow;
-        int newCaretRowIndex;
-
-        //we don't know how many rows were actually scrolled
-        var realNewFirstRow = this.virtualFlow.visibleCells().get(0);
-        var realNewFirstRowIndex = viewModel.calculateRowIndex(realNewFirstRow.getViewModel());
-        //if fewer rows were scrolled than requested, the caret is placed on the last row.
-        if (realNewFirstRowIndex == calculatedNewFirstRowIndex) {
-            newCaretRow = this.virtualFlow.visibleCells().get(caretVisibleRowIndex);
-            newCaretRowIndex = viewModel.calculateRowIndex(newCaretRow.getViewModel());
-        } else {
-            newCaretRow = this.virtualFlow.visibleCells().get(endCaretRowIndex);
-            newCaretRowIndex = viewModel.calculateRowIndex(newCaretRow.getViewModel());
-        }
-        correctLastRowPosition(newCaretRow);
-        moveCaretTo(newCaretRow, newCaretRowIndex);
-    }
-
-    private void correctLastRowPosition(RowView row) {
-        var rowModel = row.getViewModel().getModel();
-        var caretViewModel = this.caret.getViewModel();
-        if (caretViewModel.getByteIndex() >= rowModel.getByteCount()) {
-            caretViewModel.setByteIndex(rowModel.getByteCount() - 1);
-            if (caretViewModel.getShape() == CaretShape.BAR) {
-                caretViewModel.setBytePosition(BytePosition.THIRD);
-            } else {
-                caretViewModel.setBytePosition(BytePosition.SECOND);
-            }
-            updateCaretX();
-        }
     }
 
     /**
@@ -382,15 +306,11 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     * row becomes the last visible row after scrolling.
      */
     private void moveCaretPageUp() {
-        var viewModel = getViewModel();
-        if (viewModel.getOffsets().isEmpty()) {
-            return;
-        }
-        var pageNavigation = createPageNavigation();
-        int calculatedNewFirstRowIndex = pageNavigation.firstRowIndex() - pageNavigation.scrollRowCount();
-        this.virtualFlow.scrollYBy(pageNavigation.scrollRowCount * pageNavigation.rowHeiht() * -1);
+        var pageScroll = createPageScroll();
+        int calculatedNewFirstRowIndex = pageScroll.firstRowIndex() - pageScroll.scrollRowCount();
+        this.virtualFlow.scrollYBy(pageScroll.scrollRowCount * pageScroll.rowHeiht() * -1);
         Platform.runLater(() -> {
-            moveCaretOnPagination(calculatedNewFirstRowIndex, pageNavigation.caretVisibleRowIndex, 0);
+            moveCaretOnPageScroll(calculatedNewFirstRowIndex, pageScroll.caretVisibleRowIndex, 0);
         });
     }
 
@@ -419,217 +339,70 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
      * visible row becomes the new first visible row after scrolling.
      */
     private void moveCaretPageDown() {
-        var viewModel = getViewModel();
-        if (viewModel.getOffsets().isEmpty()) {
-            return;
-        }
-        var pageNavigation = createPageNavigation();
-        int calculatedNewFirstRowIndex = pageNavigation.firstRowIndex() + pageNavigation.scrollRowCount();
-        this.virtualFlow.scrollYBy(pageNavigation.scrollRowCount * pageNavigation.rowHeiht());
+        var pageScroll = createPageScroll();
+        int calculatedNewFirstRowIndex = pageScroll.firstRowIndex() + pageScroll.scrollRowCount();
+        this.virtualFlow.scrollYBy(pageScroll.scrollRowCount * pageScroll.rowHeiht());
         Platform.runLater(() -> {
-            moveCaretOnPagination(calculatedNewFirstRowIndex, pageNavigation.caretVisibleRowIndex,
+            moveCaretOnPageScroll(calculatedNewFirstRowIndex, pageScroll.caretVisibleRowIndex,
                     this.virtualFlow.visibleCells().size() - 1);
         });
     }
 
-    private void moveCaretUp() {
-        var caretViewModel = getViewModel().getCaret();
-        var rowIndex = getViewModel().calculateRowIndex(caretViewModel.getRowOffset());
-        rowIndex--;
-        if (rowIndex >= 0) {
-            var row = scrollUpTo(rowIndex);
-            updateCaretRow(row);
-            caretViewModel.setRowIndex(rowIndex);
-            caretViewModel.setRowOffset(row.getViewModel().getModel().getOffset());
-            completeCaretMove();
-        }
-    }
+    private PageScroll createPageScroll() {
+        var viewModel = getViewModel();
 
-    private void moveCaretDown() {
-        var caretViewModel = getViewModel().getCaret();
-        var rowIndex = getViewModel().calculateRowIndex(caretViewModel.getRowOffset());
-        rowIndex++;
-        if (rowIndex < getViewModel().getOffsets().size()) {
-            var row = scrollDownTo(rowIndex);
-            updateCaretRow(row);
-            caretViewModel.setRowIndex(rowIndex);
-            caretViewModel.setRowOffset(row.getViewModel().getModel().getOffset());
-            correctLastRowPosition(row);
-            completeCaretMove();
-        }
-    }
+        //resolving which row is fully visible and which is not
+        var firstRow = this.virtualFlow.visibleCells().get(0);
+        var firstRowIndex = viewModel.calculateRowIndex(firstRow.getViewModel());
+        double firstRowFlowOffset = Math.max(0, -firstRow.getNode().getBoundsInParent().getMinY());
+        boolean firstRowFullyVisible = ROW_VISIBILITY_TOLERANCE >= firstRowFlowOffset;
 
-    private void moveCaretLeft() {
-        var caretViewModel = getViewModel().getCaret();
-        if (caretViewModel.getByteIndex() - 1 < 0) {
-            if ((caretViewModel.getPanel() == EditorPanel.HEX && caretViewModel.getBytePosition() == BytePosition.FIRST)
-                    || caretViewModel.getPanel() == EditorPanel.ASCII) {
-                var rowIndex = getViewModel().calculateRowIndex(caretViewModel.getRowOffset());
-                rowIndex--;
-                if (rowIndex >= 0) {
-                    var row = scrollUpTo(rowIndex);
-                    moveCaretTo(caretViewModel.getPanel(), row, rowIndex,
-                            row.getViewModel().getModel().getByteCount() - 1,
-                            BytePosition.SECOND);
-                }
+        var visibleRowTotalHeight = this.virtualFlow.visibleCells().size() * firstRow.getNode().getHeight();
+        visibleRowTotalHeight -= firstRowFlowOffset;
+        boolean lastRowFullyVisible = ROW_VISIBILITY_TOLERANCE >= visibleRowTotalHeight - this.virtualFlow.getHeight();
+
+        //calculating caret row index diff
+        var caretRowIndex = this.caret.getViewModel().getRowIndex();
+        //the index of the visible row owning the caret
+        var caretVisibleRowIndex = caretRowIndex - firstRowIndex;
+
+        int scrollRowCount;
+        if (firstRowFullyVisible) {
+            if (lastRowFullyVisible) {
+                scrollRowCount = this.virtualFlow.visibleCells().size();
             } else {
-                doMoveCaretLeft();
+                scrollRowCount = this.virtualFlow.visibleCells().size() - 1;
             }
         } else {
-            doMoveCaretLeft();
-        }
-    }
-
-    private void moveCaretRight() {
-        var caretVM = getViewModel().getCaret();
-        if (caretVM.getByteIndex() + 1 == getViewModel().getRowByteCount()) {
-            if ((caretVM.getPanel() == EditorPanel.HEX && caretVM.getBytePosition() == BytePosition.SECOND)
-                    || caretVM.getPanel() == EditorPanel.ASCII) {
-                var rowIndex = getViewModel().calculateRowIndex(caretVM.getRowOffset());
-                rowIndex++;
-                if (rowIndex < getViewModel().getOffsets().size()) {
-                    var row = scrollDownTo(rowIndex);
-                    moveCaretTo(caretVM.getPanel(), row, rowIndex, 0, BytePosition.FIRST);
-                }
+            if (lastRowFullyVisible) {
+                scrollRowCount = this.virtualFlow.visibleCells().size() - 1;
             } else {
-                doMoveCaretRight();
-            }
-        } else {
-            doMoveCaretRight();
-        }
-    }
-
-    private void moveCaretHome() {
-        var caretVM = getViewModel().getCaret();
-        if (caretVM.getByteIndex() != 0
-                || (caretVM.getPanel() == EditorPanel.HEX && caretVM.getBytePosition() == BytePosition.SECOND)) {
-            caretVM.setByteIndex(0);
-            caretVM.setBytePosition(BytePosition.FIRST);
-            updateCaretX();
-            completeCaretMove();
-        }
-    }
-
-    private void moveCaretEnd() {
-        var caretViewModel = getViewModel().getCaret();
-        caretViewModel.setByteIndex(this.caret.getRow().getViewModel().getModel().getByteCount() - 1);
-        if (caretViewModel.getShape() == CaretShape.BAR) {
-            caretViewModel.setBytePosition(BytePosition.THIRD);
-        } else {
-            caretViewModel.setBytePosition(BytePosition.SECOND);
-        }
-        updateCaretX();
-        completeCaretMove();
-    }
-
-    /**
-     * Is not called when only row is changed.
-     */
-    private void updateCaretX() {
-        var caretViewModel = getViewModel().getCaret();
-        var bytePair = this.caret.getRow().getByteTextPairs().get(caretViewModel.getByteIndex());
-        if (caretViewModel.getPanel() == EditorPanel.HEX) {
-            var text = bytePair.getHexText();
-            switch (caretViewModel.getBytePosition()) {
-                case FIRST:
-                    caretViewModel.setX(text.getBoundsInParent().getMinX());
-                    break;
-                case SECOND:
-                    double textWidth = text.getLayoutBounds().getWidth();
-                    double widthHalf = textWidth / 2;
-                    caretViewModel.setX(text.getBoundsInParent().getMinX() + widthHalf);
-                    break;
-                case THIRD:
-                    caretViewModel.setX(text.getBoundsInParent().getMaxX());
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-        } else {
-            var text = bytePair.getAsciiText();
-            caretViewModel.setX(text.getBoundsInParent().getMinX());
-        }
-        updateIndicatorX();
-    }
-
-    private void updateIndicatorX() {
-        var row = this.caret.getRow();
-        var caretVM = this.caret.getViewModel();
-        var text = row.getText(caretVM.getPanel().opposite(), caretVM.getByteIndex());
-        var textBounds = text.getBoundsInParent();
-        if (getViewModel().getCaret().getPanel() == EditorPanel.HEX) {
-            caretVM.setIndicatorX(textBounds.getMinX());
-        } else {
-            caretVM.setIndicatorX(textBounds.getMinX());
-        }
-    }
-
-    private void doMoveCaretLeft() {
-        var caretVM = getViewModel().getCaret();
-        if (caretVM.getPanel() == EditorPanel.HEX) {
-            if (!(caretVM.getByteIndex() == 0 && caretVM.getBytePosition() == BytePosition.FIRST)) {
-                if (caretVM.getBytePosition() == BytePosition.FIRST) {
-                    caretVM.setByteIndex(caretVM.getByteIndex() - 1);
-                    caretVM.setBytePosition(BytePosition.SECOND);
-                    updateCaretX();
+                if (this.virtualFlow.visibleCells().size() >= 2) {
+                    scrollRowCount = this.virtualFlow.visibleCells().size() - 2;
                 } else {
-                    caretVM.setBytePosition(BytePosition.FIRST);
-                    updateCaretX();
+                    scrollRowCount = this.virtualFlow.visibleCells().size() - 1;
                 }
             }
+        }
+
+        return new PageScroll(firstRowIndex, firstRow.getNode().getHeight(), caretVisibleRowIndex, scrollRowCount);
+    }
+
+    private void moveCaretOnPageScroll(int calculatedNewFirstRowIndex, int caretVisibleRowIndex, int endCaretRowIndex) {
+        var viewModel = getViewModel();
+        RowView newCaretRow;
+
+        //we don't know how many rows were actually scrolled
+        var realNewFirstRow = this.virtualFlow.visibleCells().get(0);
+        var realNewFirstRowIndex = viewModel.calculateRowIndex(realNewFirstRow.getViewModel());
+        //if fewer rows are scrolled than requested, the caret is placed on the first or last row.
+        if (realNewFirstRowIndex == calculatedNewFirstRowIndex) {
+            newCaretRow = this.virtualFlow.visibleCells().get(caretVisibleRowIndex);
         } else {
-            if (caretVM.getByteIndex() != 0) {
-                caretVM.setByteIndex(caretVM.getByteIndex() - 1);
-                updateCaretX();
-            }
+            newCaretRow = this.virtualFlow.visibleCells().get(endCaretRowIndex);
         }
-        completeCaretMove();
-    }
-
-    private void doMoveCaretRight() {
-        var caretVM = getViewModel().getCaret();
-        if (caretVM.getPanel() == EditorPanel.HEX) {
-            if (!(caretVM.getByteIndex() + 1 == this.caret.getRow().getViewModel().getModel().getByteCount()
-                    && caretVM.getBytePosition() == BytePosition.SECOND)) {
-                if (caretVM.getBytePosition() == BytePosition.FIRST) {
-                        caretVM.setBytePosition(BytePosition.SECOND);
-                        updateCaretX();
-                } else {
-                    caretVM.setByteIndex(caretVM.getByteIndex() + 1);
-                    var bytePair = this.caret.getRow().getByteTextPairs().get(caretVM.getByteIndex());
-                    if (!bytePair.isEmpty()) {
-                        caretVM.setBytePosition(BytePosition.FIRST);
-                        updateCaretX();
-                    }
-                }
-            }
-        } else {
-            if (caretVM.getByteIndex() + 1 != this.caret.getRow().getViewModel().getModel().getByteCount()) {
-                caretVM.setByteIndex(caretVM.getByteIndex() + 1);
-                updateCaretX();
-            }
-        }
-        completeCaretMove();
-    }
-
-    private void updateCaretRow(RowView newRow) {
-        var caretRow = this.caret.getRow();
-        if (caretRow != newRow && caretRow != null) {
-            caretRow.getViewModel().setFocused(false);
-            caretRow.removeCaret();
-        }
-        this.caret.setRow(newRow);
-        this.caret.getViewModel().setRow(newRow.getViewModel());
-    }
-
-    private void completeCaretMove() {
-        var caretRow = this.caret.getRow();
-        caretRow.getViewModel().setFocused(true);
-        caretRow.removeCaret();
-        caretRow.addCaret();
-        //when cursor is moved it must always be visible
-        if (!this.caret.getViewModel().isDisabled()) {
-            this.caret.getNode().setVisible(true);
-        }
+        int newCaretRowIndex = viewModel.calculateRowIndex(newCaretRow.getViewModel());
+        viewModel.adjustCaretDownForLastRow(newCaretRowIndex);
+        this.caret.moveTo(newCaretRow);
     }
 }
