@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demos.full;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.ComponentHelper;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.hex.editor.AbstractHexEditorTabView;
@@ -45,6 +46,7 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
     protected void build(HexEditorTabViewModel viewModel) {
         super.build(viewModel);
         this.shapeComboBox.setItems(viewModel.getShapes());
+        this.shapeComboBox.getStyleClass().add(Styles.DENSE);
         getToolBar().getItems().addAll(
                 getNewButton(),
                 getClearButton(),
