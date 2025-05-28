@@ -104,15 +104,16 @@ public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel> 
         super.addListeners(viewModel);
         addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
             List<StackPane> dividers = new ArrayList<>();
+            //we need only the dividers of these two split panes, so, we check every divider parent
             this.horizontalSplitPane.lookupAll(".split-pane-divider").forEach(d -> {
                 var divider = (StackPane) d;
-                if (divider.getParent() == this.verticalSplitPane) {
+                if (divider.getParent() == this.horizontalSplitPane) {
+                    dividers.add(divider);
+                } else if (divider.getParent() == this.verticalSplitPane) {
                     this.bottomDivider = divider;
                     this.bottomDivider.visibleProperty().bindBidirectional(viewModel.bottomPaneVisibleProperty());
                     viewModel.getBottomDivider().paddingProperty()
                             .bindBidirectional(this.bottomDivider.paddingProperty());
-                } else {
-                    dividers.add(divider);
                 }
             });
             this.leftDivider = dividers.get(0);

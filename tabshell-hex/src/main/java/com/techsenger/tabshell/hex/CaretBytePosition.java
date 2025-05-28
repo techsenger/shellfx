@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 /**
  * The position of the caret (cursor) within a single byte for both HEX and ASCII panels.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 import java.util.List;
 

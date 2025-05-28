@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.node.AbstractNodeView;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -24,7 +24,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import org.fxmisc.flowless.Cell;
@@ -128,7 +127,6 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
 
         this.hexPane.getStyleClass().add("hex-pane");
         this.asciiPane.getStyleClass().add("ascii-pane");
-        HBox.setHgrow(this.asciiPane, Priority.ALWAYS);
 
         this.root.getStyleClass().add(StyleClasses.MONOSPACE);
     }

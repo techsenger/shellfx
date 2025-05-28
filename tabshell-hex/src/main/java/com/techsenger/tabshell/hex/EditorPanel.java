@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
-
-import com.techsenger.tabshell.hex.AbstractHexEditorTabHelper;
+package com.techsenger.tabshell.hex;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabHelper extends AbstractHexEditorTabHelper<HexEditorTabView> {
+public enum EditorPanel {
 
-    public HexEditorTabHelper(HexEditorTabView view) {
-        super(view);
+    HEX, ASCII;
+
+    public EditorPanel opposite() {
+        if (this == HEX) {
+            return ASCII;
+        } else {
+            return HEX;
+        }
     }
-
 }

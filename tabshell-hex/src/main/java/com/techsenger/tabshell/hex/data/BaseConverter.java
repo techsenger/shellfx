@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
-
-import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabHistory;
+package com.techsenger.tabshell.hex.data;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractHexEditorTabHistory<T extends AbstractHexEditorTabViewModel>
-        extends AbstractWorkerTabHistory<T> {
+@FunctionalInterface
+public interface BaseConverter<T> {
+
+    Bases convert(T value);
 
 }

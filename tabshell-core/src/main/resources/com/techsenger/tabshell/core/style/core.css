@@ -265,7 +265,7 @@
 
 .table-view.extra-dense .table-row-cell,
 .tree-table-view.extra-dense .table-row-cell {
-    -fx-cell-size: 1.5em;
+    -fx-cell-size: 1.6em;
 }
 
 .table-view.same-spacing-table .column-header-background .column-header .label,
@@ -329,6 +329,8 @@
 .text-field.dense {
     -fx-padding: 0.55em 0.85em 0.55em 0.85em;
     -fx-min-height: 2.1em;
+    -fx-pref-height: 2.1em;
+    -fx-max-height: 2.1em;
 }
 
 /*

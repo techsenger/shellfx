@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.tabshell.hex.editor.AbstractHexEditorTabHistory;
+import com.techsenger.tabshell.hex.AbstractHexEditorTabHistory;
 
 /**
  *
@@ -24,4 +24,9 @@ import com.techsenger.tabshell.hex.editor.AbstractHexEditorTabHistory;
  */
 public class HexEditorTabHistory extends AbstractHexEditorTabHistory<HexEditorTabViewModel> {
 
+    @Override
+    public void setDefaultValues() {
+        super.setDefaultValues();
+        this.setRightPaneVisible(true);
+    }
 }

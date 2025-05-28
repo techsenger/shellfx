@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 /**
  * Represents a paired set of textual representations (HEX and ASCII) for a single byte within a hex editor row.

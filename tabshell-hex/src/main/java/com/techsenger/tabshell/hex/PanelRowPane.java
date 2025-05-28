@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.HBox;

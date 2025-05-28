@@ -50,11 +50,19 @@ public interface CoreIcons {
 
     StyleFontIcon CHEVRON_UP = new StyleFontIcon("tabshell-chevron-up-icon");
 
-    StyleFontIcon CHEVRON_DOWN = new StyleFontIcon("tabshell-chevron-down-icon");
-
     StyleFontIcon CHEVRON_DOUBLE_UP = new StyleFontIcon("tabshell-chevron-double-up-icon");
 
+    StyleFontIcon CHEVRON_DOWN = new StyleFontIcon("tabshell-chevron-down-icon");
+
     StyleFontIcon CHEVRON_DOUBLE_DOWN = new StyleFontIcon("tabshell-chevron-double-down-icon");
+
+    StyleFontIcon CHEVRON_RIGHT = new StyleFontIcon("tabshell-chevron-right-icon");
+
+    StyleFontIcon CHEVRON_DOUBLE_RIGHT = new StyleFontIcon("tabshell-chevron-double-right-icon");
+
+    StyleFontIcon CHEVRON_LEFT = new StyleFontIcon("tabshell-chevron-left-icon");
+
+    StyleFontIcon CHEVRON_DOUBLE_LEFT = new StyleFontIcon("tabshell-chevron-double-left-icon");
 
     StyleFontIcon CUT = new StyleFontIcon("tabshell-cut-icon");
 

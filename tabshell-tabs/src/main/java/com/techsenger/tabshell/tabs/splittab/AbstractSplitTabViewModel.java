@@ -100,11 +100,18 @@ public abstract class AbstractSplitTabViewModel extends AbstractShellTabViewMode
             return historyPosition;
         }
 
+        /**
+         * This method is called after restoring the history.
+         */
         private void init() {
             this.visiblePadding = this.padding.get();
             this.padding.set(Insets.EMPTY);
             //Only when divider has been hidden, it is necessary to set close position - divider has its own size.
-            this.position.set(closedPosition);
+            if (paneVisible.get()) {
+                this.position.set(historyPosition);
+            } else {
+                this.position.set(closedPosition);
+            }
         }
     }
 

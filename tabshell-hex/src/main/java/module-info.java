@@ -28,7 +28,9 @@ module com.techsenger.tabshell.hex {
     requires javafx.base;
     requires javafx.controls;
     requires javafx.graphics;
+    requires atlantafx.base;
 
-    exports com.techsenger.tabshell.hex.editor;
+    exports com.techsenger.tabshell.hex;
+    opens com.techsenger.tabshell.hex.data;
     exports com.techsenger.tabshell.hex.style;
 }

@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum EditorPanel {
+public enum CaretShape {
 
-    HEX, ASCII;
+    BAR,
 
-    public EditorPanel opposite() {
-        if (this == HEX) {
-            return ASCII;
-        } else {
-            return HEX;
-        }
-    }
+    BLOCK,
+
+    UNDERSCORE
 }

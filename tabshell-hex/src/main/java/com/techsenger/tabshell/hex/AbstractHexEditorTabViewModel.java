@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -22,8 +22,10 @@ import com.techsenger.tabshell.core.style.StyleUtils;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
+import com.techsenger.tabshell.hex.data.DataInspectorViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.storage.GenericFile;
+import com.techsenger.tabshell.tabs.tabmanager.TabManagerViewModel;
 import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -82,12 +84,17 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     private final ObservableSource<Integer> moveRequest = new SimpleObservableSource<>();
 
+    private final TabManagerViewModel rightTabManager = new TabManagerViewModel(HexComponentKeys.RIGHT_TAB_MANAGER);
+
+    private final DataInspectorViewModel dataInspector;
+
     public AbstractHexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
         super(tabShell);
         this.document = new HexDocument(file);
         setIcon(HexIcons.EDITOR);
         setTitle("Hex Editor");
         this.caret.shapeProperty().addListener((ov, oldV, newV) -> adjustCaretOnShapeChange(oldV, newV));
+        this.dataInspector = createDataInspector();
     }
 
     @Override
@@ -120,6 +127,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
             this.caret.setBytePosition(CaretBytePosition.FIRST);
             this.contentLoaded.next(true);
             this.caret.setDisabled(false);
+            this.dataInspector.updateTypeItems();
         }
     }
 
@@ -180,6 +188,18 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     public int getLastRowByteCount() {
         return this.lastRowByteCount.get();
+    }
+
+    public DataInspectorViewModel getDataInspector() {
+        return dataInspector;
+    }
+
+    public TabManagerViewModel getRightTabManager() {
+        return rightTabManager;
+    }
+
+    protected DataInspectorViewModel createDataInspector() {
+        return new DataInspectorViewModel(this.document, this.caret.offsetProperty());
     }
 
     ObservableList<Integer> getOffsets() {

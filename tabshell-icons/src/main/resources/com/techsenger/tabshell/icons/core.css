@@ -74,16 +74,32 @@
     -fx-code-point: 983363; /* chevron-up */
 }
 
-.font-icon-view.tabshell-chevron-down-icon {
-    -fx-code-point: 983360; /* chevron-down */
-}
-
 .font-icon-view.tabshell-chevron-double-up-icon {
     -fx-code-point: 983359; /* chevron-double-up */
 }
 
+.font-icon-view.tabshell-chevron-down-icon {
+    -fx-code-point: 983360; /* chevron-down */
+}
+
 .font-icon-view.tabshell-chevron-double-down-icon {
     -fx-code-point: 983356; /* chevron-double-down */
+}
+
+.font-icon-view.tabshell-chevron-right-icon {
+    -fx-code-point: 983362; /* chevron-right */
+}
+
+.font-icon-view.tabshell-chevron-double-right-icon {
+    -fx-code-point: 983358; /* chevron-double-right */
+}
+
+.font-icon-view.tabshell-chevron-left-icon {
+    -fx-code-point: 983361; /* chevron-left */
+}
+
+.font-icon-view.tabshell-chevron-double-left-icon {
+    -fx-code-point: 983357; /* chevron-double-left */
 }
 
 .font-icon-view.tabshell-cut-icon {

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.hex.data.DataInspectorView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.tabs.tabmanager.TabManagerView;
 import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabView;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.application.Platform;
@@ -85,9 +87,15 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final CaretView caret;
 
+    private final TabManagerView rightTabManager;
+
+    private final DataInspectorView<?> dataInspector;
+
     public AbstractHexEditorTabView(ShellView<?> tabShell, T viewModel) {
         super(tabShell, viewModel);
         this.caret = new CaretView(this, viewModel.getCaret());
+        this.rightTabManager = new TabManagerView(viewModel.getRightTabManager());
+        this.dataInspector = createDataInspector();
     }
 
     @Override
@@ -103,6 +111,10 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     public CaretView getCaret() {
         return caret;
+    }
+
+    protected DataInspectorView<?> createDataInspector() {
+        return new DataInspectorView<>(getViewModel().getDataInspector());
     }
 
     @Override
@@ -138,6 +150,9 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
         this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         VBox.setVgrow(virtualScrollPane, Priority.ALWAYS);
+
+        VBox.setVgrow(this.rightTabManager.getNode(), Priority.ALWAYS);
+        getRightPane().getChildren().add(this.rightTabManager.getNode());
     }
 
     @Override
@@ -181,12 +196,17 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     protected void postInitialize(T viewModel) {
         super.postInitialize(viewModel);
         this.caret.initialize();
+        this.rightTabManager.initialize();
+        this.dataInspector.initialize();
+        this.rightTabManager.openTab(this.dataInspector);
         viewModel.readFile();
     }
 
     @Override
     protected void preDeinitialize(T viewModel) {
         super.preDeinitialize(viewModel);
+        this.dataInspector.deinitialize();
+        this.rightTabManager.deinitialize();
         this.caret.deinitialize();
     }
 

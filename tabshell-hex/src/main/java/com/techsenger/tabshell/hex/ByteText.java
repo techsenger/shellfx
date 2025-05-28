@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.hex;
 
-import com.techsenger.tabshell.hex.AbstractHexEditorTabHelper;
+import javafx.scene.text.Text;
 
 /**
+ * This class represents the text for a single byte.
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabHelper extends AbstractHexEditorTabHelper<HexEditorTabView> {
+class ByteText extends Text {
 
-    public HexEditorTabHelper(HexEditorTabView view) {
-        super(view);
+    private ByteTextPair pair;
+
+    ByteText() {
+        setSmooth(false);
     }
 
+    public ByteTextPair getPair() {
+        return pair;
+    }
+
+    public void setPair(ByteTextPair pair) {
+        this.pair = pair;
+    }
 }
+

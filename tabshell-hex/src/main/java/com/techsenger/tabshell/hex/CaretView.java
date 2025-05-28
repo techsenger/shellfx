@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.node.AbstractNodeView;
-import static com.techsenger.tabshell.hex.editor.CaretShape.BAR;
-import static com.techsenger.tabshell.hex.editor.CaretShape.BLOCK;
-import static com.techsenger.tabshell.hex.editor.CaretShape.UNDERSCORE;
+import static com.techsenger.tabshell.hex.CaretShape.BAR;
+import static com.techsenger.tabshell.hex.CaretShape.BLOCK;
+import static com.techsenger.tabshell.hex.CaretShape.UNDERSCORE;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

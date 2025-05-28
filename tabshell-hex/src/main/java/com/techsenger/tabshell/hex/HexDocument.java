@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.storage.GenericFile;
 import org.slf4j.Logger;

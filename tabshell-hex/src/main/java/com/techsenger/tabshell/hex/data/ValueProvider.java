@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex.data;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum CaretShape {
+public interface ValueProvider<T> {
 
-    BAR,
-
-    BLOCK,
-
-    UNDERSCORE
+    T provide(Values values);
 }

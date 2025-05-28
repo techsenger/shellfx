@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.hex;
 
-import com.techsenger.tabshell.hex.AbstractHexEditorTabHelper;
+import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.core.tab.TabKey;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabHelper extends AbstractHexEditorTabHelper<HexEditorTabView> {
+public interface HexComponentKeys {
 
-    public HexEditorTabHelper(HexEditorTabView view) {
-        super(view);
-    }
+    TabKey DATA_INSPECTOR = new TabKey("Data Inspector");
 
+    PaneKey RIGHT_TAB_MANAGER = new PaneKey("Right Tab Manager");
 }

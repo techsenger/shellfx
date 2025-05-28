@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.hex;
 
-import com.techsenger.tabshell.hex.AbstractHexEditorTabHelper;
+import com.techsenger.tabshell.dialogs.StandardDialogHelper;
+import com.techsenger.tabshell.tabs.workertab.WorkerTabHelper;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabHelper extends AbstractHexEditorTabHelper<HexEditorTabView> {
+public abstract class AbstractHexEditorTabHelper<T extends AbstractHexEditorTabView<?>> extends WorkerTabHelper<T>
+        implements StandardDialogHelper<T> {
 
-    public HexEditorTabHelper(HexEditorTabView view) {
+    public AbstractHexEditorTabHelper(T view) {
         super(view);
     }
 

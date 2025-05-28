@@ -26,9 +26,15 @@ public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewMode
 
     private DividerHistory leftDivider;
 
+    private boolean leftPaneVisible;
+
     private DividerHistory rightDivider;
 
+    private boolean rightPaneVisible;
+
     private DividerHistory bottomDivider;
+
+    private boolean bottomPaneVisible;
 
     public DividerHistory getLeftDivider() {
         return leftDivider;
@@ -40,6 +46,30 @@ public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewMode
 
     public DividerHistory getBottomDivider() {
         return bottomDivider;
+    }
+
+    public boolean isLeftPaneVisible() {
+        return leftPaneVisible;
+    }
+
+    public void setLeftPaneVisible(boolean leftPaneVisible) {
+        this.leftPaneVisible = leftPaneVisible;
+    }
+
+    public boolean isRightPaneVisible() {
+        return rightPaneVisible;
+    }
+
+    public void setRightPaneVisible(boolean rightPaneVisible) {
+        this.rightPaneVisible = rightPaneVisible;
+    }
+
+    public boolean isBottomPaneVisible() {
+        return bottomPaneVisible;
+    }
+
+    public void setBottomPaneVisible(boolean bottomPaneVisible) {
+        this.bottomPaneVisible = bottomPaneVisible;
     }
 
     @Override
@@ -59,6 +89,9 @@ public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewMode
         viewModel.getLeftDivider().setHistoryPosition(this.leftDivider.getPosition());
         viewModel.getRightDivider().setHistoryPosition(this.rightDivider.getPosition());
         viewModel.getBottomDivider().setHistoryPosition(this.bottomDivider.getPosition());
+        viewModel.setLeftPaneVisible(leftPaneVisible);
+        viewModel.setRightPaneVisible(rightPaneVisible);
+        viewModel.setBottomPaneVisible(bottomPaneVisible);
     }
 
     @Override
@@ -67,5 +100,8 @@ public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewMode
         this.leftDivider.setPosition(viewModel.getLeftDivider().getHistoryPosition());
         this.rightDivider.setPosition(viewModel.getRightDivider().getHistoryPosition());
         this.bottomDivider.setPosition(viewModel.getBottomDivider().getHistoryPosition());
+        this.leftPaneVisible = viewModel.isLeftPaneVisible();
+        this.rightPaneVisible = viewModel.isRightPaneVisible();
+        this.bottomPaneVisible = viewModel.isBottomPaneVisible();
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.node.AbstractNodeViewModel;
 import com.techsenger.tabshell.core.node.NodeKey;
@@ -68,6 +68,8 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     private final AbstractHexEditorTabViewModel editor;
 
+    private final ReadOnlyIntegerWrapper offset = new ReadOnlyIntegerWrapper(0);
+
     private RowViewModel row;
 
     CaretViewModel(AbstractHexEditorTabViewModel editor) {
@@ -76,6 +78,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV, editor.getCharWidth()));
         editor.charWidthProperty().addListener((ov, oldV, newV) -> updateWidhts(getShape(), getPanel(),
                 newV.doubleValue()));
+
     }
 
     @Override
@@ -175,6 +178,14 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         return indicatorWidth.get();
     }
 
+    public ReadOnlyIntegerProperty offsetProperty() {
+        return offset;
+    }
+
+    public int getOffset() {
+        return offset.get();
+    }
+
     void setByteIndex(int index) {
         this.byteIndex.set(index);
     }
@@ -199,6 +210,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         this.row = row;
         setRowOffset(row.getModel().getOffset());
         setRowIndex(this.editor.calculateRowIndex(row));
+        this.offset.set(getRowOffset() + getByteIndex());
     }
 
     ReadOnlyDoubleWrapper xWrapper() {

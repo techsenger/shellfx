@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex.data;
 
-import javafx.scene.text.Text;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
- * This class represents the text for a single byte.
  *
  * @author Pavel Castornii
  */
-class ByteText extends Text {
+public abstract class AbstractItem {
 
-    private ByteTextPair pair;
+    private final StringProperty value = new SimpleStringProperty();
 
-    ByteText() {
-        setSmooth(false);
+    public StringProperty valueProperty() {
+        return value;
     }
 
-    public ByteTextPair getPair() {
-        return pair;
+    public String getValue() {
+        return value.get();
     }
 
-    public void setPair(ByteTextPair pair) {
-        this.pair = pair;
+    public void setValue(String value) {
+        this.value.set(value);
     }
 }
-
