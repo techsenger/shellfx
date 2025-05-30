@@ -20,7 +20,6 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.Spacer;
 import java.nio.ByteOrder;
@@ -76,10 +75,6 @@ public class DataInspectorView<T extends DataInspectorViewModel> extends Abstrac
 
     private final SplitPane splitPane = new SplitPane(typeTableView, baseTableView);
 
-    private final VBox content = new VBox(toolBar, splitPane);
-
-    private final ComponentTab tab = new ComponentTab(this, "Data Inspector");
-
     public DataInspectorView(T viewModel) {
         super(viewModel);
     }
@@ -87,11 +82,6 @@ public class DataInspectorView<T extends DataInspectorViewModel> extends Abstrac
     @Override
     public void requestFocus() {
 
-    }
-
-    @Override
-    public ComponentTab getNode() {
-        return this.tab;
     }
 
     @Override
@@ -133,9 +123,7 @@ public class DataInspectorView<T extends DataInspectorViewModel> extends Abstrac
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         splitPane.setOrientation(Orientation.VERTICAL);
 
-        VBox.setVgrow(content, Priority.ALWAYS);
-
-        tab.setContent(content);
+        getContentPane().getChildren().addAll(toolBar, splitPane);
     }
 
     @Override

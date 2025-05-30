@@ -84,6 +84,7 @@ public class DataInspectorViewModel extends AbstractTabViewModel {
         this.offset.addListener((ov, oldV, newV) -> updateTypeItems());
         this.byteOrder.addListener((ov, oldV, newV) -> updateTypeItems());
         this.selectedTypeItem.addListener((ov, oldV, newV) -> updateBaseItems());
+        setTitle("Data Inspector");
     }
 
     @Override
