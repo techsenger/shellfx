@@ -28,9 +28,9 @@ public class BaseItem extends AbstractItem {
 
     private final StringProperty base = new SimpleStringProperty();
 
-    private final Function<Bases, String> baseSelector;
+    private final Function<NumberBases, String> baseSelector;
 
-    public BaseItem(String base, Function<Bases, String> baseSelector) {
+    public BaseItem(String base, Function<NumberBases, String> baseSelector) {
         setBase(base);
         this.baseSelector = baseSelector;
     }
@@ -47,7 +47,7 @@ public class BaseItem extends AbstractItem {
         this.base.set(base);
     }
 
-    public Function<Bases, String> getBaseSelector() {
+    public Function<NumberBases, String> getBaseSelector() {
         return baseSelector;
     }
 }

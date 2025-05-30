@@ -40,22 +40,22 @@ public class DataInspectorViewModel extends AbstractTabViewModel {
     private final ReadOnlyObjectWrapper<ByteOrder> byteOrder = new ReadOnlyObjectWrapper<>(ByteOrder.BIG_ENDIAN);
 
     private final ObservableList<TypeItem<?>> typeItems = FXCollections.observableArrayList(
-            new TypeItem<Integer>(1, "Signed Int 8", (v) -> v.getSignedInt8(), BaseConverters::convert),
-            new TypeItem<Integer>(1, "Unsigned Int 8", (v) -> v.getUnsignedInt8(), BaseConverters::convert),
-            new TypeItem<Integer>(2, "Signed Int 16", (v) -> v.getSignedInt16(), BaseConverters::convert),
-            new TypeItem<Integer>(2, "Unsigned Int 16", (v) -> v.getUnsignedInt16(), BaseConverters::convert),
-            new TypeItem<Integer>(3, "Signed Int 24", (v) -> v.getSignedInt24(), BaseConverters::convert),
-            new TypeItem<Integer>(3, "Unsigned Int 24", (v) -> v.getUnsignedInt24(), BaseConverters::convert),
-            new TypeItem<Integer>(4, "Signed Int 32", (v) -> v.getSignedInt32(), BaseConverters::convert),
+            new TypeItem<Long>(1, "Signed Int 8", (v) -> v.getSignedInt8(), BaseConverters::convert),
+            new TypeItem<Long>(1, "Unsigned Int 8", (v) -> v.getUnsignedInt8(), BaseConverters::convert),
+            new TypeItem<Long>(2, "Signed Int 16", (v) -> v.getSignedInt16(), BaseConverters::convert),
+            new TypeItem<Long>(2, "Unsigned Int 16", (v) -> v.getUnsignedInt16(), BaseConverters::convert),
+            new TypeItem<Long>(3, "Signed Int 24", (v) -> v.getSignedInt24(), BaseConverters::convert),
+            new TypeItem<Long>(3, "Unsigned Int 24", (v) -> v.getUnsignedInt24(), BaseConverters::convert),
+            new TypeItem<Long>(4, "Signed Int 32", (v) -> v.getSignedInt32(), BaseConverters::convert),
             new TypeItem<Long>(4, "Unsigned Int 32", (v) -> v.getUnsignedInt32(), BaseConverters::convert),
             new TypeItem<Long>(6, "Signed Int 48", (v) -> v.getSignedInt48(), BaseConverters::convert),
             new TypeItem<Long>(6, "Unsigned Int 48", (v) -> v.getUnsignedInt48(), BaseConverters::convert),
-            new TypeItem<Long>(8, "Signed Int 64", (v) -> v.getSignedInt64(), BaseConverters::convert),
+            new TypeItem<Long>(8, "Signed Int 64", (v) -> v.getSignedInt64(), (v, s) -> BaseConverters.convert(v, s)),
             new TypeItem<BigInteger>(8, "Unsigned Int 64", (v) -> v.getUnsignedInt64(), BaseConverters::convert),
             new TypeItem<Float>(4, "Float 32", (v) -> v.getFloat32()),
             new TypeItem<Double>(8, "Float 64", (v) -> v.getFloat64()),
-            new TypeItem<Character>(1, "Char 8", (v) -> v.getChar8(), BaseConverters::convert),
-            new TypeItem<Character>(2, "Char 16", (v) -> v.getChar16(), BaseConverters::convert),
+            new TypeItem<Character>(1, "Char 8", (v) -> v.getChar8(), (v, s) -> BaseConverters.convert(v)),
+            new TypeItem<Character>(2, "Char 16", (v) -> v.getChar16(), (v, s) -> BaseConverters.convert(v)),
             new TypeItem<String>("UTF 8", (v) -> v.getUtf8Char(), BaseConverters::convert, (v) -> v.getUtf8Length()),
             new TypeItem<String>("UTF 16", (v) -> v.getUtf16Char(), BaseConverters::convert, (v) -> v.getUtf16Length()),
             new TypeItem<String>(4, "UTF 32", (v) -> v.getUtf32Char(), BaseConverters::convert)
@@ -161,7 +161,7 @@ public class DataInspectorViewModel extends AbstractTabViewModel {
 
     private void updateBaseItems() {
         var typeItem = getSelectedTypeItem();
-        Bases bases = null;
+        NumberBases bases = null;
         if (typeItem != null) {
             bases = typeItem.createBases(values);
         }

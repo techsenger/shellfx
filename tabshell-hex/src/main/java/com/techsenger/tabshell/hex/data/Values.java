@@ -24,19 +24,19 @@ import java.math.BigInteger;
  */
 public class Values {
 
-    private Integer signedInt8;
+    private Long signedInt8;
 
-    private Integer unsignedInt8;
+    private Long unsignedInt8;
 
-    private Integer signedInt16;
+    private Long signedInt16;
 
-    private Integer unsignedInt16;
+    private Long unsignedInt16;
 
-    private Integer signedInt24;
+    private Long signedInt24;
 
-    private Integer unsignedInt24;
+    private Long unsignedInt24;
 
-    private Integer signedInt32;
+    private Long signedInt32;
 
     private Long unsignedInt32;
 
@@ -66,59 +66,59 @@ public class Values {
 
     private String utf32Char;
 
-    public Integer getSignedInt8() {
+    public Long getSignedInt8() {
         return signedInt8;
     }
 
-    public void setSignedInt8(Integer signedInt8) {
+    public void setSignedInt8(Long signedInt8) {
         this.signedInt8 = signedInt8;
     }
 
-    public Integer getUnsignedInt8() {
+    public Long getUnsignedInt8() {
         return unsignedInt8;
     }
 
-    public void setUnsignedInt8(Integer unsignedInt8) {
+    public void setUnsignedInt8(Long unsignedInt8) {
         this.unsignedInt8 = unsignedInt8;
     }
 
-    public Integer getSignedInt16() {
+    public Long getSignedInt16() {
         return signedInt16;
     }
 
-    public void setSignedInt16(Integer signedInt16) {
+    public void setSignedInt16(Long signedInt16) {
         this.signedInt16 = signedInt16;
     }
 
-    public Integer getUnsignedInt16() {
+    public Long getUnsignedInt16() {
         return unsignedInt16;
     }
 
-    public void setUnsignedInt16(Integer unsignedInt16) {
+    public void setUnsignedInt16(Long unsignedInt16) {
         this.unsignedInt16 = unsignedInt16;
     }
 
-    public Integer getSignedInt24() {
+    public Long getSignedInt24() {
         return signedInt24;
     }
 
-    public void setSignedInt24(Integer signedInt24) {
+    public void setSignedInt24(Long signedInt24) {
         this.signedInt24 = signedInt24;
     }
 
-    public Integer getUnsignedInt24() {
+    public Long getUnsignedInt24() {
         return unsignedInt24;
     }
 
-    public void setUnsignedInt24(Integer unsignedInt24) {
+    public void setUnsignedInt24(Long unsignedInt24) {
         this.unsignedInt24 = unsignedInt24;
     }
 
-    public Integer getSignedInt32() {
+    public Long getSignedInt32() {
         return signedInt32;
     }
 
-    public void setSignedInt32(Integer signedInt32) {
+    public void setSignedInt32(Long signedInt32) {
         this.signedInt32 = signedInt32;
     }
 

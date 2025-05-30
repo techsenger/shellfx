@@ -23,6 +23,6 @@ package com.techsenger.tabshell.hex.data;
 @FunctionalInterface
 public interface BaseConverter<T> {
 
-    Bases convert(T value);
+    NumberBases convert(T value, int bits);
 
 }

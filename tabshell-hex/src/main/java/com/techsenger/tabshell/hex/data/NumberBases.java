@@ -20,7 +20,7 @@ package com.techsenger.tabshell.hex.data;
  *
  * @author Pavel Castornii
  */
-public class Bases {
+public class NumberBases {
 
     private final String decimal;
 
@@ -30,7 +30,7 @@ public class Bases {
 
     private final String binary;
 
-    public Bases(String decimal, String hexadecimal, String octal, String binary) {
+    public NumberBases(String decimal, String hexadecimal, String octal, String binary) {
         this.decimal = decimal;
         this.hexadecimal = hexadecimal;
         this.octal = octal;
@@ -51,5 +51,11 @@ public class Bases {
 
     public String getBinary() {
         return binary;
+    }
+
+    @Override
+    public String toString() {
+        return "NumberBases{" + "decimal=" + decimal + ", hexadecimal=" + hexadecimal
+                + ", octal=" + octal + ", binary=" + binary + '}';
     }
 }

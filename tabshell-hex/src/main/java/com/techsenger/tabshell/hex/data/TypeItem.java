@@ -72,7 +72,7 @@ public class TypeItem<T> extends AbstractItem {
         return valueProvider;
     }
 
-    public Bases createBases(Values values) {
+    public NumberBases createBases(Values values) {
         if (this.converter == null) {
             return null;
         }
@@ -80,7 +80,8 @@ public class TypeItem<T> extends AbstractItem {
         if (value == null) {
             return null;
         }
-        return this.converter.convert(value);
+        var bits = getSize(values) * 8;
+        return this.converter.convert(value, bits);
     }
 
     public int getSize(Values values) {

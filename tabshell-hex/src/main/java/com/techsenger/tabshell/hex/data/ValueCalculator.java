@@ -43,28 +43,28 @@ public final class ValueCalculator {
         // 8-bit
         RawValue int8 = calculateRaw(data, offset, byteOrder, 1);
         if (int8 != null) {
-            values.setSignedInt8((int) toSigned(int8.raw, 8));
-            values.setUnsignedInt8((int) int8.raw);
+            values.setSignedInt8((long) toSigned(int8.raw, 8));
+            values.setUnsignedInt8((long) int8.raw);
         }
 
         // 16-bit
         RawValue int16 = calculateRaw(data, offset, byteOrder, 2);
         if (int16 != null) {
-            values.setSignedInt16((int) toSigned(int16.raw, 16));
-            values.setUnsignedInt16((int) int16.raw);
+            values.setSignedInt16((long) toSigned(int16.raw, 16));
+            values.setUnsignedInt16((long) int16.raw);
         }
 
         // 24-bit
         RawValue int24 = calculateRaw(data, offset, byteOrder, 3);
         if (int24 != null) {
-            values.setSignedInt24((int) toSigned(int24.raw, 24));
-            values.setUnsignedInt24((int) int24.raw);
+            values.setSignedInt24((long) toSigned(int24.raw, 24));
+            values.setUnsignedInt24((long) int24.raw);
         }
 
         // 32-bit
         RawValue int32 = calculateRaw(data, offset, byteOrder, 4);
         if (int32 != null) {
-            values.setSignedInt32((int) toSigned(int32.raw, 32));
+            values.setSignedInt32((long) toSigned(int32.raw, 32));
             values.setUnsignedInt32(int32.raw);
         }
 
