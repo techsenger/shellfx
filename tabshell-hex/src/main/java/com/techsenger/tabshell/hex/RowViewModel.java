@@ -29,11 +29,6 @@ class RowViewModel extends AbstractNodeViewModel {
 
     private final AbstractHexEditorTabViewModel editor;
 
-    /**
-     * The count of columns when layout was built.
-     */
-    private int columnCount;
-
     private RowModel model;
 
     private boolean focused;
@@ -46,10 +41,6 @@ class RowViewModel extends AbstractNodeViewModel {
     @Override
     public NodeKey getKey() {
         return HEX_EDITOR_ROW_KEY;
-    }
-
-    public int getColumnCount() {
-        return columnCount;
     }
 
     public RowModel getModel() {
@@ -87,19 +78,7 @@ class RowViewModel extends AbstractNodeViewModel {
         this.focused = focused;
     }
 
-    boolean shoulRebuilRow() {
-        return this.columnCount != editor.getColumnCount();
-    }
-
-    void setColumnCount(int columnCount) {
-        this.columnCount = columnCount;
-    }
-
     AbstractHexEditorTabViewModel getEditor() {
         return editor;
-    }
-
-    void updateColumnCount() {
-        setColumnCount(this.editor.getColumnCount());
     }
 }

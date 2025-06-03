@@ -21,9 +21,11 @@ import com.techsenger.mvvm4fx.core.ComponentHelper;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.hex.AbstractHexEditorTabView;
 import com.techsenger.tabshell.hex.CaretShape;
+import com.techsenger.tabshell.hex.ColumnSeparator;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tooltip;
 
 /**
  *
@@ -31,7 +33,9 @@ import javafx.scene.control.Separator;
  */
 public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewModel> {
 
-    private final ComboBox<CaretShape> shapeComboBox = new ComboBox<>();
+    private final ComboBox<CaretShape> caretShapeComboBox = new ComboBox<>();
+
+    private final ComboBox<ColumnSeparator> columnSeparatorComboBox = new ComboBox<>();
 
     public HexEditorTabView(ShellView<?> tabShell, HexEditorTabViewModel viewModel) {
         super(tabShell, viewModel);
@@ -45,8 +49,15 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
     @Override
     protected void build(HexEditorTabViewModel viewModel) {
         super.build(viewModel);
-        this.shapeComboBox.setItems(viewModel.getShapes());
-        this.shapeComboBox.getStyleClass().add(Styles.DENSE);
+
+        this.caretShapeComboBox.setItems(viewModel.getCaretShapes());
+        this.caretShapeComboBox.getStyleClass().add(Styles.DENSE);
+        this.caretShapeComboBox.setTooltip(new Tooltip("Caret Shape"));
+
+        this.columnSeparatorComboBox.setItems(viewModel.getColumnSeparators());
+        this.columnSeparatorComboBox.getStyleClass().add(Styles.DENSE);
+        this.columnSeparatorComboBox.setTooltip(new Tooltip("Column Separator"));
+
         getToolBar().getItems().addAll(
                 getNewButton(),
                 getClearButton(),
@@ -61,7 +72,12 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
                 getFindButton(),
                 getReplaceButton(),
                 new Separator(Orientation.VERTICAL),
-                this.shapeComboBox
+                getRowByteCountsComboBox(),
+                getColumnsEnabledButton(),
+                getColumnByteCountsComboBox(),
+                this.columnSeparatorComboBox,
+                new Separator(Orientation.VERTICAL),
+                this.caretShapeComboBox
         );
         getTopPane().getChildren().addAll(getToolBar(), getVirtualScrollPane());
     }
@@ -69,7 +85,8 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
     @Override
     protected void bind(HexEditorTabViewModel viewModel) {
         super.bind(viewModel);
-        this.shapeComboBox.valueProperty().bindBidirectional(viewModel.getCaret().shapeProperty());
+        this.caretShapeComboBox.valueProperty().bindBidirectional(viewModel.getCaret().shapeProperty());
+        this.columnSeparatorComboBox.valueProperty().bindBidirectional(viewModel.columnSeparatorProperty());
     }
 
 

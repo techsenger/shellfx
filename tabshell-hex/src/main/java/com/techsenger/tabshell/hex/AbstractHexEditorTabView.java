@@ -16,18 +16,24 @@
 
 package com.techsenger.tabshell.hex;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.hex.data.DataInspectorView;
+import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.tabs.tabmanager.TabManagerView;
 import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabView;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
 import static javafx.scene.input.KeyCode.DOWN;
@@ -76,14 +82,21 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final Button replaceButton = new Button(null, new FontIconView(CoreIcons.REPLACE));
 
+    private final ComboBox<Integer> rowByteCountsComboBox = new ComboBox<>();
+
+    private final ToggleButton columnsEnabledButton =
+            new ToggleButton(null, new FontIconView(HexIcons.COLUMNS_ENABLED));
+
+    private final ComboBox<Integer> columnByteCountsComboBox = new ComboBox<>();
+
     private final ToolBar toolBar = new ToolBar();
 
     /**
      * Integer is a row index.
      */
-    private VirtualFlow<Integer, RowView> virtualFlow;
+    private final VirtualFlow<Integer, RowView> virtualFlow;
 
-    private VirtualizedScrollPane<VirtualFlow<Integer, RowView>> virtualScrollPane;
+    private final VirtualizedScrollPane<VirtualFlow<Integer, RowView>> virtualScrollPane;
 
     private final CaretView caret;
 
@@ -91,8 +104,22 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final DataInspectorView<?> dataInspector;
 
+    /**
+     * Reusable cells in a virtual flow remain in memory after creation and are only released when virtualFlow.dispose()
+     * is explicitly invoked.
+     */
+    private final List<RowView> rows = new ArrayList<>();
+
     public AbstractHexEditorTabView(ShellView<?> tabShell, T viewModel) {
         super(tabShell, viewModel);
+        virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
+                var rowViewModel = viewModel.createRow(offset);
+                var rowView = new RowView(rowViewModel, this);
+                this.rows.add(rowView);
+                rowView.initialize();
+                return rowView;
+        });
+        virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
         this.caret = new CaretView(this, viewModel.getCaret());
         this.rightTabManager = new TabManagerView(viewModel.getRightTabManager());
         this.dataInspector = createDataInspector();
@@ -139,20 +166,32 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         replaceButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
         replaceButton.setTooltip(new Tooltip("Replace"));
 
+        rowByteCountsComboBox.setItems(viewModel.getRowByteCounts());
+        rowByteCountsComboBox.getStyleClass().add(Styles.DENSE);
+        rowByteCountsComboBox.setTooltip(new Tooltip("Bytes per Row"));
+
+        columnsEnabledButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
+        columnsEnabledButton.setTooltip(new Tooltip("Columns Enabled"));
+
+        columnByteCountsComboBox.setItems(viewModel.getColumnByteCounts());
+        columnByteCountsComboBox.getStyleClass().add(Styles.DENSE);
+        columnByteCountsComboBox.setTooltip(new Tooltip("Bytes per Column"));
+
         var css = AbstractHexEditorTabView.class.getResource("hexeditor.css").toExternalForm();
         getTopPane().getStylesheets().add(css);
-        virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
-                var rowViewModel = viewModel.createRow(offset);
-                var rowView = new RowView(rowViewModel, this);
-                rowView.initialize();
-                return rowView;
-        });
-        virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
         this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         VBox.setVgrow(virtualScrollPane, Priority.ALWAYS);
 
         VBox.setVgrow(this.rightTabManager.getNode(), Priority.ALWAYS);
         getRightPane().getChildren().add(this.rightTabManager.getNode());
+    }
+
+    @Override
+    protected void bind(T viewModel) {
+        super.bind(viewModel);
+        this.rowByteCountsComboBox.valueProperty().bindBidirectional(viewModel.rowByteCountProperty());
+        this.columnByteCountsComboBox.valueProperty().bindBidirectional(viewModel.columnByteCountProperty());
+        this.columnsEnabledButton.selectedProperty().bindBidirectional(viewModel.columnsEnabledProperty());
     }
 
     @Override
@@ -180,11 +219,15 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
-        viewModel.contentLoadedSource().addListener((newV) -> {
-            this.virtualFlow.showAsFirst(0); //after clearing and adding new items flow is scrolled to the end
-            var row = this.virtualFlow.getCell(0);
-            this.caret.moveTo(row);
+        viewModel.layoutUpdateRequestSource().addListener((newV) -> {
+            for (var r : rows) {
+                r.rebuild();
+                r.updateItem(r.getViewModel().getModel().getOffset());
+            }
+            this.virtualFlow.showAsFirst(newV); //after clearing and adding new items flow is scrolled to the end
+            var row = this.virtualFlow.getCell(newV);
             addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+                this.caret.moveTo(row);
                 NodeUtils.requestFocus(virtualFlow);
                 return false;
             });
@@ -256,6 +299,18 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     protected VirtualizedScrollPane<VirtualFlow<Integer, RowView>> getVirtualScrollPane() {
         return virtualScrollPane;
+    }
+
+    protected ComboBox<Integer> getRowByteCountsComboBox() {
+        return rowByteCountsComboBox;
+    }
+
+    protected ToggleButton getColumnsEnabledButton() {
+        return columnsEnabledButton;
+    }
+
+    protected ComboBox<Integer> getColumnByteCountsComboBox() {
+        return columnByteCountsComboBox;
     }
 
     private void onMoveRequest(Integer newRow) {

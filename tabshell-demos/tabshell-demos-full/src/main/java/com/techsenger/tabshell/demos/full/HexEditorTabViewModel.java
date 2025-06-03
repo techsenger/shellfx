@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
 import com.techsenger.tabshell.hex.CaretShape;
+import com.techsenger.tabshell.hex.ColumnSeparator;
 import com.techsenger.tabshell.storage.GenericFile;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,7 +32,10 @@ import javafx.collections.ObservableList;
  */
 public class HexEditorTabViewModel extends AbstractHexEditorTabViewModel {
 
-    private final ObservableList<CaretShape> shapes = FXCollections.observableArrayList(CaretShape.values());
+    private final ObservableList<CaretShape> caretShapes = FXCollections.observableArrayList(CaretShape.values());
+
+    private final ObservableList<ColumnSeparator> columnSeparators =
+            FXCollections.observableArrayList(ColumnSeparator.values());
 
     public HexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
         super(tabShell, file);
@@ -45,8 +49,11 @@ public class HexEditorTabViewModel extends AbstractHexEditorTabViewModel {
         return DemoComponentKeys.HEX_EDITOR;
     }
 
-    public ObservableList<CaretShape> getShapes() {
-        return shapes;
+    public ObservableList<CaretShape> getCaretShapes() {
+        return caretShapes;
     }
 
+    public ObservableList<ColumnSeparator> getColumnSeparators() {
+        return columnSeparators;
+    }
 }

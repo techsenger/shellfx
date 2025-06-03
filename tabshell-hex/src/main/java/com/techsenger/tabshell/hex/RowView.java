@@ -25,7 +25,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.text.Text;
 import org.fxmisc.flowless.Cell;
 
 /**
@@ -71,19 +70,19 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
 
     }
 
+    /**
+     * Due to virtualization and for performance reasons, we do not bind the values of text nodes to the model,
+     * but instead set the values explicitly.
+     */
     @Override
     public void updateItem(Integer offset) {
         var vm = getViewModel();
         var row = vm.getEditor().createRowModel(offset);
         vm.setModel(row);
-        if (vm.shoulRebuilRow()) {
-            this.updateRowPanes();
-        }
         removeCaret();
         if (offset != null) {
             this.root.setVisible(true);
             offsetLabel.setText(row.getHexOffset());
-
             for (var i = 0; i < vm.getEditor().getRowByteCount(); i++) {
                 var bytePair = byteTextPairs.get(i);
                 bytePair.setIndex(i);
@@ -129,6 +128,7 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
         this.asciiPane.getStyleClass().add("ascii-pane");
 
         this.root.getStyleClass().add(StyleClasses.MONOSPACE);
+        rebuild();
     }
 
     @Override
@@ -188,40 +188,53 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
         }
     }
 
-    private void updateRowPanes() {
-        getViewModel().updateColumnCount();
+    void rebuild() {
+        var viewModel = getViewModel();
         this.hexPane.clear();
+        //canvas width prevents resetting the panel width
+        this.hexPane.getCanvas().setWidth(0);
         this.asciiPane.clear();
+        this.asciiPane.getCanvas().setWidth(0);
         this.byteTextPairs.clear();
 
+        var editorViewModel = viewModel.getEditor();
+        var charWidth = editorViewModel.getCharWidth();
+
         var hexContentBox = this.hexPane.getContentBox();
-        var charWidth = getViewModel().getEditor().getCharWidth();
-        hexContentBox.setPadding(new Insets(0, 0, 0, charWidth));
+        hexContentBox.setPadding(new Insets(0, charWidth, 0, charWidth));
         hexContentBox.setSpacing(charWidth);
-        List<Text> asciiTexts = new ArrayList<>();
-        for (var c = 0; c < getViewModel().getColumnCount(); c++) {
-            for (var i = 0; i < AbstractHexEditorTabViewModel.COLUMN_BYTE_COUNT; i++) {
-                var hexText = createByteHexText();
-                hexContentBox.getChildren().add(hexText);
-                var asciiText = createByteAsciiText();
-                asciiTexts.add(asciiText);
-                this.byteTextPairs.add(new ByteTextPair(this, hexText, asciiText));
-                if (i + 1 == AbstractHexEditorTabViewModel.COLUMN_BYTE_COUNT) {
+
+        List<ByteText> asciiTexts = new ArrayList<>();
+
+        for (var i = 0; i < editorViewModel.getRowByteCount(); i++) {
+            if (editorViewModel.areColumnsEnabled() && i != 0 && i % editorViewModel.getColumnByteCount() == 0) {
+                if (editorViewModel.getColumnSeparator() == ColumnSeparator.SPACE) {
                     //we use regions as they stretch
-                    var line = new Region();
-                    line.getStyleClass().add("line");
-                    hexContentBox.getChildren().add(line);
+                    var separator = new Region();
+                    separator.getStyleClass().add("space");
+                    hexContentBox.getChildren().add(separator);
+                } else {
+                    var separator = new Region();
+                    separator.getStyleClass().add("line");
+                    hexContentBox.getChildren().add(separator);
                 }
             }
+
+            var hexText = createByteHexText();
+            hexContentBox.getChildren().add(hexText);
+            var asciiText = createByteAsciiText();
+            asciiTexts.add(asciiText);
+            this.byteTextPairs.add(new ByteTextPair(this, hexText, asciiText));
         }
 
         var asciiContentBox = this.asciiPane.getContentBox();
-        asciiContentBox.setPadding(new Insets(0, 0, 0, charWidth));
+        asciiContentBox.setPadding(new Insets(0, charWidth, 0, charWidth));
         asciiContentBox.getChildren().addAll(asciiTexts);
     }
 
     private ByteText createByteHexText() {
         var text = createByteText();
+
         text.setOnMouseClicked(e -> {
             var caretV = this.editor.getCaret();
             var caretVM = caretV.getViewModel();

@@ -33,7 +33,7 @@
     -fx-font-size: 1em;
 }
 
-.hex-pane > .content-box > .text {
+.hex-pane > .content-box .text {
     -fx-fill: -color-fg-default;
     -fx-letter-spacing: 10px;
 }
@@ -43,7 +43,17 @@
     -fx-pref-width: 1;
     -fx-min-width: 1;
     -fx-max-width: 1;
-    -fx-padding: 0 6 0 0;/* 6 - SizeConstants.HALF_INSET */
+}
+
+.hex-pane > .content-box > .space {
+    -fx-background-color: -color-bg-default;
+    -fx-pref-width: 1;
+    -fx-min-width: 1;
+    -fx-max-width: 1;
+}
+
+.hex-pane > .content-box > .separator-space {
+
 }
 
 .hex-pane > .caret-pane > .caret.bar {
@@ -63,25 +73,26 @@
 }
 
 .ascii-pane {
-
+    -fx-border-color: -color-fg-default;
+    -fx-border-width: 0 0 0 1;
 }
 
 .ascii-pane > .content-box > .text {
-    -fx-fill: -color-success-2;
+    -fx-fill: -color-fg-default;
 }
 
 .ascii-pane > .caret-pane > .caret.bar {
-    -fx-fill: -color-success-2;
+    -fx-fill: -color-fg-default;
 }
 
 .ascii-pane > .caret-pane > .caret.block {
-    -fx-fill: -color-chart-6;
+    -fx-fill: -color-accent-6;
 }
 
 .ascii-pane > .caret-pane > .caret.underscore {
-    -fx-fill: -color-success-2;
+    -fx-fill: -color-fg-default;
 }
 
 .ascii-pane > .caret-pane > .indicator {
-    -fx-fill: -color-chart-6;
+    -fx-fill: -color-accent-6;
 }

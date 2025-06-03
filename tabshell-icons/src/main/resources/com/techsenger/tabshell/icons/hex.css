@@ -25,3 +25,7 @@
 .font-icon-view.tabshell-hex-editor-icon {
     -fx-code-point: 987815; /* hexadecimal */
 }
+
+.font-icon-view.tabshell-columns-enabled-icon {
+    -fx-code-point: 985311; /* format-columns */
+}

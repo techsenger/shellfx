@@ -19,7 +19,8 @@ package com.techsenger.tabshell.hex;
 import javafx.scene.text.Text;
 
 /**
- * This class represents the text for a single byte.
+ * This class represents the text for a single byte. We use {@link Text} instead of {@link Label} because the
+ * latter is significantly slower.
  *
  * @author Pavel Castornii
  */

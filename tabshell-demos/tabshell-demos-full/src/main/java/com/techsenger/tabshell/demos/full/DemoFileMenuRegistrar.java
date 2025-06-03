@@ -88,16 +88,18 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             item.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
+                //file
                 Path currentPath = Paths.get(System.getProperty("user.dir"));
                 URI fileUri = currentPath.resolve("src" + File.separator + "main" + File.separator
                         + "resources" + File.separator + "hex.png").toUri();
-                //editor
                 var storage = FileStorages.findByUri(FileStorages.getDefault(true), fileUri);
                 var file = new GenericFile.Builder()
                         .storage(storage)
                         .uri(fileUri)
                         .type(FileType.FILE)
                         .build();
+
+                //editor
                 var editorViewModel = new HexEditorTabViewModel(shell.getViewModel(), file);
                 var editorView = new HexEditorTabView(shell, editorViewModel);
                 editorView.initialize();

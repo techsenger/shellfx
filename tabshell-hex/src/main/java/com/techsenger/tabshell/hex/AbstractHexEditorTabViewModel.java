@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleUtils;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
@@ -32,12 +31,16 @@ import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -50,17 +53,30 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabViewModel
         implements FileOpenerViewModel, FileSaverViewModel {
 
-    static final int COLUMN_BYTE_COUNT = 4;
-
     private static final Logger logger = LoggerFactory.getLogger(AbstractHexEditorTabViewModel.class);
 
     private static final String INVALID_CHAR = "\u2022";
 
     private final HexFormat hexFormat = HexFormat.of().withUpperCase();
 
-    private final ObservableSource<Boolean> contentLoaded = new SimpleObservableSource<>();
+    private final ObservableSource<Integer> layoutUpdateRequest = new SimpleObservableSource<>();
 
     private final HexDocument document;
+
+    private final ObservableList<Integer> rowByteCounts =
+            FXCollections.observableArrayList(8, 16, 24, 32, 48, 64, 96, 128, 256, 512, 1024);
+
+    private final ObjectProperty<Integer> rowByteCount = new SimpleObjectProperty<>(24);
+
+    private final BooleanProperty columnsEnabled = new SimpleBooleanProperty(true);
+
+    private final ObservableList<Integer> columnByteCounts = FXCollections.observableArrayList(2, 4, 8);
+
+    private final ObjectProperty<Integer> columnByteCount = new SimpleObjectProperty<>(8);
+
+    private final ObjectProperty<ColumnSeparator> columnSeparator = new SimpleObjectProperty<>(ColumnSeparator.SPACE);
+
+    private final ReadOnlyIntegerWrapper columnCount = new ReadOnlyIntegerWrapper();
 
     /**
      * Observable list is created only when file content is loaded, because it works faster.
@@ -68,10 +84,6 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     private final ObservableList<Integer> offsets = FXCollections.observableArrayList();
 
     private final ReadOnlyBooleanWrapper contentModified = new ReadOnlyBooleanWrapper(false);
-
-    private final ReadOnlyIntegerWrapper columnCount = new ReadOnlyIntegerWrapper();
-
-    private final ReadOnlyIntegerWrapper rowByteCount = new ReadOnlyIntegerWrapper();
 
     private final ReadOnlyIntegerWrapper lastRowByteCount = new ReadOnlyIntegerWrapper();
 
@@ -120,14 +132,9 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     public void readFile() {
         this.caret.setDisabled(true);
         if (this.document.readFile()) {
-            calculateLayout();
-            createOffsets();
-            this.caret.setPanel(EditorPanel.HEX);
-            this.caret.setByteIndex(0);
-            this.caret.setBytePosition(CaretBytePosition.FIRST);
-            this.contentLoaded.next(true);
-            this.caret.setDisabled(false);
-            this.dataInspector.updateTypeItems();
+            resetCaret();
+            updateOffsets();
+            updateLayout();
         }
     }
 
@@ -174,12 +181,60 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return charWidth.get();
     }
 
-    public ReadOnlyIntegerProperty rowByteCountProperty() {
-        return rowByteCount.getReadOnlyProperty();
+    public ObservableList<Integer> getRowByteCounts() {
+        return rowByteCounts;
     }
 
-    public int getRowByteCount() {
+    public ObjectProperty<Integer> rowByteCountProperty() {
+        return rowByteCount;
+    }
+
+    public Integer getRowByteCount() {
         return this.rowByteCount.get();
+    }
+
+    public void setRowByteCount(Integer value) {
+        this.rowByteCount.set(value);
+    }
+
+    public BooleanProperty columnsEnabledProperty() {
+        return columnsEnabled;
+    }
+
+    public boolean areColumnsEnabled() {
+        return columnsEnabled.get();
+    }
+
+    public void setColumnsEnabled(boolean enabled) {
+        this.columnsEnabled.set(enabled);
+    }
+
+    public ObservableList<Integer> getColumnByteCounts() {
+        return columnByteCounts;
+    }
+
+    public ObjectProperty<Integer> columnByteCountProperty() {
+        return  columnByteCount;
+    }
+
+    public Integer getColumnByteCount() {
+        return this.columnByteCount.get();
+    }
+
+    public void setColumnByteCount(Integer value) {
+        this.columnByteCount.set(value);
+    }
+
+    public ObjectProperty<ColumnSeparator> columnSeparatorProperty() {
+        return columnSeparator;
+    }
+
+    public ColumnSeparator getColumnSeparator() {
+        return columnSeparator.get();
+    }
+
+    public void setColumnSeparator(ColumnSeparator separator) {
+        this.columnSeparator.set(separator);
     }
 
     public ReadOnlyIntegerProperty lastRowByteCountProperty() {
@@ -202,17 +257,34 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return new DataInspectorViewModel(this.document, this.caret.offsetProperty());
     }
 
+    @Override
+    protected void postHistoryRestore() {
+        super.postHistoryRestore();
+        this.rowByteCount.addListener((ov, oldV, newV) -> {
+            updateOffsets();
+            updateLayout();
+        });
+        this.columnsEnabled.addListener((ov, oldV, newV) -> updateLayout());
+        this.columnByteCount.addListener((ov, oldV, newV) -> updateLayout());
+        this.columnSeparator.addListener((ov, oldV, newV) -> updateLayout());
+    }
+
     ObservableList<Integer> getOffsets() {
         return this.offsets;
     }
 
-    ObservableSource<Boolean> contentLoadedSource() {
-        return contentLoaded;
+    ObservableSource<Integer> layoutUpdateRequestSource() {
+        return layoutUpdateRequest;
     }
 
     int calculateRowIndex(int offset) {
         int rowIndex = offset / getRowByteCount();
         return rowIndex;
+    }
+
+    int calculateByteIndex(int offset) {
+        var byteIndex = offset % getRowByteCount();
+        return byteIndex;
     }
 
     int calculateRowIndex(RowViewModel row) {
@@ -399,47 +471,84 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         }
     }
 
-    private void createOffsets() {
+    private void resetCaret() {
+        this.caret.setPanel(EditorPanel.HEX);
+        this.caret.setByteIndex(0);
+        this.caret.setBytePosition(CaretBytePosition.FIRST);
+    }
+
+    private void updateLayout() {
+        calculateFixedLayout();
+        this.caret.setDisabled(true);
+        var rowIndex = calculateRowIndex(this.caret.getOffset());
+        var byteIndex = calculateByteIndex(this.caret.getOffset());
+        this.caret.setByteIndex(byteIndex);
+        this.layoutUpdateRequest.next(rowIndex);
+        this.caret.setDisabled(false);
+        this.dataInspector.updateTypeItems();
+    }
+
+    private void updateOffsets() {
         List<Integer> tempOffsets = new ArrayList<>();
         var content = this.document.getContent();
         for (var offset = 0; offset < content.length; offset += getRowByteCount()) {
             tempOffsets.add(offset);
         }
+        this.offsets.clear();
         this.offsets.addAll(tempOffsets);
         logger.debug("Offsets list size: {}", offsets.size());
     }
 
-    private void calculateLayout() {
+    private void calculateFixedLayout() {
         this.charWidth.set(StyleUtils.getMonospaceCharWidth(getShell().getSettings().getAppearance()
                 .getMonospaceFont()));
-        //4 * 2 bytes, 5 spaces, 4 ascii chars
-        var columnCharCount = (COLUMN_BYTE_COUNT * 2) + (COLUMN_BYTE_COUNT + 1) + COLUMN_BYTE_COUNT;
-        //insets for both sides of offset, and half inset between text and vertical scrollbar
-        var insets = 3 * SizeConstants.HALF_INSET;
-        //10 - scrollbar width, 10 - rounding correction
-        var editorWidth = getShell().getWidth() - 10 - 10;
-        int maxCharCount = (int) ((editorWidth - insets) / getCharWidth());
-        double rowWidth = 0;
-        do {
-            //8 - offset, 1 - extra char between hex and ascii
-            this.columnCount.set((maxCharCount - 8 - 1) / columnCharCount);
-            var rowCharCount  = (getColumnCount() * columnCharCount) + 8 + 1;
-            rowWidth = rowCharCount * getCharWidth() + insets + getColumnCount();
-            if (rowWidth > editorWidth) {
-                maxCharCount--;
-            } else {
-                logger.debug("EditorWidth: {}, charWidth: {}, maxCharCount : {}, columnCharCount: {}, columnCount: {},"
-                        + " rowCharCount: {}, rowWidth: {}",  editorWidth, getCharWidth(), maxCharCount,
-                        columnCharCount, getColumnCount(), rowCharCount, rowWidth);
-
-                break;
-            }
-        } while (true);
-        this.rowByteCount.set(COLUMN_BYTE_COUNT * getColumnCount());
-        var lastRowBCount = this.document.getContent().length % getRowByteCount();
-        if (lastRowBCount == 0 && this.document.getContent().length > 0) {
-            lastRowBCount = getRowByteCount();
+        if (areColumnsEnabled()) {
+            this.columnCount.set(getRowByteCount() / getColumnByteCount());
+        } else {
+            this.columnCount.set(0);
         }
-        this.lastRowByteCount.set(lastRowBCount);
+        this.lastRowByteCount.set(calculateLastRowByteCount());
+    }
+
+//    /**
+//     * This method needs to be adjusted according to the changes in the layout properties.
+//     * <p>Calculates the layout so that rows are fully visible at the current window size.
+//     */
+//    private void calculateFittingLayout() {
+//        this.charWidth.set(StyleUtils.getMonospaceCharWidth(getShell().getSettings().getAppearance()
+//                .getMonospaceFont()));
+//        //4 * 2 bytes, 5 spaces, 4 ascii chars
+//        var columnCharCount = (getColumnByteCount() * 2) + (getColumnByteCount() + 1) + getColumnByteCount();
+//        //insets for both sides of offset, and half inset between text and vertical scrollbar
+//        var insets = 3 * SizeConstants.HALF_INSET;
+//        //10 - scrollbar width, 10 - rounding correction
+//        var editorWidth = getShell().getWidth() - 10 - 10;
+//        int maxCharCount = (int) ((editorWidth - insets) / getCharWidth());
+//        double rowWidth = 0;
+//        do {
+//            //8 - offset, 1 - extra char between hex and ascii
+//            this.columnCount.set((maxCharCount - 8 - 1) / columnCharCount);
+//            var rowCharCount  = (getColumnCount() * columnCharCount) + 8 + 1;
+//            rowWidth = rowCharCount * getCharWidth() + insets + getColumnCount();
+//            if (rowWidth > editorWidth) {
+//                maxCharCount--;
+//            } else {
+//                logger.debug("EditorWidth: {}, charWidth: {}, maxCharCount : {}, columnCharCount: {}, "
+//                        + "columnCount: {}, rowCharCount: {}, rowWidth: {}",  editorWidth, getCharWidth(),
+//                        maxCharCount, columnCharCount, getColumnCount(), rowCharCount, rowWidth);
+//
+//                break;
+//            }
+//        } while (true);
+//        this.rowByteCount.set(getColumnByteCount() * getColumnCount());
+//        this.lastRowByteCount.set(calculateLastRowByteCount());
+//    }
+
+    private int calculateLastRowByteCount() {
+        var lastRowByteCount = this.document.getContent().length % getRowByteCount();
+        if (lastRowByteCount == 0 && this.document.getContent().length > 0) {
+            lastRowByteCount = getRowByteCount();
+        }
+        return lastRowByteCount;
     }
 }

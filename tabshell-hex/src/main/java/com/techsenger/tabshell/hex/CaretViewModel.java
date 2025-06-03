@@ -54,7 +54,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     private final ReadOnlyObjectWrapper<EditorPanel> panel = new ReadOnlyObjectWrapper<>(EditorPanel.HEX);
 
-    private final ReadOnlyBooleanWrapper disabled = new ReadOnlyBooleanWrapper(true);
+    private final ReadOnlyBooleanWrapper disabled = new ReadOnlyBooleanWrapper(false);
 
     private final ObjectProperty<CaretShape> shape = new SimpleObjectProperty<>(CaretShape.BAR);
 
@@ -78,7 +78,6 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV, editor.getCharWidth()));
         editor.charWidthProperty().addListener((ov, oldV, newV) -> updateWidhts(getShape(), getPanel(),
                 newV.doubleValue()));
-
     }
 
     @Override

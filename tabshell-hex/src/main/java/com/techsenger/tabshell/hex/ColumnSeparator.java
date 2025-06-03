@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.style;
-
-import com.techsenger.tabshell.material.icon.StyleFontIcon;
+package com.techsenger.tabshell.hex;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface HexIcons {
+public enum ColumnSeparator {
 
-    StyleFontIcon EDITOR = new StyleFontIcon("tabshell-hex-editor-icon");
-
-    StyleFontIcon COLUMNS_ENABLED = new StyleFontIcon("tabshell-columns-enabled-icon");
+    LINE, SPACE
 }
