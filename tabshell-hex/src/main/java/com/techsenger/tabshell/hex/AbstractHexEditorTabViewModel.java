@@ -133,8 +133,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         this.caret.setDisabled(true);
         if (this.document.readFile()) {
             resetCaret();
-            updateOffsets();
-            updateLayout();
+            updateLayout(true);
         }
     }
 
@@ -260,13 +259,10 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     @Override
     protected void postHistoryRestore() {
         super.postHistoryRestore();
-        this.rowByteCount.addListener((ov, oldV, newV) -> {
-            updateOffsets();
-            updateLayout();
-        });
-        this.columnsEnabled.addListener((ov, oldV, newV) -> updateLayout());
-        this.columnByteCount.addListener((ov, oldV, newV) -> updateLayout());
-        this.columnSeparator.addListener((ov, oldV, newV) -> updateLayout());
+        this.rowByteCount.addListener((ov, oldV, newV) -> updateLayout(true));
+        this.columnsEnabled.addListener((ov, oldV, newV) -> updateLayout(false));
+        this.columnByteCount.addListener((ov, oldV, newV) -> updateLayout(false));
+        this.columnSeparator.addListener((ov, oldV, newV) -> updateLayout(false));
     }
 
     ObservableList<Integer> getOffsets() {
@@ -477,15 +473,20 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         this.caret.setBytePosition(CaretBytePosition.FIRST);
     }
 
-    private void updateLayout() {
-        calculateFixedLayout();
+    private void updateLayout(boolean updateOffsets) {
         this.caret.setDisabled(true);
-        var rowIndex = calculateRowIndex(this.caret.getOffset());
-        var byteIndex = calculateByteIndex(this.caret.getOffset());
-        this.caret.setByteIndex(byteIndex);
-        this.layoutUpdateRequest.next(rowIndex);
+        if (updateOffsets) {
+            updateOffsets();
+            calculateFixedLayout();
+            var rowIndex = calculateRowIndex(this.caret.getOffset());
+            var byteIndex = calculateByteIndex(this.caret.getOffset());
+            this.caret.setByteIndex(byteIndex);
+            this.layoutUpdateRequest.next(rowIndex);
+        } else {
+            this.layoutUpdateRequest.next(null);
+        }
         this.caret.setDisabled(false);
-        this.dataInspector.updateTypeItems();
+        //this.dataInspector.updateTypeItems();
     }
 
     private void updateOffsets() {

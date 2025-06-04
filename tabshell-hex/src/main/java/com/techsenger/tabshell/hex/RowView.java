@@ -242,7 +242,7 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
             var position = resolveHexPosition(text, e.getX(), caretVM.getShape());
             caretVM.setBytePosition(position);
             caretVM.setPanel(EditorPanel.HEX);
-            caretV.moveTo(this);
+            caretV.move(this);
         });
         return text;
     }
@@ -274,7 +274,7 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
                     caretVM.getByteIndex() == caretVM.getRow().getModel().getByteCount() - 1);
             caretVM.setBytePosition(position);
             caretVM.setPanel(EditorPanel.ASCII);
-            caretV.moveTo(this);
+            caretV.move(this);
         });
         return text;
     }

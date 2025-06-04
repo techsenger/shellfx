@@ -165,21 +165,21 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         return row;
     }
 
-    void move() {
-        moveTo(this.row);
-    }
-
-    void moveTo(RowView row) {
+    /**
+     * Moves the caret to a new position in the view, based on the model state.
+     *
+     * @param row the target row, or {@code null} if the caret remains on the same row
+     */
+    void move(RowView row) {
         var viewModel = getViewModel();
+
+        if (row == null) {
+            row = this.row;
+        }
         viewModel.setRow(row.getViewModel());
         var oldRow = this.row;
         this.row = row;
-        updatePositions();
-        updateRow(oldRow, this.row);
-    }
 
-    private void updatePositions() {
-        var viewModel = getViewModel();
         //when file is opened the position of the caret is calculated by char width as there can be no bytes
         if (viewModel.getByteIndex() == 0 && viewModel.getBytePosition() == CaretBytePosition.FIRST
                 && viewModel.getRowIndex() == 0) {
@@ -222,6 +222,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
             text = bytePair.getHexText();
             viewModel.setIndicatorX(text.getBoundsInParent().getMinX());
         }
+        updateRow(oldRow, this.row);
     }
 
     private void updateRow(RowView oldRow, RowView newRow) {

@@ -224,10 +224,17 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
                 r.rebuild();
                 r.updateItem(r.getViewModel().getModel().getOffset());
             }
-            this.virtualFlow.showAsFirst(newV); //after clearing and adding new items flow is scrolled to the end
-            var row = this.virtualFlow.getCell(newV);
+            RowView row = null;
+            if (newV != null) {
+                this.virtualFlow.showAsFirst(newV); //after clearing and adding new items flow is scrolled to the end
+                row = this.virtualFlow.getCell(newV);
+
+            }
+            var finalRow = row;
+            //when the layout changes, the text coordinates are updated as well; therefore, to correctly calculate
+            //the caret position, it is necessary to use a pulse listener.
             addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
-                this.caret.moveTo(row);
+                this.caret.move(finalRow);
                 NodeUtils.requestFocus(virtualFlow);
                 return false;
             });
@@ -315,7 +322,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private void onMoveRequest(Integer newRow) {
         if (newRow == null) {
-            this.caret.move();
+            this.caret.move(null);
         } else {
             var currentRow = this.caret.getViewModel().getRowIndex();
             RowView row;
@@ -324,7 +331,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
             } else {
                 row = scrollUpTo(newRow);
             }
-            this.caret.moveTo(row);
+            this.caret.move(row);
         }
     }
 
@@ -478,6 +485,6 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         }
         int newCaretRowIndex = viewModel.calculateRowIndex(newCaretRow.getViewModel());
         viewModel.adjustCaretDownForLastRow(newCaretRowIndex);
-        this.caret.moveTo(newCaretRow);
+        this.caret.move(newCaretRow);
     }
 }
