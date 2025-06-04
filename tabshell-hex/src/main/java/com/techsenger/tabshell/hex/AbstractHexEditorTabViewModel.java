@@ -134,6 +134,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         if (this.document.readFile()) {
             resetCaret();
             updateLayout(true);
+            this.dataInspector.updateTypeItems();
         }
     }
 
@@ -486,7 +487,6 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
             this.layoutUpdateRequest.next(null);
         }
         this.caret.setDisabled(false);
-        //this.dataInspector.updateTypeItems();
     }
 
     private void updateOffsets() {
