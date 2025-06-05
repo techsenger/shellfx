@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex;
+package com.techsenger.tabshell.hex.row;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.HBox;
@@ -25,7 +25,7 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public class PanelRowPane extends StackPane {
+class PanelRowPane extends StackPane {
 
     /**
      * This canvas is used for background color, selection etc.
@@ -42,7 +42,7 @@ public class PanelRowPane extends StackPane {
      */
     private final HBox contentBox = new HBox();
 
-    public PanelRowPane() {
+    PanelRowPane() {
         this.getChildren().addAll(this.canvas, this.caretPane, this.contentBox);
         this.caretPane.setMouseTransparent(true);
         this.caretPane.getStyleClass().add("caret-pane");

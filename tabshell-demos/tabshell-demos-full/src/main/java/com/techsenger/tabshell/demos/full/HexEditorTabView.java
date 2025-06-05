@@ -77,9 +77,10 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
                 getColumnByteCountsComboBox(),
                 this.columnSeparatorComboBox,
                 new Separator(Orientation.VERTICAL),
+                getOffsetNumberBaseComboBox(),
                 this.caretShapeComboBox
         );
-        getTopPane().getChildren().addAll(getToolBar(), getVirtualScrollPane());
+        getTopPane().getChildren().addAll(getToolBar(), getMainPane());
     }
 
     @Override

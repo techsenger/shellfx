@@ -29,7 +29,7 @@ public class TypeItem<T> extends AbstractItem {
 
     private final ValueProvider<T> valueProvider;
 
-    private final BaseConverter<T> converter;
+    private final NumberBaseConverter<T> converter;
 
     private int size;
 
@@ -39,15 +39,16 @@ public class TypeItem<T> extends AbstractItem {
         this(size, type, provider, null);
     }
 
-    public TypeItem(int size, String type, ValueProvider<T> provider, BaseConverter<T> converter) {
+    public TypeItem(int size, String type, ValueProvider<T> provider, NumberBaseConverter<T> converter) {
         this(size, type, provider, converter, null);
     }
 
-    public TypeItem(String type, ValueProvider<T> provider, BaseConverter<T> converter, SizeProvider sizeProvider) {
+    public TypeItem(String type, ValueProvider<T> provider, NumberBaseConverter<T> converter,
+            SizeProvider sizeProvider) {
         this(0, type, provider, converter, sizeProvider);
     }
 
-    private TypeItem(int size, String type, ValueProvider<T> provider, BaseConverter<T> converter,
+    private TypeItem(int size, String type, ValueProvider<T> provider, NumberBaseConverter<T> converter,
             SizeProvider sizeProvider) {
         this.size = size;
         this.type.set(type);

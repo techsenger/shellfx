@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex;
+package com.techsenger.tabshell.hex.row;
 
 /**
  * Represents a paired set of textual representations (HEX and ASCII) for a single byte within a hex editor row.
@@ -24,9 +24,10 @@ package com.techsenger.tabshell.hex;
  *
  * @author Pavel Castornii
  */
-class ByteTextPair {
+//todo: not public
+public class ByteTextPair {
 
-    private final RowView rowView;
+    private final BodyRowView rowView;
 
     private final ByteText hexText;
 
@@ -36,7 +37,7 @@ class ByteTextPair {
 
     private int index;
 
-    ByteTextPair(RowView rowView, ByteText hexText, ByteText asciiText) {
+    ByteTextPair(BodyRowView rowView, ByteText hexText, ByteText asciiText) {
         this.rowView = rowView;
         this.hexText = hexText;
         this.hexText.setPair(this);
@@ -60,7 +61,7 @@ class ByteTextPair {
         return index;
     }
 
-    public RowView getRow() {
+    public BodyRowView getRow() {
         return rowView;
     }
 

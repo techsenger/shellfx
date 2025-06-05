@@ -22,6 +22,8 @@ import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.hex.data.DataInspectorView;
+import com.techsenger.tabshell.hex.row.BodyRowView;
+import com.techsenger.tabshell.hex.row.HeaderRowView;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.tabs.tabmanager.TabManagerView;
@@ -46,6 +48,7 @@ import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.UP;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.fxmisc.flowless.VirtualFlow;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -89,14 +92,20 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final ComboBox<Integer> columnByteCountsComboBox = new ComboBox<>();
 
+    private final ComboBox<NumberBase> offsetNumberBaseComboBox = new ComboBox<>();
+
     private final ToolBar toolBar = new ToolBar();
+
+    private final StackPane headerPane = new StackPane();
 
     /**
      * Integer is a row index.
      */
-    private final VirtualFlow<Integer, RowView> virtualFlow;
+    private final VirtualFlow<Integer, BodyRowView> virtualFlow;
 
-    private final VirtualizedScrollPane<VirtualFlow<Integer, RowView>> virtualScrollPane;
+    private final VirtualizedScrollPane<VirtualFlow<Integer, BodyRowView>> virtualScrollPane;
+
+    private final VBox mainPane = new VBox();
 
     private final CaretView caret;
 
@@ -104,25 +113,28 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final DataInspectorView<?> dataInspector;
 
+    private final HeaderRowView headerRow;
+
     /**
      * Reusable cells in a virtual flow remain in memory after creation and are only released when virtualFlow.dispose()
      * is explicitly invoked.
      */
-    private final List<RowView> rows = new ArrayList<>();
+    private final List<BodyRowView> rows = new ArrayList<>();
 
     public AbstractHexEditorTabView(ShellView<?> tabShell, T viewModel) {
         super(tabShell, viewModel);
-        virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
+        this.virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
                 var rowViewModel = viewModel.createRow(offset);
-                var rowView = new RowView(rowViewModel, this);
+                var rowView = new BodyRowView(rowViewModel, this);
                 this.rows.add(rowView);
                 rowView.initialize();
                 return rowView;
         });
-        virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
+        this.virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
         this.caret = new CaretView(this, viewModel.getCaret());
         this.rightTabManager = new TabManagerView(viewModel.getRightTabManager());
         this.dataInspector = createDataInspector();
+        this.headerRow = new HeaderRowView(viewModel.getHeaderRow(), this);
     }
 
     @Override
@@ -177,10 +189,18 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         columnByteCountsComboBox.getStyleClass().add(Styles.DENSE);
         columnByteCountsComboBox.setTooltip(new Tooltip("Bytes per Column"));
 
+        offsetNumberBaseComboBox.setItems(viewModel.getOffsetNumberBases());
+        offsetNumberBaseComboBox.getStyleClass().add(Styles.DENSE);
+        offsetNumberBaseComboBox.setTooltip(new Tooltip("Offset Display Base"));
+
         var css = AbstractHexEditorTabView.class.getResource("hexeditor.css").toExternalForm();
         getTopPane().getStylesheets().add(css);
         this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         VBox.setVgrow(virtualScrollPane, Priority.ALWAYS);
+
+        this.headerPane.getChildren().add(this.headerRow.getNode());
+        this.mainPane.getChildren().addAll(headerPane, virtualScrollPane);
+        VBox.setVgrow(this.mainPane, Priority.ALWAYS);
 
         VBox.setVgrow(this.rightTabManager.getNode(), Priority.ALWAYS);
         getRightPane().getChildren().add(this.rightTabManager.getNode());
@@ -192,6 +212,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         this.rowByteCountsComboBox.valueProperty().bindBidirectional(viewModel.rowByteCountProperty());
         this.columnByteCountsComboBox.valueProperty().bindBidirectional(viewModel.columnByteCountProperty());
         this.columnsEnabledButton.selectedProperty().bindBidirectional(viewModel.columnsEnabledProperty());
+        this.offsetNumberBaseComboBox.valueProperty().bindBidirectional(viewModel.offsetNumberBaseProperty());
     }
 
     @Override
@@ -220,11 +241,12 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         viewModel.layoutUpdateRequestSource().addListener((newV) -> {
+            this.headerRow.rebuild();
             for (var r : rows) {
                 r.rebuild();
                 r.updateItem(r.getViewModel().getModel().getOffset());
             }
-            RowView row = null;
+            BodyRowView row = null;
             if (newV != null) {
                 this.virtualFlow.showAsFirst(newV); //after clearing and adding new items flow is scrolled to the end
                 row = this.virtualFlow.getCell(newV);
@@ -240,11 +262,19 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
             });
         });
         viewModel.moveRequestSource().addListener((row) -> onMoveRequest(row));
+        this.virtualScrollPane.widthProperty().addListener((ov, oldV, newV) -> {
+           //setting min and max width on headerPane causes its child pane to be centered
+            headerPane.setPrefWidth(newV.doubleValue());
+        });
+        this.virtualScrollPane.estimatedScrollXProperty().addListener((ov, oldV, newV) -> {
+            this.headerRow.getNode().setTranslateX(newV * -1);
+        });
     }
 
     @Override
     protected void postInitialize(T viewModel) {
         super.postInitialize(viewModel);
+        this.headerRow.initialize();
         this.caret.initialize();
         this.rightTabManager.initialize();
         this.dataInspector.initialize();
@@ -300,12 +330,16 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         return toolBar;
     }
 
-    protected VirtualFlow<Integer, RowView> getVirtualFlow() {
+    protected VirtualFlow<Integer, BodyRowView> getVirtualFlow() {
         return virtualFlow;
     }
 
-    protected VirtualizedScrollPane<VirtualFlow<Integer, RowView>> getVirtualScrollPane() {
+    protected VirtualizedScrollPane<VirtualFlow<Integer, BodyRowView>> getVirtualScrollPane() {
         return virtualScrollPane;
+    }
+
+    protected VBox getMainPane() {
+        return mainPane;
     }
 
     protected ComboBox<Integer> getRowByteCountsComboBox() {
@@ -320,12 +354,16 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         return columnByteCountsComboBox;
     }
 
+    protected ComboBox<NumberBase> getOffsetNumberBaseComboBox() {
+        return offsetNumberBaseComboBox;
+    }
+
     private void onMoveRequest(Integer newRow) {
         if (newRow == null) {
             this.caret.move(null);
         } else {
             var currentRow = this.caret.getViewModel().getRowIndex();
-            RowView row;
+            BodyRowView row;
             if (newRow > currentRow) {
                 row = scrollDownTo(newRow);
             } else {
@@ -335,7 +373,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         }
     }
 
-    private RowView scrollUpTo(int rowIndex) {
+    private BodyRowView scrollUpTo(int rowIndex) {
         var row = virtualFlow.getCellIfVisible(rowIndex).orElse(null);
         if (row == null) {
             virtualFlow.showAsFirst(rowIndex);
@@ -349,7 +387,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         return row;
     }
 
-    private RowView scrollDownTo(int rowIndex) {
+    private BodyRowView scrollDownTo(int rowIndex) {
         var row = virtualFlow.getCellIfVisible(rowIndex).orElse(null);
         if (row == null) {
             virtualFlow.showAsLast(rowIndex);
@@ -472,7 +510,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private void moveCaretOnPageScroll(int calculatedNewFirstRowIndex, int caretVisibleRowIndex, int endCaretRowIndex) {
         var viewModel = getViewModel();
-        RowView newCaretRow;
+        BodyRowView newCaretRow;
 
         //we don't know how many rows were actually scrolled
         var realNewFirstRow = this.virtualFlow.visibleCells().get(0);

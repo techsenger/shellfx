@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex;
+package com.techsenger.tabshell.hex.row;
 
 import java.util.List;
 
@@ -22,29 +22,25 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-class RowModel {
+public class RowModel {
 
     private final int offset;
-
-    private final String hexOffset;
 
     private final List<String> hexes;
 
     private final List<String> asciis;
 
-    RowModel(int offset, String hexOffset,  List<String> hexes, List<String> asciis) {
+    private final boolean last;
+
+    public RowModel(int offset, List<String> hexes, List<String> asciis, boolean last) {
         this.offset = offset;
-        this.hexOffset = hexOffset;
         this.hexes = hexes;
         this.asciis = asciis;
+        this.last = last;
     }
 
     public int getOffset() {
         return offset;
-    }
-
-    public String getHexOffset() {
-        return hexOffset;
     }
 
     public List<String> getHexes() {
@@ -62,4 +58,14 @@ class RowModel {
     public int getByteCount() {
         return this.hexes.size();
     }
+
+    /**
+     * Returns true if this row is the last one among all visible and non-visible rows.
+     *
+     * @return true if this is the last row; false otherwise.
+     */
+    public boolean isLast() {
+        return last;
+    }
+
 }

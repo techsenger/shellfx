@@ -23,7 +23,7 @@ import java.util.Arrays;
  *
  * @author Pavel Castornii
  */
-public final class BaseConverters {
+public final class NumberBaseConverters {
 
     private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
@@ -141,7 +141,7 @@ public final class BaseConverters {
         return new String(result);
     }
 
-    private BaseConverters() {
+    private NumberBaseConverters() {
         //empty
     }
 

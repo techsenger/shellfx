@@ -18,6 +18,7 @@ package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.node.AbstractNodeViewModel;
 import com.techsenger.tabshell.core.node.NodeKey;
+import com.techsenger.tabshell.hex.row.BodyRowViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -70,7 +71,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     private final ReadOnlyIntegerWrapper offset = new ReadOnlyIntegerWrapper(0);
 
-    private RowViewModel row;
+    private BodyRowViewModel row;
 
     CaretViewModel(AbstractHexEditorTabViewModel editor) {
         this.editor = editor;
@@ -185,15 +186,18 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         return offset.get();
     }
 
-    void setByteIndex(int index) {
+    //todo: package level
+    public void setByteIndex(int index) {
         this.byteIndex.set(index);
     }
 
-    void setBytePosition(CaretBytePosition position) {
+    //todo: package level
+    public void setBytePosition(CaretBytePosition position) {
         this.bytePosition.set(position);
     }
 
-    void setPanel(EditorPanel panel) {
+    //todo: package level
+    public void setPanel(EditorPanel panel) {
         this.panel.set(panel);
     }
 
@@ -201,11 +205,12 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         this.disabled.set(value);
     }
 
-    RowViewModel getRow() {
+    //todo: package level
+    public BodyRowViewModel getRow() {
         return row;
     }
 
-    void setRow(RowViewModel row) {
+    void setRow(BodyRowViewModel row) {
         this.row = row;
         setRowOffset(row.getModel().getOffset());
         setRowIndex(this.editor.calculateRowIndex(row));

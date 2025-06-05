@@ -14,30 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex;
+package com.techsenger.tabshell.hex.row;
 
-import javafx.scene.text.Text;
+import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
 
 /**
- * This class represents the text for a single byte. We use {@link Text} instead of {@link Label} because the
- * latter is significantly slower.
  *
  * @author Pavel Castornii
  */
-class ByteText extends Text {
+public class HeaderRowViewModel extends AbstractRowViewModel {
 
-    private ByteTextPair pair;
+    private static final PaneKey HEX_EDITOR_HEADER_ROW = new PaneKey("Hex Editor Header Row");
 
-    ByteText() {
-        setSmooth(false);
+    public HeaderRowViewModel(AbstractHexEditorTabViewModel editor) {
+        super(editor);
     }
 
-    public ByteTextPair getPair() {
-        return pair;
+    @Override
+    public PaneKey getKey() {
+        return HEX_EDITOR_HEADER_ROW;
     }
 
-    public void setPair(ByteTextPair pair) {
-        this.pair = pair;
-    }
 }
-

@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Pavel Castornii
  */
-public class BaseConvertersTest {
+public class NumberBaseConvertersTest {
 
     @Test
     public void convert_whenLongForMinSignedInt8_returnsCorrectBases() {
@@ -33,11 +33,8 @@ public class BaseConvertersTest {
         String hexadecimal = "80";
         String octal = "200";
         String binary = "10000000";
-        var bases = BaseConverters.convert(value, 8);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 8);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -47,11 +44,8 @@ public class BaseConvertersTest {
         String hexadecimal = "A6";
         String octal = "246";
         String binary = "10100110";
-        var bases = BaseConverters.convert(value, 8);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 8);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -61,11 +55,8 @@ public class BaseConvertersTest {
         String hexadecimal = "7F";
         String octal = "177";
         String binary = "01111111";
-        var bases = BaseConverters.convert(value, 8);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 8);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -77,11 +68,8 @@ public class BaseConvertersTest {
         String hexadecimal = "00";
         String octal = "000";
         String binary = "00000000";
-        var bases = BaseConverters.convert(value, 8);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 8);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -91,11 +79,8 @@ public class BaseConvertersTest {
         String hexadecimal = "8C";
         String octal = "214";
         String binary = "10001100";
-        var bases = BaseConverters.convert(value, 8);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 8);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -105,11 +90,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FF";
         String octal = "377";
         String binary = "11111111";
-        var bases = BaseConverters.convert(value, 8);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 8);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -121,11 +103,8 @@ public class BaseConvertersTest {
         String hexadecimal = "8000";
         String octal = "100000";
         String binary = "1000000000000000";
-        var bases = BaseConverters.convert(value, 16);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 16);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -135,11 +114,8 @@ public class BaseConvertersTest {
         String hexadecimal = "D0F9";
         String octal = "150371";
         String binary = "1101000011111001";
-        var bases = BaseConverters.convert(value, 16);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 16);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -149,11 +125,8 @@ public class BaseConvertersTest {
         String hexadecimal = "7FFF";
         String octal = "077777";
         String binary = "0111111111111111";
-        var bases = BaseConverters.convert(value, 16);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 16);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -166,11 +139,8 @@ public class BaseConvertersTest {
         String hexadecimal = "0000";
         String octal = "000000";
         String binary = "0000000000000000";
-        var bases = BaseConverters.convert(value, 16);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 16);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -180,11 +150,8 @@ public class BaseConvertersTest {
         String hexadecimal = "805D";
         String octal = "100135";
         String binary = "1000000001011101";
-        var bases = BaseConverters.convert(value, 16);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 16);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -194,11 +161,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FFFF";
         String octal = "177777";
         String binary = "1111111111111111";
-        var bases = BaseConverters.convert(value, 16);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 16);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -210,11 +174,8 @@ public class BaseConvertersTest {
         String hexadecimal = "800000";
         String octal = "40000000";
         String binary = "100000000000000000000000";
-        var bases = BaseConverters.convert(value, 24);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 24);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -224,11 +185,8 @@ public class BaseConvertersTest {
         String hexadecimal = "A1A2AF";
         String octal = "50321257";
         String binary = "101000011010001010101111";
-        var bases = BaseConverters.convert(value, 24);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 24);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -238,11 +196,8 @@ public class BaseConvertersTest {
         String hexadecimal = "7FFFFF";
         String octal = "37777777";
         String binary = "011111111111111111111111";
-        var bases = BaseConverters.convert(value, 24);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 24);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -254,11 +209,8 @@ public class BaseConvertersTest {
         String hexadecimal = "000000";
         String octal = "00000000";
         String binary = "000000000000000000000000";
-        var bases = BaseConverters.convert(value, 24);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 24);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -268,11 +220,8 @@ public class BaseConvertersTest {
         String hexadecimal = "046207";
         String octal = "01061007";
         String binary = "000001000110001000000111";
-        var bases = BaseConverters.convert(value, 24);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 24);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -282,11 +231,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FFFFFF";
         String octal = "77777777";
         String binary = "111111111111111111111111";
-        var bases = BaseConverters.convert(value, 24);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 24);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -298,11 +244,8 @@ public class BaseConvertersTest {
         String hexadecimal = "80000000";
         String octal = "20000000000";
         String binary = "10000000000000000000000000000000";
-        var bases = BaseConverters.convert(value, 32);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 32);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
 
     }
 
@@ -313,11 +256,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FFDAE391";
         String octal = "37766561621";
         String binary = "11111111110110101110001110010001";
-        var bases = BaseConverters.convert(value, 32);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 32);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -327,11 +267,8 @@ public class BaseConvertersTest {
         String hexadecimal = "7FFFFFFF";
         String octal = "17777777777";
         String binary = "01111111111111111111111111111111";
-        var bases = BaseConverters.convert(value, 32);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 32);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -343,11 +280,8 @@ public class BaseConvertersTest {
         String hexadecimal = "00000000";
         String octal = "00000000000";
         String binary = "00000000000000000000000000000000";
-        var bases = BaseConverters.convert(value, 32);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 32);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -357,11 +291,8 @@ public class BaseConvertersTest {
         String hexadecimal = "0002366A";
         String octal = "00000433152";
         String binary = "00000000000000100011011001101010";
-        var bases = BaseConverters.convert(value, 32);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 32);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -371,11 +302,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FFFFFFFF";
         String octal = "37777777777";
         String binary = "11111111111111111111111111111111";
-        var bases = BaseConverters.convert(value, 32);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 32);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -387,11 +315,8 @@ public class BaseConvertersTest {
         String hexadecimal = "800000000000";
         String octal = "4000000000000000";
         String binary = "100000000000000000000000000000000000000000000000";
-        var bases = BaseConverters.convert(value, 48);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 48);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
 
     }
 
@@ -403,11 +328,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FFE86EAB3959";
         String octal = "7776415652634531";
         String binary = "111111111110100001101110101010110011100101011001";
-        var bases = BaseConverters.convert(value, 48);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 48);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -417,11 +339,8 @@ public class BaseConvertersTest {
         String hexadecimal = "7FFFFFFFFFFF";
         String octal = "3777777777777777";
         String binary = "011111111111111111111111111111111111111111111111";
-        var bases = BaseConverters.convert(value, 48);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 48);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -433,11 +352,8 @@ public class BaseConvertersTest {
         String hexadecimal = "000000000000";
         String octal = "0000000000000000";
         String binary = "000000000000000000000000000000000000000000000000";
-        var bases = BaseConverters.convert(value, 48);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 48);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -448,11 +364,8 @@ public class BaseConvertersTest {
         String hexadecimal = "0013671436F1";
         String octal = "0001154705033361";
         String binary = "000000000001001101100111000101000011011011110001";
-        var bases = BaseConverters.convert(value, 48);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 48);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -462,11 +375,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FFFFFFFFFFFF";
         String octal = "7777777777777777";
         String binary = "111111111111111111111111111111111111111111111111";
-        var bases = BaseConverters.convert(value, 48);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 48);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -478,11 +388,8 @@ public class BaseConvertersTest {
         String hexadecimal = "8000000000000000";
         String octal = "1000000000000000000000";
         String binary = "1000000000000000000000000000000000000000000000000000000000000000";
-        var bases = BaseConverters.convert(value, 64);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 64);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
 
@@ -493,11 +400,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FFFE6AEA573E38F0";
         String octal = "1777763256512717434360";
         String binary = "1111111111111110011010101110101001010111001111100011100011110000";
-        var bases = BaseConverters.convert(value, 64);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 64);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -507,11 +411,8 @@ public class BaseConvertersTest {
         String hexadecimal = "7FFFFFFFFFFFFFFF";
         String octal = "0777777777777777777777";
         String binary = "0111111111111111111111111111111111111111111111111111111111111111";
-        var bases = BaseConverters.convert(value, 64);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 64);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     /* ************************************************************************************************************* */
@@ -523,11 +424,8 @@ public class BaseConvertersTest {
         String hexadecimal = "0000000000000000";
         String octal = "0000000000000000000000";
         String binary = "0000000000000000000000000000000000000000000000000000000000000000";
-        var bases = BaseConverters.convert(value, 64);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 64);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -537,11 +435,8 @@ public class BaseConvertersTest {
         String hexadecimal = "0000B97D6DD52FAB";
         String octal = "0000005627655565227653";
         String binary = "0000000000000000101110010111110101101101110101010010111110101011";
-        var bases = BaseConverters.convert(value, 64);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 64);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -551,11 +446,8 @@ public class BaseConvertersTest {
         String hexadecimal = "FFFFFFFFFFFFFFFF";
         String octal = "1777777777777777777777";
         String binary = "1111111111111111111111111111111111111111111111111111111111111111";
-        var bases = BaseConverters.convert(value, 64);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 64);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
 
@@ -568,11 +460,8 @@ public class BaseConvertersTest {
         String hexadecimal = "0002366A";
         String octal = "00000433152";
         String binary = "00000000000000100011011001101010";
-        var bases = BaseConverters.convert(value, 32);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 32);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
     }
 
     @Test
@@ -582,10 +471,14 @@ public class BaseConvertersTest {
         String hexadecimal = "FFDAE391";
         String octal = "37766561621";
         String binary = "11111111110110101110001110010001";
-        var bases = BaseConverters.convert(value, 32);
-        assertThat(bases.getDecimal()).isEqualTo(decimal);
-        assertThat(bases.getHexadecimal()).isEqualTo(hexadecimal);
-        assertThat(bases.getOctal()).isEqualTo(octal);
-        assertThat(bases.getBinary()).isEqualTo(binary);
+        var bases = NumberBaseConverters.convert(value, 32);
+        assertBases(decimal, hexadecimal, octal, binary, bases);
+    }
+
+    private void assertBases(String dec, String hex, String oct, String bin, NumberBases bases) {
+        assertThat(bases.getDecimal()).isEqualTo(dec);
+        assertThat(bases.getHexadecimal()).isEqualTo(hex);
+        assertThat(bases.getOctal()).isEqualTo(oct);
+        assertThat(bases.getBinary()).isEqualTo(bin);
     }
 }

@@ -20,6 +20,7 @@ import com.techsenger.tabshell.core.node.AbstractNodeView;
 import static com.techsenger.tabshell.hex.CaretShape.BAR;
 import static com.techsenger.tabshell.hex.CaretShape.BLOCK;
 import static com.techsenger.tabshell.hex.CaretShape.UNDERSCORE;
+import com.techsenger.tabshell.hex.row.BodyRowView;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -47,7 +48,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
 
     private final AbstractHexEditorTabView<?> editor;
 
-    private RowView row;
+    private BodyRowView row;
 
     CaretView(AbstractHexEditorTabView<?> editor, CaretViewModel viewModel) {
         super(viewModel);
@@ -57,6 +58,10 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
     @Override
     public Rectangle getNode() {
         return caret;
+    }
+
+    public Rectangle getIndicator() {
+        return indicator;
     }
 
     @Override
@@ -157,11 +162,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         }
     }
 
-    Rectangle getIndicator() {
-        return indicator;
-    }
-
-    RowView getRow() {
+    BodyRowView getRow() {
         return row;
     }
 
@@ -170,7 +171,8 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
      *
      * @param row the target row, or {@code null} if the caret remains on the same row
      */
-    void move(RowView row) {
+    //todo: package level
+    public void move(BodyRowView row) {
         var viewModel = getViewModel();
 
         if (row == null) {
@@ -225,7 +227,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         updateRow(oldRow, this.row);
     }
 
-    private void updateRow(RowView oldRow, RowView newRow) {
+    private void updateRow(BodyRowView oldRow, BodyRowView newRow) {
         if (oldRow != newRow) {
             if (oldRow != null) {
                 oldRow.removeCaret();

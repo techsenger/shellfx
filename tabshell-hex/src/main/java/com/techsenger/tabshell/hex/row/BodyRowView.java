@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex;
+package com.techsenger.tabshell.hex.row;
 
-import com.techsenger.tabshell.core.node.AbstractNodeView;
 import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.hex.AbstractHexEditorTabView;
+import com.techsenger.tabshell.hex.CaretBytePosition;
+import com.techsenger.tabshell.hex.CaretShape;
+import com.techsenger.tabshell.hex.ColumnSeparator;
+import com.techsenger.tabshell.hex.EditorPanel;
+import com.techsenger.tabshell.hex.NumberBaseUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import org.fxmisc.flowless.Cell;
 
@@ -31,38 +34,15 @@ import org.fxmisc.flowless.Cell;
  *
  * @author Pavel Castornii
  */
-class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, Node> {
-
-    private final AbstractHexEditorTabView<?> editor;
-
-    /**
-     * This flow has only one text node.
-     */
-    private final Label offsetLabel = new Label();
-
-    /**
-     * Stack pane for hex panel.
-     */
-    private final PanelRowPane hexPane = new PanelRowPane();
-
-    /**
-     * Stack pane for ascii panel.
-     */
-    private final PanelRowPane asciiPane = new PanelRowPane();
+public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Cell<Integer, Node> {
 
     /**
      * Only texts that represent bytes. Its size is always equal to max rowByteCount.
      */
     private final List<ByteTextPair> byteTextPairs = new ArrayList<>();
 
-    /**
-     * The root node of the row.
-     */
-    private final HBox root = new HBox(offsetLabel, hexPane, asciiPane);
-
-    RowView(RowViewModel viewModel, AbstractHexEditorTabView<?> editor) {
-        super(viewModel);
-        this.editor = editor;
+    public BodyRowView(BodyRowViewModel viewModel, AbstractHexEditorTabView<?> editor) {
+        super(viewModel, editor);
     }
 
     @Override
@@ -81,8 +61,10 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
         vm.setModel(row);
         removeCaret();
         if (offset != null) {
-            this.root.setVisible(true);
-            offsetLabel.setText(row.getHexOffset());
+            getNode().setVisible(true);
+            var offsetStr = NumberBaseUtils.convert(row.getOffset(), vm.getEditor().getOffsetNumberBase(),
+                    vm.getEditor().getOffsetLength());
+            getOffsetLabel().setText(offsetStr);
             for (var i = 0; i < vm.getEditor().getRowByteCount(); i++) {
                 var bytePair = byteTextPairs.get(i);
                 bytePair.setIndex(i);
@@ -96,7 +78,7 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
                     bytePair.getAsciiText().setText(" ");
                 }
             }
-            if (this.editor.getCaret().getViewModel().getRowOffset() == offset) {
+            if (getEditor().getCaret().getViewModel().getRowOffset() == offset) {
                 vm.setFocused(true);
                 addCaret();
             } else {
@@ -104,13 +86,8 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
             }
         } else {
             vm.setFocused(false);
-            this.root.setVisible(false);
+            getNode().setVisible(false);
         }
-    }
-
-    @Override
-    public HBox getNode() {
-        return root;
     }
 
     @Override
@@ -119,88 +96,19 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
     }
 
     @Override
-    protected void build(RowViewModel viewModel) {
-        super.build(viewModel);
-        this.offsetLabel.getStyleClass().add("offset-label");
-        this.offsetLabel.setMinWidth(Region.USE_PREF_SIZE);
-
-        this.hexPane.getStyleClass().add("hex-pane");
-        this.asciiPane.getStyleClass().add("ascii-pane");
-
-        this.root.getStyleClass().add(StyleClasses.MONOSPACE);
-        rebuild();
-    }
-
-    @Override
-    protected void addListeners(RowViewModel viewModel) {
-        super.addListeners(viewModel);
-//        //when new row is created on scrolling it is necessary to update caret x
-//        var caret = this.editor.getCaret();
-//        if (caret.getRow() != null
-//                && caret.getRow().getViewModel().getOffset() == caret.getViewModel().getRowOffset()) {
-//            addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
-//                setLinesX();
-//                getEditor().getCaret().updateX();
-//                removeCaret();
-//                addCaret();
-//                return false;
-//            });
-//        }
-    }
-
-    @Override
-    protected void postInitialize(RowViewModel viewModel) {
-        super.postInitialize(viewModel);
-        updateItem(viewModel.getModel().getOffset());
-    }
-
-    List<ByteTextPair> getByteTextPairs() {
-        return byteTextPairs;
-    }
-
-    void removeCaret() {
-        this.hexPane.getCaretPane().getChildren().clear();
-        this.asciiPane.getCaretPane().getChildren().clear();
-    }
-
-    void addCaret() {
-        if (getViewModel().isFocused()) {
-            var caret = editor.getCaret();
-            if (caret.getViewModel().getPanel() == EditorPanel.HEX) {
-                this.hexPane.getCaretPane().getChildren().add(caret.getNode());
-                this.asciiPane.getCaretPane().getChildren().add(caret.getIndicator());
-            } else {
-                this.hexPane.getCaretPane().getChildren().add(caret.getIndicator());
-                this.asciiPane.getCaretPane().getChildren().add(caret.getNode());
-            }
-        }
-    }
-
-    AbstractHexEditorTabView<?> getEditor() {
-        return editor;
-    }
-
-    ByteText getText(EditorPanel panel, int byteIndex) {
-        if (panel == EditorPanel.HEX) {
-            return this.byteTextPairs.get(byteIndex).getHexText();
-        } else {
-            return this.byteTextPairs.get(byteIndex).getAsciiText();
-        }
-    }
-
-    void rebuild() {
+    public void rebuild() {
         var viewModel = getViewModel();
-        this.hexPane.clear();
+        getHexPane().clear();
         //canvas width prevents resetting the panel width
-        this.hexPane.getCanvas().setWidth(0);
-        this.asciiPane.clear();
-        this.asciiPane.getCanvas().setWidth(0);
+        getHexPane().getCanvas().setWidth(0);
+        getAsciiPane().clear();
+        getAsciiPane().getCanvas().setWidth(0);
         this.byteTextPairs.clear();
 
         var editorViewModel = viewModel.getEditor();
         var charWidth = editorViewModel.getCharWidth();
 
-        var hexContentBox = this.hexPane.getContentBox();
+        var hexContentBox = getHexPane().getContentBox();
         hexContentBox.setPadding(new Insets(0, charWidth, 0, charWidth));
         hexContentBox.setSpacing(charWidth);
 
@@ -227,16 +135,79 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
             this.byteTextPairs.add(new ByteTextPair(this, hexText, asciiText));
         }
 
-        var asciiContentBox = this.asciiPane.getContentBox();
+        var asciiContentBox = getAsciiPane().getContentBox();
         asciiContentBox.setPadding(new Insets(0, charWidth, 0, charWidth));
         asciiContentBox.getChildren().addAll(asciiTexts);
+    }
+
+    @Override
+    protected void build(BodyRowViewModel viewModel) {
+        super.build(viewModel);
+        getNode().getStyleClass().addAll("body-row", StyleClasses.MONOSPACE);
+        rebuild();
+    }
+
+    @Override
+    protected void addListeners(BodyRowViewModel viewModel) {
+        super.addListeners(viewModel);
+//        //when new row is created on scrolling it is necessary to update caret x
+//        var caret = this.editor.getCaret();
+//        if (caret.getRow() != null
+//                && caret.getRow().getViewModel().getOffset() == caret.getViewModel().getRowOffset()) {
+//            addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+//                setLinesX();
+//                getEditor().getCaret().updateX();
+//                removeCaret();
+//                addCaret();
+//                return false;
+//            });
+//        }
+    }
+
+    @Override
+    protected void postInitialize(BodyRowViewModel viewModel) {
+        super.postInitialize(viewModel);
+        updateItem(viewModel.getModel().getOffset());
+    }
+
+    //todo: not public
+    public List<ByteTextPair> getByteTextPairs() {
+        return byteTextPairs;
+    }
+
+    //todo: not public
+    public void removeCaret() {
+        getHexPane().getCaretPane().getChildren().clear();
+        getAsciiPane().getCaretPane().getChildren().clear();
+    }
+
+    //todo: not public
+    public void addCaret() {
+        if (getViewModel().isFocused()) {
+            var caret = getEditor().getCaret();
+            if (caret.getViewModel().getPanel() == EditorPanel.HEX) {
+                getHexPane().getCaretPane().getChildren().add(caret.getNode());
+                getAsciiPane().getCaretPane().getChildren().add(caret.getIndicator());
+            } else {
+                getHexPane().getCaretPane().getChildren().add(caret.getIndicator());
+                getAsciiPane().getCaretPane().getChildren().add(caret.getNode());
+            }
+        }
+    }
+
+    ByteText getText(EditorPanel panel, int byteIndex) {
+        if (panel == EditorPanel.HEX) {
+            return this.byteTextPairs.get(byteIndex).getHexText();
+        } else {
+            return this.byteTextPairs.get(byteIndex).getAsciiText();
+        }
     }
 
     private ByteText createByteHexText() {
         var text = createByteText();
 
         text.setOnMouseClicked(e -> {
-            var caretV = this.editor.getCaret();
+            var caretV = getEditor().getCaret();
             var caretVM = caretV.getViewModel();
             caretVM.setByteIndex(text.getPair().getIndex());
             var position = resolveHexPosition(text, e.getX(), caretVM.getShape());
@@ -267,7 +238,7 @@ class RowView extends AbstractNodeView<RowViewModel> implements Cell<Integer, No
     private ByteText createByteAsciiText() {
         var text = createByteText();
         text.setOnMouseClicked(e -> {
-            var caretV = this.editor.getCaret();
+            var caretV = getEditor().getCaret();
             var caretVM = caretV.getViewModel();
             caretVM.setByteIndex(text.getPair().getIndex());
             var position = resolveAsciiPosition(text, e.getX(), caretVM.getShape(),

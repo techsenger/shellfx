@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.data;
+package com.techsenger.tabshell.hex.row;
+
+import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-@FunctionalInterface
-public interface BaseConverter<T> {
+public abstract class AbstractRowViewModel extends AbstractPaneViewModel {
 
-    NumberBases convert(T value, int bits);
+    private final AbstractHexEditorTabViewModel editor;
 
+    public AbstractRowViewModel(AbstractHexEditorTabViewModel editor) {
+        this.editor = editor;
+    }
+
+    AbstractHexEditorTabViewModel getEditor() {
+        return editor;
+    }
 }

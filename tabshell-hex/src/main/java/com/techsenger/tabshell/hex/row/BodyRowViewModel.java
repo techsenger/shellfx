@@ -14,33 +14,31 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex;
+package com.techsenger.tabshell.hex.row;
 
-import com.techsenger.tabshell.core.node.AbstractNodeViewModel;
-import com.techsenger.tabshell.core.node.NodeKey;
+import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-class RowViewModel extends AbstractNodeViewModel {
+public class BodyRowViewModel extends AbstractRowViewModel {
 
-    private static final NodeKey HEX_EDITOR_ROW_KEY = new NodeKey("Hex Editor Row");
-
-    private final AbstractHexEditorTabViewModel editor;
+    private static final PaneKey HEX_EDITOR_BODY_ROW = new PaneKey("Hex Editor Body Row");
 
     private RowModel model;
 
     private boolean focused;
 
-    RowViewModel(AbstractHexEditorTabViewModel editor, RowModel model) {
+    public BodyRowViewModel(AbstractHexEditorTabViewModel editor, RowModel model) {
+        super(editor);
         this.model = model;
-        this.editor = editor;
     }
 
     @Override
-    public NodeKey getKey() {
-        return HEX_EDITOR_ROW_KEY;
+    public PaneKey getKey() {
+        return HEX_EDITOR_BODY_ROW;
     }
 
     public RowModel getModel() {
@@ -60,25 +58,12 @@ class RowViewModel extends AbstractNodeViewModel {
         return this.model.getOffset() == 0;
     }
 
-    /**
-     * Returns true if this row is the last one among all visible and non-visible rows.
-     *
-     * @return true if this is the last row; false otherwise.
-     */
-    public boolean isLast() {
-        var offsets = this.editor.getOffsets();
-        return offsets.get(offsets.size() - 1) == this.model.getOffset();
-    }
-
     void setModel(RowModel model) {
         this.model = model;
     }
 
-    void setFocused(boolean focused) {
+    //todo: not public
+    public void setFocused(boolean focused) {
         this.focused = focused;
-    }
-
-    AbstractHexEditorTabViewModel getEditor() {
-        return editor;
     }
 }

@@ -22,6 +22,9 @@ import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.hex.data.DataInspectorViewModel;
+import com.techsenger.tabshell.hex.row.BodyRowViewModel;
+import com.techsenger.tabshell.hex.row.HeaderRowViewModel;
+import com.techsenger.tabshell.hex.row.RowModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.tabs.tabmanager.TabManagerViewModel;
@@ -29,8 +32,9 @@ import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
-import java.util.HexFormat;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -55,18 +59,20 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractHexEditorTabViewModel.class);
 
-    private static final String INVALID_CHAR = "\u2022";
+    private static final int OFFSET_MIN_LENGTH = 8;
 
-    private final HexFormat hexFormat = HexFormat.of().withUpperCase();
+    private static final String INVALID_CHAR = "\u2022";
 
     private final ObservableSource<Integer> layoutUpdateRequest = new SimpleObservableSource<>();
 
     private final HexDocument document;
 
     private final ObservableList<Integer> rowByteCounts =
-            FXCollections.observableArrayList(8, 16, 24, 32, 48, 64, 96, 128, 256, 512, 1024);
+            FXCollections.observableArrayList(8, 16, 24, 32, 40, 48, 56, 64);
 
     private final ObjectProperty<Integer> rowByteCount = new SimpleObjectProperty<>(24);
+
+    private final ReadOnlyIntegerWrapper lastRowByteCount = new ReadOnlyIntegerWrapper();
 
     private final BooleanProperty columnsEnabled = new SimpleBooleanProperty(true);
 
@@ -83,9 +89,14 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
      */
     private final ObservableList<Integer> offsets = FXCollections.observableArrayList();
 
-    private final ReadOnlyBooleanWrapper contentModified = new ReadOnlyBooleanWrapper(false);
+    private final ObservableList<NumberBase> offsetNumberBases = FXCollections.observableArrayList(Arrays
+            .stream(NumberBase.values()).filter(e -> e != NumberBase.BIN).collect(Collectors.toList()));
 
-    private final ReadOnlyIntegerWrapper lastRowByteCount = new ReadOnlyIntegerWrapper();
+    private final ObjectProperty<NumberBase> offsetNumberBase = new SimpleObjectProperty<>(NumberBase.HEX);
+
+    private final ReadOnlyIntegerWrapper offsetLength = new ReadOnlyIntegerWrapper();
+
+    private final ReadOnlyBooleanWrapper contentModified = new ReadOnlyBooleanWrapper(false);
 
     private final ReadOnlyDoubleWrapper charWidth = new ReadOnlyDoubleWrapper();
 
@@ -97,6 +108,8 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     private final ObservableSource<Integer> moveRequest = new SimpleObservableSource<>();
 
     private final TabManagerViewModel rightTabManager = new TabManagerViewModel(HexComponentKeys.RIGHT_TAB_MANAGER);
+
+    private final HeaderRowViewModel headerRow = new HeaderRowViewModel(this);
 
     private final DataInspectorViewModel dataInspector;
 
@@ -133,6 +146,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         this.caret.setDisabled(true);
         if (this.document.readFile()) {
             resetCaret();
+            updateOffsetLength();
             updateLayout(true);
             this.dataInspector.updateTypeItems();
         }
@@ -171,6 +185,30 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     public int getColumnCount() {
         return columnCount.get();
+    }
+
+    public ObservableList<NumberBase> getOffsetNumberBases() {
+        return offsetNumberBases;
+    }
+
+    public ObjectProperty<NumberBase> offsetNumberBaseProperty() {
+        return offsetNumberBase;
+    }
+
+    public NumberBase getOffsetNumberBase() {
+        return offsetNumberBase.get();
+    }
+
+    public void setOffsetNumberBase(NumberBase value) {
+        this.offsetNumberBase.set(value);
+    }
+
+    public ReadOnlyIntegerProperty offsetLengthProperty() {
+        return offsetLength.getReadOnlyProperty();
+    }
+
+    public int getOffsetLength() {
+        return offsetLength.get();
     }
 
     public ReadOnlyDoubleProperty charWidthProperty() {
@@ -253,6 +291,30 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return rightTabManager;
     }
 
+    //todo: not public
+    public RowModel createRowModel(Integer offset) {
+        if (offset == null) {
+            return null;
+        }
+        var content = this.document.getContent();
+        int realLength = Math.min(getRowByteCount(), content.length - offset);
+        var data = new byte[realLength];
+        List<String> hexes = new ArrayList<>(data.length);
+        List<String> asciis = new ArrayList<>(data.length);
+        System.arraycopy(content, offset, data, 0, realLength);
+        for (var i = 0; i < data.length; i++) {
+            byte b = data[i];
+            hexes.add(NumberBaseUtils.convertToHex(b));
+            if (b <= 31 || b == 127) {
+                asciis.add(INVALID_CHAR);
+            } else {
+                asciis.add(Character.toString((char) (b & 0xFF)));
+            }
+        }
+        var last = offsets.get(offsets.size() - 1) == offset;
+        return new RowModel(offset, hexes, asciis, last);
+    }
+
     protected DataInspectorViewModel createDataInspector() {
         return new DataInspectorViewModel(this.document, this.caret.offsetProperty());
     }
@@ -264,6 +326,14 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         this.columnsEnabled.addListener((ov, oldV, newV) -> updateLayout(false));
         this.columnByteCount.addListener((ov, oldV, newV) -> updateLayout(false));
         this.columnSeparator.addListener((ov, oldV, newV) -> updateLayout(false));
+        this.offsetNumberBase.addListener((ov, oldV, newV) -> {
+            updateOffsetLength();
+            updateLayout(false);
+        });
+    }
+
+    HeaderRowViewModel getHeaderRow() {
+        return headerRow;
     }
 
     ObservableList<Integer> getOffsets() {
@@ -284,37 +354,14 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return byteIndex;
     }
 
-    int calculateRowIndex(RowViewModel row) {
+    int calculateRowIndex(BodyRowViewModel row) {
         int rowIndex = row.getModel().getOffset() / getRowByteCount();
         return rowIndex;
     }
 
-    RowViewModel createRow(Integer offset) {
+    BodyRowViewModel createRow(Integer offset) {
         var model = createRowModel(offset);
-        return new RowViewModel(this, model);
-    }
-
-    RowModel createRowModel(Integer offset) {
-        if (offset == null) {
-            return null;
-        }
-        var content = this.document.getContent();
-        int realLength = Math.min(getRowByteCount(), content.length - offset);
-        var data = new byte[realLength];
-        List<String> hexes = new ArrayList<>(data.length);
-        List<String> asciis = new ArrayList<>(data.length);
-        System.arraycopy(content, offset, data, 0, realLength);
-        for (var i = 0; i < data.length; i++) {
-            byte b = data[i];
-
-            hexes.add(hexFormat.toHexDigits(b));
-            if (b <= 31 || b == 127) {
-                asciis.add(INVALID_CHAR);
-            } else {
-                asciis.add(Character.toString((char) (b & 0xFF)));
-            }
-        }
-        return new RowModel(offset, hexFormat.toHexDigits(offset), hexes, asciis);
+        return new BodyRowViewModel(this, model);
     }
 
     ObservableSource<Integer> moveRequestSource() {
@@ -380,7 +427,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     void moveCaretRight() {
         var atLastByte = caret.getByteIndex() + 1 >= caret.getRow().getModel().getByteCount();
-        var notAtLastRow = !caret.getRow().isLast();
+        var notAtLastRow = !caret.getRow().getModel().isLast();
         var canChangeRow = ((caret.getPanel() == EditorPanel.HEX && caret.getBytePosition() != CaretBytePosition.FIRST)
                     || caret.getPanel() == EditorPanel.ASCII);
 
@@ -410,7 +457,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
                     }
                     this.moveRequest.next(null);
                 } else {
-                    if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().isLast()) {
+                    if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().getModel().isLast()) {
                         this.caret.setBytePosition(CaretBytePosition.THIRD);
                         this.moveRequest.next(null);
                     }
@@ -420,7 +467,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
                     caret.setByteIndex(caret.getByteIndex() + 1);
                     this.moveRequest.next(null);
                 } else {
-                    if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().isLast()) {
+                    if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().getModel().isLast()) {
                         this.caret.setBytePosition(CaretBytePosition.THIRD);
                         this.moveRequest.next(null);
                     }
@@ -498,6 +545,16 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         this.offsets.clear();
         this.offsets.addAll(tempOffsets);
         logger.debug("Offsets list size: {}", offsets.size());
+    }
+
+    private void updateOffsetLength() {
+        if (getOffsetNumberBase() == NumberBase.HEX) {
+            this.offsetLength.set(8);
+        } else {
+            var length = NumberBaseUtils.calculateOffsetLength(this.document.getContent(), getOffsetNumberBase());
+            length = Math.max(length, OFFSET_MIN_LENGTH);
+            this.offsetLength.set(length);
+        }
     }
 
     private void calculateFixedLayout() {
