@@ -22,8 +22,6 @@ import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.hex.data.DataInspectorView;
-import com.techsenger.tabshell.hex.row.BodyRowView;
-import com.techsenger.tabshell.hex.row.HeaderRowView;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.tabs.tabmanager.TabManagerView;
@@ -131,7 +129,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
                 return rowView;
         });
         this.virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
-        this.caret = new CaretView(this, viewModel.getCaret());
+        this.caret = new CaretView(viewModel.getCaret());
         this.rightTabManager = new TabManagerView(viewModel.getRightTabManager());
         this.dataInspector = createDataInspector();
         this.headerRow = new HeaderRowView(viewModel.getHeaderRow(), this);
@@ -523,8 +521,8 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         }
         int newCaretRowIndex = viewModel.calculateRowIndex(newCaretRow.getViewModel());
         var curPos = this.caret.getViewModel().getPosition();
-        var newPos = viewModel.createCaretPosition(curPos.getPanel(),
-                newCaretRowIndex, curPos.getByteIndex(), curPos.getByteLocation());
+        var newPos = CaretPosition.create(curPos.getPanel(),
+                newCaretRowIndex, curPos.getByteIndex(), curPos.getByteLocation(), viewModel);
         this.caret.moveTo(newPos, newCaretRow);
     }
 }

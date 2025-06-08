@@ -20,7 +20,6 @@ import com.techsenger.tabshell.core.node.AbstractNodeView;
 import static com.techsenger.tabshell.hex.CaretShape.BAR;
 import static com.techsenger.tabshell.hex.CaretShape.BLOCK;
 import static com.techsenger.tabshell.hex.CaretShape.UNDERSCORE;
-import com.techsenger.tabshell.hex.row.BodyRowView;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -46,13 +45,10 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
 
     private final Timeline timeline = new Timeline();
 
-    private final AbstractHexEditorTabView<?> editor;
-
     private BodyRowView row;
 
-    CaretView(AbstractHexEditorTabView<?> editor, CaretViewModel viewModel) {
+    CaretView(CaretViewModel viewModel) {
         super(viewModel);
-        this.editor = editor;
     }
 
     @Override
@@ -170,88 +166,39 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
      * Moves the caret to a new position in the view, based on the model state.
      *
      * @param position the new position of the caret
-     * @param row the target row, or {@code null} if the caret remains on the same row
+     * @param newRow the target row, or {@code null} if the caret remains on the same row
      */
-    //todo: package level
-    public void moveTo(CaretPosition position, BodyRowView row) {
+    void moveTo(CaretPosition position, BodyRowView newRow) {
         var viewModel = getViewModel();
         //if the position is null, it indicates that the caret has not moved,
         //and only the view's caret needs to be updated.
         if (position == null) {
             position = viewModel.getPosition();
         }
-        if (row == null) {
-            row = this.row;
+        
+        if (newRow == null) {
+            newRow = this.row;
         }
-        viewModel.setRow(row.getViewModel());
+        viewModel.setRow(newRow.getViewModel());
         var oldRow = this.row;
-        this.row = row;
+        this.row = newRow;
 
-        //when file is opened the position of the caret is calculated by char width as there can be no bytes
-        if (position.getByteIndex() == 0 && position.getByteLocation() == CaretByteLocation.FIRST
-                && position.getRowIndex() == 0) {
-            var charWidth = this.editor.getViewModel().getCharWidth();
-            viewModel.setX(charWidth);
-            viewModel.setIndicatorX(charWidth);
-            updateRow(oldRow, this.row, position);
-            //and only now we change position
-            viewModel.setPosition(position);
-            return;
-        }
-        var bytePair = this.row.getByteTextPairs().get(position.getByteIndex());
-        if (position.getPanel() == EditorPanel.HEX) {
-            //caret
-            var text = bytePair.getHexText();
-            switch (position.getByteLocation()) {
-                case FIRST:
-                    viewModel.setX(text.getBoundsInParent().getMinX());
-                    break;
-                case SECOND:
-                    double textWidth = text.getLayoutBounds().getWidth();
-                    double widthHalf = textWidth / 2;
-                    viewModel.setX(text.getBoundsInParent().getMinX() + widthHalf);
-                    break;
-                case THIRD:
-                    viewModel.setX(text.getBoundsInParent().getMaxX());
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-            //indicator
-            text = bytePair.getAsciiText();
-            viewModel.setIndicatorX(text.getBoundsInParent().getMinX());
-        } else {
-            //caret
-            var text = bytePair.getAsciiText();
-            if (position.getByteLocation() == CaretByteLocation.THIRD) {
-                viewModel.setX(text.getBoundsInParent().getMaxX());
-            } else {
-                viewModel.setX(text.getBoundsInParent().getMinX());
-            }
-            //indicator
-            text = bytePair.getHexText();
-            viewModel.setIndicatorX(text.getBoundsInParent().getMinX());
-        }
-        updateRow(oldRow, this.row, position);
-        //and only now we change position
-        viewModel.setPosition(position);
-    }
-
-    private void updateRow(BodyRowView oldRow, BodyRowView newRow, CaretPosition position) {
         if (oldRow != newRow) {
             if (oldRow != null) {
                 oldRow.removeCaret();
                 oldRow.getViewModel().setFocused(false);
             }
-            newRow.getViewModel().setFocused(true);
         }
         // The caret is added to the row in two cases: when this method is called and when row.updateItem(..) is called.
         // That's why we always remove the caret first to avoid a 'duplicate children added' exception.
         newRow.removeCaret();
         newRow.addCaret(position);
+        newRow.getViewModel().setFocused(true);
         //when cursor is moved it must always be visible
         if (!getViewModel().isDisabled()) {
             this.caret.setVisible(true);
         }
+        //and only now we change position
+        viewModel.setPosition(position);
     }
 }

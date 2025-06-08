@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.row;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class BodyRowViewModel extends AbstractRowViewModel {
+class BodyRowViewModel extends AbstractRowViewModel {
 
     private static final PaneKey HEX_EDITOR_BODY_ROW = new PaneKey("Hex Editor Body Row");
 
@@ -31,7 +30,7 @@ public class BodyRowViewModel extends AbstractRowViewModel {
 
     private boolean focused;
 
-    public BodyRowViewModel(AbstractHexEditorTabViewModel editor, RowModel model) {
+    BodyRowViewModel(AbstractHexEditorTabViewModel editor, RowModel model) {
         super(editor);
         this.model = model;
     }
@@ -62,8 +61,7 @@ public class BodyRowViewModel extends AbstractRowViewModel {
         this.model = model;
     }
 
-    //todo: not public
-    public void setFocused(boolean focused) {
+    void setFocused(boolean focused) {
         this.focused = focused;
     }
 }

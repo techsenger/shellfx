@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.row;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.hex.AbstractHexEditorTabView;
-import com.techsenger.tabshell.hex.ColumnSeparator;
-import com.techsenger.tabshell.hex.NumberBaseUtils;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
@@ -28,9 +25,9 @@ import javafx.scene.text.Text;
  *
  * @author Pavel Castornii
  */
-public class HeaderRowView extends AbstractRowView<HeaderRowViewModel> {
+class HeaderRowView extends AbstractRowView<HeaderRowViewModel> {
 
-    public HeaderRowView(HeaderRowViewModel viewModel, AbstractHexEditorTabView<?> editor) {
+    HeaderRowView(HeaderRowViewModel viewModel, AbstractHexEditorTabView<?> editor) {
         super(viewModel, editor);
     }
 

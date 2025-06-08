@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.row;
+package com.techsenger.tabshell.hex;
 
-import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
+import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HeaderRowViewModel extends AbstractRowViewModel {
+abstract class AbstractRowViewModel extends AbstractPaneViewModel {
 
-    private static final PaneKey HEX_EDITOR_HEADER_ROW = new PaneKey("Hex Editor Header Row");
+    private final AbstractHexEditorTabViewModel editor;
 
-    public HeaderRowViewModel(AbstractHexEditorTabViewModel editor) {
-        super(editor);
+    AbstractRowViewModel(AbstractHexEditorTabViewModel editor) {
+        this.editor = editor;
     }
 
-    @Override
-    public PaneKey getKey() {
-        return HEX_EDITOR_HEADER_ROW;
+    AbstractHexEditorTabViewModel getEditor() {
+        return editor;
     }
-
 }

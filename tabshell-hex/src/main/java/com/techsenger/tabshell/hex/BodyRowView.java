@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.row;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.hex.AbstractHexEditorTabView;
-import com.techsenger.tabshell.hex.CaretByteLocation;
-import com.techsenger.tabshell.hex.CaretPosition;
-import com.techsenger.tabshell.hex.CaretShape;
-import com.techsenger.tabshell.hex.ColumnSeparator;
-import com.techsenger.tabshell.hex.EditorPanel;
-import com.techsenger.tabshell.hex.NumberBaseUtils;
+import static com.techsenger.tabshell.hex.CaretByteLocation.FIRST;
+import static com.techsenger.tabshell.hex.CaretByteLocation.SECOND;
+import static com.techsenger.tabshell.hex.CaretByteLocation.THIRD;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Insets;
@@ -35,14 +31,14 @@ import org.fxmisc.flowless.Cell;
  *
  * @author Pavel Castornii
  */
-public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Cell<Integer, Node> {
+class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Cell<Integer, Node> {
 
     /**
      * Only texts that represent bytes. Its size is always equal to max rowByteCount.
      */
     private final List<ByteTextPair> byteTextPairs = new ArrayList<>();
 
-    public BodyRowView(BodyRowViewModel viewModel, AbstractHexEditorTabView<?> editor) {
+    BodyRowView(BodyRowViewModel viewModel, AbstractHexEditorTabView<?> editor) {
         super(viewModel, editor);
     }
 
@@ -58,7 +54,7 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
     @Override
     public void updateItem(Integer offset) {
         var vm = getViewModel();
-        var row = vm.getEditor().createRowModel(offset);
+        var row = RowModel.create(offset, vm.getEditor());
         vm.setModel(row);
         removeCaret();
         if (offset != null) {
@@ -172,19 +168,17 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
         updateItem(viewModel.getModel().getOffset());
     }
 
-    //todo: not public
-    public List<ByteTextPair> getByteTextPairs() {
+    List<ByteTextPair> getByteTextPairs() {
         return byteTextPairs;
     }
 
-    //todo: not public
-    public void removeCaret() {
+    void removeCaret() {
         getHexPane().getCaretPane().getChildren().clear();
         getAsciiPane().getCaretPane().getChildren().clear();
     }
 
-    //todo: not public
-    public void addCaret(CaretPosition position) {
+    void addCaret(CaretPosition position) {
+        calculateCaretX(position);
         if (getViewModel().isFocused()) {
             var caret = getEditor().getCaret();
             if (position.getPanel() == EditorPanel.HEX) {
@@ -215,8 +209,8 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
 
             var location = resolveHexLocation(text, e.getX(), caretV.getViewModel().getShape());
             var rowIndex = getViewModel().getModel().getIndex();
-            var newPos = editorVM.createCaretPosition(EditorPanel.HEX, rowIndex, text.getPair().getIndex(),
-                    location);
+            var newPos = CaretPosition.create(EditorPanel.HEX, rowIndex, text.getPair().getIndex(),
+                    location, editorVM);
             caretV.moveTo(newPos, this);
         });
         return text;
@@ -245,13 +239,15 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
             var editorVM = getEditor().getViewModel();
 
             var caretV = getEditor().getCaret();
+            var caretVM = caretV.getViewModel();
             var curPos = caretV.getViewModel().getPosition();
 
-            var location = resolveAsciiLocation(text, e.getX(), caretV.getViewModel().getShape(),
-                    curPos.getByteIndex() == caretV.getViewModel().getRow().getModel().getByteCount() - 1);
+            var location = resolveAsciiLocation(text, e.getX(), caretVM.getShape(), caretVM.isAtRowEnd());
             var rowIndex = getViewModel().getModel().getIndex();
-            var newPos = editorVM.createCaretPosition(EditorPanel.ASCII, rowIndex, text.getPair().getIndex(), location);
+            var newPos = CaretPosition.create(EditorPanel.ASCII, rowIndex, text.getPair().getIndex(), location,
+                    editorVM);
             caretV.moveTo(newPos, this);
+
         });
         return text;
     }
@@ -277,5 +273,54 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
         var text = new ByteText();
         text.getStyleClass().add("text");
         return text;
+    }
+
+    private void calculateCaretX(CaretPosition position) {
+        var caretVM = getViewModel().getEditor().getCaret();
+        //when file is opened the position of the caret is calculated by char width as there can be no bytes
+        if (position.getByteIndex() == 0 && position.getByteLocation() == CaretByteLocation.FIRST
+                && position.getRowIndex() == 0) {
+            var charWidth = getEditor().getViewModel().getCharWidth();
+            caretVM.setX(charWidth);
+            caretVM.setIndicatorX(charWidth);
+        }
+        double x;
+        double indicatorX;
+        var bytePair = this.byteTextPairs.get(position.getByteIndex());
+        if (position.getPanel() == EditorPanel.HEX) {
+            //caret
+            var text = bytePair.getHexText();
+            switch (position.getByteLocation()) {
+                case FIRST:
+                    x = text.getBoundsInParent().getMinX();
+                    break;
+                case SECOND:
+                    double textWidth = text.getLayoutBounds().getWidth();
+                    double widthHalf = textWidth / 2;
+                    x = text.getBoundsInParent().getMinX() + widthHalf;
+                    break;
+                case THIRD:
+                    x = text.getBoundsInParent().getMaxX();
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            //indicator
+            text = bytePair.getAsciiText();
+            indicatorX = text.getBoundsInParent().getMinX();
+        } else {
+            //caret
+            var text = bytePair.getAsciiText();
+            if (position.getByteLocation() == CaretByteLocation.THIRD) {
+                x = text.getBoundsInParent().getMaxX();
+            } else {
+                x = text.getBoundsInParent().getMinX();
+            }
+            //indicator
+            text = bytePair.getHexText();
+            indicatorX = text.getBoundsInParent().getMinX();
+        }
+        caretVM.setX(x);
+        caretVM.setIndicatorX(indicatorX);
     }
 }

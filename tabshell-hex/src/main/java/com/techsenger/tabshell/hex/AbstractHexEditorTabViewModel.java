@@ -22,9 +22,6 @@ import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.hex.data.DataInspectorViewModel;
-import com.techsenger.tabshell.hex.row.BodyRowViewModel;
-import com.techsenger.tabshell.hex.row.HeaderRowViewModel;
-import com.techsenger.tabshell.hex.row.RowModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.tabs.tabmanager.TabManagerViewModel;
@@ -60,8 +57,6 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     private static final Logger logger = LoggerFactory.getLogger(AbstractHexEditorTabViewModel.class);
 
     private static final int OFFSET_MIN_LENGTH = 8;
-
-    private static final String INVALID_CHAR = "\u2022";
 
     private final ObservableSource<CaretPosition> layoutUpdate = new SimpleObservableSource<>();
 
@@ -101,7 +96,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     /**
      * Caret uses {@link #charWidth}, so, it is declared after it.
      */
-    private final CaretViewModel caret = new CaretViewModel(this);
+    private final CaretViewModel caret = new CaretViewModel(charWidth);
 
     /**
      * Caret position is updated either via this source or via {@link #layoutUpdate}.
@@ -148,7 +143,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     public void readFile() {
         this.caret.setDisabled(true);
         if (this.document.readFile()) {
-            var newPos = new CaretPosition(EditorPanel.HEX, 0, 0, 0, CaretByteLocation.FIRST);
+            var newPos = CaretPosition.create(EditorPanel.HEX, 0, 0, CaretByteLocation.FIRST, this);
             updateOffsetLength();
             updateLayout(true, newPos);
             this.dataInspector.updateTypeItems();
@@ -294,34 +289,19 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return rightTabManager;
     }
 
-    public void moveCaretTo(EditorPanel panel, int rowIndex, int byteIndex, CaretByteLocation byteLocation) {
-        var position = createCaretPosition(panel, rowIndex, byteIndex, byteLocation);
-        this.caretPosition.next(position);
+    public int calculateRowIndex(int offset) {
+        int rowIndex = offset / getRowByteCount();
+        return rowIndex;
     }
 
-    //todo: not public
-    public RowModel createRowModel(Integer offset) {
-        if (offset == null) {
-            return null;
-        }
-        var content = this.document.getContent();
-        int realLength = Math.min(getRowByteCount(), content.length - offset);
-        var data = new byte[realLength];
-        List<String> hexes = new ArrayList<>(data.length);
-        List<String> asciis = new ArrayList<>(data.length);
-        System.arraycopy(content, offset, data, 0, realLength);
-        for (var i = 0; i < data.length; i++) {
-            byte b = data[i];
-            hexes.add(NumberBaseUtils.convertToHex(b));
-            if (b <= 31 || b == 127) {
-                asciis.add(INVALID_CHAR);
-            } else {
-                asciis.add(Character.toString((char) (b & 0xFF)));
-            }
-        }
-        var index = calculateRowIndex(offset);
-        var last = offsets.get(offsets.size() - 1) == offset;
-        return new RowModel(offset, index, last, hexes, asciis);
+    public int calculateByteIndex(int offset) {
+        var byteIndex = offset % getRowByteCount();
+        return byteIndex;
+    }
+
+    public void moveCaretTo(EditorPanel panel, int rowIndex, int byteIndex, CaretByteLocation byteLocation) {
+        var position = CaretPosition.create(panel, rowIndex, byteIndex, byteLocation, this);
+        this.caretPosition.next(position);
     }
 
     protected DataInspectorViewModel createDataInspector() {
@@ -353,47 +333,18 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return layoutUpdate;
     }
 
-    int calculateRowIndex(int offset) {
-        int rowIndex = offset / getRowByteCount();
-        return rowIndex;
-    }
-
-    int calculateByteIndex(int offset) {
-        var byteIndex = offset % getRowByteCount();
-        return byteIndex;
-    }
-
     int calculateRowIndex(BodyRowViewModel row) {
         int rowIndex = row.getModel().getOffset() / getRowByteCount();
         return rowIndex;
     }
 
     BodyRowViewModel createRow(Integer offset) {
-        var model = createRowModel(offset);
+        var model = RowModel.create(offset, this);
         return new BodyRowViewModel(this, model);
     }
 
     ObservableSource<CaretPosition> caretPositionSource() {
         return caretPosition;
-    }
-
-    //todo: not public
-    public CaretPosition createCaretPosition(EditorPanel panel, int rowIndex, int byteIndex,
-            CaretByteLocation byteLocation) {
-        var rowOffset = this.offsets.get(rowIndex);
-
-        if (rowIndex == this.offsets.size() - 1) {
-            if (byteIndex >= getLastRowByteCount()) {
-                byteIndex = getLastRowByteCount() - 1;
-                if (this.caret.getShape() == CaretShape.BAR) {
-                    byteLocation = CaretByteLocation.THIRD;
-                } else {
-                    byteLocation = CaretByteLocation.SECOND;
-                }
-            }
-        }
-        var position = new CaretPosition(panel, rowOffset, rowIndex, byteIndex, byteLocation);
-        return position;
     }
 
     void moveCaretUp() {
@@ -462,12 +413,12 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     void moveCaretRight() {
         var currentPos = this.caret.getPosition();
         var atLastByte = currentPos.getByteIndex() + 1 >= caret.getRow().getModel().getByteCount();
-        var notAtLastRow = !caret.getRow().getModel().isLast();
+        var atLastRow = isRowLast(caret.getRow().getModel().getOffset());
         var canChangeRow = ((currentPos.getPanel() == EditorPanel.HEX
                 && currentPos.getByteLocation() != CaretByteLocation.FIRST)
                 || currentPos.getPanel() == EditorPanel.ASCII);
 
-        if (atLastByte && notAtLastRow && canChangeRow) {
+        if (atLastByte && !atLastRow && canChangeRow) {
             //next row
             moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex() + 1, 0, CaretByteLocation.FIRST);
         } else {
@@ -489,7 +440,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
                     }
                     moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
                 } else {
-                    if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().getModel().isLast()) {
+                    if (this.caret.getShape() == CaretShape.BAR && atLastRow) {
                         byteLocation = CaretByteLocation.THIRD;
                         moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
                     }
@@ -498,7 +449,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
                 if (currentPos.getByteIndex() + 1 != this.caret.getRow().getModel().getByteCount()) {
                     byteIndex = currentPos.getByteIndex() + 1;
                 } else {
-                    if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().getModel().isLast()) {
+                    if (this.caret.getShape() == CaretShape.BAR && atLastRow) {
                         byteLocation = CaretByteLocation.THIRD;
                     }
                 }
@@ -544,8 +495,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
                 var rowIndex = calculateRowIndex(this.caret.getOffset());
                 var byteIndex = calculateByteIndex(this.caret.getOffset());
                 var curPos = this.caret.getPosition();
-                pos = new CaretPosition(curPos.getPanel(), curPos.getOffset(), rowIndex, byteIndex,
-                        curPos.getByteLocation());
+                pos = CaretPosition.create(curPos.getPanel(), rowIndex, byteIndex, curPos.getByteLocation(), this);
             }
             this.layoutUpdate.next(pos);
         } else {
@@ -626,5 +576,15 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
             lastRowByteCount = getRowByteCount();
         }
         return lastRowByteCount;
+    }
+
+    /**
+     * Returns true if this row is the last one among all visible and non-visible rows.
+     *
+     * @return true if this is the last row; false otherwise.
+     */
+    private boolean isRowLast(int offset) {
+        var last = offsets.get(offsets.size() - 1) == offset;
+        return last;
     }
 }

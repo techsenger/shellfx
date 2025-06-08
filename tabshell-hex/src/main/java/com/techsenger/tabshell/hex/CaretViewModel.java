@@ -18,7 +18,6 @@ package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.node.AbstractNodeViewModel;
 import com.techsenger.tabshell.core.node.NodeKey;
-import com.techsenger.tabshell.hex.row.BodyRowViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -61,15 +60,12 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     private final ObjectProperty<CaretShape> shape = new SimpleObjectProperty<>(CaretShape.BAR);
 
-    private final AbstractHexEditorTabViewModel editor;
-
     private BodyRowViewModel row;
 
-    CaretViewModel(AbstractHexEditorTabViewModel editor) {
-        this.editor = editor;
-        shape.addListener((ov, oldV, newV) -> updateWidhts(newV, editor.getCharWidth()));
-        panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), editor.getCharWidth()));
-        editor.charWidthProperty().addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV.doubleValue()));
+    CaretViewModel(ReadOnlyDoubleProperty charWidth) {
+        shape.addListener((ov, oldV, newV) -> updateWidhts(newV, charWidth.get()));
+        panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), charWidth.get()));
+        charWidth.addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV.doubleValue()));
     }
 
     @Override
@@ -145,6 +141,15 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         return indicatorWidth.get();
     }
 
+    /**
+     * Checks whether the caret is positioned at the last byte in the row.
+     *
+     * @return {@code true} if the caret is at the last byte; {@code false} otherwise
+     */
+    public boolean isAtRowEnd() {
+        return getPosition().getByteIndex() == row.getModel().getByteCount() - 1;
+    }
+
     void setPosition(CaretPosition position) {
         this.position.set(position);
         this.offset.set(position.getOffset());
@@ -155,8 +160,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         this.disabled.set(value);
     }
 
-    //todo: not public
-    public BodyRowViewModel getRow() {
+    BodyRowViewModel getRow() {
         return row;
     }
 

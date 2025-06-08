@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.row;
+package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.hex.AbstractHexEditorTabView;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -27,7 +26,7 @@ import javafx.scene.layout.Region;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractRowView<T extends AbstractRowViewModel> extends AbstractPaneView<T> {
+abstract class AbstractRowView<T extends AbstractRowViewModel> extends AbstractPaneView<T> {
 
     private final AbstractHexEditorTabView<?> editor;
 
@@ -51,7 +50,7 @@ public abstract class AbstractRowView<T extends AbstractRowViewModel> extends Ab
      */
     private final HBox root = new HBox(offsetLabel, hexPane, asciiPane);
 
-    public AbstractRowView(T viewModel, AbstractHexEditorTabView<?> editor) {
+    AbstractRowView(T viewModel, AbstractHexEditorTabView<?> editor) {
         super(viewModel);
         this.editor = editor;
     }

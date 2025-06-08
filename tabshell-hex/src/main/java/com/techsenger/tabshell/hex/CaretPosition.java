@@ -22,6 +22,26 @@ package com.techsenger.tabshell.hex;
  */
 public final class CaretPosition {
 
+    public static CaretPosition create(EditorPanel panel, int rowIndex, int byteIndex,
+            CaretByteLocation byteLocation, AbstractHexEditorTabViewModel editor) {
+        int rowOffset = 0;
+        if (!editor.getOffsets().isEmpty()) {
+            rowOffset = editor.getOffsets().get(rowIndex);
+            if (rowIndex == editor.getOffsets().size() - 1) {
+                if (byteIndex >= editor.getLastRowByteCount()) {
+                    byteIndex = editor.getLastRowByteCount() - 1;
+                    if (editor.getCaret().getShape() == CaretShape.BAR) {
+                        byteLocation = CaretByteLocation.THIRD;
+                    } else {
+                        byteLocation = CaretByteLocation.SECOND;
+                    }
+                }
+            }
+        }
+        var position = new CaretPosition(panel, rowOffset, rowIndex, byteIndex, byteLocation);
+        return position;
+    }
+
     private final EditorPanel panel;
 
     /**
@@ -43,7 +63,7 @@ public final class CaretPosition {
 
     private final int offset;
 
-    CaretPosition(EditorPanel panel, int rowOffset, int rowIndex, int byteIndex,
+    private CaretPosition(EditorPanel panel, int rowOffset, int rowIndex, int byteIndex,
             CaretByteLocation byteLocation) {
         this.panel = panel;
         this.rowOffset = rowOffset;

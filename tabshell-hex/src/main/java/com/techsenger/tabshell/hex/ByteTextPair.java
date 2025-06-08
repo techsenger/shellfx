@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.row;
+package com.techsenger.tabshell.hex;
 
 /**
  * Represents a paired set of textual representations (HEX and ASCII) for a single byte within a hex editor row.
@@ -24,8 +24,7 @@ package com.techsenger.tabshell.hex.row;
  *
  * @author Pavel Castornii
  */
-//todo: not public
-public class ByteTextPair {
+class ByteTextPair {
 
     private final BodyRowView rowView;
 

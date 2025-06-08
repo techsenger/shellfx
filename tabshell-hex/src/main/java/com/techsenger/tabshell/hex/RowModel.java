@@ -14,30 +14,53 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.row;
+package com.techsenger.tabshell.hex;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class RowModel {
+final class RowModel {
+
+    private static final String INVALID_CHAR = "\u2022";
+
+    static RowModel create(Integer offset, AbstractHexEditorTabViewModel editor) {
+        if (offset == null) {
+            return null;
+        }
+        var content = editor.getDocument().getContent();
+        int realLength = Math.min(editor.getRowByteCount(), content.length - offset);
+        var data = new byte[realLength];
+        List<String> hexes = new ArrayList<>(data.length);
+        List<String> asciis = new ArrayList<>(data.length);
+        System.arraycopy(content, offset, data, 0, realLength);
+        for (var i = 0; i < data.length; i++) {
+            byte b = data[i];
+            hexes.add(NumberBaseUtils.convertToHex(b));
+            if (b <= 31 || b == 127) {
+                asciis.add(INVALID_CHAR);
+            } else {
+                asciis.add(Character.toString((char) (b & 0xFF)));
+            }
+        }
+        var index = editor.calculateRowIndex(offset);
+        return new RowModel(offset, index, hexes, asciis);
+    }
 
     private final int offset;
 
     private final int index;
 
-    private final boolean last;
-
     private final List<String> hexes;
 
     private final List<String> asciis;
 
-    public RowModel(int offset, int index, boolean last, List<String> hexes, List<String> asciis) {
+    private RowModel(int offset, int index, List<String> hexes, List<String> asciis) {
         this.offset = offset;
         this.index = index;
-        this.last = last;
         this.hexes = hexes;
         this.asciis = asciis;
     }
@@ -48,15 +71,6 @@ public class RowModel {
 
     public int getIndex() {
         return index;
-    }
-
-    /**
-     * Returns true if this row is the last one among all visible and non-visible rows.
-     *
-     * @return true if this is the last row; false otherwise.
-     */
-    public boolean isLast() {
-        return last;
     }
 
     public List<String> getHexes() {
