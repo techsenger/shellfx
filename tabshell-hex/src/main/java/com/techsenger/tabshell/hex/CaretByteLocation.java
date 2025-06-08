@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.hex;
 
 /**
- * The position of the caret (cursor) within a single byte for both HEX and ASCII panels.
+ * The location of the caret (cursor) within a single byte for both HEX and ASCII panels.
  * <p>In the HEX panel, a byte is represented as two hexadecimal digits. In the ASCII panel, a byte is shown as
  * a single character.
  *
@@ -25,19 +25,19 @@ package com.techsenger.tabshell.hex;
  *
  * @author Pavel Castornii
  */
-public enum CaretBytePosition {
+public enum CaretByteLocation {
 
     /**
-     * The first position that is compatible with all shape types.
+     * The first location that is compatible with all shape types.
      * <p>
-     * HEX panel - the caret position associated with the first nibble of the byte:
+     * HEX panel - the caret location associated with the first nibble of the byte:
      * <ul>
      *   <li>Bar: placed before the first digit — <code>|AB</code></li>
      *   <li>Block: highlights the first digit — <code>[A]B</code></li>
      *   <li>Underscore: underlines the first digit — <code><u>A</u>B</code></li>
      * </ul>
      *
-     * ASCII panel - the caret position associated with the whole byte:
+     * ASCII panel - the caret location associated with the whole byte:
      * <ul>
      *   <li>Bar: placed before the character — <code>|A</code></li>
      *   <li>Block: highlights the whole character — <code>[A]</code></li>
@@ -47,9 +47,9 @@ public enum CaretBytePosition {
     FIRST,
 
     /**
-     * The second position that is compatible with all shape types.
+     * The second location that is compatible with all shape types.
      * <p>
-     * HEX panel - the caret position associated with the second nibble of the byte:
+     * HEX panel - the caret location associated with the second nibble of the byte:
      * <ul>
      *   <li>Bar: placed between the two digits — <code>A|B</code></li>
      *   <li>Block: highlights the second digit — <code>A[B]</code></li>
@@ -66,15 +66,15 @@ public enum CaretBytePosition {
     SECOND,
 
     /**
-     * This position is supported only by bar-shaped carets and used in limited scenarios — for example, when
+     * This location is supported only by bar-shaped carets and used in limited scenarios — for example, when
      * placing the caret at the very end of the row or during range selections.
      *
-     * HEX panel - the caret position after the second nibble of the byte:
+     * HEX panel - the caret location after the second nibble of the byte:
      * <ul>
      *   <li>Bar: placed after the byte — <code>AB|</code></li>
      * </ul>
      *
-     * ASCII panel - the caret position after the character:
+     * ASCII panel - the caret location after the character:
      * <ul>
      *   <li>Bar: placed after the character — <code>A|</code></li>
      * </ul>

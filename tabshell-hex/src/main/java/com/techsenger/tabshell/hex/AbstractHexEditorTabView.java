@@ -240,28 +240,28 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
-        viewModel.layoutUpdateRequestSource().addListener((newV) -> {
+        viewModel.layoutUpdateSource().addListener((newPos) -> {
             this.headerRow.rebuild();
             for (var r : rows) {
                 r.rebuild();
                 r.updateItem(r.getViewModel().getModel().getOffset());
             }
             BodyRowView row = null;
-            if (newV != null) {
-                this.virtualFlow.showAsFirst(newV); //after clearing and adding new items flow is scrolled to the end
-                row = this.virtualFlow.getCell(newV);
-
+            if (newPos != null) {
+                //after clearing and adding new items flow is scrolled to the end
+                this.virtualFlow.showAsFirst(newPos.getRowIndex());
+                row = this.virtualFlow.getCell(newPos.getRowIndex());
             }
             var finalRow = row;
             //when the layout changes, the text coordinates are updated as well; therefore, to correctly calculate
             //the caret position, it is necessary to use a pulse listener.
             addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
-                this.caret.move(finalRow);
+                this.caret.moveTo(newPos, finalRow);
                 NodeUtils.requestFocus(virtualFlow);
                 return false;
             });
         });
-        viewModel.moveRequestSource().addListener((row) -> onMoveRequest(row));
+        viewModel.caretPositionSource().addListener((position) -> updateCaretPosition(position));
         this.virtualScrollPane.widthProperty().addListener((ov, oldV, newV) -> {
            //setting min and max width on headerPane causes its child pane to be centered
             headerPane.setPrefWidth(newV.doubleValue());
@@ -358,18 +358,18 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         return offsetNumberBaseComboBox;
     }
 
-    private void onMoveRequest(Integer newRow) {
-        if (newRow == null) {
-            this.caret.move(null);
+    private void updateCaretPosition(CaretPosition newPos) {
+        var curPos = this.caret.getViewModel().getPosition();
+        if (newPos.getRowIndex() == curPos.getRowIndex()) {
+            this.caret.moveTo(newPos, null);
         } else {
-            var currentRow = this.caret.getViewModel().getRowIndex();
             BodyRowView row;
-            if (newRow > currentRow) {
-                row = scrollDownTo(newRow);
+            if (newPos.getRowIndex() > curPos.getRowIndex()) {
+                row = scrollDownTo(newPos.getRowIndex());
             } else {
-                row = scrollUpTo(newRow);
+                row = scrollUpTo(newPos.getRowIndex());
             }
-            this.caret.move(row);
+            this.caret.moveTo(newPos, row);
         }
     }
 
@@ -482,7 +482,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         boolean lastRowFullyVisible = ROW_VISIBILITY_TOLERANCE >= visibleRowTotalHeight - this.virtualFlow.getHeight();
 
         //calculating caret row index diff
-        var caretRowIndex = this.caret.getViewModel().getRowIndex();
+        var caretRowIndex = this.caret.getViewModel().getPosition().getRowIndex();
         //the index of the visible row owning the caret
         var caretVisibleRowIndex = caretRowIndex - firstRowIndex;
 
@@ -522,7 +522,9 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
             newCaretRow = this.virtualFlow.visibleCells().get(endCaretRowIndex);
         }
         int newCaretRowIndex = viewModel.calculateRowIndex(newCaretRow.getViewModel());
-        viewModel.adjustCaretDownForLastRow(newCaretRowIndex);
-        this.caret.move(newCaretRow);
+        var curPos = this.caret.getViewModel().getPosition();
+        var newPos = viewModel.createCaretPosition(curPos.getPanel(),
+                newCaretRowIndex, curPos.getByteIndex(), curPos.getByteLocation());
+        this.caret.moveTo(newPos, newCaretRow);
     }
 }

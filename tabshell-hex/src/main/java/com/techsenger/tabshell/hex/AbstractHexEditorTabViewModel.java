@@ -63,9 +63,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     private static final String INVALID_CHAR = "\u2022";
 
-    private final ObservableSource<Integer> layoutUpdateRequest = new SimpleObservableSource<>();
-
-    private final HexDocument document;
+    private final ObservableSource<CaretPosition> layoutUpdate = new SimpleObservableSource<>();
 
     private final ObservableList<Integer> rowByteCounts =
             FXCollections.observableArrayList(8, 16, 24, 32, 40, 48, 56, 64);
@@ -105,11 +103,16 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
      */
     private final CaretViewModel caret = new CaretViewModel(this);
 
-    private final ObservableSource<Integer> moveRequest = new SimpleObservableSource<>();
+    /**
+     * Caret position is updated either via this source or via {@link #layoutUpdate}.
+     */
+    private final ObservableSource<CaretPosition> caretPosition = new SimpleObservableSource<>();
 
     private final TabManagerViewModel rightTabManager = new TabManagerViewModel(HexComponentKeys.RIGHT_TAB_MANAGER);
 
     private final HeaderRowViewModel headerRow = new HeaderRowViewModel(this);
+
+    private final HexDocument document;
 
     private final DataInspectorViewModel dataInspector;
 
@@ -145,9 +148,9 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     public void readFile() {
         this.caret.setDisabled(true);
         if (this.document.readFile()) {
-            resetCaret();
+            var newPos = new CaretPosition(EditorPanel.HEX, 0, 0, 0, CaretByteLocation.FIRST);
             updateOffsetLength();
-            updateLayout(true);
+            updateLayout(true, newPos);
             this.dataInspector.updateTypeItems();
         }
     }
@@ -291,6 +294,11 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return rightTabManager;
     }
 
+    public void moveCaretTo(EditorPanel panel, int rowIndex, int byteIndex, CaretByteLocation byteLocation) {
+        var position = createCaretPosition(panel, rowIndex, byteIndex, byteLocation);
+        this.caretPosition.next(position);
+    }
+
     //todo: not public
     public RowModel createRowModel(Integer offset) {
         if (offset == null) {
@@ -311,8 +319,9 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
                 asciis.add(Character.toString((char) (b & 0xFF)));
             }
         }
+        var index = calculateRowIndex(offset);
         var last = offsets.get(offsets.size() - 1) == offset;
-        return new RowModel(offset, hexes, asciis, last);
+        return new RowModel(offset, index, last, hexes, asciis);
     }
 
     protected DataInspectorViewModel createDataInspector() {
@@ -322,13 +331,13 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     @Override
     protected void postHistoryRestore() {
         super.postHistoryRestore();
-        this.rowByteCount.addListener((ov, oldV, newV) -> updateLayout(true));
-        this.columnsEnabled.addListener((ov, oldV, newV) -> updateLayout(false));
-        this.columnByteCount.addListener((ov, oldV, newV) -> updateLayout(false));
-        this.columnSeparator.addListener((ov, oldV, newV) -> updateLayout(false));
+        this.rowByteCount.addListener((ov, oldV, newV) -> updateLayout(true, null));
+        this.columnsEnabled.addListener((ov, oldV, newV) -> updateLayout(false, null));
+        this.columnByteCount.addListener((ov, oldV, newV) -> updateLayout(false, null));
+        this.columnSeparator.addListener((ov, oldV, newV) -> updateLayout(false, null));
         this.offsetNumberBase.addListener((ov, oldV, newV) -> {
             updateOffsetLength();
-            updateLayout(false);
+            updateLayout(false, null);
         });
     }
 
@@ -340,8 +349,8 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return this.offsets;
     }
 
-    ObservableSource<Integer> layoutUpdateRequestSource() {
-        return layoutUpdateRequest;
+    ObservableSource<CaretPosition> layoutUpdateSource() {
+        return layoutUpdate;
     }
 
     int calculateRowIndex(int offset) {
@@ -364,174 +373,183 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return new BodyRowViewModel(this, model);
     }
 
-    ObservableSource<Integer> moveRequestSource() {
-        return moveRequest;
+    ObservableSource<CaretPosition> caretPositionSource() {
+        return caretPosition;
+    }
+
+    //todo: not public
+    public CaretPosition createCaretPosition(EditorPanel panel, int rowIndex, int byteIndex,
+            CaretByteLocation byteLocation) {
+        var rowOffset = this.offsets.get(rowIndex);
+
+        if (rowIndex == this.offsets.size() - 1) {
+            if (byteIndex >= getLastRowByteCount()) {
+                byteIndex = getLastRowByteCount() - 1;
+                if (this.caret.getShape() == CaretShape.BAR) {
+                    byteLocation = CaretByteLocation.THIRD;
+                } else {
+                    byteLocation = CaretByteLocation.SECOND;
+                }
+            }
+        }
+        var position = new CaretPosition(panel, rowOffset, rowIndex, byteIndex, byteLocation);
+        return position;
     }
 
     void moveCaretUp() {
-        var rowIndex = calculateRowIndex(caret.getRowOffset());
+        var currentPos = this.caret.getPosition();
+        var rowIndex = currentPos.getRowIndex();
         rowIndex--;
         if (rowIndex >= 0) {
-            this.moveRequest.next(rowIndex);
+            moveCaretTo(currentPos.getPanel(), rowIndex, currentPos.getByteIndex(), currentPos.getByteLocation());
         }
     }
 
     void moveCaretDown() {
-        var rowIndex = calculateRowIndex(caret.getRowOffset());
+        var currentPos = this.caret.getPosition();
+        var rowIndex = currentPos.getRowIndex();
         rowIndex++;
         if (rowIndex < this.offsets.size()) {
-            adjustCaretDownForLastRow(rowIndex);
-            this.moveRequest.next(rowIndex);
+            moveCaretTo(currentPos.getPanel(), rowIndex, currentPos.getByteIndex(), currentPos.getByteLocation());
         }
     }
 
     void moveCaretLeft() {
-        var atFirstByte = caret.getByteIndex() == 0;
+        var currentPos = this.caret.getPosition();
+        var atFirstByte = currentPos.getByteIndex() == 0;
         var notAtFirstRow = !caret.getRow().isFirst();
-        var canChangeRow = ((caret.getPanel() == EditorPanel.HEX && caret.getBytePosition() == CaretBytePosition.FIRST)
-                    || caret.getPanel() == EditorPanel.ASCII && caret.getBytePosition() != CaretBytePosition.THIRD);
+        var canChangeRow = ((currentPos.getPanel() == EditorPanel.HEX
+                && currentPos.getByteLocation() == CaretByteLocation.FIRST)
+                    || currentPos.getPanel() == EditorPanel.ASCII
+                && currentPos.getByteLocation() != CaretByteLocation.THIRD);
 
         if (atFirstByte && notAtFirstRow && canChangeRow) {
             //previous row
-            caret.setByteIndex(getRowByteCount() - 1);
-            caret.setBytePosition(CaretBytePosition.SECOND);
-            this.moveRequest.next(caret.getRowIndex() - 1);
+            moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex() - 1, getRowByteCount() - 1,
+                    CaretByteLocation.SECOND);
         } else {
             //same row
-            if (caret.getPanel() == EditorPanel.HEX) {
-                if (!(caret.getByteIndex() == 0 && caret.getBytePosition() == CaretBytePosition.FIRST)) {
-                    if (caret.getBytePosition() == CaretBytePosition.FIRST) {
-                        caret.setByteIndex(caret.getByteIndex() - 1);
-                        caret.setBytePosition(CaretBytePosition.SECOND);
-                    } else if (caret.getBytePosition() == CaretBytePosition.SECOND) {
-                        caret.setBytePosition(CaretBytePosition.FIRST);
-                    } else if (caret.getBytePosition() == CaretBytePosition.THIRD) {
-                        caret.setBytePosition(CaretBytePosition.SECOND);
+            if (currentPos.getPanel() == EditorPanel.HEX) {
+                if (!(currentPos.getByteIndex() == 0 && currentPos.getByteLocation() == CaretByteLocation.FIRST)) {
+                    int byteIndex = currentPos.getByteIndex();
+                    var byteLocation = currentPos.getByteLocation();
+                    if (currentPos.getByteLocation() == CaretByteLocation.FIRST) {
+                        byteIndex = currentPos.getByteIndex() - 1;
+                        byteLocation = CaretByteLocation.SECOND;
+                    } else if (currentPos.getByteLocation() == CaretByteLocation.SECOND) {
+                        byteLocation = CaretByteLocation.FIRST;
+                    } else if (currentPos.getByteLocation() == CaretByteLocation.THIRD) {
+                        byteLocation = CaretByteLocation.SECOND;
                     }
-                    this.moveRequest.next(null);
+                    moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
                 }
             } else {
-                if (caret.getByteIndex() != 0) {
-                    if (caret.getBytePosition() != CaretBytePosition.THIRD) {
-                        caret.setByteIndex(caret.getByteIndex() - 1);
-                        caret.setBytePosition(CaretBytePosition.FIRST);
-                        this.moveRequest.next(null);
+                if (currentPos.getByteIndex() != 0) {
+                    int byteIndex = currentPos.getByteIndex();
+                    var byteLocation = currentPos.getByteLocation();
+                    if (currentPos.getByteLocation() != CaretByteLocation.THIRD) {
+                        byteIndex = currentPos.getByteIndex() - 1;
+                        byteLocation = CaretByteLocation.FIRST;
                     } else {
-                        caret.setBytePosition(CaretBytePosition.FIRST);
-                        this.moveRequest.next(null);
+                        byteLocation = CaretByteLocation.FIRST;
                     }
+                    moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
                 }
             }
         }
     }
 
     void moveCaretRight() {
-        var atLastByte = caret.getByteIndex() + 1 >= caret.getRow().getModel().getByteCount();
+        var currentPos = this.caret.getPosition();
+        var atLastByte = currentPos.getByteIndex() + 1 >= caret.getRow().getModel().getByteCount();
         var notAtLastRow = !caret.getRow().getModel().isLast();
-        var canChangeRow = ((caret.getPanel() == EditorPanel.HEX && caret.getBytePosition() != CaretBytePosition.FIRST)
-                    || caret.getPanel() == EditorPanel.ASCII);
+        var canChangeRow = ((currentPos.getPanel() == EditorPanel.HEX
+                && currentPos.getByteLocation() != CaretByteLocation.FIRST)
+                || currentPos.getPanel() == EditorPanel.ASCII);
 
         if (atLastByte && notAtLastRow && canChangeRow) {
             //next row
-            caret.setByteIndex(0);
-            caret.setBytePosition(CaretBytePosition.FIRST);
-            this.moveRequest.next(caret.getRowIndex() + 1);
+            moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex() + 1, 0, CaretByteLocation.FIRST);
         } else {
             //same row
-            if (caret.getBytePosition() == CaretBytePosition.THIRD
-                    && caret.getByteIndex() == caret.getRow().getModel().getByteCount() - 1) {
+            int byteIndex = currentPos.getByteIndex();
+            var byteLocation = currentPos.getByteLocation();
+            if (currentPos.getByteLocation() == CaretByteLocation.THIRD
+                    && currentPos.getByteIndex() == caret.getRow().getModel().getByteCount() - 1) {
                 return;
             }
-            if (caret.getPanel() == EditorPanel.HEX) {
-                if (!(caret.getByteIndex() + 1 >= this.caret.getRow().getModel().getByteCount()
-                        && caret.getBytePosition() == CaretBytePosition.SECOND)) {
-                    if (caret.getBytePosition() == CaretBytePosition.FIRST) {
-                        caret.setBytePosition(CaretBytePosition.SECOND);
+            if (currentPos.getPanel() == EditorPanel.HEX) {
+                if (!(currentPos.getByteIndex() + 1 >= this.caret.getRow().getModel().getByteCount()
+                        && currentPos.getByteLocation() == CaretByteLocation.SECOND)) {
+                    if (currentPos.getByteLocation() == CaretByteLocation.FIRST) {
+                        byteLocation = CaretByteLocation.SECOND;
                     } else {
-                        caret.setByteIndex(caret.getByteIndex() + 1);
-                        caret.setBytePosition(CaretBytePosition.FIRST);
-    //                    var bytePair = this.caret.getRow().getByteTextPairs().get(caret.getByteIndex());
-    //                    if (!bytePair.isEmpty()) {
-    //                        caret.setCaretBytePosition(CaretBytePosition.FIRST);
-    //                    }
+                        byteIndex = currentPos.getByteIndex() + 1;
+                        byteLocation = CaretByteLocation.FIRST;
                     }
-                    this.moveRequest.next(null);
+                    moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
                 } else {
                     if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().getModel().isLast()) {
-                        this.caret.setBytePosition(CaretBytePosition.THIRD);
-                        this.moveRequest.next(null);
+                        byteLocation = CaretByteLocation.THIRD;
+                        moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
                     }
                 }
             } else {
-                if (caret.getByteIndex() + 1 != this.caret.getRow().getModel().getByteCount()) {
-                    caret.setByteIndex(caret.getByteIndex() + 1);
-                    this.moveRequest.next(null);
+                if (currentPos.getByteIndex() + 1 != this.caret.getRow().getModel().getByteCount()) {
+                    byteIndex = currentPos.getByteIndex() + 1;
                 } else {
                     if (this.caret.getShape() == CaretShape.BAR && this.caret.getRow().getModel().isLast()) {
-                        this.caret.setBytePosition(CaretBytePosition.THIRD);
-                        this.moveRequest.next(null);
+                        byteLocation = CaretByteLocation.THIRD;
                     }
                 }
+                moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
             }
         }
     }
 
     void moveCaretHome() {
-        if (caret.getByteIndex() != 0
-                || (caret.getPanel() == EditorPanel.HEX && caret.getBytePosition() == CaretBytePosition.SECOND)) {
-            caret.setByteIndex(0);
-            caret.setBytePosition(CaretBytePosition.FIRST);
-            this.moveRequest.next(null);
+        var currentPos = this.caret.getPosition();
+        if (currentPos.getByteIndex() != 0 || (currentPos.getPanel() == EditorPanel.HEX
+                && currentPos.getByteLocation() == CaretByteLocation.SECOND)) {
+            moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), 0, CaretByteLocation.FIRST);
         }
     }
 
     void moveCaretEnd() {
-        caret.setByteIndex(caret.getRow().getModel().getByteCount() - 1);
+        var currentPos = this.caret.getPosition();
+        var byteLocation = currentPos.getByteLocation();
         if (this.caret.getShape() == CaretShape.BAR) {
-            caret.setBytePosition(CaretBytePosition.THIRD);
+            byteLocation = CaretByteLocation.THIRD;
         } else {
-            caret.setBytePosition(CaretBytePosition.SECOND);
+            byteLocation = CaretByteLocation.SECOND;
         }
-        this.moveRequest.next(null);
-    }
-
-    void adjustCaretDownForLastRow(int newRowIndex) {
-        if (newRowIndex == this.offsets.size() - 1) {
-            if (this.caret.getByteIndex() >= getLastRowByteCount()) {
-                this.caret.setByteIndex(getLastRowByteCount() - 1);
-                if (this.caret.getShape() == CaretShape.BAR) {
-                    this.caret.setBytePosition(CaretBytePosition.THIRD);
-                } else {
-                    this.caret.setBytePosition(CaretBytePosition.SECOND);
-                }
-            }
-        }
+        var byteIndex = caret.getRow().getModel().getByteCount() - 1;
+        moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
     }
 
     private void adjustCaretOnShapeChange(CaretShape oldShape, CaretShape newShape) {
-        if (oldShape == CaretShape.BAR && this.caret.getBytePosition() == CaretBytePosition.THIRD) {
-            this.caret.setBytePosition(CaretBytePosition.SECOND);
-            this.moveRequest.next(null);
+        var currentPos = this.caret.getPosition();
+        if (oldShape == CaretShape.BAR && currentPos.getByteLocation() == CaretByteLocation.THIRD) {
+            moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), currentPos.getByteIndex(),
+                    CaretByteLocation.SECOND);
         }
     }
 
-    private void resetCaret() {
-        this.caret.setPanel(EditorPanel.HEX);
-        this.caret.setByteIndex(0);
-        this.caret.setBytePosition(CaretBytePosition.FIRST);
-    }
-
-    private void updateLayout(boolean updateOffsets) {
+    private void updateLayout(boolean updateOffsets, CaretPosition pos) {
         this.caret.setDisabled(true);
         if (updateOffsets) {
             updateOffsets();
             calculateFixedLayout();
-            var rowIndex = calculateRowIndex(this.caret.getOffset());
-            var byteIndex = calculateByteIndex(this.caret.getOffset());
-            this.caret.setByteIndex(byteIndex);
-            this.layoutUpdateRequest.next(rowIndex);
+            if (pos == null) {
+                var rowIndex = calculateRowIndex(this.caret.getOffset());
+                var byteIndex = calculateByteIndex(this.caret.getOffset());
+                var curPos = this.caret.getPosition();
+                pos = new CaretPosition(curPos.getPanel(), curPos.getOffset(), rowIndex, byteIndex,
+                        curPos.getByteLocation());
+            }
+            this.layoutUpdate.next(pos);
         } else {
-            this.layoutUpdateRequest.next(null);
+            this.layoutUpdate.next(null);
         }
         this.caret.setDisabled(false);
     }

@@ -169,12 +169,17 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
     /**
      * Moves the caret to a new position in the view, based on the model state.
      *
+     * @param position the new position of the caret
      * @param row the target row, or {@code null} if the caret remains on the same row
      */
     //todo: package level
-    public void move(BodyRowView row) {
+    public void moveTo(CaretPosition position, BodyRowView row) {
         var viewModel = getViewModel();
-
+        //if the position is null, it indicates that the caret has not moved,
+        //and only the view's caret needs to be updated.
+        if (position == null) {
+            position = viewModel.getPosition();
+        }
         if (row == null) {
             row = this.row;
         }
@@ -183,18 +188,21 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         this.row = row;
 
         //when file is opened the position of the caret is calculated by char width as there can be no bytes
-        if (viewModel.getByteIndex() == 0 && viewModel.getBytePosition() == CaretBytePosition.FIRST
-                && viewModel.getRowIndex() == 0) {
+        if (position.getByteIndex() == 0 && position.getByteLocation() == CaretByteLocation.FIRST
+                && position.getRowIndex() == 0) {
             var charWidth = this.editor.getViewModel().getCharWidth();
             viewModel.setX(charWidth);
             viewModel.setIndicatorX(charWidth);
+            updateRow(oldRow, this.row, position);
+            //and only now we change position
+            viewModel.setPosition(position);
             return;
         }
-        var bytePair = this.row.getByteTextPairs().get(viewModel.getByteIndex());
-        if (viewModel.getPanel() == EditorPanel.HEX) {
+        var bytePair = this.row.getByteTextPairs().get(position.getByteIndex());
+        if (position.getPanel() == EditorPanel.HEX) {
             //caret
             var text = bytePair.getHexText();
-            switch (viewModel.getBytePosition()) {
+            switch (position.getByteLocation()) {
                 case FIRST:
                     viewModel.setX(text.getBoundsInParent().getMinX());
                     break;
@@ -215,7 +223,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         } else {
             //caret
             var text = bytePair.getAsciiText();
-            if (viewModel.getBytePosition() == CaretBytePosition.THIRD) {
+            if (position.getByteLocation() == CaretByteLocation.THIRD) {
                 viewModel.setX(text.getBoundsInParent().getMaxX());
             } else {
                 viewModel.setX(text.getBoundsInParent().getMinX());
@@ -224,10 +232,12 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
             text = bytePair.getHexText();
             viewModel.setIndicatorX(text.getBoundsInParent().getMinX());
         }
-        updateRow(oldRow, this.row);
+        updateRow(oldRow, this.row, position);
+        //and only now we change position
+        viewModel.setPosition(position);
     }
 
-    private void updateRow(BodyRowView oldRow, BodyRowView newRow) {
+    private void updateRow(BodyRowView oldRow, BodyRowView newRow, CaretPosition position) {
         if (oldRow != newRow) {
             if (oldRow != null) {
                 oldRow.removeCaret();
@@ -238,7 +248,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         // The caret is added to the row in two cases: when this method is called and when row.updateItem(..) is called.
         // That's why we always remove the caret first to avoid a 'duplicate children added' exception.
         newRow.removeCaret();
-        newRow.addCaret();
+        newRow.addCaret(position);
         //when cursor is moved it must always be visible
         if (!getViewModel().isDisabled()) {
             this.caret.setVisible(true);

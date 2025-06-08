@@ -18,7 +18,8 @@ package com.techsenger.tabshell.hex.row;
 
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.hex.AbstractHexEditorTabView;
-import com.techsenger.tabshell.hex.CaretBytePosition;
+import com.techsenger.tabshell.hex.CaretByteLocation;
+import com.techsenger.tabshell.hex.CaretPosition;
 import com.techsenger.tabshell.hex.CaretShape;
 import com.techsenger.tabshell.hex.ColumnSeparator;
 import com.techsenger.tabshell.hex.EditorPanel;
@@ -78,9 +79,10 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
                     bytePair.getAsciiText().setText(" ");
                 }
             }
-            if (getEditor().getCaret().getViewModel().getRowOffset() == offset) {
+            var caretPos = getEditor().getCaret().getViewModel().getPosition();
+            if (caretPos != null && caretPos.getRowOffset() == offset) {
                 vm.setFocused(true);
-                addCaret();
+                addCaret(caretPos);
             } else {
                 vm.setFocused(false);
             }
@@ -182,10 +184,10 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
     }
 
     //todo: not public
-    public void addCaret() {
+    public void addCaret(CaretPosition position) {
         if (getViewModel().isFocused()) {
             var caret = getEditor().getCaret();
-            if (caret.getViewModel().getPanel() == EditorPanel.HEX) {
+            if (position.getPanel() == EditorPanel.HEX) {
                 getHexPane().getCaretPane().getChildren().add(caret.getNode());
                 getAsciiPane().getCaretPane().getChildren().add(caret.getIndicator());
             } else {
@@ -205,32 +207,34 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
 
     private ByteText createByteHexText() {
         var text = createByteText();
-
         text.setOnMouseClicked(e -> {
+            var editorVM = getEditor().getViewModel();
+
             var caretV = getEditor().getCaret();
-            var caretVM = caretV.getViewModel();
-            caretVM.setByteIndex(text.getPair().getIndex());
-            var position = resolveHexPosition(text, e.getX(), caretVM.getShape());
-            caretVM.setBytePosition(position);
-            caretVM.setPanel(EditorPanel.HEX);
-            caretV.move(this);
+            var curPos = caretV.getViewModel().getPosition();
+
+            var location = resolveHexLocation(text, e.getX(), caretV.getViewModel().getShape());
+            var rowIndex = getViewModel().getModel().getIndex();
+            var newPos = editorVM.createCaretPosition(EditorPanel.HEX, rowIndex, text.getPair().getIndex(),
+                    location);
+            caretV.moveTo(newPos, this);
         });
         return text;
     }
 
-    private CaretBytePosition resolveHexPosition(ByteText text, double x, CaretShape shape) {
+    private CaretByteLocation resolveHexLocation(ByteText text, double x, CaretShape shape) {
         double textWidth = text.getLayoutBounds().getWidth();
         double widthHalf = textWidth / 2;
         if (x < widthHalf) {
-            return CaretBytePosition.FIRST;
+            return CaretByteLocation.FIRST;
         } else {
             if (shape != CaretShape.BAR) {
-                return CaretBytePosition.SECOND;
+                return CaretByteLocation.SECOND;
             }
             if (x < widthHalf + (widthHalf / 2)) {
-                return CaretBytePosition.SECOND;
+                return CaretByteLocation.SECOND;
             } else {
-                return CaretBytePosition.THIRD;
+                return CaretByteLocation.THIRD;
             }
         }
     }
@@ -238,32 +242,34 @@ public class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Ce
     private ByteText createByteAsciiText() {
         var text = createByteText();
         text.setOnMouseClicked(e -> {
+            var editorVM = getEditor().getViewModel();
+
             var caretV = getEditor().getCaret();
-            var caretVM = caretV.getViewModel();
-            caretVM.setByteIndex(text.getPair().getIndex());
-            var position = resolveAsciiPosition(text, e.getX(), caretVM.getShape(),
-                    caretVM.getByteIndex() == caretVM.getRow().getModel().getByteCount() - 1);
-            caretVM.setBytePosition(position);
-            caretVM.setPanel(EditorPanel.ASCII);
-            caretV.move(this);
+            var curPos = caretV.getViewModel().getPosition();
+
+            var location = resolveAsciiLocation(text, e.getX(), caretV.getViewModel().getShape(),
+                    curPos.getByteIndex() == caretV.getViewModel().getRow().getModel().getByteCount() - 1);
+            var rowIndex = getViewModel().getModel().getIndex();
+            var newPos = editorVM.createCaretPosition(EditorPanel.ASCII, rowIndex, text.getPair().getIndex(), location);
+            caretV.moveTo(newPos, this);
         });
         return text;
     }
 
-    private CaretBytePosition resolveAsciiPosition(ByteText text, double x, CaretShape shape, boolean lastByte) {
+    private CaretByteLocation resolveAsciiLocation(ByteText text, double x, CaretShape shape, boolean lastByte) {
         if (shape != CaretShape.BAR) {
-            return CaretBytePosition.FIRST;
+            return CaretByteLocation.FIRST;
         }
         double textWidth = text.getLayoutBounds().getWidth();
         double widthHalf = textWidth / 2;
         if (lastByte) {
             if (x < widthHalf) {
-                return CaretBytePosition.FIRST;
+                return CaretByteLocation.FIRST;
             } else {
-                return CaretBytePosition.THIRD;
+                return CaretByteLocation.THIRD;
             }
         } else {
-            return CaretBytePosition.FIRST;
+            return CaretByteLocation.FIRST;
         }
     }
 

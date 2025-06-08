@@ -26,21 +26,37 @@ public class RowModel {
 
     private final int offset;
 
+    private final int index;
+
+    private final boolean last;
+
     private final List<String> hexes;
 
     private final List<String> asciis;
 
-    private final boolean last;
-
-    public RowModel(int offset, List<String> hexes, List<String> asciis, boolean last) {
+    public RowModel(int offset, int index, boolean last, List<String> hexes, List<String> asciis) {
         this.offset = offset;
+        this.index = index;
+        this.last = last;
         this.hexes = hexes;
         this.asciis = asciis;
-        this.last = last;
     }
 
     public int getOffset() {
         return offset;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * Returns true if this row is the last one among all visible and non-visible rows.
+     *
+     * @return true if this is the last row; false otherwise.
+     */
+    public boolean isLast() {
+        return last;
     }
 
     public List<String> getHexes() {
@@ -58,14 +74,4 @@ public class RowModel {
     public int getByteCount() {
         return this.hexes.size();
     }
-
-    /**
-     * Returns true if this row is the last one among all visible and non-visible rows.
-     *
-     * @return true if this is the last row; false otherwise.
-     */
-    public boolean isLast() {
-        return last;
-    }
-
 }

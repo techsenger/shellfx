@@ -24,9 +24,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
-import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -38,26 +36,20 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     private static final NodeKey HEX_EDITOR_CARET = new NodeKey("Hex Editor Caret");
 
-    private final ReadOnlyIntegerWrapper rowIndex = new ReadOnlyIntegerWrapper(0);
+    private final ReadOnlyObjectWrapper<CaretPosition> position = new ReadOnlyObjectWrapper<>();
 
     /**
-     * We don't use offset from row because of virtualization.
+     * In the vast majority of cases, a property for the offset is specifically required, which is why this property
+     * was added, even though it partially duplicates the position.
      */
-    private final ReadOnlyIntegerWrapper rowOffset = new ReadOnlyIntegerWrapper(0);
+    private final ReadOnlyIntegerWrapper offset = new ReadOnlyIntegerWrapper();
 
     /**
-     * Index in byte row.
+     * This property is visible only within this class.
      */
-    private final ReadOnlyIntegerWrapper byteIndex = new ReadOnlyIntegerWrapper(0);
-
-    private final ReadOnlyObjectWrapper<CaretBytePosition> bytePosition =
-            new ReadOnlyObjectWrapper<>(CaretBytePosition.FIRST);
-
-    private final ReadOnlyObjectWrapper<EditorPanel> panel = new ReadOnlyObjectWrapper<>(EditorPanel.HEX);
+    private final ObjectProperty<EditorPanel> panel = new SimpleObjectProperty<>();
 
     private final ReadOnlyBooleanWrapper disabled = new ReadOnlyBooleanWrapper(false);
-
-    private final ObjectProperty<CaretShape> shape = new SimpleObjectProperty<>(CaretShape.BAR);
 
     private final ReadOnlyDoubleWrapper x = new ReadOnlyDoubleWrapper();
 
@@ -67,18 +59,17 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     private final ReadOnlyDoubleWrapper indicatorWidth = new ReadOnlyDoubleWrapper();
 
-    private final AbstractHexEditorTabViewModel editor;
+    private final ObjectProperty<CaretShape> shape = new SimpleObjectProperty<>(CaretShape.BAR);
 
-    private final ReadOnlyIntegerWrapper offset = new ReadOnlyIntegerWrapper(0);
+    private final AbstractHexEditorTabViewModel editor;
 
     private BodyRowViewModel row;
 
     CaretViewModel(AbstractHexEditorTabViewModel editor) {
         this.editor = editor;
-        shape.addListener((ov, oldV, newV) -> updateWidhts(newV, getPanel(), editor.getCharWidth()));
-        panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV, editor.getCharWidth()));
-        editor.charWidthProperty().addListener((ov, oldV, newV) -> updateWidhts(getShape(), getPanel(),
-                newV.doubleValue()));
+        shape.addListener((ov, oldV, newV) -> updateWidhts(newV, editor.getCharWidth()));
+        panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), editor.getCharWidth()));
+        editor.charWidthProperty().addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV.doubleValue()));
     }
 
     @Override
@@ -86,44 +77,20 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         return HEX_EDITOR_CARET;
     }
 
-    public ReadOnlyIntegerProperty rowIndexProperty() {
-        return rowIndex.getReadOnlyProperty();
+    public ReadOnlyObjectWrapper<CaretPosition> positionProperty() {
+        return position;
     }
 
-    public int getRowIndex() {
-        return rowIndex.get();
+    public CaretPosition getPosition() {
+        return position.get();
     }
 
-    public ReadOnlyIntegerProperty rowOffsetProperty() {
-        return rowOffset.getReadOnlyProperty();
+    public ReadOnlyIntegerWrapper offsetProperty() {
+        return offset;
     }
 
-    public int getRowOffset() {
-        return rowOffset.get();
-    }
-
-    public ReadOnlyIntegerProperty byteIndexProperty() {
-        return byteIndex.getReadOnlyProperty();
-    }
-
-    public int getByteIndex() {
-        return byteIndex.get();
-    }
-
-    public ReadOnlyObjectProperty<CaretBytePosition> bytePositionProperty() {
-        return bytePosition.getReadOnlyProperty();
-    }
-
-    public CaretBytePosition getBytePosition() {
-        return bytePosition.get();
-    }
-
-    public ReadOnlyObjectProperty<EditorPanel> panelProperty() {
-        return panel.getReadOnlyProperty();
-    }
-
-    public EditorPanel getPanel() {
-        return panel.get();
+    public int getOffset() {
+        return offset.get();
     }
 
     public ReadOnlyBooleanProperty disabledProperty() {
@@ -178,43 +145,23 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         return indicatorWidth.get();
     }
 
-    public ReadOnlyIntegerProperty offsetProperty() {
-        return offset;
-    }
-
-    public int getOffset() {
-        return offset.get();
-    }
-
-    //todo: package level
-    public void setByteIndex(int index) {
-        this.byteIndex.set(index);
-    }
-
-    //todo: package level
-    public void setBytePosition(CaretBytePosition position) {
-        this.bytePosition.set(position);
-    }
-
-    //todo: package level
-    public void setPanel(EditorPanel panel) {
-        this.panel.set(panel);
+    void setPosition(CaretPosition position) {
+        this.position.set(position);
+        this.offset.set(position.getOffset());
+        this.panel.set(position.getPanel());
     }
 
     void setDisabled(boolean value) {
         this.disabled.set(value);
     }
 
-    //todo: package level
+    //todo: not public
     public BodyRowViewModel getRow() {
         return row;
     }
 
     void setRow(BodyRowViewModel row) {
         this.row = row;
-        setRowOffset(row.getModel().getOffset());
-        setRowIndex(this.editor.calculateRowIndex(row));
-        this.offset.set(getRowOffset() + getByteIndex());
     }
 
     ReadOnlyDoubleWrapper xWrapper() {
@@ -233,15 +180,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         this.indicatorX.set(indicatorX);
     }
 
-    private void setRowIndex(int index) {
-        this.rowIndex.set(index);
-    }
-
-    private void setRowOffset(int offset) {
-        this.rowOffset.set(offset);
-    }
-
-    private void updateWidhts(CaretShape shape, EditorPanel panel, double charWidth) {
+    private void updateWidhts(CaretShape shape, double charWidth) {
         switch (shape) {
             case BAR:
                 this.width.set(1);
@@ -255,7 +194,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
             default:
                 throw new AssertionError();
         }
-        if (panel == EditorPanel.HEX) {
+        if (this.panel.get() == EditorPanel.HEX) {
             this.indicatorWidth.set(charWidth);
         } else {
             this.indicatorWidth.set(charWidth * 2);
