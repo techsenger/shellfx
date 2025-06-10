@@ -45,8 +45,8 @@ import static javafx.scene.input.KeyCode.PAGE_UP;
 import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.UP;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.fxmisc.flowless.VirtualFlow;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -94,7 +94,9 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final ToolBar toolBar = new ToolBar();
 
-    private final StackPane headerPane = new StackPane();
+    private final Pane headerPane = new Pane();
+
+    private final HeaderRowView headerRow;
 
     /**
      * Integer is a row index.
@@ -110,8 +112,6 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     private final TabManagerView rightTabManager;
 
     private final DataInspectorView<?> dataInspector;
-
-    private final HeaderRowView headerRow;
 
     /**
      * Reusable cells in a virtual flow remain in memory after creation and are only released when virtualFlow.dispose()
@@ -196,7 +196,9 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         VBox.setVgrow(virtualScrollPane, Priority.ALWAYS);
 
+        this.headerPane.getStyleClass().add("header-pane");
         this.headerPane.getChildren().add(this.headerRow.getNode());
+        this.headerPane.setMaxWidth(Double.MAX_VALUE);
         this.mainPane.getChildren().addAll(headerPane, virtualScrollPane);
         VBox.setVgrow(this.mainPane, Priority.ALWAYS);
 
@@ -207,6 +209,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
+        this.headerPane.prefWidthProperty().bind(this.mainPane.widthProperty());
         this.rowByteCountsComboBox.valueProperty().bindBidirectional(viewModel.rowByteCountProperty());
         this.columnByteCountsComboBox.valueProperty().bindBidirectional(viewModel.columnByteCountProperty());
         this.columnsEnabledButton.selectedProperty().bindBidirectional(viewModel.columnsEnabledProperty());
@@ -239,6 +242,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         viewModel.layoutUpdateSource().addListener((newPos) -> {
+            //setHeaderPaneWidth(300);
             this.headerRow.rebuild();
             for (var r : rows) {
                 r.rebuild();
@@ -261,8 +265,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         });
         viewModel.caretPositionSource().addListener((position) -> updateCaretPosition(position));
         this.virtualScrollPane.widthProperty().addListener((ov, oldV, newV) -> {
-           //setting min and max width on headerPane causes its child pane to be centered
-            headerPane.setPrefWidth(newV.doubleValue());
+            //setHeaderPaneWidth(this.virtualScrollPane.getWidth());
         });
         this.virtualScrollPane.estimatedScrollXProperty().addListener((ov, oldV, newV) -> {
             this.headerRow.getNode().setTranslateX(newV * -1);

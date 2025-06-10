@@ -175,7 +175,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         if (position == null) {
             position = viewModel.getPosition();
         }
-        
+
         if (newRow == null) {
             newRow = this.row;
         }
