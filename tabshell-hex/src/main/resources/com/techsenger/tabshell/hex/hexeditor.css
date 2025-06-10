@@ -26,11 +26,15 @@
     -fx-padding: 0 6 0 6;/* 6 - SizeConstants.HALF_INSET */
     -fx-font-size: 1em;
     -fx-background-color: -color-bg-inset;
-    -fx-fill: -color-fg-muted;
+    -fx-text-fill: -color-fg-muted;
 }
 
 .header-row > .hex-pane > .content-box {
     -fx-background-color: -color-bg-inset;
+}
+
+.header-row > .hex-pane > .content-box > .text {
+    -fx-fill: -color-fg-muted;
 }
 
 .header-row > .hex-pane > .content-box > .line {
@@ -56,7 +60,7 @@
     -fx-padding: 0 6 0 6;
     -fx-font-size: 1em;
     -fx-background-color: -color-bg-inset;
-    -fx-fill: -color-fg-muted;
+    -fx-text-fill: -color-fg-muted;
 }
 
 .body-row > .hex-pane > .content-box {

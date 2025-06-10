@@ -64,6 +64,7 @@ class HeaderRowView extends AbstractRowView<HeaderRowViewModel> {
                 }
             }
             var text = new Text(NumberBaseUtils.convert(i, editorVM.getOffsetNumberBase(), 2));
+            text.getStyleClass().add("text");
             children.add(text);
         }
     }
