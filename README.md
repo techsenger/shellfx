@@ -45,7 +45,7 @@ final application.
 
 ### Hex Editor (In Progress) <a name="demo-hex-editor"></a>
 
-![Screenshot from 2025-06-11 23-15-09](https://github.com/user-attachments/assets/63ed09ea-0e95-454d-b458-be62d9b469a0)
+![Screenshot from 2025-06-11 23-30-02](https://github.com/user-attachments/assets/13fd4345-db82-40d1-b79a-b71341c90a09)
 
 ### Terminal <a name="demo-terminal"></a>
 
