@@ -24,8 +24,10 @@ import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Dimension2D;
 
 /**
  *
@@ -62,10 +64,10 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     private BodyRowViewModel row;
 
-    CaretViewModel(ReadOnlyDoubleProperty charWidth) {
-        shape.addListener((ov, oldV, newV) -> updateWidhts(newV, charWidth.get()));
-        panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), charWidth.get()));
-        charWidth.addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV.doubleValue()));
+    CaretViewModel(ReadOnlyObjectProperty<Dimension2D> charSize) {
+        shape.addListener((ov, oldV, newV) -> updateWidhts(newV, charSize.get().getWidth()));
+        panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), charSize.get().getWidth()));
+        charSize.addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV.getWidth()));
     }
 
     @Override

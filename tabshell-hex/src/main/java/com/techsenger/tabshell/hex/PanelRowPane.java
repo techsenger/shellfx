@@ -52,8 +52,8 @@ class PanelRowPane extends StackPane {
     @Override
     protected void layoutChildren() {
         super.layoutChildren();
-        this.canvas.setWidth(getWidth());
-        this.canvas.setHeight(getHeight());
+//        this.canvas.setWidth(getWidth());
+//        this.canvas.setHeight(getHeight());
     }
 
     public Canvas getCanvas() {

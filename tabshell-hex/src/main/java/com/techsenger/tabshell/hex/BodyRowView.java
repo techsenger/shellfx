@@ -61,7 +61,7 @@ class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Cell<Inte
             getNode().setVisible(true);
             var offsetStr = NumberBaseUtils.convert(row.getOffset(), vm.getEditor().getOffsetNumberBase(),
                     vm.getEditor().getOffsetLength());
-            getOffsetLabel().setText(offsetStr);
+            getInfoLabel().setText(offsetStr);
             for (var i = 0; i < vm.getEditor().getRowByteCount(); i++) {
                 var bytePair = byteTextPairs.get(i);
                 bytePair.setIndex(i);
@@ -96,15 +96,17 @@ class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Cell<Inte
     @Override
     public void rebuild() {
         var viewModel = getViewModel();
+        var editorViewModel = viewModel.getEditor();
+        var charWidth = editorViewModel.getCharSize().getWidth();
+
+        getInfoLabel().setPadding(new Insets(0, charWidth, 0, charWidth));
+
         getHexPane().clear();
         //canvas width prevents resetting the panel width
         getHexPane().getCanvas().setWidth(0);
         getAsciiPane().clear();
         getAsciiPane().getCanvas().setWidth(0);
         this.byteTextPairs.clear();
-
-        var editorViewModel = viewModel.getEditor();
-        var charWidth = editorViewModel.getCharWidth();
 
         var hexContentBox = getHexPane().getContentBox();
         hexContentBox.setPadding(new Insets(0, charWidth, 0, charWidth));
@@ -271,7 +273,7 @@ class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Cell<Inte
 
     private ByteText createByteText() {
         var text = new ByteText();
-        text.getStyleClass().add("text");
+        text.getStyleClass().add("content");
         return text;
     }
 
@@ -280,7 +282,7 @@ class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Cell<Inte
         //when file is opened the position of the caret is calculated by char width as there can be no bytes
         if (position.getByteIndex() == 0 && position.getByteLocation() == CaretByteLocation.FIRST
                 && position.getRowIndex() == 0) {
-            var charWidth = getEditor().getViewModel().getCharWidth();
+            var charWidth = getEditor().getViewModel().getCharSize().getWidth();
             caretVM.setX(charWidth);
             caretVM.setIndicatorX(charWidth);
         }

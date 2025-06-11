@@ -39,7 +39,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
     /**
      * Region is not use used because it can't always have 1 px width, but we don't need as the height is set via timer.
      */
-    private final Rectangle caret = new Rectangle();
+    private final Rectangle node = new Rectangle();
 
     private final Rectangle indicator = new Rectangle();
 
@@ -53,7 +53,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
 
     @Override
     public Rectangle getNode() {
-        return caret;
+        return node;
     }
 
     public Rectangle getIndicator() {
@@ -68,9 +68,9 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
     @Override
     protected void build(CaretViewModel viewModel) {
         super.build(viewModel);
-        this.caret.getStyleClass().add("caret");
-        this.caret.setSmooth(false);
-        this.caret.setManaged(false);
+        this.node.getStyleClass().add("caret");
+        this.node.setSmooth(false);
+        this.node.setManaged(false);
         this.indicator.getStyleClass().add("indicator");
         this.indicator.setSmooth(false);
         this.indicator.setManaged(false);
@@ -80,9 +80,9 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
     @Override
     protected void bind(CaretViewModel viewModel) {
         super.bind(viewModel);
-        this.caret.widthProperty().bind(viewModel.widthProperty());
+        this.node.widthProperty().bind(viewModel.widthProperty());
         this.indicator.widthProperty().bind(viewModel.indicatorWidthProperty());
-        this.caret.translateXProperty().bind(viewModel.xProperty());
+        this.node.translateXProperty().bind(viewModel.xProperty());
         this.indicator.translateXProperty().bind(viewModel.indicatorXProperty());
     }
 
@@ -90,19 +90,19 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
     protected void addHandlers(CaretViewModel viewModel) {
         super.addHandlers(viewModel);
         this.timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), e -> {
-            this.caret.setVisible(!this.caret.isVisible());
-            if (this.row != null && this.caret.isVisible()) {
+            this.node.setVisible(!this.node.isVisible());
+            if (this.row != null && this.node.isVisible()) {
                 //setting caret width and height, for example, when font changes,
                 //while we can calculate char width we can't calculate row width
                 switch (viewModel.getShape()) {
                     case BAR:
-                        this.caret.setHeight(this.row.getNode().getHeight());
+                        this.node.setHeight(this.row.getNode().getHeight());
                         break;
                     case BLOCK:
-                        this.caret.setHeight(this.row.getNode().getHeight());
+                        this.node.setHeight(this.row.getNode().getHeight());
                         break;
                     case UNDERSCORE:
-                        this.caret.setTranslateY(this.row.getNode().getHeight() - 1);
+                        this.node.setTranslateY(this.row.getNode().getHeight() - 1);
                         break;
                     default:
                         throw new AssertionError();
@@ -120,29 +120,29 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         viewModel.disabledProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
                 this.timeline.pause();
-                this.caret.setVisible(false);
+                this.node.setVisible(false);
                 this.indicator.setVisible(false);
             } else {
-                this.caret.setVisible(true);
+                this.node.setVisible(true);
                 this.indicator.setVisible(true);
                 this.timeline.play();
             }
         });
         ValueUtils.callAndAddListener(viewModel.shapeProperty(), (ov, oldV, newV) -> {
-                this.caret.getStyleClass().clear();
+                this.node.getStyleClass().clear();
             switch (newV) {
                 case BAR:
-                    VBox.setVgrow(caret, Priority.ALWAYS);
-                    this.caret.setTranslateY(0);
-                    this.caret.getStyleClass().addAll("caret", "bar");
+                    VBox.setVgrow(node, Priority.ALWAYS);
+                    this.node.setTranslateY(0);
+                    this.node.getStyleClass().addAll("caret", "bar");
                     break;
                 case BLOCK:
-                    this.caret.setTranslateY(0);
-                    this.caret.getStyleClass().addAll("caret", "block");
+                    this.node.setTranslateY(0);
+                    this.node.getStyleClass().addAll("caret", "block");
                     break;
                 case UNDERSCORE:
-                    this.caret.setHeight(1);
-                    this.caret.getStyleClass().addAll("caret", "underscore");
+                    this.node.setHeight(1);
+                    this.node.getStyleClass().addAll("caret", "underscore");
                     break;
                 default:
                     throw new AssertionError();
@@ -196,7 +196,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         newRow.getViewModel().setFocused(true);
         //when cursor is moved it must always be visible
         if (!getViewModel().isDisabled()) {
-            this.caret.setVisible(true);
+            this.node.setVisible(true);
         }
         //and only now we change position
         viewModel.setPosition(position);

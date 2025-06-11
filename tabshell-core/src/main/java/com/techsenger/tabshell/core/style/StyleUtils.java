@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.style;
 
+import javafx.geometry.Dimension2D;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -36,16 +37,18 @@ public final class StyleUtils {
     }
 
     /**
-     * Returns the width of the char for monospace font.
+     * Returns the width and height of a single character when rendered with the specified monospace font.
      *
-     * @param font
-     * @return
+     * <p>Note: The character height is not equal to the line height.
+     *
+     * @param font the font to measure (must be monospace for accurate results)
+     * @return a {@code Dimension2D} representing character width and height
      */
-    public static double getMonospaceCharWidth(Font font) {
-        final Text text = new Text("0");
+    public static Dimension2D getMonospaceCharSize(Font font) {
+        final Text text = new Text("W");
         text.setFont(font);
-        double width = text.getBoundsInLocal().getWidth();
-        return width;
+        var bounds = text.getBoundsInLocal();
+        return new Dimension2D(bounds.getWidth(), bounds.getHeight());
     }
 
     private StyleUtils() {

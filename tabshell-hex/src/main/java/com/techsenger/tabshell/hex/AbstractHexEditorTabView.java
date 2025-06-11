@@ -45,7 +45,6 @@ import static javafx.scene.input.KeyCode.PAGE_UP;
 import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.UP;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.fxmisc.flowless.VirtualFlow;
@@ -94,8 +93,6 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final ToolBar toolBar = new ToolBar();
 
-    private final Pane headerPane = new Pane();
-
     private final HeaderRowView headerRow;
 
     /**
@@ -112,6 +109,8 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     private final TabManagerView rightTabManager;
 
     private final DataInspectorView<?> dataInspector;
+
+    private int pulseCounter;
 
     /**
      * Reusable cells in a virtual flow remain in memory after creation and are only released when virtualFlow.dispose()
@@ -196,10 +195,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         VBox.setVgrow(virtualScrollPane, Priority.ALWAYS);
 
-        this.headerPane.getStyleClass().add("header-pane");
-        this.headerPane.getChildren().add(this.headerRow.getNode());
-        this.headerPane.setMaxWidth(Double.MAX_VALUE);
-        this.mainPane.getChildren().addAll(headerPane, virtualScrollPane);
+        this.mainPane.getChildren().addAll(headerRow.getNode(), virtualScrollPane);
         VBox.setVgrow(this.mainPane, Priority.ALWAYS);
 
         VBox.setVgrow(this.rightTabManager.getNode(), Priority.ALWAYS);
@@ -209,7 +205,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
-        this.headerPane.prefWidthProperty().bind(this.mainPane.widthProperty());
+        this.headerRow.getNode().prefWidthProperty().bind(this.mainPane.widthProperty());
         this.rowByteCountsComboBox.valueProperty().bindBidirectional(viewModel.rowByteCountProperty());
         this.columnByteCountsComboBox.valueProperty().bindBidirectional(viewModel.columnByteCountProperty());
         this.columnsEnabledButton.selectedProperty().bindBidirectional(viewModel.columnsEnabledProperty());
@@ -242,7 +238,8 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         viewModel.layoutUpdateSource().addListener((newPos) -> {
-            //setHeaderPaneWidth(300);
+            this.pulseCounter = 0;
+            this.mainPane.setVisible(false);
             this.headerRow.rebuild();
             for (var r : rows) {
                 r.rebuild();
@@ -255,20 +252,33 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
                 row = this.virtualFlow.getCell(newPos.getRowIndex());
             }
             var finalRow = row;
-            //when the layout changes, the text coordinates are updated as well; therefore, to correctly calculate
+            //When the layout changes, the text coordinates are updated as well; therefore, to correctly calculate
             //the caret position, it is necessary to use a pulse listener.
+
+            //For precise padding calculation, exact dimensions are only available in the PulseListener. However,
+            //when the required padding is set within this listener, the changes will only become visible in the
+            //next pulse. To prevent flickering during layout adjustments, the mainPane is made invisible and only
+            //becomes visible again after the second pulse.
             addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
-                this.caret.moveTo(newPos, finalRow);
-                NodeUtils.requestFocus(virtualFlow);
-                return false;
+                if (this.pulseCounter >= 1) {
+                    this.mainPane.setVisible(true);
+                    this.caret.moveTo(newPos, finalRow);
+                    NodeUtils.requestFocus(virtualFlow);
+                    return false;
+                } else {
+                    this.headerRow.setPanelPanesBackground();
+                    this.headerRow.updateAsciiPaneWidth(this.mainPane.getWidth());
+                    this.pulseCounter++;
+                    return true;
+                }
             });
         });
         viewModel.caretPositionSource().addListener((position) -> updateCaretPosition(position));
-        this.virtualScrollPane.widthProperty().addListener((ov, oldV, newV) -> {
-            //setHeaderPaneWidth(this.virtualScrollPane.getWidth());
-        });
+        this.mainPane.widthProperty().addListener((ov, oldV, newV) ->
+                this.headerRow.updateAsciiPaneWidth(newV.doubleValue()));
         this.virtualScrollPane.estimatedScrollXProperty().addListener((ov, oldV, newV) -> {
-            this.headerRow.getNode().setTranslateX(newV * -1);
+            this.headerRow.getScrollableBox().setTranslateX(newV * -1);
+            this.headerRow.updateAsciiPaneWidth(this.mainPane.getWidth());
         });
     }
 

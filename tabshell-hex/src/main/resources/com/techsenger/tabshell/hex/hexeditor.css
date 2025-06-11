@@ -18,46 +18,48 @@
     Author: Pavel Castornii
 */
 
-.header-pane {
+/*
+    Do not add the padding property, as it is hardcoded.
+*/
+
+.header-row {
     -fx-background-color: -color-bg-inset;
 }
 
-.header-row > .label {
-    -fx-padding: 0 6 0 6;/* 6 - SizeConstants.HALF_INSET */
+.header-row > .scrollable-box > .info-label {
     -fx-font-size: 1em;
-    -fx-background-color: -color-bg-inset;
+    visibility: hidden;
+}
+
+.header-row > .scrollable-box > .hex-pane {
+    -fx-background-color: -color-bg-default, -color-bg-inset;
+}
+
+.header-row > .scrollable-box > .hex-pane > .content-box > .content {
     -fx-text-fill: -color-fg-muted;
 }
 
-.header-row > .hex-pane > .content-box {
-    -fx-background-color: -color-bg-inset;
-}
-
-.header-row > .hex-pane > .content-box > .text {
-    -fx-fill: -color-fg-muted;
-}
-
-.header-row > .hex-pane > .content-box > .line {
+.header-row > .scrollable-box > .hex-pane > .content-box > .line {
     -fx-background-color: -color-fg-default;
     -fx-pref-width: 1;
     -fx-min-width: 1;
     -fx-max-width: 1;
 }
 
-.header-row > .hex-pane > .content-box > .space {
+.header-row > .scrollable-box > .hex-pane > .content-box > .space {
     -fx-background-color: -color-bg-default;
     -fx-pref-width: 0;
     -fx-min-width: 0;
     -fx-max-width: 0;
 }
 
-.header-row > .ascii-pane {
+.header-row > .scrollable-box > .ascii-pane {
     -fx-border-color: -color-fg-default;
     -fx-border-width: 0 0 0 1;
+    -fx-background-color: -color-bg-default, -color-bg-inset;
 }
 
-.body-row > .label {
-    -fx-padding: 0 6 0 6;
+.body-row > .info-label {
     -fx-font-size: 1em;
     -fx-background-color: -color-bg-inset;
     -fx-text-fill: -color-fg-muted;
@@ -67,7 +69,7 @@
     -fx-font-size: 1em;
 }
 
-.body-row > .hex-pane > .content-box >.text {
+.body-row > .hex-pane > .content-box > .content {
     -fx-fill: -color-fg-default;
     -fx-letter-spacing: 10px;
 }
@@ -107,7 +109,7 @@
     -fx-border-width: 0 0 0 1;
 }
 
-.body-row > .ascii-pane > .content-box > .text {
+.body-row > .ascii-pane > .content-box > .content {
     -fx-fill: -color-fg-default;
 }
 

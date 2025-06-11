@@ -36,14 +36,15 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Dimension2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,12 +92,12 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     private final ReadOnlyBooleanWrapper contentModified = new ReadOnlyBooleanWrapper(false);
 
-    private final ReadOnlyDoubleWrapper charWidth = new ReadOnlyDoubleWrapper();
+    private final ReadOnlyObjectWrapper<Dimension2D> charSize = new ReadOnlyObjectWrapper<>();
 
     /**
      * Caret uses {@link #charWidth}, so, it is declared after it.
      */
-    private final CaretViewModel caret = new CaretViewModel(charWidth);
+    private final CaretViewModel caret = new CaretViewModel(charSize);
 
     /**
      * Caret position is updated either via this source or via {@link #layoutUpdate}.
@@ -209,12 +210,12 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return offsetLength.get();
     }
 
-    public ReadOnlyDoubleProperty charWidthProperty() {
-        return charWidth.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<Dimension2D> charSizeProperty() {
+        return charSize.getReadOnlyProperty();
     }
 
-    public double getCharWidth() {
-        return charWidth.get();
+    public Dimension2D getCharSize() {
+        return charSize.get();
     }
 
     public ObservableList<Integer> getRowByteCounts() {
@@ -526,8 +527,8 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     }
 
     private void calculateFixedLayout() {
-        this.charWidth.set(StyleUtils.getMonospaceCharWidth(getShell().getSettings().getAppearance()
-                .getMonospaceFont()));
+        var chSize = StyleUtils.getMonospaceCharSize(getShell().getSettings().getAppearance().getMonospaceFont());
+        this.charSize.set(chSize);
         if (areColumnsEnabled()) {
             this.columnCount.set(getRowByteCount() / getColumnByteCount());
         } else {

@@ -33,7 +33,7 @@ abstract class AbstractRowView<T extends AbstractRowViewModel> extends AbstractP
     /**
      * This flow has only one text node.
      */
-    private final Label offsetLabel = new Label();
+    private final Label infoLabel = new Label();
 
     /**
      * Stack pane for hex panel.
@@ -48,7 +48,7 @@ abstract class AbstractRowView<T extends AbstractRowViewModel> extends AbstractP
     /**
      * The root node of the row.
      */
-    private final HBox root = new HBox(offsetLabel, hexPane, asciiPane);
+    private final HBox node = new HBox(infoLabel, hexPane, asciiPane);
 
     AbstractRowView(T viewModel, AbstractHexEditorTabView<?> editor) {
         super(viewModel);
@@ -57,7 +57,7 @@ abstract class AbstractRowView<T extends AbstractRowViewModel> extends AbstractP
 
     @Override
     public HBox getNode() {
-        return root;
+        return node;
     }
 
     @Override
@@ -70,16 +70,15 @@ abstract class AbstractRowView<T extends AbstractRowViewModel> extends AbstractP
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        this.offsetLabel.setMinWidth(Region.USE_PREF_SIZE);
-
+        this.infoLabel.setMinWidth(Region.USE_PREF_SIZE);
+        this.infoLabel.getStyleClass().add("info-label");
         this.hexPane.getStyleClass().add("hex-pane");
         this.asciiPane.getStyleClass().add("ascii-pane");
-
-        this.root.getStyleClass().addAll(StyleClasses.MONOSPACE);
+        this.node.getStyleClass().addAll(StyleClasses.MONOSPACE);
     }
 
-    protected Label getOffsetLabel() {
-        return offsetLabel;
+    protected Label getInfoLabel() {
+        return infoLabel;
     }
 
     protected PanelRowPane getHexPane() {
