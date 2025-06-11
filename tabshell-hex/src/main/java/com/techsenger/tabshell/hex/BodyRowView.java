@@ -181,15 +181,13 @@ class BodyRowView extends AbstractRowView<BodyRowViewModel> implements Cell<Inte
 
     void addCaret(CaretPosition position) {
         calculateCaretX(position);
-        if (getViewModel().isFocused()) {
-            var caret = getEditor().getCaret();
-            if (position.getPanel() == EditorPanel.HEX) {
-                getHexPane().getCaretPane().getChildren().add(caret.getNode());
-                getAsciiPane().getCaretPane().getChildren().add(caret.getIndicator());
-            } else {
-                getHexPane().getCaretPane().getChildren().add(caret.getIndicator());
-                getAsciiPane().getCaretPane().getChildren().add(caret.getNode());
-            }
+        var caret = getEditor().getCaret();
+        if (position.getPanel() == EditorPanel.HEX) {
+            getHexPane().getCaretPane().getChildren().add(caret.getNode());
+            getAsciiPane().getCaretPane().getChildren().add(caret.getIndicator());
+        } else {
+            getHexPane().getCaretPane().getChildren().add(caret.getIndicator());
+            getAsciiPane().getCaretPane().getChildren().add(caret.getNode());
         }
     }
 
