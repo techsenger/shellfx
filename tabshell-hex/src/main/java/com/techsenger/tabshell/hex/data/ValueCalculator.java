@@ -158,26 +158,26 @@ public final class ValueCalculator {
         // UTF-8 detection (1-4 bytes)
         if (offset < data.length) {
             int b1 = data[offset] & 0xFF;
-            int utf8Length = 0;
+            int utf8Size = 0;
             String utf8Char = null;
 
             if ((b1 & 0x80) == 0) {  // 1-byte (ASCII)
-                utf8Length = 1;
+                utf8Size = 8;
                 utf8Char = new String(data, offset, 1, StandardCharsets.UTF_8);
             } else if ((b1 & 0xE0) == 0xC0 && offset + 1 < data.length) {  // 2-byte
-                utf8Length = 2;
+                utf8Size = 16;
                 utf8Char = new String(data, offset, 2, StandardCharsets.UTF_8);
             } else if ((b1 & 0xF0) == 0xE0 && offset + 2 < data.length) {  // 3-byte
-                utf8Length = 3;
+                utf8Size = 24;
                 utf8Char = new String(data, offset, 3, StandardCharsets.UTF_8);
             } else if ((b1 & 0xF8) == 0xF0 && offset + 3 < data.length) {  // 4-byte
-                utf8Length = 4;
+                utf8Size = 32;
                 utf8Char = new String(data, offset, 4, StandardCharsets.UTF_8);
             }
 
             if (utf8Char != null && !utf8Char.isEmpty()) {
                 values.setUtf8Char(utf8Char);
-                values.setUtf8Length(utf8Length);
+                values.setUtf8Size(utf8Size);
             }
         }
 
@@ -195,13 +195,13 @@ public final class ValueCalculator {
 
                 if (Character.isLowSurrogate(c2)) {
                     values.setUtf16Char(new String(new char[]{c1, c2}));
-                    values.setUtf16Length(4);
+                    values.setUtf16Size(32);
 
                 }
             } else {
                 // Regular 2-byte character
                 values.setUtf16Char(String.valueOf(c1));
-                values.setUtf16Length(2);
+                values.setUtf16Size(16);
             }
         }
 

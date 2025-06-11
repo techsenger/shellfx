@@ -81,11 +81,11 @@ public class TypeItem<T> extends AbstractItem {
         if (value == null) {
             return null;
         }
-        var bits = getSize(values) * 8;
+        var bits = getSize(values);
         return this.converter.convert(value, bits);
     }
 
-    public int getSize(Values values) {
+    private int getSize(Values values) {
         if (this.sizeProvider == null) {
             return this.size;
         } else {

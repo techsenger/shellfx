@@ -58,11 +58,11 @@ public class Values {
 
     private String utf8Char;
 
-    private int utf8Length;
+    private int utf8Size;
 
     private String utf16Char;
 
-    private int  utf16Length;
+    private int  utf16Size;
 
     private String utf32Char;
 
@@ -202,12 +202,12 @@ public class Values {
         this.utf8Char = utf8Char;
     }
 
-    public int getUtf8Length() {
-        return utf8Length;
+    public int getUtf8Size() {
+        return utf8Size;
     }
 
-    public void setUtf8Length(int utf8Length) {
-        this.utf8Length = utf8Length;
+    public void setUtf8Size(int utf8Size) {
+        this.utf8Size = utf8Size;
     }
 
     public String getUtf16Char() {
@@ -218,12 +218,12 @@ public class Values {
         this.utf16Char = utf16Char;
     }
 
-    public int getUtf16Length() {
-        return utf16Length;
+    public int getUtf16Size() {
+        return utf16Size;
     }
 
-    public void setUtf16Length(int utf16Length) {
-        this.utf16Length = utf16Length;
+    public void setUtf16Size(int utf16Size) {
+        this.utf16Size = utf16Size;
     }
 
     public String getUtf32Char() {

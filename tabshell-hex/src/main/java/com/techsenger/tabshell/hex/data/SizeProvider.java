@@ -23,5 +23,11 @@ package com.techsenger.tabshell.hex.data;
 @FunctionalInterface
 public interface SizeProvider {
 
+    /**
+     * Returns the size of the value in bits.
+     *
+     * @param values
+     * @return
+     */
     int provide(Values values);
 }
