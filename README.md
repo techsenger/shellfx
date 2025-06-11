@@ -49,7 +49,7 @@ final application.
 
 ### Terminal <a name="demo-terminal"></a>
 
-![TabShell Terminal](https://github.com/user-attachments/assets/07a4bae8-a418-4e88-8bd4-90bb899c8ed9)
+![Screenshot from 2025-06-11 23-53-30](https://github.com/user-attachments/assets/d7be0f9f-38ba-4e0f-aa75-23ed830c7f60)
 
 ### Dialogs <a name="demo-dialogs"></a>
 
