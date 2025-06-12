@@ -65,9 +65,9 @@ public final class CaretViewModel extends AbstractNodeViewModel {
     private BodyRowViewModel row;
 
     CaretViewModel(ReadOnlyObjectProperty<Dimension2D> charSize) {
-        shape.addListener((ov, oldV, newV) -> updateWidhts(newV, charSize.get().getWidth()));
-        panel.addListener((ov, oldV, newV) -> updateWidhts(getShape(), charSize.get().getWidth()));
-        charSize.addListener((ov, oldV, newV) -> updateWidhts(getShape(), newV.getWidth()));
+        shape.addListener((ov, oldV, newV) -> updateWidths(newV, charSize.get().getWidth()));
+        panel.addListener((ov, oldV, newV) -> updateWidths(getShape(), charSize.get().getWidth()));
+        charSize.addListener((ov, oldV, newV) -> updateWidths(getShape(), newV.getWidth()));
     }
 
     @Override
@@ -175,7 +175,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
     }
 
     ReadOnlyDoubleWrapper indicatorXWrapper() {
-        return this.x;
+        return this.indicatorX;
     }
 
     void setX(double x) {
@@ -186,7 +186,7 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         this.indicatorX.set(indicatorX);
     }
 
-    private void updateWidhts(CaretShape shape, double charWidth) {
+    private void updateWidths(CaretShape shape, double charWidth) {
         switch (shape) {
             case BAR:
                 this.width.set(1);

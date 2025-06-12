@@ -96,6 +96,12 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     private final HeaderRowView headerRow;
 
     /**
+     * Reusable cells in a virtual flow remain in memory after creation and are only released when virtualFlow.dispose()
+     * is explicitly invoked.
+     */
+    private final List<BodyRowView> bodyRows = new ArrayList<>();
+
+    /**
      * Integer is a row index.
      */
     private final VirtualFlow<Integer, BodyRowView> virtualFlow;
@@ -112,18 +118,12 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private int pulseCounter;
 
-    /**
-     * Reusable cells in a virtual flow remain in memory after creation and are only released when virtualFlow.dispose()
-     * is explicitly invoked.
-     */
-    private final List<BodyRowView> rows = new ArrayList<>();
-
     public AbstractHexEditorTabView(ShellView<?> tabShell, T viewModel) {
         super(tabShell, viewModel);
         this.virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
                 var rowViewModel = viewModel.createRow(offset);
                 var rowView = new BodyRowView(rowViewModel, this);
-                this.rows.add(rowView);
+                this.bodyRows.add(rowView);
                 rowView.initialize();
                 return rowView;
         });
@@ -237,42 +237,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
-        viewModel.layoutUpdateSource().addListener((newPos) -> {
-            this.pulseCounter = 0;
-            this.mainPane.setVisible(false);
-            this.headerRow.rebuild();
-            for (var r : rows) {
-                r.rebuild();
-                r.updateItem(r.getViewModel().getModel().getOffset());
-            }
-            BodyRowView row = null;
-            if (newPos != null) {
-                //after clearing and adding new items flow is scrolled to the end
-                this.virtualFlow.showAsFirst(newPos.getRowIndex());
-                row = this.virtualFlow.getCell(newPos.getRowIndex());
-            }
-            var finalRow = row;
-            //When the layout changes, the text coordinates are updated as well; therefore, to correctly calculate
-            //the caret position, it is necessary to use a pulse listener.
-
-            //For precise padding calculation, exact dimensions are only available in the PulseListener. However,
-            //when the required padding is set within this listener, the changes will only become visible in the
-            //next pulse. To prevent flickering during layout adjustments, the mainPane is made invisible and only
-            //becomes visible again after the second pulse.
-            addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
-                if (this.pulseCounter >= 1) {
-                    this.mainPane.setVisible(true);
-                    this.caret.moveTo(newPos, finalRow);
-                    NodeUtils.requestFocus(virtualFlow);
-                    return false;
-                } else {
-                    this.headerRow.setPanelPanesBackground();
-                    this.headerRow.updateAsciiPaneWidth(this.mainPane.getWidth());
-                    this.pulseCounter++;
-                    return true;
-                }
-            });
-        });
+        viewModel.layoutUpdateSource().addListener((newPosition) -> updateLayout(newPosition));
         viewModel.caretPositionSource().addListener((position) -> updateCaretPosition(position));
         this.mainPane.widthProperty().addListener((ov, oldV, newV) ->
                 this.headerRow.updateAsciiPaneWidth(newV.doubleValue()));
@@ -299,6 +264,10 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         this.dataInspector.deinitialize();
         this.rightTabManager.deinitialize();
         this.caret.deinitialize();
+        this.headerRow.deinitialize();
+        for (var r : bodyRows) {
+            r.deinitialize();
+        }
     }
 
     protected Button getNewButton() {
@@ -367,6 +336,43 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     protected ComboBox<NumberBase> getOffsetNumberBaseComboBox() {
         return offsetNumberBaseComboBox;
+    }
+
+    private void updateLayout(CaretPosition newPosition) {
+        this.mainPane.setVisible(false);
+        this.headerRow.rebuild();
+        for (var r : bodyRows) {
+            r.rebuild();
+            r.updateItem(r.getViewModel().getModel().getOffset());
+        }
+        BodyRowView row = null;
+        if (newPosition != null) {
+            //after clearing and adding new items flow is scrolled to the end
+            this.virtualFlow.showAsFirst(newPosition.getRowIndex());
+            row = this.virtualFlow.getCell(newPosition.getRowIndex());
+        }
+        var finalRow = row;
+        this.pulseCounter = 0;
+        //When the layout changes, the text coordinates are updated as well; therefore, to correctly calculate
+        //the caret position, it is necessary to use a pulse listener.
+
+        //For precise padding calculation, exact dimensions are only available in the PulseListener. However,
+        //when the required padding is set within this listener, the changes will only become visible in the
+        //next pulse. To prevent flickering during layout adjustments, the mainPane is made invisible and only
+        //becomes visible again after the second pulse.
+        addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+            if (this.pulseCounter == 0) {
+                this.headerRow.setPanelPanesBackground();
+                this.headerRow.updateAsciiPaneWidth(this.mainPane.getWidth());
+                this.pulseCounter++;
+                return true;
+            } else {
+                this.mainPane.setVisible(true);
+                this.caret.moveTo(newPosition, finalRow);
+                NodeUtils.requestFocus(virtualFlow);
+                return false;
+            }
+        });
     }
 
     private void updateCaretPosition(CaretPosition newPos) {

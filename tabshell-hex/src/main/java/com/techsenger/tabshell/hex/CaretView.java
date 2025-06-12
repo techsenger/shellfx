@@ -153,9 +153,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
     @Override
     protected void preDeinitialize(CaretViewModel viewModel) {
         super.preDeinitialize(viewModel);
-        if (!viewModel.isDisabled()) {
-            this.timeline.stop();
-        }
+        this.timeline.stop();
     }
 
     BodyRowView getRow() {
