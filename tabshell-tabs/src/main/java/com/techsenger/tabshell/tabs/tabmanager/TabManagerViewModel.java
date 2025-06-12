@@ -18,7 +18,6 @@ package com.techsenger.tabshell.tabs.tabmanager;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.core.tab.TabHostViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -31,12 +30,13 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabManagerViewModel extends AbstractPaneViewModel implements TabHostViewModel<TabViewModel> {
+public class TabManagerViewModel extends AbstractPaneViewModel implements TabContainerViewModel<TabViewModel> {
 
     private static final Logger logger = LoggerFactory.getLogger(TabManagerViewModel.class);
 

@@ -37,14 +37,14 @@ public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedVie
      *
      * @return
      */
-    ReadOnlyObjectProperty<TabHostViewModel<?>> tabHostProperty();
+    ReadOnlyObjectProperty<TabContainerViewModel<?>> containerProperty();
 
     /**
      * Return the component that contains the TabPane with this tab.
      *
      * @return
      */
-    TabHostViewModel<?> getTabHost();
+    TabContainerViewModel<?> getContainer();
 
     /**
      * Returns tab key. This property allows to distinguish different tab types in TabShell.

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public interface TabHostView<T extends TabView<?>> {
+public interface TabContainerView<T extends TabView<?>> {
 
     /**
      * Opens tabs and makes it selected.

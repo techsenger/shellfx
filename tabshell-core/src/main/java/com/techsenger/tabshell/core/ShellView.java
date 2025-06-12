@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ShellTabView;
-import com.techsenger.tabshell.core.tab.TabHostView;
+import com.techsenger.tabshell.core.tab.TabContainerView;
 import java.util.List;
 
 /**
@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface ShellView<T extends ShellViewModel> extends View<T>, TabHostView<ShellTabView<?>>, MenuAware,
+public interface ShellView<T extends ShellViewModel> extends View<T>, TabContainerView<ShellTabView<?>>, MenuAware,
         CloseableView {
 
     @Override

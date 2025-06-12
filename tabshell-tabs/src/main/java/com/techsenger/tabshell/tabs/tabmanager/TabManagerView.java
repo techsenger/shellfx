@@ -25,8 +25,8 @@ import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.ComponentTab;
-import com.techsenger.tabshell.core.tab.TabHostView;
-import com.techsenger.tabshell.core.tab.TabHostViewUtils;
+import com.techsenger.tabshell.core.tab.TabContainerView;
+import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
@@ -45,7 +45,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implements TabHostView<TabView<?>>,
+public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implements TabContainerView<TabView<?>>,
         MenuAware {
 
     private final TabPane root = new TabPane();
@@ -144,7 +144,7 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
     @Override
     protected void build(TabManagerViewModel viewModel) {
         super.build(viewModel);
-        TabHostViewUtils.initTabPane(root, this);
+        TabContainerViewUtils.initTabPane(root, this);
         VBox.setVgrow(this.root, Priority.ALWAYS);
     }
 
@@ -177,18 +177,18 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
                 if (change.wasAdded()) {
                     for (Tab tab : change.getAddedSubList()) {
                         var tabView = ((ComponentTab) tab).getView();
-                        ((AbstractTabView<?>) tabView).setTabHost(this);
+                        ((AbstractTabView<?>) tabView).setContainer(this);
                         var tabViewModel = tabView.getViewModel();
-                        ((AbstractTabViewModel) tabViewModel).setTabHost(viewModel);
+                        ((AbstractTabViewModel) tabViewModel).setContainer(viewModel);
                         viewModel.getModifiableTabs().add(tabViewModel);
                     }
                 }
                 if (change.wasRemoved()) {
                     for (Tab tab : change.getRemoved()) {
                         var tabView = ((ComponentTab) tab).getView();
-                        ((AbstractTabView<?>) tabView).setTabHost(null);
+                        ((AbstractTabView<?>) tabView).setContainer(null);
                         var tabViewModel = tabView.getViewModel();
-                        ((AbstractTabViewModel) tabViewModel).setTabHost(null);
+                        ((AbstractTabViewModel) tabViewModel).setContainer(null);
                         viewModel.getModifiableTabs().remove(tabViewModel);
                     }
                 }

@@ -35,14 +35,14 @@ public interface TabView<T extends TabViewModel> extends ChildView<T>, Selectabl
      *
      * @return
      */
-    ReadOnlyObjectProperty<TabHostView<?>> tabHostProperty();
+    ReadOnlyObjectProperty<TabContainerView<?>> containerProperty();
 
     /**
      * Return the component that contains the TabPane with this tab.
      *
      * @return
      */
-    TabHostView<?> getTabHost();
+    TabContainerView<?> getContainer();
 
     /**
      * Is called when there is a new attempt to close the tab or the shell.

@@ -47,7 +47,7 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     private final StackPane wrapperPane = new StackPane(contentPane);
 
-    private final ReadOnlyObjectWrapper<TabHostView<?>> tabHost = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<TabContainerView<?>> container = new ReadOnlyObjectWrapper<>();
 
     public AbstractTabView(T viewModel) {
         super(viewModel);
@@ -69,17 +69,17 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
     }
 
     @Override
-    public ReadOnlyObjectProperty<TabHostView<?>> tabHostProperty() {
-        return this.tabHost.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<TabContainerView<?>> containerProperty() {
+        return this.container.getReadOnlyProperty();
     }
 
     @Override
-    public TabHostView<?> getTabHost() {
-        return this.tabHost.get();
+    public TabContainerView<?> getContainer() {
+        return this.container.get();
     }
 
-    public void setTabHost(TabHostView<?> value) {
-        this.tabHost.set(value);
+    public void setContainer(TabContainerView<?> value) {
+        this.container.set(value);
     }
 
     @Override
@@ -104,7 +104,7 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     @Override
     public void close() {
-        ((TabHostView<AbstractTabView<T>>) getTabHost()).closeTab(this);
+        ((TabContainerView<AbstractTabView<T>>) getContainer()).closeTab(this);
     }
 
     @Override

@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
-import com.techsenger.tabshell.core.tab.TabHostViewModel;
+import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -34,7 +34,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public interface ShellViewModel extends ViewModel, TabHostViewModel<ShellTabViewModel>, IconedViewModel,
+public interface ShellViewModel extends ViewModel, TabContainerViewModel<ShellTabViewModel>, IconedViewModel,
         CloseableViewModel {
 
     /**

@@ -37,7 +37,7 @@ import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabView;
-import com.techsenger.tabshell.core.tab.TabHostViewUtils;
+import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.material.icon.IconViewBox;
@@ -347,7 +347,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         tabPane.getStyleClass().addAll("shell-tab-pane", Styles.TABS_FLOATING, Styles.DENSE);
         VBox.setVgrow(tabPane, Priority.ALWAYS);
         this.contentPane.getChildren().add(tabPane);
-        TabHostViewUtils.initTabPane(tabPane, this);
+        TabContainerViewUtils.initTabPane(tabPane, this);
         stageController.contentProperty().set(this.contentPane);
         //we add stackpane behind stage root
         stackPane.getChildren().add(stage.getScene().getRoot());
@@ -386,19 +386,19 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
                 if (change.wasAdded()) {
                     for (Tab tab : change.getAddedSubList()) {
                         ShellTabView<?> tabView = (ShellTabView<?>) ((ComponentTab) tab).getView();
-                        ((AbstractShellTabView<?>) tabView).setTabHost(this);
+                        ((AbstractShellTabView<?>) tabView).setContainer(this);
                         var tabViewModel = tabView.getViewModel();
                         viewModel.getModifiableTabs().add(tabViewModel);
-                        ((AbstractShellTabViewModel) tabViewModel).setTabHost(viewModel);
+                        ((AbstractShellTabViewModel) tabViewModel).setContainer(viewModel);
                     }
                 }
                 if (change.wasRemoved()) {
                     for (Tab tab : change.getRemoved()) {
                         ShellTabView<?> tabView = (ShellTabView<?>) ((ComponentTab) tab).getView();
-                        ((AbstractShellTabView<?>) tabView).setTabHost(null);
+                        ((AbstractShellTabView<?>) tabView).setContainer(null);
                         var tabViewModel = tabView.getViewModel();
                         viewModel.getModifiableTabs().remove(tabViewModel);
-                        ((AbstractShellTabViewModel) tabViewModel).setTabHost(null);
+                        ((AbstractShellTabViewModel) tabViewModel).setContainer(null);
                     }
                 }
             }

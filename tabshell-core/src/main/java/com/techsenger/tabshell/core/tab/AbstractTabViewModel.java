@@ -58,7 +58,7 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
 
     private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper();
 
-    private final ReadOnlyObjectWrapper<TabHostViewModel<?>> tabHost = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<TabContainerViewModel<?>> container = new ReadOnlyObjectWrapper<>();
 
     private final ObservableSource<Boolean> close = new SimpleObservableSource<>();
 
@@ -150,17 +150,17 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     }
 
     @Override
-    public ReadOnlyObjectProperty<TabHostViewModel<?>> tabHostProperty() {
-        return this.tabHost.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<TabContainerViewModel<?>> containerProperty() {
+        return this.container.getReadOnlyProperty();
     }
 
     @Override
-    public TabHostViewModel<?> getTabHost() {
-        return this.tabHost.get();
+    public TabContainerViewModel<?> getContainer() {
+        return this.container.get();
     }
 
-    public void setTabHost(TabHostViewModel<?> value) {
-        this.tabHost.set(value);
+    public void setContainer(TabContainerViewModel<?> value) {
+        this.container.set(value);
     }
 
     public BooleanProperty waitingProperty() {
