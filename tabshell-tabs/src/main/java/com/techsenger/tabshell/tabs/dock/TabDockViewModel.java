@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.tabs.tabmanager;
+package com.techsenger.tabshell.tabs.dock;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -30,15 +31,14 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabManagerViewModel extends AbstractPaneViewModel implements TabContainerViewModel<TabViewModel> {
+public class TabDockViewModel extends AbstractPaneViewModel implements TabContainerViewModel<TabViewModel> {
 
-    private static final Logger logger = LoggerFactory.getLogger(TabManagerViewModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(TabDockViewModel.class);
 
     private final ReadOnlyObjectWrapper<TabViewModel> selectedTab = new ReadOnlyObjectWrapper<>();
 
@@ -58,7 +58,7 @@ public class TabManagerViewModel extends AbstractPaneViewModel implements TabCon
 
     private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
 
-    public TabManagerViewModel(PaneKey key) {
+    public TabDockViewModel(PaneKey key) {
         super();
         this.key = key;
         this.modifiableTabs.addListener((ListChangeListener<? super TabViewModel>) (change) -> {

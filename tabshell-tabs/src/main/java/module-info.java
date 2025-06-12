@@ -30,7 +30,7 @@ module com.techsenger.tabshell.tabs {
     requires jakarta.xml.bind;
 
     exports com.techsenger.tabshell.tabs;
+    exports com.techsenger.tabshell.tabs.dock;
     exports com.techsenger.tabshell.tabs.splittab;
-    exports com.techsenger.tabshell.tabs.tabmanager;
     exports com.techsenger.tabshell.tabs.workertab;
 }

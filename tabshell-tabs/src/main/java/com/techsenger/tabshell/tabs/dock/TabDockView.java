@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.tabs.tabmanager;
+package com.techsenger.tabshell.tabs.dock;
 
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuAware;
@@ -41,18 +41,18 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
- * TabManager is the generic class for components that have TabPane and every tab is a separate component.
+ * TabDock is the generic class for components that have TabPane and every tab is a separate component.
  *
  * @author Pavel Castornii
  */
-public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implements TabContainerView<TabView<?>>,
+public class TabDockView extends AbstractPaneView<TabDockViewModel> implements TabContainerView<TabView<?>>,
         MenuAware {
 
     private final TabPane root = new TabPane();
 
     private final ReadOnlyObjectWrapper<TabView<?>> selectedTab = new ReadOnlyObjectWrapper<>();
 
-    public TabManagerView(TabManagerViewModel viewModel) {
+    public TabDockView(TabDockViewModel viewModel) {
         super(viewModel);
     }
 
@@ -142,19 +142,19 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
     }
 
     @Override
-    protected void build(TabManagerViewModel viewModel) {
+    protected void build(TabDockViewModel viewModel) {
         super.build(viewModel);
         TabContainerViewUtils.initTabPane(root, this);
         VBox.setVgrow(this.root, Priority.ALWAYS);
     }
 
     @Override
-    protected void bind(TabManagerViewModel viewModel) {
+    protected void bind(TabDockViewModel viewModel) {
         super.bind(viewModel);
     }
 
     @Override
-    protected void addListeners(TabManagerViewModel viewModel) {
+    protected void addListeners(TabDockViewModel viewModel) {
         super.addListeners(viewModel);
         this.root.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (oldV != null) {
@@ -208,7 +208,7 @@ public class TabManagerView extends AbstractPaneView<TabManagerViewModel> implem
     }
 
     @Override
-    protected void postDeinitialize(TabManagerViewModel viewModel) {
+    protected void postDeinitialize(TabDockViewModel viewModel) {
         super.postDeinitialize(viewModel);
         for (var t : this.root.getTabs()) {
             ((ComponentTab) t).getView().deinitialize();

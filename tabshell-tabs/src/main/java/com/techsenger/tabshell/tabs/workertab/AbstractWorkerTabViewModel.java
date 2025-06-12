@@ -20,7 +20,7 @@ import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.tabs.CoreComponentKeys;
 import com.techsenger.tabshell.tabs.splittab.AbstractSplitTabViewModel;
-import com.techsenger.tabshell.tabs.tabmanager.TabManagerViewModel;
+import com.techsenger.tabshell.tabs.dock.TabDockViewModel;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -43,14 +43,14 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
 
     private ReadOnlyIntegerWrapper workerCount = new ReadOnlyIntegerWrapper(0);
 
-    private final TabManagerViewModel bottomTabManager;
+    private final TabDockViewModel bottomDock;
 
     public AbstractWorkerTabViewModel(ShellViewModel shell) {
         super(shell);
-        this.bottomTabManager = new TabManagerViewModel(CoreComponentKeys.BOTTOM_TABS);
+        this.bottomDock = new TabDockViewModel(CoreComponentKeys.BOTTOM_TABS);
         this.workers.addListener((InvalidationListener) (change) -> this.workerCount.set(workers.size()));
-        this.bottomTabManager.getTabs().addListener((InvalidationListener) (change) -> {
-            if (this.bottomTabManager.getTabs().size() == 0) {
+        this.bottomDock.getTabs().addListener((InvalidationListener) (change) -> {
+            if (this.bottomDock.getTabs().size() == 0) {
                 this.setBottomPaneVisible(false);
             }
         });
@@ -84,13 +84,13 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
         return (WorkerTabHelper) super.getComponentHelper();
     }
 
-    protected TabManagerViewModel getBottomTabManager() {
-        return bottomTabManager;
+    protected TabDockViewModel getBottomDock() {
+        return bottomDock;
     }
 
     protected void openWorkerReportTab() {
         //firstly check if such tab is open
-        for (var tab : this.bottomTabManager.getTabs()) {
+        for (var tab : this.bottomDock.getTabs()) {
             if (tab.getKey() == CoreComponentKeys.WORKER_REPORT_TAB) {
                 return;
             }

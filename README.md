@@ -161,7 +161,7 @@ the final menu.
 
 The `MenuManager` is responsible for managing the state of menu elements and responding to their actions. It interacts
 with a component that implements the `MenuAware` interface. This interface is implemented by `Shell`, `ShellTab`,
-`Tab` and `TabManager`. If all tabs are closed, `MenuManager` interacts with `Shell`. When tabs are present,
+`Tab` and `TabDock`. If all tabs are closed, `MenuManager` interacts with `Shell`. When tabs are present,
 `MenuManager` interacts with the currently selected tab.
 
 It is also important to remember that the `MenuManager` also interacts with MenuAware when the user uses accelerators.
@@ -181,7 +181,7 @@ There are two types of tabs: `ShellTab` and `Tab`. A `ShellTab` component can be
 A `Tab` component cannot be opened directly through the `Shell`, so it always resides inside a `ShellTab`.
 
 The `ShellTab` a `Tab` components are closed in the following way. When the `View#close()` method is called, control is
-transferred to their parent component (e.g., `Shell`, `TabManager`), which is responsible for their actual closure.
+transferred to their parent component (e.g., `Shell`, `TabDock`), which is responsible for their actual closure.
 Thus, these tabs can also be closed directly through their parent if a reference to the tab is available.
 
 The tab closing procedure is largely determined by the asynchronous nature of dialogs in the TabShell project and
