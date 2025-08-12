@@ -67,7 +67,7 @@ public class DataInspectorView<T extends DataInspectorViewModel> extends Abstrac
 
     private final Button nextButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_RIGHT));
 
-    private final ToolBar toolBar = new ToolBar(previousButton, nextButton, new Spacer(), byteOrderCheckBox);
+    private final ToolBar toolBar = new ToolBar(previousButton, nextButton, new Spacer());
 
     private final TableView<TypeItem<?>> typeTableView = new TableView<>();
 
@@ -123,6 +123,7 @@ public class DataInspectorView<T extends DataInspectorViewModel> extends Abstrac
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         splitPane.setOrientation(Orientation.VERTICAL);
 
+        this.toolBar.getStyleClass().add(Styles.DENSE);
         getContentPane().getChildren().addAll(toolBar, splitPane);
     }
 

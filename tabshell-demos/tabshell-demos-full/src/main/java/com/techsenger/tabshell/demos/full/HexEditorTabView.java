@@ -80,7 +80,8 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
                 getOffsetNumberBaseComboBox(),
                 this.caretShapeComboBox
         );
-        getTopPane().getChildren().addAll(getToolBar(), getMainPane());
+        getContentPane().getChildren().add(0, getToolBar());
+        getTopPane().getChildren().add(getMainPane());
     }
 
     @Override

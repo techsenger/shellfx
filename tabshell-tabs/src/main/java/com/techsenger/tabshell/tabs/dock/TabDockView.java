@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.tabs.dock;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
@@ -145,6 +146,7 @@ public class TabDockView extends AbstractPaneView<TabDockViewModel> implements T
     protected void build(TabDockViewModel viewModel) {
         super.build(viewModel);
         TabContainerViewUtils.initTabPane(root, this);
+        this.root.getStyleClass().add(Styles.DENSE);
         VBox.setVgrow(this.root, Priority.ALWAYS);
     }
 

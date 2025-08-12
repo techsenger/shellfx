@@ -372,21 +372,24 @@
 .tool-bar.dense {
     -fx-min-height: -1;
     -fx-max-height: -1;
-    -fx-padding: 2 12 3 4; /* 3 = 2(padding) + 1(bg-insetts) */
-}
-
-.tool-bar.dense .button,
-.tool-bar.dense .toggle-button {
-    -fx-min-height:2.1em;
-    -fx-max-height:2.1em;
-    -fx-pref-height:2.1em;
+    -fx-padding: 2 2 3 2; /* 3 = 2(padding) + 1(bg-insetts) */
 }
 
 .tool-bar.dense .button.iconed,
 .tool-bar.dense .toggle-button.iconed {
-    -fx-min-width:2.1em;
-    -fx-max-width:2.1em;
-    -fx-pref-width:2.1em;
+    -fx-padding: 0;
+    -fx-max-width: 1.5em;
+    -fx-min-width: 1.5em;
+    -fx-pref-width: 1.5em;
+    -fx-max-height: 1.5em;
+    -fx-min-height: 1.5em;
+    -fx-pref-height: 1.5em;
+}
+
+.tool-bar.dense .button .font-icon-view,
+.tool-bar.dense .toggle-button .font-icon-view {
+    -fx-padding: 0;
+    -fx-font-size: 1.4em;
 }
 
 /*
