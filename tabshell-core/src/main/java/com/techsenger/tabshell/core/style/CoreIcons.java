@@ -89,4 +89,6 @@ public interface CoreIcons {
     StyleFontIcon DIRECTORY = new StyleFontIcon("tabshell-directory-icon");
 
     StyleFontIcon FILE = new StyleFontIcon("tabshell-file-icon");
+
+    StyleFontIcon DRAG_VERTICAL = new StyleFontIcon("tabshell-drag-vertical-icon");
 }

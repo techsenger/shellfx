@@ -20,6 +20,7 @@ module com.techsenger.tabshell.demos.full {
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.tabshell.tabs;
     requires com.techsenger.tabshell.text;
     requires com.techsenger.tabshell.hex;
     requires com.techsenger.tabshell.storage;
@@ -28,6 +29,7 @@ module com.techsenger.tabshell.demos.full {
     requires com.techsenger.tabshell.registrars;
     requires com.techsenger.tabshell.icons;
     requires com.techsenger.tabshell.demos.core;
+    requires com.techsenger.tabpanepro.core;
 
     requires org.slf4j;
     requires javafx.base;

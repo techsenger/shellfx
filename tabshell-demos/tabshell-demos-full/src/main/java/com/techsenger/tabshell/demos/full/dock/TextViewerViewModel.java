@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.tabshell.core.menu.FileMenuKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.demos.full.DemoComponentKeys;
 
 /**
- * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
- * for example, during validation in a tab.
  *
  * @author Pavel Castornii
  */
-public interface DemoFileMenuKeys extends FileMenuKeys {
+public class TextViewerViewModel extends AbstractPaneViewModel {
 
-    MenuItemKey TEXT_EDITOR = new MenuItemKey();
+    @Override
+    public PaneKey getKey() {
+        return DemoComponentKeys.TEXT_VIEWER;
+    }
 
-    MenuItemKey HEX_EDITOR = new MenuItemKey();
-
-    MenuItemKey TERMINAL = new MenuItemKey();
-
-    MenuItemKey THEME = new MenuItemKey();
-
-    MenuItemKey DOCK_TAB = new MenuItemKey();
 }

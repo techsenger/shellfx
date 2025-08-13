@@ -22,7 +22,6 @@ import com.techsenger.tabshell.core.CloseableViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.SelectableViewModel;
 import com.techsenger.tabshell.core.TitledViewModel;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
 
 /**
@@ -31,20 +30,6 @@ import javafx.beans.property.StringProperty;
  */
 public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedViewModel, SelectableViewModel,
         CloseableViewModel {
-
-    /**
-     * The property for the component that contains the TabPane with this tab.
-     *
-     * @return
-     */
-    ReadOnlyObjectProperty<TabContainerViewModel<?>> containerProperty();
-
-    /**
-     * Return the component that contains the TabPane with this tab.
-     *
-     * @return
-     */
-    TabContainerViewModel<?> getContainer();
 
     /**
      * Returns tab key. This property allows to distinguish different tab types in TabShell.

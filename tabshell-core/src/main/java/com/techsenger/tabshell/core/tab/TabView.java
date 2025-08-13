@@ -17,11 +17,11 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.mvvm4fx.core.ChildView;
+import com.techsenger.mvvm4fx.core.ParentView;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.CloseableView;
 import com.techsenger.tabshell.core.SelectableView;
 import com.techsenger.tabshell.core.menu.MenuAware;
-import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
  * A view for components that has a root with JavaFX Tab class.
@@ -31,18 +31,12 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 public interface TabView<T extends TabViewModel> extends ChildView<T>, SelectableView, CloseableView, MenuAware {
 
     /**
-     * The property for the component that contains the TabPane with this tab.
+     * Sets the parent component for this tab. At the same time, for optimization purposes, the parent component
+     * does not keep references to the Tab components, since all tabs can be retrieved from the TabPane.
      *
-     * @return
+     * @param parent
      */
-    ReadOnlyObjectProperty<TabContainerView<?>> containerProperty();
-
-    /**
-     * Return the component that contains the TabPane with this tab.
-     *
-     * @return
-     */
-    TabContainerView<?> getContainer();
+    void setParent(ParentView<?> parent);
 
     /**
      * Is called when there is a new attempt to close the tab or the shell.

@@ -17,7 +17,9 @@
 package com.techsenger.tabshell.demos.full;
 
 import com.techsenger.tabshell.core.dialog.DialogKey;
+import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
+import com.techsenger.tabshell.core.tab.TabKey;
 
 /**
  * Keys are used to identify components at they are always accessible and are kept in API. Classes cannot
@@ -25,15 +27,17 @@ import com.techsenger.tabshell.core.tab.ShellTabKey;
  *
  * @author Pavel Castornii
  */
-public final class DemoComponentKeys {
+public interface DemoComponentKeys {
 
-    public static final ShellTabKey EDITOR_TAB = new ShellTabKey("Demo Editor Tab");
+    ShellTabKey EDITOR_TAB = new ShellTabKey("Demo Editor Tab");
 
-    public static final ShellTabKey HEX_EDITOR = new ShellTabKey("Demo Hex Editor");
+    ShellTabKey HEX_EDITOR = new ShellTabKey("Demo Hex Editor");
 
-    public static final DialogKey THEME_DIALOG = new DialogKey("Theme Dialog");
+    DialogKey THEME_DIALOG = new DialogKey("Theme Dialog");
 
-    private DemoComponentKeys() {
-        //empty
-    }
+    ShellTabKey DOCK_TAB = new ShellTabKey("Demo Dock Tab");
+
+    TabKey DOCKABLE_TAB = new TabKey("Demo Dockable Tab");
+
+    PaneKey TEXT_VIEWER = new PaneKey("Demo Text Viewer");
 }

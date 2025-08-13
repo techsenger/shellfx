@@ -24,7 +24,7 @@ import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.hex.data.DataInspectorViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.storage.GenericFile;
-import com.techsenger.tabshell.tabs.dock.TabDockViewModel;
+import com.techsenger.tabshell.tabs.TabHostViewModel;
 import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -104,7 +104,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
      */
     private final ObservableSource<CaretPosition> caretPosition = new SimpleObservableSource<>();
 
-    private final TabDockViewModel rightDock = new TabDockViewModel(HexComponentKeys.RIGHT_TAB_MANAGER);
+    private final TabHostViewModel rightTabHost = new TabHostViewModel(HexComponentKeys.RIGHT_TAB_MANAGER);
 
     private final HeaderRowViewModel headerRow = new HeaderRowViewModel(this);
 
@@ -286,8 +286,8 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return dataInspector;
     }
 
-    public TabDockViewModel getRightDock() {
-        return rightDock;
+    public TabHostViewModel getRightTabHost() {
+        return rightTabHost;
     }
 
     public int calculateRowIndex(int offset) {

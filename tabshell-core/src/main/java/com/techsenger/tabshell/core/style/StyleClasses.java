@@ -85,6 +85,15 @@ public interface StyleClasses {
     String ICONED_BUTTON = "iconed";
 
     /**
+     * Represents a small icon-only button, typically used for auxiliary panel actions such as closing, minimizing,
+     * or other management operations.
+     *
+     * <p>Unlike regular iconed buttons, this button is visually smaller and usually positioned in a panel's corner
+     * (commonly top-right) to indicate it controls the panel itself rather than performing primary panel functions.
+     */
+    String MINI_ICONED_BUTTON = "mini-iconed";
+
+    /**
      * Use this class for TabPanes to hide entire tab-header-area.
      */
     String HIDDEN_TABS = "hidden-tabs";

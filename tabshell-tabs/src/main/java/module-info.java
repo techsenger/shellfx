@@ -21,6 +21,7 @@ module com.techsenger.tabshell.tabs {
     requires com.techsenger.mvvm4fx.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
+    requires com.techsenger.tabpanepro.core;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
@@ -30,7 +31,7 @@ module com.techsenger.tabshell.tabs {
     requires jakarta.xml.bind;
 
     exports com.techsenger.tabshell.tabs;
-    exports com.techsenger.tabshell.tabs.dock;
+    exports com.techsenger.tabshell.tabs.docktab;
     exports com.techsenger.tabshell.tabs.splittab;
     exports com.techsenger.tabshell.tabs.workertab;
 }

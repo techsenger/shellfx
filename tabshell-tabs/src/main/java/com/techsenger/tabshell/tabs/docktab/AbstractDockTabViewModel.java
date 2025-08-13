@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.tabs.docktab;
 
-import com.techsenger.tabshell.core.menu.FileMenuKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 
 /**
- * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
- * for example, during validation in a tab.
  *
  * @author Pavel Castornii
  */
-public interface DemoFileMenuKeys extends FileMenuKeys {
+public abstract class AbstractDockTabViewModel extends AbstractShellTabViewModel {
 
-    MenuItemKey TEXT_EDITOR = new MenuItemKey();
+    public AbstractDockTabViewModel(ShellViewModel shell) {
+        super(shell);
+    }
 
-    MenuItemKey HEX_EDITOR = new MenuItemKey();
+    protected TabDockViewModel createTabDock() {
+        var tabDock = new TabDockViewModel();
+        return tabDock;
+    }
 
-    MenuItemKey TERMINAL = new MenuItemKey();
-
-    MenuItemKey THEME = new MenuItemKey();
-
-    MenuItemKey DOCK_TAB = new MenuItemKey();
 }

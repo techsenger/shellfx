@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.tabs;
-
-import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.core.tab.TabKey;
-
-/**
- *
- * @author Pavel Castornii
- */
-public interface CoreComponentKeys {
-
-    PaneKey BOTTOM_TAB_HOST = new PaneKey("Bottom Tab Host");
-
-    TabKey WORKER_REPORT_TAB = new TabKey("Worker Report Tab");
-
-    PaneKey WORKSPACE = new PaneKey("Workspace");
-
-    PaneKey TAB_DOCK = new PaneKey("Tab Dock");
+/*
+    Author: Pavel Castornii
+*/
+.dock-tab .indicator {
+    -fx-fill: -color-accent-5;
+    -fx-stroke: -color-accent-7;
+    -fx-stroke-width: 2;
+    -fx-stroke-type: inside;
+    -fx-opacity: 0.3;
 }
+
+

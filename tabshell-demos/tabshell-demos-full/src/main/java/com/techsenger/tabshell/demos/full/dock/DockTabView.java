@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.tabshell.core.menu.FileMenuKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.tabs.docktab.AbstractDockTabView;
 
 /**
- * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
- * for example, during validation in a tab.
  *
  * @author Pavel Castornii
  */
-public interface DemoFileMenuKeys extends FileMenuKeys {
+public class DockTabView extends AbstractDockTabView<DockTabViewModel> {
 
-    MenuItemKey TEXT_EDITOR = new MenuItemKey();
+    public DockTabView(ShellView<?> shell, DockTabViewModel viewModel) {
+        super(shell, viewModel);
+    }
 
-    MenuItemKey HEX_EDITOR = new MenuItemKey();
+    @Override
+    public void requestFocus() {
 
-    MenuItemKey TERMINAL = new MenuItemKey();
-
-    MenuItemKey THEME = new MenuItemKey();
-
-    MenuItemKey DOCK_TAB = new MenuItemKey();
+    }
 }

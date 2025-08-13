@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.mvvm4fx.core.AbstractChildView;
+import com.techsenger.mvvm4fx.core.ParentView;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
@@ -25,7 +26,6 @@ import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -47,10 +47,13 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     private final StackPane wrapperPane = new StackPane(contentPane);
 
-    private final ReadOnlyObjectWrapper<TabContainerView<?>> container = new ReadOnlyObjectWrapper<>();
-
     public AbstractTabView(T viewModel) {
         super(viewModel);
+    }
+
+    @Override
+    public void setParent(ParentView<?> parent) {
+        super.setParent(parent);
     }
 
     @Override
@@ -66,20 +69,6 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
     @Override
     public ComponentTab getNode() {
         return root;
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<TabContainerView<?>> containerProperty() {
-        return this.container.getReadOnlyProperty();
-    }
-
-    @Override
-    public TabContainerView<?> getContainer() {
-        return this.container.get();
-    }
-
-    public void setContainer(TabContainerView<?> value) {
-        this.container.set(value);
     }
 
     @Override
@@ -104,7 +93,7 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     @Override
     public void close() {
-        ((TabContainerView<AbstractTabView<T>>) getContainer()).closeTab(this);
+        ((TabContainerView<AbstractTabView<T>>) getParent()).closeTab(this);
     }
 
     @Override

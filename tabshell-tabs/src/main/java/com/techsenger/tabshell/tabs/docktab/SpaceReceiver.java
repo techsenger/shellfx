@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
-
-import com.techsenger.tabshell.core.menu.FileMenuKeys;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
+package com.techsenger.tabshell.tabs.docktab;
 
 /**
- * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
- * for example, during validation in a tab.
+ * Defines which neighboring dock will take over the space when a TabDock is removed from the layout.
  *
  * @author Pavel Castornii
  */
-public interface DemoFileMenuKeys extends FileMenuKeys {
+public enum SpaceReceiver {
 
-    MenuItemKey TEXT_EDITOR = new MenuItemKey();
+    /**
+     * In a horizontal split: the left neighbor receives the space.
+     * In a vertical split: the top neighbor receives the space.
+     */
+    PREVIOUS,
 
-    MenuItemKey HEX_EDITOR = new MenuItemKey();
+    /**
+     * In a horizontal split: the right neighbor receives the space.
+     * In a vertical split: the bottom neighbor receives the space.
+     */
+    NEXT,
 
-    MenuItemKey TERMINAL = new MenuItemKey();
-
-    MenuItemKey THEME = new MenuItemKey();
-
-    MenuItemKey DOCK_TAB = new MenuItemKey();
+    /**
+     * The space is distributed between both neighbors.
+     */
+    BOTH
 }

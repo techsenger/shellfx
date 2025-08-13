@@ -24,7 +24,7 @@ import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.hex.data.DataInspectorView;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.tabs.dock.TabDockView;
+import com.techsenger.tabshell.tabs.TabHostView;
 import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabView;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import java.util.ArrayList;
@@ -112,7 +112,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final CaretView caret;
 
-    private final TabDockView rightDock;
+    private final TabHostView rightTabHost;
 
     private final DataInspectorView<?> dataInspector;
 
@@ -129,7 +129,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         });
         this.virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
         this.caret = new CaretView(viewModel.getCaret());
-        this.rightDock = new TabDockView(viewModel.getRightDock());
+        this.rightTabHost = new TabHostView(viewModel.getRightTabHost());
         this.dataInspector = createDataInspector();
         this.headerRow = new HeaderRowView(viewModel.getHeaderRow(), this);
     }
@@ -198,8 +198,8 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         this.mainPane.getChildren().addAll(headerRow.getNode(), virtualScrollPane);
         VBox.setVgrow(this.mainPane, Priority.ALWAYS);
 
-        VBox.setVgrow(this.rightDock.getNode(), Priority.ALWAYS);
-        getRightPane().getChildren().add(this.rightDock.getNode());
+        VBox.setVgrow(this.rightTabHost.getNode(), Priority.ALWAYS);
+        getRightPane().getChildren().add(this.rightTabHost.getNode());
     }
 
     @Override
@@ -252,9 +252,9 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         super.postInitialize(viewModel);
         this.headerRow.initialize();
         this.caret.initialize();
-        this.rightDock.initialize();
+        this.rightTabHost.initialize();
         this.dataInspector.initialize();
-        this.rightDock.openTab(this.dataInspector);
+        this.rightTabHost.openTab(this.dataInspector);
         viewModel.readFile();
     }
 
@@ -262,7 +262,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
     protected void preDeinitialize(T viewModel) {
         super.preDeinitialize(viewModel);
         this.dataInspector.deinitialize();
-        this.rightDock.deinitialize();
+        this.rightTabHost.deinitialize();
         this.caret.deinitialize();
         this.headerRow.deinitialize();
         for (var r : bodyRows) {

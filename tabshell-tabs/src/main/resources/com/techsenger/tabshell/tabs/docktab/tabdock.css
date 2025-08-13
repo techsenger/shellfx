@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.tabs;
+/*
+    Author: Pavel Castornii
+*/
+.tab-dock.tab-pane-pro > .tab-header-area > .first-area {
+    -fx-padding: 0 0 2px 0px; /* bottom 2px is the line under tab headers */
+}
 
-import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.core.tab.TabKey;
+.tab-dock.tab-pane-pro > .tab-header-area > .last-area {
+    -fx-padding: 0 0 2px 0; /* bottom 2px is the line under tab headers */
+}
 
-/**
- *
- * @author Pavel Castornii
- */
-public interface CoreComponentKeys {
-
-    PaneKey BOTTOM_TAB_HOST = new PaneKey("Bottom Tab Host");
-
-    TabKey WORKER_REPORT_TAB = new TabKey("Worker Report Tab");
-
-    PaneKey WORKSPACE = new PaneKey("Workspace");
-
-    PaneKey TAB_DOCK = new PaneKey("Tab Dock");
+.tab-dock.tab-pane-pro > .tab-header-area > .last-area > .control-container {
+    -fx-padding: 0 4px 0 12px;
 }

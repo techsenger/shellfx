@@ -190,6 +190,14 @@
 }
 
 /*
+    Tab
+*/
+.tab-pane-pro > .tab-header-area > .tab-drop-position {
+    -fx-background-color: -color-accent-5;
+    -fx-pref-width: 2px;
+}
+
+/*
     Button
 */
 .button.cross {
@@ -212,18 +220,34 @@
 .button.iconed,
 .toggle-button.iconed {
     -fx-padding: 0;
-    -fx-min-height:2.1em;
-    -fx-max-height:2.1em;
-    -fx-pref-height:2.1em;
-    -fx-min-width:2.1em;
-    -fx-max-width:2.1em;
-    -fx-pref-width:2.1em;
+    -fx-min-height: 2.1em;
+    -fx-max-height: 2.1em;
+    -fx-pref-height: 2.1em;
+    -fx-min-width: 2.1em;
+    -fx-max-width: 2.1em;
+    -fx-pref-width: 2.1em;
 }
 
 .button .font-icon-view,
 .toggle-button .font-icon-view {
     -fx-padding: 0;
     -fx-font-size: 1.4em;
+}
+
+.button.mini-iconed,
+.toggle-button.mini-iconed {
+    -fx-padding: 0;
+    -fx-min-height: 1.4em;
+    -fx-max-height: 1.4em;
+    -fx-pref-height: 1.4em;
+    -fx-min-width: 1.4em;
+    -fx-max-width: 1.4em;
+    -fx-pref-width: 1.4em;
+}
+
+.button.mini-iconed .font-icon-view,
+.toggle-button.mini-iconed .font-icon-view {
+    -fx-font-size: 1.2em;
 }
 
 .toggle-button.flat {

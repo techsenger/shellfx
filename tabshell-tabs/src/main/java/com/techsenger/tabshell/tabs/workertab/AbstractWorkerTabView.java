@@ -19,8 +19,8 @@ package com.techsenger.tabshell.tabs.workertab;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.tabs.TabHostView;
 import com.techsenger.tabshell.tabs.splittab.AbstractSplitTabView;
-import com.techsenger.tabshell.tabs.dock.TabDockView;
 import javafx.geometry.Pos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
@@ -36,23 +36,23 @@ public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel
 
     private final Hyperlink workerCountLink = new Hyperlink("0", new FontIconView(CoreIcons.PROCESS));
 
-    private final TabDockView bottomDock;
+    private final TabHostView bottomTabHost;
 
     public AbstractWorkerTabView(ShellView<?> shell, T viewModel) {
         super(shell, viewModel);
-        this.bottomDock = new TabDockView(viewModel.getBottomDock());
+        this.bottomTabHost = new TabHostView(viewModel.getBottomTabHost());
     }
 
     @Override
     protected void preInitialize(T viewModel) {
         super.preInitialize(viewModel);
-        this.bottomDock.initialize();
+        this.bottomTabHost.initialize();
     }
 
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        this.getBottomPane().getChildren().add(bottomDock.getNode());
+        this.getBottomPane().getChildren().add(bottomTabHost.getNode());
         workerCountLink.setOnAction((e) -> viewModel.openWorkerReportTab());
         statusBar.setText(""); //to remove ok
         var hBox = new HBox(workerCountLink);
@@ -80,14 +80,14 @@ public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel
     @Override
     protected void postDeinitialize(T viewModel) {
         super.postDeinitialize(viewModel);
-        this.bottomDock.deinitialize();
+        this.bottomTabHost.deinitialize();
     }
 
     protected StatusBar getStatusBar() {
         return statusBar;
     }
 
-    protected TabDockView getBottomDock() {
-        return bottomDock;
+    protected TabHostView getBottomTabHost() {
+        return bottomTabHost;
     }
 }

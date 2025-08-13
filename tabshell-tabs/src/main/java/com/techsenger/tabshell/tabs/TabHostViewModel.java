@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.tabs.dock;
+package com.techsenger.tabshell.tabs;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class TabDockViewModel extends AbstractPaneViewModel implements TabContainerViewModel<TabViewModel> {
+public class TabHostViewModel extends AbstractPaneViewModel implements TabContainerViewModel<TabViewModel> {
 
-    private static final Logger logger = LoggerFactory.getLogger(TabDockViewModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(TabHostViewModel.class);
 
     private final ReadOnlyObjectWrapper<TabViewModel> selectedTab = new ReadOnlyObjectWrapper<>();
 
@@ -58,7 +58,7 @@ public class TabDockViewModel extends AbstractPaneViewModel implements TabContai
 
     private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
 
-    public TabDockViewModel(PaneKey key) {
+    public TabHostViewModel(PaneKey key) {
         super();
         this.key = key;
         this.modifiableTabs.addListener((ListChangeListener<? super TabViewModel>) (change) -> {

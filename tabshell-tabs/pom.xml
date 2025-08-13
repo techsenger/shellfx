@@ -15,6 +15,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.techsenger.tabpanepro</groupId>
+            <artifactId>tabpanepro-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.mvvm4fx</groupId>
             <artifactId>mvvm4fx-core</artifactId>
         </dependency>

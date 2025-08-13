@@ -24,6 +24,7 @@ module com.techsenger.tabshell.hex {
     requires com.techsenger.mvvm4fx.core;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
+    requires com.techsenger.tabpanepro.core;
     requires org.fxmisc.flowless;
     requires javafx.base;
     requires javafx.controls;

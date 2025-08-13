@@ -153,3 +153,7 @@
 .font-icon-view.tabshell-file-icon {
     -fx-code-point: 983588; /* file-outline */
 }
+
+.font-icon-view.tabshell-drag-vertical-icon {
+    -fx-code-point: 983517; /* drag-vertical */
+}

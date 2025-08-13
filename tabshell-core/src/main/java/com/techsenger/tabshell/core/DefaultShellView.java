@@ -33,8 +33,6 @@ import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.Stylesheet;
-import com.techsenger.tabshell.core.tab.AbstractShellTabView;
-import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
@@ -208,7 +206,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     private final MenuManager menuManager;
 
-    private final VBox contentPane  = new VBox();
+    private final VBox contentPane = new VBox();
 
     private final StackPane stackPane = new StackPane();
 
@@ -386,19 +384,13 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
                 if (change.wasAdded()) {
                     for (Tab tab : change.getAddedSubList()) {
                         ShellTabView<?> tabView = (ShellTabView<?>) ((ComponentTab) tab).getView();
-                        ((AbstractShellTabView<?>) tabView).setContainer(this);
-                        var tabViewModel = tabView.getViewModel();
-                        viewModel.getModifiableTabs().add(tabViewModel);
-                        ((AbstractShellTabViewModel) tabViewModel).setContainer(viewModel);
+                        tabView.setParent(this);
                     }
                 }
                 if (change.wasRemoved()) {
                     for (Tab tab : change.getRemoved()) {
                         ShellTabView<?> tabView = (ShellTabView<?>) ((ComponentTab) tab).getView();
-                        ((AbstractShellTabView<?>) tabView).setContainer(null);
-                        var tabViewModel = tabView.getViewModel();
-                        viewModel.getModifiableTabs().remove(tabViewModel);
-                        ((AbstractShellTabViewModel) tabViewModel).setContainer(null);
+                        tabView.setParent(null);
                     }
                 }
             }

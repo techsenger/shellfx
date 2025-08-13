@@ -31,8 +31,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -57,8 +55,6 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     private final BooleanProperty waiting = new SimpleBooleanProperty(false);
 
     private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper();
-
-    private final ReadOnlyObjectWrapper<TabContainerViewModel<?>> container = new ReadOnlyObjectWrapper<>();
 
     private final ObservableSource<Boolean> close = new SimpleObservableSource<>();
 
@@ -147,20 +143,6 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     @Override
     public void prepareForClose(CloseScope scope, Runnable retryCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<TabContainerViewModel<?>> containerProperty() {
-        return this.container.getReadOnlyProperty();
-    }
-
-    @Override
-    public TabContainerViewModel<?> getContainer() {
-        return this.container.get();
-    }
-
-    public void setContainer(TabContainerViewModel<?> value) {
-        this.container.set(value);
     }
 
     public BooleanProperty waitingProperty() {

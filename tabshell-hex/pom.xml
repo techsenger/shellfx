@@ -15,6 +15,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.techsenger.tabpanepro</groupId>
+            <artifactId>tabpanepro-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

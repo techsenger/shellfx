@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.tabs.dock;
+package com.techsenger.tabshell.tabs;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
@@ -37,7 +36,6 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -46,14 +44,14 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class TabDockView extends AbstractPaneView<TabDockViewModel> implements TabContainerView<TabView<?>>,
-        MenuAware {
+public class TabHostView<T extends TabHostViewModel> extends AbstractPaneView<T>
+        implements TabContainerView<TabView<?>>, MenuAware {
 
-    private final TabPane root = new TabPane();
+    private final TabPanePro root = new TabPanePro();
 
     private final ReadOnlyObjectWrapper<TabView<?>> selectedTab = new ReadOnlyObjectWrapper<>();
 
-    public TabDockView(TabDockViewModel viewModel) {
+    public TabHostView(T viewModel) {
         super(viewModel);
     }
 
@@ -102,7 +100,7 @@ public class TabDockView extends AbstractPaneView<TabDockViewModel> implements T
     }
 
     @Override
-    public TabPane getNode() {
+    public TabPanePro getNode() {
         return this.root;
     }
 
@@ -143,7 +141,7 @@ public class TabDockView extends AbstractPaneView<TabDockViewModel> implements T
     }
 
     @Override
-    protected void build(TabDockViewModel viewModel) {
+    protected void build(T viewModel) {
         super.build(viewModel);
         TabContainerViewUtils.initTabPane(root, this);
         this.root.getStyleClass().add(Styles.DENSE);
@@ -151,12 +149,12 @@ public class TabDockView extends AbstractPaneView<TabDockViewModel> implements T
     }
 
     @Override
-    protected void bind(TabDockViewModel viewModel) {
+    protected void bind(T viewModel) {
         super.bind(viewModel);
     }
 
     @Override
-    protected void addListeners(TabDockViewModel viewModel) {
+    protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         this.root.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (oldV != null) {
@@ -179,19 +177,13 @@ public class TabDockView extends AbstractPaneView<TabDockViewModel> implements T
                 if (change.wasAdded()) {
                     for (Tab tab : change.getAddedSubList()) {
                         var tabView = ((ComponentTab) tab).getView();
-                        ((AbstractTabView<?>) tabView).setContainer(this);
-                        var tabViewModel = tabView.getViewModel();
-                        ((AbstractTabViewModel) tabViewModel).setContainer(viewModel);
-                        viewModel.getModifiableTabs().add(tabViewModel);
+                        tabView.setParent(this);
                     }
                 }
                 if (change.wasRemoved()) {
                     for (Tab tab : change.getRemoved()) {
                         var tabView = ((ComponentTab) tab).getView();
-                        ((AbstractTabView<?>) tabView).setContainer(null);
-                        var tabViewModel = tabView.getViewModel();
-                        ((AbstractTabViewModel) tabViewModel).setContainer(null);
-                        viewModel.getModifiableTabs().remove(tabViewModel);
+                        tabView.setParent(null);
                     }
                 }
             }
@@ -210,7 +202,7 @@ public class TabDockView extends AbstractPaneView<TabDockViewModel> implements T
     }
 
     @Override
-    protected void postDeinitialize(TabDockViewModel viewModel) {
+    protected void postDeinitialize(T viewModel) {
         super.postDeinitialize(viewModel);
         for (var t : this.root.getTabs()) {
             ((ComponentTab) t).getView().deinitialize();

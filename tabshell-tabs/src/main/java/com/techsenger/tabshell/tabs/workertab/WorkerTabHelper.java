@@ -31,6 +31,6 @@ public class WorkerTabHelper<T extends AbstractWorkerTabView<?>> extends SplitTa
     public void openWorkerReportTab(WorkerReportTabViewModel viewModel) {
         var reportView = new WorkerReportTabView(viewModel);
         reportView.initialize();
-        getView().getBottomDock().openTab(reportView);
+        getView().getBottomTabHost().openTab(reportView);
     }
 }
