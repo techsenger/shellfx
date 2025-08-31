@@ -189,6 +189,28 @@
     -fx-padding: 0.4em 12px 0.4em 0.4em;
 }
 
+.shell-tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: transparent, -color-bg-default;
+}
+
+.shell-tab-pane > .tab-header-area > .headers-region > .tab:hover {
+  -fx-background-color: -color-border-default, -color-bg-subtle;
+}
+
+.shell-tab-pane > .tab-header-area > .headers-region > .tab:selected {
+  -fx-background-color: -color-border-default, -color-tab-bg-selected;
+}
+
+.shell-tab-pane > .tab-header-area > .headers-region > .tab > .border-path {
+    -fx-stroke: -color-border-default;
+    -fx-stroke-width: 2px;
+}
+
+.shell-tab-pane > .tab-header-area > .headers-region > .tab > .selected-path {
+    -fx-stroke: -color-accent-5;
+    -fx-stroke-width: 2px;
+}
+
 /*
     Tab
 */

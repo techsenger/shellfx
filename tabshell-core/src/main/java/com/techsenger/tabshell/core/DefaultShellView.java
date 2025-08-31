@@ -20,6 +20,8 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.AbstractParentView;
 import com.techsenger.stagepro.core.StageResizeEvent;
 import com.techsenger.stagepro.core.StandardStageController;
+import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import static com.techsenger.tabshell.core.CloseScope.SHELL;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
@@ -210,7 +212,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     private final StackPane stackPane = new StackPane();
 
-    private final TabPane tabPane = new TabPane();
+    private final TabPanePro tabPane = new TabPanePro();
 
     private final ThemeManager themeManager;
 
@@ -342,10 +344,21 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
     protected void build(DefaultShellViewModel viewModel) {
         super.build(viewModel);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
-        tabPane.getStyleClass().addAll("shell-tab-pane", Styles.TABS_FLOATING, Styles.DENSE);
+        tabPane.getStyleClass().addAll("shell-tab-pane", Styles.DENSE);
         VBox.setVgrow(tabPane, Priority.ALWAYS);
         this.contentPane.getChildren().add(tabPane);
         TabContainerViewUtils.initTabPane(tabPane, this);
+        var tabHeaderArea = getTabHeaderArea();
+        tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
+        tabHeaderArea.setTabGap(-10.0);
+        // right corner is on top
+        tabHeaderArea.setTabViewOrderResolver((tabHeader, index, tabCount, selected) -> {
+            if (selected) {
+                return  tabCount * -1.0;
+            } else {
+                return (tabCount - 1 - index) * -1.0;
+            }
+        });
         stageController.contentProperty().set(this.contentPane);
         //we add stackpane behind stage root
         stackPane.getChildren().add(stage.getScene().getRoot());
@@ -428,6 +441,12 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     protected ShellStageController getStageController() {
         return stageController;
+    }
+
+    protected TabPaneProSkin.TabHeaderArea getTabHeaderArea() {
+        TabPaneProSkin sourceSkin = (TabPaneProSkin) this.tabPane.getSkin();
+        TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
+        return tabHeaderArea;
     }
 
     private void doCloseTab(TabView<?> tabView) {

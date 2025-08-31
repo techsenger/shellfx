@@ -25,6 +25,7 @@ module com.techsenger.tabshell.core {
     requires atlantafx.base;
     requires jakarta.xml.bind;
     requires com.techsenger.stagepro.core;
+    requires com.techsenger.tabpanepro.core;
     requires com.techsenger.mvvm4fx.core;
     requires com.techsenger.tabshell.material;
 
