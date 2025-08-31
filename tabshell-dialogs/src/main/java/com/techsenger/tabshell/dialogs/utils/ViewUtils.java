@@ -18,8 +18,6 @@ package com.techsenger.tabshell.dialogs.utils;
 
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -33,13 +31,13 @@ import javafx.scene.layout.VBox;
 public final class ViewUtils {
 
     public static void buildIconedMessageBox(FontIconView messageIconView, Label messageLabel, HBox messageBox) {
-        messageIconView.setMinWidth(Label.USE_PREF_SIZE);
-        DoubleBinding messageLabelWidth = Bindings.createDoubleBinding(
-                () -> messageBox.getWidth() - messageIconView.getWidth() - 2 * SizeConstants.INSET, //0.5 + 0.5 + 1
-                messageBox.widthProperty(), messageIconView.widthProperty());
-        messageLabel.prefWidthProperty().bind(messageLabelWidth);
-        messageLabel.minWidthProperty().bind(messageLabelWidth);
-        messageLabel.maxWidthProperty().bind(messageLabelWidth);
+//        messageIconView.setMinWidth(Label.USE_PREF_SIZE);
+//        DoubleBinding messageLabelWidth = Bindings.createDoubleBinding(
+//                () -> messageBox.getWidth() - messageIconView.getWidth() - 2 * SizeConstants.INSET, //0.5 + 0.5 + 1
+//                messageBox.widthProperty(), messageIconView.widthProperty());
+//        messageLabel.prefWidthProperty().bind(messageLabelWidth);
+//        messageLabel.minWidthProperty().bind(messageLabelWidth);
+//        messageLabel.maxWidthProperty().bind(messageLabelWidth);
         messageLabel.setPadding(new Insets(SizeConstants.INSET, 0, 0, 0));
 
         VBox.setVgrow(messageBox, Priority.ALWAYS);

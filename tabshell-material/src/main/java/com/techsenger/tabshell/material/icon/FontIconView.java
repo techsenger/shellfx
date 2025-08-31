@@ -24,21 +24,18 @@ import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableIntegerProperty;
 import javafx.css.StyleableIntegerProperty;
 import javafx.css.StyleablePropertyFactory;
-import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 
 /**
- * Font icon that supports icon size in ems and pixels. It extends {@link Label} (not Text because Label supports more
- * CSS properties) and adds only one property = code point (-fx-code-point). Note, the code point in the decimal system.
+ * Font icon that supports icon size in ems and pixels. It extends {@link Text} (not Label because Label adds extra
+ * space, although it supports more CSS properties) and adds only one property = code point (-fx-code-point). Note,
+ * the code point in the decimal system.
  *
- * <p>Ikonli is not used because it doesn't support `em` see  https://github.com/kordamp/ikonli/issues/150 . It seems
- * that the reason is in custom property `-fx-icon-size: 1.0em;` that internally sets `-fx-font-size` and it creates
- * endless loop.
- *
- * <p>That's why this class extends {@link Label} and uses its `-fx-font-size` property adding only one custom property.
+ * <p>To set the icon size, use the standard -fx-font-size property.
  *
  * @author Pavel Castornii
  */
-public class FontIconView extends Label {
+public class FontIconView extends Text {
 
     private static final class Css {
 
@@ -47,7 +44,7 @@ public class FontIconView extends Label {
         private static final List<CssMetaData<?, ?>> META_DATA;
 
         static {
-            var factory = new StyleablePropertyFactory<FontIconView>(Label.getClassCssMetaData());
+            var factory = new StyleablePropertyFactory<FontIconView>(Text.getClassCssMetaData());
             CODE_POINT = factory.createSizeCssMetaData("-fx-code-point", s -> s.codePoint);
             META_DATA = List.copyOf(factory.getCssMetaData());
         }
@@ -99,7 +96,7 @@ public class FontIconView extends Label {
     }
 
     @Override
-    public List<CssMetaData<?, ?>> getControlCssMetaData() {
+    public List<CssMetaData<?, ?>> getCssMetaData() {
         return getClassCssMetaData();
     }
 
