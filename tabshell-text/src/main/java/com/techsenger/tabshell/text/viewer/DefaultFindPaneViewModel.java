@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.find.AbstractFindPaneViewModel;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.core.pane.PaneKey;

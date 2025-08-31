@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.find;
+package com.techsenger.tabshell.shared.find;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneHistory;
 import com.techsenger.tabshell.core.history.HistoryUtils;

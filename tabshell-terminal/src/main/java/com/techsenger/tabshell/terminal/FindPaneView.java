@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.core.find.AbstractFindPaneView;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneView;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 

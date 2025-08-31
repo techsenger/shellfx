@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.find.AbstractFindPaneView;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;

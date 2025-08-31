@@ -28,6 +28,7 @@ module com.techsenger.tabshell.terminal {
     requires com.techsenger.jeditermfx.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
+    requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabshell.dialogs;
 
     exports com.techsenger.tabshell.terminal;

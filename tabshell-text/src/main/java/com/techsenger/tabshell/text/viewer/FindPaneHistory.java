@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.tabshell.core.find.AbstractFindPaneHistory;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneHistory;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import java.util.ArrayList;
 import java.util.List;

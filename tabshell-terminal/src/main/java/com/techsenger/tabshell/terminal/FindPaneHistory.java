@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.core.find.AbstractFindPaneHistory;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneHistory;
 
 /**
  *

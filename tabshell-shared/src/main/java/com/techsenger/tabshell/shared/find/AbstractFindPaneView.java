@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.find;
+package com.techsenger.tabshell.shared.find;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;

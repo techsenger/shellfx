@@ -30,7 +30,6 @@ module com.techsenger.tabshell.core {
 
     exports com.techsenger.tabshell.core;
     exports com.techsenger.tabshell.core.dialog;
-    exports com.techsenger.tabshell.core.find;
     exports com.techsenger.tabshell.core.history;
     exports com.techsenger.tabshell.core.menu;
     exports com.techsenger.tabshell.core.node;
