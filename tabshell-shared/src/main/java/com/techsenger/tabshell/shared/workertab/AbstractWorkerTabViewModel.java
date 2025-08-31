@@ -18,7 +18,7 @@ package com.techsenger.tabshell.shared.workertab;
 
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.TabWorker;
-import com.techsenger.tabshell.layout.TabHostViewModel;
+import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import com.techsenger.tabshell.layout.splittab.AbstractSplitTabViewModel;
 import com.techsenger.tabshell.shared.SharedComponentKeys;
 import javafx.beans.InvalidationListener;

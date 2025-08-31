@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.layout.docktab;
 
 import com.techsenger.tabshell.layout.LayoutComponentKeys;
-import com.techsenger.tabshell.layout.TabHostViewModel;
+import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyProperty;

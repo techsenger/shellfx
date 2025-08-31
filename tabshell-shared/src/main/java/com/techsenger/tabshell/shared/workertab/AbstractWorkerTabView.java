@@ -18,7 +18,7 @@ package com.techsenger.tabshell.shared.workertab;
 
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.layout.TabHostView;
+import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.layout.splittab.AbstractSplitTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import javafx.geometry.Pos;

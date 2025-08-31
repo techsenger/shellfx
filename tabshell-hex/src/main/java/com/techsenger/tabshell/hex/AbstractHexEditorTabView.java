@@ -23,7 +23,7 @@ import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.hex.data.DataInspectorView;
 import com.techsenger.tabshell.hex.style.HexIcons;
-import com.techsenger.tabshell.layout.TabHostView;
+import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabView;
 import com.techsenger.toolkit.fx.utils.NodeUtils;

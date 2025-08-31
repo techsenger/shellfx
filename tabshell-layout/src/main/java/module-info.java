@@ -33,4 +33,5 @@ module com.techsenger.tabshell.layout {
     exports com.techsenger.tabshell.layout;
     exports com.techsenger.tabshell.layout.docktab;
     exports com.techsenger.tabshell.layout.splittab;
+    exports com.techsenger.tabshell.layout.tabhost;
 }

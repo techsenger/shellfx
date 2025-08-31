@@ -22,7 +22,7 @@ import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.layout.TabHostView;
+import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

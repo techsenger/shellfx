@@ -23,7 +23,7 @@ import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.hex.data.DataInspectorViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
-import com.techsenger.tabshell.layout.TabHostViewModel;
+import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.toolkit.fx.value.ObservableSource;
