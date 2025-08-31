@@ -81,7 +81,8 @@ The platform consists of the following modules:
 * Core — includes the shell itself, base classes for component development, settings, and core utility classes.
 If you don't plan to use ready-made components, just two modules (material and core) are sufficient to run TabShell
 and develop custom components. See [Core Demo](#running-core-demo) for details.
-* Tabs — offers abstract components for creating tabs with various layouts.
+* Layout — offers abstract components for creating tabs with various layouts.
+* Shared — includes components that are used by other components from different modules.
 * Storage — contains classes to interact with storage systems that are not natively recognized by the operating system
 (such as Google Drive, Dropbox, FTP, and similar). At the same time, the module only includes implementations for
 working with the OS's default storage systems.

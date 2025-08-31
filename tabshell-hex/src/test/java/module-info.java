@@ -18,7 +18,7 @@ open module com.techsenger.tabshell.hex {
     requires org.slf4j;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
-    requires com.techsenger.tabshell.tabs;
+    requires com.techsenger.tabshell.layout;
     requires com.techsenger.tabshell.storage;
     requires com.techsenger.tabshell.dialogs;
     requires com.techsenger.mvvm4fx.core;

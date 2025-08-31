@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex;
 
-import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabHistory;
+import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabHistory;
 
 /**
  *

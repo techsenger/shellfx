@@ -25,7 +25,7 @@ import com.techsenger.tabshell.core.style.StyleUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.RichTextFxUtils;
-import com.techsenger.tabshell.tabs.workertab.AbstractWorkerTabView;
+import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabView;
 import com.techsenger.tabshell.text.style.TextIcons;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;

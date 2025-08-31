@@ -19,7 +19,7 @@ package com.techsenger.tabshell.demos.full.dock;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.demos.full.DemoComponentKeys;
-import com.techsenger.tabshell.tabs.docktab.AbstractDockTabViewModel;
+import com.techsenger.tabshell.layout.docktab.AbstractDockTabViewModel;
 
 /**
  *

@@ -68,7 +68,12 @@
             </dependency>
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-tabs</artifactId>
+                <artifactId>tabshell-layout</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -117,14 +122,15 @@
     <modules>
         <module>tabshell-material</module>
         <module>tabshell-core</module>
+        <module>tabshell-layout</module>
         <module>tabshell-storage</module>
-        <module>tabshell-tabs</module>
+        <module>tabshell-icons</module>
+        <module>tabshell-shared</module>
         <module>tabshell-text</module>
         <module>tabshell-terminal</module>
         <module>tabshell-dialogs</module>
         <module>tabshell-hex</module>
         <module>tabshell-registrars</module>
-        <module>tabshell-icons</module>
         <module>tabshell-demos</module>
     </modules>
 

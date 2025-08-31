@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.hex;
 
 import com.techsenger.tabshell.dialogs.StandardDialogHelper;
-import com.techsenger.tabshell.tabs.workertab.WorkerTabHelper;
+import com.techsenger.tabshell.shared.workertab.WorkerTabHelper;
 
 /**
  *

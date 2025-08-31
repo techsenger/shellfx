@@ -18,7 +18,7 @@ package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.dialogs.StandardDialogHelper;
-import com.techsenger.tabshell.tabs.workertab.WorkerTabHelper;
+import com.techsenger.tabshell.shared.workertab.WorkerTabHelper;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.slf4j.Logger;
