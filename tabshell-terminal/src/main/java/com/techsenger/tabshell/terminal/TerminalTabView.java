@@ -171,6 +171,7 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
         paletteTypesComboBox.setCellFactory(cellFactory);
         paletteTypesComboBox.setButtonCell(cellFactory.call(null));
         this.toolBar.getItems().addAll(stretchablePane, paletteLabel, this.paletteTypesComboBox);
+        this.toolBar.getStyleClass().add(StyleClasses.BLEND);
     }
 
     @Override

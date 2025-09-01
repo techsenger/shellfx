@@ -190,6 +190,8 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         offsetNumberBaseComboBox.getStyleClass().add(Styles.DENSE);
         offsetNumberBaseComboBox.setTooltip(new Tooltip("Offset Display Base"));
 
+        toolBar.getStyleClass().add(StyleClasses.BLEND);
+
         var css = AbstractHexEditorTabView.class.getResource("hexeditor.css").toExternalForm();
         getTopPane().getStylesheets().add(css);
         this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);

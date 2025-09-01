@@ -32,7 +32,7 @@ import javafx.scene.shape.Polygon;
  */
 class SlantedTabHeaderSkin extends TabPaneProSkin.TabHeaderSkin {
 
-    private static final Insets extraPadding = new Insets(2, 13, 0, 13);
+    private static final Insets extraPadding = new Insets(2, 13, 0, 4);
 
     private static final BiFunction<Side, Double, Double> dropOffsetResolver = (side, gap) -> {
         var offset = gap / 2;
@@ -65,7 +65,7 @@ class SlantedTabHeaderSkin extends TabPaneProSkin.TabHeaderSkin {
 
     @Override
     protected double computePrefWidth(double height) {
-        var width = super.computePrefWidth(height) + 26;
+        var width = super.computePrefWidth(height) + 28;
         return width;
     }
 
@@ -74,7 +74,7 @@ class SlantedTabHeaderSkin extends TabPaneProSkin.TabHeaderSkin {
         super.layoutChildren(extraPadding);
 
         double widthBottom = snapSizeX(getWidth());
-        double widthTop = snapSizeX(widthBottom - 26);
+        double widthTop = snapSizeX(widthBottom - 28);
         double height = snapSizeY(getHeight());
         Double inset = snapSizeX((widthBottom - widthTop) / 2);
 

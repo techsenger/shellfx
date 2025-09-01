@@ -178,6 +178,10 @@
 /*
     ShellTab
 */
+.shell-tab-pane > .tab-header-area > .tab-header-background {
+  -fx-background-insets: 0 0 0 0, 0 0 1px 0;
+}
+
 .shell-tab-pane > .tab-header-area > .headers-region > .tab .font-icon-view {
     -fx-font-size: 1.6em;
     -fx-padding: 0;
@@ -185,12 +189,14 @@
 
 .shell-tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
     -fx-pref-width: -1;
+    -fx-pref-height: 2.4em;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0.4em 12px 0.4em 0.4em;
 }
 
 .shell-tab-pane > .tab-header-area > .headers-region > .tab {
-    -fx-background-color: transparent, -color-bg-default;
+    -fx-background-color: transparent, ladder(-color-bg-default, derive(-color-bg-inset, 20%) 49%, -color-base-1 50%);
+    -fx-background-insets: 0 0 0 0, 0 0 1px 0;
 }
 
 .shell-tab-pane > .tab-header-area > .headers-region > .tab:hover {
@@ -199,6 +205,7 @@
 
 .shell-tab-pane > .tab-header-area > .headers-region > .tab:selected {
   -fx-background-color: -color-border-default, -color-tab-bg-selected;
+  -fx-background-insets: 0 0 0 0, 0 0 0 0;
 }
 
 .shell-tab-pane > .tab-header-area > .headers-region > .tab > .border-path {
@@ -382,6 +389,17 @@
 /*
     Toolbar
 */
+
+.tool-bar.blend {
+  -fx-background-color: -color-border-muted, -color-bg-default;
+}
+
+.tool-bar.blend > .container > .button,
+.tool-bar.blend > .container > .menu-button,
+.tool-bar.blend > .container > .split-menu-button {
+  -color-button-bg: -color-bg-default;
+}
+
 .tool-bar {
     -fx-padding: 4 4 5 4; /*bottom padding is 5 = 4 + 1 because of the botttom line */
     -fx-alignment: center-left;

@@ -159,6 +159,8 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         wrapTextButton.setTooltip(new Tooltip("Line Wrap"));
         wrapTextButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
 
+        this.toolBar.getStyleClass().add(StyleClasses.BLEND);
+
         this.statusBarLeftBox.setPadding(new Insets(0, 0, 0, SizeConstants.INSET));
         this.statusBarLeftBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(this.statusBarLeftBox, Priority.NEVER);

@@ -108,4 +108,14 @@ public interface StyleClasses {
     String SAME_SPACING_TABLE_FIRST_COLUMN = "first";
 
     String SAME_SPACING_TABLE_LAST_COLUMN = "last";
+
+    /**
+     * CSS style class for UI elements that should visually blend with the default background. Applied to elements
+     * when their background color needs to match the base container's background color (-color-bg-default), creating
+     * a seamless integration between the element and its surrounding environment.
+     *
+     * <p>Commonly used for toolbars, panels, and containers that should appear as part of the background rather than
+     * distinct elevated elements.
+     */
+    String BLEND = "blend";
 }
