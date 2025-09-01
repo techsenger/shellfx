@@ -17,7 +17,9 @@
 package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.demos.full.Text;
+import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -50,6 +52,7 @@ public class TextViewerView extends AbstractPaneView<TextViewerViewModel> {
     protected void build(TextViewerViewModel viewModel) {
         super.build(viewModel);
         textArea.setWrapText(true);
+        stackPane.setPadding(new Insets(SizeConstants.HALF_INSET));
     }
 
 
