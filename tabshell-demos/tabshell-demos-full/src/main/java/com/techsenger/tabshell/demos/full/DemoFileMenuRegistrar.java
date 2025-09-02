@@ -23,10 +23,6 @@ import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.demos.full.dock.DockTabView;
 import com.techsenger.tabshell.demos.full.dock.DockTabViewModel;
-import com.techsenger.tabshell.demos.full.dock.DockableTabView;
-import com.techsenger.tabshell.demos.full.dock.DockableTabViewModel;
-import com.techsenger.tabshell.demos.full.dock.TextViewerView;
-import com.techsenger.tabshell.demos.full.dock.TextViewerViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
@@ -34,8 +30,6 @@ import com.techsenger.tabshell.registrars.FileMenuRegistrar;
 import com.techsenger.tabshell.storage.FileStorages;
 import com.techsenger.tabshell.storage.FileType;
 import com.techsenger.tabshell.storage.GenericFile;
-import com.techsenger.tabshell.layout.docktab.SpaceReceiver;
-import com.techsenger.tabshell.layout.docktab.TabDockView;
 import com.techsenger.tabshell.terminal.TerminalTabView;
 import com.techsenger.tabshell.terminal.TerminalTabViewModel;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
@@ -166,32 +160,9 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
                 var dockTabView = new DockTabView(shell, dockTabViewModel);
                 dockTabView.initialize();
                 shell.openTab(dockTabView);
-
-                var workspaceView = dockTabView.createWorkspace();
-
-                dockTabView.setRoot(workspaceView);
-
-                var mainViewModel = new TextViewerViewModel();
-                var mainView = new TextViewerView(mainViewModel);
-                mainView.initialize();
-                workspaceView.getChildren().add(mainView);
-                var tabDockView = dockTabView.createTabDock();
-                fillTabs(tabDockView);
-                tabDockView.getViewModel().setSpaceReceiver(SpaceReceiver.NEXT);
-                workspaceView.getChildren().add(tabDockView);
             });
             return item;
         };
         addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
     }
-
-    private void fillTabs(TabDockView<?> tabDock) {
-        for (var i = 0; i < 10; i++) {
-            var tabViewModel = new DockableTabViewModel(i);
-            var tabView = new DockableTabView(tabViewModel);
-            tabView.initialize();
-            tabDock.openTab(tabView);
-        }
-    }
-
 }

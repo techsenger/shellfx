@@ -18,7 +18,6 @@ package com.techsenger.tabshell.layout.docktab;
 
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
-import javafx.scene.layout.Region;
 
 /**
  *
@@ -38,7 +37,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
     }
 
     @Override
-    public Region getNode() {
+    public TabPanePro getNode() {
         return tabPane;
     }
 

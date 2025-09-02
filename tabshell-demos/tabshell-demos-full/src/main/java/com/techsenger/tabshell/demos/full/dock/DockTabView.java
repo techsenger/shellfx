@@ -17,16 +17,30 @@
 package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.layout.docktab.AbstractDockTabView;
+import com.techsenger.tabshell.core.style.CoreIcons;
+import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.core.tab.AbstractShellTabView;
+import com.techsenger.tabshell.layout.docktab.DockLayoutView;
+import com.techsenger.tabshell.layout.docktab.SpaceReceiver;
+import com.techsenger.tabshell.layout.docktab.TabDockView;
+import com.techsenger.tabshell.material.icon.FontIconView;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToolBar;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockTabView extends AbstractDockTabView<DockTabViewModel> {
+public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
+
+    private final DockLayoutView<?> layout;
+
+    private final TextViewerView textViewer;
 
     public DockTabView(ShellView<?> shell, DockTabViewModel viewModel) {
         super(shell, viewModel);
+        this.layout = new DockLayoutView<>(viewModel.getLayout());
+        this.textViewer = new TextViewerView(viewModel.getTextViewer());
     }
 
     @Override
@@ -34,9 +48,45 @@ public class DockTabView extends AbstractDockTabView<DockTabViewModel> {
 
     }
 
+    public DockLayoutView<?> getLayout() {
+        return layout;
+    }
+
+    @Override
+    protected void preInitialize(DockTabViewModel viewModel) {
+        super.preInitialize(viewModel);
+        this.layout.initialize();
+    }
+
     @Override
     protected void build(DockTabViewModel viewModel) {
         super.build(viewModel);
-        getContentPane().getChildren().add(getBorderPane());
+        var removeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
+        var addButton = new Button(null, new FontIconView(CoreIcons.ADD));
+        var toolbar = new ToolBar(removeButton, addButton);
+        toolbar.getStyleClass().add(StyleClasses.BLEND);
+        getContentPane().getChildren().addAll(toolbar, layout.getNode());
+    }
+
+    @Override
+    protected void postInitialize(DockTabViewModel viewModel) {
+        super.postInitialize(viewModel);
+        var workspaceView = layout.createWorkspace();
+        layout.setRoot(workspaceView);
+        textViewer.initialize();
+        workspaceView.getChildren().add(textViewer);
+        var tabDockView = layout.createTabDock();
+        fillTabs(tabDockView);
+        tabDockView.getViewModel().setSpaceReceiver(SpaceReceiver.NEXT);
+        workspaceView.getChildren().add(tabDockView);
+    }
+
+    private void fillTabs(TabDockView<?> tabDock) {
+        for (var i = 0; i < 10; i++) {
+            var tabViewModel = new DockableTabViewModel(i);
+            var tabView = new DockableTabView(tabViewModel);
+            tabView.initialize();
+            tabDock.openTab(tabView);
+        }
     }
 }

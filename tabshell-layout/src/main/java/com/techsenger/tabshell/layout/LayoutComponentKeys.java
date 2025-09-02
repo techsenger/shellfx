@@ -24,6 +24,8 @@ import com.techsenger.tabshell.core.pane.PaneKey;
  */
 public interface LayoutComponentKeys {
 
+    PaneKey DOCK_LAYOUT = new PaneKey("Dock Layout");
+
     PaneKey WORKSPACE = new PaneKey("Workspace");
 
     PaneKey TAB_DOCK = new PaneKey("Tab Dock");

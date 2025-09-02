@@ -21,13 +21,13 @@ import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
-import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.core.ObjectUtils;
 import com.techsenger.toolkit.core.Pair;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -113,9 +113,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> extends AbstractShellTabView<T> {
+public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneView<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractDockTabView.class);
+    private static final Logger logger = LoggerFactory.getLogger(DockLayoutView.class);
 
     private static final Double EDGE_THRESHOLD = 20.0;
 
@@ -142,18 +142,18 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
      */
     private abstract static class AbstractContainer<T extends AbstractPaneView<?>> extends StackPane {
 
-        private final AbstractDockTabView<?> dockTab;
+        private final DockLayoutView<?> layout;
 
         private final T component;
 
-        AbstractContainer(AbstractDockTabView<?> dockTab, T component) {
-            this.dockTab = dockTab;
+        AbstractContainer(DockLayoutView<?> layout, T component) {
+            this.layout = layout;
             this.component = component;
             getChildren().add(component.getNode());
         }
 
-        AbstractDockTabView<?> getDockTab() {
-            return dockTab;
+        DockLayoutView<?> getLayout() {
+            return layout;
         }
 
         T getComponent() {
@@ -162,9 +162,9 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
 
         abstract void updateDragInProgress(boolean value, DraggableType type);
 
-        AbstractDockTabView.ContainerInfo createInfo() {
-            AbstractDockTabView.ContainerInfo result;
-            if (component != dockTab.getRoot()) {
+        ContainerInfo createInfo() {
+            ContainerInfo result;
+            if (component != layout.getRoot()) {
                 result = createInfo((WorkspaceView<?>) component.getParent());
             } else {
                 result = createInfo(null);
@@ -172,19 +172,19 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
             return result;
         }
 
-        AbstractDockTabView.ContainerInfo createInfo(WorkspaceView<?> parent) {
+        ContainerInfo createInfo(WorkspaceView<?> parent) {
             if (parent != null) {
                 var parentSplitPane = parent.getNode();
                 var containerIndex = parentSplitPane.getItems().indexOf(this);
-                return new AbstractDockTabView.ContainerInfo(this, containerIndex);
+                return new ContainerInfo(this, containerIndex);
             } else {
-                return new AbstractDockTabView.ContainerInfo(this, -1);
+                return new ContainerInfo(this, -1);
             }
         }
 
         @Override
         public String toString() {
-            return "AbstractContainer [" + "dockTab:" + ObjectUtils.getIdentity(dockTab)
+            return "AbstractContainer [" + "dockTab:" + ObjectUtils.getIdentity(layout)
                     + ", component:" + ObjectUtils.getIdentity(component) + ']';
         }
     }
@@ -193,8 +193,8 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
 
         private final Rectangle indicator = createIndicator();
 
-        WorkspaceContainer(AbstractDockTabView<?> dockTab, WorkspaceView<?> component) {
-            super(dockTab, component);
+        WorkspaceContainer(DockLayoutView<?> layout, WorkspaceView<?> component) {
+            super(layout, component);
             this.indicator.setMouseTransparent(true);
         }
 
@@ -243,13 +243,13 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
 
         private final Pane eventPane = new Pane();
 
-        AbstractEventContainer(AbstractDockTabView<?> dockTab, T component) {
-            super(dockTab, component);
+        AbstractEventContainer(DockLayoutView<?> layout, T component) {
+            super(layout, component);
             eventPane.setMouseTransparent(false);
             // eventPane.setStyle("-fx-background-color: yellow");
-            eventPane.setOnMouseDragOver(e -> getDockTab().handleMouseDragOverOnContainer(provideMousePosition(e)));
-            eventPane.setOnMouseDragExited(e -> getDockTab().handleMouseDragExitedOnContainer(provideMousePosition(e)));
-            eventPane.setOnMouseDragReleased(e -> getDockTab()
+            eventPane.setOnMouseDragOver(e -> getLayout().handleMouseDragOverOnContainer(provideMousePosition(e)));
+            eventPane.setOnMouseDragExited(e -> getLayout().handleMouseDragExitedOnContainer(provideMousePosition(e)));
+            eventPane.setOnMouseDragReleased(e -> getLayout()
                     .handleMouseDragReleasedOnContainer(provideMousePosition(e)));
         }
 
@@ -309,16 +309,16 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
 
     private static class MainContainer extends AbstractEventContainer<AbstractPaneView<?>> {
 
-        MainContainer(AbstractDockTabView<?> dockTab, AbstractPaneView<?> component) {
-            super(dockTab, component);
+        MainContainer(DockLayoutView<?> layout, AbstractPaneView<?> component) {
+            super(layout, component);
         }
 
     }
 
     private static class TabDockContainer extends AbstractEventContainer<TabDockView<?>> {
 
-        TabDockContainer(AbstractDockTabView<?> dockTab, TabDockView<?> component) {
-            super(dockTab, component);
+        TabDockContainer(DockLayoutView<?> layout, TabDockView<?> component) {
+            super(layout, component);
         }
 
         @Override
@@ -1019,8 +1019,20 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
 
     private boolean dragInProgress;
 
-    public AbstractDockTabView(ShellView<?> shell, T viewModel) {
-        super(shell, viewModel);
+    private final ObjectProperty<AbstractPaneView<?>> main  = new SimpleObjectProperty<>();
+
+    public DockLayoutView(T viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+
+    }
+
+    @Override
+    public BorderPane getNode() {
+        return this.borderPane;
     }
 
     public final ObjectProperty<WorkspaceView<?>> rootProperty() {
@@ -1056,10 +1068,6 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
         return barView;
     }
 
-    public BorderPane getBorderPane() {
-        return borderPane;
-    }
-
     public DragAndDropContext getDragAndDropContext() {
         return dragAndDropContext;
     }
@@ -1067,10 +1075,19 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        this.getContentPane().getStyleClass().add("dock-tab");
-        var css = AbstractDockTabView.class.getResource("docktab.css").toExternalForm();
-        this.getContentPane().getStylesheets().add(css);
+        this.borderPane.getStyleClass().add("dock-tab");
+        var css = DockLayoutView.class.getResource("docktab.css").toExternalForm();
+        this.borderPane.getStylesheets().add(css);
         VBox.setVgrow(borderPane, Priority.ALWAYS);
+
+        var sideBar = createSideBar(RIGHT);
+        this.borderPane.setRight(sideBar.getNode());
+
+        sideBar = createSideBar(BOTTOM);
+        this.borderPane.setBottom(sideBar.getNode());
+
+        sideBar = createSideBar(LEFT);
+        this.borderPane.setLeft(sideBar.getNode());
     }
 
     @Override
@@ -1111,6 +1128,28 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
         return container;
     }
 
+//    protected Side resolveTabDockSide(TabDockView<?> tabDock) {
+//        var iterator = breadthFirstIterator();
+//        while (iterator.hasNext()) {
+//            ChildView<?> component = (ChildView<?>) iterator.next();
+//            c
+//        }
+//    }
+
+    protected Deque<AbstractPaneView<?>> pathToRoot(AbstractPaneView<?> node) {
+        var result = new LinkedList<AbstractPaneView<?>>();
+        var current = node;
+        while (current != null) {
+            result.addFirst(current);
+            if (current != getRoot()) {
+                current = (AbstractPaneView<?>) current.getParent();
+            } else {
+                current = null;
+            }
+        }
+        return result;
+    }
+
     Node createContainerFor(AbstractPaneView<?> child) {
         AbstractContainer container;
         if (child instanceof WorkspaceView<?>) {
@@ -1135,12 +1174,12 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
 
     void handleDragDetectedOnTab(ComponentTab tab) {
         this.dragTab = tab;
-        updateDragInProgress(true, AbstractDockTabView.DraggableType.TAB);
+        updateDragInProgress(true, DraggableType.TAB);
     }
 
     void handleDragOnTab(ComponentTab tab) {
         this.dragTab = tab;
-        updateDragInProgress(true, AbstractDockTabView.DraggableType.TAB);
+        updateDragInProgress(true, DraggableType.TAB);
     }
 
     void handleDropOnTab(ComponentTab tab) {
@@ -1152,8 +1191,7 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
     }
 
     void handleMouseDragOverOnTabHeaderArea(TabPanePro tabPane, MouseDragEvent e) {
-        AbstractDockTabView.TabDockContainer tabDockContainer = (AbstractDockTabView.TabDockContainer)
-                tabPane.getParent();
+        TabDockContainer tabDockContainer = (TabDockContainer) tabPane.getParent();
         var pos = new MousePosition(tabDockContainer, e, null, false, true);
         handleMouseDragOverOnTabHeaderArea(pos, tabDockContainer);
     }
@@ -1215,6 +1253,10 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
         } finally {
             clearOnDrop();
         }
+    }
+
+    void minimizeTabDock(TabDockView<?> dock) {
+
     }
 
     private void handleMouseDragOverOnTabHeaderArea(MousePosition mousePosition, TabDockContainer tabDockContainer) {

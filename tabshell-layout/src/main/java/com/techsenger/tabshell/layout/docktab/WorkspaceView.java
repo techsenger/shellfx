@@ -29,13 +29,13 @@ import javafx.scene.control.SplitPane;
  */
 public class WorkspaceView<T extends WorkspaceViewModel> extends AbstractPaneView<T> {
 
-    private final AbstractDockTabView<?> dockTab;
+    private final DockLayoutView<?> layout;
 
     private final SplitPane splitPane = new SplitPane();
 
-    protected WorkspaceView(AbstractDockTabView<?> dockTab, T viewModel) {
+    protected WorkspaceView(DockLayoutView<?> layout, T viewModel) {
         super(viewModel);
-        this.dockTab = dockTab;
+        this.layout = layout;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class WorkspaceView<T extends WorkspaceViewModel> extends AbstractPaneVie
     }
 
     private void addChild(AbstractPaneView<?> child, int index) {
-        Node container = this.dockTab.createContainerFor(child);
+        Node container = this.layout.createContainerFor(child);
         splitPane.getItems().add(index, container);
     }
 

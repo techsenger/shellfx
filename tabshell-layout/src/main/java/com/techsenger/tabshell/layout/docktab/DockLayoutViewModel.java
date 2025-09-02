@@ -16,19 +16,16 @@
 
 package com.techsenger.tabshell.layout.docktab;
 
-import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
+import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.layout.LayoutComponentKeys;
 import javafx.geometry.Side;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDockTabViewModel extends AbstractShellTabViewModel {
-
-    public AbstractDockTabViewModel(ShellViewModel shell) {
-        super(shell);
-    }
+public class DockLayoutViewModel extends AbstractPaneViewModel {
 
     protected TabDockViewModel createTabDock() {
         var tabDock = new TabDockViewModel();
@@ -43,6 +40,11 @@ public abstract class AbstractDockTabViewModel extends AbstractShellTabViewModel
     protected SideBarViewModel createSideBar(Side side) {
         var sideBar = new SideBarViewModel(side);
         return sideBar;
+    }
+
+    @Override
+    public PaneKey getKey() {
+        return LayoutComponentKeys.DOCK_LAYOUT;
     }
 
 }

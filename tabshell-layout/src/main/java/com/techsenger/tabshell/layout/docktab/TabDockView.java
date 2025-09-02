@@ -39,15 +39,15 @@ import javafx.scene.layout.HBox;
  */
 public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
 
-    private final AbstractDockTabView<?> dockTab;
+    private final DockLayoutView<?> layout;
 
     private final Button minimizeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
 
     private final HBox controlContainer = new HBox(minimizeButton);
 
-    protected TabDockView(AbstractDockTabView<?> dockTab, T viewModel) {
+    protected TabDockView(DockLayoutView<?> layout, T viewModel) {
         super(viewModel);
-        this.dockTab = dockTab;
+        this.layout = layout;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         var tabPane = getNode();
         tabPane.setTabDragEnabled(true);
         tabPane.setTabDropEnabled(true);
-        tabPane.setDragAndDropContext(this.dockTab.getDragAndDropContext());
+        tabPane.setDragAndDropContext(this.layout.getDragAndDropContext());
 
         minimizeButton.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
         controlContainer.setAlignment(Pos.CENTER_LEFT);
@@ -69,7 +69,7 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         var tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.getLastArea().getChildren().add(controlContainer);
         tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
-        tabHeaderArea.setTabDragContentFactory(this.dockTab::createTabDragContent);
+        tabHeaderArea.setTabDragContentFactory(this.layout::createTabDragContent);
         tabHeaderArea.setTabDragScrollStep(10.0);
 
     }
@@ -82,16 +82,16 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
             tabHeaderArea.getFirstArea().getChildren().clear();
             if (newV != null) {
                 var iconView = new FontIconView(CoreIcons.DRAG_VERTICAL);
-                iconView.setOnDragDetected(e -> this.dockTab.handleDragDetectedOnDock(this, iconView, e));
-                iconView.setOnMouseDragged(e -> this.dockTab.handleMouseDraggedOnDock(this, iconView, e));
-                iconView.setOnMouseReleased(e -> this.dockTab.handleMouseReleasedOnDock(this, iconView, e));
+                iconView.setOnDragDetected(e -> this.layout.handleDragDetectedOnDock(this, iconView, e));
+                iconView.setOnMouseDragged(e -> this.layout.handleMouseDraggedOnDock(this, iconView, e));
+                iconView.setOnMouseReleased(e -> this.layout.handleMouseReleasedOnDock(this, iconView, e));
                 tabHeaderArea.getFirstArea().getChildren().add(iconView);
             }
         });
         var tabPane = getNode();
         tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
             if (tabPane.getTabs().isEmpty()) {
-                this.dockTab.processEmptyTabPane(tabPane);
+                this.layout.processEmptyTabPane(tabPane);
             }
         });
     }
@@ -99,14 +99,14 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
     @Override
     protected void addHandlers(T viewModel) {
         super.addHandlers(viewModel);
+        minimizeButton.setOnAction(e -> this.layout.minimizeTabDock(this));
         var tabPane = getNode();
-        tabPane.addTabDragHandler(tab -> this.dockTab.handleDragOnTab((ComponentTab) tab));
+        tabPane.addTabDragHandler(tab -> this.layout.handleDragOnTab((ComponentTab) tab));
         // this handler is called when mouse is over TabHeaderArea
-        tabPane.addTabDropHandler((tab, s) -> this.dockTab.handleDropOnTab((ComponentTab) tab));
-
+        tabPane.addTabDropHandler((tab, s) -> this.layout.handleDropOnTab((ComponentTab) tab));
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
-                e -> this.dockTab.handleMouseDragOverOnTabHeaderArea(tabPane, e));
+                e -> this.layout.handleMouseDragOverOnTabHeaderArea(tabPane, e));
     }
 
     /**

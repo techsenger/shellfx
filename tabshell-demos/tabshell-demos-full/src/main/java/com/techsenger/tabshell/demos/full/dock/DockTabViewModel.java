@@ -17,15 +17,20 @@
 package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.demos.full.DemoComponentKeys;
-import com.techsenger.tabshell.layout.docktab.AbstractDockTabViewModel;
+import com.techsenger.tabshell.layout.docktab.DockLayoutViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockTabViewModel extends AbstractDockTabViewModel {
+public class DockTabViewModel extends AbstractShellTabViewModel {
+
+    private final DockLayoutViewModel layout = new DockLayoutViewModel();
+
+    private final TextViewerViewModel textViewer = new TextViewerViewModel();
 
     public DockTabViewModel(ShellViewModel shell) {
         super(shell);
@@ -37,4 +42,11 @@ public class DockTabViewModel extends AbstractDockTabViewModel {
         return DemoComponentKeys.DOCK_TAB;
     }
 
+    public DockLayoutViewModel getLayout() {
+        return layout;
+    }
+
+    public TextViewerViewModel getTextViewer() {
+        return textViewer;
+    }
 }
