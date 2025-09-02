@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dock;
+package com.techsenger.tabshell.layout.docktab;
 
-import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.layout.docktab.AbstractDockTabView;
+import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import javafx.scene.layout.Region;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockTabView extends AbstractDockTabView<DockTabViewModel> {
+public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T> {
 
-    public DockTabView(ShellView<?> shell, DockTabViewModel viewModel) {
-        super(shell, viewModel);
+    private final TabPanePro tabPane = new TabPanePro();
+
+    public SideBarView(T viewModel) {
+        super(viewModel);
     }
 
     @Override
@@ -35,8 +38,13 @@ public class DockTabView extends AbstractDockTabView<DockTabViewModel> {
     }
 
     @Override
-    protected void build(DockTabViewModel viewModel) {
+    public Region getNode() {
+        return tabPane;
+    }
+
+    @Override
+    protected void build(T viewModel) {
         super.build(viewModel);
-        getContentPane().getChildren().add(getBorderPane());
+        tabPane.setSide(viewModel.getSide());
     }
 }

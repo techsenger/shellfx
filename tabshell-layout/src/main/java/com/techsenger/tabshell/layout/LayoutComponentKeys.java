@@ -27,4 +27,6 @@ public interface LayoutComponentKeys {
     PaneKey WORKSPACE = new PaneKey("Workspace");
 
     PaneKey TAB_DOCK = new PaneKey("Tab Dock");
+
+    PaneKey SIDE_BAR = new PaneKey("Side Bar");
 }

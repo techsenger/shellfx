@@ -18,6 +18,7 @@ package com.techsenger.tabshell.layout.docktab;
 
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
+import javafx.geometry.Side;
 
 /**
  *
@@ -32,6 +33,16 @@ public abstract class AbstractDockTabViewModel extends AbstractShellTabViewModel
     protected TabDockViewModel createTabDock() {
         var tabDock = new TabDockViewModel();
         return tabDock;
+    }
+
+    protected WorkspaceViewModel createWorkspace() {
+        var workspace = new WorkspaceViewModel();
+        return workspace;
+    }
+
+    protected SideBarViewModel createSideBar(Side side) {
+        var sideBar = new SideBarViewModel(side);
+        return sideBar;
     }
 
 }

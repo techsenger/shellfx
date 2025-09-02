@@ -18,13 +18,19 @@ package com.techsenger.tabshell.layout.docktab;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.ParentView;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.layout.tabhost.TabHostView;
+import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.value.ValueUtils;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.HBox;
 
 /**
@@ -50,16 +56,22 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         var tabPane = getNode();
         tabPane.setTabDragEnabled(true);
         tabPane.setTabDropEnabled(true);
+        tabPane.setDragAndDropContext(this.dockTab.getDragAndDropContext());
 
         minimizeButton.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
         controlContainer.setAlignment(Pos.CENTER_LEFT);
         controlContainer.getStyleClass().add("control-container");
-        var tabHeaderArea = getTabHeaderArea();
-        tabHeaderArea.getLastArea().getChildren().add(controlContainer);
 
         var css = TabDockView.class.getResource("tabdock.css").toExternalForm();
         this.getNode().getStylesheets().add(css);
         this.getNode().getStyleClass().add("tab-dock");
+
+        var tabHeaderArea = getTabHeaderArea();
+        tabHeaderArea.getLastArea().getChildren().add(controlContainer);
+        tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
+        tabHeaderArea.setTabDragContentFactory(this.dockTab::createTabDragContent);
+        tabHeaderArea.setTabDragScrollStep(10.0);
+
     }
 
     @Override
@@ -76,6 +88,25 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
                 tabHeaderArea.getFirstArea().getChildren().add(iconView);
             }
         });
+        var tabPane = getNode();
+        tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
+            if (tabPane.getTabs().isEmpty()) {
+                this.dockTab.processEmptyTabPane(tabPane);
+            }
+        });
+    }
+
+    @Override
+    protected void addHandlers(T viewModel) {
+        super.addHandlers(viewModel);
+        var tabPane = getNode();
+        tabPane.addTabDragHandler(tab -> this.dockTab.handleDragOnTab((ComponentTab) tab));
+        // this handler is called when mouse is over TabHeaderArea
+        tabPane.addTabDropHandler((tab, s) -> this.dockTab.handleDropOnTab((ComponentTab) tab));
+
+        TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
+        tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
+                e -> this.dockTab.handleMouseDragOverOnTabHeaderArea(tabPane, e));
     }
 
     /**
@@ -86,5 +117,9 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
     @Override
     protected void setParent(ParentView<?> parent) {
         super.setParent(parent);
+    }
+
+    protected Button getMinimizeButton() {
+        return minimizeButton;
     }
 }

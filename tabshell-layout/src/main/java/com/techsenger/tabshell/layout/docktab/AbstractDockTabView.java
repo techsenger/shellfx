@@ -33,7 +33,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -48,11 +47,11 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -1004,6 +1003,8 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
         return singlingInfo;
     }
 
+    private final BorderPane borderPane = new BorderPane();
+
     private final DragAndDropContext dragAndDropContext = new DragAndDropContext();
 
     private final ObjectProperty<WorkspaceView<?>> root = new SimpleObjectProperty<>();
@@ -1035,7 +1036,7 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
     }
 
     public WorkspaceView<?> createWorkspace() {
-        var viewModel = new WorkspaceViewModel();
+        var viewModel = getViewModel().createWorkspace();
         var view = new WorkspaceView<WorkspaceViewModel>(this, viewModel);
         view.initialize();
         return view;
@@ -1045,8 +1046,22 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
         var tabDockViewModel = getViewModel().createTabDock();
         var tabDockView = new TabDockView<TabDockViewModel>(this, tabDockViewModel);
         tabDockView.initialize();
-        prepareTabPane(tabDockView.getNode());
         return tabDockView;
+    }
+
+    public SideBarView<?> createSideBar(Side side) {
+        var barViewModel = getViewModel().createSideBar(side);
+        var barView = new SideBarView<SideBarViewModel>(barViewModel);
+        barView.initialize();
+        return barView;
+    }
+
+    public BorderPane getBorderPane() {
+        return borderPane;
+    }
+
+    public DragAndDropContext getDragAndDropContext() {
+        return dragAndDropContext;
     }
 
     @Override
@@ -1055,6 +1070,7 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
         this.getContentPane().getStyleClass().add("dock-tab");
         var css = AbstractDockTabView.class.getResource("docktab.css").toExternalForm();
         this.getContentPane().getStylesheets().add(css);
+        VBox.setVgrow(borderPane, Priority.ALWAYS);
     }
 
     @Override
@@ -1062,46 +1078,12 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
         super.addListeners(viewModel);
         this.root.addListener((ov, oldV, newV) -> {
             if (oldV != null) {
-                WorkspaceContainer container = getContainer(oldV);
-                getContentPane().getChildren().remove(container);
+                borderPane.setCenter(null);
             }
             if (newV != null) {
                 WorkspaceContainer container = new WorkspaceContainer(this, newV);
                 VBox.setVgrow(container, Priority.ALWAYS);
-                getContentPane().getChildren().add(container);
-            }
-        });
-    }
-
-    protected void prepareTabPane(TabPanePro tabPane) {
-        tabPane.setDragAndDropContext(dragAndDropContext);
-        tabPane.addTabDragHandler(t -> {
-            this.dragTab = (ComponentTab) t;
-            updateDragInProgress(true, DraggableType.TAB);
-        });
-        // this handler is called when mouse is over TabHeaderArea
-        tabPane.addTabDropHandler((tabs, s) -> {
-            try {
-                processDropInsideTabHeaderArea();
-            } finally {
-                clearOnDrop();
-            }
-        });
-        TabPaneProSkin sourceSkin = (TabPaneProSkin) tabPane.getSkin();
-        TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
-        tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
-        tabHeaderArea.setTabDragContentFactory(this::createTabDragContent);
-        tabHeaderArea.setTabDragScrollStep(10.0);
-        tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER, e -> {
-            TabDockContainer tabDockContainer = (TabDockContainer) tabPane.getParent();
-            var pos = new MousePosition(tabDockContainer, e, null, false, true);
-            handleMouseDragOverOnTabHeaderArea(pos, tabDockContainer);
-        });
-        tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
-            if (tabPane.getTabs().isEmpty()) {
-                removeTabDock(tabPane);
-                printTreeDebugInfo();
-                logger.debug("Removed empty TabDock");
+                borderPane.setCenter(container);
             }
         });
     }
@@ -1143,6 +1125,37 @@ public abstract class AbstractDockTabView<T extends AbstractDockTabViewModel> ex
             container = new MainContainer(this, child);
         }
         return container;
+    }
+
+    void processEmptyTabPane(TabPanePro tabPane) {
+        removeTabDock(tabPane);
+        printTreeDebugInfo();
+        logger.debug("Removed empty TabDock");
+    }
+
+    void handleDragDetectedOnTab(ComponentTab tab) {
+        this.dragTab = tab;
+        updateDragInProgress(true, AbstractDockTabView.DraggableType.TAB);
+    }
+
+    void handleDragOnTab(ComponentTab tab) {
+        this.dragTab = tab;
+        updateDragInProgress(true, AbstractDockTabView.DraggableType.TAB);
+    }
+
+    void handleDropOnTab(ComponentTab tab) {
+        try {
+            processDropInsideTabHeaderArea();
+        } finally {
+            clearOnDrop();
+        }
+    }
+
+    void handleMouseDragOverOnTabHeaderArea(TabPanePro tabPane, MouseDragEvent e) {
+        AbstractDockTabView.TabDockContainer tabDockContainer = (AbstractDockTabView.TabDockContainer)
+                tabPane.getParent();
+        var pos = new MousePosition(tabDockContainer, e, null, false, true);
+        handleMouseDragOverOnTabHeaderArea(pos, tabDockContainer);
     }
 
     /**
