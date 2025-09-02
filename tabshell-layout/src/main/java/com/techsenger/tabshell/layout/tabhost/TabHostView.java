@@ -18,6 +18,7 @@ package com.techsenger.tabshell.layout.tabhost;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
@@ -207,5 +208,12 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractPaneView<T>
         for (var t : this.root.getTabs()) {
             ((ComponentTab) t).getView().deinitialize();
         }
+    }
+
+    protected TabPaneProSkin.TabHeaderArea getTabHeaderArea() {
+        var tabPane = getNode();
+        TabPaneProSkin sourceSkin = (TabPaneProSkin) tabPane.getSkin();
+        TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
+        return tabHeaderArea;
     }
 }

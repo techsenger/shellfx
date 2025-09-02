@@ -18,7 +18,6 @@ package com.techsenger.tabshell.layout.docktab;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.ParentView;
-import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -88,12 +87,4 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
     protected void setParent(ParentView<?> parent) {
         super.setParent(parent);
     }
-
-    protected TabPaneProSkin.TabHeaderArea getTabHeaderArea() {
-        var tabPane = getNode();
-        TabPaneProSkin sourceSkin = (TabPaneProSkin) tabPane.getSkin();
-        TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
-        return tabHeaderArea;
-    }
-
 }
