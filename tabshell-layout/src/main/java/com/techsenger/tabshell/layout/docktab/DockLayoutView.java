@@ -1094,13 +1094,14 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         this.root.addListener((ov, oldV, newV) -> {
-            if (oldV != null) {
-                borderPane.setCenter(null);
-            }
             if (newV != null) {
                 WorkspaceContainer container = new WorkspaceContainer(this, newV);
                 VBox.setVgrow(container, Priority.ALWAYS);
                 borderPane.setCenter(container);
+                viewModel.setRoot(newV.getViewModel());
+            } else {
+                borderPane.setCenter(null);
+                viewModel.setRoot(null);
             }
         });
     }
