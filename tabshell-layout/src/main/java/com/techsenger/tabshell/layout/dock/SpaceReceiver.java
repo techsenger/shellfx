@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.docktab;
-
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
-import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.layout.LayoutComponentKeys;
-import javafx.geometry.Side;
+package com.techsenger.tabshell.layout.dock;
 
 /**
+ * Defines which neighboring dock will take over the space when a TabDock is removed from the layout.
  *
  * @author Pavel Castornii
  */
-public class SideBarViewModel extends AbstractPaneViewModel {
+public enum SpaceReceiver {
 
-    private final Side side;
+    /**
+     * In a horizontal split: the left neighbor receives the space.
+     * In a vertical split: the top neighbor receives the space.
+     */
+    PREVIOUS,
 
-    public SideBarViewModel(Side side) {
-        this.side = side;
-    }
+    /**
+     * In a horizontal split: the right neighbor receives the space.
+     * In a vertical split: the bottom neighbor receives the space.
+     */
+    NEXT,
 
-    @Override
-    public PaneKey getKey() {
-        return LayoutComponentKeys.SIDE_BAR;
-    }
-
-    public Side getSide() {
-        return side;
-    }
+    /**
+     * The space is distributed between both neighbors.
+     */
+    BOTH
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.docktab;
+package com.techsenger.tabshell.layout.dock;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.ParentView;
@@ -62,7 +62,7 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         controlContainer.setAlignment(Pos.CENTER_LEFT);
         controlContainer.getStyleClass().add("control-container");
 
-        var css = TabDockView.class.getResource("tabdock.css").toExternalForm();
+        var css = TabDockView.class.getResource("tab-dock.css").toExternalForm();
         this.getNode().getStylesheets().add(css);
         this.getNode().getStyleClass().add("tab-dock");
 

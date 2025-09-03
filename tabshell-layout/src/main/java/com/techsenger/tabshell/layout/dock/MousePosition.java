@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.docktab;
+package com.techsenger.tabshell.layout.dock;
 
 import javafx.geometry.Side;
 import javafx.scene.input.MouseEvent;

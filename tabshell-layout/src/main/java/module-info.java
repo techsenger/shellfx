@@ -31,7 +31,7 @@ module com.techsenger.tabshell.layout {
     requires jakarta.xml.bind;
 
     exports com.techsenger.tabshell.layout;
-    exports com.techsenger.tabshell.layout.docktab;
+    exports com.techsenger.tabshell.layout.dock;
     exports com.techsenger.tabshell.layout.splittab;
     exports com.techsenger.tabshell.layout.tabhost;
 }

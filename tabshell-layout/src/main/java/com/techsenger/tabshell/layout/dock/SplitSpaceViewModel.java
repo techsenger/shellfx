@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.docktab;
+package com.techsenger.tabshell.layout.dock;
 
+import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.layout.LayoutComponentKeys;
-import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabDockViewModel extends TabHostViewModel {
+public class SplitSpaceViewModel extends AbstractPaneViewModel {
 
     private final ReadOnlyObjectWrapper<SpaceReceiver> spaceReceiver = new ReadOnlyObjectWrapper<>();
 
-    private final BooleanProperty draggable = new SimpleBooleanProperty(true);
+    protected SplitSpaceViewModel() {
 
-    protected TabDockViewModel() {
-        super(LayoutComponentKeys.TAB_DOCK);
+    }
+
+    @Override
+    public PaneKey getKey() {
+        return LayoutComponentKeys.SPLIT_SPACE;
     }
 
     /**
@@ -65,32 +67,4 @@ public class TabDockViewModel extends TabHostViewModel {
         spaceReceiver.set(value);
     }
 
-    /**
-     * Returns the value of {@link #draggableProperty()}.
-     *
-     * @return the current draggable state of this component
-     */
-    public final boolean isDraggable() {
-        return draggable.get();
-    }
-
-    /**
-     * The property that defines whether this component can be dragged by the user.
-     * When {@code true}, the component can be dragged and docked to different locations.
-     * When {@code false}, the component remains fixed in its current position.
-     *
-     * @return the {@link BooleanProperty} representing the draggable state
-     */
-    public final BooleanProperty draggableProperty() {
-        return draggable;
-    }
-
-    /**
-     * Sets the value of {@link #draggableProperty()}.
-     *
-     * @param value the new draggable state for this component
-     */
-    public final void setDraggable(boolean value) {
-        draggable.set(value);
-    }
 }

@@ -14,36 +14,31 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.docktab;
+package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.tabpanepro.core.TabPanePro;
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.layout.LayoutComponentKeys;
+import javafx.geometry.Side;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T> {
+public class SideBarViewModel extends AbstractPaneViewModel {
 
-    private final TabPanePro tabPane = new TabPanePro();
+    private final Side side;
 
-    public SideBarView(T viewModel) {
-        super(viewModel);
+    public SideBarViewModel(Side side) {
+        this.side = side;
     }
 
     @Override
-    public void requestFocus() {
-
+    public PaneKey getKey() {
+        return LayoutComponentKeys.SIDE_BAR;
     }
 
-    @Override
-    public TabPanePro getNode() {
-        return tabPane;
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
-        tabPane.setSide(viewModel.getSide());
+    public Side getSide() {
+        return side;
     }
 }

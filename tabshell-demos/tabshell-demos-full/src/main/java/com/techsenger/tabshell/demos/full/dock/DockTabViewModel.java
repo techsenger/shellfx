@@ -20,7 +20,7 @@ import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.demos.full.DemoComponentKeys;
-import com.techsenger.tabshell.layout.docktab.DockLayoutViewModel;
+import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
 
 /**
  *

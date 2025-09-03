@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.docktab;
+package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ChildView;
 import com.techsenger.tabpanepro.core.TabPanePro;
@@ -1075,8 +1075,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        this.borderPane.getStyleClass().add("dock-tab");
-        var css = DockLayoutView.class.getResource("docktab.css").toExternalForm();
+        this.borderPane.getStyleClass().add("dock-layout");
+        var css = DockLayoutView.class.getResource("dock-layout.css").toExternalForm();
         this.borderPane.getStylesheets().add(css);
         VBox.setVgrow(borderPane, Priority.ALWAYS);
 

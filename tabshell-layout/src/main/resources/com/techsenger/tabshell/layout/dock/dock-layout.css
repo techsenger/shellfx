@@ -17,7 +17,7 @@
 /*
     Author: Pavel Castornii
 */
-.dock-tab .indicator {
+.dock-layout .indicator {
     -fx-fill: -color-accent-5;
     -fx-stroke: -color-accent-7;
     -fx-stroke-width: 2;

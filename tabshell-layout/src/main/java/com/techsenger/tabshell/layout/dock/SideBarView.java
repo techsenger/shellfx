@@ -14,29 +14,36 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.docktab;
+package com.techsenger.tabshell.layout.dock;
+
+import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabshell.core.pane.AbstractPaneView;
 
 /**
- * Defines which neighboring dock will take over the space when a TabDock is removed from the layout.
  *
  * @author Pavel Castornii
  */
-public enum SpaceReceiver {
+public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T> {
 
-    /**
-     * In a horizontal split: the left neighbor receives the space.
-     * In a vertical split: the top neighbor receives the space.
-     */
-    PREVIOUS,
+    private final TabPanePro tabPane = new TabPanePro();
 
-    /**
-     * In a horizontal split: the right neighbor receives the space.
-     * In a vertical split: the bottom neighbor receives the space.
-     */
-    NEXT,
+    public SideBarView(T viewModel) {
+        super(viewModel);
+    }
 
-    /**
-     * The space is distributed between both neighbors.
-     */
-    BOTH
+    @Override
+    public void requestFocus() {
+
+    }
+
+    @Override
+    public TabPanePro getNode() {
+        return tabPane;
+    }
+
+    @Override
+    protected void build(T viewModel) {
+        super.build(viewModel);
+        tabPane.setSide(viewModel.getSide());
+    }
 }
