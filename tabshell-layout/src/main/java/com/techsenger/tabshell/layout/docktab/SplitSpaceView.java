@@ -27,13 +27,13 @@ import javafx.scene.control.SplitPane;
  *
  * @author Pavel Castornii
  */
-public class WorkspaceView<T extends WorkspaceViewModel> extends AbstractPaneView<T> {
+public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneView<T> {
 
     private final DockLayoutView<?> layout;
 
     private final SplitPane splitPane = new SplitPane();
 
-    protected WorkspaceView(DockLayoutView<?> layout, T viewModel) {
+    protected SplitSpaceView(DockLayoutView<?> layout, T viewModel) {
         super(viewModel);
         this.layout = layout;
     }

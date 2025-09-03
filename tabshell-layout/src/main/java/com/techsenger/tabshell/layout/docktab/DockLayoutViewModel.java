@@ -29,18 +29,18 @@ import javafx.geometry.Side;
  */
 public class DockLayoutViewModel extends AbstractPaneViewModel {
 
-    private final ReadOnlyObjectWrapper<WorkspaceViewModel> root = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<SplitSpaceViewModel> root = new ReadOnlyObjectWrapper<>();
 
     @Override
     public PaneKey getKey() {
         return LayoutComponentKeys.DOCK_LAYOUT;
     }
 
-    public final WorkspaceViewModel getRoot() {
+    public final SplitSpaceViewModel getRoot() {
         return root.get();
     }
 
-    public final ReadOnlyObjectProperty<WorkspaceViewModel> rootProperty() {
+    public final ReadOnlyObjectProperty<SplitSpaceViewModel> rootProperty() {
         return root.getReadOnlyProperty();
     }
 
@@ -49,8 +49,8 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         return tabDock;
     }
 
-    protected WorkspaceViewModel createWorkspace() {
-        var workspace = new WorkspaceViewModel();
+    protected SplitSpaceViewModel createSplitSpace() {
+        var workspace = new SplitSpaceViewModel();
         return workspace;
     }
 
@@ -59,7 +59,7 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         return sideBar;
     }
 
-    void setRoot(WorkspaceViewModel value) {
+    void setRoot(SplitSpaceViewModel value) {
         root.set(value);
     }
 

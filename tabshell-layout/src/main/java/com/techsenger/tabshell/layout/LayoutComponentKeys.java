@@ -26,7 +26,7 @@ public interface LayoutComponentKeys {
 
     PaneKey DOCK_LAYOUT = new PaneKey("Dock Layout");
 
-    PaneKey WORKSPACE = new PaneKey("Workspace");
+    PaneKey SPLIT_SPACE = new PaneKey("Split Space");
 
     PaneKey TAB_DOCK = new PaneKey("Tab Dock");
 

@@ -71,14 +71,14 @@ public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
     @Override
     protected void postInitialize(DockTabViewModel viewModel) {
         super.postInitialize(viewModel);
-        var workspaceView = layout.createWorkspace();
-        layout.setRoot(workspaceView);
+        var splitSpaceView = layout.createSplitSpace();
+        layout.setRoot(splitSpaceView);
         textViewer.initialize();
-        workspaceView.getChildren().add(textViewer);
+        splitSpaceView.getChildren().add(textViewer);
         var tabDockView = layout.createTabDock();
         fillTabs(tabDockView);
         tabDockView.getViewModel().setSpaceReceiver(SpaceReceiver.NEXT);
-        workspaceView.getChildren().add(tabDockView);
+        splitSpaceView.getChildren().add(tabDockView);
     }
 
     private void fillTabs(TabDockView<?> tabDock) {

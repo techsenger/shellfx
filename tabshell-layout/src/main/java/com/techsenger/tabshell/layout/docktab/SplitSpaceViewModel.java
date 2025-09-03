@@ -18,25 +18,25 @@ package com.techsenger.tabshell.layout.docktab;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.layout.LayoutComponentKeys;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyProperty;
-import com.techsenger.tabshell.layout.LayoutComponentKeys;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WorkspaceViewModel extends AbstractPaneViewModel {
+public class SplitSpaceViewModel extends AbstractPaneViewModel {
 
     private final ReadOnlyObjectWrapper<SpaceReceiver> spaceReceiver = new ReadOnlyObjectWrapper<>();
 
-    protected WorkspaceViewModel() {
+    protected SplitSpaceViewModel() {
 
     }
 
     @Override
     public PaneKey getKey() {
-        return LayoutComponentKeys.WORKSPACE;
+        return LayoutComponentKeys.SPLIT_SPACE;
     }
 
     /**
