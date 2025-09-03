@@ -18,6 +18,11 @@ package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.toolkit.fx.collections.ListSynchronizer;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.control.Tab;
 
 /**
  *
@@ -25,7 +30,11 @@ import com.techsenger.tabshell.core.pane.AbstractPaneView;
  */
 public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T> {
 
+    private final ObservableList<TabDockView<?>> tabDocks = FXCollections.observableArrayList();
+
     private final TabPanePro tabPane = new TabPanePro();
+
+    private ListSynchronizer<TabDockView<?>, TabDockViewModel> listSynchronizer;
 
     public SideBarView(T viewModel) {
         super(viewModel);
@@ -41,9 +50,43 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         return tabPane;
     }
 
+    /**
+     * Returns a modifiable list of minimized tab docks.
+     *
+     * @return
+     */
+    public ObservableList<TabDockView<?>> getTabDocks() {
+        return tabDocks;
+    }
+
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
         tabPane.setSide(viewModel.getSide());
+    }
+
+    @Override
+    protected void addListeners(T viewModel) {
+        super.addListeners(viewModel);
+        listSynchronizer = new ListSynchronizer<TabDockView<?>, TabDockViewModel>(tabDocks,
+                viewModel.getModifiableTabDocks(), v -> v.getViewModel());
+        tabDocks.addListener((ListChangeListener<TabDockView<?>>) (change) -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    for (var tabDock : change.getAddedSubList()) {
+                        for (var tab : tabDock.getNode().getTabs()) {
+                            var t = createTabFor(tab);
+                            this.tabPane.getTabs().add(t);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    protected Tab createTabFor(Tab tab) {
+        var t = new Tab(tab.getText(), tab.getGraphic());
+        t.setClosable(false);
+        return t;
     }
 }

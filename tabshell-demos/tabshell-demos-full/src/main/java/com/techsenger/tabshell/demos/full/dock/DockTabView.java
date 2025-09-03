@@ -53,12 +53,6 @@ public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
     }
 
     @Override
-    protected void preInitialize(DockTabViewModel viewModel) {
-        super.preInitialize(viewModel);
-        this.layout.initialize();
-    }
-
-    @Override
     protected void build(DockTabViewModel viewModel) {
         super.build(viewModel);
         var removeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
@@ -71,10 +65,15 @@ public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
     @Override
     protected void postInitialize(DockTabViewModel viewModel) {
         super.postInitialize(viewModel);
+        textViewer.initialize();
+
+        this.layout.initialize();
+        this.layout.setMain(this.textViewer);
+
         var splitSpaceView = layout.createSplitSpace();
         layout.setRoot(splitSpaceView);
-        textViewer.initialize();
         splitSpaceView.getChildren().add(textViewer);
+        
         var tabDockView = layout.createTabDock();
         fillTabs(tabDockView);
         tabDockView.getViewModel().setSpaceReceiver(SpaceReceiver.NEXT);

@@ -19,6 +19,8 @@ package com.techsenger.tabshell.layout.dock;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.layout.LayoutComponentKeys;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 
 /**
@@ -28,6 +30,11 @@ import javafx.geometry.Side;
 public class SideBarViewModel extends AbstractPaneViewModel {
 
     private final Side side;
+
+    private final ObservableList<TabDockViewModel> modifiableTabDocks = FXCollections.observableArrayList();
+
+    private final ObservableList<TabDockViewModel> tabDocks =
+            FXCollections.unmodifiableObservableList(modifiableTabDocks);
 
     public SideBarViewModel(Side side) {
         this.side = side;
@@ -40,5 +47,18 @@ public class SideBarViewModel extends AbstractPaneViewModel {
 
     public Side getSide() {
         return side;
+    }
+
+    /**
+     * Returns an unmodifiable list of minimized tab docks.
+     *
+     * @return
+     */
+    public ObservableList<TabDockViewModel> getTabDocks() {
+        return tabDocks;
+    }
+
+    ObservableList<TabDockViewModel> getModifiableTabDocks() {
+        return modifiableTabDocks;
     }
 }

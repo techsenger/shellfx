@@ -31,6 +31,14 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
 
     private final ReadOnlyObjectWrapper<SplitSpaceViewModel> root = new ReadOnlyObjectWrapper<>();
 
+    private final ReadOnlyObjectWrapper<AbstractPaneViewModel> main = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyObjectWrapper<SideBarViewModel> rightBar = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyObjectWrapper<SideBarViewModel> bottomBar = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyObjectWrapper<SideBarViewModel> leftBar = new ReadOnlyObjectWrapper<>();
+
     @Override
     public PaneKey getKey() {
         return LayoutComponentKeys.DOCK_LAYOUT;
@@ -42,6 +50,38 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
 
     public final ReadOnlyObjectProperty<SplitSpaceViewModel> rootProperty() {
         return root.getReadOnlyProperty();
+    }
+
+    public final AbstractPaneViewModel getMain() {
+        return main.get();
+    }
+
+    public final ReadOnlyObjectProperty<AbstractPaneViewModel> mainProperty() {
+        return main.getReadOnlyProperty();
+    }
+
+    public final SideBarViewModel getRightBar() {
+        return rightBar.get();
+    }
+
+    public final ReadOnlyObjectProperty<SideBarViewModel> rightBarProperty() {
+        return rightBar.getReadOnlyProperty();
+    }
+
+    public final SideBarViewModel getBottomBar() {
+        return bottomBar.get();
+    }
+
+    public final ReadOnlyObjectProperty<SideBarViewModel> bottomBarProperty() {
+        return bottomBar.getReadOnlyProperty();
+    }
+
+    public final SideBarViewModel getLeftBar() {
+        return leftBar.get();
+    }
+
+    public final ReadOnlyObjectProperty<SideBarViewModel> leftBarProperty() {
+        return leftBar.getReadOnlyProperty();
     }
 
     protected TabDockViewModel createTabDock() {
@@ -63,4 +103,19 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         root.set(value);
     }
 
+    void setMain(AbstractPaneViewModel value) {
+        main.set(value);
+    }
+
+    ReadOnlyObjectWrapper<SideBarViewModel> rightBarWrapper() {
+        return rightBar;
+    }
+
+    ReadOnlyObjectWrapper<SideBarViewModel> bottomBarWrapper() {
+        return bottomBar;
+    }
+
+    ReadOnlyObjectWrapper<SideBarViewModel> leftBarWrapper() {
+        return leftBar;
+    }
 }

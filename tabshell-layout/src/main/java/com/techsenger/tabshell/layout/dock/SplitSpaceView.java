@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ChildView;
+import com.techsenger.mvvm4fx.core.ComponentHelper;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import java.util.List;
 import javafx.collections.ListChangeListener;
@@ -73,6 +74,11 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
                 }
             }
         });
+    }
+
+    @Override
+    protected ComponentHelper<?> createComponentHelper() {
+        return new SplitSpaceHelper(this);
     }
 
     private void addChild(AbstractPaneView<?> child, int index) {
