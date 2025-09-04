@@ -24,7 +24,7 @@ import com.techsenger.tabshell.material.icon.StyleFontIcon;
  */
 public interface HexIcons {
 
-    StyleFontIcon EDITOR = new StyleFontIcon("tabshell-hex-editor-icon");
+    StyleFontIcon EDITOR = new StyleFontIcon("hex-editor-icon");
 
-    StyleFontIcon COLUMNS_ENABLED = new StyleFontIcon("tabshell-columns-enabled-icon");
+    StyleFontIcon COLUMNS_ENABLED = new StyleFontIcon("columns-enabled-icon");
 }

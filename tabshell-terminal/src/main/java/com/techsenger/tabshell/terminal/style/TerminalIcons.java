@@ -24,5 +24,5 @@ import com.techsenger.tabshell.material.icon.StyleFontIcon;
  */
 public interface TerminalIcons {
 
-    StyleFontIcon TERMINAL = new StyleFontIcon("tabshell-terminal-icon");
+    StyleFontIcon TERMINAL = new StyleFontIcon("terminal-icon");
 }

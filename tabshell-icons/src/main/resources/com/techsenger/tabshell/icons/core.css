@@ -22,138 +22,142 @@
     src: url('font/materialdesignicons-webfont.ttf');
 }
 
-.font-icon-view.tabshell-open-icon {
+.font-icon-view.open-icon {
     -fx-code-point: 986575; /* folder-open-outline */
 }
 
-.font-icon-view.tabshell-open-in-new-icon {
+.font-icon-view.open-in-new-icon {
     -fx-code-point: 984012; /* open-in-new */
 }
 
-.font-icon-view.tabshell-save-icon {
+.font-icon-view.save-icon {
     -fx-code-point: 985112; /* content-save-outline */
 }
 
-.font-icon-view.tabshell-save-as-icon {
+.font-icon-view.save-as-icon {
     -fx-code-point: 986364; /* content-save-edit-outline */
 }
 
-.font-icon-view.tabshell-settings-icon {
+.font-icon-view.settings-icon {
     -fx-code-point: 985275; /* cog-outline */
 }
 
-.font-icon-view.tabshell-exit-icon {
+.font-icon-view.exit-icon {
     -fx-code-point: 983875; /* logout */
 }
 
-.font-icon-view.tabshell-undo-icon {
+.font-icon-view.undo-icon {
     -fx-code-point: 984396; /* undo */
 }
 
-.font-icon-view.tabshell-redo-icon {
+.font-icon-view.redo-icon {
     -fx-code-point: 984142; /* redo */
 }
 
-.font-icon-view.tabshell-help-icon {
+.font-icon-view.help-icon {
     -fx-code-point: 986022; /* help-rhombus-outline */
 }
 
-.font-icon-view.tabshell-process-icon {
+.font-icon-view.process-icon {
     -fx-code-point: 985302; /* cogs */
 }
 
-.font-icon-view.tabshell-add-icon {
+.font-icon-view.add-icon {
     -fx-code-point: 984085; /* plus */
 }
 
-.font-icon-view.tabshell-remove-icon {
+.font-icon-view.remove-icon {
     -fx-code-point: 983924; /* minus */
 }
 
-.font-icon-view.tabshell-chevron-up-icon {
+.font-icon-view.chevron-up-icon {
     -fx-code-point: 983363; /* chevron-up */
 }
 
-.font-icon-view.tabshell-chevron-double-up-icon {
+.font-icon-view.chevron-double-up-icon {
     -fx-code-point: 983359; /* chevron-double-up */
 }
 
-.font-icon-view.tabshell-chevron-down-icon {
+.font-icon-view.chevron-down-icon {
     -fx-code-point: 983360; /* chevron-down */
 }
 
-.font-icon-view.tabshell-chevron-double-down-icon {
+.font-icon-view.chevron-double-down-icon {
     -fx-code-point: 983356; /* chevron-double-down */
 }
 
-.font-icon-view.tabshell-chevron-right-icon {
+.font-icon-view.chevron-right-icon {
     -fx-code-point: 983362; /* chevron-right */
 }
 
-.font-icon-view.tabshell-chevron-double-right-icon {
+.font-icon-view.chevron-double-right-icon {
     -fx-code-point: 983358; /* chevron-double-right */
 }
 
-.font-icon-view.tabshell-chevron-left-icon {
+.font-icon-view.chevron-left-icon {
     -fx-code-point: 983361; /* chevron-left */
 }
 
-.font-icon-view.tabshell-chevron-double-left-icon {
+.font-icon-view.chevron-double-left-icon {
     -fx-code-point: 983357; /* chevron-double-left */
 }
 
-.font-icon-view.tabshell-cut-icon {
+.font-icon-view.cut-icon {
     -fx-code-point: 983440; /* content-cut */
 }
 
-.font-icon-view.tabshell-copy-icon {
+.font-icon-view.copy-icon {
     -fx-code-point: 983439; /* content-copy */
 }
 
-.font-icon-view.tabshell-paste-icon {
+.font-icon-view.paste-icon {
     -fx-code-point: 983442; /* content-paste */
 }
 
-.font-icon-view.tabshell-clear-icon {
+.font-icon-view.clear-icon {
     -fx-code-point: 985722; /* trash-can-outline */
 }
 
-.font-icon-view.tabshell-match-case-icon {
+.font-icon-view.match-case-icon {
     -fx-code-point: 985908; /* format-letter-case */
 }
 
-.font-icon-view.tabshell-whole-word-icon {
+.font-icon-view.whole-word-icon {
     -fx-code-point: 987065; /* format-letter-matches */
 }
 
-.font-icon-view.tabshell-reg-exp-icon {
+.font-icon-view.reg-exp-icon {
     -fx-code-point: 984145; /* regex */
 }
 
-.font-icon-view.tabshell-highlight-icon {
+.font-icon-view.highlight-icon {
     -fx-code-point: 984658; /* marker */
 }
 
-.font-icon-view.tabshell-find-icon {
+.font-icon-view.find-icon {
     -fx-code-point: 983881; /* magnify */
 }
 
-.font-icon-view.tabshell-replace-icon {
+.font-icon-view.replace-icon {
     -fx-code-point: 984788; /* find-replace */
 }
 
-.font-icon-view.tabshell-select-all-icon {
+.font-icon-view.select-all-icon {
     -fx-code-point: 984198; /* select all */
 }
 
-.font-icon-view.tabshell-directory-icon {
+.font-icon-view.directory-icon {
     -fx-code-point: 983627; /* folder */
 }
 
-.font-icon-view.tabshell-file-icon {
+.font-icon-view.file-icon {
     -fx-code-point: 983588; /* file-outline */
 }
 
-.font-icon-view.tabshell-drag-vertical-icon {
+.font-icon-view.drag-vertical-icon {
     -fx-code-point: 983517; /* drag-vertical */
+}
+
+.font-icon-view.restore-size-icon {
+    -fx-code-point: 984598; /* arrow-expand */
 }

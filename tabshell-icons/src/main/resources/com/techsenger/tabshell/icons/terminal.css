@@ -22,6 +22,6 @@
     src: url('font/materialdesignicons-webfont.ttf');
 }
 
-.font-icon-view.tabshell-terminal-icon {
+.font-icon-view.terminal-icon {
     -fx-code-point: 985015; /* console-line */
 }

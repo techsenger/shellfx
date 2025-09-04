@@ -22,55 +22,55 @@
     src: url('font/materialdesignicons-webfont.ttf');
 }
 
-.font-icon-view.tabshell-info-icon {
+.font-icon-view.info-icon {
     -fx-code-point: 983805; /* information-outline */
 }
 
-.font-icon-view.tabshell-error-icon {
+.font-icon-view.error-icon {
     -fx-code-point: 986342; /* alert-octagon-outline */
 }
 
-.font-icon-view.tabshell-warning-icon {
+.font-icon-view.warning-icon {
     -fx-code-point: 983082; /* alert-outline */
 }
 
-.font-icon-view.tabshell-question-icon {
+.font-icon-view.question-icon {
     -fx-code-point: 986022; /* help-rhombus-outline */
 }
 
-.font-icon-view.tabshell-directory-up-icon {
+.font-icon-view.directory-up-icon {
     -fx-code-point: 989683; /* folder-arrow-up-outline */
 }
 
-.font-icon-view.tabshell-home-icon {
+.font-icon-view.home-icon {
     -fx-code-point: 984737; /* home-outline */
 }
 
-.font-icon-view.tabshell-add-directory-icon {
+.font-icon-view.add-directory-icon {
     -fx-code-point: 986013; /* folder-plus-outline */
 }
 
-.font-icon-view.tabshell-list-view-icon {
+.font-icon-view.list-view-icon {
     -fx-code-point: 988299; /* view-list-outline */
 }
 
-.font-icon-view.tabshell-grid-view-icon {
+.font-icon-view.grid-view-icon {
     -fx-code-point: 987609; /* view-grid-outline */
 }
 
-.font-icon-view.tabshell-disc-icon {
+.font-icon-view.disc-icon {
     -fx-code-point: 984558; /* disc */
 }
 
-.font-icon-view.tabshell-floppy-icon {
+.font-icon-view.floppy-icon {
     -fx-code-point: 983625; /* floppy */
 }
 
-.font-icon-view.tabshell-base-disk-icon {
+.font-icon-view.base-disk-icon {
     /* view-agenda-outline, harddisk, table-row */
     -fx-code-point: 990362; /* server-outline */
 }
 
-.font-icon-view.tabshell-network-disk-icon {
+.font-icon-view.network-disk-icon {
     -fx-code-point: 990361; /* server-network-outline */
 }

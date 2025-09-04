@@ -24,31 +24,31 @@ import com.techsenger.tabshell.material.icon.StyleFontIcon;
  */
 public interface DialogIcons {
 
-    StyleFontIcon INFO = new StyleFontIcon("tabshell-info-icon");
+    StyleFontIcon INFO = new StyleFontIcon("info-icon");
 
-    StyleFontIcon ERROR = new StyleFontIcon("tabshell-error-icon");
+    StyleFontIcon ERROR = new StyleFontIcon("error-icon");
 
-    StyleFontIcon WARNING = new StyleFontIcon("tabshell-warning-icon");
+    StyleFontIcon WARNING = new StyleFontIcon("warning-icon");
 
-    StyleFontIcon QUESTION = new StyleFontIcon("tabshell-question-icon");
+    StyleFontIcon QUESTION = new StyleFontIcon("question-icon");
 
-    StyleFontIcon DIRECTORY_UP = new StyleFontIcon("tabshell-directory-up-icon");
+    StyleFontIcon DIRECTORY_UP = new StyleFontIcon("directory-up-icon");
 
-    StyleFontIcon HOME = new StyleFontIcon("tabshell-home-icon");
+    StyleFontIcon HOME = new StyleFontIcon("home-icon");
 
-    StyleFontIcon ADD_DIRECTORY = new StyleFontIcon("tabshell-add-directory-icon");
+    StyleFontIcon ADD_DIRECTORY = new StyleFontIcon("add-directory-icon");
 
-    StyleFontIcon LIST_VIEW = new StyleFontIcon("tabshell-list-view-icon");
+    StyleFontIcon LIST_VIEW = new StyleFontIcon("list-view-icon");
 
-    StyleFontIcon GRID_VIEW = new StyleFontIcon("tabshell-grid-view-icon");
+    StyleFontIcon GRID_VIEW = new StyleFontIcon("grid-view-icon");
 
-    StyleFontIcon DISC = new StyleFontIcon("tabshell-disc-icon");
+    StyleFontIcon DISC = new StyleFontIcon("disc-icon");
 
-    StyleFontIcon FLOPPY = new StyleFontIcon("tabshell-floppy-icon");
+    StyleFontIcon FLOPPY = new StyleFontIcon("floppy-icon");
 
-    StyleFontIcon BASE_DISK = new StyleFontIcon("tabshell-base-disk-icon");
+    StyleFontIcon BASE_DISK = new StyleFontIcon("base-disk-icon");
 
-    StyleFontIcon NETWORK_DISK = new StyleFontIcon("tabshell-network-disk-icon");
+    StyleFontIcon NETWORK_DISK = new StyleFontIcon("network-disk-icon");
 
 }
 

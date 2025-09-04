@@ -22,10 +22,10 @@
     src: url('font/materialdesignicons-webfont.ttf');
 }
 
-.font-icon-view.tabshell-hex-editor-icon {
+.font-icon-view.hex-editor-icon {
     -fx-code-point: 987815; /* hexadecimal */
 }
 
-.font-icon-view.tabshell-columns-enabled-icon {
+.font-icon-view.columns-enabled-icon {
     -fx-code-point: 985311; /* format-columns */
 }

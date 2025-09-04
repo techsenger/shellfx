@@ -24,7 +24,7 @@ import com.techsenger.tabshell.material.icon.StyleFontIcon;
  */
 public interface TextIcons {
 
-    StyleFontIcon WRAP = new StyleFontIcon("tabshell-wrap-icon");
+    StyleFontIcon WRAP = new StyleFontIcon("wrap-icon");
 
-    StyleFontIcon EDITOR = new StyleFontIcon("tabshell-editor-icon");
+    StyleFontIcon EDITOR = new StyleFontIcon("editor-icon");
 }
