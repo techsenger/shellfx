@@ -18,9 +18,9 @@ package com.techsenger.tabshell.demos.core.history;
 
 import com.techsenger.mvvm4fx.core.ComponentHistory;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.toolkit.core.function.Factory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * For the demo application the history map is not saved to a file. Always on the JavaFX thread.
@@ -29,16 +29,32 @@ import java.util.Map;
  */
 public class DemoHistoryManager implements HistoryManager {
 
-    private final Map<Class<? extends ComponentHistory>, ComponentHistory> historiesByClass = new HashMap<>();
+    private final Map<Class<? extends ComponentHistory>, ComponentHistory<?>> historiesByClass = new HashMap<>();
+
+    private final Map<UUID, ComponentHistory<?>> historiesByUuid = new HashMap<>();
 
     @Override
-    public <T extends ComponentHistory> T getHistory(Class<T> historyClass, Factory<T> factory) {
-        var history = (T) this.historiesByClass.get(historyClass);
-        if (history == null) {
-            history = factory.create();
-            history.setDefaultValues();
-            this.historiesByClass.put(historyClass, history);
-        }
-        return history;
+    public <T extends ComponentHistory> T getHistory(Class<T> historyClass) {
+        return (T) this.historiesByClass.get(historyClass);
     }
+
+    @Override
+    public <T extends ComponentHistory> void putHistory(Class<T> historyClass, T history) {
+        this.historiesByClass.put(historyClass, history);
+    }
+
+    @Override
+    public ComponentHistory getHistory(UUID uuid) {
+        return this.historiesByUuid.get(uuid);
+    }
+
+    @Override
+    public void putHistory(UUID uuid, ComponentHistory history) {
+        this.historiesByUuid.put(uuid, history);
+    }
+
+
+
+
+
 }

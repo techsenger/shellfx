@@ -19,6 +19,7 @@ package com.techsenger.tabshell.core;
 import com.techsenger.mvvm4fx.core.AbstractParentViewModel;
 import com.techsenger.mvvm4fx.core.ComponentKey;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
@@ -105,7 +106,8 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
         this.settings = settings;
         this.historyManager = historyManager;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> historyManager.getHistory(DefaultShellHistory.class, DefaultShellHistory::new));
+        setHistoryProvider(new DefaultClassHistoryProvider<>(historyManager,
+                DefaultShellHistory.class, DefaultShellHistory::new));
     }
 
     @Override

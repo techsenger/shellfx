@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core.history;
 
 import com.techsenger.mvvm4fx.core.ComponentHistory;
-import com.techsenger.toolkit.core.function.Factory;
+import java.util.UUID;
 
 /**
  *
@@ -31,14 +31,24 @@ public class DefaultHistoryManager implements HistoryManager {
         this.file = file;
     }
 
-    public <T extends ComponentHistory> T getHistory(Class<T> historyClass, Factory<T> factory) {
-        //always on JavaFX thread.
-        var history = (T) file.getHistoriesByClass().get(historyClass);
-        if (history == null) {
-            history = factory.create();
-            history.setDefaultValues();
-            file.getHistoriesByClass().put(historyClass, history);
-        }
-        return history;
+    @Override
+    public <T extends ComponentHistory> T getHistory(Class<T> historyClass) {
+        return (T) this.file.getData().getHistoriesByClass().get(historyClass);
     }
+
+    @Override
+    public <T extends ComponentHistory> void putHistory(Class<T> historyClass, T history) {
+        this.file.getData().getHistoriesByClass().put(historyClass, history);
+    }
+
+    @Override
+    public ComponentHistory getHistory(UUID uuid) {
+        return this.file.getData().getHistoriesByUuid().get(uuid);
+    }
+
+    @Override
+    public void putHistory(UUID uuid, ComponentHistory history) {
+        this.file.getData().getHistoriesByUuid().put(uuid, history);
+    }
+
 }

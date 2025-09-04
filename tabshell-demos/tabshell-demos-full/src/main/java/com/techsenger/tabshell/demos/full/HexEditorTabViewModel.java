@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demos.full;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
 import com.techsenger.tabshell.hex.CaretShape;
@@ -40,7 +41,7 @@ public class HexEditorTabViewModel extends AbstractHexEditorTabViewModel {
     public HexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
         super(tabShell, file);
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> tabShell.getHistoryManager().getHistory(HexEditorTabHistory.class,
+        setHistoryProvider(new DefaultClassHistoryProvider<>(tabShell.getHistoryManager(), HexEditorTabHistory.class,
                 HexEditorTabHistory::new));
     }
 

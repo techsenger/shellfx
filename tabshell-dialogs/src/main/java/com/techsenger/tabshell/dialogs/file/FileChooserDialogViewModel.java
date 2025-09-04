@@ -19,6 +19,7 @@ package com.techsenger.tabshell.dialogs.file;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.dialog.DialogKey;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.style.CoreIcons;
@@ -155,7 +156,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
                 throw new AssertionError();
         }
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> historyManager.getHistory(FileChooserDialogHistory.class,
+        setHistoryProvider(new DefaultClassHistoryProvider<>(historyManager, FileChooserDialogHistory.class,
                 FileChooserDialogHistory::new));
         setButtonWidthEqual(true);
         setCancelVisible(true);

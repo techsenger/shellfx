@@ -22,6 +22,7 @@ import com.techsenger.jeditermfx.core.util.Platform;
 import com.techsenger.jeditermfx.ui.settings.SettingsProvider;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
@@ -80,7 +81,8 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         this.setIcon(TerminalIcons.TERMINAL);
         this.setTitle("Terminal");
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> shell.getHistoryManager().getHistory(TerminalHistory.class, TerminalHistory::new));
+        setHistoryProvider(new DefaultClassHistoryProvider<>(shell.getHistoryManager(), TerminalHistory.class,
+                TerminalHistory::new));
     }
 
     @Override

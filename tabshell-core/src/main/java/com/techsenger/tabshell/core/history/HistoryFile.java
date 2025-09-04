@@ -21,8 +21,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +35,40 @@ import org.slf4j.LoggerFactory;
  */
 public class HistoryFile {
 
+    static class HistoryData implements Serializable {
+
+        private Map<Class<? extends ComponentHistory>, ComponentHistory> historiesByClass;
+
+        private Map<UUID, ComponentHistory> historiesByUuid;
+
+        public Map<Class<? extends ComponentHistory>, ComponentHistory> getHistoriesByClass() {
+            return historiesByClass;
+        }
+
+        public Map<UUID, ComponentHistory> getHistoriesByUuid() {
+            return historiesByUuid;
+        }
+
+        @Override
+        public String toString() {
+            return "HistoryData [" + "historiesByClass:" + historiesByClass + ", historiesByUuid:" + historiesByUuid
+                    + ']';
+        }
+
+        void setHistoriesByClass(Map<Class<? extends ComponentHistory>, ComponentHistory> historiesByClass) {
+            this.historiesByClass = historiesByClass;
+        }
+
+        void setHistoriesByUuid(Map<UUID, ComponentHistory> historiesByUuid) {
+            this.historiesByUuid = historiesByUuid;
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(HistoryFile.class);
 
-    private Map<Class<? extends ComponentHistory>, ComponentHistory> historiesByClass;
-
     private final Path path;
+
+    private HistoryData data;
 
     public HistoryFile(Path path) {
         this.path = path;
@@ -47,30 +78,31 @@ public class HistoryFile {
         var file = path.toFile();
         if (!file.exists()) {
             logger.info("No history data file at {}", path);
-            this.historiesByClass = new ConcurrentHashMap<>();
+            this.data = new HistoryData();
+            this.data.setHistoriesByClass(new ConcurrentHashMap<>());
+            this.data.setHistoriesByUuid(new ConcurrentHashMap<>());
             return;
         }
-        //we will read string keyed map
         try (FileInputStream f = new FileInputStream(file);
             ObjectInputStream s = new ObjectInputStream(f)) {
-            this.historiesByClass = (Map<Class<? extends ComponentHistory>, ComponentHistory>) s.readObject();
-            logger.debug("Read from {} history map: {}", path, this.historiesByClass);
+            this.data = (HistoryData) s.readObject();
+            logger.debug("Read from {} history data: {}", path, this.data);
         } catch (Exception ex) {
-            logger.error("Error reading history from {}", path, ex);
+            logger.error("Error reading history data from {}", path, ex);
         }
     }
 
     public void write() {
         try (FileOutputStream f = new FileOutputStream(path.toFile());
              ObjectOutputStream s = new ObjectOutputStream(f)) {
-            s.writeObject(this.historiesByClass);
-            logger.debug("Wrote to {} history map: {}", path, this.historiesByClass);
+            s.writeObject(this.data);
+            logger.debug("Wrote to {} history data: {}", path, this.data);
         } catch (Exception ex) {
-            logger.error("Error writing history to {}", path, ex);
+            logger.error("Error writing history data to {}", path, ex);
         }
     }
 
-    Map<Class<? extends ComponentHistory>, ComponentHistory> getHistoriesByClass() {
-        return historiesByClass;
+    public HistoryData getData() {
+        return data;
     }
 }

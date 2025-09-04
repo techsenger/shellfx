@@ -24,9 +24,10 @@ import com.techsenger.jeditermfx.core.model.TerminalTextBuffer;
 import com.techsenger.jeditermfx.ui.FindResult;
 import com.techsenger.jeditermfx.ui.SubstringFinder;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -51,7 +52,8 @@ public class FindPaneViewModel extends AbstractFindPaneViewModel {
             }
         });
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> historyManager.getHistory(FindPaneHistory.class, FindPaneHistory::new));
+        setHistoryProvider(new DefaultClassHistoryProvider<>(historyManager, FindPaneHistory.class,
+                FindPaneHistory::new));
     }
 
     @Override

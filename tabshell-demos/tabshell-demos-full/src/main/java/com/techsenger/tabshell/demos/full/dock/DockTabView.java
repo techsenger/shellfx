@@ -73,7 +73,7 @@ public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
         var splitSpaceView = layout.createSplitSpace();
         layout.setRoot(splitSpaceView);
         splitSpaceView.getChildren().add(textViewer);
-        
+
         var tabDockView = layout.createTabDock();
         fillTabs(tabDockView);
         tabDockView.getViewModel().setSpaceReceiver(SpaceReceiver.NEXT);

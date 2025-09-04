@@ -19,6 +19,7 @@ package com.techsenger.tabshell.demos.full;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
@@ -42,8 +43,8 @@ public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
         //the initial history is created using a factory instead of reflection in the history manager to avoid
         //access issues with hidden packages
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> shell.getHistoryManager()
-                .getHistory(TextEditorTabHistory.class, TextEditorTabHistory::new));
+        setHistoryProvider(new DefaultClassHistoryProvider<>(shell.getHistoryManager(),
+                TextEditorTabHistory.class, TextEditorTabHistory::new));
         setIcon(TextIcons.EDITOR);
 
         //these validators will be used when menu is shown

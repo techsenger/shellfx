@@ -19,6 +19,7 @@ package com.techsenger.tabshell.text.viewer;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.dialog.DialogKey;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.text.TextComponentKeys;
@@ -44,8 +45,8 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
     GoToLineDialogViewModel(HistoryManager historyManager) {
         super(DialogScope.TAB, false);
         setHistoryPolicy(HistoryPolicy.DATA);
-        setHistoryProvider(() -> historyManager.getHistory(GoToLineDialogHistory.class,
-                () -> new GoToLineDialogHistory()));
+        setHistoryProvider(new DefaultClassHistoryProvider<>(historyManager, GoToLineDialogHistory.class,
+                GoToLineDialogHistory::new));
         prefWidthProperty().set(400);
         titleProperty().set("Go To Line");
         okDisableProperty().set(true);

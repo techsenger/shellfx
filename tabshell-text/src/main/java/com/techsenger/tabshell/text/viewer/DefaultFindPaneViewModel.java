@@ -17,11 +17,12 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
 import com.techsenger.tabshell.text.TextComponentKeys;
 import java.util.Collection;
 import java.util.List;
@@ -86,7 +87,8 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
             }
         });
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> historyManager.getHistory(FindPaneHistory.class, () -> new FindPaneHistory()));
+        setHistoryProvider(new DefaultClassHistoryProvider<>(historyManager, FindPaneHistory.class,
+                FindPaneHistory::new));
     }
 
     @Override
