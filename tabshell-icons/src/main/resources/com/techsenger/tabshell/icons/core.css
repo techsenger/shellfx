@@ -158,6 +158,6 @@
     -fx-code-point: 983517; /* drag-vertical */
 }
 
-.font-icon-view.restore-size-icon {
-    -fx-code-point: 984598; /* arrow-expand */
+.font-icon-view.restore-window-icon {
+    -fx-code-point: 984498; /* window-restore */
 }

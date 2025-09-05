@@ -16,12 +16,17 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.style.CoreIcons;
+import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.collections.ListSynchronizer;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 
 /**
@@ -63,6 +68,10 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
     protected void build(T viewModel) {
         super.build(viewModel);
         tabPane.setSide(viewModel.getSide());
+        tabPane.getStyleClass().addAll(TabPanePro.STYLE_CLASS_FLOATING, "side-bar");
+
+        var css = SideBarView.class.getResource("side-bar.css").toExternalForm();
+        this.getNode().getStylesheets().add(css);
     }
 
     @Override
@@ -74,6 +83,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
             while (change.next()) {
                 if (change.wasAdded()) {
                     for (var tabDock : change.getAddedSubList()) {
+                        this.tabPane.getTabs().add(createRestoreTab());
                         for (var tab : tabDock.getNode().getTabs()) {
                             var t = createTabFor(tab);
                             this.tabPane.getTabs().add(t);
@@ -84,8 +94,19 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         });
     }
 
+    protected Tab createRestoreTab() {
+        var t = new Tab();
+        var b = new Button(null, new FontIconView(CoreIcons.RESTORE_WINDOW));
+        b.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
+        t.setGraphic(b);
+        t.setClosable(false);
+        t.getStyleClass().add("restore");
+        return t;
+    }
+
     protected Tab createTabFor(Tab tab) {
-        var t = new Tab(tab.getText(), tab.getGraphic());
+        var t = new Tab(tab.getText());
+        t.setGraphic(tab.getGraphic());
         t.setClosable(false);
         return t;
     }

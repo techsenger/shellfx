@@ -1,0 +1,75 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+    Author: Pavel Castornii
+*/
+
+.tab-pane-pro.side-bar > .tab-header-area {
+    -fx-background-insets: 0;
+    -fx-background-color: -color-bg-default;
+    /* bottom line using border! */
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: -color-border-default;
+}
+
+/*.tab-pane.floating {
+  -color-tab-bg-selected: -color-base-6;
+  -color-tab-fg-selected: -color-fg-default;
+  -color-tab-border-selected: -color-border-default;
+}
+.tab-pane.floating > .tab-header-area {
+  -fx-background-color: -color-border-default, -color-bg-inset;
+  -fx-background-insets: 0, 0 0 1px 0;
+}*/
+
+.tab-pane-pro.side-bar > .tab-header-area > .tab-header-background {
+    -fx-background-insets: 0, 0;
+}
+
+.tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab {
+    -fx-background-insets: 0, 0;
+}
+
+.tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab > .tab-container {
+    -fx-background-insets: 0, 0;
+}
+
+.tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+    -fx-pref-width: -1;
+    -fx-padding: 0.20em;
+}
+
+.tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab.restore {
+    -fx-padding: 0 0.6em 0.3em 0.6em;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab.restore > .tab-container {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+/*
+    Graphic is inside label.
+*/
+.tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab.restore > .tab-container > .tab-label {
+    -fx-padding: 0;
+    -fx-padding: 0 0.4em 0.4em 0.4em;
+    -fx-background-color: transparent;
+}

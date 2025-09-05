@@ -92,5 +92,5 @@ public interface CoreIcons {
 
     StyleFontIcon DRAG_VERTICAL = new StyleFontIcon("drag-vertical-icon");
 
-    StyleFontIcon RESTORE_SIZE = new StyleFontIcon("restore-size-icon");
+    StyleFontIcon RESTORE_WINDOW = new StyleFontIcon("restore-window-icon");
 }
