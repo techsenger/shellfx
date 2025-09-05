@@ -53,6 +53,16 @@ public class DemoHistoryManager implements HistoryManager {
         this.historiesByUuid.put(uuid, history);
     }
 
+    @Override
+    public <T extends ComponentHistory> T removeHistory(Class<T> historyClass) {
+        return (T) this.historiesByClass.remove(historyClass);
+    }
+
+    @Override
+    public ComponentHistory removeHistory(UUID uuid) {
+        return this.historiesByUuid.remove(uuid);
+    }
+
 
 
 

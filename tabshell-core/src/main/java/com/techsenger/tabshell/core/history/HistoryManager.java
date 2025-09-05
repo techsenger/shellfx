@@ -48,6 +48,16 @@ public interface HistoryManager {
     <T extends ComponentHistory> void putHistory(Class<T> historyClass, T history);
 
     /**
+     * Removes and returns the global history object associated with the specified class. This is used for components
+     * that share a single history across all component instances and need to clear or replace it.
+     *
+     * @param <T> the type of history to remove
+     * @param historyClass the class of the history to remove
+     * @return the removed history object for the given class, or {@code null} if no history was associated
+     */
+    <T extends ComponentHistory> T removeHistory(Class<T> historyClass);
+
+    /**
      * Retrieves the history for a specific component instance by its UUID. This is used for components that require
      * unique history per instance.
      *
@@ -64,4 +74,13 @@ public interface HistoryManager {
      * @param history the history object to store for this instance
      */
     void putHistory(UUID uuid, ComponentHistory history);
+
+    /**
+     * Removes and returns the history associated with a specific component instance identified by its UUID.
+     * This is used for components that require unique history per instance and need to clear or replace it.
+     *
+     * @param uuid the unique identifier of the component instance
+     * @return the removed history object for the specified instance, or {@code null} if no history was associated
+     */
+    ComponentHistory removeHistory(UUID uuid);
 }

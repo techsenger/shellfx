@@ -50,6 +50,16 @@ public class TestFindPaneViewModel  extends DefaultFindPaneViewModel {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
 
+            @Override
+            public <T extends ComponentHistory> T removeHistory(Class<T> historyClass) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public ComponentHistory removeHistory(UUID uuid) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
         };
     }
 

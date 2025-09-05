@@ -42,6 +42,11 @@ public class DefaultHistoryManager implements HistoryManager {
     }
 
     @Override
+    public <T extends ComponentHistory> T removeHistory(Class<T> historyClass) {
+        return (T) this.file.getData().getHistoriesByClass().remove(historyClass);
+    }
+
+    @Override
     public ComponentHistory getHistory(UUID uuid) {
         return this.file.getData().getHistoriesByUuid().get(uuid);
     }
@@ -49,6 +54,11 @@ public class DefaultHistoryManager implements HistoryManager {
     @Override
     public void putHistory(UUID uuid, ComponentHistory history) {
         this.file.getData().getHistoriesByUuid().put(uuid, history);
+    }
+
+    @Override
+    public ComponentHistory removeHistory(UUID uuid) {
+        return this.file.getData().getHistoriesByUuid().remove(uuid);
     }
 
 }
