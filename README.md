@@ -8,6 +8,7 @@
 * [Overview](#overview)
 * [Demo](#demo)
     * [Text Editor](#demo-text-editor)
+    * [Hex Editor](#demo-hex-editor)
     * [Terminal](#demo-terminal)
     * [Dialogs](#demo-dialogs)
 * [Features](#features)
@@ -42,9 +43,13 @@ final application.
 
 ![TabShell Text Editor](https://github.com/user-attachments/assets/42b61472-3ce6-4309-91fe-8ecd188f494f)
 
+### Hex Editor (In Progress) <a name="demo-hex-editor"></a>
+
+![Screenshot from 2025-06-11 23-30-02](https://github.com/user-attachments/assets/13fd4345-db82-40d1-b79a-b71341c90a09)
+
 ### Terminal <a name="demo-terminal"></a>
 
-![TabShell Terminal](https://github.com/user-attachments/assets/07a4bae8-a418-4e88-8bd4-90bb899c8ed9)
+![Screenshot from 2025-06-11 23-53-30](https://github.com/user-attachments/assets/d7be0f9f-38ba-4e0f-aa75-23ed830c7f60)
 
 ### Dialogs <a name="demo-dialogs"></a>
 
