@@ -82,9 +82,9 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
             tabHeaderArea.getFirstArea().getChildren().clear();
             if (newV != null) {
                 var iconView = new FontIconView(CoreIcons.DRAG_VERTICAL);
-                iconView.setOnDragDetected(e -> this.layout.handleDragDetectedOnDock(this, iconView, e));
-                iconView.setOnMouseDragged(e -> this.layout.handleMouseDraggedOnDock(this, iconView, e));
-                iconView.setOnMouseReleased(e -> this.layout.handleMouseReleasedOnDock(this, iconView, e));
+                iconView.setOnDragDetected(e -> this.layout.handleDockDragDetected(this, iconView, e));
+                iconView.setOnMouseDragged(e -> this.layout.handleDockMouseDragged(this, iconView, e));
+                iconView.setOnMouseReleased(e -> this.layout.handleDockMouseReleased(this, iconView, e));
                 tabHeaderArea.getFirstArea().getChildren().add(iconView);
             }
         });
@@ -101,12 +101,12 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         super.addHandlers(viewModel);
         minimizeButton.setOnAction(e -> this.layout.minimizeTabDock(this));
         var tabPane = getNode();
-        tabPane.addTabDragHandler(tab -> this.layout.handleDragOnTab((ComponentTab) tab));
+        tabPane.addTabDragHandler(tab -> this.layout.handleTabDrag((ComponentTab) tab));
         // this handler is called when mouse is over TabHeaderArea
-        tabPane.addTabDropHandler((tab, s) -> this.layout.handleDropOnTab((ComponentTab) tab));
+        tabPane.addTabDropHandler((tab, s) -> this.layout.handleTabDrop((ComponentTab) tab));
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
-                e -> this.layout.handleMouseDragOverOnTabHeaderArea(tabPane, e));
+                e -> this.layout.handleTabHeaderAreaMouseDragOver(tabPane, e));
     }
 
     /**

@@ -35,14 +35,17 @@ import javafx.scene.control.Tab;
  */
 public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T> {
 
+    private final DockLayoutView<?> layout;
+
     private final ObservableList<TabDockView<?>> tabDocks = FXCollections.observableArrayList();
 
     private final TabPanePro tabPane = new TabPanePro();
 
     private ListSynchronizer<TabDockView<?>, TabDockViewModel> listSynchronizer;
 
-    public SideBarView(T viewModel) {
+    public SideBarView(DockLayoutView<?> layout, T viewModel) {
         super(viewModel);
+        this.layout = layout;
     }
 
     @Override
@@ -95,13 +98,14 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
     }
 
     protected Tab createRestoreTab() {
-        var t = new Tab();
-        var b = new Button(null, new FontIconView(CoreIcons.RESTORE_WINDOW));
-        b.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
-        t.setGraphic(b);
-        t.setClosable(false);
-        t.getStyleClass().add("restore");
-        return t;
+        var tab = new Tab();
+        var button = new Button(null, new FontIconView(CoreIcons.RESTORE_WINDOW));
+        button.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
+        button.setOnAction(e -> handleRestoreButtonAction(tab));
+        tab.setGraphic(button);
+        tab.setClosable(false);
+        tab.getStyleClass().add("restore");
+        return tab;
     }
 
     protected Tab createTabFor(Tab tab) {
@@ -109,5 +113,33 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         t.setGraphic(tab.getGraphic());
         t.setClosable(false);
         return t;
+    }
+
+    protected void handleRestoreButtonAction(Tab tab) {
+        var restoreTabIndex = tabPane.getTabs().indexOf(tab);
+        var dockIndex = findTabDockIndex(restoreTabIndex);
+        var tabDock = this.tabDocks.remove(dockIndex);
+        // removing restoreTab and dock tabs from side bar
+        tabPane.getTabs().remove(restoreTabIndex, restoreTabIndex + tabDock.getNode().getTabs().size() + 1);
+        this.layout.restoreTabDock(this, tabDock);
+    }
+
+    /**
+     * Finds the tab dock index by the index of the tab with the restore button.
+     *
+     * @param restoreTab
+     * @return
+     */
+    private int findTabDockIndex(int restoreTabIndex) {
+        var index = -1;
+        for (var i = 0; i < this.tabDocks.size(); i++) {
+            index += 1; // restore button
+            if (index == restoreTabIndex) {
+                return i;
+            }
+            var tabDock = this.tabDocks.get(i);
+            index += tabDock.getTabs().size();
+        }
+        return -1;
     }
 }

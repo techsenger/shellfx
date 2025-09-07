@@ -20,8 +20,11 @@ import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.layout.LayoutComponentKeys;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
+import java.util.UUID;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.LEFT;
 import org.slf4j.Logger;
@@ -36,6 +39,8 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
     private static final Logger logger = LoggerFactory.getLogger(SplitSpaceViewModel.class);
 
     private final ReadOnlyObjectWrapper<SpaceReceiver> spaceReceiver = new ReadOnlyObjectWrapper<>();
+
+    private final ObjectProperty<UUID> uuid = new SimpleObjectProperty();
 
     protected SplitSpaceViewModel() {
 
@@ -77,6 +82,33 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
     @Override
     public SplitSpaceHelper getComponentHelper() {
         return (SplitSpaceHelper) super.getComponentHelper();
+    }
+
+    /**
+     * Returns the value of {@link #uuidProperty()}.
+     *
+     * @return the current {@link UUID} of this component
+     */
+    public final UUID getUuid() {
+        return uuid.get();
+    }
+
+    /**
+     * The property that defines the unique identifier of this component.
+     *
+     * @return the {@link ObjectProperty} of the {@link UUID}
+     */
+    public final ObjectProperty<UUID> uuidProperty() {
+        return uuid;
+    }
+
+    /**
+     * Sets the value of {@link #uuidProperty()}.
+     *
+     * @param value the new {@link UUID} for this component
+     */
+    protected final void setUuid(UUID value) {
+        uuid.set(value);
     }
 
     void updateHalfDividersOnAdd(int anchorContainerIndex, double[] oldPositions) {

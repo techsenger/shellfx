@@ -31,6 +31,7 @@ import com.techsenger.toolkit.core.Pair;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
@@ -251,10 +252,10 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             super(layout, component);
             eventPane.setMouseTransparent(false);
             // eventPane.setStyle("-fx-background-color: yellow");
-            eventPane.setOnMouseDragOver(e -> getLayout().handleMouseDragOverOnContainer(provideMousePosition(e)));
-            eventPane.setOnMouseDragExited(e -> getLayout().handleMouseDragExitedOnContainer(provideMousePosition(e)));
+            eventPane.setOnMouseDragOver(e -> getLayout().handleContainerMouseDragOver(provideMousePosition(e)));
+            eventPane.setOnMouseDragExited(e -> getLayout().handleContainerMouseDragExited(provideMousePosition(e)));
             eventPane.setOnMouseDragReleased(e -> getLayout()
-                    .handleMouseDragReleasedOnContainer(provideMousePosition(e)));
+                    .handleContainerMouseDragReleased(provideMousePosition(e)));
         }
 
         @Override
@@ -812,6 +813,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     public SplitSpaceView<?> createSplitSpace() {
         var viewModel = getViewModel().createSplitSpace();
+        viewModel.setUuid(UUID.randomUUID());
         var view = new SplitSpaceView<SplitSpaceViewModel>(this, viewModel);
         view.initialize();
         return view;
@@ -819,6 +821,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     public TabDockView<?> createTabDock() {
         var tabDockViewModel = getViewModel().createTabDock();
+        tabDockViewModel.setUuid(UUID.randomUUID());
         var tabDockView = new TabDockView<TabDockViewModel>(this, tabDockViewModel);
         tabDockView.initialize();
         return tabDockView;
@@ -826,7 +829,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     public SideBarView<?> createSideBar(Side side) {
         var barViewModel = getViewModel().createSideBar(side);
-        var barView = new SideBarView<SideBarViewModel>(barViewModel);
+        var barView = new SideBarView<SideBarViewModel>(this, barViewModel);
         barView.initialize();
         return barView;
     }
@@ -948,17 +951,17 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         logger.debug("Removed empty TabDock");
     }
 
-    void handleDragDetectedOnTab(ComponentTab tab) {
+    void handleTabDragDetected(ComponentTab tab) {
         this.dragTab = tab;
         updateDragInProgress(true, DraggableType.TAB);
     }
 
-    void handleDragOnTab(ComponentTab tab) {
+    void handleTabDrag(ComponentTab tab) {
         this.dragTab = tab;
         updateDragInProgress(true, DraggableType.TAB);
     }
 
-    void handleDropOnTab(ComponentTab tab) {
+    void handleTabDrop(ComponentTab tab) {
         try {
             processDropInsideTabHeaderArea();
         } finally {
@@ -966,7 +969,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
     }
 
-    void handleMouseDragOverOnTabHeaderArea(TabPanePro tabPane, MouseDragEvent e) {
+    void handleTabHeaderAreaMouseDragOver(TabPanePro tabPane, MouseDragEvent e) {
         TabDockContainer tabDockContainer = (TabDockContainer) tabPane.getParent();
         var pos = new MousePosition(tabDockContainer, e, null, false, true);
         handleMouseDragOverOnTabHeaderArea(pos, tabDockContainer);
@@ -978,7 +981,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * @param dock
      * @param position
      */
-    void handleDragDetectedOnDock(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
+    void handleDockDragDetected(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
         this.dragDock = dock;
         TabPaneProSkin sourceSkin = (TabPaneProSkin) dock.getNode().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
@@ -995,7 +998,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         updateDragInProgress(true, DraggableType.TAB_DOCK);
     }
 
-    void handleMouseDraggedOnDock(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
+    void handleDockMouseDragged(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
         if (this.dragDockPopup != null) {
             this.dragDockPopup.setAnchorX(e.getScreenX());
             this.dragDockPopup.setAnchorY(e.getScreenY());
@@ -1003,16 +1006,16 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
     }
 
-    void handleMouseReleasedOnDock(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
+    void handleDockMouseReleased(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
         hideDragDockPopup();
         updateDragInProgress(false, DraggableType.TAB_DOCK);
     }
 
-    void handleMouseDragExitedOnContainer(MousePosition mousePosition) {
+    void handleContainerMouseDragExited(MousePosition mousePosition) {
         hideIndicator();
     }
 
-    void handleMouseDragOverOnContainer(MousePosition mousePosition) {
+    void handleContainerMouseDragOver(MousePosition mousePosition) {
         hideIndicator();
         this.dockInfo = createBaseDockInfo(mousePosition);
         showIndicator();
@@ -1023,7 +1026,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      *
      * @param mousePosition
      */
-    void handleMouseDragReleasedOnContainer(MousePosition mousePosition) {
+    void handleContainerMouseDragReleased(MousePosition mousePosition) {
         try {
             processDropOutsideTabHeaderArea();
         } finally {
@@ -1032,11 +1035,20 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     }
 
     void minimizeTabDock(TabDockView<?> dock) {
-        // 0. resolving the side (before removing)
+        // saving current position
+        SplitSpaceView<?> parent = (SplitSpaceView<?>) dock.getParent();
+        var index = parent.getChildren().indexOf(dock);
+        var pos = new ComponentPosition(parent.getViewModel().getUuid(), index,
+                dock.getNode().getWidth(), dock.getNode().getHeight());
+        dock.getViewModel().setMinimizedPosition(pos);
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} minimized position: {}", ObjectUtils.getIdentity(dock), pos);
+        }
+        // resolving the side (before removing)
         var side = resolveTabDockSide(dock);
-        // 1. removing the dock
+        // removing the dock
         removeTabDock(dock.getNode());
-        // 2. createaing a sidebar if it is null
+        // createaing a sidebar if it is null
         SideBarView<?> sideBar = null;
         switch (side) {
             case RIGHT:
@@ -1066,8 +1078,50 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             default:
                 throw new AssertionError();
         }
-        // 3. adding the dock to the sidebar
+        // adding the dock to the sidebar
         sideBar.getTabDocks().add(dock);
+    }
+
+    void restoreTabDock(SideBarView<?> sideBar, TabDockView<?> dock) {
+        var position = dock.getViewModel().getMinimizedPosition();
+        dock.getViewModel().setMinimizedPosition(null);
+        SplitSpaceView<?> parent = null;
+        var iterator = getRoot().breadthFirstIterator();
+        while (iterator.hasNext()) {
+            AbstractPaneView<?> component = (AbstractPaneView<?>) iterator.next();
+            if (component instanceof SplitSpaceView<?> c) {
+                if (c.getViewModel().getUuid().equals(position.getParentUuid())) {
+                    parent = c;
+                    break;
+                }
+            }
+        }
+        if (sideBar.getTabDocks().isEmpty()) {
+            switch (sideBar.getViewModel().getSide()) {
+                case RIGHT:
+                    setRightBar(null);
+                    this.borderPane.setRight(null);
+                    break;
+                case BOTTOM:
+                    setBottomBar(null);
+                    this.borderPane.setBottom(null);
+                    break;
+                case LEFT:
+                    setLeftBar(null);
+                    this.borderPane.setLeft(null);
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            sideBar.deinitialize();
+        }
+        if (parent != null) {
+            var dividerPositsions = parent.getNode().getDividerPositions();
+            parent.getChildren().add(position.getIndex(), dock);
+            var finalP = parent;
+            finalP.updateDividerPositionsAfterInsert(finalP.getNode(), position.getIndex(),
+                            position.getWidth(), dividerPositsions);
+        }
     }
 
     private void handleMouseDragOverOnTabHeaderArea(MousePosition mousePosition, TabDockContainer tabDockContainer) {
