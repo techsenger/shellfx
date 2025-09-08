@@ -24,6 +24,7 @@ import com.techsenger.tabshell.layout.dock.DockLayoutView;
 import com.techsenger.tabshell.layout.dock.SpaceReceiver;
 import com.techsenger.tabshell.layout.dock.TabDockView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 
@@ -70,7 +71,7 @@ public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
         this.layout.initialize();
         this.layout.setMain(this.textViewer);
 
-        var splitSpaceView = layout.createSplitSpace();
+        var splitSpaceView = layout.createSplitSpace(Orientation.HORIZONTAL);
         layout.setRoot(splitSpaceView);
         splitSpaceView.getChildren().add(textViewer);
 

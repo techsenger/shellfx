@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.layout.LayoutComponentKeys;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 
 /**
@@ -89,8 +90,8 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         return tabDock;
     }
 
-    protected SplitSpaceViewModel createSplitSpace() {
-        var workspace = new SplitSpaceViewModel();
+    protected SplitSpaceViewModel createSplitSpace(Orientation orientation) {
+        var workspace = new SplitSpaceViewModel(orientation);
         return workspace;
     }
 

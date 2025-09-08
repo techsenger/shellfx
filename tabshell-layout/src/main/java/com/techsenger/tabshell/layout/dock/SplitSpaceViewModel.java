@@ -25,6 +25,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.LEFT;
 import org.slf4j.Logger;
@@ -42,8 +43,10 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
 
     private final ObjectProperty<UUID> uuid = new SimpleObjectProperty();
 
-    protected SplitSpaceViewModel() {
+    private final Orientation orientation;
 
+    protected SplitSpaceViewModel(Orientation orientation) {
+        this.orientation = orientation;
     }
 
     @Override
@@ -100,6 +103,15 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
      */
     public final ObjectProperty<UUID> uuidProperty() {
         return uuid;
+    }
+
+    /**
+     * Returns the orientation of the component..
+     *
+     * @return the current {@link Orientation} of this component
+     */
+    public final Orientation getOrientation() {
+        return orientation;
     }
 
     /**
@@ -359,5 +371,85 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
         getComponentHelper().setDividerPositions(newPositions);
         logger.debug("Updated dividers on unwrap; oldPositions: {}, childPositions: {}, newPositions: {}",
                 oldPositions, childPositions, newPositions);
+    }
+
+    /**
+     * Updates divider positions after inserting a new node at the specified index during restore.
+     *
+     * @param oldPositions the divider positions before the new node is inserted.
+     * @param componentPosition the saved component position.
+     */
+    void updateDividersOnRestore(double[] oldPositions, ComponentPosition componentPosition) {
+        int count = getChildren().size();
+
+        if (count < 2) {
+            return;
+        }
+        double totalWidth = getWidth();
+
+        // Get actual widths of all children (including the new one)
+        double[] sizes = new double[count];
+        for (int i = 0; i < count; i++) {
+            sizes[i] = ((AbstractPaneViewModel) getChildren().get(i)).getWidth();
+        }
+        var insertIndex = componentPosition.getIndex();
+        double nodeSize = componentPosition.getWidth();
+        if (orientation == Orientation.VERTICAL) {
+            nodeSize = componentPosition.getHeight();
+        }
+
+        // Prepare adjustment
+        if (insertIndex == 0 || insertIndex == count - 1) {
+            // New node at the edge
+            int neighborIdx = (insertIndex == 0) ? 1 : count - 2;
+            double neighborSize = sizes[neighborIdx];
+
+            double allocate = nodeSize;
+            if (neighborSize < nodeSize) {
+                allocate = neighborSize / 3.0;
+            }
+
+            sizes[insertIndex] = allocate;
+            sizes[neighborIdx] = neighborSize - allocate;
+        } else {
+            // New node between two nodes
+            int leftIdx = insertIndex - 1;
+            int rightIdx = insertIndex + 1;
+            double previousSize = sizes[leftIdx];
+            double nextSize = sizes[rightIdx];
+            double totalNeighbors = previousSize + nextSize;
+
+            double previousGive = nodeSize * (previousSize / totalNeighbors);
+            double nextGive = nodeSize * (nextSize / totalNeighbors);
+
+            boolean previousOk = previousGive <= previousSize;
+            boolean nextOk = nextGive <= nextSize;
+
+            if (previousOk && nextOk) {
+                sizes[leftIdx] = previousSize - previousGive;
+                sizes[rightIdx] = nextSize - nextGive;
+                sizes[insertIndex] = previousGive + nextGive;
+            } else {
+                previousGive = previousSize / 3.0;
+                nextGive = nextSize / 3.0;
+                sizes[leftIdx] = previousSize - previousGive;
+                sizes[rightIdx] = nextSize - nextGive;
+                sizes[insertIndex] = previousGive + nextGive;
+            }
+        }
+
+        double total = 0.0;
+        for (int i = 0; i < count; i++) {
+            total += sizes[i];
+        }
+        double[] newPositions = new double[count - 1];
+        double accum = 0.0;
+        for (int i = 0; i < count - 1; i++) {
+            accum += sizes[i];
+            newPositions[i] = accum / total;
+        }
+        getComponentHelper().setDividerPositions(newPositions);
+        logger.debug("Updated dividers on restore; oldPositions: {}, component position: {}, newPositions: {}",
+                oldPositions, componentPosition, newPositions);
     }
 }

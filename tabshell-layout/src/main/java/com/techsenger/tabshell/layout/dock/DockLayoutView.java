@@ -811,8 +811,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return main;
     }
 
-    public SplitSpaceView<?> createSplitSpace() {
-        var viewModel = getViewModel().createSplitSpace();
+    public SplitSpaceView<?> createSplitSpace(Orientation orientation) {
+        var viewModel = getViewModel().createSplitSpace(orientation);
         viewModel.setUuid(UUID.randomUUID());
         var view = new SplitSpaceView<SplitSpaceViewModel>(this, viewModel);
         view.initialize();
@@ -1116,11 +1116,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             sideBar.deinitialize();
         }
         if (parent != null) {
-            var dividerPositsions = parent.getNode().getDividerPositions();
+            var oldPositions = parent.getNode().getDividerPositions();
             parent.getChildren().add(position.getIndex(), dock);
-            var finalP = parent;
-            finalP.updateDividerPositionsAfterInsert(finalP.getNode(), position.getIndex(),
-                            position.getWidth(), dividerPositsions);
+            parent.getViewModel().updateDividersOnRestore(oldPositions, position);
         }
     }
 
@@ -1524,9 +1522,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     private TabDockView<?> wrapAndAddTabDock(Orientation newOrientation, ContainerInfo anchorInfo,
             ContainerInfo newInfo, TabDockView<?> newTabDock) {
-        var newSplitSpace = createSplitSpace();
+        var newSplitSpace = createSplitSpace(newOrientation);
 
-        newSplitSpace.getNode().setOrientation(newOrientation);
         var anchorContainerIndex = anchorInfo.getIndex();
         var acnhorSpaceReceiver = getSpaceReceiver(anchorInfo.getContainer()); // saving value
 
