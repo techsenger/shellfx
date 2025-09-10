@@ -91,8 +91,13 @@ class TerminalSettingsProvider extends DefaultSettingsProvider {
         return HyperlinkStyle.HighlightMode.HOVER_WITH_ORIGINAL_COLOR;
     }
 
-    @Deprecated
-    public TextStyle getDefaultStyle() {
-        return terminalPalette.getDefaultStyle();
+    @Override
+    public TerminalColor getDefaultBackground() {
+        return terminalPalette.getDefaultBackgroundColor();
+    }
+
+    @Override
+    public TerminalColor getDefaultForeground() {
+        return terminalPalette.getDefaultForegroundColor();
     }
 }

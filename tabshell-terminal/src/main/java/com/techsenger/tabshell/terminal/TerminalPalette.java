@@ -18,7 +18,6 @@ package com.techsenger.tabshell.terminal;
 
 import com.techsenger.jeditermfx.core.Color;
 import com.techsenger.jeditermfx.core.TerminalColor;
-import com.techsenger.jeditermfx.core.TextStyle;
 import com.techsenger.jeditermfx.core.emulator.ColorPalette;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.core.theme.ThemePalette;
@@ -57,8 +56,24 @@ class TerminalPalette extends ColorPalette {
     }
 
     @Override
-    protected Color getBackgroundByColorIndex(int colorIndex) {
+    public Color getBackgroundByColorIndex(int colorIndex) {
         return bgColors[colorIndex];
+    }
+
+    public TerminalColor getDefaultForegroundColor() {
+        return new TerminalColor(fgColorIndex);
+    }
+
+    public TerminalColor getDefaultBackgroundColor() {
+        return new TerminalColor(bgColorIndex);
+    }
+
+    public int getFoundBackground() {
+        return theme.getPalette().getFoundBgColor();
+    }
+
+    public int getFoundForeground() {
+        return theme.getPalette().getFoundFgColor();
     }
 
     /**
@@ -78,10 +93,6 @@ class TerminalPalette extends ColorPalette {
         this.createColors();
     }
 
-    public TextStyle getDefaultStyle() {
-        return new TextStyle(new TerminalColor(fgColorIndex), new TerminalColor(bgColorIndex));
-    }
-
     public ThemePalette getTextPalette() {
         return textPalette;
     }
@@ -89,14 +100,6 @@ class TerminalPalette extends ColorPalette {
     public void setPaletteType(TerminalPaletteType paletteType) {
         this.paletteType = paletteType;
         this.createColors();
-    }
-
-    public int getFoundBackground() {
-        return theme.getPalette().getFoundBgColor();
-    }
-
-    public int getFoundForeground() {
-        return theme.getPalette().getFoundFgColor();
     }
 
     private void createColors() {
