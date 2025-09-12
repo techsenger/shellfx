@@ -377,16 +377,20 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
      * Updates divider positions after inserting a new node at the specified index during restore.
      * <p>Algorithm:
      * <ul>
-     *   <li>If the new node is at the edge (left or right), its neighbor allocates space so that the new node's width
-     *    or height is equal to nodeWidth (in pixels). If not possible, the new node takes 1/3 of neighbor's width.</li>
-     *   <li>If the new node is inserted between two nodes, both neighbors allocate space proportionally to their
-     *      widths/heights to achieve nodeSize. If not possible, each neighbor gives up 1/3 of its width/height.</li>
+     *   <li>If {@code componentSpaceReceiver} is not {@link SpaceReceiver#BOTH}, its neighbor allocates space so that
+     *      the new node's width or height is equal to nodeWidth (in pixels). If not possible, the new node takes
+     *      1/3 of neighbor's width/height.</li>
+     *   <li>If {@code componentSpaceReceiver} is {@link SpaceReceiver#BOTH}, both neighbors allocate space
+     *      proportionally to their widths/heights to achieve nodeSize. If not possible, each neighbor gives up 1/3
+     *      of its width/height.</li>
      * </ul>
+     *
      * @param oldPositions the divider positions before the new node is inserted.
      * @param componentPosition the saved component position.
-     * @param closedSideBarSize the width or the height of the sidebar or 0 if the side bar is still present
+     * @param componentSpaceReceiver the receiver of the component space.
      */
-    void updateDividersOnRestore(double[] oldPositions, ComponentPosition componentPosition, double closedSideBarSize) {
+    void updateDividersOnRestore(double[] oldPositions, ComponentPosition componentPosition,
+            SpaceReceiver componentSpaceReceiver) {
         int count = getChildren().size();
 
         if (count < 2) {
@@ -411,10 +415,13 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
         }
         //nodeSize += closedSideBarSize;
 
-        // Prepare adjustment
-        if (insertIndex == 0 || insertIndex == count - 1) {
-            // New node at the edge
-            int neighborIdx = (insertIndex == 0) ? 1 : count - 2;
+        if (componentSpaceReceiver != SpaceReceiver.BOTH) {
+            int neighborIdx;
+            if (componentSpaceReceiver == SpaceReceiver.PREVIOUS) {
+                neighborIdx = insertIndex - 1;
+            } else {
+                neighborIdx = insertIndex + 1;
+            }
             double neighborSize = sizes[neighborIdx];
 
             double allocate = nodeSize;
@@ -425,7 +432,6 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
             sizes[insertIndex] = allocate;
             sizes[neighborIdx] = neighborSize - allocate;
         } else {
-            // New node between two nodes
             int leftIdx = insertIndex - 1;
             int rightIdx = insertIndex + 1;
             double previousSize = sizes[leftIdx];

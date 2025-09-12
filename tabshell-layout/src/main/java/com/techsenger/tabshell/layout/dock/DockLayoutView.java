@@ -1082,6 +1082,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
         // adding the dock to the sidebar
         sideBar.getTabDocks().add(dock);
+        printTreeDebugInfo();
     }
 
     void restoreTabDock(SideBarView<?> sideBar, TabDockView<?> dock) {
@@ -1130,7 +1131,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             var container = getContainer(dock);
             // workaround for JDK-8367322
             SplitPane.setResizableWithParent(container, false);
-            parent.getViewModel().updateDividersOnRestore(oldPositions, position, 0.0);
+            parent.getViewModel().updateDividersOnRestore(oldPositions, position,
+                    dock.getViewModel().getSpaceReceiver());
             Platform.runLater(() -> SplitPane.setResizableWithParent(container, true));
             var savedSize = parent.getNode().getWidth();
             if (parent.getNode().getOrientation() == Orientation.VERTICAL) {
