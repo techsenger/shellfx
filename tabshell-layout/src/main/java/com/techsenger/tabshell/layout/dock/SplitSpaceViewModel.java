@@ -375,28 +375,41 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
 
     /**
      * Updates divider positions after inserting a new node at the specified index during restore.
-     *
+     * <p>Algorithm:
+     * <ul>
+     *   <li>If the new node is at the edge (left or right), its neighbor allocates space so that the new node's width
+     *    or height is equal to nodeWidth (in pixels). If not possible, the new node takes 1/3 of neighbor's width.</li>
+     *   <li>If the new node is inserted between two nodes, both neighbors allocate space proportionally to their
+     *      widths/heights to achieve nodeSize. If not possible, each neighbor gives up 1/3 of its width/height.</li>
+     * </ul>
      * @param oldPositions the divider positions before the new node is inserted.
      * @param componentPosition the saved component position.
+     * @param closedSideBarSize the width or the height of the sidebar or 0 if the side bar is still present
      */
-    void updateDividersOnRestore(double[] oldPositions, ComponentPosition componentPosition) {
+    void updateDividersOnRestore(double[] oldPositions, ComponentPosition componentPosition, double closedSideBarSize) {
         int count = getChildren().size();
 
         if (count < 2) {
             return;
         }
-        double totalWidth = getWidth();
 
         // Get actual widths of all children (including the new one)
         double[] sizes = new double[count];
         for (int i = 0; i < count; i++) {
-            sizes[i] = ((AbstractPaneViewModel) getChildren().get(i)).getWidth();
+            if (orientation == Orientation.HORIZONTAL) {
+                sizes[i] = ((AbstractPaneViewModel) getChildren().get(i)).getWidth();
+            } else {
+                sizes[i] = ((AbstractPaneViewModel) getChildren().get(i)).getHeight();
+            }
         }
         var insertIndex = componentPosition.getIndex();
-        double nodeSize = componentPosition.getWidth();
-        if (orientation == Orientation.VERTICAL) {
+        double nodeSize;
+        if (orientation == Orientation.HORIZONTAL) {
+            nodeSize = componentPosition.getWidth();
+        } else {
             nodeSize = componentPosition.getHeight();
         }
+        //nodeSize += closedSideBarSize;
 
         // Prepare adjustment
         if (insertIndex == 0 || insertIndex == count - 1) {
@@ -406,7 +419,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
 
             double allocate = nodeSize;
             if (neighborSize < nodeSize) {
-                allocate = neighborSize / 3.0;
+                allocate = neighborSize * DockConstants.ONE_THIRD;
             }
 
             sizes[insertIndex] = allocate;
@@ -430,8 +443,8 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
                 sizes[rightIdx] = nextSize - nextGive;
                 sizes[insertIndex] = previousGive + nextGive;
             } else {
-                previousGive = previousSize / 3.0;
-                nextGive = nextSize / 3.0;
+                previousGive = previousSize * DockConstants.ONE_THIRD;
+                nextGive = nextSize * DockConstants.ONE_THIRD;
                 sizes[leftIdx] = previousSize - previousGive;
                 sizes[rightIdx] = nextSize - nextGive;
                 sizes[insertIndex] = previousGive + nextGive;
@@ -451,5 +464,90 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
         getComponentHelper().setDividerPositions(newPositions);
         logger.debug("Updated dividers on restore; oldPositions: {}, component position: {}, newPositions: {}",
                 oldPositions, componentPosition, newPositions);
+    }
+
+    /**
+     * Adjusts divider positions for a SplitPane so that all children keep their pixel width/height,
+     * except one (or two, if withSibling=true) children, when the SplitPane width changes.
+     *
+     * <p>
+     * The widths/heights of children are calculated from the previous divider positions and previous SplitPane size.
+     * The change (delta) in width/height is absorbed by the flexible child (or two flexible children proportionally).
+     * If the flexible children cannot absorb the delta (i.e., their width/height would become negative), then function
+     * is terminated.
+     * </p>
+     *
+     * @param oldSize previous SplitPane width/height in pixels
+     * @param flexibleChildIndex index of the child to absorb the change, or first of two children (if withSibling)
+     * @param withSibling if true, both child at flexibleIndex and the next child are flexible and absorb the change
+     * proportionally
+     */
+    void updateDividersOnResize(double oldSize, double[] oldPositions, int flexibleChildIndex, boolean withSibling) {
+        double newSize = getWidth();
+        if (getOrientation() == Orientation.VERTICAL) {
+            newSize = getHeight();
+        }
+        double delta = oldSize - newSize;
+        if (Math.abs(delta) < 1.0) {
+            return;
+        }
+
+        //double[] oldPositions = getComponentHelper().getDividerPositions();
+        int n = oldPositions.length + 1;
+
+        // Calculate previous children sizes
+        double[] sizes = new double[n];
+        double lastDiv = 0;
+        for (int i = 0; i < n - 1; i++) {
+            sizes[i] = (oldPositions[i] - lastDiv) * oldSize;
+            lastDiv = oldPositions[i];
+        }
+        sizes[n - 1] = oldSize - lastDiv * oldSize;
+
+
+        double[] newSizes = sizes.clone();
+
+        if (withSibling) {
+            if (flexibleChildIndex < 0 || flexibleChildIndex + 1 >= n) {
+                return; // Invalid index
+            }
+            double s1 = sizes[flexibleChildIndex];
+            double s2 = sizes[flexibleChildIndex + 1];
+            double total = s1 + s2;
+
+            if (total < delta) {
+                return; // Not enough space to absorb
+            }
+            double prop1 = s1 / total;
+            double prop2 = s2 / total;
+            newSizes[flexibleChildIndex] -= delta * prop1;
+            newSizes[flexibleChildIndex + 1] -= delta * prop2;
+            if (newSizes[flexibleChildIndex] < 0 || newSizes[flexibleChildIndex + 1] < 0) {
+                return;
+            }
+        } else {
+            if (flexibleChildIndex < 0 || flexibleChildIndex >= n) {
+                return;
+            }
+            if (sizes[flexibleChildIndex] < delta) {
+                return;
+            }
+            newSizes[flexibleChildIndex] -= delta;
+            if (newSizes[flexibleChildIndex] < 0) {
+                return;
+            }
+        }
+
+        // Calculate new divider positions
+        double[] newPositions = new double[n - 1];
+        double sum = 0;
+        for (int i = 0; i < n - 1; i++) {
+            sum += newSizes[i];
+            newPositions[i] = sum / newSize;
+        }
+        getComponentHelper().setDividerPositions(newPositions);
+        logger.debug("Updated dividers on resize; oldSize: {}, newSize: {}, flexibleChildIndex: {}, withSibling: {},"
+                + "oldPositions: {}, newPositions: {}", oldSize, newSize, flexibleChildIndex, withSibling,
+                oldPositions, newPositions);
     }
 }

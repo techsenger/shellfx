@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ChildView;
+import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -538,8 +540,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return (SplitSpaceContainer) component.getNode().getParent();
     }
 
-    private static SpaceReceiver getSpaceReceiver(AbstractContainer<?> container) {
-        var component = container.getComponent();
+    private static SpaceReceiver getSpaceReceiver(AbstractPaneView<?> component) {
         if (component instanceof SplitSpaceView<?> c) {
             return c.getViewModel().getSpaceReceiver();
         } else if (component instanceof TabDockView<?> c) {
@@ -549,8 +550,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
     }
 
-    private static void setSpaceReceiver(AbstractContainer<?> container, SpaceReceiver receiver) {
-        var component = container.getComponent();
+    private static void setSpaceReceiver(AbstractPaneView<?> component, SpaceReceiver receiver) {
         if (component instanceof SplitSpaceView<?> c) {
             c.getViewModel().setSpaceReceiver(receiver);
         } else if (component instanceof TabDockView<?> c) {
@@ -934,11 +934,11 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         if (child instanceof SplitSpaceView<?>) {
             var splitSpace = (SplitSpaceView<?>) child;
             container = new SplitSpaceContainer(this, splitSpace);
-            SplitPane.setResizableWithParent(container, false);
+            SplitPane.setResizableWithParent(container, true);
         } else if (child instanceof TabDockView<?>) {
             var tabDock = (TabDockView<?>) child;
             container = new TabDockContainer(this, tabDock);
-            SplitPane.setResizableWithParent(container, false);
+            SplitPane.setResizableWithParent(container, true);
         } else {
             container = new MainContainer(this, child);
         }
@@ -1037,11 +1037,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     void minimizeTabDock(TabDockView<?> dock) {
         // saving current position
         SplitSpaceView<?> parent = (SplitSpaceView<?>) dock.getParent();
+        var parentPos = parent.getNode().getDividerPositions();
         var index = parent.getChildren().indexOf(dock);
         var pos = new ComponentPosition(parent.getViewModel().getUuid(), index,
                 dock.getNode().getWidth(), dock.getNode().getHeight());
         dock.getViewModel().setMinimizedPosition(pos);
         if (logger.isDebugEnabled()) {
+            parent.logState("Before minimizing");
             logger.debug("{} minimized position: {}", ObjectUtils.getIdentity(dock), pos);
         }
         // resolving the side (before removing)
@@ -1096,18 +1098,23 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 }
             }
         }
+        double closedSideBarSize = 0.0;
         if (sideBar.getTabDocks().isEmpty()) {
-            switch (sideBar.getViewModel().getSide()) {
+            var sideVM = sideBar.getViewModel();
+            switch (sideVM.getSide()) {
                 case RIGHT:
+                    closedSideBarSize = sideVM.getWidth();
                     setRightBar(null);
                     this.borderPane.setRight(null);
                     break;
                 case BOTTOM:
+                    closedSideBarSize = sideVM.getHeight();
                     setBottomBar(null);
                     this.borderPane.setBottom(null);
                     break;
                 case LEFT:
                     setLeftBar(null);
+                    closedSideBarSize = sideVM.getWidth();
                     this.borderPane.setLeft(null);
                     break;
                 default:
@@ -1115,10 +1122,49 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             }
             sideBar.deinitialize();
         }
+        final var finalP = parent;
+
         if (parent != null) {
             var oldPositions = parent.getNode().getDividerPositions();
             parent.getChildren().add(position.getIndex(), dock);
-            parent.getViewModel().updateDividersOnRestore(oldPositions, position);
+            var container = getContainer(dock);
+            // workaround for JDK-8367322
+            SplitPane.setResizableWithParent(container, false);
+            parent.getViewModel().updateDividersOnRestore(oldPositions, position, 0.0);
+            Platform.runLater(() -> SplitPane.setResizableWithParent(container, true));
+            var savedSize = parent.getNode().getWidth();
+            if (parent.getNode().getOrientation() == Orientation.VERTICAL) {
+                savedSize = parent.getNode().getHeight();
+            }
+            final var s = savedSize;
+            final var positionsBeforePulse = parent.getNode().getDividerPositions();
+            addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+                int index;
+                var withSibling = false;
+                if (finalP == getMain().getParent()) {
+                    index = finalP.getChildren().indexOf(getMain());
+                } else {
+                    index = position.getIndex();
+                    var spaceReceiver = getSpaceReceiver(dock);
+                    if (spaceReceiver != SpaceReceiver.NEXT) {
+                        index--;
+                        if (spaceReceiver == SpaceReceiver.BOTH) {
+                            withSibling = true;
+                        }
+                    }
+                }
+                finalP.getViewModel().updateDividersOnResize(s, positionsBeforePulse, index, withSibling);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Restored {} to {}", ObjectUtils.getIdentity(dock), ObjectUtils.getIdentity(finalP));
+                    printTreeDebugInfo();
+                    // in this pulse dividers are updated, so, only in the next pulse item sizes are calculated
+                    addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+                        finalP.logState("After restoring");
+                        return false;
+                    });
+                }
+                return false;
+            });
         }
     }
 
@@ -1152,7 +1198,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 dockInfo.getFactory().apply(dockInfo);
                 // saving the new parent, because it will be null after removal
                 SplitSpaceView<?> newParent = (SplitSpaceView<?>) this.dragDock.getParent();
-                printTreeDebugInfo();
                 // it is necessary to create a new info with a new index for example,
                 // if there are new children, besides the old parent should be used
                 var oldInfo = oldContainer.createInfo(oldParent);
@@ -1525,7 +1570,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         var newSplitSpace = createSplitSpace(newOrientation);
 
         var anchorContainerIndex = anchorInfo.getIndex();
-        var acnhorSpaceReceiver = getSpaceReceiver(anchorInfo.getContainer()); // saving value
+        var acnhorSpaceReceiver = getSpaceReceiver(anchorInfo.getContainer().getComponent()); // saving value
 
         double[] parentOldPositions = null;
         SplitPane parentSplitPane = null;
@@ -1548,7 +1593,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
         AbstractContainer<?> newSplitSpaceContainer = getContainer(newSplitSpace);
         // the new splitSpace container will inherit the space provider of the wrapped container
-        setSpaceReceiver(newSplitSpaceContainer, acnhorSpaceReceiver);
+        setSpaceReceiver(newSplitSpace, acnhorSpaceReceiver);
 
         //adding the wrapped component to the wrapper component
         newSplitSpace.getChildren().add(anchorInfo.getContainer().getComponent());
@@ -1558,8 +1603,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
         AbstractContainer<?> firstContainer = (AbstractContainer<?>) newSplitSpace.getNode().getItems().get(0);
         AbstractContainer<?> secondContainer = (AbstractContainer<?>) newSplitSpace.getNode().getItems().get(1);
-        setSpaceReceiver(firstContainer, SpaceReceiver.NEXT);
-        setSpaceReceiver(secondContainer, SpaceReceiver.PREVIOUS);
+        setSpaceReceiver(firstContainer.getComponent(), SpaceReceiver.NEXT);
+        setSpaceReceiver(secondContainer.getComponent(), SpaceReceiver.PREVIOUS);
 
         if (newInfo.getFraction() == ONE_THIRD) {
             var splitPane = newSplitSpace.getNode();
@@ -1618,12 +1663,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             var oldPositions = grandparentComponent.getNode().getDividerPositions();
             // removing parent
             grandparentComponent.getChildren().remove(parentInfo.getIndex());
-            var parentSpaceReceiver = getSpaceReceiver(parentInfo.getContainer());
+            var parentSpaceReceiver = getSpaceReceiver(parentComponent);
             // adding tab docks
             grandparentComponent.getChildren().addAll(parentInfo.getIndex(), otherTabDocks);
             // last child has parent space provider
             var lastOtherChild = (AbstractPaneView<?>) otherTabDocks.get(otherTabDocks.size() - 1);
-            setSpaceReceiver(getContainer(lastOtherChild), parentSpaceReceiver);
+            setSpaceReceiver(lastOtherChild, parentSpaceReceiver);
             grandparentComponent.getViewModel()
                     .updateDividersOnUnwrap(oldPositions, parentInfo.getIndex(), childPositions);
             if (logger.isDebugEnabled()) {
@@ -1660,12 +1705,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 throw new AssertionError();
             }
             if (side == TOP || side == LEFT) {
-                setSpaceReceiver(newTabDockContainer, SpaceReceiver.NEXT);
+                setSpaceReceiver(newTabDock, SpaceReceiver.NEXT);
             } else {
-                setSpaceReceiver(newTabDockContainer, SpaceReceiver.PREVIOUS);
+                setSpaceReceiver(newTabDock, SpaceReceiver.PREVIOUS);
             }
         } else {
-            setSpaceReceiver(newTabDockContainer, SpaceReceiver.BOTH);
+            setSpaceReceiver(newTabDock, SpaceReceiver.BOTH);
             double beforeProportion;
             double afterProportion;
             if (side == RIGHT || side == BOTTOM) {
@@ -1697,8 +1742,31 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         var splitPane = splitSpace.getNode();
         var oldPositions = splitPane.getDividerPositions();
         splitSpace.getChildren().remove(tabDockInfo.getIndex());
-        splitSpace.getViewModel().updateDividersOnRemove(oldPositions, tabDockInfo.getIndex(),
-                getSpaceReceiver(tabDockContainer));
+        var spaceReceiver = getSpaceReceiver(componentToRemove);
+        splitSpace.getViewModel().updateDividersOnRemove(oldPositions, tabDockInfo.getIndex(), spaceReceiver);
+        var savedSize = splitPane.getWidth();
+        if (splitPane.getOrientation() == Orientation.VERTICAL) {
+            savedSize = splitPane.getHeight();
+        }
+        final var finalSize = savedSize;
+        final var positionsBeforePulse = splitPane.getDividerPositions();
+        addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+            int index;
+            var withSibling = false;
+            if (parent.getContainer().getComponent() == getMain().getParent()) {
+                index = parent.getContainer().getComponent().getChildren().indexOf(getMain());
+            } else {
+                index = tabDockInfo.getIndex();
+                if (spaceReceiver != SpaceReceiver.NEXT) {
+                    index--;
+                    if (spaceReceiver == SpaceReceiver.BOTH) {
+                        withSibling = true;
+                    }
+                }
+            }
+            splitSpace.getViewModel().updateDividersOnResize(finalSize, positionsBeforePulse, index, withSibling);
+            return false;
+        });
         if (logger.isDebugEnabled()) {
             logger.debug("Removed {} from {}", ObjectUtils.getIdentity(componentToRemove),
                     ObjectUtils.getIdentity(parent));
@@ -1747,25 +1815,33 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         StringBuilder builder = new StringBuilder();
         var iterator = getRoot().depthFirstIterator();
         while (iterator.hasNext()) {
-            var component = iterator.next();
-            var container = getContainer((AbstractPaneView<?>) component);
+            AbstractPaneView<?> component = (AbstractPaneView<?>) iterator.next();
             String orientation = "";
-            if (component instanceof SplitSpaceView<?>) {
-                orientation = ((SplitSpaceView<?>) component).getNode().getOrientation().name().toLowerCase();
+            UUID uuid = null;
+            if (component instanceof SplitSpaceView<?> spaceV) {
+                orientation = spaceV.getNode().getOrientation().name().toLowerCase();
+                uuid = spaceV.getViewModel().getUuid();
+            } else if (component instanceof TabDockView<?> dockV) {
+                uuid = dockV.getViewModel().getUuid();
             }
             builder.append("\n");
             builder.append("    ".repeat(iterator.getDepth()));
             builder.append(ObjectUtils.getIdentity(component));
-            builder.append(" (");
+            builder.append(" [");
+            if (uuid != null) {
+                builder.append("uuid: ");
+                builder.append(uuid);
+                builder.append(", ");
+            }
             if (orientation.length() > 0) {
                 builder.append("orientation: ");
                 builder.append(orientation);
                 builder.append(", ");
             }
             builder.append("spaceReceiver: ");
-            var spaceReceiver = getSpaceReceiver(container);
+            var spaceReceiver = getSpaceReceiver(component);
             builder.append(spaceReceiver != null ? spaceReceiver.toString().toLowerCase() : null);
-            builder.append(")");
+            builder.append("]");
         }
         return builder.toString();
     }
@@ -1817,9 +1893,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             result.addFirst(current);
             current = (AbstractPaneView<?>) current.getParent();
         }
-        if (logger.isDebugEnabled()) {
+        if (logger.isTraceEnabled()) {
             var nodes = result.stream().map(c -> ObjectUtils.getIdentity(c)).collect(Collectors.joining(", "));
-            logger.debug("{} path to root: {}", ObjectUtils.getIdentity(startNode), nodes);
+            logger.trace("{} path to root: {}", ObjectUtils.getIdentity(startNode), nodes);
         }
         return result;
     }

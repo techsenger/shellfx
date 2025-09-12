@@ -19,16 +19,24 @@ package com.techsenger.tabshell.layout.dock;
 import com.techsenger.mvvm4fx.core.ChildView;
 import com.techsenger.mvvm4fx.core.ComponentHelper;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.toolkit.core.ObjectUtils;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.Region;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneView<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(SplitSpaceView.class);
 
     private final DockLayoutView<?> layout;
 
@@ -85,6 +93,28 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
     @Override
     protected ComponentHelper<?> createComponentHelper() {
         return new SplitSpaceHelper(this);
+    }
+
+    void logState(String note) {
+        logger.debug(note + ", {} child sizes: {}, dividers: {}", ObjectUtils.getIdentity(this),
+                getChildSizes(), this.splitPane.getDividerPositions());
+    }
+
+    /**
+     * Returns the widths/heights of the children for horizontal/vertical split space.
+     *
+     * @return
+     */
+    private List<Double> getChildSizes() {
+        var sizes = new ArrayList<Double>();
+        for (var item : splitPane.getItems()) {
+            if (splitPane.getOrientation() == Orientation.HORIZONTAL) {
+                sizes.add(((Region) item).getWidth());
+            } else {
+                sizes.add(((Region) item).getHeight());
+            }
+        }
+        return sizes;
     }
 
     private void addChild(AbstractPaneView<?> child, int index) {
