@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.layout.splittab;
 
-import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
+import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Orientation;
@@ -102,7 +102,7 @@ public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel> 
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
-        addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
             List<StackPane> dividers = new ArrayList<>();
             //we need only the dividers of these two split panes, so, we check every divider parent
             this.horizontalSplitPane.lookupAll(".split-pane-divider").forEach(d -> {

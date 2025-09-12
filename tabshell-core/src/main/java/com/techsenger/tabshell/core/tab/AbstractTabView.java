@@ -24,10 +24,10 @@ import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.menu.MenuItemKey;
 import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.toolkit.core.ObjectUtils;
+import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 import com.techsenger.toolkit.fx.value.ValueUtils;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.Cursor;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
@@ -47,8 +47,12 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     private final StackPane wrapperPane = new StackPane(contentPane);
 
+    private final PulseListenerManager pulseListenerManager;
+
     public AbstractTabView(T viewModel) {
         super(viewModel);
+        this.pulseListenerManager = new PulseListenerManager(ObjectUtils.getIdentity(this),
+                () -> getContentPane().sceneProperty());
     }
 
     @Override
@@ -154,16 +158,11 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
         });
     }
 
-    @Override
-    protected ReadOnlyObjectProperty<Scene> sceneProperty() {
-        return getContentPane().sceneProperty();
-    }
-
-    protected Scene getScene() {
-        return sceneProperty().get();
-    }
-
     protected StackPane getWrapperPane() {
         return wrapperPane;
+    }
+
+    protected PulseListenerManager getPulseListenerManager() {
+        return pulseListenerManager;
     }
 }

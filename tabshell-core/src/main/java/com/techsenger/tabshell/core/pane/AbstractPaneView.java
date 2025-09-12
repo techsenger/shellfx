@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.core.pane;
 
 import com.techsenger.mvvm4fx.core.AbstractChildView;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.scene.Scene;
+import com.techsenger.toolkit.core.ObjectUtils;
+import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 
 /**
  *
@@ -27,17 +27,12 @@ import javafx.scene.Scene;
 public abstract class AbstractPaneView<T extends AbstractPaneViewModel> extends AbstractChildView<T>
         implements PaneView<T> {
 
+    private final PulseListenerManager pulseListenerManager;
+
     public AbstractPaneView(T viewModel) {
         super(viewModel);
-    }
-
-    @Override
-    protected ReadOnlyObjectProperty<Scene> sceneProperty() {
-        return this.getNode().sceneProperty();
-    }
-
-    protected Scene getScene() {
-        return sceneProperty().get();
+        this.pulseListenerManager = new PulseListenerManager(ObjectUtils.getIdentity(this),
+                () -> getNode().sceneProperty());
     }
 
     @Override
@@ -46,5 +41,9 @@ public abstract class AbstractPaneView<T extends AbstractPaneViewModel> extends 
         var pane = getNode();
         viewModel.getWidthWrapper().bind(pane.widthProperty());
         viewModel.getHeightWrapper().bind(pane.heightProperty());
+    }
+
+    protected PulseListenerManager getPulseListenerManager() {
+        return pulseListenerManager;
     }
 }

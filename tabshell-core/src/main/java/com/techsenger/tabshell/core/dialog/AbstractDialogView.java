@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.mvvm4fx.core.LayoutPulseListener;
-import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.RegionResizer;
+import com.techsenger.toolkit.fx.pulse.LayoutPhase;
+import com.techsenger.toolkit.fx.pulse.LayoutPulseListener;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
@@ -196,10 +196,10 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
         });
         ValueUtils.callAndAddListener(viewModel.buttonWidthEqualProperty(), (ov, oldV, newV) -> {
             if (Boolean.FALSE.equals(oldV)) {
-                removeLayoutPulseListener(PulseListenerTiming.AFTER, buttonWidthListener);
+                getPulseListenerManager().removeListener(LayoutPhase.POST, buttonWidthListener);
             }
             if (newV) {
-                addLayoutPulseListener(PulseListenerTiming.AFTER, buttonWidthListener);
+                getPulseListenerManager().addListener(LayoutPhase.POST, buttonWidthListener);
             }
         });
     }

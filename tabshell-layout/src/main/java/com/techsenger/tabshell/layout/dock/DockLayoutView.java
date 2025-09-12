@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ChildView;
-import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
@@ -29,6 +28,7 @@ import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.core.ObjectUtils;
 import com.techsenger.toolkit.core.Pair;
+import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -990,8 +990,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         this.dragDockPopup = new Popup();
         this.dragDockPopup.setAutoHide(false);
         this.dragDockPopup.getContent().add(content);
-        this.dragDockPopup.show(getScene().getWindow(), e.getScreenX(), e.getScreenY());
-        var scene = getScene();
+        var scene = getNode().getScene();
+        this.dragDockPopup.show(scene.getWindow(), e.getScreenX(), e.getScreenY());
         scene.setCursor(Cursor.CLOSED_HAND);
 
         iconView.startFullDrag();
@@ -1138,7 +1138,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             }
             final var s = savedSize;
             final var positionsBeforePulse = parent.getNode().getDividerPositions();
-            addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+            getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
                 int index;
                 var withSibling = false;
                 if (finalP == getMain().getParent()) {
@@ -1158,7 +1158,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                     logger.debug("Restored {} to {}", ObjectUtils.getIdentity(dock), ObjectUtils.getIdentity(finalP));
                     printTreeDebugInfo();
                     // in this pulse dividers are updated, so, only in the next pulse item sizes are calculated
-                    addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+                    getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
                         finalP.logState("After restoring");
                         return false;
                     });
@@ -1750,7 +1750,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
         final var finalSize = savedSize;
         final var positionsBeforePulse = splitPane.getDividerPositions();
-        addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
             int index;
             var withSibling = false;
             if (parent.getContainer().getComponent() == getMain().getParent()) {

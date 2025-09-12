@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.hex;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.mvvm4fx.core.PulseListenerTiming;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -26,6 +25,7 @@ import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabView;
+import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -362,7 +362,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         //when the required padding is set within this listener, the changes will only become visible in the
         //next pulse. To prevent flickering during layout adjustments, the mainPane is made invisible and only
         //becomes visible again after the second pulse.
-        addLayoutPulseListener(PulseListenerTiming.AFTER, () -> {
+        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
             if (this.pulseCounter == 0) {
                 this.headerRow.setPanelPanesBackground();
                 this.headerRow.updateAsciiPaneWidth(this.mainPane.getWidth());

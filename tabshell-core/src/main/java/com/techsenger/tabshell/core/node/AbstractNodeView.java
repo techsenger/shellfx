@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.core.node;
 
 import com.techsenger.mvvm4fx.core.AbstractChildView;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.scene.Scene;
+import com.techsenger.toolkit.core.ObjectUtils;
+import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 
 /**
  *
@@ -27,16 +27,15 @@ import javafx.scene.Scene;
 public abstract class AbstractNodeView<T extends AbstractNodeViewModel> extends AbstractChildView<T>
         implements NodeView<T> {
 
+    private final PulseListenerManager pulseListenerManager;
+
     public AbstractNodeView(T viewModel) {
         super(viewModel);
+        this.pulseListenerManager = new PulseListenerManager(ObjectUtils.getIdentity(this),
+                () -> getNode().sceneProperty());
     }
 
-    @Override
-    protected ReadOnlyObjectProperty<Scene> sceneProperty() {
-        return getNode().sceneProperty();
-    }
-
-    protected Scene getScene() {
-        return sceneProperty().get();
+    protected PulseListenerManager getPulseListenerManager() {
+        return pulseListenerManager;
     }
 }
