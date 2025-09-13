@@ -111,7 +111,7 @@ This project is available on Maven Central.
 ### Quick Start <a name="usage-quick-start"></a>
 To get started with TabShell, it is recommended to follow these steps:
 
-1. Familiarize yourself with the [mvvm4fx](https://github.com/techsenger/mvvm4fx) framework and its sampler.
+1. Familiarize yourself with the [mvvm4fx](https://github.com/techsenger/mvvm4fx) framework and its demo.
 2. Explore and run core demo. See [Core Demo](#running-core-demo) for details.
 3. Explore and run full demo. See [Full Demo](#running-full-demo) for details.
 

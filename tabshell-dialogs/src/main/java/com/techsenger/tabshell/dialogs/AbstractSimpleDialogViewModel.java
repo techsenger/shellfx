@@ -162,7 +162,7 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
     }
 
     @Override
-    public StandardDialogHelper<?> getComponentHelper() {
-        return (StandardDialogHelper<?>) super.getComponentHelper();
+    public StandardDialogBridge getBridge() {
+        return (StandardDialogBridge) super.getBridge();
     }
 }

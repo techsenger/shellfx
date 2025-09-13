@@ -84,8 +84,8 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     }
 
     @Override
-    protected StandardDialogHelper<?> createComponentHelper() {
-        return new StandardDialogHelper() {
+    protected StandardDialogBridge createBridge() {
+        return new StandardDialogBridge() {
             @Override
             public void openDialog(DialogView dialog) {
                 getDialogManager().openDialog(dialog);

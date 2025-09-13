@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.mvvm4fx.core.AbstractComponentHelper;
+import com.techsenger.mvvm4fx.core.AbstractComponentBridge;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogView;
@@ -26,9 +26,9 @@ import com.techsenger.tabshell.demos.core.dialog.DemoDialogViewModel;
  *
  * @author Pavel Castornii
  */
-public class DemoTabHelper extends AbstractComponentHelper<DemoTabView> {
+public class DemoTabBridge extends AbstractComponentBridge<DemoTabView> {
 
-    public DemoTabHelper(DemoTabView view) {
+    public DemoTabBridge(DemoTabView view) {
         super(view);
     }
 

@@ -16,8 +16,7 @@
 
 package com.techsenger.tabshell.dialogs;
 
-import com.techsenger.mvvm4fx.core.ParentView;
-import com.techsenger.tabshell.core.dialog.DialogHelper;
+import com.techsenger.tabshell.core.dialog.DialogBridge;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogView;
@@ -30,7 +29,7 @@ import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
  *
  * @author Pavel Castornii
  */
-public interface StandardDialogHelper<T extends ParentView<?>> extends DialogHelper<T> {
+public interface StandardDialogBridge extends DialogBridge {
 
     default void openAlertDialog(AlertDialogViewModel viewModel) {
         var view = new AlertDialogView<AlertDialogViewModel>(viewModel);

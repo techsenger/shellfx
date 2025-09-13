@@ -277,8 +277,8 @@ public abstract class AbstractDialogViewModel extends AbstractPaneViewModel impl
     }
 
     @Override
-    public DialogHelper<?> getComponentHelper() {
-        return (DialogHelper<?>) super.getComponentHelper();
+    public DialogBridge getBridge() {
+        return (DialogBridge) super.getBridge();
     }
 
     ObservableSource<Boolean> closeRequestedSource() {

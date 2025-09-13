@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.dialogs.StandardDialogHelper;
-import com.techsenger.tabshell.shared.workertab.WorkerTabHelper;
+import com.techsenger.tabshell.dialogs.StandardDialogBridge;
+import com.techsenger.tabshell.shared.workertab.WorkerTabBridge;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.slf4j.Logger;
@@ -28,12 +28,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class ViewerTabHelper<T extends AbstractViewerTabView<?>>
-        extends WorkerTabHelper<T> implements StandardDialogHelper<T> {
+public class ViewerTabBridge<T extends AbstractViewerTabView<?>> extends WorkerTabBridge<T>
+        implements StandardDialogBridge {
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewerTabHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(ViewerTabBridge.class);
 
-    public ViewerTabHelper(T view) {
+    public ViewerTabBridge(T view) {
         super(view);
     }
 

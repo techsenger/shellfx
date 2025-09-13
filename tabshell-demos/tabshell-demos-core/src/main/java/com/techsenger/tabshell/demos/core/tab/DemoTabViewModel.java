@@ -107,11 +107,11 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
 
     void openDialog(DialogScope scope) {
         var dialogViewModel = new DemoDialogViewModel(scope, true);
-        getComponentHelper().openDemoDialog(dialogViewModel);
+        getBridge().openDemoDialog(dialogViewModel);
     }
 
     @Override
-    public DemoTabHelper getComponentHelper() {
-        return (DemoTabHelper) super.getComponentHelper();
+    public DemoTabBridge getBridge() {
+        return (DemoTabBridge) super.getBridge();
     }
 }

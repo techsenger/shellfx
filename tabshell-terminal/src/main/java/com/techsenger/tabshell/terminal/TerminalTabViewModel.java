@@ -176,7 +176,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         }
         this.find = new FindPaneViewModel(getShell().getHistoryManager(), selectedText.get());
         this.find.closeActionProperty().set(() -> hideFind());
-        getComponentHelper().showFindPane(this.find);
+        getBridge().showFindPane(this.find);
     }
 
     protected void hideFind() {
@@ -184,12 +184,12 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
             return;
         }
         this.find = null;
-        getComponentHelper().hideFindPane();
+        getBridge().hideFindPane();
     }
 
     @Override
-    public TerminalTabHelper<?> getComponentHelper() {
-        return (TerminalTabHelper<?>) super.getComponentHelper();
+    public TerminalTabBridge<?> getBridge() {
+        return (TerminalTabBridge<?>) super.getBridge();
     }
 
     protected void createNewTerminal() {

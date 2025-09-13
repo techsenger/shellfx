@@ -19,7 +19,7 @@ package com.techsenger.tabshell.terminal;
 import atlantafx.base.theme.Styles;
 import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
-import com.techsenger.mvvm4fx.core.ComponentHelper;
+import com.techsenger.mvvm4fx.core.ComponentBridge;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -265,8 +265,8 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     }
 
     @Override
-    protected ComponentHelper<?> createComponentHelper() {
-        return new TerminalTabHelper(this);
+    protected ComponentBridge createBridge() {
+        return new TerminalTabBridge(this);
     }
 
     protected KitJediTermFxWidget getWidget() {

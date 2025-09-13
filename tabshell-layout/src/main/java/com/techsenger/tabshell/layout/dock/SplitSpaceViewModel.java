@@ -83,8 +83,8 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
     }
 
     @Override
-    public SplitSpaceHelper getComponentHelper() {
-        return (SplitSpaceHelper) super.getComponentHelper();
+    public SplitSpaceBridge<?> getBridge() {
+        return (SplitSpaceBridge) super.getBridge();
     }
 
     /**
@@ -144,7 +144,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
                 }
             }
         }
-        getComponentHelper().setDividerPositions(newPositions);
+        getBridge().setDividerPositions(newPositions);
         logger.debug("Updated half dividers on add; oldPositions: {}, newPositions: {}", oldPositions, newPositions);
     }
 
@@ -175,7 +175,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
                 }
             }
         }
-        getComponentHelper().setDividerPositions(newPositions);
+        getBridge().setDividerPositions(newPositions);
         logger.debug("Updated third dividers on add; oldPositions: {}, newPositions: {}", oldPositions, newPositions);
     }
 
@@ -239,7 +239,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
             sum += newSizes[i];
             newPositions[i] = sum;
         }
-        getComponentHelper().setDividerPositions(newPositions);
+        getBridge().setDividerPositions(newPositions);
         logger.debug("Updated intermediate dividers on add; oldPositions: {}, newPositions: {}", oldPositions,
                 newPositions);
     }
@@ -318,7 +318,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
             acc += newSizes[i];
             newPositions[i] = acc;
         }
-        getComponentHelper().setDividerPositions(newPositions);
+        getBridge().setDividerPositions(newPositions);
         logger.debug("Updated dividers on remove; spaceReceiver: {}, oldPositions: {}, newPositions: {}", spaceReceiver,
                 oldPositions, newPositions);
     }
@@ -368,7 +368,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
                 newPositions[pos++] = oldPositions[i];
             }
         }
-        getComponentHelper().setDividerPositions(newPositions);
+        getBridge().setDividerPositions(newPositions);
         logger.debug("Updated dividers on unwrap; oldPositions: {}, childPositions: {}, newPositions: {}",
                 oldPositions, childPositions, newPositions);
     }
@@ -467,7 +467,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
             accum += sizes[i];
             newPositions[i] = accum / total;
         }
-        getComponentHelper().setDividerPositions(newPositions);
+        getBridge().setDividerPositions(newPositions);
         logger.debug("Updated dividers on restore; oldPositions: {}, component position: {}, newPositions: {}",
                 oldPositions, componentPosition, newPositions);
     }
@@ -498,7 +498,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
             return;
         }
 
-        //double[] oldPositions = getComponentHelper().getDividerPositions();
+        //double[] oldPositions = getBridge().getDividerPositions();
         int n = oldPositions.length + 1;
 
         // Calculate previous children sizes
@@ -551,7 +551,7 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
             sum += newSizes[i];
             newPositions[i] = sum / newSize;
         }
-        getComponentHelper().setDividerPositions(newPositions);
+        getBridge().setDividerPositions(newPositions);
         logger.debug("Updated dividers on resize; oldSize: {}, newSize: {}, flexibleChildIndex: {}, withSibling: {},"
                 + "oldPositions: {}, newPositions: {}", oldSize, newSize, flexibleChildIndex, withSibling,
                 oldPositions, newPositions);

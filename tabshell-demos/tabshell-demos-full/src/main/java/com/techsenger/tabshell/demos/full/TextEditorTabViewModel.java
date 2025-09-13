@@ -61,21 +61,21 @@ public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
                 "All done! Time for coffee.");
         viewModel.setPrefWidth(400);
-        getComponentHelper().openAlertDialog(viewModel);
+        getBridge().openAlertDialog(viewModel);
     }
 
     void showWarningDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
                 "Attention! You shouldn't do it!");
         viewModel.setPrefWidth(400);
-        getComponentHelper().openAlertDialog(viewModel);
+        getBridge().openAlertDialog(viewModel);
     }
 
     void showErrorDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
                 "Oops! That didn’t work.");
         viewModel.setPrefWidth(400);
-        getComponentHelper().openAlertDialog(viewModel);
+        getBridge().openAlertDialog(viewModel);
     }
 
     void showYesNoDialog() {
@@ -85,7 +85,7 @@ public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
         viewModel.setYesText("Yes");
         viewModel.setNoText("No");
         viewModel.setPrefWidth(400);
-        getComponentHelper().openYesNoDialog(viewModel);
+        getBridge().openYesNoDialog(viewModel);
     }
 
     @Override

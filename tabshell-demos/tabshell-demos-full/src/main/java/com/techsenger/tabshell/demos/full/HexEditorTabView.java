@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demos.full;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.mvvm4fx.core.ComponentHelper;
+import com.techsenger.mvvm4fx.core.ComponentBridge;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.hex.AbstractHexEditorTabView;
 import com.techsenger.tabshell.hex.CaretShape;
@@ -42,8 +42,8 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
     }
 
     @Override
-    protected ComponentHelper<?> createComponentHelper() {
-        return new HexEditorTabHelper(this);
+    protected ComponentBridge createBridge() {
+        return new HexEditorTabBridge(this);
     }
 
     @Override

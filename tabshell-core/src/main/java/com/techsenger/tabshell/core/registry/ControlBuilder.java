@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.mvvm4fx.core.View;
 import com.techsenger.tabshell.material.menu.KeyedMenu;
 import com.techsenger.tabshell.material.menu.KeyedMenuGroup;
 import com.techsenger.tabshell.material.menu.KeyedMenuItem;
@@ -33,6 +32,7 @@ import java.util.Map;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import com.techsenger.mvvm4fx.core.ComponentView;
 
 /**
  *
@@ -88,7 +88,7 @@ public class ControlBuilder {
         this.registry = registry;
     }
 
-    public List<Menu> buildMenuBarElements(View<?> view) {
+    public List<Menu> buildMenuBarElements(ComponentView<?> view) {
         var componentKey = view.getViewModel().getKey();
         //we clone collections because there can not be changes during building
         var registrations = new ArrayList<>(registry.getBarMenuRegistrations(componentKey));
@@ -162,7 +162,7 @@ public class ControlBuilder {
      * @param view
      * @param regs
      */
-    private void buildBarElements(View<?> view, List<AbstractMenuRegistration<?>> regs) {
+    private void buildBarElements(ComponentView<?> view, List<AbstractMenuRegistration<?>> regs) {
         for (var r : regs) {
             switch (r.getType()) {
                 case MENU:

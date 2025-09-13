@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.shared.workertab;
+package com.techsenger.tabshell.hex;
 
-import com.techsenger.tabshell.layout.splittab.SplitTabHelper;
+import com.techsenger.tabshell.dialogs.StandardDialogBridge;
+import com.techsenger.tabshell.shared.workertab.WorkerTabBridge;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WorkerTabHelper<T extends AbstractWorkerTabView<?>> extends SplitTabHelper<T> {
+public abstract class AbstractHexEditorTabBridge<T extends AbstractHexEditorTabView<?>> extends WorkerTabBridge<T>
+        implements StandardDialogBridge {
 
-    public WorkerTabHelper(T view) {
+    public AbstractHexEditorTabBridge(T view) {
         super(view);
     }
 
-    public void openWorkerReportTab(WorkerReportTabViewModel viewModel) {
-        var reportView = new WorkerReportTabView(viewModel);
-        reportView.initialize();
-        getView().getBottomTabHost().openTab(reportView);
-    }
 }

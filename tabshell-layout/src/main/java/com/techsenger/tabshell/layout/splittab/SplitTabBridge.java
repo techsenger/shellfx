@@ -14,36 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.terminal;
+package com.techsenger.tabshell.layout.splittab;
 
-import com.techsenger.tabshell.core.dialog.AbstractDialogHelper;
+import com.techsenger.tabshell.core.dialog.AbstractDialogBridge;
+import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.dialog.DialogView;
-import com.techsenger.tabshell.dialogs.StandardDialogHelper;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TerminalTabHelper<T extends TerminalTabView> extends AbstractDialogHelper<T>
-        implements StandardDialogHelper<T> {
+public class SplitTabBridge<T extends AbstractSplitTabView<?>> extends AbstractDialogBridge<T> {
 
-    public TerminalTabHelper(T view) {
+    public SplitTabBridge(T view) {
         super(view);
     }
 
     @Override
     public void openDialog(DialogView<?> dialog) {
-        getView().getDialogManager().openDialog(dialog);
+        var scope = dialog.getViewModel().getScope();
+        if (scope == DialogScope.SHELL) {
+            getView().getShell().getDialogManager().openDialog(dialog);
+        } else {
+            getView().getDialogManager().openDialog(dialog);
+        }
     }
-
-    public void showFindPane(FindPaneViewModel findViewModel) {
-        var findView = new FindPaneView(getView().getWidget(), findViewModel);
-        findView.initialize();
-        getView().showFind(findView);
-    }
-
-    public void hideFindPane() {
-        getView().hideFind();
-    }
-
 }

@@ -212,10 +212,10 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     }
 
     @Override
-    protected DialogHelper<?> createComponentHelper() {
+    protected DialogBridge createBridge() {
         //we suppose that all child dialogs
         //will be with the same scope
-        return new DialogHelper() {
+        return new DialogBridge() {
             @Override
             public void openDialog(DialogView dialog) {
                 getDialogManager().openDialog(dialog);

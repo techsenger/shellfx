@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.mvvm4fx.core.ComponentHelper;
+import com.techsenger.mvvm4fx.core.ComponentBridge;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -85,7 +85,7 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
     }
 
     @Override
-    protected ComponentHelper<?> createComponentHelper() {
-        return new DemoTabHelper(this);
+    protected ComponentBridge createBridge() {
+        return new DemoTabBridge(this);
     }
 }

@@ -18,8 +18,8 @@ package com.techsenger.tabshell.shared.workertab;
 
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.TabWorker;
-import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import com.techsenger.tabshell.layout.splittab.AbstractSplitTabViewModel;
+import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import com.techsenger.tabshell.shared.SharedComponentKeys;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -80,8 +80,8 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
     }
 
     @Override
-    public WorkerTabHelper<?> getComponentHelper() {
-        return (WorkerTabHelper) super.getComponentHelper();
+    public WorkerTabBridge<?> getBridge() {
+        return (WorkerTabBridge) super.getBridge();
     }
 
     protected TabHostViewModel getBottomTabHost() {
@@ -96,7 +96,7 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
             }
         }
         var reportViewModel = new WorkerReportTabViewModel(getWorkers());
-        getComponentHelper().openWorkerReportTab(reportViewModel);
+        getBridge().openWorkerReportTab(reportViewModel);
         bottomPaneVisibleProperty().set(true);
     }
 

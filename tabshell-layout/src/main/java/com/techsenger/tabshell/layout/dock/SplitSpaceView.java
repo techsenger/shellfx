@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ChildView;
-import com.techsenger.mvvm4fx.core.ComponentHelper;
+import com.techsenger.mvvm4fx.core.ComponentBridge;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.toolkit.core.ObjectUtils;
 import java.util.ArrayList;
@@ -91,8 +91,8 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
     }
 
     @Override
-    protected ComponentHelper<?> createComponentHelper() {
-        return new SplitSpaceHelper(this);
+    protected ComponentBridge createBridge() {
+        return new SplitSpaceBridge(this);
     }
 
     void logState(String note) {

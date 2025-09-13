@@ -122,8 +122,8 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     }
 
     @Override
-    public AbstractHexEditorTabHelper<?> getComponentHelper() {
-        return (AbstractHexEditorTabHelper) super.getComponentHelper();
+    public AbstractHexEditorTabBridge<?> getBridge() {
+        return (AbstractHexEditorTabBridge) super.getBridge();
     }
 
     @Override

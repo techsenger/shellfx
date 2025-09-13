@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.mvvm4fx.core.AbstractComponentHelper;
-import com.techsenger.mvvm4fx.core.ParentView;
+import com.techsenger.mvvm4fx.core.AbstractComponentBridge;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogHelper<T extends ParentView<?>> extends AbstractComponentHelper<T>
-        implements DialogHelper<T> {
+public class SplitSpaceBridge<T extends SplitSpaceView<?>> extends AbstractComponentBridge<T> {
 
-    public AbstractDialogHelper(T view) {
+    public SplitSpaceBridge(T view) {
         super(view);
     }
+
+    public double[] getDividerPositions() {
+        return getView().getNode().getDividerPositions();
+    }
+
+    public void setDividerPositions(double[] positions) {
+        getView().getNode().setDividerPositions(positions);
+    }
+
 }

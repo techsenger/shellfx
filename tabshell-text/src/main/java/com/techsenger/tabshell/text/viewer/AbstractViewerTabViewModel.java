@@ -198,7 +198,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     public void openGoToLineDialog() {
         var viewModel = new GoToLineDialogViewModel(getShell().getHistoryManager());
-        getComponentHelper().openGoToLineDialog(viewModel);
+        getBridge().openGoToLineDialog(viewModel);
     }
 
     /**
@@ -213,7 +213,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 this.removeFindPane();
             });
             this.find.replaceModeProperty().set(replaceMode);
-            getComponentHelper().addFindPane(this.find);
+            getBridge().addFindPane(this.find);
         }
     }
 
@@ -222,14 +222,14 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
      */
     public void removeFindPane() {
         if (this.find != null) {
-            getComponentHelper().removeFindPane();
+            getBridge().removeFindPane();
             this.find = null;
         }
     }
 
     @Override
-    public ViewerTabHelper<?> getComponentHelper() {
-        return (ViewerTabHelper) super.getComponentHelper();
+    public ViewerTabBridge<?> getBridge() {
+        return (ViewerTabBridge) super.getBridge();
     }
 
     public ObjectProperty<GenericFile> fileProperty() {
@@ -262,7 +262,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 var message = "Error reading file " + file.getUri();
                 logger.warn(message, task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
-                getComponentHelper().openAlertDialog(alertViewModel);
+                getBridge().openAlertDialog(alertViewModel);
             }
         });
         this.submitWorker(task);
@@ -284,7 +284,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 var message = "Error writing file " + file.getUri();
                 logger.warn(message, task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
-                getComponentHelper().openAlertDialog(alertViewModel);
+                getBridge().openAlertDialog(alertViewModel);
             }
         });
         this.submitWorker(task);
@@ -324,7 +324,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             yesNoDialog.requestClose();
             readyToClose.run();
         });
-        getComponentHelper().openYesNoDialog(yesNoDialog);
+        getBridge().openYesNoDialog(yesNoDialog);
     }
 
     public FileTaskProvider<String> createFileTaskProvider() {

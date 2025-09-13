@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -934,13 +933,14 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         if (child instanceof SplitSpaceView<?>) {
             var splitSpace = (SplitSpaceView<?>) child;
             container = new SplitSpaceContainer(this, splitSpace);
-            SplitPane.setResizableWithParent(container, true);
+            SplitPane.setResizableWithParent(container, false);
         } else if (child instanceof TabDockView<?>) {
             var tabDock = (TabDockView<?>) child;
             container = new TabDockContainer(this, tabDock);
-            SplitPane.setResizableWithParent(container, true);
+            SplitPane.setResizableWithParent(container, false);
         } else {
             container = new MainContainer(this, child);
+            SplitPane.setResizableWithParent(container, true);
         }
         return container;
     }
@@ -1099,23 +1099,19 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 }
             }
         }
-        double closedSideBarSize = 0.0;
         if (sideBar.getTabDocks().isEmpty()) {
             var sideVM = sideBar.getViewModel();
             switch (sideVM.getSide()) {
                 case RIGHT:
-                    closedSideBarSize = sideVM.getWidth();
                     setRightBar(null);
                     this.borderPane.setRight(null);
                     break;
                 case BOTTOM:
-                    closedSideBarSize = sideVM.getHeight();
                     setBottomBar(null);
                     this.borderPane.setBottom(null);
                     break;
                 case LEFT:
                     setLeftBar(null);
-                    closedSideBarSize = sideVM.getWidth();
                     this.borderPane.setLeft(null);
                     break;
                 default:
@@ -1130,10 +1126,10 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             parent.getChildren().add(position.getIndex(), dock);
             var container = getContainer(dock);
             // workaround for JDK-8367322
-            SplitPane.setResizableWithParent(container, false);
+            //SplitPane.setResizableWithParent(container, false);
             parent.getViewModel().updateDividersOnRestore(oldPositions, position,
                     dock.getViewModel().getSpaceReceiver());
-            Platform.runLater(() -> SplitPane.setResizableWithParent(container, true));
+            //Platform.runLater(() -> SplitPane.setResizableWithParent(container, true));
             var savedSize = parent.getNode().getWidth();
             if (parent.getNode().getOrientation() == Orientation.VERTICAL) {
                 savedSize = parent.getNode().getHeight();

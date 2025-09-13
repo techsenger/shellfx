@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.shared.workertab;
 
-import com.techsenger.mvvm4fx.core.ComponentHelper;
-import com.techsenger.mvvm4fx.core.ParentView;
+import com.techsenger.tabshell.layout.splittab.SplitTabBridge;
 
 /**
- * Different dialog helpers can be created using interfaces with default methods.
  *
  * @author Pavel Castornii
  */
-public interface DialogHelper<T extends ParentView<?>> extends ComponentHelper<T> {
+public class WorkerTabBridge<T extends AbstractWorkerTabView<?>> extends SplitTabBridge<T> {
 
-    /**
-     * Opens dialog.
-     * @param dialog
-     */
-    void openDialog(DialogView<?> dialog);
+    public WorkerTabBridge(T view) {
+        super(view);
+    }
+
+    public void openWorkerReportTab(WorkerReportTabViewModel viewModel) {
+        var reportView = new WorkerReportTabView(viewModel);
+        reportView.initialize();
+        getView().getBottomTabHost().openTab(reportView);
+    }
 }

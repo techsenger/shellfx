@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.hex.AbstractHexEditorTabHelper;
+import com.techsenger.mvvm4fx.core.ComponentBridge;
 
 /**
+ * Different dialog bridges can be created using interfaces with default methods.
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabHelper extends AbstractHexEditorTabHelper<HexEditorTabView> {
+public interface DialogBridge extends ComponentBridge {
 
-    public HexEditorTabHelper(HexEditorTabView view) {
-        super(view);
-    }
-
+    /**
+     * Opens dialog.
+     * @param dialog
+     */
+    void openDialog(DialogView<?> dialog);
 }

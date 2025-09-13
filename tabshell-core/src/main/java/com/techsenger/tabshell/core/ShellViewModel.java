@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.mvvm4fx.core.ViewModel;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
@@ -29,12 +28,13 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
+import com.techsenger.mvvm4fx.core.ComponentViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellViewModel extends ViewModel, TabContainerViewModel<ShellTabViewModel>, IconedViewModel,
+public interface ShellViewModel extends ComponentViewModel, TabContainerViewModel<ShellTabViewModel>, IconedViewModel,
         CloseableViewModel {
 
     /**
