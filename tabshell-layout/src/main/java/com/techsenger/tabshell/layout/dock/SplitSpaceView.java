@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ChildView;
-import com.techsenger.mvvm4fx.core.ComponentBridge;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.material.pane.SplitPaneDividerBinder;
 import com.techsenger.toolkit.core.ObjectUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +64,12 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
     }
 
     @Override
+    protected void bind(T viewModel) {
+        super.bind(viewModel);
+        new SplitPaneDividerBinder(splitPane, viewModel.getDividerPositions());
+    }
+
+    @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         getChildren().addListener((ListChangeListener<ChildView<?>>) (change) -> {
@@ -88,11 +94,6 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
                 }
             }
         });
-    }
-
-    @Override
-    protected ComponentBridge createBridge() {
-        return new SplitSpaceBridge(this);
     }
 
     void logState(String note) {
