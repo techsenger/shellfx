@@ -1,11 +1,12 @@
 # Techsenger TabShell
 
-| Support the Project! |
-|:-------------|
-| This project is open-source and free to use, both commercially and non-commercially, which is why we need your help in its development. If you like it, please give it a star ⭐ on GitHub — it helps others discover the project and increases its visibility. You can also contribute, for example, by fixing bugs 🐛 or suggesting improvements 💡, see [Contributing](#contributing). If you can, financial support 💰 is always appreciated, see [Support Us](#support-us). Thank you! |
+Techsenger TabShell is a lightweight platform for building tab-based applications in JavaFX using the MVVM pattern.
+
+The platform consists of two parts: the core and ready-made components. The core includes the core shell and classes
+for creating components. Ready-made components are used as needed and significantly reduce the development time of the
+final application.
 
 ## Table of Contents
-* [Overview](#overview)
 * [Demo](#demo)
     * [Text Editor](#demo-text-editor)
     * [Hex Editor](#demo-hex-editor)
@@ -27,15 +28,7 @@
     * [Full Demo](#running-full-demo)
 * [License](#license)
 * [Contributing](#contributing)
-* [👉 Support Us](#support-us)
-
-## Overview <a name="overview"></a>
-
-Techsenger TabShell is a lightweight platform for building tab-based applications in JavaFX using the MVVM pattern.
-
-The platform consists of two parts: the core and ready-made components. The core includes the core shell and classes
-for creating components. Ready-made components are used as needed and significantly reduce the development time of the
-final application.
+* [Support Us](#support-us)
 
 ## Demo <a name="demo"></a>
 
@@ -285,10 +278,10 @@ Techsenger TabShell is licensed under the Apache License, Version 2.0.
 We welcome all contributions. You can help by reporting bugs, suggesting improvements, or submitting pull requests
 with fixes and new features. If you have any questions, feel free to reach out — we’ll be happy to assist you.
 
-## 👉 Support Us <a name="support-us"></a>
+## Support Us <a name="support-us"></a>
 
-You can support us financially through [GitHub Sponsors](https://github.com/sponsors/techsenger). Your
-contribution directly helps us keep our open-source projects active, improve their features, and offer ongoing support.
-Besides, we offer multiple sponsorship tiers, with different rewards.
+You can support our open-source work through [GitHub Sponsors](https://github.com/sponsors/techsenger).
+Your contribution helps us maintain projects, develop new features, and provide ongoing improvements.
+Multiple sponsorship tiers are available, each offering different levels of recognition and benefits.
 
 
