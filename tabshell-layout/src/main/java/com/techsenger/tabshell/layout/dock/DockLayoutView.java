@@ -1624,7 +1624,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Wrapped {} into {} and added {}",
+            logger.debug("Wrapped {} into {}; added {}",
                 ObjectUtils.getIdentity(anchorInfo.getContainer().getComponent()),
                 ObjectUtils.getIdentity(newSplitSpace),
                 ObjectUtils.getIdentity(newTabDock));
@@ -1670,18 +1670,18 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             grandparentComponent.getViewModel()
                     .updateDividersOnUnwrap(oldPositions, parentInfo.getIndex(), childPositions);
             if (logger.isDebugEnabled()) {
-                logger.debug("Removed {} and unwrapped {} into {}",
-                    ObjectUtils.getIdentity(anchorInfo.getContainer().getComponent()),
+                logger.debug("Unwrapped {} into {}; removed {}",
                     otherTabDocks.stream().map(e -> ObjectUtils.getIdentity(e)).collect(Collectors.joining(", ")),
-                    ObjectUtils.getIdentity(grandparentComponent));
+                    ObjectUtils.getIdentity(grandparentComponent),
+                    ObjectUtils.getIdentity(anchorInfo.getContainer().getComponent()));
             }
         } else {
             if (otherChild instanceof SplitSpaceView) {
                 setRoot((SplitSpaceView<?>) otherChild);
                 if (logger.isDebugEnabled()) {
-                logger.debug("Removed {} and set {} as a root",
-                        ObjectUtils.getIdentity(anchorInfo.getContainer().getComponent()),
-                        ObjectUtils.getIdentity(otherChild));
+                logger.debug("Unwrapped {} and set it as a root; removed {}",
+                        ObjectUtils.getIdentity(otherChild),
+                        ObjectUtils.getIdentity(anchorInfo.getContainer().getComponent()));
                 }
             } // otherwise there is a splitSpace with one main component
         }
