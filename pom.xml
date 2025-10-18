@@ -63,7 +63,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.techsenger.osp-bom</groupId>
+                <groupId>com.techsenger.osp.bom</groupId>
                 <artifactId>osp-bom</artifactId>
                 <version>1.7.0-SNAPSHOT</version>
                 <type>pom</type>
