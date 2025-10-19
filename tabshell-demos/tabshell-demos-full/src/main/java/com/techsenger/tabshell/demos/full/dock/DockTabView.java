@@ -21,7 +21,6 @@ import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
-import com.techsenger.tabshell.layout.dock.SpaceReceiver;
 import com.techsenger.tabshell.layout.dock.TabDockView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import javafx.geometry.Orientation;
@@ -77,7 +76,6 @@ public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
 
         var tabDockView = layout.createTabDock();
         fillTabs(tabDockView);
-        tabDockView.getViewModel().setSpaceReceiver(SpaceReceiver.NEXT);
         splitSpaceView.getChildren().add(tabDockView);
     }
 

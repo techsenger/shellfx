@@ -31,8 +31,6 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public class TabDockViewModel extends TabHostViewModel {
 
-    private final ReadOnlyObjectWrapper<SpaceReceiver> spaceReceiver = new ReadOnlyObjectWrapper<>();
-
     private final BooleanProperty draggable = new SimpleBooleanProperty(true);
 
     private final ReadOnlyObjectWrapper<UUID> uuid = new ReadOnlyObjectWrapper<>();
@@ -41,34 +39,6 @@ public class TabDockViewModel extends TabHostViewModel {
 
     protected TabDockViewModel() {
         super(LayoutComponentKeys.TAB_DOCK);
-    }
-
-    /**
-     * Returns the value of {@link #spaceReceiverProperty()}.
-     *
-     * @return the current {@link SpaceReceiver} of this component
-     */
-    public final SpaceReceiver getSpaceReceiver() {
-        return spaceReceiver.get();
-    }
-
-    /**
-     * The property that defines which neighboring component will receive this component's space if it is removed
-     * from the layout.
-     *
-     * @return the {@link ReadOnlyProperty} of the {@link SpaceReceiver}
-     */
-    public final ReadOnlyProperty<SpaceReceiver> spaceReceiverProperty() {
-        return spaceReceiver.getReadOnlyProperty();
-    }
-
-    /**
-     * Sets the value of {@link #spaceReceiverProperty()}.
-     *
-     * @param value the new {@link SpaceReceiver} for this component
-     */
-    public final void setSpaceReceiver(SpaceReceiver value) {
-        spaceReceiver.set(value);
     }
 
     /**

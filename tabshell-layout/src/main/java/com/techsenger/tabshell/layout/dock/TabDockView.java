@@ -39,6 +39,8 @@ import javafx.scene.layout.HBox;
  */
 public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
 
+    static final double MIN_SIZE = 100; // temp
+
     private final DockLayoutView<?> layout;
 
     private final Button minimizeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
