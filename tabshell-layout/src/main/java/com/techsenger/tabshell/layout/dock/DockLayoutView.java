@@ -29,6 +29,7 @@ import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.core.ObjectUtils;
 import com.techsenger.toolkit.core.Pair;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -117,14 +118,13 @@ import org.slf4j.LoggerFactory;
  * | 11 | Vertical    | false    | Top/Bottom | Any           | Add to parent                                       |
  * | 12 | Vertical    | false    | Left/Right | Any           | Wrap node with horizontal split                     |
  *
- * <p>When a TabDock is restored from a collapsed side panel, the system first checks whether the original SplitSpace
- * (identified by its UUID) still exists and restores the TabDock there if possible. If the original SplitSpace is no
- * longer present, the system attempts to restore the TabDock into the root SplitSpace, provided its orientation
- * is compatible with the direction of restoration. If the root orientation is not compatible, it searches for the
- * first suitable child SplitSpace inside the root with the opposite orientation; if none is found, the root is wrapped
- * in a new SplitSpace of the opposite orientation, and the TabDock is attached there. This approach ensures that the
- * restored TabDock always appears in a visible and structurally consistent location, while allowing the user to
- * freely move the entire TabDock to the desired position afterwards.
+ * <p>When restoring a TabDock from a collapsed side panel, the system first attempts to locate the original SplitSpace
+ * by its UUID for restoration. If the original SplitSpace no longer exists, the system tries to place the TabDock
+ * directly into the root SplitSpace, but only if its orientation matches the restoration direction. If the root's
+ * orientation is incompatible, the root SplitSpace is wrapped inside a new SplitSpace with the opposite orientation,
+ * and the TabDock is attached there. This ensures the restored content always appears at the top level in a
+ * predictable location while maintaining layout integrity, after which the user can freely reposition the TabDock
+ * as needed.
  *
  * @author Pavel Castornii
  */
@@ -733,13 +733,64 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return ONE_THIRD * (firstContainerSize + secondContainerSize);
     }
 
-
     private static ContainerInfo createSiblingInfo(ContainerInfo parentInfo,
             ContainerInfo anchorInfo, int siblingIndex) {
         SplitPane splitPane = (SplitPane) parentInfo.getContainer().getComponent().getNode();
         var siblingContainer = ((AbstractContainer<?>) splitPane.getItems().get(siblingIndex));
         var singlingInfo = siblingContainer.createInfo();
         return singlingInfo;
+    }
+
+    private static ComponentPosition.SnapshotNode createSnapshotTree(SplitSpaceView<?> root) {
+        var iterator = root.depthFirstIterator();
+        Deque<ComponentPosition.SnapshotNode> stack = new ArrayDeque<>();
+        ComponentPosition.SnapshotNode rootSnapshot = null;
+        int prevDepth = -1;
+
+        while (iterator.hasNext()) {
+            var node = iterator.next();
+            int currentDepth = iterator.getDepth();
+
+            ComponentPosition.NodeType type;
+            Orientation orientation = null;
+            UUID uuid = null;
+
+            if (node instanceof SplitSpaceView<?> ssv) {
+                type = ComponentPosition.NodeType.SPLIT_SPACE;
+                orientation = ssv.getNode().getOrientation();
+                uuid = ssv.getViewModel().getUuid();
+            } else if (node instanceof TabDockView<?> tdv) {
+                type = ComponentPosition.NodeType.TAB_DOCK;
+                uuid = tdv.getViewModel().getUuid();
+            } else {
+                type = ComponentPosition.NodeType.MAIN;
+            }
+
+            var snapshotNode = new ComponentPosition.SnapshotNode(uuid, type, orientation);
+
+            // Remove nodes from stack until we reach parent level
+            while (stack.size() > currentDepth) {
+                stack.pop();
+            }
+
+            // Add as child to parent if exists
+            if (!stack.isEmpty()) {
+                stack.peek().getChildren().add(snapshotNode);
+            }
+
+            // Push current node to stack if it can have children
+            if (node instanceof SplitSpaceView) {
+                stack.push(snapshotNode);
+            }
+
+            if (rootSnapshot == null) {
+                rootSnapshot = snapshotNode;
+            }
+
+            prevDepth = currentDepth;
+        }
+
+        return rootSnapshot;
     }
 
     private final BorderPane borderPane = new BorderPane();
@@ -1039,11 +1090,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         SplitSpaceView<?> parent = (SplitSpaceView<?>) dock.getParent();
         var parentPos = parent.getNode().getDividerPositions();
         var index = parent.getChildren().indexOf(dock);
-        var pos = new ComponentPosition(parent.getViewModel().getUuid(), index,
+        var snapshotTree = createSnapshotTree(getRoot());
+        var pos = new ComponentPosition(snapshotTree, dock.getViewModel().getUuid(), index,
                 dock.getNode().getWidth(), dock.getNode().getHeight());
         dock.getViewModel().setMinimizedPosition(pos);
         if (logger.isDebugEnabled()) {
             parent.logState("Before minimizing");
+            logger.debug("Snapshot tree: {}", ComponentPosition.toString(snapshotTree));
             logger.debug("{} minimized position: {}", ObjectUtils.getIdentity(dock), pos);
         }
         // resolving the side (before removing)
@@ -1093,7 +1146,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         while (iterator.hasNext()) {
             AbstractPaneView<?> component = (AbstractPaneView<?>) iterator.next();
             if (component instanceof SplitSpaceView<?> c) {
-                if (c.getViewModel().getUuid().equals(position.getParentUuid())) {
+                if (c.getViewModel().getUuid().equals(position.getUuid())) {  // TEMP TEMP TEMP
                     parent = c;
                     break;
                 }
@@ -1134,15 +1187,20 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 }
             }
         } else {
-            if (side == BOTTOM) {
-                parent = findParentForRestoring(Orientation.VERTICAL);
+            parent = getRoot();
+            if (parent.getNode().getOrientation() == Orientation.HORIZONTAL) {
+                if (side == BOTTOM) {
+                    parent = null;
+                }
             } else {
-                parent = findParentForRestoring(Orientation.HORIZONTAL);
+                if (side == LEFT || side == RIGHT) {
+                    parent = null;
+                }
             }
-
             if (parent == null) {
                 parent = wrap(getRoot(), 0);
             }
+
             index = parent.getChildren().size();
             if (side == LEFT) {
                 index = 0;
@@ -1181,19 +1239,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             }
             return false;
         });
-    }
-
-    private SplitSpaceView<?> findParentForRestoring(Orientation orientation) {
-        if (getRoot().getNode().getOrientation() == orientation) {
-            return getRoot();
-        } else {
-            for (var child : getRoot().getChildren()) {
-                if (child instanceof SplitSpaceView ssv && ssv.getNode().getOrientation() == orientation) {
-                    return ssv;
-                }
-            }
-        }
-        return null;
     }
 
     private void handleMouseDragOverOnTabHeaderArea(MousePosition mousePosition, TabDockContainer tabDockContainer) {
