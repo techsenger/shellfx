@@ -1851,20 +1851,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 splitSpace.updateDividersOnRemoveWithoutMain(finalOldSplitSpaneSize, oldPositions,
                         tabDockInfo.getIndex());
             }
-//            int index;
-//            var withSibling = false;
-//            if (parent.getContainer().getComponent() == getMain().getParent()) {
-//                index = parent.getContainer().getComponent().getChildren().indexOf(getMain());
-//            } else {
-//                index = tabDockInfo.getIndex();
-//                if (spaceReceiver != SpaceReceiver.NEXT) {
-//                    index--;
-//                    if (spaceReceiver == SpaceReceiver.BOTH) {
-//                        withSibling = true;
-//                    }
-//                }
-//            }
-//            splitSpace.updateDividersOnResize(finalSavedSize, positionsBeforePulse, index, withSibling);
             return false;
         });
         if (logger.isDebugEnabled()) {
