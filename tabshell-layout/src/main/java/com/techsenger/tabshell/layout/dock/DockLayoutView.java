@@ -1636,12 +1636,16 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             // adding tab docks
             grandparentComponent.getChildren().addAll(index, otherTabDocks);
             // last child has parent space provider
-            grandparentComponent.updateDividersOnUnwrap(index, oldPositions, childPositions);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Unwrapped {} into {}",
-                    otherTabDocks.stream().map(e -> ObjectUtils.getIdentity(e)).collect(Collectors.joining(", ")),
-                    ObjectUtils.getIdentity(grandparentComponent));
-            }
+            getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
+                grandparentComponent.updateDividersOnUnwrap(index, oldPositions, childPositions);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Unwrapped {} into {}",
+                        otherTabDocks.stream().map(e -> ObjectUtils.getIdentity(e)).collect(Collectors.joining(", ")),
+                        ObjectUtils.getIdentity(grandparentComponent));
+                }
+                return false;
+            });
+
         } else {
             if (child instanceof SplitSpaceView) {
                 setRoot((SplitSpaceView<?>) child);
