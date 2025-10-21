@@ -1248,7 +1248,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * @return
      */
     private DockInfo createTabAreaDockInfo(MousePosition position, TabDockContainer tabDockContainer) {
-        DockInfo info = new DockInfo();
+        DockInfo info;
+        info = tryReusePreviousDockInfo(position);
+        if (info != null) {
+            return info;
+        }
+        info = new DockInfo();
         info.setMousePosition(position);
         var indicatorBounds = createTabPaneIndicatorBounds(position, tabDockContainer);
         info.setIndicatorBounds(indicatorBounds);
@@ -1267,7 +1272,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * @return
      */
     private DockInfo createBaseDockInfo(MousePosition position) {
-        DockInfo info = new DockInfo();
+        DockInfo info;
+        info = tryReusePreviousDockInfo(position);
+        if (info != null) {
+            return info;
+        }
+        info = new DockInfo();
         info.setMousePosition(position);
 
         AbstractEventContainer<?> eventContainer = (AbstractEventContainer<?>) position.getEventContainer();
@@ -1304,6 +1314,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
         validateDockInfo(info);
         return info;
+    }
+
+    private DockInfo tryReusePreviousDockInfo(MousePosition position) {
+        if (this.dockInfo != null && this.dockInfo.getMousePosition().equals(position)) {
+            return this.dockInfo;
+        }
+        return null;
     }
 
     private void prepareDockInfoForHorizontalSpace(final DockInfo info) {

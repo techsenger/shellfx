@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import java.util.Objects;
 import javafx.geometry.Side;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
@@ -74,5 +75,39 @@ class MousePosition {
     public String toString() {
         return "MousePosition [" + "side:" + side + ", edgeMode:" + edgeMode
                 + ", overTabHeaderArea:" + overTabHeaderArea + ']';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 61 * hash + Objects.hashCode(this.eventContainer);
+        hash = 61 * hash + Objects.hashCode(this.side);
+        hash = 61 * hash + (this.edgeMode ? 1 : 0);
+        hash = 61 * hash + (this.overTabHeaderArea ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MousePosition other = (MousePosition) obj;
+        if (this.edgeMode != other.edgeMode) {
+            return false;
+        }
+        if (this.overTabHeaderArea != other.overTabHeaderArea) {
+            return false;
+        }
+        if (!Objects.equals(this.eventContainer, other.eventContainer)) {
+            return false;
+        }
+        return this.side == other.side;
     }
 }
