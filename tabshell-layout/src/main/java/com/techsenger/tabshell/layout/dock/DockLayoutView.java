@@ -1120,9 +1120,20 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             sideBar.deinitialize();
         }
 
-        var index = position.getIndex();
-        if (parent == null) {
-            var side = sideBar.getViewModel().getSide();
+        var side = sideBar.getViewModel().getSide();
+        int index;
+        if (parent != null) {
+            index = position.getIndex();
+            if (index > parent.getChildren().size()) {
+                index = parent.getChildren().size();
+            }
+            if (side == LEFT) {
+                var mainIndex = indexOfMain(parent);
+                if (mainIndex >= 0 && index >= mainIndex) {
+                    index = mainIndex;
+                }
+            }
+        } else {
             if (side == BOTTOM) {
                 parent = findParentForRestoring(Orientation.VERTICAL);
             } else {
@@ -1131,9 +1142,11 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
             if (parent == null) {
                 parent = wrap(getRoot(), 0);
-                parent.getNode().setDividerPositions(1);
             }
             index = parent.getChildren().size();
+            if (side == LEFT) {
+                index = 0;
+            }
         }
 
         final var splitPane = parent.getNode();
@@ -1856,10 +1869,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             if (uuid != null) {
                 builder.append("uuid: ");
                 builder.append(uuid);
-                builder.append(", ");
             }
             if (orientation.length() > 0) {
-                builder.append("orientation: ");
+                builder.append(", orientation: ");
                 builder.append(orientation);
             }
             builder.append("]");
