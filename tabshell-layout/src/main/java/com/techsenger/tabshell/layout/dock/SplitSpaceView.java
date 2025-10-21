@@ -310,41 +310,66 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
      */
     void updateDividersOnAddWithMain(double oldSize, double[] oldPositions, int flexibleChildIndex,
             int newChildIndex, double newChildSize) {
-        // Calculate original node sizes in absolute units with higher precision
+        // Get current SplitPane size
+        double newSize = splitPane.getWidth();
+        if (splitPane.getOrientation() == Orientation.VERTICAL) {
+            newSize = splitPane.getHeight();
+        }
+
+        // If oldSize is 0 (initial state), use simple distribution
+        if (oldSize <= 0) {
+            // Initial setup with two nodes
+            double[] newPositions = new double[1];
+
+            if (newChildIndex == 0) {
+                // New node at beginning, flexible node takes remaining space
+                newPositions[0] = newChildSize / newSize;
+            } else {
+                // New node at end, flexible node takes remaining space
+                newPositions[0] = (newSize - newChildSize) / newSize;
+            }
+
+            // Ensure valid range
+            newPositions[0] = Math.max(0.0, Math.min(1.0, newPositions[0]));
+
+            logger.debug("Initial dividers setup with main; newSize: {}, flexibleChildIndex: {}, "
+                    + "newChildIndex: {}, newChildSize: {}, newPositions: {}",
+                    newSize, flexibleChildIndex, newChildIndex, newChildSize, newPositions);
+            splitPane.setDividerPositions(newPositions);
+            return;
+        }
+
+        // Calculate original node sizes in absolute units
         int oldNodeCount = oldPositions.length + 1;
         double[] oldSizes = new double[oldNodeCount];
 
-        // First node
-        if (oldPositions.length > 0) {
+        if (oldPositions.length == 0) {
+            // Only one node exists - it takes the entire space
+            oldSizes[0] = oldSize;
+        } else {
+            // First node
             oldSizes[0] = oldPositions[0] * oldSize;
-        }
 
-        // Middle nodes
-        for (int i = 1; i < oldNodeCount - 1; i++) {
-            oldSizes[i] = (oldPositions[i] - oldPositions[i - 1]) * oldSize;
-        }
+            // Middle nodes
+            for (int i = 1; i < oldNodeCount - 1; i++) {
+                oldSizes[i] = (oldPositions[i] - oldPositions[i - 1]) * oldSize;
+            }
 
-        // Last node - calculate precisely to avoid floating point errors
-        oldSizes[oldNodeCount - 1] = oldSize;
-        for (int i = 0; i < oldNodeCount - 1; i++) {
-            oldSizes[oldNodeCount - 1] -= oldSizes[i];
+            // Last node
+            oldSizes[oldNodeCount - 1] = (1.0 - oldPositions[oldPositions.length - 1]) * oldSize;
         }
 
         // Create new sizes array with space for the new node
         int newNodeCount = oldNodeCount + 1;
         double[] newSizes = new double[newNodeCount];
 
+        // Copy old sizes to new array, inserting the new node at the specified position
         for (int i = 0, j = 0; i < newNodeCount; i++) {
             if (i == newChildIndex) {
                 newSizes[i] = newChildSize;
             } else {
                 newSizes[i] = oldSizes[j++];
             }
-        }
-
-        double newSize = splitPane.getWidth();
-        if (splitPane.getOrientation() == Orientation.VERTICAL) {
-            newSize = splitPane.getHeight();
         }
 
         // Apply SplitPane size change directly to flexible node
@@ -361,47 +386,22 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
         } else {
             // Flexible node gives all it can, reduce new node size
             newSizes[flexibleChildIndex] = TabDockView.MIN_SIZE;
-            newSizes[newChildIndex] = availableForSacrifice; // Use whatever is available
+            newSizes[newChildIndex] = availableForSacrifice;
         }
 
-        // Calculate total allocated size to check for rounding errors
-        double totalAllocated = 0.0;
-        for (double size : newSizes) {
-            totalAllocated += size;
-        }
-
-        // Adjust for any floating point precision errors
-        double sizeDifference = newSize - totalAllocated;
-        if (Math.abs(sizeDifference) > 0.001) {
-            // Distribute the difference to the flexible node
-            newSizes[flexibleChildIndex] += sizeDifference;
-        }
-
-        // Calculate new divider positions with precision
+        // Calculate new divider positions
         double[] newPositions = new double[newNodeCount - 1];
         double cumulativeSize = 0.0;
 
         for (int i = 0; i < newNodeCount - 1; i++) {
             cumulativeSize += newSizes[i];
             newPositions[i] = cumulativeSize / newSize;
-
-            // Ensure positions are within valid range
-            if (newPositions[i] < 0.0) {
-                newPositions[i] = 0.0;
-            }
-            if (newPositions[i] > 1.0) {
-                newPositions[i] = 1.0;
-            }
-        }
-
-        // Final validation - ensure last position doesn't exceed 1.0
-        if (newPositions.length > 0 && newPositions[newPositions.length - 1] > 1.0) {
-            newPositions[newPositions.length - 1] = 1.0;
         }
 
         logger.debug("Updated dividers on add with main; oldSize: {}, newSize: {}, flexibleChildIndex: {}, "
                 + "newChildIndex: {}, newChildSize: {}, oldPositions: {}, newPositions: {}",
                 oldSize, newSize, flexibleChildIndex, newChildIndex, newChildSize, oldPositions, newPositions);
+
         splitPane.setDividerPositions(newPositions);
     }
 
@@ -500,39 +500,59 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
      */
     void updateDividersOnAddWithoutMain(double oldSize, double[] oldPositions, int newChildIndex,
             double newChildSize) {
-        // Convert everything to integers for precise calculation
-        int oldSizeInt = (int) Math.round(oldSize);
-        int newSizeInt = (int) Math.round(splitPane.getWidth());
+        // Get current SplitPane size
+        double newSize = splitPane.getWidth();
         if (splitPane.getOrientation() == Orientation.VERTICAL) {
-            newSizeInt = (int) Math.round(splitPane.getHeight());
+            newSize = splitPane.getHeight();
         }
-        int newChildSizeInt = (int) Math.round(newChildSize);
-        int minimalNodeSizeInt = (int) Math.round(TabDockView.MIN_SIZE);
 
-        // Calculate original node sizes in integer pixels
+        // If oldSize is 0 (initial state), use equal distribution
+        if (oldSize <= 0) {
+            // Initial setup with two nodes
+            double[] newPositions = new double[1];
+            if (newChildIndex == 0) {
+                // New node at beginning, existing node takes remaining space
+                newPositions[0] = newChildSize / newSize;
+            } else {
+                // New node at end, existing node takes remaining space
+                newPositions[0] = (newSize - newChildSize) / newSize;
+            }
+
+            // Ensure valid range
+            newPositions[0] = Math.max(0.0, Math.min(1.0, newPositions[0]));
+
+            logger.debug("Initial dividers setup; newSize: {}, newChildIndex: {}, newChildSize: {}, newPositions: {}",
+                    newSize, newChildIndex, newChildSize, newPositions);
+
+            splitPane.setDividerPositions(newPositions);
+            return;
+        }
+
+        // Calculate original node sizes in absolute units
         int oldNodeCount = oldPositions.length + 1;
-        int[] oldSizes = new int[oldNodeCount];
+        double[] oldSizes = new double[oldNodeCount];
 
-        // First node
-        oldSizes[0] = (int) Math.round(oldPositions[0] * oldSizeInt);
+        if (oldPositions.length == 0) {
+            // Only one node exists - it takes the entire space
+            oldSizes[0] = oldSize;
+        } else {
+            // First node
+            oldSizes[0] = oldPositions[0] * oldSize;
 
-        // Middle nodes
-        for (int i = 1; i < oldNodeCount - 1; i++) {
-            oldSizes[i] = (int) Math.round((oldPositions[i] - oldPositions[i - 1]) * oldSizeInt);
+            // Middle nodes
+            for (int i = 1; i < oldNodeCount - 1; i++) {
+                oldSizes[i] = (oldPositions[i] - oldPositions[i - 1]) * oldSize;
+            }
+
+            // Last node
+            oldSizes[oldNodeCount - 1] = (1.0 - oldPositions[oldPositions.length - 1]) * oldSize;
         }
 
-        // Last node - ensure total is exact
-        int totalCalculated = 0;
-        for (int i = 0; i < oldNodeCount - 1; i++) {
-            totalCalculated += oldSizes[i];
-        }
-        oldSizes[oldNodeCount - 1] = oldSizeInt - totalCalculated;
-
-        int sizeChangeInt = newSizeInt - oldSizeInt;
+        double sizeChange = newSize - oldSize;
 
         // Create new sizes array with space for the new node
         int newNodeCount = oldNodeCount + 1;
-        int[] newSizes = new int[newNodeCount];
+        double[] newSizes = new double[newNodeCount];
 
         // Copy old sizes to new array, inserting 0 for the new node
         for (int i = 0, j = 0; i < newNodeCount; i++) {
@@ -546,20 +566,20 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
         // Calculate space allocation
         if (newChildIndex == 0) {
             // Insert at beginning
-            int neighborSize = newSizes[1];
-            int availableFromNeighbor = Math.max(neighborSize - minimalNodeSizeInt, 0);
-            int actualSpace = Math.min(newChildSizeInt, availableFromNeighbor);
+            double neighborSize = newSizes[1];
+            double availableFromNeighbor = Math.max(neighborSize - TabDockView.MIN_SIZE, 0);
+            double actualSpace = Math.min(newChildSize, availableFromNeighbor);
 
-            newSizes[1] = neighborSize - actualSpace + sizeChangeInt;
+            newSizes[1] = neighborSize - actualSpace + sizeChange;
             newSizes[0] = actualSpace;
 
         } else if (newChildIndex == newNodeCount - 1) {
             // Insert at end
-            int neighborSize = newSizes[newNodeCount - 2];
-            int availableFromNeighbor = Math.max(neighborSize - minimalNodeSizeInt, 0);
-            int actualSpace = Math.min(newChildSizeInt, availableFromNeighbor);
+            double neighborSize = newSizes[newNodeCount - 2];
+            double availableFromNeighbor = Math.max(neighborSize - TabDockView.MIN_SIZE, 0);
+            double actualSpace = Math.min(newChildSize, availableFromNeighbor);
 
-            newSizes[newNodeCount - 2] = neighborSize - actualSpace + sizeChangeInt;
+            newSizes[newNodeCount - 2] = neighborSize - actualSpace + sizeChange;
             newSizes[newNodeCount - 1] = actualSpace;
 
         } else {
@@ -567,136 +587,54 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
             int leftNeighborIndex = newChildIndex - 1;
             int rightNeighborIndex = newChildIndex + 1;
 
-            int leftNeighborSize = newSizes[leftNeighborIndex];
-            int rightNeighborSize = newSizes[rightNeighborIndex];
-            int combinedSize = leftNeighborSize + rightNeighborSize;
+            double leftNeighborSize = newSizes[leftNeighborIndex];
+            double rightNeighborSize = newSizes[rightNeighborIndex];
 
-            int availableFromLeft = Math.max(leftNeighborSize - minimalNodeSizeInt, 0);
-            int availableFromRight = Math.max(rightNeighborSize - minimalNodeSizeInt, 0);
-            int totalAvailable = availableFromLeft + availableFromRight;
+            double availableFromLeft = Math.max(leftNeighborSize - TabDockView.MIN_SIZE, 0);
+            double availableFromRight = Math.max(rightNeighborSize - TabDockView.MIN_SIZE, 0);
+            double totalAvailable = availableFromLeft + availableFromRight;
 
-            int actualSpace = Math.min(newChildSizeInt, totalAvailable);
+            double actualSpace = Math.min(newChildSize, totalAvailable);
 
             if (actualSpace > 0) {
-                // Distribute proportionally using integer math
-                int leftContribution;
-                int rightContribution;
+                // Distribute proportionally based on available space
+                double leftRatio = availableFromLeft / totalAvailable;
+                double rightRatio = availableFromRight / totalAvailable;
 
-                if (combinedSize > 0) {
-                    leftContribution = (int) Math.round((double) actualSpace * leftNeighborSize / combinedSize);
-                    rightContribution = (int) Math.round((double) actualSpace * rightNeighborSize / combinedSize);
-                } else {
-                    leftContribution = actualSpace / 2;
-                    rightContribution = actualSpace - leftContribution;
-                }
-
-                // Ensure we don't take more than available
-                leftContribution = Math.min(leftContribution, availableFromLeft);
-                rightContribution = Math.min(rightContribution, availableFromRight);
-
-                // Adjust if needed
-                int totalContributed = leftContribution + rightContribution;
-                if (totalContributed < actualSpace) {
-                    int remaining = actualSpace - totalContributed;
-                    if (availableFromLeft - leftContribution > 0) {
-                        int additional = Math.min(remaining, availableFromLeft - leftContribution);
-                        leftContribution += additional;
-                        remaining -= additional;
-                    }
-                    if (remaining > 0 && availableFromRight - rightContribution > 0) {
-                        int additional = Math.min(remaining, availableFromRight - rightContribution);
-                        rightContribution += additional;
-                    }
-                }
+                double leftContribution = actualSpace * leftRatio;
+                double rightContribution = actualSpace * rightRatio;
 
                 newSizes[leftNeighborIndex] = leftNeighborSize - leftContribution;
                 newSizes[rightNeighborIndex] = rightNeighborSize - rightContribution;
-                newSizes[newChildIndex] = leftContribution + rightContribution;
+                newSizes[newChildIndex] = actualSpace;
             }
 
             // Distribute size change proportionally
-            int totalNeighborSize = newSizes[leftNeighborIndex] + newSizes[rightNeighborIndex];
+            double totalNeighborSize = newSizes[leftNeighborIndex] + newSizes[rightNeighborIndex];
             if (totalNeighborSize > 0) {
-                int leftChange =
-                        (int) Math.round((double) sizeChangeInt * newSizes[leftNeighborIndex] / totalNeighborSize);
-                int rightChange = sizeChangeInt - leftChange; // Ensure exact total
+                double leftRatio = newSizes[leftNeighborIndex] / totalNeighborSize;
+                double rightRatio = newSizes[rightNeighborIndex] / totalNeighborSize;
 
-                newSizes[leftNeighborIndex] += leftChange;
-                newSizes[rightNeighborIndex] += rightChange;
+                newSizes[leftNeighborIndex] += sizeChange * leftRatio;
+                newSizes[rightNeighborIndex] += sizeChange * rightRatio;
             } else {
-                int halfChange = sizeChangeInt / 2;
-                newSizes[leftNeighborIndex] += halfChange;
-                newSizes[rightNeighborIndex] += sizeChangeInt - halfChange;
+                newSizes[leftNeighborIndex] += sizeChange / 2;
+                newSizes[rightNeighborIndex] += sizeChange / 2;
             }
         }
 
-        // FINAL EXACT CORRECTION - ensure total equals newSizeInt exactly
-        int finalTotal = 0;
-        for (int size : newSizes) {
-            finalTotal += size;
-        }
-
-        int discrepancy = newSizeInt - finalTotal;
-        if (discrepancy != 0) {
-            // Distribute discrepancy to the largest node(s)
-            if (discrepancy > 0) {
-                // Add pixels to the largest node
-                int maxSize = -1;
-                int maxIndex = -1;
-                for (int i = 0; i < newNodeCount; i++) {
-                    if (newSizes[i] > maxSize) {
-                        maxSize = newSizes[i];
-                        maxIndex = i;
-                    }
-                }
-                if (maxIndex != -1) {
-                    newSizes[maxIndex] += discrepancy;
-                }
-            } else {
-                // Remove pixels from the largest node that can afford it
-                for (int i = 0; i < Math.abs(discrepancy); i++) {
-                    int maxSize = -1;
-                    int maxIndex = -1;
-                    for (int j = 0; j < newNodeCount; j++) {
-                        if (newSizes[j] > maxSize && newSizes[j] > minimalNodeSizeInt) {
-                            maxSize = newSizes[j];
-                            maxIndex = j;
-                        }
-                    }
-                    if (maxIndex != -1) {
-                        newSizes[maxIndex]--;
-                    } else {
-                        break; // Can't remove more
-                    }
-                }
-            }
-        }
-
-        // Convert back to double positions with exact calculation
+        // Calculate new divider positions
         double[] newPositions = new double[newNodeCount - 1];
-        int cumulative = 0;
+        double cumulativeSize = 0.0;
 
         for (int i = 0; i < newNodeCount - 1; i++) {
-            cumulative += newSizes[i];
-            newPositions[i] = (double) cumulative / newSizeInt;
+            cumulativeSize += newSizes[i];
+            newPositions[i] = cumulativeSize / newSize;
         }
 
-        // Ensure the last position is exactly at the end
-        if (newPositions.length > 0) {
-            int finalCumulative = 0;
-            for (int i = 0; i < newNodeCount - 1; i++) {
-                finalCumulative += newSizes[i];
-            }
-            // Last node should take exactly the remaining space
-            newSizes[newNodeCount - 1] = newSizeInt - finalCumulative;
-
-            // Recalculate last position
-            newPositions[newPositions.length - 1] = (double) finalCumulative / newSizeInt;
-        }
-
-        logger.debug("Updated dividers on resize and add; oldSize: {}, newSize: {}, "
+        logger.debug("Updated dividers on resize and add without main; oldSize: {}, newSize: {}, "
                 + "newChildIndex: {}, newChildSize: {}, oldPositions: {}, newPositions: {}",
-                oldSize, newSizeInt, newChildIndex, newChildSize, oldPositions, newPositions);
+                oldSize, newSize, newChildIndex, newChildSize, oldPositions, newPositions);
 
         splitPane.setDividerPositions(newPositions);
     }
