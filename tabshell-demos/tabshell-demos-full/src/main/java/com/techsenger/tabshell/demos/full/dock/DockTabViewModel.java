@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
+import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.demos.full.DemoComponentKeys;
@@ -28,13 +30,20 @@ import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
  */
 public class DockTabViewModel extends AbstractShellTabViewModel {
 
-    private final DockLayoutViewModel layout = new DockLayoutViewModel();
+    private final DockTabHistory history;
+
+    private final DockLayoutViewModel layout;
 
     private final TextViewerViewModel textViewer = new TextViewerViewModel();
 
     public DockTabViewModel(ShellViewModel shell) {
         super(shell);
         setTitle("Dock Tab");
+        setHistoryPolicy(HistoryPolicy.ALL);
+        setHistoryProvider(new DefaultClassHistoryProvider(shell.getHistoryManager(),
+                DockTabHistory.class, DockTabHistory::new));
+        this.history = (DockTabHistory) getHistoryProvider().provide();
+        this.layout = new DockLayoutViewModel(this.history.getDockLayout());
     }
 
     @Override

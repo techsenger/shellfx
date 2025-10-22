@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout;
+package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.tabshell.core.tab.AbstractTabHistory;
+import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface LayoutComponentKeys {
+public class DockTabHistory extends AbstractTabHistory<DockTabViewModel> {
 
-    PaneKey DOCK_LAYOUT = new PaneKey("Dock Layout");
+    private DockLayoutHistory<?> dockLayout;
 
-    PaneKey SPLIT_SPACE = new PaneKey("Split Space");
+    @Override
+    public void setDefaultValues() {
+        super.setDefaultValues();
+        this.dockLayout = new DockLayoutHistory<>();
+        this.dockLayout.setDefaultValues();
+    }
 
-    PaneKey TAB_DOCK = new PaneKey("Tab Dock");
-
-    PaneKey SIDE_BAR = new PaneKey("Side Bar");
-
-    PaneKey TAB_POPUP = new PaneKey("Tab Popup");
+    public DockLayoutHistory<?> getDockLayout() {
+        return dockLayout;
+    }
 }

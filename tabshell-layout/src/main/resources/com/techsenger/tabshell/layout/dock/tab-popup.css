@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout;
-
-import com.techsenger.tabshell.core.pane.PaneKey;
-
-/**
- *
- * @author Pavel Castornii
- */
-public interface LayoutComponentKeys {
-
-    PaneKey DOCK_LAYOUT = new PaneKey("Dock Layout");
-
-    PaneKey SPLIT_SPACE = new PaneKey("Split Space");
-
-    PaneKey TAB_DOCK = new PaneKey("Tab Dock");
-
-    PaneKey SIDE_BAR = new PaneKey("Side Bar");
-
-    PaneKey TAB_POPUP = new PaneKey("Tab Popup");
+/*
+    Author: Pavel Castornii
+*/
+.tab-popup {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-muted;
 }
+
+.tab-popup.right {
+    -fx-border-width: 0 0 0 1px;
+}
+
+.tab-popup.bottom {
+    -fx-border-width: 1px 0 0 0;
+}
+
+.tab-popup.left {
+    -fx-border-width: 0 1px 0 0;
+}
+

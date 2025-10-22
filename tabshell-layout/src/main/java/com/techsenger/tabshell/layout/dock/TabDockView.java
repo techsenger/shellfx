@@ -92,7 +92,7 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         });
         var tabPane = getNode();
         tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
-            if (tabPane.getTabs().isEmpty()) {
+            if (tabPane.getTabs().isEmpty() && viewModel.getMinimizedPosition() == null) {
                 this.layout.processEmptyTabPane(tabPane);
             }
         });

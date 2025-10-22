@@ -46,6 +46,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
@@ -751,6 +752,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     private final BorderPane borderPane = new BorderPane();
 
+    private final StackPane node = new StackPane(borderPane);
+
     private final DragAndDropContext dragAndDropContext = new DragAndDropContext();
 
     private final ObjectProperty<SplitSpaceView<?>> root = new SimpleObjectProperty<>();
@@ -783,8 +786,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     }
 
     @Override
-    public BorderPane getNode() {
-        return this.borderPane;
+    public StackPane getNode() {
+        return this.node;
     }
 
     public final ObjectProperty<SplitSpaceView<?>> rootProperty() {
@@ -865,10 +868,11 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
+        VBox.setVgrow(node, Priority.ALWAYS);
+
         this.borderPane.getStyleClass().add("dock-layout");
         var css = DockLayoutView.class.getResource("dock-layout.css").toExternalForm();
         this.borderPane.getStylesheets().add(css);
-        VBox.setVgrow(borderPane, Priority.ALWAYS);
 
         var sideBar = createSideBar(RIGHT);
         this.borderPane.setRight(sideBar.getNode());
@@ -1221,6 +1225,19 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             }
             return false;
         });
+    }
+
+    void showTabPopup(TabPopupView<?> popup) {
+        var popupNode = popup.getNode();
+        //popupNode.setManaged(false);
+        StackPane.setAlignment(popupNode, Pos.TOP_LEFT);
+        this.node.getChildren().add(popupNode);
+    }
+
+    void hideTabPopup() {
+        if (this.node.getChildren().size() > 1) {
+            this.node.getChildren().remove(1);
+        }
     }
 
     private AbstractPaneView<?> findSibling(SplitSpaceView<?> splitSpace, List<UUID> siblings) {

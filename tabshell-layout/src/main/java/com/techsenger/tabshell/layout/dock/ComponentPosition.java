@@ -24,7 +24,7 @@ import javafx.geometry.Orientation;
  *
  * @author Pavel Castornii
  */
-class ComponentPosition {
+public class ComponentPosition {
 
     private final List<UUID> pathFromRoot;
 

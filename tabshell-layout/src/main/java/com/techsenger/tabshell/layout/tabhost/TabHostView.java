@@ -41,7 +41,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
- * TabDock is the generic class for components that have TabPane and every tab is a separate component.
+ * TabHost is the generic class for components that have TabPane and every tab is a separate component.
  *
  * @author Pavel Castornii
  */
