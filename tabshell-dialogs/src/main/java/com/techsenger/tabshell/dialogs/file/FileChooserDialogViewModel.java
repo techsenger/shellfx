@@ -178,7 +178,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         columns.add(modifiedColumn);
         this.tableHistory = new TableHistory(columns);
         setPrefWidth(800);
-        setPrefWidth(500);
+        setPrefHeight(500);
     }
 
     @Override
