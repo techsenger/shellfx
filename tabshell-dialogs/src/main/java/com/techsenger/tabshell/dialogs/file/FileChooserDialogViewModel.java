@@ -19,7 +19,6 @@ package com.techsenger.tabshell.dialogs.file;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.dialog.DialogKey;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.style.CoreIcons;
@@ -29,7 +28,9 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.StyleFontIcon;
+import com.techsenger.tabshell.material.table.TableColumnHistory;
 import com.techsenger.tabshell.material.table.TableHistory;
+import com.techsenger.tabshell.storage.FileColumnKeys;
 import com.techsenger.tabshell.storage.FileStorage;
 import static com.techsenger.tabshell.storage.FileStorageType.BASE;
 import static com.techsenger.tabshell.storage.FileStorageType.FLOPPY;
@@ -59,6 +60,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +74,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
 
     private final FileChooserType type;
 
-    private final BooleanProperty listSelected = new SimpleBooleanProperty();
+    private final BooleanProperty listSelected = new SimpleBooleanProperty(true);
 
     private final BooleanProperty detailsSelected = new SimpleBooleanProperty();
 
@@ -156,10 +158,27 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
                 throw new AssertionError();
         }
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(new DefaultClassHistoryProvider<>(historyManager, FileChooserDialogHistory.class,
+        setHistoryProvider(() -> historyManager.getOrCreateHistory(FileChooserDialogHistory.class,
                 FileChooserDialogHistory::new));
         setButtonWidthEqual(true);
         setCancelVisible(true);
+
+        var columns = new ArrayList<TableColumnHistory>();
+        var typeColumn = new TableColumnHistory(FileColumnKeys.TYPE.toString());
+        columns.add(typeColumn);
+        typeColumn.setSortIndex(0);
+        typeColumn.setSortType(TableColumn.SortType.ASCENDING);
+        var nameColumn = new TableColumnHistory(FileColumnKeys.NAME.toString());
+        columns.add(nameColumn);
+        nameColumn.setSortIndex(1);
+        nameColumn.setSortType(TableColumn.SortType.ASCENDING);
+        var sizeColumn = new TableColumnHistory(FileColumnKeys.SIZE.toString());
+        columns.add(sizeColumn);
+        var modifiedColumn = new TableColumnHistory(FileColumnKeys.LAST_MODIFIED.toString());
+        columns.add(modifiedColumn);
+        this.tableHistory = new TableHistory(columns);
+        setPrefWidth(800);
+        setPrefWidth(500);
     }
 
     @Override

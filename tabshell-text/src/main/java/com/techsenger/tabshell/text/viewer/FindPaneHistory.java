@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.tabshell.shared.find.AbstractFindPaneHistory;
 import com.techsenger.tabshell.core.history.HistoryUtils;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneHistory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class FindPaneHistory extends AbstractFindPaneHistory<DefaultFindPaneViewModel> {
 
-    private List<String> replaceTexts;
+    private List<String> replaceTexts = new ArrayList<>();
 
     public List<String> getReplaceTexts() {
         return replaceTexts;
@@ -35,12 +35,6 @@ public class FindPaneHistory extends AbstractFindPaneHistory<DefaultFindPaneView
 
     public void setReplaceTexts(List<String> replaceTexts) {
         this.replaceTexts = replaceTexts;
-    }
-
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.replaceTexts = new ArrayList<>();
     }
 
     @Override

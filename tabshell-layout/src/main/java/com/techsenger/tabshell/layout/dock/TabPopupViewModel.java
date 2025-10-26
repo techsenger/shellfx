@@ -32,9 +32,9 @@ public class TabPopupViewModel extends AbstractPaneViewModel {
 
     private final TabViewModel tab;
 
-    private double oldWidth;
+    private double oldWidth = 250;
 
-    private double oldHeight;
+    private double oldHeight = 250;
 
     public TabPopupViewModel(SideBarViewModel sideBar, TabViewModel tab, TabPopupHistory<?> history) {
         this.sideBar = sideBar;

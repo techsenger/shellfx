@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.history;
 
 import com.techsenger.mvvm4fx.core.ComponentHistory;
+import com.techsenger.toolkit.core.function.Factory;
 import java.util.UUID;
 
 /**
@@ -36,6 +37,18 @@ public interface HistoryManager {
      * @return the history object for the given class, or null if no history exists
      */
     <T extends ComponentHistory> T getHistory(Class<T> historyClass);
+
+    /**
+     * Retrieves the global history object associated with the specified class, creating and storing a new one
+     * if it does not already exist. This is useful for components that require a shared history instance
+     * but should automatically create it on first access.
+     *
+     * @param <T> the type of history to retrieve
+     * @param historyClass the class of the history to retrieve
+     * @param factory the factory used to create a new instance if no history exists
+     * @return the existing or newly created history object
+     */
+    <T extends ComponentHistory<?>> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory);
 
     /**
      * Stores a global history object for the specified class. This is used for components that share a single
@@ -65,6 +78,17 @@ public interface HistoryManager {
      * @return the history object for the specified instance, or null if not found
      */
     ComponentHistory getHistory(UUID uuid);
+
+    /**
+     * Retrieves the history associated with a specific component instance identified by its UUID, creating and storing
+     * a new one if it does not already exist. This method is used for components that require a dedicated history per
+     * instance and should automatically create it on first access.
+     *
+     * @param uuid the unique identifier of the component instance
+     * @param factory the factory used to create a new {@code ComponentHistory} instance if none exists
+     * @return the existing or newly created history object associated with the given UUID
+     */
+    ComponentHistory getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory> factory);
 
     /**
      * Stores history for a specific component instance identified by its UUID. This is used for components that

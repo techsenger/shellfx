@@ -27,12 +27,6 @@ public class TerminalHistory extends AbstractShellTabHistory<TerminalTabViewMode
     private TerminalPaletteType paletteType;
 
     @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        paletteType = TerminalPaletteType.THEME_32_LC;
-    }
-
-    @Override
     public void saveAppearance(TerminalTabViewModel viewModel) {
         super.saveAppearance(viewModel);
         this.paletteType = viewModel.paletteTypeProperty().get();

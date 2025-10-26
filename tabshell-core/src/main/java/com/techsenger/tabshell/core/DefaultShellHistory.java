@@ -30,11 +30,8 @@ public class DefaultShellHistory extends AbstractHistory<DefaultShellViewModel> 
 
     private boolean maximized;
 
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.width = 1200;
-        this.height = 800;
+    public DefaultShellHistory() {
+
     }
 
     @Override

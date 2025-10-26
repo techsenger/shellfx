@@ -29,13 +29,6 @@ public class TabPopupHistory<T extends TabPopupViewModel> extends AbstractPaneHi
     private double height;
 
     @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.width = 250.0;
-        this.height = 250.0;
-    }
-
-    @Override
     public void restoreAppearance(T viewModel) {
         super.restoreAppearance(viewModel);
         viewModel.setOldWidth(this.width);

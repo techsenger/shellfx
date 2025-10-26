@@ -65,7 +65,7 @@ public class SideBarViewModel extends AbstractPaneViewModel {
     }
 
     protected TabPopupViewModel createPopup(TabViewModel tab) {
-        return new TabPopupViewModel(this, tab, this.history.getPopup());
+        return new TabPopupViewModel(this, tab, this.history.getOrCreatePopup());
     }
 
     protected TabPopupViewModel getPopup() {

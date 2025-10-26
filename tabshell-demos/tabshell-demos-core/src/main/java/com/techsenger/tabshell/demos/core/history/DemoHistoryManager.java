@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demos.core.history;
 
 import com.techsenger.mvvm4fx.core.ComponentHistory;
 import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.toolkit.core.function.Factory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -39,6 +40,16 @@ public class DemoHistoryManager implements HistoryManager {
     }
 
     @Override
+    public <T extends ComponentHistory<?>> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
+        var history = getHistory(historyClass);
+        if (history == null) {
+            history = factory.create();
+            putHistory(historyClass, history);
+        }
+        return history;
+    }
+
+    @Override
     public <T extends ComponentHistory> void putHistory(Class<T> historyClass, T history) {
         this.historiesByClass.put(historyClass, history);
     }
@@ -46,6 +57,16 @@ public class DemoHistoryManager implements HistoryManager {
     @Override
     public ComponentHistory getHistory(UUID uuid) {
         return this.historiesByUuid.get(uuid);
+    }
+
+    @Override
+    public ComponentHistory getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory> factory) {
+        var history = getHistory(uuid);
+        if (history == null) {
+            history = factory.create();
+            putHistory(uuid, history);
+        }
+        return history;
     }
 
     @Override

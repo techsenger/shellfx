@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneHistory;
 import com.techsenger.tabshell.core.history.HistoryUtils;
+import com.techsenger.tabshell.core.pane.AbstractPaneHistory;
 import com.techsenger.tabshell.material.button.ToggleButtonHistory;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +30,13 @@ public abstract class AbstractFindPaneHistory<T extends AbstractFindPaneViewMode
 
     private List<String> findTexts;
 
-    private ToggleButtonHistory caseButton;
+    private ToggleButtonHistory caseButton = new ToggleButtonHistory();
 
-    private ToggleButtonHistory wholeWordButton;
+    private ToggleButtonHistory wholeWordButton = new ToggleButtonHistory();
 
-    private ToggleButtonHistory regExpButton;
+    private ToggleButtonHistory regExpButton = new ToggleButtonHistory();
 
-    private ToggleButtonHistory highlightButton;
+    private ToggleButtonHistory highlightButton = new ToggleButtonHistory();
 
     public List<String> getFindTexts() {
         return findTexts;
@@ -56,17 +56,6 @@ public abstract class AbstractFindPaneHistory<T extends AbstractFindPaneViewMode
 
     public ToggleButtonHistory getHighlightButton() {
         return highlightButton;
-    }
-
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.findTexts = new ArrayList<>();
-        this.caseButton = new ToggleButtonHistory();
-        this.wholeWordButton = new ToggleButtonHistory();
-        this.regExpButton = new ToggleButtonHistory();
-        this.highlightButton = new ToggleButtonHistory();
-        this.highlightButton.setSelected(true);
     }
 
     @Override

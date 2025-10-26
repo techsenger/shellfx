@@ -25,14 +25,7 @@ import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
  */
 public class DockTabHistory extends AbstractTabHistory<DockTabViewModel> {
 
-    private DockLayoutHistory<?> dockLayout;
-
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.dockLayout = new DockLayoutHistory<>();
-        this.dockLayout.setDefaultValues();
-    }
+    private DockLayoutHistory<?> dockLayout = new DockLayoutHistory<>();
 
     public DockLayoutHistory<?> getDockLayout() {
         return dockLayout;

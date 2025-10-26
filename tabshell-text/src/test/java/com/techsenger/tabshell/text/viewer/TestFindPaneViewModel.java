@@ -18,6 +18,7 @@ package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.ComponentHistory;
 import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.toolkit.core.function.Factory;
 import java.util.UUID;
 
 /**
@@ -30,8 +31,12 @@ public class TestFindPaneViewModel  extends DefaultFindPaneViewModel {
         return new HistoryManager() {
             @Override
             public <T extends ComponentHistory> T getHistory(Class<T> historyClass) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public <T extends ComponentHistory<?>> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
                 var history = new FindPaneHistory();
-                history.setDefaultValues();
                 return (T) history;
             }
 
@@ -42,6 +47,11 @@ public class TestFindPaneViewModel  extends DefaultFindPaneViewModel {
 
             @Override
             public ComponentHistory getHistory(UUID uuid) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public ComponentHistory getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory> factory) {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
 

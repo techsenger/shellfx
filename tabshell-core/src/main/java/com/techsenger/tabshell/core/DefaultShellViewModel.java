@@ -19,7 +19,6 @@ package com.techsenger.tabshell.core;
 import com.techsenger.mvvm4fx.core.AbstractParentViewModel;
 import com.techsenger.mvvm4fx.core.ComponentKey;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
@@ -94,20 +93,20 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
     /**
      * The width of the stage if the stage is not maximized.
      */
-    private double defaultWidth;
+    private double defaultWidth = 1200;
 
     /**
      * The height of the stage if the stage is not maximized.
      */
-    private double defaultHeight;
+    private double defaultHeight = 800;
 
     public DefaultShellViewModel(Settings settings, HistoryManager historyManager) {
         super();
         this.settings = settings;
         this.historyManager = historyManager;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(new DefaultClassHistoryProvider<>(historyManager,
-                DefaultShellHistory.class, DefaultShellHistory::new));
+        setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
     }
 
     @Override

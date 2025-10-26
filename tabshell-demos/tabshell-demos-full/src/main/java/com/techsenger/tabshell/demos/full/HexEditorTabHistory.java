@@ -24,9 +24,4 @@ import com.techsenger.tabshell.hex.AbstractHexEditorTabHistory;
  */
 public class HexEditorTabHistory extends AbstractHexEditorTabHistory<HexEditorTabViewModel> {
 
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.setRightPaneVisible(true);
-    }
 }

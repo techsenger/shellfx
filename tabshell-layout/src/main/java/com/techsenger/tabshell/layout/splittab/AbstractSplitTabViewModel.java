@@ -36,6 +36,9 @@ public abstract class AbstractSplitTabViewModel extends AbstractShellTabViewMode
 
         private final BooleanProperty paneVisible = new SimpleBooleanProperty(false);
 
+        /**
+         * Real current position.
+         */
         private final DoubleProperty position = new SimpleDoubleProperty();
 
         /**
@@ -124,8 +127,11 @@ public abstract class AbstractSplitTabViewModel extends AbstractShellTabViewMode
     public AbstractSplitTabViewModel(ShellViewModel shell) {
         super(shell);
         this.leftDivider = new Divider(0);
+        this.leftDivider.setHistoryPosition(0.25);
         this.rightDivider = new Divider(1.0);
+        this.rightDivider.setHistoryPosition(0.75);
         this.bottomDivider = new Divider(1.0);
+        this.bottomDivider.setHistoryPosition(0.75);
     }
 
     public BooleanProperty leftPaneVisibleProperty() {

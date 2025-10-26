@@ -31,26 +31,24 @@ public class DockLayoutHistory<T extends AbstractDialogViewModel> extends Abstra
 
     private SideBarHistory<?> leftSideBar;
 
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.rightSideBar = new SideBarHistory<>();
-        this.rightSideBar.setDefaultValues();
-        this.bottomSideBar = new SideBarHistory<>();
-        this.bottomSideBar.setDefaultValues();
-        this.leftSideBar = new SideBarHistory<>();
-        this.leftSideBar.setDefaultValues();
-    }
-
-    public SideBarHistory<?> getRightSideBar() {
+    public SideBarHistory<?> getOrCreateRightSideBar() {
+        if (rightSideBar == null) {
+            rightSideBar = new SideBarHistory<>();
+        }
         return rightSideBar;
     }
 
-    public SideBarHistory<?> getBottomSideBar() {
+    public SideBarHistory<?> getOrCreateBottomSideBar() {
+        if (bottomSideBar == null) {
+            bottomSideBar = new SideBarHistory<>();
+        }
         return bottomSideBar;
     }
 
-    public SideBarHistory<?> getLeftSideBar() {
+    public SideBarHistory<?> getOrCreateLeftSideBar() {
+        if (leftSideBar == null) {
+            leftSideBar = new SideBarHistory<>();
+        }
         return leftSideBar;
     }
 }

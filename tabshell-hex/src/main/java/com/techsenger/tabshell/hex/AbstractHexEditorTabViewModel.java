@@ -119,6 +119,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         setTitle("Hex Editor");
         this.caret.shapeProperty().addListener((ov, oldV, newV) -> adjustCaretOnShapeChange(oldV, newV));
         this.dataInspector = createDataInspector();
+        this.setRightPaneVisible(true);
     }
 
     @Override

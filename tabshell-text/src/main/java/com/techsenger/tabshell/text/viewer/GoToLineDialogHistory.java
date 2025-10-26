@@ -27,9 +27,9 @@ import java.util.List;
  */
 public class GoToLineDialogHistory extends AbstractSimpleDialogHistory<GoToLineDialogViewModel> {
 
-    private List<Integer> lines;
+    private List<Integer> lines = new ArrayList<>();
 
-    private List<Integer> columns;
+    private List<Integer> columns = new ArrayList<>();
 
     public List<Integer> getLines() {
         return lines;
@@ -45,13 +45,6 @@ public class GoToLineDialogHistory extends AbstractSimpleDialogHistory<GoToLineD
 
     public void setColumns(List<Integer> columns) {
         this.columns = columns;
-    }
-
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        lines = new ArrayList<>();
-        columns = new ArrayList<>();
     }
 
     @Override

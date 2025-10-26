@@ -26,14 +26,10 @@ public class SideBarHistory<T extends SideBarViewModel> extends AbstractPaneHist
 
     private TabPopupHistory popup;
 
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.popup = new TabPopupHistory();
-        this.popup.setDefaultValues();
-    }
-
-    public TabPopupHistory getPopup() {
+    public TabPopupHistory getOrCreatePopup() {
+        if (this.popup == null) {
+            this.popup = new TabPopupHistory();
+        }
         return popup;
     }
 }

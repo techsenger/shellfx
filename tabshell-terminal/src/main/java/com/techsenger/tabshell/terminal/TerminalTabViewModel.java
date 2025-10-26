@@ -22,7 +22,6 @@ import com.techsenger.jeditermfx.core.util.Platform;
 import com.techsenger.jeditermfx.ui.settings.SettingsProvider;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
@@ -69,7 +68,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
             Arrays.asList(TerminalPaletteType.values()));
 
     private final ObjectProperty<TerminalPaletteType> paletteType =
-            new SimpleObjectProperty<>();
+            new SimpleObjectProperty<>(TerminalPaletteType.THEME_32_LC);
 
     private final PtyProcessTtyConnector ttyConnector;
 
@@ -81,7 +80,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         this.setIcon(TerminalIcons.TERMINAL);
         this.setTitle("Terminal");
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(new DefaultClassHistoryProvider<>(shell.getHistoryManager(), TerminalHistory.class,
+        setHistoryProvider(() -> shell.getHistoryManager().getOrCreateHistory(TerminalHistory.class,
                 TerminalHistory::new));
     }
 
@@ -134,15 +133,10 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         this.openUrlDisable.set(value);
     }
 
-    @Override
-    protected void postHistoryRestore() {
-        super.postHistoryRestore();
-        this.terminalPalette = new TerminalPalette(getShell().getSettings().getAppearance().getTheme(),
-                paletteType.get());
-    }
-
     protected SettingsProvider createSettingsProvider() {
         var settings = getShell().getSettings();
+        this.terminalPalette = new TerminalPalette(getShell().getSettings().getAppearance().getTheme(),
+                paletteType.get());
         return new TerminalSettingsProvider(settings.getAppearance().getMonospaceFont(), terminalPalette);
     }
 

@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.history.DefaultClassHistoryProvider;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.core.pane.PaneKey;
@@ -87,7 +86,7 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
             }
         });
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(new DefaultClassHistoryProvider<>(historyManager, FindPaneHistory.class,
+        setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPaneHistory.class,
                 FindPaneHistory::new));
     }
 

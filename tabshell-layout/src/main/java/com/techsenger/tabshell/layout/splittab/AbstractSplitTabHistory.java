@@ -24,71 +24,24 @@ import com.techsenger.tabshell.core.tab.AbstractShellTabHistory;
  */
 public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewModel> extends AbstractShellTabHistory<T> {
 
-    private DividerHistory leftDivider;
+    private double leftDivider;
 
     private boolean leftPaneVisible;
 
-    private DividerHistory rightDivider;
+    private double rightDivider;
 
     private boolean rightPaneVisible;
 
-    private DividerHistory bottomDivider;
+    private double bottomDivider;
 
     private boolean bottomPaneVisible;
-
-    public DividerHistory getLeftDivider() {
-        return leftDivider;
-    }
-
-    public DividerHistory getRightDivider() {
-        return rightDivider;
-    }
-
-    public DividerHistory getBottomDivider() {
-        return bottomDivider;
-    }
-
-    public boolean isLeftPaneVisible() {
-        return leftPaneVisible;
-    }
-
-    public void setLeftPaneVisible(boolean leftPaneVisible) {
-        this.leftPaneVisible = leftPaneVisible;
-    }
-
-    public boolean isRightPaneVisible() {
-        return rightPaneVisible;
-    }
-
-    public void setRightPaneVisible(boolean rightPaneVisible) {
-        this.rightPaneVisible = rightPaneVisible;
-    }
-
-    public boolean isBottomPaneVisible() {
-        return bottomPaneVisible;
-    }
-
-    public void setBottomPaneVisible(boolean bottomPaneVisible) {
-        this.bottomPaneVisible = bottomPaneVisible;
-    }
-
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.leftDivider = new DividerHistory();
-        this.leftDivider.setPosition(0.25);
-        this.rightDivider = new DividerHistory();
-        this.rightDivider.setPosition(0.75);
-        this.bottomDivider = new DividerHistory();
-        this.bottomDivider.setPosition(0.75);
-    }
 
     @Override
     public void restoreAppearance(T viewModel) {
         super.restoreAppearance(viewModel);
-        viewModel.getLeftDivider().setHistoryPosition(this.leftDivider.getPosition());
-        viewModel.getRightDivider().setHistoryPosition(this.rightDivider.getPosition());
-        viewModel.getBottomDivider().setHistoryPosition(this.bottomDivider.getPosition());
+        viewModel.getLeftDivider().setHistoryPosition(this.leftDivider);
+        viewModel.getRightDivider().setHistoryPosition(this.rightDivider);
+        viewModel.getBottomDivider().setHistoryPosition(this.bottomDivider);
         viewModel.setLeftPaneVisible(leftPaneVisible);
         viewModel.setRightPaneVisible(rightPaneVisible);
         viewModel.setBottomPaneVisible(bottomPaneVisible);
@@ -97,9 +50,9 @@ public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewMode
     @Override
     public void saveAppearance(T viewModel) {
         super.saveAppearance(viewModel);
-        this.leftDivider.setPosition(viewModel.getLeftDivider().getHistoryPosition());
-        this.rightDivider.setPosition(viewModel.getRightDivider().getHistoryPosition());
-        this.bottomDivider.setPosition(viewModel.getBottomDivider().getHistoryPosition());
+        this.leftDivider = viewModel.getLeftDivider().getHistoryPosition();
+        this.rightDivider = viewModel.getRightDivider().getHistoryPosition();
+        this.bottomDivider = viewModel.getBottomDivider().getHistoryPosition();
         this.leftPaneVisible = viewModel.isLeftPaneVisible();
         this.rightPaneVisible = viewModel.isRightPaneVisible();
         this.bottomPaneVisible = viewModel.isBottomPaneVisible();

@@ -16,13 +16,9 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.storage.FileColumnKeys;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogHistory;
 import com.techsenger.tabshell.material.button.ToggleButtonHistory;
-import com.techsenger.tabshell.material.table.TableColumnHistory;
 import com.techsenger.tabshell.material.table.TableHistory;
-import java.util.ArrayList;
-import javafx.scene.control.TableColumn;
 
 /**
  *
@@ -31,36 +27,14 @@ import javafx.scene.control.TableColumn;
 public class FileChooserDialogHistory<T extends FileChooserDialogViewModel>
         extends AbstractSimpleDialogHistory<T> {
 
-    private ToggleButtonHistory listButton;
+    private ToggleButtonHistory listButton = new ToggleButtonHistory();
 
-    private ToggleButtonHistory detailsButton;
+    private ToggleButtonHistory detailsButton = new ToggleButtonHistory();
 
     private TableHistory table;
 
-    @Override
-    public void setDefaultValues() {
-        super.setDefaultValues();
-        this.listButton = new ToggleButtonHistory();
-        this.listButton.setSelected(true);
-        this.detailsButton = new ToggleButtonHistory();
+    public FileChooserDialogHistory() {
 
-        var columns = new ArrayList<TableColumnHistory>();
-        var typeColumn = new TableColumnHistory(FileColumnKeys.TYPE.toString());
-        columns.add(typeColumn);
-        typeColumn.setSortIndex(0);
-        typeColumn.setSortType(TableColumn.SortType.ASCENDING);
-        var nameColumn = new TableColumnHistory(FileColumnKeys.NAME.toString());
-        columns.add(nameColumn);
-        nameColumn.setSortIndex(1);
-        nameColumn.setSortType(TableColumn.SortType.ASCENDING);
-        var sizeColumn = new TableColumnHistory(FileColumnKeys.SIZE.toString());
-        columns.add(sizeColumn);
-        var modifiedColumn = new TableColumnHistory(FileColumnKeys.LAST_MODIFIED.toString());
-        columns.add(modifiedColumn);
-        this.table = new TableHistory(columns);
-
-        setWidth(800);
-        setHeight(500);
     }
 
     @Override

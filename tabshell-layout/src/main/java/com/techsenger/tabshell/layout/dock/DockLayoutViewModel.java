@@ -106,13 +106,13 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         SideBarHistory<?> sideBarHistory = null;
         switch (side) {
             case RIGHT:
-                sideBarHistory = this.history.getRightSideBar();
+                sideBarHistory = this.history.getOrCreateRightSideBar();
                 break;
             case BOTTOM:
-                sideBarHistory = this.history.getBottomSideBar();
+                sideBarHistory = this.history.getOrCreateBottomSideBar();
                 break;
             case LEFT:
-                sideBarHistory = this.history.getLeftSideBar();
+                sideBarHistory = this.history.getOrCreateLeftSideBar();
                 break;
             default:
                 throw new AssertionError();
