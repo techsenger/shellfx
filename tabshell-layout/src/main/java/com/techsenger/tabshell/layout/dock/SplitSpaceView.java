@@ -22,6 +22,7 @@ import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
 import com.techsenger.tabshell.material.pane.SplitPaneDividerBinder;
 import com.techsenger.toolkit.core.ObjectUtils;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
@@ -255,17 +256,13 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
         double[] newPositions;
 
         if (childPositions == null || childPositions.length == 0) {
-            // If childPositions is empty, the child SplitPane had only one dock.
-            // After unwrap, the number of children in parent stays the same.
-            // If parent has 2 children, divider should be kept.
-            // If parent has 1 child, no divider.
-            if (oldPositions.length == 1) {
-                newPositions = new double[] {oldPositions[0]};
-            } else {
-                newPositions = new double[0];
-            }
+            // Case 1: Child SplitPane had only one element
+            // We're replacing one node with another node at the same position
+            // Number of dividers remains the same, positions remain the same
+            newPositions = Arrays.copyOf(oldPositions, oldPositions.length);
         } else {
-            // Number of new dividers: oldPositions.length + childPositions.length
+            // Case 2: Child SplitPane had multiple elements with dividers
+            // We're replacing one node with multiple nodes
             newPositions = new double[oldPositions.length + childPositions.length];
 
             int pos = 0;
@@ -274,7 +271,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
                 newPositions[pos++] = oldPositions[i];
             }
 
-            // Calculate bounds for childPositions
+            // Calculate bounds for childPositions mapping
             double left = unwrapIndex == 0 ? 0.0 : oldPositions[unwrapIndex - 1];
             double right = unwrapIndex == oldPositions.length ? 1.0 : oldPositions[unwrapIndex];
 
@@ -288,6 +285,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
                 newPositions[pos++] = oldPositions[i];
             }
         }
+
         getNode().setDividerPositions(newPositions);
         logger.debug("Updated dividers on unwrap; oldPositions: {}, childPositions: {}, newPositions: {}",
                 oldPositions, childPositions, newPositions);
