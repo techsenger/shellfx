@@ -50,7 +50,8 @@
 
 .tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
     -fx-pref-width: -1;
-    -fx-padding: 0.20em;
+    -fx-graphic-text-gap: 0;
+    -fx-padding: 0.20em 0.25em 0.20em 0.25em;
 }
 
 .tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab.restore {
