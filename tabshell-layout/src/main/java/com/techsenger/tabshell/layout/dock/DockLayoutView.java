@@ -1252,15 +1252,35 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     private boolean checkNewSide(SplitSpaceView<?> parent, int index, Side side) {
         var tempIndex = index;
+        boolean isLastPosition = false;
         if (parent.getChildren().size() - 1 < tempIndex) {
             tempIndex--;
+            isLastPosition = true;
         }
-        var actualSide = resolveSide((AbstractPaneView<?>) parent.getChildren().get(tempIndex));
+        var component = (AbstractPaneView<?>) parent.getChildren().get(tempIndex);
+
+        Side resolvedSide;
+        if (component == getMain()) {
+            SplitSpaceView<?> parentSplitSpace = (SplitSpaceView<?>) component.getParent();
+            if (parentSplitSpace.getViewModel().getOrientation() == Orientation.HORIZONTAL) {
+                resolvedSide = LEFT;
+                if (isLastPosition) {
+                    resolvedSide = RIGHT;
+                }
+            } else {
+                resolvedSide = TOP;
+                if (isLastPosition) {
+                    resolvedSide = BOTTOM;
+                }
+            }
+        } else {
+            resolvedSide = resolveSide(component);
+        }
         if (logger.isDebugEnabled()) {
             logger.debug("If tabDock is added into {} at {} its side will be {}, when {} is required",
-                    ObjectUtils.getIdentity(parent), index, actualSide, side);
+                    ObjectUtils.getIdentity(parent), index, resolvedSide, side);
         }
-        return actualSide == side;
+        return resolvedSide == side;
     }
 
     private AbstractPaneView<?> findSibling(SplitSpaceView<?> splitSpace, List<UUID> siblings) {
@@ -1969,21 +1989,15 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     /**
      * Resolves the side of the tabDock or splitSpace. The resolved side will be one of four values, though
-     * there is no top side bar.
+     * there is no top side bar. This method can't be used if the specified component is the main one.
      *
      * @param component
      * @return
      */
     private Side resolveSide(AbstractPaneView<?> component) {
         if (component == getMain()) {
-            SplitSpaceView<?> parentSplitSpace = (SplitSpaceView<?>) component.getParent();
-            if (parentSplitSpace.getViewModel().getOrientation() == Orientation.HORIZONTAL) {
-                return LEFT;
-            } else {
-                return TOP;
-            }
+            throw new IllegalArgumentException("Can't resolve the side of the main component");
         }
-
         var componentPath = findPathFromRoot(component);
         var mainPath = findPathFromRoot(getMain());
         // we must find Lowest Common Ancestor
