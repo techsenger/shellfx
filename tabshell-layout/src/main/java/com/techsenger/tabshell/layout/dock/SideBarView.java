@@ -187,7 +187,10 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         var tab = new Tab();
         var button = new Button(null, new FontIconView(CoreIcons.RESTORE_WINDOW));
         button.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
-        button.setOnAction(e -> handleRestoreButtonAction(tab));
+        button.setOnAction(e -> {
+            hidePopup();
+            handleRestoreButtonAction(tab);
+        });
         tab.setGraphic(button);
         tab.setClosable(false);
         tab.getStyleClass().add("restore");
