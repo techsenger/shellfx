@@ -29,7 +29,6 @@ import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.core.ObjectUtils;
 import com.techsenger.toolkit.core.Pair;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -119,11 +118,6 @@ import org.slf4j.LoggerFactory;
  * | 11 | Vertical    | false    | Top/Bottom | Any           | Add to parent                                       |
  * | 12 | Vertical    | false    | Left/Right | Any           | Wrap node with horizontal split                     |
  *
- * <p>When restoring a TabDock from a collapsed side panel, the system first attempts to locate the original SplitSpace
- * by its UUID for restoration. If the original SplitSpace no longer exists, it searches for the nearest living ancestor
- * using the historical path and sibling information. If no suitable ancestor is found, the system falls back to placing
- * the TabDock directly into the root SplitSpace, wrapping it if orientation conflicts arise. This ensures the restored
- * content is always placed logically within the current layout while preserving spatial relationships.
  *
  * @author Pavel Castornii
  */
@@ -1047,52 +1041,50 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     void minimizeTabDock(TabDockView<?> dock) {
         // saving current position
+        var side = resolveSide(dock);
         SplitSpaceView<?> parent = (SplitSpaceView<?>) dock.getParent();
         var parentPos = parent.getNode().getDividerPositions();
         var index = parent.getChildren().indexOf(dock);
         var siblings = parent.getChildren().stream().filter(c -> c != dock)
                 .map(c -> getUuid((AbstractPaneView<?>) c)).collect(Collectors.toList());
         var pathFromRoot = findPathFromRoot(dock).stream().map(c -> getUuid(c)).collect(Collectors.toList());
-        var pos = new ComponentPosition(pathFromRoot, siblings, parent.getNode().getOrientation(),
+        var pos = new ComponentPosition(pathFromRoot, siblings, parent.getNode().getOrientation(), side,
                 dock.getViewModel().getUuid(), index, dock.getNode().getWidth(), dock.getNode().getHeight());
         dock.getViewModel().setMinimizedPosition(pos);
         if (logger.isDebugEnabled()) {
             parent.logState("Before minimizing");
             logger.debug("{} minimized position: {}", ObjectUtils.getIdentity(dock), pos);
         }
-        // resolving the side (before removing)
-        var side = resolveTabDockSide(dock);
         // removing the dock
         removeTabDock(dock.getNode());
         // createaing a sidebar if it is null
         SideBarView<?> sideBar = null;
         switch (side) {
-            case RIGHT:
+            case RIGHT -> {
                 sideBar = getRightBar();
                 if (sideBar == null) {
                     sideBar = createSideBar(side);
                     setRightBar(sideBar);
                     this.borderPane.setRight(sideBar.getNode());
                 }
-                break;
-            case BOTTOM:
-                sideBar = getBottomBar();
-                if (sideBar == null) {
-                    sideBar = createSideBar(side);
-                    setBottomBar(sideBar);
-                    this.borderPane.setBottom(sideBar.getNode());
-                }
-                break;
-            case LEFT:
+            }
+            case LEFT -> {
                 sideBar = getLeftBar();
                 if (sideBar == null) {
                     sideBar = createSideBar(side);
                     setLeftBar(sideBar);
                     this.borderPane.setLeft(sideBar.getNode());
                 }
-                break;
-            default:
-                throw new AssertionError();
+            }
+            case TOP, BOTTOM -> {
+                sideBar = getBottomBar();
+                if (sideBar == null) {
+                    sideBar = createSideBar(side);
+                    setBottomBar(sideBar);
+                    this.borderPane.setBottom(sideBar.getNode());
+                }
+            }
+            default -> throw new AssertionError();
         }
         // adding the dock to the sidebar
         sideBar.getTabDocks().add(dock);
@@ -1121,6 +1113,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             sideBar.deinitialize();
         }
 
+        // attempt 0 - find the parent by UUID
         var position = dock.getViewModel().getMinimizedPosition();
         var pathFromRoot = position.getPathFromRoot();
         dock.getViewModel().setMinimizedPosition(null);
@@ -1132,59 +1125,65 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 splitSpacesByUuid.put(c.getViewModel().getUuid(), c);
             }
         }
-        var parentUuid = pathFromRoot.get(pathFromRoot.size() - 2);
+        var parentUuid = pathFromRoot.get(pathFromRoot.size() - 2); // excluding the node itself
         SplitSpaceView<?> parent = splitSpacesByUuid.get(parentUuid);
         SplitSpaceView<?> grandParent = null;
         double[] grandParentPositions = null;
 
-        var side = sideBar.getViewModel().getSide();
+        var side = position.getSide(); // the position side can differ from the side bar side
         int index;
         if (parent != null) {
             index = position.getIndex();
             if (index > parent.getChildren().size()) {
                 index = parent.getChildren().size();
             }
-            if (side == LEFT) {
-                var mainIndex = indexOfMain(parent);
-                if (mainIndex >= 0 && index >= mainIndex) {
-                    index = mainIndex;
-                }
-            }
             logger.debug("Original parent SplitSpace available");
         } else {
-            // searching for nearest living ancestor
+            // attempt 1 - find the nearest living ancestor
             if (pathFromRoot.size() > 2) {
                 for (var i = pathFromRoot.size() - 3; i >= 0; i--) {
                     var uuid = pathFromRoot.get(i);
                     parent = splitSpacesByUuid.get(uuid);
                     if (parent != null) {
-                        logger.debug("Original parent SplitSpace not available; nearest living ancestor {} is used",
-                                ObjectUtils.getIdentity(parent));
                         if (i == pathFromRoot.size() - 3) { // grandparent
                             var sibling = findSibling(parent, position.getSiblings());
-                            if (sibling != null) {
+                            if (sibling != null && resolveSide(sibling) == side) {
                                 grandParent = parent;
                                 grandParentPositions = parent.getNode().getDividerPositions();
                                 parent = wrap(sibling, getContainer(sibling).createInfo().getIndex());
                                 parent.getViewModel().setUuid(parentUuid);
                             }
                         }
+                        logger.debug("Original parent SplitSpace not available; nearest living ancestor {} is used",
+                                ObjectUtils.getIdentity(parent));
                         break;
                     }
                 }
             }
+            // attempt 2 - use the root as parent
             if (parent == null) {
                 parent = getRoot();
                 logger.debug("Original parent SplitSpace not available; root is used");
             }
 
-            if (parent.getNode().getOrientation() != position.getOrientation()) {
-                parent = wrap(getRoot(), getContainer(parent).createInfo().getIndex());
-            }
+            index = resolveNewIndex(parent, side);
 
-            index = parent.getChildren().size();
-            if (side == LEFT) {
-                index = 0;
+            // now we have determined the parent and insertion index; it't time to check the side
+            if (!checkNewSide(parent, index, side)) {
+                boolean wrapParent = false;
+                if (parent != getRoot()) {
+                    parent = getRoot();
+                    index = resolveNewIndex(parent, side);
+                    if (!checkNewSide(parent, index, side)) {
+                        wrapParent = true;
+                    }
+                } else {
+                    wrapParent = true;
+                }
+                if (wrapParent) {
+                    parent = wrap(parent, getContainer(parent).createInfo().getIndex());
+                    index = resolveNewIndex(parent, side);
+                }
             }
         }
 
@@ -1238,6 +1237,30 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         if (this.node.getChildren().size() > 1) {
             this.node.getChildren().remove(1);
         }
+    }
+
+    private int resolveNewIndex(SplitSpaceView<?> parent, Side side) {
+        int index = parent.getChildren().size();
+        if (side == LEFT || side == TOP) {
+            var mainIndex = indexOfMain(parent);
+            if (mainIndex >= 0 && index >= mainIndex) {
+                index = mainIndex;
+            }
+        }
+        return index;
+    }
+
+    private boolean checkNewSide(SplitSpaceView<?> parent, int index, Side side) {
+        var tempIndex = index;
+        if (parent.getChildren().size() - 1 < tempIndex) {
+            tempIndex--;
+        }
+        var actualSide = resolveSide((AbstractPaneView<?>) parent.getChildren().get(tempIndex));
+        if (logger.isDebugEnabled()) {
+            logger.debug("If tabDock is added into {} at {} its side will be {}, when {} is required",
+                    ObjectUtils.getIdentity(parent), index, actualSide, side);
+        }
+        return actualSide == side;
     }
 
     private AbstractPaneView<?> findSibling(SplitSpaceView<?> splitSpace, List<UUID> siblings) {
@@ -1944,20 +1967,36 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return builder.toString();
     }
 
-    private Side resolveTabDockSide(TabDockView<?> tabDock) {
-        var tabDockPath = findPathFromRoot(tabDock);
+    /**
+     * Resolves the side of the tabDock or splitSpace. The resolved side will be one of four values, though
+     * there is no top side bar.
+     *
+     * @param component
+     * @return
+     */
+    private Side resolveSide(AbstractPaneView<?> component) {
+        if (component == getMain()) {
+            SplitSpaceView<?> parentSplitSpace = (SplitSpaceView<?>) component.getParent();
+            if (parentSplitSpace.getViewModel().getOrientation() == Orientation.HORIZONTAL) {
+                return LEFT;
+            } else {
+                return TOP;
+            }
+        }
+
+        var componentPath = findPathFromRoot(component);
         var mainPath = findPathFromRoot(getMain());
         // we must find Lowest Common Ancestor
         SplitSpaceView<?> lca = getRoot();
 
-        var tabDockIterator = tabDockPath.iterator();
+        var componentIterator = componentPath.iterator();
         var mainIterator = mainPath.iterator();
-        AbstractPaneView<?> tabDockAncestor = null;
+        AbstractPaneView<?> componentAncestor = null;
         AbstractPaneView<?> mainAncestor = null;
-        while (tabDockIterator.hasNext() && mainIterator.hasNext()) {
-            tabDockAncestor = tabDockIterator.next();
+        while (componentIterator.hasNext() && mainIterator.hasNext()) {
+            componentAncestor = componentIterator.next();
             mainAncestor = mainIterator.next();
-            if (mainAncestor == tabDockAncestor) {
+            if (mainAncestor == componentAncestor) {
                 lca = (SplitSpaceView<?>) mainAncestor;
             } else {
                 break;
@@ -1965,20 +2004,24 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
 
         Side result = null;
-        if (lca.getNode().getOrientation() == Orientation.HORIZONTAL) {
-            var tabDockAncestorIndex = lca.getChildren().indexOf(tabDockAncestor);
-            var mainAncestorIndex = lca.getChildren().indexOf(mainAncestor);
-            if (tabDockAncestorIndex < mainAncestorIndex) {
+        var componentAncestorIndex = lca.getChildren().indexOf(componentAncestor);
+        var mainAncestorIndex = lca.getChildren().indexOf(mainAncestor);
+        if (componentAncestorIndex < mainAncestorIndex) {
+            if (lca.getNode().getOrientation() == Orientation.HORIZONTAL) {
                 result = LEFT;
             } else {
-                result = RIGHT;
+                result = TOP;
             }
         } else {
-            result = BOTTOM;
+            if (lca.getNode().getOrientation() == Orientation.HORIZONTAL) {
+                result = RIGHT;
+            } else {
+                result = BOTTOM;
+            }
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Resolved side for {} is {}; lowest common ancestor: {}", ObjectUtils.getIdentity(tabDock),
+            logger.debug("Resolved side for {} is {}; lowest common ancestor: {}", ObjectUtils.getIdentity(component),
                     result, ObjectUtils.getIdentity(lca));
         }
         return result;
@@ -1990,7 +2033,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * @param startNode
      * @return
      */
-    private Deque<AbstractPaneView<?>> findPathFromRoot(AbstractPaneView<?> startNode) {
+    private List<AbstractPaneView<?>> findPathFromRoot(AbstractPaneView<?> startNode) {
         var result = new LinkedList<AbstractPaneView<?>>();
         var current = startNode;
         while (current != null && current != this) {

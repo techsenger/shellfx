@@ -19,6 +19,7 @@ package com.techsenger.tabshell.layout.dock;
 import java.util.List;
 import java.util.UUID;
 import javafx.geometry.Orientation;
+import javafx.geometry.Side;
 
 /**
  *
@@ -32,6 +33,8 @@ public class ComponentPosition {
 
     private final Orientation orientation;
 
+    private final Side side;
+
     private final UUID uuid;
 
     private final int index;
@@ -40,11 +43,12 @@ public class ComponentPosition {
 
     private final double height;
 
-    ComponentPosition(List<UUID> pathFromRoot, List<UUID> siblings, Orientation orientation, UUID uuid, int index,
-            double width, double height) {
+    ComponentPosition(List<UUID> pathFromRoot, List<UUID> siblings, Orientation orientation, Side side,
+            UUID uuid, int index, double width, double height) {
         this.pathFromRoot = pathFromRoot;
         this.siblings = siblings;
         this.orientation = orientation;
+        this.side = side;
         this.uuid = uuid;
         this.index = index;
         this.width = width;
@@ -61,6 +65,16 @@ public class ComponentPosition {
 
     public Orientation getOrientation() {
         return orientation;
+    }
+
+    /**
+     * Returns one of four sides. If the side is {@link Side#TOP} or {@link Side#BOTTOM} it is minimized to the bottom
+     * side bar.
+     *
+     * @return
+     */
+    public Side getSide() {
+        return side;
     }
 
     public UUID getUuid() {
@@ -82,7 +96,7 @@ public class ComponentPosition {
     @Override
     public String toString() {
         return "ComponentPosition [" + "pathFromRoot:" + pathFromRoot + ", siblings:" + siblings
-                + ", orientation:" + orientation + ", uuid:" + uuid + ", index:" + index
+                + ", orientation:" + orientation + ", side:" + side + ", uuid:" + uuid + ", index:" + index
                 + ", width:" + width + ", height:" + height + ']';
     }
 }

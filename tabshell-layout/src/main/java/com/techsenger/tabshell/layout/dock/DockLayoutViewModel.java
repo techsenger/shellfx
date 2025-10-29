@@ -23,6 +23,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
+import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.RIGHT;
 
 /**
@@ -105,17 +106,13 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
     protected SideBarViewModel createSideBar(Side side) {
         SideBarHistory<?> sideBarHistory = null;
         switch (side) {
-            case RIGHT:
-                sideBarHistory = this.history.getOrCreateRightSideBar();
-                break;
-            case BOTTOM:
+            case RIGHT -> sideBarHistory = this.history.getOrCreateRightSideBar();
+            case LEFT -> sideBarHistory = this.history.getOrCreateLeftSideBar();
+            case TOP, BOTTOM -> {
+                side = Side.BOTTOM;
                 sideBarHistory = this.history.getOrCreateBottomSideBar();
-                break;
-            case LEFT:
-                sideBarHistory = this.history.getOrCreateLeftSideBar();
-                break;
-            default:
-                throw new AssertionError();
+            }
+            default -> throw new AssertionError();
         }
         var sideBar = new SideBarViewModel(side, sideBarHistory);
         return sideBar;
