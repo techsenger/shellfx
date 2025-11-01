@@ -25,5 +25,5 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface HexComponentNames {
 
-    ComponentName DATA_INSPECTOR = new DefaultComponentName("Data Inspector");
+    ComponentName DATA_INSPECTOR_TAB = new DefaultComponentName("DataInspectorTab");
 }

@@ -27,15 +27,15 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface DemoComponentNames {
 
-    ComponentName EDITOR_TAB = new DefaultComponentName("Demo Editor Tab");
+    ComponentName EDITOR_TAB = new DefaultComponentName("DemoEditorTab");
 
-    ComponentName HEX_EDITOR = new DefaultComponentName("Demo Hex Editor");
+    ComponentName HEX_EDITOR_TAB = new DefaultComponentName("DemoHexEditorTab");
 
-    ComponentName THEME_DIALOG = new DefaultComponentName("Theme Dialog");
+    ComponentName THEME_DIALOG = new DefaultComponentName("ThemeDialog");
 
-    ComponentName DOCK_TAB = new DefaultComponentName("Demo Dock Tab");
+    ComponentName DOCK_TAB = new DefaultComponentName("DemoDockTab");
 
-    ComponentName DOCKABLE_TAB = new DefaultComponentName("Demo Dockable Tab");
+    ComponentName DOCKABLE_TAB = new DefaultComponentName("DemoDockableTab");
 
-    ComponentName TEXT_VIEWER = new DefaultComponentName("Demo Text Viewer");
+    ComponentName TEXT_VIEWER_TAB = new DefaultComponentName("DemoTextViewerTab");
 }

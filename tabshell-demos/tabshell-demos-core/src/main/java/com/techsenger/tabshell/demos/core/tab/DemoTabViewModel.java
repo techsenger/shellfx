@@ -34,7 +34,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public class DemoTabViewModel extends AbstractShellTabViewModel {
 
-    private static final ComponentName DEMO_TAB = new DefaultComponentName("Demo Tab");
+    private static final ComponentName DEMO_TAB = new DefaultComponentName("DemoTab");
 
     private final BooleanProperty newValid = new SimpleBooleanProperty();
 

@@ -20,7 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.hex.data.DataInspectorView;
+import com.techsenger.tabshell.hex.data.DataInspectorTabView;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -114,7 +114,7 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private final TabHostView rightTabHost;
 
-    private final DataInspectorView<?> dataInspector;
+    private final DataInspectorTabView<?> dataInspector;
 
     private int pulseCounter;
 
@@ -149,8 +149,8 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
         return caret;
     }
 
-    protected DataInspectorView<?> createDataInspector() {
-        return new DataInspectorView<>(getViewModel().getDataInspector());
+    protected DataInspectorTabView<?> createDataInspector() {
+        return new DataInspectorTabView<>(getViewModel().getDataInspector());
     }
 
     @Override

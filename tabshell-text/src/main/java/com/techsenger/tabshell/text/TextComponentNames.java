@@ -25,7 +25,7 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface TextComponentNames {
 
-    ComponentName FIND_PANE = new DefaultComponentName("Find Pane");
+    ComponentName FIND_PANE = new DefaultComponentName("FindPane");
 
-    ComponentName GO_TO_LINE_DIALOG = new DefaultComponentName("Go To Line Dialog");
+    ComponentName GO_TO_LINE_DIALOG = new DefaultComponentName("GoToLineDialog");
 }

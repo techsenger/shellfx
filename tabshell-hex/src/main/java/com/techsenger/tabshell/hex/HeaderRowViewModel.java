@@ -26,7 +26,7 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 class HeaderRowViewModel extends AbstractRowViewModel {
 
-    private static final ComponentName HEX_EDITOR_HEADER_ROW = new DefaultComponentName("Hex Editor Header Row");
+    private static final ComponentName HEX_EDITOR_HEADER_ROW = new DefaultComponentName("HexEditorHeaderRow");
 
     HeaderRowViewModel(AbstractHexEditorTabViewModel editor) {
         super(editor);

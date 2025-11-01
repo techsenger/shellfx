@@ -28,6 +28,6 @@ public class TextViewerViewModel extends AbstractPaneViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.TEXT_VIEWER);
+        return new ComponentDescriptor(DemoComponentNames.TEXT_VIEWER_TAB);
     }
 }

@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.style.StyleUtils;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
-import com.techsenger.tabshell.hex.data.DataInspectorViewModel;
+import com.techsenger.tabshell.hex.data.DataInspectorTabViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabViewModel;
@@ -110,7 +110,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     private final HexDocument document;
 
-    private final DataInspectorViewModel dataInspector;
+    private final DataInspectorTabViewModel dataInspector;
 
     public AbstractHexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
         super(tabShell);
@@ -283,7 +283,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         return this.lastRowByteCount.get();
     }
 
-    public DataInspectorViewModel getDataInspector() {
+    public DataInspectorTabViewModel getDataInspector() {
         return dataInspector;
     }
 
@@ -306,8 +306,8 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         this.caretPosition.next(position);
     }
 
-    protected DataInspectorViewModel createDataInspector() {
-        return new DataInspectorViewModel(this.document, this.caret.offsetProperty());
+    protected DataInspectorTabViewModel createDataInspector() {
+        return new DataInspectorTabViewModel(this.document, this.caret.offsetProperty());
     }
 
     @Override

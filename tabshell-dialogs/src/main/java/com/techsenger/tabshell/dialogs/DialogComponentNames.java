@@ -25,9 +25,9 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface DialogComponentNames {
 
-    ComponentName ALERT_DIALOG = new DefaultComponentName("Alert Dialog");
+    ComponentName ALERT_DIALOG = new DefaultComponentName("AlertDialog");
 
-    ComponentName YES_NO_DIALOG = new DefaultComponentName("Yes-No Dialog");
+    ComponentName YES_NO_DIALOG = new DefaultComponentName("YesNoDialog");
 
-    ComponentName FILE_CHOOSER_DIALOG = new DefaultComponentName("File Chooser Dialog");
+    ComponentName FILE_CHOOSER_DIALOG = new DefaultComponentName("FileChooserDialog");
 }

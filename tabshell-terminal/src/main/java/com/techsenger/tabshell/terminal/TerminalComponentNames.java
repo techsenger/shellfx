@@ -25,7 +25,7 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface TerminalComponentNames {
 
-    ComponentName TERMINAL_TAB = new DefaultComponentName("Terminal Tab");
+    ComponentName TERMINAL_TAB = new DefaultComponentName("TerminalTab");
 
-    ComponentName FIND_PANE = new DefaultComponentName("Terminal Find Pane");
+    ComponentName FIND_PANE = new DefaultComponentName("TerminalFindPane");
 }

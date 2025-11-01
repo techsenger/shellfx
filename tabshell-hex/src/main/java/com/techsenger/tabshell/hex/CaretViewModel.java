@@ -37,7 +37,7 @@ import javafx.geometry.Dimension2D;
  */
 public final class CaretViewModel extends AbstractNodeViewModel {
 
-    private static final ComponentName HEX_EDITOR_CARET = new DefaultComponentName("Hex Editor Caret");
+    private static final ComponentName HEX_EDITOR_CARET = new DefaultComponentName("HexEditorCaret");
 
     private final ReadOnlyObjectWrapper<CaretPosition> position = new ReadOnlyObjectWrapper<>();
 

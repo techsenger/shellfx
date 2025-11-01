@@ -25,5 +25,5 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface SharedComponentNames {
 
-    ComponentName WORKER_REPORT_TAB = new DefaultComponentName("Worker Report Tab");
+    ComponentName WORKER_REPORT_TAB = new DefaultComponentName("WorkerReportTab");
 }

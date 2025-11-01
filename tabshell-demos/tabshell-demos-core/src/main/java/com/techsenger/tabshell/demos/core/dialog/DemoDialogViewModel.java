@@ -28,7 +28,7 @@ import com.techsenger.tabshell.core.dialog.DialogScope;
  */
 public class DemoDialogViewModel extends AbstractDialogViewModel {
 
-    private static final ComponentName DEMO_DIALOG = new DefaultComponentName("Demo Dialog");
+    private static final ComponentName DEMO_DIALOG = new DefaultComponentName("DemoDialog");
 
     public DemoDialogViewModel(DialogScope scope, boolean resizable) {
         super(scope, resizable);

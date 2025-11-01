@@ -32,7 +32,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class DataInspectorViewModel extends AbstractTabViewModel {
+public class DataInspectorTabViewModel extends AbstractTabViewModel {
 
     private final ObservableList<ByteOrder> byteOrders = FXCollections.observableArrayList(
             ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN);
@@ -81,7 +81,7 @@ public class DataInspectorViewModel extends AbstractTabViewModel {
 
     private Values values;
 
-    public DataInspectorViewModel(HexDocument document, ReadOnlyIntegerProperty offset) {
+    public DataInspectorTabViewModel(HexDocument document, ReadOnlyIntegerProperty offset) {
         this.document = document;
         this.offset = offset;
         this.offset.addListener((ov, oldV, newV) -> updateTypeItems());
@@ -135,7 +135,7 @@ public class DataInspectorViewModel extends AbstractTabViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(HexComponentNames.DATA_INSPECTOR);
+        return new ComponentDescriptor(HexComponentNames.DATA_INSPECTOR_TAB);
     }
 
     protected ObservableList<ByteOrder> getByteOrders() {

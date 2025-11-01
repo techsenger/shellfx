@@ -54,6 +54,6 @@ public class HexEditorTabViewModel extends AbstractHexEditorTabViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.HEX_EDITOR);
+        return new ComponentDescriptor(DemoComponentNames.HEX_EDITOR_TAB);
     }
 }

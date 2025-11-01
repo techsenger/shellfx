@@ -25,15 +25,15 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface LayoutComponentNames {
 
-    ComponentName DOCK_LAYOUT = new DefaultComponentName("Dock Layout");
+    ComponentName DOCK_LAYOUT = new DefaultComponentName("DockLayout");
 
-    ComponentName SPLIT_SPACE = new DefaultComponentName("Split Space");
+    ComponentName SPLIT_SPACE = new DefaultComponentName("SplitSpace");
 
-    ComponentName TAB_DOCK = new DefaultComponentName("Tab Dock");
+    ComponentName TAB_DOCK = new DefaultComponentName("TabDock");
 
-    ComponentName SIDE_BAR = new DefaultComponentName("Side Bar");
+    ComponentName SIDE_BAR = new DefaultComponentName("SideBar");
 
-    ComponentName TAB_POPUP = new DefaultComponentName("Tab Popup");
+    ComponentName TAB_POPUP = new DefaultComponentName("TabPopup");
 
-    ComponentName TAB_HOST = new DefaultComponentName("Tab Host");
+    ComponentName TAB_HOST = new DefaultComponentName("TabHost");
 }

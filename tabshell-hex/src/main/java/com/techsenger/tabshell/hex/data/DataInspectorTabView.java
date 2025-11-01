@@ -40,7 +40,7 @@ import javafx.util.converter.DefaultStringConverter;
  *
  * @author Pavel Castornii
  */
-public class DataInspectorView<T extends DataInspectorViewModel> extends AbstractTabView<T> {
+public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends AbstractTabView<T> {
 
     private static class SelectableTableCell<T> extends TextFieldTableCell<T, String> {
 
@@ -75,7 +75,7 @@ public class DataInspectorView<T extends DataInspectorViewModel> extends Abstrac
 
     private final SplitPane splitPane = new SplitPane(typeTableView, baseTableView);
 
-    public DataInspectorView(T viewModel) {
+    public DataInspectorTabView(T viewModel) {
         super(viewModel);
     }
 
