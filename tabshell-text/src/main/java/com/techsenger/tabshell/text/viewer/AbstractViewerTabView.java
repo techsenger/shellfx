@@ -55,16 +55,12 @@ import org.fxmisc.richtext.Caret;
 import org.fxmisc.wellbehaved.event.EventPattern;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel> extends AbstractWorkerTabView<T> {
-
-    private static final Logger logger = LoggerFactory.getLogger(AbstractViewerTabView.class);
 
     private final ToolBar toolBar = new ToolBar();
 

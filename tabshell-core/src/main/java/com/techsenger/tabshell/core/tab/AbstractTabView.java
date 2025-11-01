@@ -24,7 +24,6 @@ import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
-import com.techsenger.toolkit.core.ObjectUtils;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.scene.Cursor;
@@ -51,7 +50,7 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     public AbstractTabView(T viewModel) {
         super(viewModel);
-        this.pulseListenerManager = new PulseListenerManager(ObjectUtils.getIdentity(this),
+        this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
                 () -> getContentPane().sceneProperty());
     }
 

@@ -19,9 +19,7 @@ package com.techsenger.tabshell.layout.dock;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
 import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
-import java.util.UUID;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -33,8 +31,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 public class TabDockViewModel extends TabHostViewModel {
 
     private final BooleanProperty draggable = new SimpleBooleanProperty(true);
-
-    private final ReadOnlyObjectWrapper<UUID> uuid = new ReadOnlyObjectWrapper<>();
 
     private final ReadOnlyObjectWrapper<ComponentPosition> minimizedPosition = new ReadOnlyObjectWrapper();
 
@@ -68,24 +64,6 @@ public class TabDockViewModel extends TabHostViewModel {
     }
 
     /**
-     * Returns the value of {@link #uuidProperty()}.
-     *
-     * @return the current {@link UUID} of this component
-     */
-    public final UUID getUuid() {
-        return uuid.get();
-    }
-
-    /**
-     * The property that defines the unique identifier of this component.
-     *
-     * @return the {@link ReadOnlyObjectProperty} of the {@link UUID}
-     */
-    public final ReadOnlyObjectProperty<UUID> uuidProperty() {
-        return uuid.getReadOnlyProperty();
-    }
-
-    /**
      * Returns the value of {@link #minimizedPositionProperty()}.
      *
      * @return the original {@link ComponentPosition} of this component before it was minimized to the SideBar,
@@ -109,15 +87,6 @@ public class TabDockViewModel extends TabHostViewModel {
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(LayoutComponentNames.TAB_DOCK);
-    }
-
-    /**
-     * Sets the value of {@link #uuidProperty()}.
-     *
-     * @param value the new {@link UUID} for this component
-     */
-    protected final void setUuid(UUID value) {
-        uuid.set(value);
     }
 
     /**

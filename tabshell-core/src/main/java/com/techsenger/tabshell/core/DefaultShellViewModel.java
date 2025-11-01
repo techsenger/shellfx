@@ -45,8 +45,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class extends ParentViewModel but its interface doesn't because of encapsulation.
@@ -54,8 +52,6 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public class DefaultShellViewModel extends AbstractParentViewModel implements ShellViewModel {
-
-    private static final Logger logger = LoggerFactory.getLogger(DefaultShellViewModel.class);
 
     private ShellClosedCallback onClosed;
 

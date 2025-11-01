@@ -514,7 +514,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
         }
         this.offsets.clear();
         this.offsets.addAll(tempOffsets);
-        logger.debug("Offsets list size: {}", offsets.size());
+        logger.debug("{} Offsets list size: {}", getDescriptor().getLogPrefix(), offsets.size());
     }
 
     private void updateOffsetLength() {

@@ -30,16 +30,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class TabHostViewModel extends AbstractPaneViewModel implements TabContainerViewModel<TabViewModel> {
-
-    private static final Logger logger = LoggerFactory.getLogger(TabHostViewModel.class);
 
     private final ReadOnlyObjectWrapper<TabViewModel> selectedTab = new ReadOnlyObjectWrapper<>();
 

@@ -275,7 +275,7 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
     void moveToRange(MatchRange range) {
         this.finder.matchRangeProperty().set(range);
         this.updateInfoLabel(range);
-        logger.debug("Current range: " + range);
+        logger.debug("{} Current range: {}", getDescriptor().getLogPrefix(), range);
     }
 
     void setReplacingIsDone(boolean replacingIsDone) {

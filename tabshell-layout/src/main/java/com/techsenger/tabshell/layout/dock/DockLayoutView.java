@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ChildView;
+import com.techsenger.mvvm4fx.core.ComponentView;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
@@ -26,12 +27,11 @@ import com.techsenger.tabshell.core.tab.ComponentTab;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_HALF;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.toolkit.core.ObjectUtils;
 import com.techsenger.toolkit.core.Pair;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -191,12 +191,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             } else {
                 return new ContainerInfo(this, -1);
             }
-        }
-
-        @Override
-        public String toString() {
-            return "AbstractContainer [" + "dockTab:" + ObjectUtils.getIdentity(layout)
-                    + ", component:" + ObjectUtils.getIdentity(component) + ']';
         }
     }
 
@@ -527,6 +521,10 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
     }
 
+    private static String getFullName(ComponentView<?> c) {
+        return c.getViewModel().getDescriptor().getFullName();
+    }
+
     /**
      * Returns the existing container node for a component that is currently on the scene.
      * @param component
@@ -545,13 +543,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     }
 
     private static UUID getUuid(AbstractPaneView<?> component) {
-        if (component instanceof SplitSpaceView<?> ssv) {
-            return ssv.getViewModel().getUuid();
-        } else if (component instanceof TabDockView<?> tdv) {
-            return tdv.getViewModel().getUuid();
-        } else {
-            return null;
-        }
+        return component.getViewModel().getDescriptor().getUuid();
     }
 
     private static Bounds createTabPaneIndicatorBounds(MousePosition position, TabDockContainer tabDockContainer) {
@@ -810,7 +802,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     public SplitSpaceView<?> createSplitSpace(Orientation orientation) {
         var viewModel = getViewModel().createSplitSpace(orientation);
-        viewModel.setUuid(UUID.randomUUID());
         var view = new SplitSpaceView<SplitSpaceViewModel>(this, viewModel);
         view.initialize();
         return view;
@@ -818,7 +809,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     public TabDockView<?> createTabDock() {
         var tabDockViewModel = getViewModel().createTabDock();
-        tabDockViewModel.setUuid(UUID.randomUUID());
         var tabDockView = new TabDockView<TabDockViewModel>(this, tabDockViewModel);
         tabDockView.initialize();
         return tabDockView;
@@ -953,7 +943,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     void processEmptyTabPane(TabPanePro tabPane) {
         removeTabDock(tabPane);
         printTreeDebugInfo();
-        logger.debug("Removed empty TabDock");
+        logger.debug("{} Removed empty TabDock", getDescriptor().getLogPrefix());
     }
 
     void handleTabDragDetected(ComponentTab tab) {
@@ -1049,11 +1039,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 .map(c -> getUuid((AbstractPaneView<?>) c)).collect(Collectors.toList());
         var pathFromRoot = findPathFromRoot(dock).stream().map(c -> getUuid(c)).collect(Collectors.toList());
         var pos = new ComponentPosition(pathFromRoot, siblings, parent.getNode().getOrientation(), side,
-                dock.getViewModel().getUuid(), index, dock.getNode().getWidth(), dock.getNode().getHeight());
+                getUuid(dock), index, dock.getNode().getWidth(), dock.getNode().getHeight());
+        pos.buildMaps();
         dock.getViewModel().setMinimizedPosition(pos);
         if (logger.isDebugEnabled()) {
             parent.logState("Before minimizing");
-            logger.debug("{} minimized position: {}", ObjectUtils.getIdentity(dock), pos);
+            logger.debug("{} Minimized position: {}", getDescriptor().getLogPrefix(), pos);
         }
         // removing the dock
         removeTabDock(dock.getNode());
@@ -1103,7 +1094,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         while (iterator.hasNext()) {
             AbstractPaneView<?> component = (AbstractPaneView<?>) iterator.next();
             if (component instanceof SplitSpaceView<?> c) {
-                splitSpacesByUuid.put(c.getViewModel().getUuid(), c);
+                splitSpacesByUuid.put(getUuid(c), c);
             }
         }
         var parentUuid = pathFromRoot.get(pathFromRoot.size() - 2); // excluding the node itself
@@ -1118,7 +1109,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             if (index > parent.getChildren().size()) {
                 index = parent.getChildren().size();
             }
-            logger.debug("Original parent SplitSpace available");
+            logger.debug("{} Original parent SplitSpace available", getDescriptor().getLogPrefix());
         } else {
             // attempt 1 - find the nearest living ancestor
             if (pathFromRoot.size() > 2) {
@@ -1132,11 +1123,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                                 grandParent = parent;
                                 grandParentPositions = parent.getNode().getDividerPositions();
                                 parent = wrap(sibling, getContainer(sibling).createInfo().getIndex());
-                                parent.getViewModel().setUuid(parentUuid);
+                                // we created a new component in place of a removed one, so, now it is
+                                // necessary to update all UUID collections in all minimized TabDocks.
+                                updateUuidInPositions(parentUuid, getUuid(parent));
                             }
                         }
-                        logger.debug("Original parent SplitSpace not available; nearest living ancestor {} is used",
-                                ObjectUtils.getIdentity(parent));
+                        logger.debug("{} Original parent SplitSpace not available; nearest living ancestor {} is used",
+                                getDescriptor().getLogPrefix(), getFullName(parent));
                         break;
                     }
                 }
@@ -1144,7 +1137,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             // attempt 2 - use the root as parent
             if (parent == null) {
                 parent = getRoot();
-                logger.debug("Original parent SplitSpace not available; root is used");
+                logger.debug("{} Original parent SplitSpace not available; root is used",
+                        getDescriptor().getLogPrefix());
             }
 
             index = resolveNewIndex(parent, side);
@@ -1203,9 +1197,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                         finalIndex, finalDockSize);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("Restored {} to {}",
-                        ObjectUtils.getIdentity(dock),
-                        ObjectUtils.getIdentity(dock.getParent()));
+                logger.debug("{} Restored {} to {}", getDescriptor().getLogPrefix(),
+                        getFullName(dock),
+                        getFullName(dock.getParent()));
                 printTreeDebugInfo();
             }
             return false;
@@ -1263,8 +1257,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             resolvedSide = resolveSide(component);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("If tabDock is added into {} at {} its side will be {}, when {} is required",
-                    ObjectUtils.getIdentity(parent), index, resolvedSide, side);
+            logger.debug("{} If tabDock is added into {} at {} its side will be {}, when {} is required",
+                    getDescriptor().getLogPrefix(), getFullName(parent), index, resolvedSide, side);
         }
         return resolvedSide == side;
     }
@@ -1291,7 +1285,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     private void processDropInsideTabHeaderArea() {
         updateDragInProgress(false, DraggableType.TAB);
-        logger.debug("Processed drop inside TabHeaderArea");
+        logger.debug("{} Processed drop inside TabHeaderArea", getDescriptor().getLogPrefix());
     }
 
     private void processDropOutsideTabHeaderArea() {
@@ -1324,7 +1318,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             printTreeDebugInfo();
         }
         updateDragInProgress(false, this.dragDock == null ? DraggableType.TAB : DraggableType.TAB_DOCK);
-        logger.debug("Processed drop outside TabHeaderArea");
+        logger.debug("{} Processed drop outside TabHeaderArea", getDescriptor().getLogPrefix());
     }
 
     /**
@@ -1556,8 +1550,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             caseIndex = 3;
         }
         info.setFactory(factory);
-        logger.trace("Prepared dock info for same orientation on edge; side: {}, case: {}, info: {}", side,
-                caseIndex, info);
+        logger.trace("{} Prepared dock info for same orientation on edge; side: {}, case: {}, info: {}",
+                getDescriptor().getLogPrefix(), side, caseIndex, info);
     }
 
     private void prepareDockInfoForOppositeOrientationOnEdge(DockInfo info, Side side) {
@@ -1588,8 +1582,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             info.setNewInfo(new ContainerInfo(index, ONE_THIRD));
         }
         info.setFactory(factory);
-        logger.trace("Prepared dock info for opposite orientation on edge; side: {}, case: {}, info: {}", side,
-                caseIndex, info);
+        logger.trace("{} Prepared dock info for opposite orientation on edge; side: {}, case: {}, info: {}",
+                getDescriptor().getLogPrefix(), side, caseIndex, info);
     }
 
     private void prepareDockInfoForSameOrientationOffEdge(DockInfo info, Side side) {
@@ -1604,7 +1598,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
         int index = info.getEventInfo().getIndex() + (isFirst ? 0 : 1);
         info.setNewInfo(new ContainerInfo(index, ONE_HALF));
-        logger.trace("Prepared dock info for same orientation off edge; side: {}, info: {}", side, info);
+        logger.trace("{} Prepared dock info for same orientation off edge; side: {}, info: {}",
+                getDescriptor().getLogPrefix(), side, info);
     }
 
     private void prepareDockInfoForOppositeOrientationOffEdge(DockInfo info, Side side) {
@@ -1619,7 +1614,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
         int index = isFirst ? 0 : 1;
         info.setNewInfo(new ContainerInfo(index, ONE_HALF));
-        logger.trace("Prepared dock info for opposite orientation off edge; side: {}, info: {}", side, info);
+        logger.trace("{} Prepared dock info for opposite orientation off edge; side: {}, info: {}",
+                getDescriptor().getLogPrefix(), side, info);
     }
 
     private void validateDockInfo(DockInfo info) {
@@ -1710,9 +1706,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             parentSplitPane.setDividerPositions(parentOldPositions);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Wrapped {} into {};",
-                ObjectUtils.getIdentity(component),
-                ObjectUtils.getIdentity(newSplitSpace));
+            logger.debug("{} Wrapped {} into {}", getDescriptor().getLogPrefix(),
+                    getFullName(component), getFullName(newSplitSpace));
         }
 
         return newSplitSpace;
@@ -1743,9 +1738,10 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
                 grandparentComponent.updateDividersOnUnwrap(index, oldPositions, childPositions);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Unwrapped {} into {}",
-                        otherTabDocks.stream().map(e -> ObjectUtils.getIdentity(e)).collect(Collectors.joining(", ")),
-                        ObjectUtils.getIdentity(grandparentComponent));
+                    logger.debug("{} Unwrapped {} into {}",
+                        getDescriptor().getLogPrefix(),
+                        otherTabDocks.stream().map(e -> getFullName(e)).collect(Collectors.joining(", ")),
+                        getFullName(grandparentComponent));
                 }
                 return false;
             });
@@ -1754,7 +1750,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             if (child instanceof SplitSpaceView) {
                 setRoot((SplitSpaceView<?>) child);
                 if (logger.isDebugEnabled()) {
-                logger.debug("Unwrapped {} and set it as a root", ObjectUtils.getIdentity(child));
+                logger.debug("{} Unwrapped {} and set it as a root", getDescriptor().getLogPrefix(),
+                        getFullName(child));
                 }
             } // otherwise there is a splitSpace with one main component
         }
@@ -1806,9 +1803,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Added {} to {}",
-                ObjectUtils.getIdentity(newTabDock),
-                ObjectUtils.getIdentity(newSplitSpace));
+            logger.debug("{} Added {} to {}", getDescriptor().getLogPrefix(),
+                    getFullName(newTabDock),
+                    getFullName(newSplitSpace));
         }
         return newTabDock;
     }
@@ -1826,9 +1823,10 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         // removing empty tabdock
         parentComponent.getChildren().remove(anchorInfo.getIndex());
         if (logger.isDebugEnabled()) {
-            logger.debug("Removed {} from {}",
-                ObjectUtils.getIdentity(anchorInfo.getContainer().getComponent()),
-                ObjectUtils.getIdentity(parentComponent));
+            logger.debug("{} Removed {} from {}",
+                    getDescriptor().getLogPrefix(),
+                    getFullName(anchorInfo.getContainer().getComponent()),
+                    getFullName(parentComponent));
         }
         unwrap((SplitSpaceView<?>) parentComponent, parentInfo.getIndex());
     }
@@ -1861,8 +1859,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                     afterProportion, oldPositions);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Added {} into {}",
-                ObjectUtils.getIdentity(newTabDock), ObjectUtils.getIdentity(parentComponent));
+            logger.debug("{} Added {} into {}", getDescriptor().getLogPrefix(),
+                getFullName(newTabDock), getFullName(parentComponent));
         }
     }
 
@@ -1905,8 +1903,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             return false;
         });
         if (logger.isDebugEnabled()) {
-            logger.debug("Removed {} from {}", ObjectUtils.getIdentity(componentToRemove),
-                    ObjectUtils.getIdentity(parent));
+            logger.debug("{} Removed {} from {}", getDescriptor().getLogPrefix(),
+                    getFullName(componentToRemove),
+                    getFullName(parent.getContainer().getComponent()));
         }
     }
 
@@ -1944,8 +1943,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     private void printTreeDebugInfo() {
         if (logger.isDebugEnabled()) {
-            logger.debug("Tab: '{}' dock component tree: {}", getViewModel().getDescriptor().getName(),
-                    getTreeDebugInfo());
+            logger.debug("{} Component tree: {}", getDescriptor().getLogPrefix(), getTreeDebugInfo());
         }
     }
 
@@ -1955,16 +1953,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         while (iterator.hasNext()) {
             AbstractPaneView<?> component = (AbstractPaneView<?>) iterator.next();
             String orientation = "";
-            UUID uuid = null;
+            UUID uuid = component.getViewModel().getDescriptor().getUuid();
             if (component instanceof SplitSpaceView<?> spaceV) {
                 orientation = spaceV.getNode().getOrientation().name().toLowerCase();
-                uuid = spaceV.getViewModel().getUuid();
-            } else if (component instanceof TabDockView<?> dockV) {
-                uuid = dockV.getViewModel().getUuid();
             }
             builder.append("\n");
             builder.append("    ".repeat(iterator.getDepth()));
-            builder.append(ObjectUtils.getIdentity(component));
+            builder.append(getFullName(component));
             builder.append(" [");
             if (uuid != null) {
                 builder.append("uuid: ");
@@ -2027,8 +2022,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Resolved side for {} is {}; lowest common ancestor: {}", ObjectUtils.getIdentity(component),
-                    result, ObjectUtils.getIdentity(lca));
+            logger.debug("{} Resolved side for {} is {}; lowest common ancestor: {}", getDescriptor().getLogPrefix(),
+                    getFullName(component), result, getFullName(lca));
         }
         return result;
     }
@@ -2040,15 +2035,15 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * @return
      */
     private List<AbstractPaneView<?>> findPathFromRoot(AbstractPaneView<?> startNode) {
-        var result = new LinkedList<AbstractPaneView<?>>();
+        var result = new ArrayList<AbstractPaneView<?>>();
         var current = startNode;
         while (current != null && current != this) {
-            result.addFirst(current);
+            result.add(0, current);
             current = (AbstractPaneView<?>) current.getParent();
         }
         if (logger.isTraceEnabled()) {
-            var nodes = result.stream().map(c -> ObjectUtils.getIdentity(c)).collect(Collectors.joining(", "));
-            logger.trace("{} path to root: {}", ObjectUtils.getIdentity(startNode), nodes);
+            var nodes = result.stream().map(c -> getFullName(c)).collect(Collectors.joining(", "));
+            logger.trace("{} {} path to root: {}", getDescriptor().getLogPrefix(), getFullName(startNode), nodes);
         }
         return result;
     }
@@ -2116,5 +2111,27 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 viewModel.set(null);
             }
         });
+    }
+
+    /**
+     * Updates the UUID in minimized {@link TabDockView}s. This is required when a new {@link SplitSpaceView} is created
+     * in place of a removed {@link SplitSpaceView}.
+     *
+     * @param oldUuid
+     * @param newUUID
+     */
+    private void updateUuidInPositions(UUID oldUuid, UUID newUUID) {
+        updateUuidInPositions(getRightBar(), oldUuid, newUUID);
+        updateUuidInPositions(getBottomBar(), oldUuid, newUUID);
+        updateUuidInPositions(getLeftBar(), oldUuid, newUUID);
+    }
+
+    private void updateUuidInPositions(SideBarView<?> sideBar, UUID oldUuid, UUID newUUID) {
+        if (sideBar != null) {
+            for (var tabDock : sideBar.getTabDocks()) {
+                var position = tabDock.getViewModel().getMinimizedPosition();
+                position.updateUuid(oldUuid, newUUID);
+            }
+        }
     }
 }

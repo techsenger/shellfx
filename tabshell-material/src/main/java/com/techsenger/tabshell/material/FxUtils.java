@@ -22,16 +22,12 @@ import javafx.scene.control.skin.ListViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public final class FxUtils {
-
-    private static final Logger logger = LoggerFactory.getLogger(FxUtils.class);
 
     public static boolean isItemVisible(ListView listView, int itemIndex) {
         if (itemIndex < 0) {

@@ -30,6 +30,7 @@ import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import com.techsenger.tabshell.material.table.TableColumnHistory;
 import com.techsenger.tabshell.material.table.TableHistory;
+import com.techsenger.tabshell.storage.FileColumnNames;
 import com.techsenger.tabshell.storage.FileStorage;
 import static com.techsenger.tabshell.storage.FileStorageType.BASE;
 import static com.techsenger.tabshell.storage.FileStorageType.FLOPPY;
@@ -62,7 +63,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.techsenger.tabshell.storage.FileColumnNames;
 
 /**
  *
@@ -471,7 +471,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
             this.storage.get().createDirectory(dirUri);
             updateFiles(file);
         } catch (Exception ex) {
-            logger.error("Error creating new directory at {}", dirUri, ex);
+            logger.error("{} Error creating new directory at {}", getDescriptor().getLogPrefix(), dirUri, ex);
         }
     }
 
@@ -480,7 +480,8 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
             this.storage.get().renameFile(newFile.getUri(), newFile.getName());
             updateFiles(newFile);
         } catch (Exception ex) {
-            logger.error("Error renaming file at {} to {}", newFile.getUri(), newFile.getName(), ex);
+            logger.error("{} Error renaming file at {} to {}", getDescriptor().getLogPrefix(), newFile.getUri(),
+                    newFile.getName(), ex);
         }
     }
 
@@ -576,7 +577,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         try {
             return this.storage.get().getFiles(directory.get());
         } catch (Exception ex) {
-            logger.error("Error getting files at {}", this.directory.get(), ex);
+            logger.error("{} Error getting files at {}", getDescriptor().getLogPrefix(), this.directory.get(), ex);
         }
         return null;
     }

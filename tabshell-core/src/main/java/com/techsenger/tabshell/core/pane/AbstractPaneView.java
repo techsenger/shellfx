@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.core.pane;
 
 import com.techsenger.mvvm4fx.core.AbstractChildView;
-import com.techsenger.toolkit.core.ObjectUtils;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 
 /**
@@ -31,7 +30,7 @@ public abstract class AbstractPaneView<T extends AbstractPaneViewModel> extends 
 
     public AbstractPaneView(T viewModel) {
         super(viewModel);
-        this.pulseListenerManager = new PulseListenerManager(ObjectUtils.getIdentity(this),
+        this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
                 () -> getNode().sceneProperty());
     }
 

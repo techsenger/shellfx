@@ -161,9 +161,9 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
             leftSpacer.setMaxWidth(leftSpacerWidth);
             rightSpacer.setMaxWidth(rightSpacerWidth);
 
-            logger.trace("Title centered. TitleBar: {}, iconBox: {}, menuBar: {}, leftSpacer: {}, label: {}, "
-                    + "rightSpacer: {}, buttonBox: {}", titleBarWidth, iconBox, menuBarWidth, leftSpacerWidth,
-                    labelHalfWidth * 2, rightSpacerWidth, buttonBoxWidth);
+            logger.trace("{} Title centered. TitleBar: {}, iconBox: {}, menuBar: {}, leftSpacer: {}, label: {}, "
+                    + "rightSpacer: {}, buttonBox: {}", getDescriptor().getLogPrefix(), titleBarWidth, iconBox,
+                    menuBarWidth, leftSpacerWidth, labelHalfWidth * 2, rightSpacerWidth, buttonBoxWidth);
         }
     }
 
@@ -284,14 +284,14 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         var builder = new ControlBuilder(controlRegistry);
         var menus = builder.buildMenuBarElements(this);
         this.menuBar.getMenus().addAll(menus);
-        logger.debug("Menu bar upgraded");
+        logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());
         updateMenuBar();
     }
 
     @Override
     public void updateMenuBar() {
         this.menuManager.updateMenuBar(getCurrentMenuAware());
-        logger.debug("Menu bar updated");
+        logger.debug("{} Menu bar updated", getDescriptor().getLogPrefix());
     }
 
     @Override

@@ -258,8 +258,8 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 setContent(task.getValue());
                 this.persisted.set(true);
             } else if (newV == Worker.State.FAILED) {
-                var message = "Error reading file " + file.getUri();
-                logger.warn(message, task.getException());
+                var message = "{} Error reading file " + file.getUri();
+                logger.warn(message, getDescriptor().getLogPrefix(), task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
                 getMediator().openAlertDialog(alertViewModel);
             }
@@ -280,8 +280,8 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 persisted.set(true);
                 modified.set(false);
             } else if (newV == Worker.State.FAILED) {
-                var message = "Error writing file " + file.getUri();
-                logger.warn(message, task.getException());
+                var message = "{} Error writing file " + file.getUri();
+                logger.warn(message, getDescriptor().getLogPrefix(), task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
                 getMediator().openAlertDialog(alertViewModel);
             }

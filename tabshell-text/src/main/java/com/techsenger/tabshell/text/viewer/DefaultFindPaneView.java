@@ -43,16 +43,12 @@ import javafx.scene.layout.Region;
 import org.fxmisc.richtext.model.RichTextChange;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.reactfx.Subscription;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel> implements FindPaneView {
-
-    private static final Logger logger = LoggerFactory.getLogger(DefaultFindPaneView.class);
 
     private final Label replaceLabel = new Label("Replace With");
 

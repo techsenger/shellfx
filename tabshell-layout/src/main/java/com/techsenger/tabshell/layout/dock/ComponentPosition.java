@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
@@ -42,6 +44,10 @@ public class ComponentPosition {
     private final double width;
 
     private final double height;
+
+    private transient Map<UUID, Integer> pathIndexesByUuid;
+
+    private transient Map<UUID, Integer> siblingIndexesByUuid;
 
     ComponentPosition(List<UUID> pathFromRoot, List<UUID> siblings, Orientation orientation, Side side,
             UUID uuid, int index, double width, double height) {
@@ -93,10 +99,34 @@ public class ComponentPosition {
         return height;
     }
 
+    public void updateUuid(UUID oldUuid, UUID newUuid) {
+        var pathIndex = this.pathIndexesByUuid.remove(oldUuid);
+        if (pathIndex != null) {
+            this.pathFromRoot.set(pathIndex, newUuid);
+            this.pathIndexesByUuid.put(newUuid, pathIndex);
+        }
+        var siblingIndex = this.siblingIndexesByUuid.remove(oldUuid);
+        if (siblingIndex != null) {
+            this.siblings.set(siblingIndex, newUuid);
+            this.siblingIndexesByUuid.put(newUuid, siblingIndex);
+        }
+    }
+
     @Override
     public String toString() {
         return "ComponentPosition [" + "pathFromRoot:" + pathFromRoot + ", siblings:" + siblings
                 + ", orientation:" + orientation + ", side:" + side + ", uuid:" + uuid + ", index:" + index
                 + ", width:" + width + ", height:" + height + ']';
+    }
+
+    void buildMaps() {
+        pathIndexesByUuid = new HashMap<>();
+        for (var i = 0; i < this.pathFromRoot.size(); i++) {
+            pathIndexesByUuid.put(this.pathFromRoot.get(i), i);
+        }
+        siblingIndexesByUuid = new HashMap<>();
+        for (var i = 0; i < this.siblings.size(); i++) {
+            siblingIndexesByUuid.put(this.siblings.get(i), i);
+        }
     }
 }
