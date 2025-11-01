@@ -22,7 +22,7 @@ import javafx.scene.Node;
  *
  * @author Pavel Castornii
  */
-abstract class AbstractChangeBuilder<T extends KeyedMenuItemUpdate, S extends AbstractChangeBuilder<T, S>> {
+abstract class AbstractChangeBuilder<T extends NamedMenuItemUpdate, S extends AbstractChangeBuilder<T, S>> {
 
     private final T change;
 

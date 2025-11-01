@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
-import com.techsenger.tabshell.core.tab.TabKey;
-import com.techsenger.tabshell.demos.full.DemoComponentKeys;
+import com.techsenger.tabshell.demos.full.DemoComponentNames;
 
 /**
  *
@@ -31,8 +31,7 @@ public class DockableTabViewModel extends AbstractTabViewModel {
     }
 
     @Override
-    public TabKey getKey() {
-        return DemoComponentKeys.DOCKABLE_TAB;
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponentNames.DOCKABLE_TAB);
     }
-
 }

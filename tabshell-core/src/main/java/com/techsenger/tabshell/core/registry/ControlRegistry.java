@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.mvvm4fx.core.ComponentKey;
-import com.techsenger.tabshell.material.menu.KeyedMenu;
-import com.techsenger.tabshell.material.menu.KeyedMenuGroup;
-import com.techsenger.tabshell.material.menu.KeyedMenuItem;
-import com.techsenger.tabshell.material.menu.MenuGroupKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.tabshell.material.menu.MenuGroupName;
+import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.material.menu.NamedMenu;
+import com.techsenger.tabshell.material.menu.NamedMenuGroup;
+import com.techsenger.tabshell.material.menu.NamedMenuItem;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ControlRegistry {
 
-    private final Map<ComponentKey, Set<AbstractMenuRegistration<?>>> barMenuRegistrationsByComponentKey =
+    private final Map<ComponentName, Set<AbstractMenuRegistration<?>>> barMenuRegistrationsByComponentName =
             new ConcurrentHashMap<>();
 
     public interface Registration {
@@ -48,15 +48,15 @@ public class ControlRegistry {
     /**
      * Registers a menu in the specified group. Note - there can be only one menu bar in the component.
      *
-     * @param componentKey
-     * @param groupKey the key of the group that this menu will belong to. Null for root menus in the MenuBar
+     * @param componentName
+     * @param groupName the name of the group that this menu will belong to. Null for root menus in the MenuBar
      * @param factory
      * @return
      */
-    public Registration registerMenu(ComponentKey componentKey, MenuGroupKey groupKey,
-            ControlFactory<KeyedMenu> factory) {
-        var menus = getMenusFor(componentKey);
-        var reg = new MenuRegistration(groupKey, factory);
+    public Registration registerMenu(ComponentName componentName, MenuGroupName groupName,
+            ControlFactory<NamedMenu> factory) {
+        var menus = getMenusFor(componentName);
+        var reg = new MenuRegistration(groupName, factory);
         menus.add(reg);
         reg.setUnregister(() -> {
             menus.remove(reg);
@@ -67,15 +67,15 @@ public class ControlRegistry {
     /**
      * Registers a menu group.
      *
-     * @param componentKey
-     * @param menuKey the key of the menu this group will belong to.
+     * @param componentName
+     * @param menuName the name of the menu this group will belong to.
      * @param factory
      * @return
      */
-    public Registration registerMenuGroup(ComponentKey componentKey, MenuKey menuKey,
-            ControlFactory<KeyedMenuGroup> factory) {
-        var menus = getMenusFor(componentKey);
-        var reg = new MenuGroupRegistration(menuKey, factory);
+    public Registration registerMenuGroup(ComponentName componentName, MenuName menuName,
+            ControlFactory<NamedMenuGroup> factory) {
+        var menus = getMenusFor(componentName);
+        var reg = new MenuGroupRegistration(menuName, factory);
         menus.add(reg);
         reg.setUnregister(() -> menus.remove(reg));
         return reg;
@@ -84,15 +84,15 @@ public class ControlRegistry {
     /**
      * Registers a menu item in the specified group.
      *
-     * @param componentKey
-     * @param groupKey
+     * @param componentName
+     * @param groupName
      * @param factory
      * @return
      */
-    public Registration registerMenuItem(ComponentKey componentKey, MenuGroupKey groupKey,
-            ControlFactory<KeyedMenuItem> factory) {
-        var menus = getMenusFor(componentKey);
-        var reg = new MenuItemRegistration(groupKey, factory);
+    public Registration registerMenuItem(ComponentName componentName, MenuGroupName groupName,
+            ControlFactory<NamedMenuItem> factory) {
+        var menus = getMenusFor(componentName);
+        var reg = new MenuItemRegistration(groupName, factory);
         menus.add(reg);
         reg.setUnregister(() -> menus.remove(reg));
         return reg;
@@ -103,22 +103,22 @@ public class ControlRegistry {
      *
      * @param componentKey
      */
-    public void removeRegistrations(ComponentKey componentKey) {
-        this.barMenuRegistrationsByComponentKey.remove(componentKey);
+    public void removeRegistrations(ComponentName componentKey) {
+        this.barMenuRegistrationsByComponentName.remove(componentKey);
     }
 
-    Set<AbstractMenuRegistration<?>> getBarMenuRegistrations(ComponentKey key) {
-        return barMenuRegistrationsByComponentKey.get(key);
+    Set<AbstractMenuRegistration<?>> getBarMenuRegistrations(ComponentName name) {
+        return barMenuRegistrationsByComponentName.get(name);
     }
 
-    private Set<AbstractMenuRegistration<?>> getMenusFor(ComponentKey componentKey) {
-        var regs = this.barMenuRegistrationsByComponentKey.get(componentKey);
+    private Set<AbstractMenuRegistration<?>> getMenusFor(ComponentName componentName) {
+        var regs = this.barMenuRegistrationsByComponentName.get(componentName);
         if (regs == null) {
-            synchronized (this.barMenuRegistrationsByComponentKey) {
-                regs = this.barMenuRegistrationsByComponentKey.get(componentKey);
+            synchronized (this.barMenuRegistrationsByComponentName) {
+                regs = this.barMenuRegistrationsByComponentName.get(componentName);
                 if (regs == null) {
                     regs = ConcurrentHashMap.newKeySet();
-                    this.barMenuRegistrationsByComponentKey.put(componentKey, regs);
+                    this.barMenuRegistrationsByComponentName.put(componentName, regs);
                 }
             }
         }

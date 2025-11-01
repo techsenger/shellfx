@@ -27,6 +27,4 @@ import com.techsenger.tabshell.core.pane.PaneViewModel;
  */
 public interface PageViewModel extends PaneViewModel, TitledViewModel, IconedViewModel, SelectableViewModel {
 
-    @Override
-    PageKey getKey();
 }

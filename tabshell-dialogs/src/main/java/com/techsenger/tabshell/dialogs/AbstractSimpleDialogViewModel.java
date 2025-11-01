@@ -162,7 +162,7 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
     }
 
     @Override
-    public StandardDialogBridge getBridge() {
-        return (StandardDialogBridge) super.getBridge();
+    public StandardDialogMediator getMediator() {
+        return (StandardDialogMediator) super.getMediator();
     }
 }

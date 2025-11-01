@@ -16,16 +16,16 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.tabshell.core.ShellKey;
+import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.menu.FileMenuKeys;
+import com.techsenger.tabshell.core.menu.FileMenuNames;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.demos.full.dock.DockTabView;
 import com.techsenger.tabshell.demos.full.dock.DockTabViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.material.menu.KeyedMenuItem;
+import com.techsenger.tabshell.material.menu.NamedMenuItem;
 import com.techsenger.tabshell.registrars.FileMenuRegistrar;
 import com.techsenger.tabshell.storage.FileStorages;
 import com.techsenger.tabshell.storage.FileType;
@@ -63,8 +63,8 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
     }
 
     protected void registerTextEditorItem() {
-        ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.TEXT_EDITOR, "_Text Editor",
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoFileMenuNames.TEXT_EDITOR, "_Text Editor",
                     new FontIconView(TextIcons.EDITOR), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
@@ -81,12 +81,12 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
     }
 
     protected void registerHexEditorItem() {
-        ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.HEX_EDITOR, "_Hex Editor",
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoFileMenuNames.HEX_EDITOR, "_Hex Editor",
                     new FontIconView(HexIcons.EDITOR), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
@@ -110,12 +110,12 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
     }
 
     protected void registerTerminalItem() {
-        ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.TERMINAL, "_Terminal",
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoFileMenuNames.TERMINAL, "_Terminal",
                     new FontIconView(TerminalIcons.TERMINAL), 300);
             item.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
@@ -128,12 +128,12 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
     }
 
     protected void registerThemeItem() {
-        ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.THEME, "_Theme", 400);
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoFileMenuNames.THEME, "_Theme", 400);
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
                 var appearance = shell.getViewModel().getSettings().getAppearance();
@@ -148,12 +148,12 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
     }
 
     protected void registerDockTabItem() {
-        ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoFileMenuKeys.DOCK_TAB, "Dock Tab", 1000);
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoFileMenuNames.DOCK_TAB, "Dock Tab", 1000);
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
                 var dockTabViewModel = new DockTabViewModel(shell.getViewModel());
@@ -163,6 +163,6 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, FileMenuKeys.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
     }
 }

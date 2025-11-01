@@ -16,10 +16,11 @@
 
 package com.techsenger.tabshell.layout.tabhost;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
-import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
+import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -44,8 +45,6 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
 
     private final ReadOnlyIntegerWrapper selectedTabIndex = new ReadOnlyIntegerWrapper();
 
-    private final PaneKey key;
-
     private final ObservableList<TabViewModel> modifiableTabs = FXCollections.observableArrayList();
 
     private final ObservableList<TabViewModel> unmodifiableTabs =
@@ -58,9 +57,8 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
 
     private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
 
-    public TabHostViewModel(PaneKey key) {
+    public TabHostViewModel() {
         super();
-        this.key = key;
         this.modifiableTabs.addListener((ListChangeListener<? super TabViewModel>) (change) -> {
             if (this.tabHeaderAutoHide.get()) {
                 resolveTabHeaderVisibility();
@@ -74,11 +72,6 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
                 this.tabHeaderVisible.set(true);
             }
         });
-    }
-
-    @Override
-    public PaneKey getKey() {
-        return this.key;
     }
 
     @Override
@@ -131,6 +124,11 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
 
     public void setTabHeaderAutoHide(boolean value) {
         this.tabHeaderAutoHide.set(value);
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponentNames.TAB_HOST);
     }
 
     ReadOnlyObjectWrapper<TabViewModel> selectedTabWrapper() {

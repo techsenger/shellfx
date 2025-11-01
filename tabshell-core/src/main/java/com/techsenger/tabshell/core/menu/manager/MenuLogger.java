@@ -17,10 +17,10 @@
 package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.menu.MenuAware;
-import com.techsenger.tabshell.material.menu.KeyedMenu;
-import com.techsenger.tabshell.material.menu.KeyedMenuGroup;
-import com.techsenger.tabshell.material.menu.KeyedMenuItem;
-import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
+import com.techsenger.tabshell.material.menu.NamedMenu;
+import com.techsenger.tabshell.material.menu.NamedMenuGroup;
+import com.techsenger.tabshell.material.menu.NamedMenuItem;
+import com.techsenger.tabshell.material.menu.NamedMenuItemUpdate;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -38,7 +38,7 @@ final class MenuLogger {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuLogger.class);
 
-    public static void buildComponentMenuMessage(MenuItem menuOrItem, KeyedMenuItemUpdate update,
+    public static void buildComponentMenuMessage(MenuItem menuOrItem, NamedMenuItemUpdate update,
             StringBuilder logMessageBuilder) {
         if (logMessageBuilder != null) {
             logMessageBuilder.append(System.lineSeparator());
@@ -61,8 +61,9 @@ final class MenuLogger {
     public static void logComponentMenuMessage(String menuName, MenuAware menuAware,
             StringBuilder logMessageBuilder) {
         if (logMessageBuilder != null) {
-            logger.atLevel(CONFIGURED_MENU_LOG_LEVEL).log("Configuration of '{}' menu for '{}' component: {}",
-                menuName.replace("_", ""), menuAware.getViewModel().getKey(), logMessageBuilder.toString());
+            logger.atLevel(CONFIGURED_MENU_LOG_LEVEL).log("{} Configuration of '{}' menu: {}",
+                menuAware.getViewModel().getDescriptor().getLogPrefix(), menuName.replace("_", ""),
+                logMessageBuilder.toString());
         }
     }
 
@@ -70,7 +71,7 @@ final class MenuLogger {
         if (logger.isDebugEnabled()) {
             var builder = new StringBuilder();
             for (var menu : menus) {
-                logMenu((KeyedMenu) menu, 0, builder);
+                logMenu((NamedMenu) menu, 0, builder);
             }
             if (afterChange) {
                 logger.debug("TabShell Menus after change: {}", builder.toString());
@@ -80,7 +81,7 @@ final class MenuLogger {
         }
     }
 
-    private static void logMenu(KeyedMenu menu, int depth, StringBuilder builder) {
+    private static void logMenu(NamedMenu menu, int depth, StringBuilder builder) {
         builder.append(System.lineSeparator());
         var tab = "    ";
         builder.append(tab.repeat(depth));
@@ -96,17 +97,17 @@ final class MenuLogger {
         builder.append(menu.getPosition());
         var tab1 = tab.repeat(depth + 1);
         var tab2 = tab.repeat(depth + 2);
-        KeyedMenuGroup group = null;
+        NamedMenuGroup group = null;
         for (var m : menu.getItems()) {
-            if (m instanceof KeyedMenu) {
-                var keyedMenu = (KeyedMenu) m;
+            if (m instanceof NamedMenu) {
+                var keyedMenu = (NamedMenu) m;
                 if (keyedMenu.getGroup() != group) {
                     group = keyedMenu.getGroup();
                     logGroup(group, builder, tab);
                 }
                 logMenu(keyedMenu, depth + 2, builder);
-            } else if (m instanceof KeyedMenuItem) {
-                var keyedItem = (KeyedMenuItem) m;
+            } else if (m instanceof NamedMenuItem) {
+                var keyedItem = (NamedMenuItem) m;
                 if (keyedItem.getGroup() != group) {
                     group = keyedItem.getGroup();
                     logGroup(group, builder, tab);
@@ -131,7 +132,7 @@ final class MenuLogger {
         }
     }
 
-    private static void logGroup(KeyedMenuGroup group, StringBuilder builder, String tab) {
+    private static void logGroup(NamedMenuGroup group, StringBuilder builder, String tab) {
         if (group == null) {
             return;
         }

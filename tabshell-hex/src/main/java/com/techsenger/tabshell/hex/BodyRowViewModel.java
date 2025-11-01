@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.hex;
 
-import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -24,7 +26,7 @@ import com.techsenger.tabshell.core.pane.PaneKey;
  */
 class BodyRowViewModel extends AbstractRowViewModel {
 
-    private static final PaneKey HEX_EDITOR_BODY_ROW = new PaneKey("Hex Editor Body Row");
+    private static final ComponentName HEX_EDITOR_BODY_ROW = new DefaultComponentName("Hex Editor Body Row");
 
     private RowModel model;
 
@@ -33,11 +35,6 @@ class BodyRowViewModel extends AbstractRowViewModel {
     BodyRowViewModel(AbstractHexEditorTabViewModel editor, RowModel model) {
         super(editor);
         this.model = model;
-    }
-
-    @Override
-    public PaneKey getKey() {
-        return HEX_EDITOR_BODY_ROW;
     }
 
     public RowModel getModel() {
@@ -55,6 +52,11 @@ class BodyRowViewModel extends AbstractRowViewModel {
      */
     public boolean isFirst() {
         return this.model.getOffset() == 0;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(HEX_EDITOR_BODY_ROW);
     }
 
     void setModel(RowModel model) {

@@ -16,21 +16,20 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.dialog.DialogKey;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.dialogs.DialogComponentKeys;
+import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import com.techsenger.tabshell.material.table.TableColumnHistory;
 import com.techsenger.tabshell.material.table.TableHistory;
-import com.techsenger.tabshell.storage.FileColumnKeys;
 import com.techsenger.tabshell.storage.FileStorage;
 import static com.techsenger.tabshell.storage.FileStorageType.BASE;
 import static com.techsenger.tabshell.storage.FileStorageType.FLOPPY;
@@ -63,6 +62,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.techsenger.tabshell.storage.FileColumnNames;
 
 /**
  *
@@ -157,33 +157,28 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
             default:
                 throw new AssertionError();
         }
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager.getOrCreateHistory(FileChooserDialogHistory.class,
                 FileChooserDialogHistory::new));
         setButtonWidthEqual(true);
         setCancelVisible(true);
 
         var columns = new ArrayList<TableColumnHistory>();
-        var typeColumn = new TableColumnHistory(FileColumnKeys.TYPE.toString());
+        var typeColumn = new TableColumnHistory(FileColumnNames.TYPE.toString());
         columns.add(typeColumn);
         typeColumn.setSortIndex(0);
         typeColumn.setSortType(TableColumn.SortType.ASCENDING);
-        var nameColumn = new TableColumnHistory(FileColumnKeys.NAME.toString());
+        var nameColumn = new TableColumnHistory(FileColumnNames.NAME.toString());
         columns.add(nameColumn);
         nameColumn.setSortIndex(1);
         nameColumn.setSortType(TableColumn.SortType.ASCENDING);
-        var sizeColumn = new TableColumnHistory(FileColumnKeys.SIZE.toString());
+        var sizeColumn = new TableColumnHistory(FileColumnNames.SIZE.toString());
         columns.add(sizeColumn);
-        var modifiedColumn = new TableColumnHistory(FileColumnKeys.LAST_MODIFIED.toString());
+        var modifiedColumn = new TableColumnHistory(FileColumnNames.LAST_MODIFIED.toString());
         columns.add(modifiedColumn);
         this.tableHistory = new TableHistory(columns);
         setPrefWidth(800);
         setPrefHeight(500);
-    }
-
-    @Override
-    public DialogKey getKey() {
-        return DialogComponentKeys.FILE_CHOOSER_DIALOG;
     }
 
     public FileChooserType getType() {
@@ -351,6 +346,11 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         builder.virtual(true);
         var file = builder.build();
         return file;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DialogComponentNames.FILE_CHOOSER_DIALOG);
     }
 
     protected void updateFiles(GenericFile selectedFile) {
@@ -562,7 +562,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
 
     private void showWarning(String text) {
         var alerViewModel = new AlertDialogViewModel(getScope(), AlertDialogType.WARNING, text);
-        getBridge().openAlertDialog(alerViewModel);
+        getMediator().openAlertDialog(alerViewModel);
     }
 
     private void setDefaultStorageAndDirectory() {

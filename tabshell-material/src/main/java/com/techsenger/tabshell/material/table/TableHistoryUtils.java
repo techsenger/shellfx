@@ -44,7 +44,7 @@ public final class TableHistoryUtils {
         List<TableColumnHistory> columns = new ArrayList<>();
         for (var column: table.getColumns()) {
             var columnHistory = new TableColumnHistory();
-            columnHistory.setKey(((KeyedTableColumn<?, ?>) column).getKey().toString());
+            columnHistory.setKey(((NamedTableColumn<?, ?>) column).getName().toString());
             columnHistory.setWidth(column.getWidth());
             if (sortedColumnIndexesByColumn != null) {
                 var sortIndex = sortedColumnIndexesByColumn.get(column);

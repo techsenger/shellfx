@@ -16,25 +16,21 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
-import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.layout.LayoutComponentKeys;
+import com.techsenger.tabshell.layout.LayoutComponentNames;
 import java.util.UUID;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class SplitSpaceViewModel extends AbstractPaneViewModel {
-
-    private static final Logger logger = LoggerFactory.getLogger(SplitSpaceViewModel.class);
 
     private final ObjectProperty<UUID> uuid = new SimpleObjectProperty();
 
@@ -44,11 +40,6 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
 
     protected SplitSpaceViewModel(Orientation orientation) {
         this.orientation = orientation;
-    }
-
-    @Override
-    public PaneKey getKey() {
-        return LayoutComponentKeys.SPLIT_SPACE;
     }
 
     /**
@@ -76,6 +67,11 @@ public class SplitSpaceViewModel extends AbstractPaneViewModel {
      */
     public final Orientation getOrientation() {
         return orientation;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponentNames.SPLIT_SPACE);
     }
 
     /**

@@ -16,13 +16,15 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.tabshell.core.DefaultComponentName;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
-import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogViewModel;
-import com.techsenger.tabshell.demos.core.menu.DemoMenuKeys;
+import com.techsenger.tabshell.demos.core.menu.DemoMenuNames;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
@@ -32,7 +34,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public class DemoTabViewModel extends AbstractShellTabViewModel {
 
-    private static final ShellTabKey DEMO_TAB = new ShellTabKey("Demo Tab");
+    private static final ComponentName DEMO_TAB = new DefaultComponentName("Demo Tab");
 
     private final BooleanProperty newValid = new SimpleBooleanProperty();
 
@@ -43,14 +45,13 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
     public DemoTabViewModel(ShellViewModel shell) {
         super(shell);
         setTitle("Tab");
-        addMenuItemHelpers(
-            new SimpleMenuItemHelper(DemoMenuKeys.NEW) {
+        addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuNames.NEW) {
                 @Override
                 public Boolean getItemValid() {
                     return newValid.get();
                 }
             },
-            new SimpleMenuItemHelper(DemoMenuKeys.EXIT) {
+            new SimpleMenuItemHelper(DemoMenuNames.EXIT) {
                 @Override
                 public Boolean getItemIncluded() {
                     return exitIncluded.get();
@@ -62,11 +63,6 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
                 }
             }
         );
-    }
-
-    @Override
-    public ShellTabKey getKey() {
-        return DEMO_TAB;
     }
 
     public BooleanProperty newValidProperty() {
@@ -105,13 +101,18 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
         this.exitValid.set(value);
     }
 
-    void openDialog(DialogScope scope) {
-        var dialogViewModel = new DemoDialogViewModel(scope, true);
-        getBridge().openDemoDialog(dialogViewModel);
+    @Override
+    public DemoTabMediator getMediator() {
+        return (DemoTabMediator) super.getMediator();
     }
 
     @Override
-    public DemoTabBridge getBridge() {
-        return (DemoTabBridge) super.getBridge();
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DEMO_TAB);
+    }
+
+    void openDialog(DialogScope scope) {
+        var dialogViewModel = new DemoDialogViewModel(scope, true);
+        getMediator().openDemoDialog(dialogViewModel);
     }
 }

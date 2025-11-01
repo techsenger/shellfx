@@ -19,8 +19,8 @@ package com.techsenger.tabshell.text.viewer;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.menu.EditMenuKeys;
-import com.techsenger.tabshell.core.menu.FileMenuKeys;
+import com.techsenger.tabshell.core.menu.EditMenuNames;
+import com.techsenger.tabshell.core.menu.FileMenuNames;
 import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.settings.ViewerSettings;
@@ -126,16 +126,15 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             }
         });
         this.text.addListener((ov, oldV, newV) -> textStateId++);
-        addMenuHelpers(new SimpleMenuHelper(EditMenuKeys.EDIT, Boolean.TRUE));
-        addMenuItemHelpers(
-            //file
-            new SimpleMenuItemHelper(FileMenuKeys.OPEN, Boolean.TRUE, Boolean.TRUE) {
+        addMenuHelpers(new SimpleMenuHelper(EditMenuNames.EDIT, Boolean.TRUE));
+        addMenuItemHelpers(//file
+            new SimpleMenuItemHelper(FileMenuNames.OPEN, Boolean.TRUE, Boolean.TRUE) {
                 @Override
                 public void doOnItemAction() {
                     openFile(DialogScope.TAB, FileStorages.getAll(true));
                 }
             },
-            new SimpleMenuItemHelper(FileMenuKeys.SAVE, Boolean.TRUE) {
+            new SimpleMenuItemHelper(FileMenuNames.SAVE, Boolean.TRUE) {
                 @Override
                 public void doOnItemAction() {
                     writeFile();
@@ -146,7 +145,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                     return isPersisted();
                 }
             },
-            new SimpleMenuItemHelper(FileMenuKeys.SAVE_AS, Boolean.TRUE) {
+            new SimpleMenuItemHelper(FileMenuNames.SAVE_AS, Boolean.TRUE) {
 
                 @Override
                 public void doOnItemAction() {
@@ -160,20 +159,20 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             },
 
             //edit
-            new SimpleMenuItemHelper(EditMenuKeys.COPY, Boolean.TRUE) {
+            new SimpleMenuItemHelper(EditMenuNames.COPY, Boolean.TRUE) {
                 @Override
                 public Boolean getItemValid() {
                     return isCopyItemValid();
                 }
             },
-            new SimpleMenuItemHelper(EditMenuKeys.FIND, Boolean.TRUE, Boolean.TRUE),
-            new SimpleMenuItemHelper(EditMenuKeys.FIND_SELECTION, Boolean.TRUE) {
+            new SimpleMenuItemHelper(EditMenuNames.FIND, Boolean.TRUE, Boolean.TRUE),
+            new SimpleMenuItemHelper(EditMenuNames.FIND_SELECTION, Boolean.TRUE) {
                 @Override
                 public Boolean getItemValid() {
                     return !selectedText.get().isEmpty();
                 }
             },
-            new SimpleMenuItemHelper(EditMenuKeys.FIND_NEXT, Boolean.TRUE) {
+            new SimpleMenuItemHelper(EditMenuNames.FIND_NEXT, Boolean.TRUE) {
                 @Override
                 public Boolean getItemValid() {
                     if (find != null) {
@@ -183,7 +182,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                     }
                 }
             },
-            new SimpleMenuItemHelper(EditMenuKeys.FIND_PREVIOUS, Boolean.TRUE) {
+            new SimpleMenuItemHelper(EditMenuNames.FIND_PREVIOUS, Boolean.TRUE) {
                 @Override
                 public Boolean getItemValid() {
                     if (find != null) {
@@ -198,7 +197,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     public void openGoToLineDialog() {
         var viewModel = new GoToLineDialogViewModel(getShell().getHistoryManager());
-        getBridge().openGoToLineDialog(viewModel);
+        getMediator().openGoToLineDialog(viewModel);
     }
 
     /**
@@ -213,7 +212,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 this.removeFindPane();
             });
             this.find.replaceModeProperty().set(replaceMode);
-            getBridge().addFindPane(this.find);
+            getMediator().addFindPane(this.find);
         }
     }
 
@@ -222,14 +221,14 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
      */
     public void removeFindPane() {
         if (this.find != null) {
-            getBridge().removeFindPane();
+            getMediator().removeFindPane();
             this.find = null;
         }
     }
 
     @Override
-    public ViewerTabBridge<?> getBridge() {
-        return (ViewerTabBridge) super.getBridge();
+    public ViewerTabMediator<?> getMediator() {
+        return (ViewerTabMediator) super.getMediator();
     }
 
     public ObjectProperty<GenericFile> fileProperty() {
@@ -262,7 +261,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 var message = "Error reading file " + file.getUri();
                 logger.warn(message, task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
-                getBridge().openAlertDialog(alertViewModel);
+                getMediator().openAlertDialog(alertViewModel);
             }
         });
         this.submitWorker(task);
@@ -284,7 +283,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 var message = "Error writing file " + file.getUri();
                 logger.warn(message, task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
-                getBridge().openAlertDialog(alertViewModel);
+                getMediator().openAlertDialog(alertViewModel);
             }
         });
         this.submitWorker(task);
@@ -324,7 +323,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             yesNoDialog.requestClose();
             readyToClose.run();
         });
-        getBridge().openYesNoDialog(yesNoDialog);
+        getMediator().openYesNoDialog(yesNoDialog);
     }
 
     public FileTaskProvider<String> createFileTaskProvider() {

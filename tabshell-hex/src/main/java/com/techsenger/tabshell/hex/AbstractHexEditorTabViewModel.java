@@ -104,7 +104,7 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
      */
     private final ObservableSource<CaretPosition> caretPosition = new SimpleObservableSource<>();
 
-    private final TabHostViewModel rightTabHost = new TabHostViewModel(HexComponentKeys.RIGHT_TAB_MANAGER);
+    private final TabHostViewModel rightTabHost = new TabHostViewModel();
 
     private final HeaderRowViewModel headerRow = new HeaderRowViewModel(this);
 
@@ -123,8 +123,8 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
     }
 
     @Override
-    public AbstractHexEditorTabBridge<?> getBridge() {
-        return (AbstractHexEditorTabBridge) super.getBridge();
+    public AbstractHexEditorTabMediator<?> getMediator() {
+        return (AbstractHexEditorTabMediator) super.getMediator();
     }
 
     @Override

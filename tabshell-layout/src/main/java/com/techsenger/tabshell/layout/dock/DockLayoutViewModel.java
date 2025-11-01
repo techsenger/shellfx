@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
-import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.layout.LayoutComponentKeys;
+import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.geometry.Orientation;
@@ -46,11 +46,6 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
 
     public DockLayoutViewModel(DockLayoutHistory<?> history) {
         this.history = history;
-    }
-
-    @Override
-    public PaneKey getKey() {
-        return LayoutComponentKeys.DOCK_LAYOUT;
     }
 
     public final SplitSpaceViewModel getRoot() {
@@ -91,6 +86,11 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
 
     public final ReadOnlyObjectProperty<SideBarViewModel> leftBarProperty() {
         return leftBar.getReadOnlyProperty();
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponentNames.DOCK_LAYOUT);
     }
 
     protected TabDockViewModel createTabDock() {

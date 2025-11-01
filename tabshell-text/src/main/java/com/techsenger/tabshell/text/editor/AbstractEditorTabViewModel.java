@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.text.editor;
 
 import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.core.menu.EditMenuKeys;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.storage.UriUtils;
@@ -28,6 +27,7 @@ import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.input.Clipboard;
+import com.techsenger.tabshell.core.menu.EditMenuNames;
 
 /**
  * Abstract class for editors in exported package.
@@ -70,32 +70,31 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
                 -> this.updatePosition(this.currentParagraph.get(), newV.intValue()));
         //setting initial value
         this.updatePosition(0, 0);
-        addMenuItemHelpers(
-            new SimpleMenuItemHelper(EditMenuKeys.UNDO, Boolean.TRUE) {
+        addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuNames.UNDO, Boolean.TRUE) {
                 @Override
                 public Boolean getItemValid() {
                     return getUndoManager().isUndoAvailable();
                 }
             },
-            new SimpleMenuItemHelper(EditMenuKeys.REDO, Boolean.TRUE) {
+            new SimpleMenuItemHelper(EditMenuNames.REDO, Boolean.TRUE) {
                 @Override
                 public Boolean getItemValid() {
                     return getUndoManager().isRedoAvailable();
                 }
             },
-            new SimpleMenuItemHelper(EditMenuKeys.CUT, Boolean.TRUE) {
+            new SimpleMenuItemHelper(EditMenuNames.CUT, Boolean.TRUE) {
                 @Override
                 public Boolean getItemValid() {
                     return isCutItemValid();
                 }
             },
-            new SimpleMenuItemHelper(EditMenuKeys.PASTE, Boolean.TRUE) {
+            new SimpleMenuItemHelper(EditMenuNames.PASTE, Boolean.TRUE) {
                 @Override
                 public Boolean getItemValid() {
                     return isPasteItemValid();
                 }
             },
-            new SimpleMenuItemHelper(EditMenuKeys.GO_TO_LINE, Boolean.TRUE)
+            new SimpleMenuItemHelper(EditMenuNames.GO_TO_LINE, Boolean.TRUE)
         );
         modifiedProperty().addListener((ov, oldV, newV) -> {
             updateTitle();

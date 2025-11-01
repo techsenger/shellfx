@@ -84,8 +84,8 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     }
 
     @Override
-    protected StandardDialogBridge createBridge() {
-        return new StandardDialogBridge() {
+    protected StandardDialogMediator createMediator() {
+        return new StandardDialogMediator() {
             @Override
             public void openDialog(DialogView dialog) {
                 getDialogManager().openDialog(dialog);

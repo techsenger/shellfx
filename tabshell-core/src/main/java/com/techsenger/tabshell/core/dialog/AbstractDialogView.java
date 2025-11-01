@@ -212,10 +212,10 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     }
 
     @Override
-    protected DialogBridge createBridge() {
+    protected DialogMediator createMediator() {
         //we suppose that all child dialogs
         //will be with the same scope
-        return new DialogBridge() {
+        return new DialogMediator() {
             @Override
             public void openDialog(DialogView dialog) {
                 getDialogManager().openDialog(dialog);

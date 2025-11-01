@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
+import com.techsenger.tabshell.material.menu.NamedMenuItemUpdate;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.control.MenuItem;
@@ -37,9 +37,9 @@ class MenuUpdateHelper {
 
         private final MenuElementState state;
 
-        private final KeyedMenuItemUpdate update;
+        private final NamedMenuItemUpdate update;
 
-        UpdateEntry(MenuItem menuItem, MenuElementState savedState, KeyedMenuItemUpdate update) {
+        UpdateEntry(MenuItem menuItem, MenuElementState savedState, NamedMenuItemUpdate update) {
             this.menuItem = menuItem;
             this.state = savedState;
             this.update = update;
@@ -53,7 +53,7 @@ class MenuUpdateHelper {
             return state;
         }
 
-        public KeyedMenuItemUpdate getUpdate() {
+        public NamedMenuItemUpdate getUpdate() {
             return update;
         }
     }
@@ -64,7 +64,7 @@ class MenuUpdateHelper {
         //empty
     }
 
-    public void applyUpdate(MenuItem item, MenuElementState state, KeyedMenuItemUpdate update) {
+    public void applyUpdate(MenuItem item, MenuElementState state, NamedMenuItemUpdate update) {
         if (update == null) {
             return;
         }

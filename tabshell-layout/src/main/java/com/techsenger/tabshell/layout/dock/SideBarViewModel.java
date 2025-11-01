@@ -16,10 +16,10 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
-import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.core.tab.TabViewModel;
-import com.techsenger.tabshell.layout.LayoutComponentKeys;
+import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
@@ -46,11 +46,6 @@ public class SideBarViewModel extends AbstractPaneViewModel {
         this.history = history;
     }
 
-    @Override
-    public PaneKey getKey() {
-        return LayoutComponentKeys.SIDE_BAR;
-    }
-
     public Side getSide() {
         return side;
     }
@@ -62,6 +57,11 @@ public class SideBarViewModel extends AbstractPaneViewModel {
      */
     public ObservableList<TabDockViewModel> getTabDocks() {
         return tabDocks;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponentNames.SIDE_BAR);
     }
 
     protected TabPopupViewModel createPopup(TabViewModel tab) {

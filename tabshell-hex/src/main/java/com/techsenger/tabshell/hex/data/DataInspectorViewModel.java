@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.hex.data;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
-import com.techsenger.tabshell.core.tab.TabKey;
-import com.techsenger.tabshell.hex.HexComponentKeys;
+import com.techsenger.tabshell.hex.HexComponentNames;
 import com.techsenger.tabshell.hex.HexDocument;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
@@ -90,11 +90,6 @@ public class DataInspectorViewModel extends AbstractTabViewModel {
         setTitle("Data Inspector");
     }
 
-    @Override
-    public TabKey getKey() {
-        return HexComponentKeys.DATA_INSPECTOR;
-    }
-
     public void updateTypeItems() {
         this.values = new Values();
         ValueCalculator.calculateInt(values, this.document.getContent(), this.offset.get(), getByteOrder());
@@ -136,6 +131,11 @@ public class DataInspectorViewModel extends AbstractTabViewModel {
 
     public BaseItem getSelectedBaseItem() {
         return selectedBaseItem.get();
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(HexComponentNames.DATA_INSPECTOR);
     }
 
     protected ObservableList<ByteOrder> getByteOrders() {

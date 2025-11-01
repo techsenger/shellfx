@@ -16,10 +16,10 @@
 
 package com.techsenger.tabshell.dialogs.alert;
 
-import com.techsenger.tabshell.core.dialog.DialogKey;
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.dialogs.DialogComponentKeys;
+import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import javafx.beans.property.SimpleStringProperty;
@@ -62,11 +62,6 @@ public class AlertDialogViewModel extends AbstractSimpleDialogViewModel {
         setButtonWidthEqual(true);
     }
 
-    @Override
-    public DialogKey getKey() {
-        return DialogComponentKeys.ALERT_DIALOG;
-    }
-
     public AlertDialogType getDialogType() {
         return dialogType;
     }
@@ -85,5 +80,10 @@ public class AlertDialogViewModel extends AbstractSimpleDialogViewModel {
 
     public StyleFontIcon getMessageIcon() {
         return messageIcon;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DialogComponentNames.ALERT_DIALOG);
     }
 }

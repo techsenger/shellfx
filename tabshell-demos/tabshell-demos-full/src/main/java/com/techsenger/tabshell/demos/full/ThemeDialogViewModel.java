@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.tabshell.core.dialog.DialogKey;
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
@@ -49,11 +49,6 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
         setButtonWidthEqual(true);
     }
 
-    @Override
-    public DialogKey getKey() {
-        return DemoComponentKeys.THEME_DIALOG;
-    }
-
     public ObservableList<TabShellTheme> getThemes() {
         return themes;
     }
@@ -68,5 +63,10 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
 
     public void setTheme(TabShellTheme theme) {
         this.theme.set(theme);
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponentNames.THEME_DIALOG);
     }
 }

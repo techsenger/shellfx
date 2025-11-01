@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
-import com.techsenger.tabshell.core.pane.PaneKey;
-import com.techsenger.tabshell.demos.full.DemoComponentKeys;
+import com.techsenger.tabshell.demos.full.DemoComponentNames;
 
 /**
  *
@@ -27,8 +27,7 @@ import com.techsenger.tabshell.demos.full.DemoComponentKeys;
 public class TextViewerViewModel extends AbstractPaneViewModel {
 
     @Override
-    public PaneKey getKey() {
-        return DemoComponentKeys.TEXT_VIEWER;
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponentNames.TEXT_VIEWER);
     }
-
 }

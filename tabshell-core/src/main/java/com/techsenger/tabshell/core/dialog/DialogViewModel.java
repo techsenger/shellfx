@@ -27,9 +27,6 @@ import com.techsenger.tabshell.core.pane.PaneViewModel;
  */
 public interface DialogViewModel extends PaneViewModel, TitledViewModel, IconedViewModel, CloseableViewModel {
 
-    @Override
-    DialogKey getKey();
-
     DialogScope getScope();
 
     @Override

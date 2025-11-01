@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
 import com.techsenger.mvvm4fx.core.ComponentViewModel;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
 
 /**
  * Interface for components that interact with menu.
@@ -37,32 +37,32 @@ public interface MenuAware {
     /**
      * Returns the helper for a specific menu.
      *
-     * @param menuKey
+     * @param menuName
      * @return
      */
-    MenuHelper getMenuHelper(MenuKey menuKey);
+    MenuHelper getMenuHelper(MenuName menuName);
 
     /**
      * Returns the helper for a specific menu item.
      *
-     * @param menuItemKey
+     * @param menuItemName
      * @return
      */
-    MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey);
+    MenuItemHelper getMenuItemHelper(MenuItemName menuItemName);
 
     /**
      * This method is called on showing menu popup.
      *
-     * @param menuKey
+     * @param menuName
      */
-    void doOnMenuShowing(MenuKey menuKey);
+    void doOnMenuShowing(MenuName menuName);
 
     /**
      * This method is called on hiding menu popup.
      *
      * <p>Important. This method is called before the action of the MenuItem, as this way it is implemented in JavaFX.
      *
-     * @param menuKey
+     * @param menuName
      */
-    void doOnMenuHiding(MenuKey menuKey);
+    void doOnMenuHiding(MenuName menuName);
 }

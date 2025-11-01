@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.dialogs.StandardDialogBridge;
+import com.techsenger.tabshell.dialogs.StandardDialogMediator;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -110,8 +110,8 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
     }
 
     @Override
-    protected StandardDialogBridge createBridge() {
-        return new StandardDialogBridge() {
+    protected StandardDialogMediator createMediator() {
+        return new StandardDialogMediator() {
             @Override
             public void openDialog(DialogView dialog) {
                 getDialogManager().openDialog(dialog);

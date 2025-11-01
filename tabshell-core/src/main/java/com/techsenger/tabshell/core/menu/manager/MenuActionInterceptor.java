@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.DefaultShellView;
-import com.techsenger.tabshell.material.menu.KeyedMenu;
+import com.techsenger.tabshell.material.menu.NamedMenu;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import org.slf4j.Logger;
@@ -37,9 +37,9 @@ class MenuActionInterceptor implements ActionInterceptor {
 
     private final EventHandler<ActionEvent> action;
 
-    private final KeyedMenu menu;
+    private final NamedMenu menu;
 
-    MenuActionInterceptor(DefaultShellView shellView, KeyedMenu menu) {
+    MenuActionInterceptor(DefaultShellView shellView, NamedMenu menu) {
         this.shellView = shellView;
         this.action = menu.getOnAction();
         this.menu = menu;
@@ -48,7 +48,7 @@ class MenuActionInterceptor implements ActionInterceptor {
     @Override
     public void handle(ActionEvent t) {
         var menuAware = shellView.getCurrentMenuAware();
-        var helper = menuAware.getMenuHelper(menu.getKey());
+        var helper = menuAware.getMenuHelper(menu.getName());
         var included = true;
         var valid = false;
         if (menu.isOptional()) {

@@ -16,16 +16,16 @@
 
 package com.techsenger.tabshell.demos.core.menu;
 
-import com.techsenger.tabshell.core.ShellKey;
+import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.demos.core.tab.DemoTabView;
 import com.techsenger.tabshell.demos.core.tab.DemoTabViewModel;
-import com.techsenger.tabshell.material.menu.KeyedMenu;
-import com.techsenger.tabshell.material.menu.KeyedMenuGroup;
-import com.techsenger.tabshell.material.menu.KeyedMenuItem;
+import com.techsenger.tabshell.material.menu.NamedMenu;
+import com.techsenger.tabshell.material.menu.NamedMenuGroup;
+import com.techsenger.tabshell.material.menu.NamedMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -51,32 +51,32 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerDemoMenu() {
-        ControlFactory<KeyedMenu> f = (v) -> {
-            return new KeyedMenu(DemoMenuKeys.DEMO, "_Demo", 100);
+        ControlFactory<NamedMenu> f = (v) -> {
+            return new NamedMenu(DemoMenuNames.DEMO, "_Demo", 100);
         };
-        addRegistration(getRegistry().registerMenu(ShellKey.INSTANCE, null, f));
+        addRegistration(getRegistry().registerMenu(CoreComponentNames.SHELL, null, f));
     }
 
     protected void registerGroupOne() {
-        ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(DemoMenuKeys.ONE, "One", 100);
+        ControlFactory<NamedMenuGroup> f = (v) -> {
+            return new NamedMenuGroup(DemoMenuNames.ONE, 100);
         };
-        addRegistration(getRegistry().registerMenuGroup(ShellKey.INSTANCE, DemoMenuKeys.DEMO, f));
+        addRegistration(getRegistry().registerMenuGroup(CoreComponentNames.SHELL, DemoMenuNames.DEMO, f));
     }
 
     protected void registerGroupTwo() {
-        ControlFactory<KeyedMenuGroup> f = (v) -> {
-            return new KeyedMenuGroup(DemoMenuKeys.TWO, "Two", 200);
+        ControlFactory<NamedMenuGroup> f = (v) -> {
+            return new NamedMenuGroup(DemoMenuNames.TWO, 200);
         };
-        addRegistration(getRegistry().registerMenuGroup(ShellKey.INSTANCE, DemoMenuKeys.DEMO, f));
+        addRegistration(getRegistry().registerMenuGroup(CoreComponentNames.SHELL, DemoMenuNames.DEMO, f));
     }
 
     /**
      * New item will be in the group one. It is not optional but is validatable.
      */
     protected void registerNewItem() {
-        ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoMenuKeys.NEW, false, true, false, "_New", 100);
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoMenuNames.NEW, false, true, false, "_New", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var shellView  = (ShellView<?>) v;
@@ -88,20 +88,20 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, DemoMenuKeys.ONE, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoMenuNames.ONE, f));
     }
 
     /**
      * Exit item will be in the group two. It is optional and validatable.
      */
     protected void registerExitItem() {
-        ControlFactory<KeyedMenuItem> f = (v) -> {
-            var item = new KeyedMenuItem(DemoMenuKeys.EXIT, true, true, false, "E_xit", 100);
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoMenuNames.EXIT, true, true, false, "E_xit", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> ((ShellView<?>) v).close());
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(ShellKey.INSTANCE, DemoMenuKeys.TWO, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoMenuNames.TWO, f));
     }
 }

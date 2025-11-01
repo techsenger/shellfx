@@ -25,9 +25,6 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
  */
 public interface PaneViewModel extends ChildViewModel {
 
-    @Override
-    PaneKey getKey();
-
     ReadOnlyDoubleProperty widthProperty();
 
     double getWidth();

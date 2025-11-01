@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.demos.full;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.menu.EditMenuKeys;
+import com.techsenger.tabshell.core.menu.EditMenuNames;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
-import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
@@ -41,40 +41,40 @@ public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
         super(shell, file);
         //the initial history is created using a factory instead of reflection in the history manager to avoid
         //access issues with hidden packages
-        setHistoryPolicy(HistoryPolicy.ALL);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> (shell.getHistoryManager().getOrCreateHistory(TextEditorTabHistory.class,
                 TextEditorTabHistory::new)));
         setIcon(TextIcons.EDITOR);
 
         //these validators will be used when menu is shown
-        addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuKeys.REPLACE, null, true));
-        addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuKeys.GO_TO_LINE, null, true));
+        addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuNames.REPLACE, null, true));
+        addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuNames.GO_TO_LINE, null, true));
     }
 
     @Override
-    public ShellTabKey getKey() {
-        return DemoComponentKeys.EDITOR_TAB;
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponentNames.EDITOR_TAB);
     }
 
     void showInfoDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
                 "All done! Time for coffee.");
         viewModel.setPrefWidth(400);
-        getBridge().openAlertDialog(viewModel);
+        getMediator().openAlertDialog(viewModel);
     }
 
     void showWarningDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
                 "Attention! You shouldn't do it!");
         viewModel.setPrefWidth(400);
-        getBridge().openAlertDialog(viewModel);
+        getMediator().openAlertDialog(viewModel);
     }
 
     void showErrorDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
                 "Oops! That didn’t work.");
         viewModel.setPrefWidth(400);
-        getBridge().openAlertDialog(viewModel);
+        getMediator().openAlertDialog(viewModel);
     }
 
     void showYesNoDialog() {
@@ -84,7 +84,7 @@ public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
         viewModel.setYesText("Yes");
         viewModel.setNoText("No");
         viewModel.setPrefWidth(400);
-        getBridge().openYesNoDialog(viewModel);
+        getMediator().openYesNoDialog(viewModel);
     }
 
     @Override

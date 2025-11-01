@@ -29,8 +29,8 @@ import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -106,36 +106,36 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractPaneView<T>
     }
 
     @Override
-    public void doOnMenuShowing(MenuKey menuKey) {
+    public void doOnMenuShowing(MenuName menuName) {
         var tab = this.selectedTab.get();
         if (tab != null) {
-            tab.doOnMenuShowing(menuKey);
+            tab.doOnMenuShowing(menuName);
         }
     }
 
     @Override
-    public void doOnMenuHiding(MenuKey menuKey) {
+    public void doOnMenuHiding(MenuName menuName) {
         var tab = this.selectedTab.get();
         if (tab != null) {
-            tab.doOnMenuHiding(menuKey);
+            tab.doOnMenuHiding(menuName);
         }
     }
 
     @Override
-    public MenuHelper getMenuHelper(MenuKey menuKey) {
+    public MenuHelper getMenuHelper(MenuName menuName) {
         var tab = this.selectedTab.get();
         if (tab != null) {
-            return tab.getMenuHelper(menuKey);
+            return tab.getMenuHelper(menuName);
         } else {
             return null;
         }
     }
 
     @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
+    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
         var tab = this.selectedTab.get();
         if (tab != null) {
-            return tab.getMenuItemHelper(menuItemKey);
+            return tab.getMenuItemHelper(menuItemName);
         } else {
             return null;
         }

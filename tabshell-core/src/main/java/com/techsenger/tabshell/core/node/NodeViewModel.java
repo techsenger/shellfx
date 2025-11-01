@@ -24,6 +24,4 @@ import com.techsenger.mvvm4fx.core.ChildViewModel;
  */
 public interface NodeViewModel extends ChildViewModel {
 
-    @Override
-    NodeKey getKey();
 }

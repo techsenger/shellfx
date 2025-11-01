@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.tabshell.material.menu.KeyedMenuItemState;
-import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.NamedMenuItemState;
+import com.techsenger.tabshell.material.menu.NamedMenuItemUpdate;
 
 /**
  *
@@ -27,10 +27,11 @@ import com.techsenger.tabshell.material.menu.MenuItemKey;
 public interface MenuItemHelper {
 
     /**
-     * Returns the key of the item this helper works with.
+     * Returns the name of the item this helper works with.
+     *
      * @return
      */
-    MenuItemKey getItemKey();
+    MenuItemName getItemName();
 
     /**
      * Checks if a specific menu item is included. Not included menu items will be hidden. This method is used only for
@@ -54,7 +55,7 @@ public interface MenuItemHelper {
      * @param itemState the current state of the item
      * @return update object or null if there are no changes.
      */
-    KeyedMenuItemUpdate updateItem(KeyedMenuItemState itemState);
+    NamedMenuItemUpdate updateItem(NamedMenuItemState itemState);
 
     /**
      * This method is called when user clicks on menu item and action should be directed to the current tab.

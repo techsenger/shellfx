@@ -22,8 +22,8 @@ import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.material.icon.IconViewBox;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
 import com.techsenger.toolkit.core.ObjectUtils;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 import com.techsenger.toolkit.fx.value.ValueUtils;
@@ -76,23 +76,23 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
     }
 
     @Override
-    public void doOnMenuShowing(MenuKey menuKey) {
+    public void doOnMenuShowing(MenuName menuName) {
 
     }
 
     @Override
-    public void doOnMenuHiding(MenuKey menuKey) {
+    public void doOnMenuHiding(MenuName menuName) {
 
     }
 
     @Override
-    public MenuHelper getMenuHelper(MenuKey menuKey) {
-        return getViewModel().getMenuHelpersByKey().get(menuKey);
+    public MenuHelper getMenuHelper(MenuName menuName) {
+        return getViewModel().getMenuHelpersByName().get(menuName);
     }
 
     @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
-        return getViewModel().getMenuItemHelpersByKey().get(menuItemKey);
+    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
+        return getViewModel().getMenuItemHelpersByName().get(menuItemName);
     }
 
     @Override

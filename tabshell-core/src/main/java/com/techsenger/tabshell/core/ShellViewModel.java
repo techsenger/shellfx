@@ -16,19 +16,19 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.mvvm4fx.core.ComponentViewModel;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.core.tab.TabContainerViewModel;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
-import com.techsenger.mvvm4fx.core.ComponentViewModel;
 
 /**
  *
@@ -159,9 +159,9 @@ public interface ShellViewModel extends ComponentViewModel, TabContainerViewMode
     /**
      * Removes menu helpers which are used when there are no tabs.
      *
-     * @param menuKeys
+     * @param menuNames
      */
-    void removeMenuHelpers(MenuKey... menuKeys);
+    void removeMenuHelpers(MenuName... menuNames);
 
     /**
      * Adds menu item helpers which are used when there are no tabs.
@@ -173,9 +173,9 @@ public interface ShellViewModel extends ComponentViewModel, TabContainerViewMode
     /**
      * Removes menu item helpers which are used when there are no tabs.
      *
-     * @param itemKeys
+     * @param itemNames
      */
-    void removeMenuItemHelpers(MenuItemKey... itemKeys);
+    void removeMenuItemHelpers(MenuItemName... itemNames);
 
     @Override
     void requestClose();

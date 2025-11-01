@@ -16,23 +16,23 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.tabshell.material.menu.KeyedMenu;
-import com.techsenger.tabshell.material.menu.MenuGroupKey;
+import com.techsenger.tabshell.material.menu.NamedMenu;
+import com.techsenger.tabshell.material.menu.MenuGroupName;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuRegistration extends AbstractMenuRegistration<KeyedMenu> {
+class MenuRegistration extends AbstractMenuRegistration<NamedMenu> {
 
-    private final MenuGroupKey groupKey;
+    private final MenuGroupName groupKey;
 
-    MenuRegistration(MenuGroupKey groupKey, ControlFactory<KeyedMenu> factory) {
+    MenuRegistration(MenuGroupName groupKey, ControlFactory<NamedMenu> factory) {
         super(MenuElementType.MENU, factory);
         this.groupKey = groupKey;
     }
 
-    public MenuGroupKey getGroupKey() {
+    public MenuGroupName getGroupKey() {
         return groupKey;
     }
 }

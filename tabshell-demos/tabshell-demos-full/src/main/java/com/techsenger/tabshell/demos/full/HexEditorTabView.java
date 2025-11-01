@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demos.full;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.mvvm4fx.core.ComponentBridge;
+import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.hex.AbstractHexEditorTabView;
 import com.techsenger.tabshell.hex.CaretShape;
@@ -42,8 +42,8 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
     }
 
     @Override
-    protected ComponentBridge createBridge() {
-        return new HexEditorTabBridge(this);
+    protected ComponentMediator createMediator() {
+        return new HexEditorTabMediator(this);
     }
 
     @Override
@@ -90,6 +90,4 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
         this.caretShapeComboBox.valueProperty().bindBidirectional(viewModel.getCaret().shapeProperty());
         this.columnSeparatorComboBox.valueProperty().bindBidirectional(viewModel.columnSeparatorProperty());
     }
-
-
 }

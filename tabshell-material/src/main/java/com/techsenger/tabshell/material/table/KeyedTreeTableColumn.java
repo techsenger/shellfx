@@ -16,29 +16,29 @@
 
 package com.techsenger.tabshell.material.table;
 
-import com.techsenger.tabshell.material.Keyed;
+import com.techsenger.tabshell.material.Named;
 import javafx.scene.control.TreeTableColumn;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class KeyedTreeTableColumn<S, T> extends TreeTableColumn<S, T> implements Keyed {
+public class KeyedTreeTableColumn<S, T> extends TreeTableColumn<S, T> implements Named {
 
-    private final TreeTableColumnKey key;
+    private final TreeTableColumnName name;
 
-    public KeyedTreeTableColumn(TreeTableColumnKey key) {
+    public KeyedTreeTableColumn(TreeTableColumnName name) {
         super();
-        this.key = key;
+        this.name = name;
     }
 
-    public KeyedTreeTableColumn(TreeTableColumnKey key, String string) {
+    public KeyedTreeTableColumn(TreeTableColumnName name, String string) {
         super(string);
-        this.key = key;
+        this.name = name;
     }
 
     @Override
-    public TreeTableColumnKey getKey() {
-        return key;
+    public TreeTableColumnName getName() {
+        return name;
     }
 }

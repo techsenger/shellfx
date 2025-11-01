@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.mvvm4fx.core.ComponentBridge;
+import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -135,8 +135,8 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
-    protected ComponentBridge createBridge() {
-        return new ViewerTabBridge(this);
+    protected ComponentMediator createMediator() {
+        return new ViewerTabMediator(this);
     }
 
     @Override

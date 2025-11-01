@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.material.menu.KeyedMenuState;
 import javafx.scene.Node;
+import com.techsenger.tabshell.material.menu.NamedMenuState;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuElementState implements KeyedMenuState {
+class MenuElementState implements NamedMenuState {
 
     private final boolean visible;
 

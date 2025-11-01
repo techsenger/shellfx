@@ -21,8 +21,8 @@ import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.material.icon.Icon;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.HashMap;
@@ -48,9 +48,9 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
 
     private final StringProperty tooltip = new SimpleStringProperty();
 
-    private final Map<MenuKey, MenuHelper> menuHelpersByKey = new HashMap<>();
+    private final Map<MenuName, MenuHelper> menuHelpersByName = new HashMap<>();
 
-    private final Map<MenuItemKey, MenuItemHelper> menuItemHelpersByKey = new HashMap<>();
+    private final Map<MenuItemName, MenuItemHelper> menuItemHelpersByName = new HashMap<>();
 
     private final BooleanProperty waiting = new SimpleBooleanProperty(false);
 
@@ -162,35 +162,35 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
         this.close.next(Boolean.TRUE);
     }
 
-    protected Map<MenuKey, MenuHelper> getMenuHelpersByKey() {
-        return menuHelpersByKey;
+    protected Map<MenuName, MenuHelper> getMenuHelpersByName() {
+        return menuHelpersByName;
     }
 
-    protected Map<MenuItemKey, MenuItemHelper> getMenuItemHelpersByKey() {
-        return menuItemHelpersByKey;
+    protected Map<MenuItemName, MenuItemHelper> getMenuItemHelpersByName() {
+        return menuItemHelpersByName;
     }
 
     protected void addMenuHelpers(MenuHelper... menuHelpers) {
         for (var h : menuHelpers) {
-            this.menuHelpersByKey.put(h.getMenuKey(), h);
+            this.menuHelpersByName.put(h.getMenuName(), h);
         }
     }
 
-    protected void removeMenuHelpers(MenuKey... menuKeys) {
-        for (var k : menuKeys) {
-            this.menuHelpersByKey.remove(k);
+    protected void removeMenuHelpers(MenuName... menuNames) {
+        for (var k : menuNames) {
+            this.menuHelpersByName.remove(k);
         }
     }
 
     protected void addMenuItemHelpers(MenuItemHelper... itemHelpers) {
         for (var h : itemHelpers) {
-            this.menuItemHelpersByKey.put(h.getItemKey(), h);
+            this.menuItemHelpersByName.put(h.getItemName(), h);
         }
     }
 
-    protected void removeMenuItemHelpers(MenuItemKey... itemKeys) {
-        for (var k : itemKeys) {
-            this.menuItemHelpersByKey.remove(k);
+    protected void removeMenuItemHelpers(MenuItemName... itemNames) {
+        for (var k : itemNames) {
+            this.menuItemHelpersByName.remove(k);
         }
     }
 

@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.tabshell.material.menu.KeyedMenuItemState;
-import com.techsenger.tabshell.material.menu.KeyedMenuItemUpdate;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.NamedMenuItemState;
+import com.techsenger.tabshell.material.menu.NamedMenuItemUpdate;
 
 /**
  *
@@ -26,29 +26,29 @@ import com.techsenger.tabshell.material.menu.MenuItemKey;
  */
 public class SimpleMenuItemHelper implements MenuItemHelper {
 
-    private final MenuItemKey itemKey;
+    private final MenuItemName itemName;
 
     private final Boolean itemIncluded;
 
     private final Boolean itemValid;
 
-    public SimpleMenuItemHelper(MenuItemKey itemKey) {
-        this(itemKey, null, null);
+    public SimpleMenuItemHelper(MenuItemName itemName) {
+        this(itemName, null, null);
     }
 
-    public SimpleMenuItemHelper(MenuItemKey itemKey, Boolean itemIncluded) {
-        this(itemKey, itemIncluded, null);
+    public SimpleMenuItemHelper(MenuItemName itemName, Boolean itemIncluded) {
+        this(itemName, itemIncluded, null);
     }
 
-    public SimpleMenuItemHelper(MenuItemKey itemKey, Boolean itemIncluded, Boolean itemValid) {
-        this.itemKey = itemKey;
+    public SimpleMenuItemHelper(MenuItemName itemName, Boolean itemIncluded, Boolean itemValid) {
+        this.itemName = itemName;
         this.itemIncluded = itemIncluded;
         this.itemValid = itemValid;
     }
 
     @Override
-    public MenuItemKey getItemKey() {
-        return this.itemKey;
+    public MenuItemName getItemName() {
+        return this.itemName;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SimpleMenuItemHelper implements MenuItemHelper {
     }
 
     @Override
-    public KeyedMenuItemUpdate updateItem(KeyedMenuItemState itemState) {
+    public NamedMenuItemUpdate updateItem(NamedMenuItemState itemState) {
         return null;
     }
 

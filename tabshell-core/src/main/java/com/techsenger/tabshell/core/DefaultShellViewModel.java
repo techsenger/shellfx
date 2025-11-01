@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.mvvm4fx.core.AbstractParentViewModel;
-import com.techsenger.mvvm4fx.core.ComponentKey;
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
@@ -25,8 +25,8 @@ import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.HashMap;
@@ -80,9 +80,9 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
 
     private final ObjectProperty<Icon<?>> icon = new SimpleObjectProperty<>();
 
-    private final Map<MenuKey, MenuHelper> menuHelpersByKey = new HashMap<>();
+    private final Map<MenuName, MenuHelper> menuHelpersByName = new HashMap<>();
 
-    private final Map<MenuItemKey, MenuItemHelper> menuItemHelpersByKey = new HashMap<>();
+    private final Map<MenuItemName, MenuItemHelper> menuItemHelpersByName = new HashMap<>();
 
     private final ObservableSource<Boolean> closeRequested = new SimpleObservableSource<>();
 
@@ -104,7 +104,7 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
         super();
         this.settings = settings;
         this.historyManager = historyManager;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager
                 .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
     }
@@ -157,11 +157,6 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
     @Override
     public ObservableList<ShellTabViewModel> getTabs() {
         return this.unmodifiableTabs;
-    }
-
-    @Override
-    public ComponentKey getKey() {
-        return ShellKey.INSTANCE;
     }
 
     @Override
@@ -252,28 +247,28 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
     @Override
     public void addMenuHelpers(MenuHelper... menuHelpers) {
         for (var h : menuHelpers) {
-            this.menuHelpersByKey.put(h.getMenuKey(), h);
+            this.menuHelpersByName.put(h.getMenuName(), h);
         }
     }
 
     @Override
-    public void removeMenuHelpers(MenuKey... menuKeys) {
-        for (var k : menuKeys) {
-            this.menuHelpersByKey.remove(k);
+    public void removeMenuHelpers(MenuName... menuNames) {
+        for (var k : menuNames) {
+            this.menuHelpersByName.remove(k);
         }
     }
 
     @Override
     public void addMenuItemHelpers(MenuItemHelper... itemHelpers) {
         for (var h : itemHelpers) {
-            this.menuItemHelpersByKey.put(h.getItemKey(), h);
+            this.menuItemHelpersByName.put(h.getItemName(), h);
         }
     }
 
     @Override
-    public void removeMenuItemHelpers(MenuItemKey... itemKeys) {
-        for (var k : itemKeys) {
-            this.menuItemHelpersByKey.remove(k);
+    public void removeMenuItemHelpers(MenuItemName... itemNames) {
+        for (var k : itemNames) {
+            this.menuItemHelpersByName.remove(k);
         }
     }
 
@@ -282,12 +277,17 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
         this.closeRequested.next(Boolean.TRUE);
     }
 
-    protected Map<MenuKey, MenuHelper> getMenuHelpersByKey() {
-        return menuHelpersByKey;
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(CoreComponentNames.SHELL);
     }
 
-    protected Map<MenuItemKey, MenuItemHelper> getMenuItemHelpersByKey() {
-        return menuItemHelpersByKey;
+    protected Map<MenuName, MenuHelper> getMenuHelpersByName() {
+        return menuHelpersByName;
+    }
+
+    protected Map<MenuItemName, MenuItemHelper> getMenuItemHelpersByName() {
+        return menuItemHelpersByName;
     }
 
     ReadOnlyObjectWrapper<ShellTabViewModel> selectedTabWrapper() {

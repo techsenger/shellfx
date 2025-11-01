@@ -16,10 +16,10 @@
 
 package com.techsenger.tabshell.shared.workertab;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
-import com.techsenger.tabshell.core.tab.TabKey;
 import com.techsenger.tabshell.core.tab.TabWorker;
-import com.techsenger.tabshell.shared.SharedComponentKeys;
+import com.techsenger.tabshell.shared.SharedComponentNames;
 import javafx.collections.ObservableList;
 
 /**
@@ -37,8 +37,8 @@ public class WorkerReportTabViewModel extends AbstractTabViewModel {
     }
 
     @Override
-    public TabKey getKey() {
-        return SharedComponentKeys.WORKER_REPORT_TAB;
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(SharedComponentNames.WORKER_REPORT_TAB);
     }
 
     protected ObservableList<TabWorker<?>> getWorkers() {

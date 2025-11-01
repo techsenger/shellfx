@@ -20,12 +20,12 @@ import com.techsenger.tabshell.core.DefaultShellView;
 import com.techsenger.tabshell.core.DefaultShellViewModel;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
-import com.techsenger.tabshell.demos.core.menu.DemoMenuKeys;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuRegistrar;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import com.techsenger.tabshell.demos.core.menu.DemoMenuNames;
 
 /**
  *
@@ -42,7 +42,7 @@ public class Demo extends Application {
             Platform.exit();
         });
         //this helper will be used when there are no tabs
-        viewModel.addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuKeys.NEW, null, Boolean.TRUE));
+        viewModel.addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuNames.NEW, null, Boolean.TRUE));
         var view = new DefaultShellView(stage, null, viewModel);
         view.initialize();
 

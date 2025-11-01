@@ -16,7 +16,8 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.tabshell.layout.LayoutComponentKeys;
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.layout.LayoutComponentNames;
 import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import java.util.UUID;
 import javafx.beans.property.BooleanProperty;
@@ -36,10 +37,6 @@ public class TabDockViewModel extends TabHostViewModel {
     private final ReadOnlyObjectWrapper<UUID> uuid = new ReadOnlyObjectWrapper<>();
 
     private final ReadOnlyObjectWrapper<ComponentPosition> minimizedPosition = new ReadOnlyObjectWrapper();
-
-    protected TabDockViewModel() {
-        super(LayoutComponentKeys.TAB_DOCK);
-    }
 
     /**
      * Returns the value of {@link #draggableProperty()}.
@@ -107,6 +104,11 @@ public class TabDockViewModel extends TabHostViewModel {
      */
     public final ReadOnlyProperty<ComponentPosition> minimizedPositionProperty() {
         return minimizedPosition.getReadOnlyProperty();
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponentNames.TAB_DOCK);
     }
 
     /**

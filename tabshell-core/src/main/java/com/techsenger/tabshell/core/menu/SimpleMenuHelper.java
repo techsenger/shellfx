@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.tabshell.material.menu.KeyedMenuState;
-import com.techsenger.tabshell.material.menu.KeyedMenuUpdate;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.material.menu.NamedMenuState;
+import com.techsenger.tabshell.material.menu.NamedMenuUpdate;
 
 /**
  *
@@ -26,29 +26,29 @@ import com.techsenger.tabshell.material.menu.MenuKey;
  */
 public class SimpleMenuHelper implements MenuHelper {
 
-    private final MenuKey menuKey;
+    private final MenuName menuName;
 
     private final Boolean menuIncluded;
 
     private final Boolean menuValid;
 
-    public SimpleMenuHelper(MenuKey key) {
-        this(key, null, null);
+    public SimpleMenuHelper(MenuName name) {
+        this(name, null, null);
     }
 
-    public SimpleMenuHelper(MenuKey key, Boolean included) {
-        this(key, included, null);
+    public SimpleMenuHelper(MenuName name, Boolean included) {
+        this(name, included, null);
     }
 
-    public SimpleMenuHelper(MenuKey key, Boolean included, Boolean valid) {
-        this.menuKey = key;
+    public SimpleMenuHelper(MenuName name, Boolean included, Boolean valid) {
+        this.menuName = name;
         this.menuIncluded = included;
         this.menuValid = valid;
     }
 
     @Override
-    public MenuKey getMenuKey() {
-        return menuKey;
+    public MenuName getMenuName() {
+        return menuName;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SimpleMenuHelper implements MenuHelper {
     }
 
     @Override
-    public KeyedMenuUpdate updateMenu(KeyedMenuState menuState) {
+    public NamedMenuUpdate updateMenu(NamedMenuState menuState) {
         return null;
     }
 }

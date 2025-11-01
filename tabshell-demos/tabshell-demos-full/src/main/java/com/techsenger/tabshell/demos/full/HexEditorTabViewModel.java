@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.demos.full;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
 import com.techsenger.tabshell.hex.CaretShape;
 import com.techsenger.tabshell.hex.ColumnSeparator;
@@ -39,14 +39,9 @@ public class HexEditorTabViewModel extends AbstractHexEditorTabViewModel {
 
     public HexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
         super(tabShell, file);
-        setHistoryPolicy(HistoryPolicy.ALL);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> tabShell.getHistoryManager().getOrCreateHistory(HexEditorTabHistory.class,
                 HexEditorTabHistory::new));
-    }
-
-    @Override
-    public ShellTabKey getKey() {
-        return DemoComponentKeys.HEX_EDITOR;
     }
 
     public ObservableList<CaretShape> getCaretShapes() {
@@ -55,5 +50,10 @@ public class HexEditorTabViewModel extends AbstractHexEditorTabViewModel {
 
     public ObservableList<ColumnSeparator> getColumnSeparators() {
         return columnSeparators;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponentNames.HEX_EDITOR);
     }
 }

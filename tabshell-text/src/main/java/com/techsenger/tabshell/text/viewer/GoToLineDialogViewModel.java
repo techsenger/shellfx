@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.text.viewer;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.dialog.DialogKey;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.text.TextComponentKeys;
+import com.techsenger.tabshell.text.TextComponentNames;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -43,7 +43,7 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
 
     GoToLineDialogViewModel(HistoryManager historyManager) {
         super(DialogScope.TAB, false);
-        setHistoryPolicy(HistoryPolicy.DATA);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.DATA);
         setHistoryProvider(() -> historyManager.getOrCreateHistory(GoToLineDialogHistory.class,
                 GoToLineDialogHistory::new));
         prefWidthProperty().set(400);
@@ -51,11 +51,6 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
         okDisableProperty().set(true);
         setCancelVisible(true);
         setButtonWidthEqual(true);
-    }
-
-    @Override
-    public DialogKey getKey() {
-        return TextComponentKeys.GO_TO_LINE_DIALOG;
     }
 
     public ObjectProperty<Integer> lineProperty() {
@@ -91,10 +86,15 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
     }
 
     @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(TextComponentNames.GO_TO_LINE_DIALOG);
+    }
+
+    @Override
     protected void postHistoryRestore() {
         super.postHistoryRestore();
         //history is always loaded but not always saved
-        setHistoryPolicy(HistoryPolicy.NONE);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.NONE);
     }
 
     /**

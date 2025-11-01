@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.dialogs.StandardDialogBridge;
+import com.techsenger.tabshell.dialogs.StandardDialogMediator;
 import com.techsenger.tabshell.storage.GenericFile;
 
 /**
@@ -28,7 +28,7 @@ public interface DialogClientViewModel {
 
     ShellViewModel getShell();
 
-    StandardDialogBridge getBridge();
+    StandardDialogMediator getMediator();
 
     GenericFile getFile();
 

@@ -16,10 +16,10 @@
 
 package com.techsenger.tabshell.dialogs.yesno;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
-import com.techsenger.tabshell.core.dialog.DialogKey;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.dialogs.DialogComponentKeys;
+import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -66,11 +66,6 @@ public class YesNoDialogViewModel extends AbstractDialogViewModel {
         this.message.set(message);
         prefWidthProperty().set(600);
         setButtonWidthEqual(true);
-    }
-
-    @Override
-    public DialogKey getKey() {
-        return DialogComponentKeys.YES_NO_DIALOG;
     }
 
     /* ************************************************* yes button ************************************************* */
@@ -247,5 +242,10 @@ public class YesNoDialogViewModel extends AbstractDialogViewModel {
 
     public void setMessage(String message) {
         this.message.set(message);
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DialogComponentNames.YES_NO_DIALOG);
     }
 }

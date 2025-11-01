@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.tabshell.material.menu.KeyedMenuState;
-import com.techsenger.tabshell.material.menu.KeyedMenuUpdate;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.material.menu.NamedMenuState;
+import com.techsenger.tabshell.material.menu.NamedMenuUpdate;
 
 /**
  *
@@ -27,10 +27,11 @@ import com.techsenger.tabshell.material.menu.MenuKey;
 public interface MenuHelper {
 
     /**
-     * Returns the key of the menu this helper works with.
+     * Returns the name of the menu this helper works with.
+     *
      * @return
      */
-    MenuKey getMenuKey();
+    MenuName getMenuName();
 
     /**
      * Checks if a specific menu is included. Not included menus will be hidden. This method is used only for optional
@@ -52,5 +53,5 @@ public interface MenuHelper {
      *
      * @return
      */
-    KeyedMenuUpdate updateMenu(KeyedMenuState menuState);
+    NamedMenuUpdate updateMenu(NamedMenuState menuState);
 }

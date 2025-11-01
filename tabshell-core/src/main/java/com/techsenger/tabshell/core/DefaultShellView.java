@@ -41,8 +41,8 @@ import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.material.icon.IconViewBox;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
 import java.util.List;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -316,20 +316,20 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
     }
 
     @Override
-    public MenuHelper getMenuHelper(MenuKey menuKey) {
-        return getViewModel().getMenuHelpersByKey().get(menuKey);
+    public MenuHelper getMenuHelper(MenuName menuName) {
+        return getViewModel().getMenuHelpersByName().get(menuName);
     }
 
     @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemKey menuItemKey) {
-        return getViewModel().getMenuItemHelpersByKey().get(menuItemKey);
+    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
+        return getViewModel().getMenuItemHelpersByName().get(menuItemName);
     }
 
     @Override
-    public void doOnMenuShowing(MenuKey menuKey) { }
+    public void doOnMenuShowing(MenuName menuName) { }
 
     @Override
-    public void doOnMenuHiding(MenuKey menuKey) { }
+    public void doOnMenuHiding(MenuName menuName) { }
 
     public MenuAware getCurrentMenuAware() {
         var selectedTab = getSelectedTab();

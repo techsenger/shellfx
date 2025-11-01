@@ -16,11 +16,11 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
-import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.core.tab.TabViewModel;
-import com.techsenger.tabshell.layout.LayoutComponentKeys;
+import com.techsenger.tabshell.layout.LayoutComponentNames;
 
 /**
  *
@@ -39,13 +39,8 @@ public class TabPopupViewModel extends AbstractPaneViewModel {
     public TabPopupViewModel(SideBarViewModel sideBar, TabViewModel tab, TabPopupHistory<?> history) {
         this.sideBar = sideBar;
         this.tab = tab;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> history);
-    }
-
-    @Override
-    public PaneKey getKey() {
-        return LayoutComponentKeys.TAB_POPUP;
     }
 
     public SideBarViewModel getSideBar() {
@@ -62,6 +57,11 @@ public class TabPopupViewModel extends AbstractPaneViewModel {
 
     public double getOldHeight() {
         return oldHeight;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponentNames.TAB_POPUP);
     }
 
     void setOldHeight(double oldHeight) {

@@ -81,7 +81,7 @@ public interface FileSaverViewModel extends DialogClientViewModel {
         };
         viewModel.cancelActionProperty().set(cancelAndCloseAction);
         viewModel.closeActionProperty().set(cancelAndCloseAction);
-        getBridge().openFileChooserDialog(viewModel);
+        getMediator().openFileChooserDialog(viewModel);
     }
 
     /**

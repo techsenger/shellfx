@@ -18,7 +18,7 @@ package com.techsenger.tabshell.storage;
 
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.material.table.KeyedTableColumn;
+import com.techsenger.tabshell.material.table.NamedTableColumn;
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.time.Instant;
 import java.time.Year;
@@ -46,8 +46,8 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public KeyedTableColumn<GenericFile, GenericFile> buildTypeColumn() {
-        var typeColumn = new KeyedTableColumn<GenericFile, GenericFile>(FileColumnKeys.TYPE, ".");
+    public NamedTableColumn<GenericFile, GenericFile> buildTypeColumn() {
+        var typeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.TYPE, ".");
         typeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         typeColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
 
@@ -84,8 +84,8 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public KeyedTableColumn<GenericFile, GenericFile> buildNameColumn() {
-        var nameColumn = new KeyedTableColumn<GenericFile, GenericFile>(FileColumnKeys.NAME, "Name");
+    public NamedTableColumn<GenericFile, GenericFile> buildNameColumn() {
+        var nameColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         nameColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
 
@@ -109,8 +109,8 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public KeyedTableColumn<GenericFile, GenericFile> buildSizeColumn() {
-        var sizeColumn = new KeyedTableColumn<GenericFile, GenericFile>(FileColumnKeys.SIZE, "Size");
+    public NamedTableColumn<GenericFile, GenericFile> buildSizeColumn() {
+        var sizeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.SIZE, "Size");
         sizeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         sizeColumn.setCellFactory(callBack -> new TableCell<GenericFile, GenericFile>() {
 
@@ -136,9 +136,9 @@ public class FileColumnBuilder {
      * Builds last modified column.
      * @return
      */
-    public KeyedTableColumn<GenericFile, GenericFile> buildLastModifiedColumn() {
+    public NamedTableColumn<GenericFile, GenericFile> buildLastModifiedColumn() {
         var lastModifiedColumn =
-                new KeyedTableColumn<GenericFile, GenericFile>(FileColumnKeys.LAST_MODIFIED, "Modified");
+                new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.LAST_MODIFIED, "Modified");
         lastModifiedColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         final DateTimeFormatter currentYearformatter = DateTimeFormatter.ofPattern("MMM dd HH:mm");
         final DateTimeFormatter otherYearformatter = DateTimeFormatter.ofPattern("MMM dd yyyy");

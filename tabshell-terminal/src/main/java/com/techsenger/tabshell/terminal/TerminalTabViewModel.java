@@ -20,10 +20,10 @@ import com.pty4j.PtyProcess;
 import com.pty4j.PtyProcessBuilder;
 import com.techsenger.jeditermfx.core.util.Platform;
 import com.techsenger.jeditermfx.ui.settings.SettingsProvider;
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
-import com.techsenger.tabshell.core.tab.ShellTabKey;
 import com.techsenger.tabshell.core.theme.TabShellTheme;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -79,14 +79,9 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         this.ttyConnector = createTtyConnector(directory);
         this.setIcon(TerminalIcons.TERMINAL);
         this.setTitle("Terminal");
-        setHistoryPolicy(HistoryPolicy.ALL);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> shell.getHistoryManager().getOrCreateHistory(TerminalHistory.class,
                 TerminalHistory::new));
-    }
-
-    @Override
-    public ShellTabKey getKey() {
-        return TerminalComponentKeys.TERMINAL_TAB;
     }
 
     public ObjectProperty<TerminalPaletteType> paletteTypeProperty() {
@@ -133,6 +128,11 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         this.openUrlDisable.set(value);
     }
 
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(TerminalComponentNames.TERMINAL_TAB);
+    }
+
     protected SettingsProvider createSettingsProvider() {
         var settings = getShell().getSettings();
         this.terminalPalette = new TerminalPalette(getShell().getSettings().getAppearance().getTheme(),
@@ -170,7 +170,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         }
         this.find = new FindPaneViewModel(getShell().getHistoryManager(), selectedText.get());
         this.find.closeActionProperty().set(() -> hideFind());
-        getBridge().showFindPane(this.find);
+        getMediator().showFindPane(this.find);
     }
 
     protected void hideFind() {
@@ -178,12 +178,12 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
             return;
         }
         this.find = null;
-        getBridge().hideFindPane();
+        getMediator().hideFindPane();
     }
 
     @Override
-    public TerminalTabBridge<?> getBridge() {
-        return (TerminalTabBridge<?>) super.getBridge();
+    public TerminalTabMediator<?> getMediator() {
+        return (TerminalTabMediator<?>) super.getMediator();
     }
 
     protected void createNewTerminal() {

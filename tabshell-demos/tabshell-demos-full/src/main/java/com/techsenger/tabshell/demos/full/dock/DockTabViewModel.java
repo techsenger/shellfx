@@ -16,11 +16,11 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
-import com.techsenger.tabshell.core.tab.ShellTabKey;
-import com.techsenger.tabshell.demos.full.DemoComponentKeys;
+import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
 
 /**
@@ -38,16 +38,11 @@ public class DockTabViewModel extends AbstractShellTabViewModel {
     public DockTabViewModel(ShellViewModel shell) {
         super(shell);
         setTitle("Dock Tab");
-        setHistoryPolicy(HistoryPolicy.ALL);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> shell.getHistoryManager()
                 .getOrCreateHistory(DockTabHistory.class, DockTabHistory::new));
         this.history = (DockTabHistory) getHistoryProvider().provide();
         this.layout = new DockLayoutViewModel(this.history.getDockLayout());
-    }
-
-    @Override
-    public ShellTabKey getKey() {
-        return DemoComponentKeys.DOCK_TAB;
     }
 
     public DockLayoutViewModel getLayout() {
@@ -56,5 +51,10 @@ public class DockTabViewModel extends AbstractShellTabViewModel {
 
     public TextViewerViewModel getTextViewer() {
         return textViewer;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponentNames.DOCK_TAB);
     }
 }

@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.hex;
 
-import com.techsenger.tabshell.core.pane.PaneKey;
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -24,15 +26,14 @@ import com.techsenger.tabshell.core.pane.PaneKey;
  */
 class HeaderRowViewModel extends AbstractRowViewModel {
 
-    private static final PaneKey HEX_EDITOR_HEADER_ROW = new PaneKey("Hex Editor Header Row");
+    private static final ComponentName HEX_EDITOR_HEADER_ROW = new DefaultComponentName("Hex Editor Header Row");
 
     HeaderRowViewModel(AbstractHexEditorTabViewModel editor) {
         super(editor);
     }
 
     @Override
-    public PaneKey getKey() {
-        return HEX_EDITOR_HEADER_ROW;
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(HEX_EDITOR_HEADER_ROW);
     }
-
 }

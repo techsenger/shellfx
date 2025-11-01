@@ -16,12 +16,13 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.tabshell.material.menu.KeyedMenu;
-import com.techsenger.tabshell.material.menu.KeyedMenuGroup;
-import com.techsenger.tabshell.material.menu.KeyedMenuItem;
-import com.techsenger.tabshell.material.menu.MenuGroupKey;
-import com.techsenger.tabshell.material.menu.MenuItemKey;
-import com.techsenger.tabshell.material.menu.MenuKey;
+import com.techsenger.mvvm4fx.core.ComponentView;
+import com.techsenger.tabshell.material.menu.MenuGroupName;
+import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.material.menu.NamedMenu;
+import com.techsenger.tabshell.material.menu.NamedMenuGroup;
+import com.techsenger.tabshell.material.menu.NamedMenuItem;
 import com.techsenger.toolkit.core.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +33,6 @@ import java.util.Map;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import com.techsenger.mvvm4fx.core.ComponentView;
 
 /**
  *
@@ -42,94 +42,94 @@ public class ControlBuilder {
 
     private static class MenuDescriptor {
 
-        private final MenuGroupKey groupKey;
+        private final MenuGroupName groupName;
 
-        private final KeyedMenu menu;
+        private final NamedMenu menu;
 
-        MenuDescriptor(MenuGroupKey groupKey, KeyedMenu menu) {
-            this.groupKey = groupKey;
+        MenuDescriptor(MenuGroupName groupName, NamedMenu menu) {
+            this.groupName = groupName;
             this.menu = menu;
         }
     }
 
     private static class GroupDescriptor {
 
-        private final MenuKey menuKey;
+        private final MenuName menuName;
 
-        private final KeyedMenuGroup group;
+        private final NamedMenuGroup group;
 
-        GroupDescriptor(MenuKey menuKey, KeyedMenuGroup group) {
-            this.menuKey = menuKey;
+        GroupDescriptor(MenuName menuName, NamedMenuGroup group) {
+            this.menuName = menuName;
             this.group = group;
         }
     }
 
     private static class ItemDescriptor {
 
-        private final MenuGroupKey groupKey;
+        private final MenuGroupName groupName;
 
-        private final KeyedMenuItem item;
+        private final NamedMenuItem item;
 
-        ItemDescriptor(MenuGroupKey groupKey, KeyedMenuItem item) {
-            this.groupKey = groupKey;
+        ItemDescriptor(MenuGroupName groupKey, NamedMenuItem item) {
+            this.groupName = groupKey;
             this.item = item;
         }
     }
 
     private final ControlRegistry registry;
 
-    private final Map<MenuKey, MenuDescriptor> barMenusByKey = new HashMap<>();
+    private final Map<MenuName, MenuDescriptor> barMenusByName = new HashMap<>();
 
-    private final Map<MenuGroupKey, GroupDescriptor> barGroupsByKey = new HashMap<>();
+    private final Map<MenuGroupName, GroupDescriptor> barGroupsByName = new HashMap<>();
 
-    private final Map<MenuItemKey, ItemDescriptor> barItemsByKey = new HashMap<>();
+    private final Map<MenuItemName, ItemDescriptor> barItemsByName = new HashMap<>();
 
     public ControlBuilder(ControlRegistry registry) {
         this.registry = registry;
     }
 
     public List<Menu> buildMenuBarElements(ComponentView<?> view) {
-        var componentKey = view.getViewModel().getKey();
+        var componentName = view.getViewModel().getDescriptor().getName();
         //we clone collections because there can not be changes during building
-        var registrations = new ArrayList<>(registry.getBarMenuRegistrations(componentKey));
+        var registrations = new ArrayList<>(registry.getBarMenuRegistrations(componentName));
         buildBarElements(view, registrations);
-        List<KeyedMenu> topMenus = new ArrayList<>();
-        Map<MenuKey, Pair<KeyedMenu, List<GroupDescriptor>>> menusAndGroupsByMenuKey = new HashMap<>();
+        List<NamedMenu> topMenus = new ArrayList<>();
+        Map<MenuName, Pair<NamedMenu, List<GroupDescriptor>>> menusAndGroupsByMenuName = new HashMap<>();
         //0. adding menus to menu bar or to groups
-        for (var entry : this.barMenusByKey.entrySet()) {
+        for (var entry : this.barMenusByName.entrySet()) {
             var key = entry.getKey();
             var menuDescriptor = entry.getValue();
-            if (menuDescriptor.groupKey == null) {
+            if (menuDescriptor.groupName == null) {
                 topMenus.add(menuDescriptor.menu);
             } else {
-                var groupDescriptor = this.barGroupsByKey.get(menuDescriptor.groupKey);
+                var groupDescriptor = this.barGroupsByName.get(menuDescriptor.groupName);
                 if (groupDescriptor != null) {
                     groupDescriptor.group.getItems().add(menuDescriptor.menu);
                     menuDescriptor.menu.setGroup(groupDescriptor.group);
                 }
             }
-            menusAndGroupsByMenuKey.put(key, new Pair<>(menuDescriptor.menu, new ArrayList<>()));
+            menusAndGroupsByMenuName.put(key, new Pair<>(menuDescriptor.menu, new ArrayList<>()));
         }
         //1. adding items to groups
-        for (var entry : this.barItemsByKey.entrySet()) {
+        for (var entry : this.barItemsByName.entrySet()) {
             var key = entry.getKey();
             var itemDescriptor = entry.getValue();
-            var groupDescriptor = this.barGroupsByKey.get(itemDescriptor.groupKey);
+            var groupDescriptor = this.barGroupsByName.get(itemDescriptor.groupName);
             if (groupDescriptor != null) {
                 groupDescriptor.group.getItems().add(itemDescriptor.item);
                 itemDescriptor.item.setGroup(groupDescriptor.group);
             }
         }
         //2. adding groups to menu content
-        for (var entry : this.barGroupsByKey.entrySet()) {
+        for (var entry : this.barGroupsByName.entrySet()) {
             var groupDescriptor = entry.getValue();
-            var menusAndGroups = menusAndGroupsByMenuKey.get(groupDescriptor.menuKey);
+            var menusAndGroups = menusAndGroupsByMenuName.get(groupDescriptor.menuName);
             if (menusAndGroups != null) {
                 menusAndGroups.getSecond().add(groupDescriptor);
             }
         }
         //3. building menus
-        for (var entry : menusAndGroupsByMenuKey.entrySet()) {
+        for (var entry : menusAndGroupsByMenuName.entrySet()) {
             var menu = entry.getValue().getFirst();
             var groups = entry.getValue().getSecond();
             List<MenuItem> menuElements = new ArrayList<>();
@@ -169,19 +169,19 @@ public class ControlBuilder {
                     var mr = (MenuRegistration) r;
                     var menu = mr.getFactory().create(view);
                     var md = new MenuDescriptor(mr.getGroupKey(), menu);
-                    barMenusByKey.put(menu.getKey(), md);
+                    barMenusByName.put(menu.getName(), md);
                     break;
                 case GROUP:
                     var gr = (MenuGroupRegistration) r;
                     var group = gr.getFactory().create(view);
-                    var gd = new GroupDescriptor(gr.getMenuKey(), group);
-                    barGroupsByKey.put(group.getKey(), gd);
+                    var gd = new GroupDescriptor(gr.getMenuName(), group);
+                    barGroupsByName.put(group.getName(), gd);
                     break;
                 case ITEM:
                     var ir = (MenuItemRegistration) r;
                     var item = ir.getFactory().create(view);
                     var id = new ItemDescriptor(ir.getGroupKey(), item);
-                    barItemsByKey.put(item.getKey(), id);
+                    barItemsByName.put(item.getName(), id);
                     break;
                 default:
                     throw new AssertionError();
@@ -189,8 +189,8 @@ public class ControlBuilder {
         }
     }
 
-    private void removeEmptyMenus(List<KeyedMenu> menus) {
-        for (Iterator<KeyedMenu> iterator = menus.iterator(); iterator.hasNext();) {
+    private void removeEmptyMenus(List<NamedMenu> menus) {
+        for (Iterator<NamedMenu> iterator = menus.iterator(); iterator.hasNext();) {
             Menu menu = iterator.next();
             if (removeEmptyMenus(menu)) {
                 iterator.remove();

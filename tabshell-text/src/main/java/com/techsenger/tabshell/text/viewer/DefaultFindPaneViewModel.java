@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.text.viewer;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.history.HistoryUtils;
-import com.techsenger.tabshell.core.pane.PaneKey;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
 import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
-import com.techsenger.tabshell.text.TextComponentKeys;
+import com.techsenger.tabshell.text.TextComponentNames;
 import java.util.Collection;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
@@ -85,14 +85,9 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
                 highlightActive.set(false);
             }
         });
-        setHistoryPolicy(HistoryPolicy.ALL);
+        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPaneHistory.class,
                 FindPaneHistory::new));
-    }
-
-    @Override
-    public PaneKey getKey() {
-        return TextComponentKeys.FIND_PANE;
     }
 
     public BooleanProperty replaceModeProperty() {
@@ -152,6 +147,11 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
 
     public void setHighlightActive(boolean value) {
         this.highlightActive.set(value);
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(TextComponentNames.FIND_PANE);
     }
 
     StringProperty replaceTextProperty() {

@@ -25,9 +25,6 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
  */
 public interface ShellTabViewModel extends TabViewModel {
 
-    @Override
-    ShellTabKey getKey();
-
     ShellViewModel getShell();
 
     /**

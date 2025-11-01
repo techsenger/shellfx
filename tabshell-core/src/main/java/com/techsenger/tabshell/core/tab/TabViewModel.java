@@ -32,14 +32,6 @@ public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedVie
         CloseableViewModel {
 
     /**
-     * Returns tab key. This property allows to distinguish different tab types in TabShell.
-     *
-     * @return
-     */
-    @Override
-    TabKey getKey();
-
-    /**
      * Returns the tooltip property of the component.
      *
      * @return

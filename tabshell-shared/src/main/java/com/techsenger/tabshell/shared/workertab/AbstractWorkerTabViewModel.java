@@ -20,7 +20,7 @@ import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.layout.splittab.AbstractSplitTabViewModel;
 import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
-import com.techsenger.tabshell.shared.SharedComponentKeys;
+import com.techsenger.tabshell.shared.SharedComponentNames;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -47,7 +47,7 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
 
     public AbstractWorkerTabViewModel(ShellViewModel shell) {
         super(shell);
-        this.bottomTabHost = new TabHostViewModel(SharedComponentKeys.BOTTOM_TAB_HOST);
+        this.bottomTabHost = new TabHostViewModel();
         this.workers.addListener((InvalidationListener) (change) -> this.workerCount.set(workers.size()));
         this.bottomTabHost.getTabs().addListener((InvalidationListener) (change) -> {
             if (this.bottomTabHost.getTabs().size() == 0) {
@@ -80,8 +80,8 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
     }
 
     @Override
-    public WorkerTabBridge<?> getBridge() {
-        return (WorkerTabBridge) super.getBridge();
+    public WorkerTabMediator<?> getMediator() {
+        return (WorkerTabMediator) super.getMediator();
     }
 
     protected TabHostViewModel getBottomTabHost() {
@@ -91,12 +91,12 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
     protected void openWorkerReportTab() {
         //firstly check if such tab is open
         for (var tab : this.bottomTabHost.getTabs()) {
-            if (tab.getKey() == SharedComponentKeys.WORKER_REPORT_TAB) {
+            if (tab.getDescriptor().getName() == SharedComponentNames.WORKER_REPORT_TAB) {
                 return;
             }
         }
         var reportViewModel = new WorkerReportTabViewModel(getWorkers());
-        getBridge().openWorkerReportTab(reportViewModel);
+        getMediator().openWorkerReportTab(reportViewModel);
         bottomPaneVisibleProperty().set(true);
     }
 

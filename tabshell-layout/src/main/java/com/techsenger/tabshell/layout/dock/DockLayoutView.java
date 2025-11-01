@@ -1953,7 +1953,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     private void printTreeDebugInfo() {
         if (logger.isDebugEnabled()) {
-            logger.debug("Tab: '{}' dock component tree: {}", getViewModel().getKey(), getTreeDebugInfo());
+            logger.debug("Tab: '{}' dock component tree: {}", getViewModel().getDescriptor().getName(),
+                    getTreeDebugInfo());
         }
     }
 

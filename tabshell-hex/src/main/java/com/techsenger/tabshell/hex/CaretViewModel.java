@@ -16,8 +16,10 @@
 
 package com.techsenger.tabshell.hex;
 
+import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.tabshell.core.DefaultComponentName;
 import com.techsenger.tabshell.core.node.AbstractNodeViewModel;
-import com.techsenger.tabshell.core.node.NodeKey;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -35,7 +37,7 @@ import javafx.geometry.Dimension2D;
  */
 public final class CaretViewModel extends AbstractNodeViewModel {
 
-    private static final NodeKey HEX_EDITOR_CARET = new NodeKey("Hex Editor Caret");
+    private static final ComponentName HEX_EDITOR_CARET = new DefaultComponentName("Hex Editor Caret");
 
     private final ReadOnlyObjectWrapper<CaretPosition> position = new ReadOnlyObjectWrapper<>();
 
@@ -68,11 +70,6 @@ public final class CaretViewModel extends AbstractNodeViewModel {
         shape.addListener((ov, oldV, newV) -> updateWidths(newV, charSize.get().getWidth()));
         panel.addListener((ov, oldV, newV) -> updateWidths(getShape(), charSize.get().getWidth()));
         charSize.addListener((ov, oldV, newV) -> updateWidths(getShape(), newV.getWidth()));
-    }
-
-    @Override
-    public NodeKey getKey() {
-        return HEX_EDITOR_CARET;
     }
 
     public ReadOnlyObjectWrapper<CaretPosition> positionProperty() {
@@ -150,6 +147,11 @@ public final class CaretViewModel extends AbstractNodeViewModel {
      */
     public boolean isAtRowEnd() {
         return getPosition().getByteIndex() == row.getModel().getByteCount() - 1;
+    }
+
+    @Override
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(HEX_EDITOR_CARET);
     }
 
     void setPosition(CaretPosition position) {
