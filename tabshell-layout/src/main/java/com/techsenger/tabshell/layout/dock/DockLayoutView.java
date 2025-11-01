@@ -1103,6 +1103,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         double[] grandParentPositions = null;
 
         var side = position.getSide(); // the position side can differ from the side bar side
+        var sideShouldBeChecked = false;
         int index;
         if (parent != null) {
             index = position.getIndex();
@@ -1140,25 +1141,30 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 logger.debug("{} Original parent SplitSpace not available; root is used",
                         getDescriptor().getLogPrefix());
             }
-
             index = resolveNewIndex(parent, side);
+            sideShouldBeChecked = true;
+        }
 
-            // now we have determined the parent and insertion index; it't time to check the side
-            if (!checkNewSide(parent, index, side)) {
-                boolean wrapParent = false;
-                if (parent != getRoot()) {
-                    parent = getRoot();
-                    index = resolveNewIndex(parent, side);
-                    if (!checkNewSide(parent, index, side)) {
-                        wrapParent = true;
-                    }
-                } else {
+        if (logger.isDebugEnabled()) {
+            parent.logState("Before restoring");
+            logger.debug("{} Minimized position: {}", getDescriptor().getLogPrefix(), position);
+        }
+
+        // now we have determined the parent and insertion index; it't time to check the side
+        if (sideShouldBeChecked && !checkNewSide(parent, index, side)) {
+            boolean wrapParent = false;
+            if (parent != getRoot()) {
+                parent = getRoot();
+                index = resolveNewIndex(parent, side);
+                if (!checkNewSide(parent, index, side)) {
                     wrapParent = true;
                 }
-                if (wrapParent) {
-                    parent = wrap(parent, getContainer(parent).createInfo().getIndex());
-                    index = resolveNewIndex(parent, side);
-                }
+            } else {
+                wrapParent = true;
+            }
+            if (wrapParent) {
+                parent = wrap(parent, getContainer(parent).createInfo().getIndex());
+                index = resolveNewIndex(parent, side);
             }
         }
 
@@ -2118,19 +2124,21 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * in place of a removed {@link SplitSpaceView}.
      *
      * @param oldUuid
-     * @param newUUID
+     * @param newUuid
      */
-    private void updateUuidInPositions(UUID oldUuid, UUID newUUID) {
-        updateUuidInPositions(getRightBar(), oldUuid, newUUID);
-        updateUuidInPositions(getBottomBar(), oldUuid, newUUID);
-        updateUuidInPositions(getLeftBar(), oldUuid, newUUID);
+    private void updateUuidInPositions(UUID oldUuid, UUID newUuid) {
+        updateUuidInPositions(getRightBar(), oldUuid, newUuid);
+        updateUuidInPositions(getBottomBar(), oldUuid, newUuid);
+        updateUuidInPositions(getLeftBar(), oldUuid, newUuid);
+        logger.debug("{} Replaced UUID {} with {} in position lists of all minimized TabDocks",
+                getDescriptor().getLogPrefix(), oldUuid, newUuid);
     }
 
-    private void updateUuidInPositions(SideBarView<?> sideBar, UUID oldUuid, UUID newUUID) {
+    private void updateUuidInPositions(SideBarView<?> sideBar, UUID oldUuid, UUID newUuid) {
         if (sideBar != null) {
             for (var tabDock : sideBar.getTabDocks()) {
                 var position = tabDock.getViewModel().getMinimizedPosition();
-                position.updateUuid(oldUuid, newUUID);
+                position.updateUuid(oldUuid, newUuid);
             }
         }
     }

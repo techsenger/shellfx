@@ -101,7 +101,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
     }
 
     void logState(String note) {
-        logger.debug("{} " + note + ", {} child sizes: {}, dividers: {}", getDescriptor().getLogPrefix(),
+        logger.debug("{} {} child sizes: {}, dividers: {}", getDescriptor().getLogPrefix(), note,
                 getChildSizes(), this.splitPane.getDividerPositions());
     }
 
