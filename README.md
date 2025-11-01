@@ -179,8 +179,8 @@ There are two types of tabs: `ShellTab` and `Tab`. A `ShellTab` component can be
 
 A `Tab` component cannot be opened directly through the `Shell`, so it always resides inside a `ShellTab`.
 
-The `ShellTab` a `Tab` components are closed in the following way. When the `View#close()` method is called, control is
-transferred to their parent component (e.g., `Shell`, `TabDock`), which is responsible for their actual closure.
+The `ShellTab` and `Tab` components are closed in the following way. When the `View#close()` method is called, control
+is transferred to their parent component (e.g., `Shell`, `TabDock`), which is responsible for their actual closure.
 Thus, these tabs can also be closed directly through their parent if a reference to the tab is available.
 
 The tab closing procedure is largely determined by the asynchronous nature of dialogs in the TabShell project and
