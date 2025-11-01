@@ -153,7 +153,7 @@ the user. Each plugin may introduce its own menu items and interact with existin
 to predict the final structure of the menu that the user will work with.
 
 The implementation of this feature is structured as follows. There are three key elements: the menu, the group, and the
-item. Each element has its own key, which is used for identification. A menu consists of groups separated by a
+item. Each element has its own name, which is used for identification. A menu consists of groups separated by a
 separator. Items are added to groups, and empty groups are ignored. All three elements are registered/unregistered in
 the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is used by `Shell` to construct
 the final menu.
