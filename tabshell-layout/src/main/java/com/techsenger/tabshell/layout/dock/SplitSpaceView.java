@@ -47,8 +47,6 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
 
     private final SplitPane splitPane = new SplitPane();
 
-    private double dividerSize = 2.0;
-
     protected SplitSpaceView(DockLayoutView<?> layout, T viewModel) {
         super(viewModel);
         this.layout = layout;
@@ -101,24 +99,6 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
                 }
             }
         });
-    }
-
-    /**
-     * Returns the divider size - width for vertical dividers, height for horizontal dividers.
-     *
-     * @return the divider size in pixels
-     */
-    protected double getDividerSize() {
-        return this.dividerSize;
-    }
-
-    /**
-     * Sets the divider size - width for vertical dividers, height for horizontal dividers.
-     *
-     * @param dividerSize
-     */
-    protected void setDividerSize(double dividerSize) {
-        this.dividerSize = dividerSize;
     }
 
     void logState(String note) {
@@ -326,10 +306,10 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
      * @param newChildIndex index where the new node will be inserted
      * @param newChildSize the desired size for the new node
      */
-    void updateDividersOnAddWithMain(double oldSize, double[] oldPositions, int flexibleChildIndex,
+    void updateDividersOnAddWithMain(double oldSize, double[] oldPositions, double dividerSize, int flexibleChildIndex,
             int newChildIndex, double newChildSize) {
-        oldSize = computeOldSize(oldSize, oldPositions);
-        var newSize = computeNewSize();
+        oldSize = computeOldSize(oldSize, oldPositions, dividerSize);
+        var newSize = computeNewSize(dividerSize);
 
         // If oldSize is 0 (initial state), use simple distribution
         if (oldSize <= 0) {
@@ -434,14 +414,14 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
      * @param flexibleChildIndex index of the flexible node that will absorb size changes
      * @param removedChildIndex index of the node that will be removed
      */
-    void updateDividersOnRemoveWithMain(double oldSize, double[] oldPositions, int flexibleChildIndex,
-            int removedChildIndex) {
+    void updateDividersOnRemoveWithMain(double oldSize, double[] oldPositions, double dividerSize,
+            int flexibleChildIndex, int removedChildIndex) {
         // Calculate original node sizes in absolute units
         int oldNodeCount = oldPositions.length + 1;
         double[] oldSizes = new double[oldNodeCount];
 
-        oldSize = computeOldSize(oldSize, oldPositions);
-        var newSize = computeNewSize();
+        oldSize = computeOldSize(oldSize, oldPositions, dividerSize);
+        var newSize = computeNewSize(dividerSize);
 
         // First node
         oldSizes[0] = oldPositions[0] * oldSize;
@@ -510,10 +490,10 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
      * @param newChildIndex index where the new node will be inserted
      * @param newChildSize the desired size for the new node
      */
-    void updateDividersOnAddWithoutMain(double oldSize, double[] oldPositions, int newChildIndex,
+    void updateDividersOnAddWithoutMain(double oldSize, double[] oldPositions, double dividerSize, int newChildIndex,
             double newChildSize) {
-        oldSize = computeOldSize(oldSize, oldPositions);
-        var newSize = computeNewSize();
+        oldSize = computeOldSize(oldSize, oldPositions, dividerSize);
+        var newSize = computeNewSize(dividerSize);
 
         // If oldSize is 0 (initial state), use equal distribution
         if (oldSize <= 0) {
@@ -667,13 +647,14 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
      * @param oldPositions array of divider positions (0.0 to 1.0) before changes
      * @param removedChildIndex index of the node that will be removed
      */
-    void updateDividersOnRemoveWithoutMain(double oldSize, double[] oldPositions, int removedChildIndex) {
+    void updateDividersOnRemoveWithoutMain(double oldSize, double[] oldPositions, double dividerSize,
+            int removedChildIndex) {
         // Calculate original node sizes in absolute units
         int oldNodeCount = oldPositions.length + 1;
         double[] oldSizes = new double[oldNodeCount];
 
-        oldSize = computeOldSize(oldSize, oldPositions);
-        var newSize = computeNewSize();
+        oldSize = computeOldSize(oldSize, oldPositions, dividerSize);
+        var newSize = computeNewSize(dividerSize);
 
         // First node
         oldSizes[0] = oldPositions[0] * oldSize;
@@ -746,6 +727,37 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
     }
 
     /**
+     * Computes SplitPane divider size - width for vertical dividers, height for horizontal dividers.
+     *
+     * @return
+     */
+    double computeDividerSize() {
+        var dividers = splitPane.getDividerPositions();
+        if (dividers.length == 0) {
+            return -1;
+        }
+
+        double paneSize = splitPane.getOrientation() == Orientation.HORIZONTAL
+                ? splitPane.getWidth()
+                : splitPane.getHeight();
+
+        if (paneSize <= 0) {
+            return -1;
+        }
+        double totalItemsSize = 0;
+        for (var item : splitPane.getItems()) {
+            double itemSize = splitPane.getOrientation() == Orientation.HORIZONTAL
+                    ? item.getBoundsInParent().getWidth()
+                    : item.getBoundsInParent().getHeight();
+            totalItemsSize += itemSize;
+        }
+        double totalDividersSize = paneSize - totalItemsSize;
+        double dividerSize = totalDividersSize / (splitPane.getItems().size() - 1);
+        logger.debug("Computed dividerSize: {}", dividerSize);
+        return dividerSize;
+    }
+
+    /**
      * Returns the widths/heights of the children for horizontal/vertical split space.
      *
      * @return
@@ -772,17 +784,17 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
         this.layout.destroyContainer(container);
     }
 
-    private double computeOldSize(double oldSize, double[] oldPositions) {
+    private double computeOldSize(double oldSize, double[] oldPositions, double dividerSize) {
         var dividersCount = 0;
         if (oldPositions.length > 0) {
             dividersCount = splitPane.getItems().size() - 1;
         }
-        var oldSizeWithoutDividers = oldSize - (dividersCount * this.dividerSize);
+        var oldSizeWithoutDividers = oldSize - (dividersCount * dividerSize);
         logger.debug("SplitPane total old size: {}, without dividers: {}", oldSize, oldSizeWithoutDividers);
         return oldSizeWithoutDividers;
     }
 
-    private double computeNewSize() {
+    private double computeNewSize(double dividerSize) {
         double newSize = splitPane.getWidth();
         if (splitPane.getOrientation() == Orientation.VERTICAL) {
             newSize = splitPane.getHeight();
@@ -791,7 +803,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
         if (!splitPane.getItems().isEmpty()) {
             dividersCount = splitPane.getItems().size() - 1;
         }
-        var newSizeWithoutDividers = newSize - (dividersCount * this.dividerSize);
+        var newSizeWithoutDividers = newSize - (dividersCount * dividerSize);
         logger.debug("SplitPane total new size: {}, without dividers: {}", newSize, newSizeWithoutDividers);
         return newSizeWithoutDividers;
     }

@@ -1092,26 +1092,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     }
 
     void restoreTabDock(SideBarView<?> sideBar, TabDockView<?> dock) {
-        if (sideBar.getTabDocks().isEmpty()) {
-            var sideVM = sideBar.getViewModel();
-            switch (sideVM.getSide()) {
-                case RIGHT:
-                    setRightBar(null);
-                    this.borderPane.setRight(null);
-                    break;
-                case BOTTOM:
-                    setBottomBar(null);
-                    this.borderPane.setBottom(null);
-                    break;
-                case LEFT:
-                    setLeftBar(null);
-                    this.borderPane.setLeft(null);
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-            sideBar.deinitialize();
-        }
+        closeSideBarIfEmpty(sideBar);
 
         // attempt 0 - find the parent by UUID
         var position = dock.getViewModel().getMinimizedPosition();
@@ -1189,6 +1170,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
         final var splitPane = parent.getNode();
         var oldSplitPaneSize = splitPane.getWidth();
+        final var dividerSize = parent.computeDividerSize();
         var dockSize = position.getWidth();
         if (splitPane.getOrientation() == Orientation.VERTICAL) {
             oldSplitPaneSize = splitPane.getHeight();
@@ -1205,15 +1187,19 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         final var finalOldPositions = oldPositions;
         final var finalGrandParentPositions = grandParentPositions;
         getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
+            var divSize = dividerSize;
+            if (divSize < 0) {
+                divSize = finalParent.computeDividerSize();
+            }
             if (finalGrandParent != null) {
                 finalGrandParent.getNode().setDividerPositions(finalGrandParentPositions);
             }
             var mainIndex = indexOfMain(finalParent);
             if (mainIndex >= 0) {
-                finalParent.updateDividersOnAddWithMain(finalOldSplitPaneSize, finalOldPositions, mainIndex,
+                finalParent.updateDividersOnAddWithMain(finalOldSplitPaneSize, finalOldPositions, divSize, mainIndex,
                         finalIndex, finalDockSize);
             } else {
-                finalParent.updateDividersOnAddWithoutMain(finalOldSplitPaneSize, finalOldPositions,
+                finalParent.updateDividersOnAddWithoutMain(finalOldSplitPaneSize, finalOldPositions, divSize,
                         finalIndex, finalDockSize);
             }
             if (logger.isDebugEnabled()) {
@@ -1900,15 +1886,20 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
 
         splitSpace.getChildren().remove(tabDockInfo.getIndex());
+        final var dividerSize = splitSpace.computeDividerSize();
 
         final var finalOldSplitSpaneSize = oldSplitPaneSize;
         getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
+            var divSize = dividerSize;
+            if (divSize < 0) {
+                divSize = splitSpace.computeDividerSize();
+            }
             var mainChildIndex = indexOfMain(splitSpace);
             if (mainChildIndex != -1) {
-                splitSpace.updateDividersOnRemoveWithMain(finalOldSplitSpaneSize, oldPositions,
+                splitSpace.updateDividersOnRemoveWithMain(finalOldSplitSpaneSize, oldPositions, divSize,
                         mainChildIndex, tabDockInfo.getIndex());
             } else {
-                splitSpace.updateDividersOnRemoveWithoutMain(finalOldSplitSpaneSize, oldPositions,
+                splitSpace.updateDividersOnRemoveWithoutMain(finalOldSplitSpaneSize, oldPositions, divSize,
                         tabDockInfo.getIndex());
             }
             return false;
@@ -2091,6 +2082,29 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     private void setLeftBar(SideBarView<?> value) {
         leftBar.set(value);
+    }
+
+    private void closeSideBarIfEmpty(SideBarView<?> sideBar) {
+        if (sideBar.getTabDocks().isEmpty()) {
+            var sideVM = sideBar.getViewModel();
+            switch (sideVM.getSide()) {
+                case RIGHT:
+                    setRightBar(null);
+                    this.borderPane.setRight(null);
+                    break;
+                case BOTTOM:
+                    setBottomBar(null);
+                    this.borderPane.setBottom(null);
+                    break;
+                case LEFT:
+                    setLeftBar(null);
+                    this.borderPane.setLeft(null);
+                    break;
+                default:
+                    throw new AssertionError();
+            }
+            sideBar.deinitialize();
+        }
     }
 
     private void addListenerForSideBar(ReadOnlyObjectWrapper<SideBarView<?>> view,
