@@ -55,7 +55,7 @@ Key features of TabShell include:
 * Abstract classes to simplify component development.
 * Dynamically configurable menu.
 * Ability to preserve component history.
-* Support for dialogs with two scopes — shell and tab.
+* Support for inline dialogs with two scopes — shell and tab.
 * Window styling that matches the theme.
 * Support for 7 themes (4 dark and 3 light).
 * Styling with CSS.
@@ -154,9 +154,9 @@ to predict the final structure of the menu that the user will work with.
 
 The implementation of this feature is structured as follows. There are three key elements: the menu, the group, and the
 item. Each element has its own name, which is used for identification. A menu consists of groups separated by a
-separator. Items are added to groups, and empty groups are ignored. All three elements are registered/unregistered in
-the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is used by `Shell` to construct
-the final menu.
+separator. Items are added to groups, and empty groups are ignored. The factories of all three elements are
+registered/unregistered in the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is used
+by `Shell` to construct the final menu.
 
 The `MenuManager` is responsible for managing the state of menu elements and responding to their actions. It interacts
 with a component that implements the `MenuAware` interface. This interface is implemented by `Shell`, `ShellTab`,
