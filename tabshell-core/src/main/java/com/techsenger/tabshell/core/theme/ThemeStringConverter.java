@@ -22,10 +22,10 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class ThemeStringConverter extends StringConverter<TabShellTheme> {
+public class ThemeStringConverter extends StringConverter<ShellTheme> {
 
     @Override
-    public String toString(TabShellTheme t) {
+    public String toString(ShellTheme t) {
         if (t != null) {
             return t.getName();
         } else {
@@ -34,7 +34,7 @@ public class ThemeStringConverter extends StringConverter<TabShellTheme> {
     }
 
     @Override
-    public TabShellTheme fromString(String string) {
+    public ShellTheme fromString(String string) {
         throw new IllegalStateException();
     }
 }

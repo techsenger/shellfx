@@ -19,7 +19,7 @@ package com.techsenger.tabshell.terminal;
 import com.techsenger.jeditermfx.core.Color;
 import com.techsenger.jeditermfx.core.TerminalColor;
 import com.techsenger.jeditermfx.core.emulator.ColorPalette;
-import com.techsenger.tabshell.core.theme.TabShellTheme;
+import com.techsenger.tabshell.core.theme.ShellTheme;
 import com.techsenger.tabshell.core.theme.ThemePalette;
 
 /**
@@ -35,7 +35,7 @@ class TerminalPalette extends ColorPalette {
 
     private Color[] bgColors;
 
-    private TabShellTheme theme;
+    private ShellTheme theme;
 
     private TerminalPaletteType paletteType;
 
@@ -45,7 +45,7 @@ class TerminalPalette extends ColorPalette {
 
     private ThemePalette textPalette;
 
-    TerminalPalette(TabShellTheme theme, TerminalPaletteType paletteType) {
+    TerminalPalette(ShellTheme theme, TerminalPaletteType paletteType) {
         this.paletteType = paletteType;
         setTheme(theme);
     }
@@ -80,7 +80,7 @@ class TerminalPalette extends ColorPalette {
      * We assume, that theme is always changed on JavaFX thread.
      * @param theme
      */
-    public void setTheme(TabShellTheme theme) {
+    public void setTheme(ShellTheme theme) {
         this.theme = theme;
         if (theme.isDark()) {
             fgColorIndex = 15;

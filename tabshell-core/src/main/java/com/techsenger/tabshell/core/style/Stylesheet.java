@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.style;
 
-import com.techsenger.tabshell.core.theme.TabShellTheme;
+import com.techsenger.tabshell.core.theme.ShellTheme;
 import java.net.URL;
 import java.util.Objects;
 
@@ -31,7 +31,7 @@ import java.util.Objects;
  */
 public class Stylesheet {
 
-    private final TabShellTheme theme;
+    private final ShellTheme theme;
 
     private final URL url;
 
@@ -50,12 +50,12 @@ public class Stylesheet {
      * @param theme the theme this stylesheet is for or null, if the stylesheet must be used for all themes.
      * @param url the url of the stylesheet.
      */
-    public Stylesheet(TabShellTheme theme, URL url) {
+    public Stylesheet(ShellTheme theme, URL url) {
         this.theme = theme;
         this.url = url;
     }
 
-    public TabShellTheme getTheme() {
+    public ShellTheme getTheme() {
         return theme;
     }
 

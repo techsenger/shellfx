@@ -16,15 +16,15 @@
 
 package com.techsenger.tabshell.core.settings.xml;
 
-import com.techsenger.tabshell.core.theme.TabShellTheme;
+import com.techsenger.tabshell.core.theme.ShellTheme;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ThemeAdapter extends EnumAdapter<TabShellTheme> {
+public class ThemeAdapter extends EnumAdapter<ShellTheme> {
 
     public ThemeAdapter() {
-        super(TabShellTheme.class);
+        super(ShellTheme.class);
     }
 }

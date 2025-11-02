@@ -19,7 +19,7 @@ package com.techsenger.tabshell.core;
 import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.style.Stylesheet;
-import com.techsenger.tabshell.core.theme.TabShellTheme;
+import com.techsenger.tabshell.core.theme.ShellTheme;
 import java.util.List;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
@@ -74,7 +74,7 @@ class ThemeManager {
         });
     }
 
-    private void addTheme(TabShellTheme theme, boolean setStageColors) {
+    private void addTheme(ShellTheme theme, boolean setStageColors) {
         if (theme == null) {
             return;
         }
@@ -82,14 +82,14 @@ class ThemeManager {
         addStylesheets(theme, stylesheets);
     }
 
-    private void removeTheme(TabShellTheme theme) {
+    private void removeTheme(ShellTheme theme) {
         if (theme == null) {
             return;
         }
         removeStylesheets(theme, stylesheets);
     }
 
-    private void addStylesheets(TabShellTheme theme, List<? extends Stylesheet> sheets) {
+    private void addStylesheets(ShellTheme theme, List<? extends Stylesheet> sheets) {
         for (var s : sheets) {
             if (s.getTheme() == null || s.getTheme().equals(theme)) {
                 var url = s.getUrl().toExternalForm();
@@ -98,7 +98,7 @@ class ThemeManager {
         }
     }
 
-    private void removeStylesheets(TabShellTheme theme, List<? extends Stylesheet> sheets) {
+    private void removeStylesheets(ShellTheme theme, List<? extends Stylesheet> sheets) {
         for (var s : sheets) {
             if (s.getTheme() == null || s.getTheme().equals(theme)) {
                 var url = s.getUrl().toExternalForm();

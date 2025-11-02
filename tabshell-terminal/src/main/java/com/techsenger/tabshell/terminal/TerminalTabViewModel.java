@@ -24,7 +24,7 @@ import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
-import com.techsenger.tabshell.core.theme.TabShellTheme;
+import com.techsenger.tabshell.core.theme.ShellTheme;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -53,7 +53,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
 
     private final ObservableSource<Boolean> focusRequired = new SimpleObservableSource<>();
 
-    private final ChangeListener<? super TabShellTheme> themeListener = (ov, oldV, newV) -> {
+    private final ChangeListener<? super ShellTheme> themeListener = (ov, oldV, newV) -> {
         terminalPalette.setTheme(newV);
         focusRequired.next(true);
     };

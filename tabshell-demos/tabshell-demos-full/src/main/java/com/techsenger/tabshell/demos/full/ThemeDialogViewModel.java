@@ -18,7 +18,7 @@ package com.techsenger.tabshell.demos.full;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.theme.TabShellTheme;
+import com.techsenger.tabshell.core.theme.ShellTheme;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import java.util.Arrays;
@@ -34,12 +34,12 @@ import javafx.collections.ObservableList;
  */
 public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
 
-    private final ObservableList<TabShellTheme> themes = FXCollections.observableArrayList(Arrays
-            .stream(TabShellTheme.values()).filter(t -> t.isSupported()).collect(Collectors.toList()));
+    private final ObservableList<ShellTheme> themes = FXCollections.observableArrayList(Arrays
+            .stream(ShellTheme.values()).filter(t -> t.isSupported()).collect(Collectors.toList()));
 
-    private final ObjectProperty<TabShellTheme> theme = new SimpleObjectProperty<>();
+    private final ObjectProperty<ShellTheme> theme = new SimpleObjectProperty<>();
 
-    public ThemeDialogViewModel(TabShellTheme currentTheme) {
+    public ThemeDialogViewModel(ShellTheme currentTheme) {
         super(DialogScope.SHELL, false);
         setPrefWidth(500);
         setTitle("Select Theme");
@@ -49,19 +49,19 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
         setButtonWidthEqual(true);
     }
 
-    public ObservableList<TabShellTheme> getThemes() {
+    public ObservableList<ShellTheme> getThemes() {
         return themes;
     }
 
-    public ObjectProperty<TabShellTheme> themeProperty() {
+    public ObjectProperty<ShellTheme> themeProperty() {
         return theme;
     }
 
-    public TabShellTheme getTheme() {
+    public ShellTheme getTheme() {
         return theme.get();
     }
 
-    public void setTheme(TabShellTheme theme) {
+    public void setTheme(ShellTheme theme) {
         this.theme.set(theme);
     }
 

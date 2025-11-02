@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.settings.xml.XmlAppearanceSettings;
 import com.techsenger.tabshell.core.settings.xml.XmlSettings;
 import com.techsenger.tabshell.core.settings.xml.XmlTabSymbolSettings;
 import com.techsenger.tabshell.core.settings.xml.XmlViewerSettings;
-import com.techsenger.tabshell.core.theme.TabShellTheme;
+import com.techsenger.tabshell.core.theme.ShellTheme;
 import javafx.scene.text.Font;
 
 /**
@@ -37,7 +37,7 @@ public final class DemoSettings {
         tabSymbol.setSize(4);
         tabSymbol.setUseSpaces(true);
         var appearance = new XmlAppearanceSettings(regularFont, monospaceFont);
-        appearance.setTheme(TabShellTheme.CUPERTINO_DARK);
+        appearance.setTheme(ShellTheme.CUPERTINO_DARK);
         var viewer = new XmlViewerSettings(monospaceFont, tabSymbol);
         var settings = new XmlSettings(appearance, viewer);
         return settings;

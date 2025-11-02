@@ -35,7 +35,7 @@ import javafx.scene.text.Font;
  *
  * @author Pavel Castornii
  */
-public enum TabShellTheme {
+public enum ShellTheme {
 
     CUPERTINO_LIGHT("Cupertino Light", "cupertino-light.css", false, 6,
             () -> new CupertinoLight().getUserAgentStylesheet(),
@@ -105,7 +105,7 @@ public enum TabShellTheme {
 
     private volatile boolean palettesCreated;
 
-    TabShellTheme(String name, String fileName, boolean dark, int borderRadius, Supplier<String> stylesheetSupplier,
+    ShellTheme(String name, String fileName, boolean dark, int borderRadius, Supplier<String> stylesheetSupplier,
             Factory<ThemeProvider.ThemePalettes> palletesFactory, boolean supported) {
         this.name = name;
         this.fileName = fileName;
