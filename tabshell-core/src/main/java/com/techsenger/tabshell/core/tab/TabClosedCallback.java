@@ -20,7 +20,7 @@ package com.techsenger.tabshell.core.tab;
  * This callback is called when tab is closed, and after references to its view and model are nullified.
  * This handler can be used when it is necessary to check which tabs are closed and which are not.
  *
- * This handler is called by TabShell, TabDock and never by component.
+ * This handler is called by Shell, TabDock and never by component.
  *
  * @author Pavel Castornii
  */

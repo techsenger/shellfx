@@ -76,7 +76,7 @@ public interface ShellView<T extends ShellViewModel> extends ComponentView<T>, T
     void addStylesheets(List<Stylesheet> sheets);
 
     /**
-     * Removes stylesheets from TabShell.
+     * Removes stylesheets from Shell.
      *
      * @param sheets
      */

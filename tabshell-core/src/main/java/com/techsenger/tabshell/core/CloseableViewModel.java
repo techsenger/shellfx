@@ -27,7 +27,7 @@ public interface CloseableViewModel {
      *
      * <p>When called, this method will trigger the {@link CloseableView#close()} method
      * on the corresponding View through a registered listener. The actual closure
-     * is delegated to the parent component (like {@code TabShell} or {@code DialogManager})
+     * is delegated to the parent component (like {@code Shell} or {@code DialogManager})
      * if the View is not a top-level component.
      */
     void requestClose();

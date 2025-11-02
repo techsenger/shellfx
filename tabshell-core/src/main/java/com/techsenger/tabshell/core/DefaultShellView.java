@@ -79,11 +79,11 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");
 
-    private static class TabShellDialogManager extends DefaultDialogManager {
+    private static class ShellDialogManager extends DefaultDialogManager {
 
         private final ShellStageController controller;
 
-        TabShellDialogManager(ShellStageController controller, StackPane stackPane, VBox mainPane,
+        ShellDialogManager(ShellStageController controller, StackPane stackPane, VBox mainPane,
                 ReadOnlyIntegerWrapper dialogCount) {
             super(DialogScope.SHELL, stackPane, mainPane, dialogCount);
             this.controller = controller;
@@ -240,7 +240,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
             this.stylesheets.addAll(stylesheets);
         }
         themeManager = new ThemeManager(stageController, this.stylesheets, viewModel.getSettings().getAppearance());
-        this.dialogManager = new TabShellDialogManager(stageController, stackPane, contentPane,
+        this.dialogManager = new ShellDialogManager(stageController, stackPane, contentPane,
                 viewModel.dialogCountWrapper());
         this.menuManager = new MenuManager(this, this.menuBar);
         this.fontManager = new FontManager(stackPane, viewModel.getSettings().getAppearance());

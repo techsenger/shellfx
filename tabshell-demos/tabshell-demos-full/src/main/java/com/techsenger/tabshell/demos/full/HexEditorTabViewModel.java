@@ -37,10 +37,10 @@ public class HexEditorTabViewModel extends AbstractHexEditorTabViewModel {
     private final ObservableList<ColumnSeparator> columnSeparators =
             FXCollections.observableArrayList(ColumnSeparator.values());
 
-    public HexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
-        super(tabShell, file);
+    public HexEditorTabViewModel(ShellViewModel shell, GenericFile file) {
+        super(shell, file);
         getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> tabShell.getHistoryManager().getOrCreateHistory(HexEditorTabHistory.class,
+        setHistoryProvider(() -> shell.getHistoryManager().getOrCreateHistory(HexEditorTabHistory.class,
                 HexEditorTabHistory::new));
     }
 

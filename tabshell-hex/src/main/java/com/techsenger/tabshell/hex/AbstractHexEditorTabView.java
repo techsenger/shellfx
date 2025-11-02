@@ -118,8 +118,8 @@ public abstract class AbstractHexEditorTabView<T extends AbstractHexEditorTabVie
 
     private int pulseCounter;
 
-    public AbstractHexEditorTabView(ShellView<?> tabShell, T viewModel) {
-        super(tabShell, viewModel);
+    public AbstractHexEditorTabView(ShellView<?> shell, T viewModel) {
+        super(shell, viewModel);
         this.virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
                 var rowViewModel = viewModel.createRow(offset);
                 var rowView = new BodyRowView(rowViewModel, this);

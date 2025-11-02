@@ -37,8 +37,8 @@ public class HexEditorTabView extends AbstractHexEditorTabView<HexEditorTabViewM
 
     private final ComboBox<ColumnSeparator> columnSeparatorComboBox = new ComboBox<>();
 
-    public HexEditorTabView(ShellView<?> tabShell, HexEditorTabViewModel viewModel) {
-        super(tabShell, viewModel);
+    public HexEditorTabView(ShellView<?> shell, HexEditorTabViewModel viewModel) {
+        super(shell, viewModel);
     }
 
     @Override

@@ -74,9 +74,9 @@ final class MenuLogger {
                 logMenu((NamedMenu) menu, 0, builder);
             }
             if (afterChange) {
-                logger.debug("TabShell Menus after change: {}", builder.toString());
+                logger.debug("Shell Menus after change: {}", builder.toString());
             } else {
-                logger.debug("TabShell Menus: {}", builder.toString());
+                logger.debug("Shell Menus: {}", builder.toString());
             }
         }
     }

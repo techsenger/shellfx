@@ -112,8 +112,8 @@ public abstract class AbstractHexEditorTabViewModel extends AbstractWorkerTabVie
 
     private final DataInspectorTabViewModel dataInspector;
 
-    public AbstractHexEditorTabViewModel(ShellViewModel tabShell, GenericFile file) {
-        super(tabShell);
+    public AbstractHexEditorTabViewModel(ShellViewModel shell, GenericFile file) {
+        super(shell);
         this.document = new HexDocument(file);
         setIcon(HexIcons.EDITOR);
         setTitle("Hex Editor");

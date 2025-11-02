@@ -221,7 +221,7 @@ public enum ShellTheme {
     }
 
     /**
-     * Indicates if this theme is supported by TabShell. Returns false for Modena and Caspian themes
+     * Indicates if this theme is supported by Shell. Returns false for Modena and Caspian themes
      * and true for all others.
      *
      * @return
