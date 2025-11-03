@@ -18,6 +18,7 @@ module com.techsenger.tabshell.registrars {
     requires org.slf4j;
     requires com.techsenger.mvvm4fx.core;
     requires com.techsenger.tabshell.core;
+    requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.text;
     requires javafx.controls;

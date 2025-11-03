@@ -27,7 +27,7 @@ import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.input.Clipboard;
-import com.techsenger.tabshell.core.menu.EditMenuNames;
+import com.techsenger.tabshell.shared.menu.EditMenuNames;
 
 /**
  * Abstract class for editors in exported package.

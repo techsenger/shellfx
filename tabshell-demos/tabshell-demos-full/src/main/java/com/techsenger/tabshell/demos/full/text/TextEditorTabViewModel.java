@@ -19,7 +19,7 @@ package com.techsenger.tabshell.demos.full.text;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.core.menu.EditMenuNames;
+import com.techsenger.tabshell.shared.menu.EditMenuNames;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;

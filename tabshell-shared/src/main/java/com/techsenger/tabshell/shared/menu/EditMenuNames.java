@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.menu;
+package com.techsenger.tabshell.shared.menu;
 
 import com.techsenger.tabshell.material.menu.MenuGroupName;
 import com.techsenger.tabshell.material.menu.MenuItemName;
@@ -24,19 +24,37 @@ import com.techsenger.tabshell.material.menu.MenuName;
  *
  * @author Pavel Castornii
  */
-public interface FileMenuNames {
+public interface EditMenuNames {
 
-    MenuName FILE = new MenuName();
+    MenuName EDIT = new MenuName();
 
-    MenuGroupName FILE_ACTIONS = new MenuGroupName("FileActions");
+    MenuGroupName HISTORY = new MenuGroupName("History");
+
+    MenuGroupName CLIPBOARD = new MenuGroupName("Clipboard");
+
+    MenuGroupName FIND_REPLACE = new MenuGroupName("FindReplace");
 
     MenuGroupName DEFAULT = new MenuGroupName("Default");
 
-    MenuItemName OPEN = new MenuItemName();
+    MenuItemName UNDO = new MenuItemName();
 
-    MenuItemName SAVE = new MenuItemName();
+    MenuItemName REDO = new MenuItemName();
 
-    MenuItemName SAVE_AS = new MenuItemName();
+    MenuItemName CUT = new MenuItemName();
 
-    MenuItemName EXIT = new MenuItemName();
+    MenuItemName COPY = new MenuItemName();
+
+    MenuItemName PASTE = new MenuItemName();
+
+    MenuItemName FIND = new MenuItemName();
+
+    MenuItemName REPLACE = new MenuItemName();
+
+    MenuItemName FIND_SELECTION = new MenuItemName();
+
+    MenuItemName FIND_NEXT = new MenuItemName();
+
+    MenuItemName FIND_PREVIOUS = new MenuItemName();
+
+    MenuItemName GO_TO_LINE = new MenuItemName();
 }

@@ -18,7 +18,7 @@ package com.techsenger.tabshell.registrars;
 
 import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.menu.FileMenuNames;
+import com.techsenger.tabshell.shared.menu.FileMenuNames;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.menu;
 
-import com.techsenger.tabshell.core.menu.FileMenuNames;
+import com.techsenger.tabshell.shared.menu.FileMenuNames;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 
 /**

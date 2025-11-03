@@ -33,5 +33,6 @@ module com.techsenger.tabshell.shared {
 
     exports com.techsenger.tabshell.shared;
     exports com.techsenger.tabshell.shared.find;
+    exports com.techsenger.tabshell.shared.menu;
     exports com.techsenger.tabshell.shared.workertab;
 }
