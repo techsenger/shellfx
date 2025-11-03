@@ -18,38 +18,12 @@ package com.techsenger.tabshell.demos.full.menu;
 
 import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.menu.FileMenuNames;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogView;
-import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogViewModel;
-import com.techsenger.tabshell.demos.full.dock.DockTabView;
-import com.techsenger.tabshell.demos.full.dock.DockTabViewModel;
-import com.techsenger.tabshell.demos.full.hex.HexEditorTabView;
-import com.techsenger.tabshell.demos.full.hex.HexEditorTabViewModel;
-import com.techsenger.tabshell.demos.full.text.Text;
-import com.techsenger.tabshell.demos.full.text.TextEditorTabView;
-import com.techsenger.tabshell.demos.full.text.TextEditorTabViewModel;
 import com.techsenger.tabshell.demos.full.theme.ThemeDialogView;
 import com.techsenger.tabshell.demos.full.theme.ThemeDialogViewModel;
-import com.techsenger.tabshell.hex.style.HexIcons;
-import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.NamedMenuItem;
 import com.techsenger.tabshell.registrars.FileMenuRegistrar;
-import com.techsenger.tabshell.storage.FileStorages;
-import com.techsenger.tabshell.storage.FileType;
-import com.techsenger.tabshell.storage.GenericFile;
-import com.techsenger.tabshell.terminal.TerminalTabView;
-import com.techsenger.tabshell.terminal.TerminalTabViewModel;
-import com.techsenger.tabshell.terminal.style.TerminalIcons;
-import com.techsenger.tabshell.text.style.TextIcons;
-import java.io.File;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 
 /**
  *
@@ -64,86 +38,12 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
     @Override
     public void register() {
         super.register();
-        registerTextEditorItem(); //file actions group
-        registerHexEditorItem(); //file actions group
-        registerTerminalItem(); //file actions group
-        registerThemeItem(); //file actions group
-        registerDialogsItem(); //file actions group
-        registerDockTabItem(); //file actions group
-    }
-
-    protected void registerTextEditorItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoFileMenuNames.TEXT_EDITOR, "_Text Editor",
-                    new FontIconView(TextIcons.EDITOR), 100);
-            item.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> {
-                var shell = (ShellView<?>) v;
-                //editor
-                var stogages = FileStorages.getDefault(true);
-                var homeDir = GenericFile.getHome(stogages);
-                var file = GenericFile.getChild(homeDir, "Lorem Ipsum.txt", FileType.FILE);
-                var editorViewModel = new TextEditorTabViewModel(shell.getViewModel(), file);
-                var editorView = new TextEditorTabView(shell, editorViewModel);
-                editorView.initialize();
-                editorViewModel.setContent(Text.INSTANCE);
-                shell.openTab(editorView);
-            });
-            return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
-    }
-
-    protected void registerHexEditorItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoFileMenuNames.HEX_EDITOR, "_Hex Editor",
-                    new FontIconView(HexIcons.EDITOR), 200);
-            item.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> {
-                var shell = (ShellView<?>) v;
-                //file
-                Path currentPath = Paths.get(System.getProperty("user.dir"));
-                URI fileUri = currentPath.resolve("src" + File.separator + "main" + File.separator
-                        + "resources" + File.separator + "hex.png").toUri();
-                var storage = FileStorages.findByUri(FileStorages.getDefault(true), fileUri);
-                var file = new GenericFile.Builder()
-                        .storage(storage)
-                        .uri(fileUri)
-                        .type(FileType.FILE)
-                        .build();
-
-                //editor
-                var editorViewModel = new HexEditorTabViewModel(shell.getViewModel(), file);
-                var editorView = new HexEditorTabView(shell, editorViewModel);
-                editorView.initialize();
-                shell.openTab(editorView);
-            });
-            return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
-    }
-
-    protected void registerTerminalItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoFileMenuNames.TERMINAL, "_Terminal",
-                    new FontIconView(TerminalIcons.TERMINAL), 300);
-            item.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> {
-                var shell = (ShellView<?>) v;
-                //terminal
-                var terminalViewModel = new TerminalTabViewModel(shell.getViewModel(), null);
-                var terminalView = new TerminalTabView(shell, terminalViewModel);
-                terminalView.initialize();
-                shell.openTab(terminalView);
-            });
-            return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
+        registerThemeItem();
     }
 
     protected void registerThemeItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoFileMenuNames.THEME, "_Theme", 400);
+            var item = new NamedMenuItem(DemoFileMenuNames.THEME, "_Theme", 1000);
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
                 var appearance = shell.getViewModel().getSettings().getAppearance();
@@ -158,38 +58,6 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoFileMenuNames.FILE_ACTIONS, f));
     }
-
-    protected void registerDialogsItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoFileMenuNames.DIALOGS, "Dialogs", 500);
-            item.setOnAction((e) -> {
-                var shell = (ShellView<?>) v;
-                var dialogViewModel = new DialogsDialogViewModel(shell.getViewModel());
-                var dialogView = new DialogsDialogView(shell, dialogViewModel);
-                dialogView.initialize();
-                shell.getDialogManager().openDialog(dialogView);
-            });
-            return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
-    }
-
-    protected void registerDockTabItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoFileMenuNames.DOCK_TAB, "Dock Tab", 1000);
-            item.setOnAction((e) -> {
-                var shell = (ShellView<?>) v;
-                var dockTabViewModel = new DockTabViewModel(shell.getViewModel());
-                var dockTabView = new DockTabView(shell, dockTabViewModel);
-                dockTabView.initialize();
-                shell.openTab(dockTabView);
-            });
-            return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
-    }
-
-
 }

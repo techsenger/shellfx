@@ -27,21 +27,21 @@ import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
  *
  * @author Pavel Castornii
  */
-public class DockTabViewModel extends AbstractShellTabViewModel {
+public class DockLayoutTabViewModel extends AbstractShellTabViewModel {
 
-    private final DockTabHistory history;
+    private final DockLayoutTabHistory history;
 
     private final DockLayoutViewModel layout;
 
     private final TextViewerViewModel textViewer = new TextViewerViewModel();
 
-    public DockTabViewModel(ShellViewModel shell) {
+    public DockLayoutTabViewModel(ShellViewModel shell) {
         super(shell);
-        setTitle("Dock Tab");
+        setTitle("Dock Layout Tab");
         getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> shell.getHistoryManager()
-                .getOrCreateHistory(DockTabHistory.class, DockTabHistory::new));
-        this.history = (DockTabHistory) getHistoryProvider().provide();
+                .getOrCreateHistory(DockLayoutTabHistory.class, DockLayoutTabHistory::new));
+        this.history = (DockLayoutTabHistory) getHistoryProvider().provide();
         this.layout = new DockLayoutViewModel(this.history.getDockLayout());
     }
 
@@ -55,6 +55,6 @@ public class DockTabViewModel extends AbstractShellTabViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DOCK_TAB);
+        return new ComponentDescriptor(DemoComponentNames.DOCK_LAYOUT_TAB);
     }
 }

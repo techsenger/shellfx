@@ -31,13 +31,13 @@ public interface DemoComponentNames {
 
     ComponentName HEX_EDITOR_TAB = new DefaultComponentName("DemoHexEditorTab");
 
-    ComponentName THEME_DIALOG = new DefaultComponentName("DemoThemeDialog");
-
-    ComponentName DOCK_TAB = new DefaultComponentName("DemoDockTab");
+    ComponentName DOCK_LAYOUT_TAB = new DefaultComponentName("DemoDockLayoutTab");
 
     ComponentName DOCKABLE_TAB = new DefaultComponentName("DemoDockableTab");
 
     ComponentName TEXT_VIEWER_TAB = new DefaultComponentName("DemoTextViewerTab");
 
     ComponentName DIALOGS_DIALOG = new DefaultComponentName("DemoDialogsDialog");
+
+    ComponentName THEME_DIALOG = new DefaultComponentName("DemoThemeDialog");
 }

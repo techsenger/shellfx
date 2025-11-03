@@ -23,7 +23,7 @@ import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
  *
  * @author Pavel Castornii
  */
-public class DockTabHistory extends AbstractTabHistory<DockTabViewModel> {
+public class DockLayoutTabHistory extends AbstractTabHistory<DockLayoutTabViewModel> {
 
     private DockLayoutHistory<?> dockLayout = new DockLayoutHistory<>();
 

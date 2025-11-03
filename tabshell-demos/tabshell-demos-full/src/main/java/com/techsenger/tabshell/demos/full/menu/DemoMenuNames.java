@@ -16,15 +16,29 @@
 
 package com.techsenger.tabshell.demos.full.menu;
 
-import com.techsenger.tabshell.core.menu.FileMenuNames;
+import com.techsenger.tabshell.material.menu.MenuGroupName;
 import com.techsenger.tabshell.material.menu.MenuItemName;
+import com.techsenger.tabshell.material.menu.MenuName;
 
 /**
+ * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
+ * for example, during validation in a tab.
  *
  * @author Pavel Castornii
  */
-public interface DemoFileMenuNames extends FileMenuNames {
+public interface DemoMenuNames {
 
-    MenuItemName THEME = new MenuItemName();
+    MenuName DEMO = new MenuName();
 
+    MenuGroupName DEFAULT = new MenuGroupName("Default");
+
+    MenuItemName TEXT_EDITOR = new MenuItemName();
+
+    MenuItemName HEX_EDITOR = new MenuItemName();
+
+    MenuItemName TERMINAL = new MenuItemName();
+
+    MenuItemName DIALOGS = new MenuItemName();
+
+    MenuItemName DOCK_LAYOUT = new MenuItemName();
 }

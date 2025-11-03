@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.DefaultShellViewModel;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
 import com.techsenger.tabshell.demos.full.menu.DemoFileMenuRegistrar;
+import com.techsenger.tabshell.demos.full.menu.DemoMenuRegistrar;
 import com.techsenger.tabshell.icons.IconStylesheetProvider;
 import com.techsenger.tabshell.registrars.EditMenuRegistrar;
 import javafx.application.Application;
@@ -51,6 +52,8 @@ public class Demo extends Application {
         fmr.register();
         var emr = new EditMenuRegistrar(controlRegistry);
         emr.register();
+        var dmr = new DemoMenuRegistrar(controlRegistry);
+        dmr.register();
         view.upgradeMenuBar();
     }
 }

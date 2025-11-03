@@ -31,13 +31,13 @@ import javafx.scene.control.ToolBar;
  *
  * @author Pavel Castornii
  */
-public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
+public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewModel> {
 
     private final DockLayoutView<?> layout;
 
     private final TextViewerView textViewer;
 
-    public DockTabView(ShellView<?> shell, DockTabViewModel viewModel) {
+    public DockLayoutTabView(ShellView<?> shell, DockLayoutTabViewModel viewModel) {
         super(shell, viewModel);
         this.layout = new DockLayoutView<>(viewModel.getLayout());
         this.textViewer = new TextViewerView(viewModel.getTextViewer());
@@ -53,7 +53,7 @@ public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
     }
 
     @Override
-    protected void build(DockTabViewModel viewModel) {
+    protected void build(DockLayoutTabViewModel viewModel) {
         super.build(viewModel);
         var removeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
         var addButton = new Button(null, new FontIconView(CoreIcons.ADD));
@@ -63,7 +63,7 @@ public class DockTabView extends AbstractShellTabView<DockTabViewModel> {
     }
 
     @Override
-    protected void postInitialize(DockTabViewModel viewModel) {
+    protected void postInitialize(DockLayoutTabViewModel viewModel) {
         super.postInitialize(viewModel);
         textViewer.initialize();
 
