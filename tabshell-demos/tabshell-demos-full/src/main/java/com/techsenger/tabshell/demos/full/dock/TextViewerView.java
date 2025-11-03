@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
-import com.techsenger.tabshell.demos.full.Text;
+import com.techsenger.tabshell.demos.full.text.Text;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;

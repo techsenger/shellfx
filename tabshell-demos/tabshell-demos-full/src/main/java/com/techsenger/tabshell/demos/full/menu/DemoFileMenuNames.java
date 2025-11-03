@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.menu;
 
-import com.techsenger.tabshell.hex.AbstractHexEditorTabMediator;
+import com.techsenger.tabshell.core.menu.FileMenuNames;
+import com.techsenger.tabshell.material.menu.MenuItemName;
 
 /**
+ * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
+ * for example, during validation in a tab.
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabMediator extends AbstractHexEditorTabMediator<HexEditorTabView> {
+public interface DemoFileMenuNames extends FileMenuNames {
 
-    public HexEditorTabMediator(HexEditorTabView view) {
-        super(view);
-    }
+    MenuItemName TEXT_EDITOR = new MenuItemName();
 
+    MenuItemName HEX_EDITOR = new MenuItemName();
+
+    MenuItemName TERMINAL = new MenuItemName();
+
+    MenuItemName THEME = new MenuItemName();
+
+    MenuItemName DOCK_TAB = new MenuItemName();
 }

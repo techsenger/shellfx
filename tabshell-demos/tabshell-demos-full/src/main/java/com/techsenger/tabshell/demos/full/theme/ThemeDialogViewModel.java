@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.theme;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.theme.ShellTheme;
+import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import java.util.Arrays;

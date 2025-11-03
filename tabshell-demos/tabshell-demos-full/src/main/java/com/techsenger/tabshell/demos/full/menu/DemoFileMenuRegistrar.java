@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.menu;
 
+import com.techsenger.tabshell.demos.full.text.Text;
+import com.techsenger.tabshell.demos.full.text.TextEditorTabView;
+import com.techsenger.tabshell.demos.full.text.TextEditorTabViewModel;
+import com.techsenger.tabshell.demos.full.hex.HexEditorTabViewModel;
+import com.techsenger.tabshell.demos.full.hex.HexEditorTabView;
 import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.menu.FileMenuNames;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.demos.full.theme.ThemeDialogView;
+import com.techsenger.tabshell.demos.full.theme.ThemeDialogViewModel;
 import com.techsenger.tabshell.demos.full.dock.DockTabView;
 import com.techsenger.tabshell.demos.full.dock.DockTabViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;

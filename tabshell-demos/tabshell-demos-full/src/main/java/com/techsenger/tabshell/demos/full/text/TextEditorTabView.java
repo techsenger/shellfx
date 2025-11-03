@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.text;
 
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
@@ -37,7 +37,7 @@ public class TextEditorTabView extends AbstractEditorTabView<TextEditorTabViewMo
 
     private final Button yesNoButton = new Button("YesNo");
 
-    TextEditorTabView(ShellView<?> shell, TextEditorTabViewModel viewModel) {
+    public TextEditorTabView(ShellView<?> shell, TextEditorTabViewModel viewModel) {
         super(shell, viewModel, new ExtendedTextArea());
     }
 

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.hex;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.hex.AbstractHexEditorTabViewModel;
 import com.techsenger.tabshell.hex.CaretShape;
 import com.techsenger.tabshell.hex.ColumnSeparator;

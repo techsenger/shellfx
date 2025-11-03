@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.text;
 
-import com.techsenger.tabshell.hex.AbstractHexEditorTabHistory;
+import com.techsenger.tabshell.text.editor.AbstractEditorTabHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabHistory extends AbstractHexEditorTabHistory<HexEditorTabViewModel> {
+public class TextEditorTabHistory extends AbstractEditorTabHistory {
 
 }

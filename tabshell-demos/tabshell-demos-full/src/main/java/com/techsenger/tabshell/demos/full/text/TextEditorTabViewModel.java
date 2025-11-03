@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full;
+package com.techsenger.tabshell.demos.full.text;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
@@ -22,6 +22,7 @@ import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.EditMenuNames;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
+import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
@@ -37,7 +38,7 @@ import java.util.List;
  */
 public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
 
-    TextEditorTabViewModel(ShellViewModel shell, GenericFile file) {
+    public TextEditorTabViewModel(ShellViewModel shell, GenericFile file) {
         super(shell, file);
         //the initial history is created using a factory instead of reflection in the history manager to avoid
         //access issues with hidden packages
