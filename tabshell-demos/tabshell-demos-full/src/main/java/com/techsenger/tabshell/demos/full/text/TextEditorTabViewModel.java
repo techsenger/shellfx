@@ -19,14 +19,10 @@ package com.techsenger.tabshell.demos.full.text;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.EditMenuNames;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
-import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabViewModel;
 import com.techsenger.tabshell.text.style.TextIcons;
@@ -55,37 +51,6 @@ public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(DemoComponentNames.EDITOR_TAB);
-    }
-
-    void showInfoDialog() {
-        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
-                "All done! Time for coffee.");
-        viewModel.setPrefWidth(400);
-        getMediator().openAlertDialog(viewModel);
-    }
-
-    void showWarningDialog() {
-        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
-                "Attention! You shouldn't do it!");
-        viewModel.setPrefWidth(400);
-        getMediator().openAlertDialog(viewModel);
-    }
-
-    void showErrorDialog() {
-        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
-                "Oops! That didn’t work.");
-        viewModel.setPrefWidth(400);
-        getMediator().openAlertDialog(viewModel);
-    }
-
-    void showYesNoDialog() {
-        var viewModel = new YesNoDialogViewModel(DialogScope.SHELL,
-                "Are you really sure?");
-        viewModel.setTitle("Confirm");
-        viewModel.setYesText("Yes");
-        viewModel.setNoText("No");
-        viewModel.setPrefWidth(400);
-        getMediator().openYesNoDialog(viewModel);
     }
 
     @Override

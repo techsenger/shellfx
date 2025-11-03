@@ -16,20 +16,22 @@
 
 package com.techsenger.tabshell.demos.full.menu;
 
-import com.techsenger.tabshell.demos.full.text.Text;
-import com.techsenger.tabshell.demos.full.text.TextEditorTabView;
-import com.techsenger.tabshell.demos.full.text.TextEditorTabViewModel;
-import com.techsenger.tabshell.demos.full.hex.HexEditorTabViewModel;
-import com.techsenger.tabshell.demos.full.hex.HexEditorTabView;
 import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.menu.FileMenuNames;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.demos.full.theme.ThemeDialogView;
-import com.techsenger.tabshell.demos.full.theme.ThemeDialogViewModel;
+import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogView;
+import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogViewModel;
 import com.techsenger.tabshell.demos.full.dock.DockTabView;
 import com.techsenger.tabshell.demos.full.dock.DockTabViewModel;
+import com.techsenger.tabshell.demos.full.hex.HexEditorTabView;
+import com.techsenger.tabshell.demos.full.hex.HexEditorTabViewModel;
+import com.techsenger.tabshell.demos.full.text.Text;
+import com.techsenger.tabshell.demos.full.text.TextEditorTabView;
+import com.techsenger.tabshell.demos.full.text.TextEditorTabViewModel;
+import com.techsenger.tabshell.demos.full.theme.ThemeDialogView;
+import com.techsenger.tabshell.demos.full.theme.ThemeDialogViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.NamedMenuItem;
@@ -66,6 +68,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
         registerHexEditorItem(); //file actions group
         registerTerminalItem(); //file actions group
         registerThemeItem(); //file actions group
+        registerDialogsItem(); //file actions group
         registerDockTabItem(); //file actions group
     }
 
@@ -158,6 +161,21 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
         addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
     }
 
+    protected void registerDialogsItem() {
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoFileMenuNames.DIALOGS, "Dialogs", 500);
+            item.setOnAction((e) -> {
+                var shell = (ShellView<?>) v;
+                var dialogViewModel = new DialogsDialogViewModel(shell.getViewModel());
+                var dialogView = new DialogsDialogView(shell, dialogViewModel);
+                dialogView.initialize();
+                shell.getDialogManager().openDialog(dialogView);
+            });
+            return item;
+        };
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
+    }
+
     protected void registerDockTabItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(DemoFileMenuNames.DOCK_TAB, "Dock Tab", 1000);
@@ -172,4 +190,6 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
         };
         addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, FileMenuNames.FILE_ACTIONS, f));
     }
+
+
 }

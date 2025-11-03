@@ -35,5 +35,7 @@ public interface DemoFileMenuNames extends FileMenuNames {
 
     MenuItemName THEME = new MenuItemName();
 
+    MenuItemName DIALOGS = new MenuItemName();
+
     MenuItemName DOCK_TAB = new MenuItemName();
 }

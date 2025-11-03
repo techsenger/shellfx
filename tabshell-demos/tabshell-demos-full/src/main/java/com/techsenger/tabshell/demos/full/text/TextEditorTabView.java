@@ -19,23 +19,12 @@ package com.techsenger.tabshell.demos.full.text;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabView;
-import javafx.geometry.Orientation;
-import javafx.scene.control.Button;
-import javafx.scene.control.Separator;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class TextEditorTabView extends AbstractEditorTabView<TextEditorTabViewModel> {
-
-    private final Button infoButton = new Button("Info");
-
-    private final Button warningButton = new Button("Warning");
-
-    private final Button errorButton = new Button("Error");
-
-    private final Button yesNoButton = new Button("YesNo");
 
     public TextEditorTabView(ShellView<?> shell, TextEditorTabViewModel viewModel) {
         super(shell, viewModel, new ExtendedTextArea());
@@ -45,18 +34,8 @@ public class TextEditorTabView extends AbstractEditorTabView<TextEditorTabViewMo
     protected void build(TextEditorTabViewModel viewModel) {
         super.build(viewModel);
         getToolBar().getItems().addAll(getClearButton(), getCopyButton(), getCutButton(), getPasteButton(),
-                getUndoButton(), getRedoButton(), getWrapTextButton(), new Separator(Orientation.VERTICAL),
-                infoButton, warningButton, errorButton, yesNoButton);
+                getUndoButton(), getRedoButton(), getWrapTextButton());
         getTopPane().getChildren().addAll(getToolBar(), this.getTextScrollPane());
         getTextAreaMenu().getItems().addAll(getCutItem(), getCopyItem(), getPasteItem());
-    }
-
-    @Override
-    protected void addHandlers(TextEditorTabViewModel viewModel) {
-        super.addHandlers(viewModel);
-        infoButton.setOnAction(e -> viewModel.showInfoDialog());
-        warningButton.setOnAction(e -> viewModel.showWarningDialog());
-        errorButton.setOnAction(e -> viewModel.showErrorDialog());
-        yesNoButton.setOnAction(e -> viewModel.showYesNoDialog());
     }
 }
