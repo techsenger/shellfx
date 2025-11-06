@@ -1119,8 +1119,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                     parent = splitSpacesByUuid.get(uuid);
                     if (parent != null) {
                         if (i == pathFromRoot.size() - 3) { // grandparent
-                            var sibling = findSibling(parent, position.getSiblings());
-                            if (sibling != null && resolveSide(sibling) == side) {
+                            var sibling = findSibling(parent, position.getSiblings(), side);
+                            if (sibling != null) {
                                 grandParent = parent;
                                 grandParentPositions = parent.getNode().getDividerPositions();
                                 parent = wrap(sibling, getContainer(sibling).createInfo().getIndex());
@@ -1269,18 +1269,27 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return resolvedSide == side;
     }
 
-    private AbstractPaneView<?> findSibling(SplitSpaceView<?> splitSpace, List<UUID> siblings) {
-        var childrenByUuid = splitSpace.getChildren()
+    private AbstractPaneView<?> findSibling(SplitSpaceView<?> splitSpace, List<UUID> siblingUuids, Side side) {
+        var siblingsByUuid = splitSpace.getChildren()
                 .stream()
                 .map(c -> (AbstractPaneView<?>) c)
                 .collect(Collectors.toMap(c -> getUuid(c), c -> c));
-        for (var sibling : siblings) {
-            var child = childrenByUuid.get(sibling);
-            if (child != null) {
-                return child;
+        boolean mainFound = false;
+        AbstractPaneView<?> sibling = null;
+        for (var uuid : siblingUuids) {
+            sibling = siblingsByUuid.get(uuid);
+            if (sibling != null) {
+                if (sibling == getMain()) {
+                    mainFound = true;
+                } else if (resolveSide(sibling) == side) {
+                    break;
+                }
             }
         }
-        return null;
+        if (sibling == null && mainFound) {
+            return getMain();
+        }
+        return sibling;
     }
 
     private void handleMouseDragOverOnTabHeaderArea(MousePosition mousePosition, TabDockContainer tabDockContainer) {
