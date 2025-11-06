@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.tab.TabView;
 import javafx.geometry.Bounds;
@@ -25,7 +26,6 @@ import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
 import static javafx.geometry.Side.RIGHT;
 import javafx.scene.Cursor;
-import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -41,7 +41,7 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
 
     private final SideBarView<?> sideBar;
 
-    private final TabPane tabPane = new TabPane();
+    private final TabPanePro tabPane = new TabPanePro();
 
     private final VBox node = new VBox(tabPane);
 
@@ -152,6 +152,10 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
                 e.consume();
             }
         });
+    }
+
+    protected TabPanePro getTabPane() {
+        return tabPane;
     }
 
     private void setResizeCursor() {
