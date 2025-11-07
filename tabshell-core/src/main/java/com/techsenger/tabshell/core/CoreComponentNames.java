@@ -24,6 +24,6 @@ import com.techsenger.mvvm4fx.core.ComponentName;
  */
 public interface CoreComponentNames {
 
-    ComponentName SHELL = new DefaultComponentName("Shell");
+    ComponentName SHELL = new ComponentName("Shell");
 
 }

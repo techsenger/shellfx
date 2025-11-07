@@ -18,13 +18,13 @@ package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
-import com.techsenger.tabshell.material.textarea.TextAreaStyleKeys;
 import com.techsenger.toolkit.fx.FxPlatform;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import com.techsenger.tabshell.material.textarea.TextAreaStyleNames;
 
 /**
  *
@@ -80,7 +80,7 @@ public class DefaultFindViewTest {
         var iterator = spans.iterator();
         var span = iterator.next();
         assertThat(span.getLength()).isEqualTo(4);
-        assertThat(span.getStyle().iterator().next().getKey()).isEqualTo(TextAreaStyleKeys.FIND_HIGHLIGHT);
+        assertThat(span.getStyle().iterator().next().getName()).isEqualTo(TextAreaStyleNames.FIND_HIGHLIGHT);
         span = iterator.next();
         assertThat(span.getLength()).isEqualTo(5);
         assertThat(span.getStyle()).hasSize(0);
@@ -101,13 +101,13 @@ public class DefaultFindViewTest {
         var iterator = spans.iterator();
         var span = iterator.next();
         assertThat(span.getLength()).isEqualTo(4);
-        assertThat(span.getStyle().iterator().next().getKey()).isEqualTo(TextAreaStyleKeys.FIND_HIGHLIGHT);
+        assertThat(span.getStyle().iterator().next().getName()).isEqualTo(TextAreaStyleNames.FIND_HIGHLIGHT);
         span = iterator.next();
         assertThat(span.getLength()).isEqualTo(1);
         assertThat(span.getStyle()).hasSize(0);
         span = iterator.next();
         assertThat(span.getLength()).isEqualTo(4);
-        assertThat(span.getStyle().iterator().next().getKey()).isEqualTo(TextAreaStyleKeys.FIND_HIGHLIGHT);
+        assertThat(span.getStyle().iterator().next().getName()).isEqualTo(TextAreaStyleNames.FIND_HIGHLIGHT);
     }
 
     @Test
@@ -125,7 +125,7 @@ public class DefaultFindViewTest {
         var iterator = spans.iterator();
         var span = iterator.next();
         assertThat(span.getLength()).isEqualTo(4);
-        assertThat(span.getStyle().iterator().next().getKey()).isEqualTo(TextAreaStyleKeys.FIND_HIGHLIGHT);
+        assertThat(span.getStyle().iterator().next().getName()).isEqualTo(TextAreaStyleNames.FIND_HIGHLIGHT);
         span = iterator.next();
         assertThat(span.getLength()).isEqualTo(3);
         assertThat(span.getStyle()).hasSize(0);
@@ -146,10 +146,10 @@ public class DefaultFindViewTest {
         var iterator = spans.iterator();
         var span = iterator.next();
         assertThat(span.getLength()).isEqualTo(4);
-        assertThat(span.getStyle().iterator().next().getKey()).isEqualTo(TextAreaStyleKeys.FIND_HIGHLIGHT);
+        assertThat(span.getStyle().iterator().next().getName()).isEqualTo(TextAreaStyleNames.FIND_HIGHLIGHT);
         span = iterator.next();
         assertThat(span.getLength()).isEqualTo(4);
-        assertThat(span.getStyle().iterator().next().getKey()).isEqualTo(TextAreaStyleKeys.FIND_HIGHLIGHT);
+        assertThat(span.getStyle().iterator().next().getName()).isEqualTo(TextAreaStyleNames.FIND_HIGHLIGHT);
     }
 
     @Test

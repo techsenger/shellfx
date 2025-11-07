@@ -18,7 +18,6 @@ package com.techsenger.tabshell.hex;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 import com.techsenger.tabshell.core.node.AbstractNodeViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -37,7 +36,7 @@ import javafx.geometry.Dimension2D;
  */
 public final class CaretViewModel extends AbstractNodeViewModel {
 
-    private static final ComponentName HEX_EDITOR_CARET = new DefaultComponentName("HexEditorCaret");
+    private static final ComponentName HEX_EDITOR_CARET = new ComponentName("HexEditorCaret");
 
     private final ReadOnlyObjectWrapper<CaretPosition> position = new ReadOnlyObjectWrapper<>();
 

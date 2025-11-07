@@ -14,31 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.table;
-
-import com.techsenger.tabshell.material.Named;
-import javafx.scene.control.TreeTableColumn;
+package com.techsenger.tabshell.material.textarea;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class KeyedTreeTableColumn<S, T> extends TreeTableColumn<S, T> implements Named {
+public interface TextAreaStyleNames {
 
-    private final TreeTableColumnName name;
-
-    public KeyedTreeTableColumn(TreeTableColumnName name) {
-        super();
-        this.name = name;
-    }
-
-    public KeyedTreeTableColumn(TreeTableColumnName name, String string) {
-        super(string);
-        this.name = name;
-    }
-
-    @Override
-    public TreeTableColumnName getName() {
-        return name;
-    }
+    TextAreaStyleName FIND_HIGHLIGHT = new TextAreaStyleName();
 }

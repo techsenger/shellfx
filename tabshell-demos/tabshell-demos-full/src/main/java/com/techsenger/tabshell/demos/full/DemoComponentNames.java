@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demos.full;
 
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  * Keys are used to identify components at they are always accessible and are kept in API. Classes cannot
@@ -27,17 +26,17 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface DemoComponentNames {
 
-    ComponentName EDITOR_TAB = new DefaultComponentName("DemoEditorTab");
+    ComponentName EDITOR_TAB = new ComponentName("DemoEditorTab");
 
-    ComponentName HEX_EDITOR_TAB = new DefaultComponentName("DemoHexEditorTab");
+    ComponentName HEX_EDITOR_TAB = new ComponentName("DemoHexEditorTab");
 
-    ComponentName DOCK_LAYOUT_TAB = new DefaultComponentName("DemoDockLayoutTab");
+    ComponentName DOCK_LAYOUT_TAB = new ComponentName("DemoDockLayoutTab");
 
-    ComponentName DOCKABLE_TAB = new DefaultComponentName("DemoDockableTab");
+    ComponentName DOCKABLE_TAB = new ComponentName("DemoDockableTab");
 
-    ComponentName TEXT_VIEWER_TAB = new DefaultComponentName("DemoTextViewerTab");
+    ComponentName TEXT_VIEWER_TAB = new ComponentName("DemoTextViewerTab");
 
-    ComponentName DIALOGS_DIALOG = new DefaultComponentName("DemoDialogsDialog");
+    ComponentName DIALOGS_DIALOG = new ComponentName("DemoDialogsDialog");
 
-    ComponentName THEME_DIALOG = new DefaultComponentName("DemoThemeDialog");
+    ComponentName THEME_DIALOG = new ComponentName("DemoThemeDialog");
 }

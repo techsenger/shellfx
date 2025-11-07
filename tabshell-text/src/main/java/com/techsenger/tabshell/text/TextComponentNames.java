@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.text;
 
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -25,7 +24,7 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface TextComponentNames {
 
-    ComponentName FIND_PANE = new DefaultComponentName("FindPane");
+    ComponentName FIND_PANE = new ComponentName("FindPane");
 
-    ComponentName GO_TO_LINE_DIALOG = new DefaultComponentName("GoToLineDialog");
+    ComponentName GO_TO_LINE_DIALOG = new ComponentName("GoToLineDialog");
 }

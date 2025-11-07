@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material;
+package com.techsenger.tabshell.material.textarea;
+
+import com.techsenger.mvvm4fx.core.Name;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class Name {
+public class TextAreaStyleName extends Name {
 
-    private final String text;
-
-    public Name(String text) {
-        this.text = text;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public String toString() {
-        return text;
+    public TextAreaStyleName() {
+        super(null);
     }
 }

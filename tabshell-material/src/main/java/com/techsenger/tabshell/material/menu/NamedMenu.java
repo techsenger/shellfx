@@ -24,7 +24,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
 /**
- * Keyed menu allows program to understand where in menu it can add/remove items. That's why all menus must be
+ * Named menu allows program to understand where in menu it can add/remove items. That's why all menus must be
  * created using this class.
  *
  * @author Pavel Castornii

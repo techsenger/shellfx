@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.layout;
 
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -25,15 +24,15 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface LayoutComponentNames {
 
-    ComponentName DOCK_LAYOUT = new DefaultComponentName("DockLayout");
+    ComponentName DOCK_LAYOUT = new ComponentName("DockLayout");
 
-    ComponentName SPLIT_SPACE = new DefaultComponentName("SplitSpace");
+    ComponentName SPLIT_SPACE = new ComponentName("SplitSpace");
 
-    ComponentName TAB_DOCK = new DefaultComponentName("TabDock");
+    ComponentName TAB_DOCK = new ComponentName("TabDock");
 
-    ComponentName SIDE_BAR = new DefaultComponentName("SideBar");
+    ComponentName SIDE_BAR = new ComponentName("SideBar");
 
-    ComponentName TAB_POPUP = new DefaultComponentName("TabPopup");
+    ComponentName TAB_POPUP = new ComponentName("TabPopup");
 
-    ComponentName TAB_HOST = new DefaultComponentName("TabHost");
+    ComponentName TAB_HOST = new ComponentName("TabHost");
 }

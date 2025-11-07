@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.shared;
 
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -25,5 +24,5 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface SharedComponentNames {
 
-    ComponentName WORKER_REPORT_TAB = new DefaultComponentName("WorkerReportTab");
+    ComponentName WORKER_REPORT_TAB = new ComponentName("WorkerReportTab");
 }

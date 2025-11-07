@@ -20,13 +20,13 @@ import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.table.NamedTableColumn;
 import com.techsenger.tabshell.material.table.TableHistoryUtils;
 import com.techsenger.tabshell.storage.FileColumnBuilder;
+import com.techsenger.tabshell.storage.FileColumnNames;
 import com.techsenger.tabshell.storage.GenericFile;
 import java.util.function.Function;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
-import com.techsenger.tabshell.storage.FileColumnNames;
 
 /**
  *
@@ -46,22 +46,22 @@ class FileTableView extends TableView<GenericFile> {
         setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
         setPlaceholder(new Label(""));
 
-        Function<String, TableColumn<?, ?>> columnProvider = (key) -> {
-            if (key.equals(FileColumnNames.TYPE.toString())) {
+        Function<String, TableColumn<?, ?>> columnProvider = (name) -> {
+            if (name.equals(FileColumnNames.TYPE.toString())) {
                 var typeColumn = columnBuilder.buildTypeColumn();
                 typeColumn.setEditable(false);
                 typeColumn.getStyleClass().add(StyleClasses.SAME_SPACING_TABLE_FIRST_COLUMN);
                 return typeColumn;
-            } else if (key.equals(FileColumnNames.NAME.toString())) {
+            } else if (name.equals(FileColumnNames.NAME.toString())) {
                 var nameColumn = columnBuilder.buildNameColumn();
                 nameColumn.setEditable(false);
                 nameColumn.setCellFactory(r -> new TextFieldTableCell<>(stringConverter));
                 return nameColumn;
-            } else if (key.equals(FileColumnNames.SIZE.toString())) {
+            } else if (name.equals(FileColumnNames.SIZE.toString())) {
                 var sizeColumn = columnBuilder.buildSizeColumn();
                 sizeColumn.setEditable(false);
                 return sizeColumn;
-            } else if (key.equals(FileColumnNames.LAST_MODIFIED.toString())) {
+            } else if (name.equals(FileColumnNames.LAST_MODIFIED.toString())) {
                 var lastModifiedColumn = columnBuilder.buildLastModifiedColumn();
                 lastModifiedColumn.setEditable(false);
                 lastModifiedColumn.getStyleClass().add(StyleClasses.SAME_SPACING_TABLE_LAST_COLUMN);

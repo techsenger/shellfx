@@ -18,7 +18,6 @@ package com.techsenger.tabshell.demos.core.dialog;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 
@@ -28,7 +27,7 @@ import com.techsenger.tabshell.core.dialog.DialogScope;
  */
 public class DemoDialogViewModel extends AbstractDialogViewModel {
 
-    private static final ComponentName DEMO_DIALOG = new DefaultComponentName("DemoDialog");
+    private static final ComponentName DEMO_DIALOG = new ComponentName("DemoDialog");
 
     public DemoDialogViewModel(DialogScope scope, boolean resizable) {
         super(scope, resizable);

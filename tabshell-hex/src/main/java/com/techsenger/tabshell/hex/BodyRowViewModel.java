@@ -18,7 +18,6 @@ package com.techsenger.tabshell.hex;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -26,7 +25,7 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 class BodyRowViewModel extends AbstractRowViewModel {
 
-    private static final ComponentName HEX_EDITOR_BODY_ROW = new DefaultComponentName("HexEditorBodyRow");
+    private static final ComponentName HEX_EDITOR_BODY_ROW = new ComponentName("HexEditorBodyRow");
 
     private RowModel model;
 

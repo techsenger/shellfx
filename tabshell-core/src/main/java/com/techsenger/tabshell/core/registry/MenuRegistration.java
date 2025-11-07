@@ -25,14 +25,14 @@ import com.techsenger.tabshell.material.menu.MenuGroupName;
  */
 class MenuRegistration extends AbstractMenuRegistration<NamedMenu> {
 
-    private final MenuGroupName groupKey;
+    private final MenuGroupName groupName;
 
     MenuRegistration(MenuGroupName groupKey, ControlFactory<NamedMenu> factory) {
         super(MenuElementType.MENU, factory);
-        this.groupKey = groupKey;
+        this.groupName = groupKey;
     }
 
-    public MenuGroupName getGroupKey() {
-        return groupKey;
+    public MenuGroupName getGroupName() {
+        return groupName;
     }
 }

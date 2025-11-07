@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.material.menu;
 
-import com.techsenger.tabshell.material.Name;
+import com.techsenger.mvvm4fx.core.Name;
 import com.techsenger.tabshell.material.Named;
 import com.techsenger.tabshell.material.Positioned;
 

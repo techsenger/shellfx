@@ -21,7 +21,7 @@ import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
 
 /**
- * Every menu, menu item, menu group has its own key  which allows it to be distinguished from other menus,
+ * Every menu, menu item, menu group has its own name  which allows it to be distinguished from other menus,
  * for example, during validation in a tab.
  *
  * @author Pavel Castornii

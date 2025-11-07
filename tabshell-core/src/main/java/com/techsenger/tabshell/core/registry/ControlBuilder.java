@@ -70,8 +70,8 @@ public class ControlBuilder {
 
         private final NamedMenuItem item;
 
-        ItemDescriptor(MenuGroupName groupKey, NamedMenuItem item) {
-            this.groupName = groupKey;
+        ItemDescriptor(MenuGroupName groupName, NamedMenuItem item) {
+            this.groupName = groupName;
             this.item = item;
         }
     }
@@ -168,7 +168,7 @@ public class ControlBuilder {
                 case MENU:
                     var mr = (MenuRegistration) r;
                     var menu = mr.getFactory().create(view);
-                    var md = new MenuDescriptor(mr.getGroupKey(), menu);
+                    var md = new MenuDescriptor(mr.getGroupName(), menu);
                     barMenusByName.put(menu.getName(), md);
                     break;
                 case GROUP:

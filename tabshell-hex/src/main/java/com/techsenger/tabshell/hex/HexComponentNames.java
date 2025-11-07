@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.hex;
 
+import com.techsenger.mvvm4fx.core.ComponentGroupName;
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -25,5 +25,7 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface HexComponentNames {
 
-    ComponentName DATA_INSPECTOR_TAB = new DefaultComponentName("DataInspectorTab");
+    ComponentName DATA_INSPECTOR_TAB = new ComponentName("DataInspectorTab");
+
+    ComponentGroupName TOOLS = new ComponentGroupName("Tools");
 }

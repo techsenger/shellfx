@@ -19,8 +19,8 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.techsenger.toolkit</groupId>
-            <artifactId>toolkit-core</artifactId>
+            <groupId>com.techsenger.mvvm4fx</groupId>
+            <artifactId>mvvm4fx-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.techsenger.toolkit</groupId>

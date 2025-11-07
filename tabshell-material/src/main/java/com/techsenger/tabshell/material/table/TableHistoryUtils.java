@@ -44,7 +44,7 @@ public final class TableHistoryUtils {
         List<TableColumnHistory> columns = new ArrayList<>();
         for (var column: table.getColumns()) {
             var columnHistory = new TableColumnHistory();
-            columnHistory.setKey(((NamedTableColumn<?, ?>) column).getName().toString());
+            columnHistory.setName(((NamedTableColumn<?, ?>) column).getName().toString());
             columnHistory.setWidth(column.getWidth());
             if (sortedColumnIndexesByColumn != null) {
                 var sortIndex = sortedColumnIndexesByColumn.get(column);
@@ -64,7 +64,7 @@ public final class TableHistoryUtils {
             TableHistory history, boolean widthIncluded) {
         TreeMap<Integer, TableColumn<?, ?>> sortedColumnByIndex = new TreeMap<>();
         for (var historyColumn : history.getColumns()) {
-            var column = columnProvider.apply(historyColumn.getKey());
+            var column = columnProvider.apply(historyColumn.getName());
             if (widthIncluded) {
                 column.setPrefWidth(historyColumn.getWidth());
             }

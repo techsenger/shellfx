@@ -17,12 +17,12 @@
 package com.techsenger.tabshell.text.viewer;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.shared.find.AbstractFindPaneView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
-import com.techsenger.tabshell.material.textarea.TextAreaStyleKeys;
+import com.techsenger.tabshell.material.textarea.TextAreaStyleNames;
+import com.techsenger.tabshell.shared.find.AbstractFindPaneView;
 import com.techsenger.toolkit.core.collection.ListUtils;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import java.util.ArrayList;
@@ -393,7 +393,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
             StyleSpansBuilder<Collection<TextAreaStyle>> ssb = new StyleSpansBuilder<>();
             for (var existingSpan : this.textArea.getStyleSpans(range.getStart(), range.getEnd())) {
                 var length = range.getEnd() - range.getStart();
-                var highlightStyle = new TextAreaStyle(TextAreaStyleKeys.FIND_HIGHLIGHT, length, FOUND_STYLE_CLASS);
+                var highlightStyle = new TextAreaStyle(TextAreaStyleNames.FIND_HIGHLIGHT, length, FOUND_STYLE_CLASS);
                 if (existingSpan.getStyle().isEmpty()) {
                     ssb.add(ListUtils.newArrayList(highlightStyle), existingSpan.getLength());
                 } else {
@@ -420,7 +420,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
             if (!oldStyles.isEmpty()) {
                 var newStyles = new ArrayList<TextAreaStyle>();
                 for (var style : oldStyles) {
-                    if (style.getKey() != TextAreaStyleKeys.FIND_HIGHLIGHT) {
+                    if (style.getName() != TextAreaStyleNames.FIND_HIGHLIGHT) {
                         newStyles.add(style);
                     }
                 }
@@ -484,7 +484,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
         var replaceRequired = false;
         List<TextAreaStyle> newStyles = new ArrayList<>();
         for (var style : span.getStyle()) {
-            if (style.getKey() == TextAreaStyleKeys.FIND_HIGHLIGHT) {
+            if (style.getName() == TextAreaStyleNames.FIND_HIGHLIGHT) {
                 if (style.getLength() != span.getLength()) {
                     replaceRequired = true;
                 } else {

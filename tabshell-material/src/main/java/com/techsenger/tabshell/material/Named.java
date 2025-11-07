@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.material;
 
+import com.techsenger.mvvm4fx.core.Name;
+
 /**
  *
  * @author Pavel Castornii

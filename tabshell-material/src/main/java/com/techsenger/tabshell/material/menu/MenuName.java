@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.material.menu;
 
-import com.techsenger.tabshell.material.Name;
+import com.techsenger.mvvm4fx.core.Name;
 
 /**
  * Although Menu extends MenuItem in JavaFX MenuName doesn't extend MenuItemName because name type must be unique.

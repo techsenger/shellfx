@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.material.table;
 
-import com.techsenger.tabshell.material.Name;
+import com.techsenger.mvvm4fx.core.Name;
 
 /**
  *

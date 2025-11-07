@@ -38,7 +38,7 @@ public class TextAreaStyle {
      */
     public static final List<TextAreaStyle> EMPTY = new ArrayList<>();
 
-    private final TextAreaStyleKey key;
+    private final TextAreaStyleName name;
 
     /**
      * The length of the text when this style was created. If user modifies span, then we can understand by length
@@ -49,19 +49,19 @@ public class TextAreaStyle {
     private final String className;
 
     public TextAreaStyle(String className) {
-        this.key = null;
+        this.name = null;
         this.length = -1;
         this.className = className;
     }
 
-    public TextAreaStyle(TextAreaStyleKey key, int length, String className) {
-        this.key = key;
+    public TextAreaStyle(TextAreaStyleName name, int length, String className) {
+        this.name = name;
         this.className = className;
         this.length = length;
     }
 
-    public TextAreaStyleKey getKey() {
-        return key;
+    public TextAreaStyleName getName() {
+        return name;
     }
 
     public int getLength() {
@@ -74,6 +74,6 @@ public class TextAreaStyle {
 
     @Override
     public String toString() {
-        return "TextAreaStyle{" + "key=" + key + ", initialLength=" + length + ", className=" + className + '}';
+        return "TextAreaStyle{" + "name=" + name + ", initialLength=" + length + ", className=" + className + '}';
     }
 }

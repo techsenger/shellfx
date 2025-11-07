@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.dialogs;
 
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -25,9 +24,9 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface DialogComponentNames {
 
-    ComponentName ALERT_DIALOG = new DefaultComponentName("AlertDialog");
+    ComponentName ALERT_DIALOG = new ComponentName("AlertDialog");
 
-    ComponentName YES_NO_DIALOG = new DefaultComponentName("YesNoDialog");
+    ComponentName YES_NO_DIALOG = new ComponentName("YesNoDialog");
 
-    ComponentName FILE_CHOOSER_DIALOG = new DefaultComponentName("FileChooserDialog");
+    ComponentName FILE_CHOOSER_DIALOG = new ComponentName("FileChooserDialog");
 }

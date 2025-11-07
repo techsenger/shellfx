@@ -25,7 +25,7 @@ import javafx.scene.control.TableColumn;
  */
 public class TableColumnHistory implements Serializable {
 
-    private String key;
+    private String name;
 
     private double width;
 
@@ -37,16 +37,16 @@ public class TableColumnHistory implements Serializable {
 
     }
 
-    public TableColumnHistory(String key) {
-        this.key = key;
+    public TableColumnHistory(String name) {
+        this.name = name;
     }
 
-    public String getKey() {
-        return key;
+    public String getName() {
+        return name;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setName(String key) {
+        this.name = key;
     }
 
     public double getWidth() {

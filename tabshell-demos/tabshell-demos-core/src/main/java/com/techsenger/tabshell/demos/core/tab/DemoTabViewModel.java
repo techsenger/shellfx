@@ -18,7 +18,6 @@ package com.techsenger.tabshell.demos.core.tab;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
@@ -34,7 +33,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  */
 public class DemoTabViewModel extends AbstractShellTabViewModel {
 
-    private static final ComponentName DEMO_TAB = new DefaultComponentName("DemoTab");
+    private static final ComponentName DEMO_TAB = new ComponentName("DemoTab");
 
     private final BooleanProperty newValid = new SimpleBooleanProperty();
 

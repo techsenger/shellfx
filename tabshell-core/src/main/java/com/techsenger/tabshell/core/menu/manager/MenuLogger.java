@@ -100,33 +100,33 @@ final class MenuLogger {
         NamedMenuGroup group = null;
         for (var m : menu.getItems()) {
             if (m instanceof NamedMenu) {
-                var keyedMenu = (NamedMenu) m;
-                if (keyedMenu.getGroup() != group) {
-                    group = keyedMenu.getGroup();
+                var namedMenu = (NamedMenu) m;
+                if (namedMenu.getGroup() != group) {
+                    group = namedMenu.getGroup();
                     logGroup(group, builder, tab);
                 }
-                logMenu(keyedMenu, depth + 2, builder);
+                logMenu(namedMenu, depth + 2, builder);
             } else if (m instanceof NamedMenuItem) {
-                var keyedItem = (NamedMenuItem) m;
-                if (keyedItem.getGroup() != group) {
-                    group = keyedItem.getGroup();
+                var namedItem = (NamedMenuItem) m;
+                if (namedItem.getGroup() != group) {
+                    group = namedItem.getGroup();
                     logGroup(group, builder, tab);
                 }
                 builder.append(System.lineSeparator());
                 builder.append(tab2);
                 builder.append("MenuItem: ");
-                builder.append(keyedItem.getText().replace("_", ""));
+                builder.append(namedItem.getText().replace("_", ""));
                 builder.append(", optional: ");
-                builder.append(keyedItem.isOptional());
+                builder.append(namedItem.isOptional());
                 builder.append(", validatable: ");
-                builder.append(keyedItem.isValidatable());
+                builder.append(namedItem.isValidatable());
                 builder.append(", updatable: ");
-                builder.append(keyedItem.isUpdatable());
+                builder.append(namedItem.isUpdatable());
                 builder.append(", position: ");
-                builder.append(keyedItem.getPosition());
-                if (keyedItem.getAccelerator() != null) {
+                builder.append(namedItem.getPosition());
+                if (namedItem.getAccelerator() != null) {
                     builder.append(", hotkey: ");
-                    builder.append(keyedItem.getAccelerator());
+                    builder.append(namedItem.getAccelerator());
                 }
             }
         }

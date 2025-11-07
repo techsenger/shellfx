@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.terminal;
 
 import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.DefaultComponentName;
 
 /**
  *
@@ -25,7 +24,7 @@ import com.techsenger.tabshell.core.DefaultComponentName;
  */
 public interface TerminalComponentNames {
 
-    ComponentName TERMINAL_TAB = new DefaultComponentName("TerminalTab");
+    ComponentName TERMINAL_TAB = new ComponentName("TerminalTab");
 
-    ComponentName FIND_PANE = new DefaultComponentName("TerminalFindPane");
+    ComponentName FIND_PANE = new ComponentName("TerminalFindPane");
 }
