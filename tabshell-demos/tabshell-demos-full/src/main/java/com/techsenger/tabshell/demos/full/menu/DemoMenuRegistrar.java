@@ -25,8 +25,8 @@ import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogView;
 import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogViewModel;
 import com.techsenger.tabshell.demos.full.dock.DockLayoutTabView;
 import com.techsenger.tabshell.demos.full.dock.DockLayoutTabViewModel;
-import com.techsenger.tabshell.demos.full.hex.HexEditorTabView;
-import com.techsenger.tabshell.demos.full.hex.HexEditorTabViewModel;
+import com.techsenger.tabshell.demos.full.hex.DemoHexEditorTabView;
+import com.techsenger.tabshell.demos.full.hex.DemoHexEditorTabViewModel;
 import com.techsenger.tabshell.demos.full.text.Text;
 import com.techsenger.tabshell.demos.full.text.TextEditorTabView;
 import com.techsenger.tabshell.demos.full.text.TextEditorTabViewModel;
@@ -126,10 +126,11 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
                         .build();
 
                 //editor
-                var editorViewModel = new HexEditorTabViewModel(shell.getViewModel(), file);
-                var editorView = new HexEditorTabView(shell, editorViewModel);
+                var editorViewModel = new DemoHexEditorTabViewModel(shell.getViewModel(), file);
+                var editorView = new DemoHexEditorTabView(shell, editorViewModel);
                 editorView.initialize();
                 shell.openTab(editorView);
+                System.gc();
             });
             return item;
         };

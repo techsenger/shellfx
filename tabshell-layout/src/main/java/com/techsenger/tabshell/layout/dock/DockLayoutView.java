@@ -849,6 +849,11 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return leftBar.getReadOnlyProperty();
     }
 
+    public void addTabDock(TabDockView<?> dock, Side side, double size) {
+        var index = resolveNewIndex(getRoot(), side);
+        addTabDock(null, getRoot(), dock, index, side, true, size);
+    }
+
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
@@ -1099,7 +1104,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
         var parentUuid = pathFromRoot.get(pathFromRoot.size() - 2); // excluding the node itself
         SplitSpaceView<?> parent = splitSpacesByUuid.get(parentUuid);
-        SplitSpaceView<?> grandParent = null;
         double[] grandParentPositions = null;
 
         var side = position.getSide(); // the position side can differ from the side bar side
@@ -1121,7 +1125,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                         if (i == pathFromRoot.size() - 3) { // grandparent
                             var sibling = findSibling(parent, position.getSiblings(), side);
                             if (sibling != null) {
-                                grandParent = parent;
                                 grandParentPositions = parent.getNode().getDividerPositions();
                                 parent = wrap(sibling, getContainer(sibling).createInfo().getIndex());
                                 // we created a new component in place of a removed one, so, now it is
@@ -1150,66 +1153,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             logger.debug("{} Minimized position: {}", getDescriptor().getLogPrefix(), position);
         }
 
-        // now we have determined the parent and insertion index; it't time to check the side
-        if (sideShouldBeChecked && !checkNewSide(parent, index, side)) {
-            boolean wrapParent = false;
-            if (parent != getRoot()) {
-                parent = getRoot();
-                index = resolveNewIndex(parent, side);
-                if (!checkNewSide(parent, index, side)) {
-                    wrapParent = true;
-                }
-            } else {
-                wrapParent = true;
-            }
-            if (wrapParent) {
-                parent = wrap(parent, getContainer(parent).createInfo().getIndex());
-                index = resolveNewIndex(parent, side);
-            }
-        }
-
-        final var splitPane = parent.getNode();
-        var oldSplitPaneSize = splitPane.getWidth();
-        final var dividerSize = parent.computeDividerSize();
+        var splitPane = parent.getNode();
         var dockSize = position.getWidth();
         if (splitPane.getOrientation() == Orientation.VERTICAL) {
-            oldSplitPaneSize = splitPane.getHeight();
             dockSize = position.getHeight();
         }
-        var oldPositions = parent.getNode().getDividerPositions();
-        parent.getChildren().add(index, dock);
-
-        final var finalOldSplitPaneSize = oldSplitPaneSize;
-        final var finalDockSize = dockSize;
-        final var finalIndex = index;
-        final var finalParent = parent;
-        final var finalGrandParent = grandParent;
-        final var finalOldPositions = oldPositions;
-        final var finalGrandParentPositions = grandParentPositions;
-        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
-            var divSize = dividerSize;
-            if (divSize < 0) {
-                divSize = finalParent.computeDividerSize();
-            }
-            if (finalGrandParent != null) {
-                finalGrandParent.getNode().setDividerPositions(finalGrandParentPositions);
-            }
-            var mainIndex = indexOfMain(finalParent);
-            if (mainIndex >= 0) {
-                finalParent.updateDividersOnAddWithMain(finalOldSplitPaneSize, finalOldPositions, divSize, mainIndex,
-                        finalIndex, finalDockSize);
-            } else {
-                finalParent.updateDividersOnAddWithoutMain(finalOldSplitPaneSize, finalOldPositions, divSize,
-                        finalIndex, finalDockSize);
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Restored {} to {}", getDescriptor().getLogPrefix(),
-                        getFullName(dock),
-                        getFullName(dock.getParent()));
-                printTreeDebugInfo();
-            }
-            return false;
-        });
+        addTabDock(grandParentPositions, parent, dock, index, side, sideShouldBeChecked, dockSize);
     }
 
     void showTabPopup(TabPopupView<?> popup) {
@@ -1516,7 +1465,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             if (info.getGrandparentInfo() == null) {
                 factory = dockInfo -> {
                     var newTabDock = provideTabDockOnDrop();
-                    addNewTabDock(side, eventInfo, null, info.getNewInfo(), newTabDock);
+                    addTabDock(side, eventInfo, null, info.getNewInfo(), newTabDock);
                     return newTabDock;
                 };
                 info.setNewInfo(new ContainerInfo(eventInfo.getIndex() + indexDelta, ONE_THIRD));
@@ -1539,7 +1488,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 } else {
                     factory = dockInfo -> {
                         var tabDock = provideTabDockOnDrop();
-                        addNewTabDock(side, info.getGrandparentInfo(), null, info.getNewInfo(), tabDock);
+                        addTabDock(side, info.getGrandparentInfo(), null, info.getNewInfo(), tabDock);
                         return tabDock;
                     };
                     info.setNewInfo(new ContainerInfo(info.getGrandparentInfo().getIndex() + indexDelta, ONE_THIRD));
@@ -1559,7 +1508,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             info.setNewInfo(new ContainerInfo(eventInfo.getIndex() + indexDelta, ONE_THIRD));
             factory = dockInfo -> {
                 var newTabDock = provideTabDockOnDrop();
-                addNewTabDock(side, eventInfo, siblingInfo, info.getNewInfo(), newTabDock);
+                addTabDock(side, eventInfo, siblingInfo, info.getNewInfo(), newTabDock);
                 return newTabDock;
             };
             caseIndex = 3;
@@ -1591,7 +1540,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             int index = info.getParentInfo().getIndex() + (isFirst ? 0 : 1);
             factory = dockInfo -> {
                 var newTabDock = provideTabDockOnDrop();
-                addNewTabDock(side, info.getParentInfo(), null, info.getNewInfo(), newTabDock);
+                addTabDock(side, info.getParentInfo(), null, info.getNewInfo(), newTabDock);
                 return newTabDock;
             };
             info.setNewInfo(new ContainerInfo(index, ONE_THIRD));
@@ -1606,7 +1555,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
         Function<DockInfo, TabDockView<?>> addFactory = dockInfo -> {
             var newTabDock = provideTabDockOnDrop();
-            addNewTabDock(info.getMousePosition().getSide(), info.getEventInfo(), null, info.getNewInfo(), newTabDock);
+            addTabDock(info.getMousePosition().getSide(), info.getEventInfo(), null, info.getNewInfo(), newTabDock);
             return newTabDock;
         };
         info.setFactory(addFactory);
@@ -1846,7 +1795,16 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         unwrap((SplitSpaceView<?>) parentComponent, parentInfo.getIndex());
     }
 
-    private void addNewTabDock(Side side, ContainerInfo anchorInfo, ContainerInfo siblingInfo,
+    /**
+     * This method adds a new TabDock when the user selects the area using mouse.
+     *
+     * @param side
+     * @param anchorInfo
+     * @param siblingInfo
+     * @param newInfo
+     * @param newTabDock
+     */
+    private void addTabDock(Side side, ContainerInfo anchorInfo, ContainerInfo siblingInfo,
             ContainerInfo newInfo, TabDockView<?> newTabDock) {
         SplitSpaceView<?> parentComponent = (SplitSpaceView<?>) anchorInfo.getContainer().getComponent().getParent();
         var splitPane = parentComponent.getNode();
@@ -1877,6 +1835,75 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             logger.debug("{} Added {} into {}", getDescriptor().getLogPrefix(),
                 getFullName(newTabDock), getFullName(parentComponent));
         }
+    }
+
+    /**
+     * This method adds a new TabDock during restoring or adding a tab dock to a specific side.
+     *
+     * @param grandParentPositions
+     * @param parent
+     * @param dock
+     * @param index
+     * @param side
+     * @param sideShouldBeChecked
+     * @param size
+     */
+    private void addTabDock(double[] grandParentPositions, SplitSpaceView<?> parent, TabDockView<?> dock,
+            int index, Side side, boolean sideShouldBeChecked, double size) {
+        if (sideShouldBeChecked && !checkNewSide(parent, index, side)) {
+            boolean wrapParent = false;
+            if (parent != getRoot()) {
+                parent = getRoot();
+                index = resolveNewIndex(parent, side);
+                if (!checkNewSide(parent, index, side)) {
+                    wrapParent = true;
+                }
+            } else {
+                wrapParent = true;
+            }
+            if (wrapParent) {
+                parent = wrap(parent, getContainer(parent).createInfo().getIndex());
+                index = resolveNewIndex(parent, side);
+            }
+        }
+
+        final var splitPane = parent.getNode();
+        var oldSplitPaneSize = splitPane.getWidth();
+        if (splitPane.getOrientation() == Orientation.VERTICAL) {
+            oldSplitPaneSize = splitPane.getHeight();
+        }
+        final var dividerSize = parent.computeDividerSize();
+
+        var oldPositions = parent.getNode().getDividerPositions();
+        parent.getChildren().add(index, dock);
+
+        final var finalOldSplitPaneSize = oldSplitPaneSize;
+        final var finalIndex = index;
+        final var finalParent = parent;
+        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
+            var divSize = dividerSize;
+            if (divSize < 0) {
+                divSize = finalParent.computeDividerSize();
+            }
+            if (finalParent.getParent() != null) {
+                ((SplitSpaceView<?>) finalParent.getParent()).getNode().setDividerPositions(grandParentPositions);
+            }
+            var mainIndex = indexOfMain(finalParent);
+            if (mainIndex >= 0) {
+                finalParent.updateDividersOnAddWithMain(finalOldSplitPaneSize, oldPositions, divSize, mainIndex,
+                        finalIndex, size);
+            } else {
+                finalParent.updateDividersOnAddWithoutMain(finalOldSplitPaneSize, oldPositions, divSize,
+                        finalIndex, size);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} Added {} into {}", getDescriptor().getLogPrefix(),
+                        getFullName(dock),
+                        getFullName(dock.getParent()));
+                printTreeDebugInfo();
+            }
+            return false;
+        });
     }
 
     /**

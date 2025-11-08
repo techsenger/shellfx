@@ -68,6 +68,6 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.THEME_DIALOG);
+        return new ComponentDescriptor(DemoComponentNames.DEMO_THEME_DIALOG);
     }
 }

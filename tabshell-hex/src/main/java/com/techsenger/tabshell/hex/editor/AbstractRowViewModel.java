@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.hex.editor;
 
-@font-face {
-    src: url('font/materialdesignicons-webfont.ttf');
+import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+abstract class AbstractRowViewModel extends AbstractPaneViewModel {
+
+    private final HexAreaViewModel area;
+
+    AbstractRowViewModel(HexAreaViewModel area) {
+        this.area = area;
+    }
+
+    HexAreaViewModel getArea() {
+        return area;
+    }
 }
-
-.font-icon-view.hex-editor-icon {
-    -fx-code-point: 987815; /* hexadecimal */
-}
-
-.font-icon-view.columns-enabled-icon {
-    -fx-code-point: 985311; /* format-columns */
-}
-
-.font-icon-view.data-inspector-icon {
-    -fx-code-point: 989337; /* account-tie-hat-outline */
-}
-
-

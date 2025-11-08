@@ -50,7 +50,7 @@ public class TextEditorTabViewModel extends AbstractEditorTabViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.EDITOR_TAB);
+        return new ComponentDescriptor(DemoComponentNames.DEMO_EDITOR_TAB);
     }
 
     @Override

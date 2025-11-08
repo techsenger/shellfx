@@ -26,17 +26,19 @@ import com.techsenger.mvvm4fx.core.ComponentName;
  */
 public interface DemoComponentNames {
 
-    ComponentName EDITOR_TAB = new ComponentName("DemoEditorTab");
+    ComponentName DEMO_EDITOR_TAB = new ComponentName("DemoEditorTab");
 
-    ComponentName HEX_EDITOR_TAB = new ComponentName("DemoHexEditorTab");
+    ComponentName DEMO_HEX_EDITOR_TAB = new ComponentName("DemoHexEditorTab");
 
-    ComponentName DOCK_LAYOUT_TAB = new ComponentName("DemoDockLayoutTab");
+    ComponentName DEMO_HEX_TOOL_BAR = new ComponentName("DemoHexToolBar");
 
-    ComponentName DOCKABLE_TAB = new ComponentName("DemoDockableTab");
+    ComponentName DEMO_DOCK_LAYOUT_TAB = new ComponentName("DemoDockLayoutTab");
 
-    ComponentName TEXT_VIEWER_TAB = new ComponentName("DemoTextViewerTab");
+    ComponentName DEMO_DOCKABLE_TAB = new ComponentName("DemoDockableTab");
 
-    ComponentName DIALOGS_DIALOG = new ComponentName("DemoDialogsDialog");
+    ComponentName DEMO_TEXT_VIEWER_TAB = new ComponentName("DemoTextViewerTab");
 
-    ComponentName THEME_DIALOG = new ComponentName("DemoThemeDialog");
+    ComponentName DEMO_DIALOGS_DIALOG = new ComponentName("DemoDialogsDialog");
+
+    ComponentName DEMO_THEME_DIALOG = new ComponentName("DemoThemeDialog");
 }

@@ -55,6 +55,6 @@ public class DockLayoutTabViewModel extends AbstractShellTabViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DOCK_LAYOUT_TAB);
+        return new ComponentDescriptor(DemoComponentNames.DEMO_DOCK_LAYOUT_TAB);
     }
 }

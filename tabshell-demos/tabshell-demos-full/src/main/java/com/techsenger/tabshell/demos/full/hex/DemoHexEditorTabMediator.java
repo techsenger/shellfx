@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.demos.full.hex;
 
-@font-face {
-    src: url('font/materialdesignicons-webfont.ttf');
+import com.techsenger.tabshell.hex.editor.HexEditorTabMediator;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class DemoHexEditorTabMediator extends HexEditorTabMediator<DemoHexEditorTabView> {
+
+    public DemoHexEditorTabMediator(DemoHexEditorTabView view) {
+        super(view);
+    }
+
 }
-
-.font-icon-view.hex-editor-icon {
-    -fx-code-point: 987815; /* hexadecimal */
-}
-
-.font-icon-view.columns-enabled-icon {
-    -fx-code-point: 985311; /* format-columns */
-}
-
-.font-icon-view.data-inspector-icon {
-    -fx-code-point: 989337; /* account-tie-hat-outline */
-}
-
-

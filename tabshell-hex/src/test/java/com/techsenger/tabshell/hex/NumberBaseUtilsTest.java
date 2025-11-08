@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.hex;
 
+import com.techsenger.tabshell.hex.editor.NumberBase;
+import com.techsenger.tabshell.hex.editor.NumberBaseUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;

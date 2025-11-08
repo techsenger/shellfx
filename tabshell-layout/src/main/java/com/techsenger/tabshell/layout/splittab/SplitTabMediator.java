@@ -16,27 +16,15 @@
 
 package com.techsenger.tabshell.layout.splittab;
 
-import com.techsenger.tabshell.core.dialog.AbstractDialogMediator;
-import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.dialog.DialogView;
+import com.techsenger.tabshell.core.tab.AbstractShellTabMediator;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class SplitTabMediator<T extends AbstractSplitTabView<?>> extends AbstractDialogMediator<T> {
+public class SplitTabMediator<T extends AbstractSplitTabView<?>> extends AbstractShellTabMediator<T> {
 
     public SplitTabMediator(T view) {
         super(view);
-    }
-
-    @Override
-    public void openDialog(DialogView<?> dialog) {
-        var scope = dialog.getViewModel().getScope();
-        if (scope == DialogScope.SHELL) {
-            getView().getShell().getDialogManager().openDialog(dialog);
-        } else {
-            getView().getDialogManager().openDialog(dialog);
-        }
     }
 }

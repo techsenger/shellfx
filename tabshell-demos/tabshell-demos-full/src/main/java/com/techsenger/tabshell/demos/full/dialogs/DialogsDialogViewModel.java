@@ -69,7 +69,7 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DIALOGS_DIALOG);
+        return new ComponentDescriptor(DemoComponentNames.DEMO_DIALOGS_DIALOG);
     }
 
     ObservableList<DialogItem> getItems() {

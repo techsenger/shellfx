@@ -32,6 +32,6 @@ public class DockableTabViewModel extends AbstractTabViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DOCKABLE_TAB);
+        return new ComponentDescriptor(DemoComponentNames.DEMO_DOCKABLE_TAB);
     }
 }

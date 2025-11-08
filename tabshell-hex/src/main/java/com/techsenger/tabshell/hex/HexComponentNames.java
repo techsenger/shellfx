@@ -25,6 +25,12 @@ import com.techsenger.mvvm4fx.core.ComponentName;
  */
 public interface HexComponentNames {
 
+    ComponentName HEX_TOOL_BAR = new ComponentName("HexToolBar");
+
+    ComponentName HEX_AREA = new ComponentName("HexArea");
+
+    ComponentName HEX_EDITOR_TAB = new ComponentName("HexEditorTab");
+
     ComponentName DATA_INSPECTOR_TAB = new ComponentName("DataInspectorTab");
 
     ComponentGroupName TOOLS = new ComponentGroupName("Tools");

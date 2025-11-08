@@ -1,0 +1,53 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.demos.full.hex;
+
+import com.techsenger.mvvm4fx.core.ComponentMediator;
+import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.hex.editor.HexEditorTabView;
+import com.techsenger.tabshell.hex.editor.HexToolBarView;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class DemoHexEditorTabView extends HexEditorTabView<DemoHexEditorTabViewModel> {
+
+    public DemoHexEditorTabView(ShellView<?> shell, DemoHexEditorTabViewModel viewModel) {
+        super(shell, viewModel);
+    }
+
+    @Override
+    protected ComponentMediator createMediator() {
+        return new DemoHexEditorTabMediator(this);
+    }
+
+    @Override
+    protected void bind(DemoHexEditorTabViewModel viewModel) {
+        super.bind(viewModel);
+        DemoHexToolBarView toolBar = (DemoHexToolBarView) getToolBar();
+        toolBar.getCaretShapeComboBox().valueProperty()
+                .bindBidirectional(viewModel.getArea().getCaret().shapeProperty());
+        toolBar.getColumnSeparatorComboBox().valueProperty()
+                .bindBidirectional(viewModel.getArea().columnSeparatorProperty());
+    }
+
+    @Override
+    protected HexToolBarView<?> createToolBar(DemoHexEditorTabViewModel viewModel) {
+        return new DemoHexToolBarView((DemoHexToolBarViewModel) viewModel.getToolBar());
+    }
+}

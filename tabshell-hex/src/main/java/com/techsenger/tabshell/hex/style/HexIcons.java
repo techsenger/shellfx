@@ -27,4 +27,6 @@ public interface HexIcons {
     StyleFontIcon EDITOR = new StyleFontIcon("hex-editor-icon");
 
     StyleFontIcon COLUMNS_ENABLED = new StyleFontIcon("columns-enabled-icon");
+
+    StyleFontIcon DATA_INSPECTOR = new StyleFontIcon("data-inspector-icon");
 }
