@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import java.lang.ref.WeakReference;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
@@ -30,6 +31,8 @@ import javafx.scene.control.TabPane;
  * @author Pavel Castornii
  */
 public final class TabContainerViewUtils {
+
+    private static final Object TAB_KEY = new Object();
 
     /**
      * Tab can be closed via close button and via model. In both cases doOnCloseRequest is called.
@@ -61,23 +64,44 @@ public final class TabContainerViewUtils {
 
     private static ContextMenu createTabContextMenu(ObservableList<ComponentTab> tabs, ComponentTab tab,
             TabContainerView<?> view) {
+        ContextMenu contextMenu = new ContextMenu();
+        // we use a weak reference as a workaround for JDK-8283449
+        contextMenu.getProperties().put(TAB_KEY, new WeakReference<ComponentTab>(tab));
+
         MenuItem close = new MenuItem("Close", new Label(" "));
-        close.setOnAction((e) -> view.closeTab(tab));
+        close.setOnAction((e) -> {
+            var t = getTab(contextMenu);
+            if (t != null) {
+                view.closeTab(t);
+            }
+        });
         MenuItem closeAll = new MenuItem("Close All");
         closeAll.setOnAction((e) -> {
             view.closeAllTabs(tabs);
         });
         MenuItem closeOther = new MenuItem("Close Other");
-        closeOther.setOnAction((e) -> view.closeOtherTabs(tabs, tab));
+        closeOther.setOnAction((e) -> {
+            var t = getTab(contextMenu);
+            if (t != null) {
+                view.closeOtherTabs(tabs, t);
+            }
+        });
         MenuItem closeRight = new MenuItem("Close to the Right");
         closeRight.setOnAction((e) -> {
-            view.closeRightTabs(tabs, tab);
+            var t = getTab(contextMenu);
+            if (t != null) {
+                view.closeRightTabs(tabs, t);
+            }
         });
         MenuItem closeLeft = new MenuItem("Close to the Left");
         closeLeft.setOnAction((e) -> {
-            view.closeLeftTabs(tabs, tab);
+            var t = getTab(contextMenu);
+            if (t != null) {
+                view.closeLeftTabs(tabs, t);
+            }
         });
-        ContextMenu contextMenu = new ContextMenu(close, closeAll, closeOther, closeRight, closeLeft);
+
+        contextMenu.getItems().addAll(close, closeAll, closeOther, closeRight, closeLeft);
         contextMenu.setOnShowing((e) -> {
             if (tabs.size() == 0) {
                 return;
@@ -93,18 +117,26 @@ public final class TabContainerViewUtils {
                 closeLeft.setDisable(false);
                 closeRight.setDisable(false);
             }
-            if (tabs.get(tabs.size() - 1) == tab) {
-                closeRight.setDisable(true);
-            } else {
-                closeRight.setDisable(false);
-            }
-            if (tabs.get(0) == tab) {
-                closeLeft.setDisable(true);
-            } else {
-                closeLeft.setDisable(false);
+            var t = getTab(contextMenu);
+            if (t != null) {
+                if (tabs.get(tabs.size() - 1) == t) {
+                    closeRight.setDisable(true);
+                } else {
+                    closeRight.setDisable(false);
+                }
+                if (tabs.get(0) == t) {
+                    closeLeft.setDisable(true);
+                } else {
+                    closeLeft.setDisable(false);
+                }
             }
         });
         return contextMenu;
+    }
+
+    private static ComponentTab getTab(ContextMenu menu) {
+        WeakReference<ComponentTab> ref = (WeakReference<ComponentTab>) menu.getProperties().get(TAB_KEY);
+        return ref.get();
     }
 
     private TabContainerViewUtils() {
