@@ -318,7 +318,7 @@
 
 .table-view.extra-dense .table-row-cell,
 .tree-table-view.extra-dense .table-row-cell {
-    -fx-cell-size: 1.6em;
+    -fx-cell-size: 1.65em;
 }
 
 .table-view.same-spacing-table .column-header-background .column-header .label,
