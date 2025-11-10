@@ -18,20 +18,22 @@ package com.techsenger.tabshell.hex.data;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.style.CoreIcons;
+import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.Spacer;
 import java.nio.ByteOrder;
-import javafx.geometry.Orientation;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
@@ -71,9 +73,23 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
 
     private final TableView<TypeItem<?>> typeTableView = new TableView<>();
 
-    private final TableView<BaseItem> baseTableView = new TableView<>();
+    private final Label decimalLabel = new Label("Decimal");
 
-    private final SplitPane splitPane = new SplitPane(typeTableView, baseTableView);
+    private final TextField decimalTextField = new TextField();
+
+    private final Label hexadecimalLabel = new Label("Hexadecimal");
+
+    private final TextField hexadecimalTextField = new TextField();
+
+    private final Label octalLabel = new Label("Octal");
+
+    private final TextField octalTextField = new TextField();
+
+    private final Label binaryLabel = new Label("Binary");
+
+    private final TextField binaryTextField = new TextField();
+
+    private final GridPane baseGridPane = new GridPane();
 
     public DataInspectorTabView(T viewModel) {
         super(viewModel);
@@ -98,7 +114,6 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
         typeTableView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         typeTableView.setEditable(true);
         typeTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        VBox.setVgrow(typeTableView, Priority.ALWAYS);
         TableColumn<TypeItem<?>, String> typeColumn = new TableColumn<>("Type");
         typeColumn.setCellValueFactory(cellData -> cellData.getValue().typeProperty());
         TableColumn<TypeItem<?>, String> typeValueColumn = new TableColumn<>("Value");
@@ -106,25 +121,27 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
         typeValueColumn.setCellFactory(col -> new SelectableTableCell<TypeItem<?>>());
         typeValueColumn.setSortable(false);
         typeTableView.getColumns().addAll(typeColumn, typeValueColumn);
+        VBox.setVgrow(typeTableView, Priority.ALWAYS);
 
-        baseTableView.setItems(viewModel.getBaseItems());
-        baseTableView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
-        baseTableView.setEditable(true);
-        baseTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        VBox.setVgrow(baseTableView, Priority.ALWAYS);
-        TableColumn<BaseItem, String> baseColumn = new TableColumn<>("Base");
-        baseColumn.setCellValueFactory(cellData -> cellData.getValue().baseProperty());
-        TableColumn<BaseItem, String> baseValueColumn = new TableColumn<>("Value");
-        baseValueColumn.setCellValueFactory(cellData -> cellData.getValue().valueProperty());
-        baseValueColumn.setCellFactory(col -> new SelectableTableCell<BaseItem>());
-        baseValueColumn.setSortable(false);
-        baseTableView.getColumns().addAll(baseColumn, baseValueColumn);
-
-        VBox.setVgrow(splitPane, Priority.ALWAYS);
-        splitPane.setOrientation(Orientation.VERTICAL);
+        baseGridPane.add(decimalLabel, 0, 0);
+        baseGridPane.add(decimalTextField, 1, 0);
+        GridPane.setHgrow(decimalTextField, Priority.ALWAYS);
+        decimalTextField.getStyleClass().add(Styles.DENSE);
+        baseGridPane.add(hexadecimalLabel, 0, 1);
+        baseGridPane.add(hexadecimalTextField, 1, 1);
+        GridPane.setHgrow(hexadecimalTextField, Priority.ALWAYS);
+        baseGridPane.add(octalLabel, 0, 2);
+        baseGridPane.add(octalTextField, 1, 2);
+        GridPane.setHgrow(octalTextField, Priority.ALWAYS);
+        baseGridPane.add(binaryLabel, 0, 3);
+        baseGridPane.add(binaryTextField, 1, 3);
+        GridPane.setHgrow(binaryTextField, Priority.ALWAYS);
+        baseGridPane.setVgap(SizeConstants.INSET);
+        baseGridPane.setHgap(SizeConstants.INSET);
+        baseGridPane.setPadding(new Insets(SizeConstants.INSET));
 
         this.toolBar.getStyleClass().add(Styles.DENSE);
-        getContentPane().getChildren().addAll(toolBar, splitPane);
+        getContentPane().getChildren().addAll(toolBar, typeTableView, baseGridPane);
     }
 
     @Override
@@ -132,7 +149,10 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
         super.bind(viewModel);
         byteOrderCheckBox.valueProperty().bindBidirectional(viewModel.byteOrderWrapper());
         viewModel.selectedTypeItemWrapper().bind(typeTableView.getSelectionModel().selectedItemProperty());
-        viewModel.selectedBaseItemWrapper().bind(baseTableView.getSelectionModel().selectedItemProperty());
+        decimalTextField.textProperty().bind(viewModel.decimalProperty());
+        hexadecimalTextField.textProperty().bind(viewModel.hexadecimalProperty());
+        octalTextField.textProperty().bind(viewModel.octalProperty());
+        binaryTextField.textProperty().bind(viewModel.binaryProperty());
     }
 
     protected ComboBox<ByteOrder> getByteOrderComboBox() {
@@ -143,13 +163,55 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
         return toolBar;
     }
 
-    protected TableView<BaseItem> getBaseTableView() {
-        return baseTableView;
+    protected TableView<TypeItem<?>> getTypeTableView() {
+        return typeTableView;
     }
 
-    protected SplitPane getSplitPane() {
-        return splitPane;
+    protected GridPane getBaseGridPane() {
+        return baseGridPane;
     }
 
+    protected ComboBox<ByteOrder> getByteOrderCheckBox() {
+        return byteOrderCheckBox;
+    }
 
+    protected Button getPreviousButton() {
+        return previousButton;
+    }
+
+    protected Button getNextButton() {
+        return nextButton;
+    }
+
+    protected Label getDecimalLabel() {
+        return decimalLabel;
+    }
+
+    protected TextField getDecimalTextField() {
+        return decimalTextField;
+    }
+
+    protected Label getHexadecimalLabel() {
+        return hexadecimalLabel;
+    }
+
+    protected TextField getHexadecimalTextField() {
+        return hexadecimalTextField;
+    }
+
+    protected Label getOctalLabel() {
+        return octalLabel;
+    }
+
+    protected TextField getOctalTextField() {
+        return octalTextField;
+    }
+
+    protected Label getBinaryLabel() {
+        return binaryLabel;
+    }
+
+    protected TextField getBinaryTextField() {
+        return binaryTextField;
+    }
 }

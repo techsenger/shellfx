@@ -23,7 +23,9 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public class TypeItem<T> extends AbstractItem {
+public class TypeItem<T> {
+
+    private final StringProperty value = new SimpleStringProperty();
 
     private final StringProperty type = new SimpleStringProperty();
 
@@ -55,6 +57,18 @@ public class TypeItem<T> extends AbstractItem {
         this.valueProvider = provider;
         this.converter = converter;
         this.sizeProvider = sizeProvider;
+    }
+
+    public StringProperty valueProperty() {
+        return value;
+    }
+
+    public String getValue() {
+        return value.get();
+    }
+
+    public void setValue(String value) {
+        this.value.set(value);
     }
 
     public StringProperty typeProperty() {

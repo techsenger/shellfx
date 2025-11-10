@@ -25,6 +25,8 @@ import java.nio.ByteOrder;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -66,14 +68,13 @@ public class DataInspectorTabViewModel extends AbstractTabViewModel {
 
     private final ReadOnlyObjectWrapper<TypeItem<?>> selectedTypeItem = new ReadOnlyObjectWrapper<>();
 
-    private final ObservableList<BaseItem> baseItems = FXCollections.observableArrayList(
-            new BaseItem("Decimal", (c) -> c.getDecimal()),
-            new BaseItem("Hexadecimal", (c) -> c.getHexadecimal()),
-            new BaseItem("Octal", (c) -> c.getOctal()),
-            new BaseItem("Binary", (c) -> c.getBinary())
-    );
+    private final ReadOnlyStringWrapper decimal = new ReadOnlyStringWrapper();
 
-    private final ReadOnlyObjectWrapper<BaseItem> selectedBaseItem = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyStringWrapper hexadecimal = new ReadOnlyStringWrapper();
+
+    private final ReadOnlyStringWrapper octal = new ReadOnlyStringWrapper();
+
+    private final ReadOnlyStringWrapper binary = new ReadOnlyStringWrapper();
 
     private final HexDocument document;
 
@@ -125,12 +126,36 @@ public class DataInspectorTabViewModel extends AbstractTabViewModel {
         return selectedTypeItem.get();
     }
 
-    public ReadOnlyObjectProperty<BaseItem> selectedBaseItemProperty() {
-        return selectedBaseItem.getReadOnlyProperty();
+    public String getDecimal() {
+        return decimal.get();
     }
 
-    public BaseItem getSelectedBaseItem() {
-        return selectedBaseItem.get();
+    public ReadOnlyStringProperty decimalProperty() {
+        return decimal.getReadOnlyProperty();
+    }
+
+    public String getHexadecimal() {
+        return hexadecimal.get();
+    }
+
+    public ReadOnlyStringProperty hexadecimalProperty() {
+        return hexadecimal.getReadOnlyProperty();
+    }
+
+    public String getOctal() {
+        return octal.get();
+    }
+
+    public ReadOnlyStringProperty octalProperty() {
+        return octal.getReadOnlyProperty();
+    }
+
+    public String getBinary() {
+        return binary.get();
+    }
+
+    public ReadOnlyStringProperty binaryProperty() {
+        return binary.getReadOnlyProperty();
     }
 
     @Override
@@ -146,10 +171,6 @@ public class DataInspectorTabViewModel extends AbstractTabViewModel {
         return typeItems;
     }
 
-    protected ObservableList<BaseItem> getBaseItems() {
-        return baseItems;
-    }
-
     ReadOnlyObjectWrapper<ByteOrder> byteOrderWrapper() {
         return byteOrder;
     }
@@ -158,8 +179,20 @@ public class DataInspectorTabViewModel extends AbstractTabViewModel {
         return selectedTypeItem;
     }
 
-    ReadOnlyObjectWrapper<BaseItem> selectedBaseItemWrapper() {
-        return selectedBaseItem;
+    private void setDecimal(String decimal) {
+        this.decimal.set(decimal);
+    }
+
+    private void setHexadecimal(String hexadecimal) {
+        this.hexadecimal.set(hexadecimal);
+    }
+
+    private void setOctal(String octal) {
+        this.octal.set(octal);
+    }
+
+    private void setBinary(String binary) {
+        this.binary.set(binary);
     }
 
     private void updateBaseItems() {
@@ -169,14 +202,15 @@ public class DataInspectorTabViewModel extends AbstractTabViewModel {
             bases = typeItem.createBases(values);
         }
         if (typeItem == null || bases == null) {
-            for (var b : baseItems) {
-                b.setValue(null);
-            }
+            setDecimal(null);
+            setHexadecimal(null);
+            setOctal(null);
+            setBinary(null);
         } else {
-            for (var b: this.baseItems) {
-                var converted = b.getBaseSelector().apply(bases);
-                b.setValue(converted);
-            }
+            setDecimal(bases.getDecimal());
+            setHexadecimal(bases.getHexadecimal());
+            setOctal(bases.getOctal());
+            setBinary(bases.getBinary());
         }
     }
 }
