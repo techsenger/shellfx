@@ -109,6 +109,17 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
         viewModel.readFile();
     }
 
+    @Override
+    protected void postDeinitialize(T viewModel) {
+        super.postDeinitialize(viewModel);
+        if (getDataInspector() != null) {
+            getDataInspector().deinitialize();
+        }
+        this.area.deinitialize();
+        this.layout.deinitialize();
+        this.toolBar.deinitialize();
+    }
+
     protected HexToolBarView<?> createToolBar(T viewModel) {
         return new HexToolBarView<>(viewModel.getToolBar());
     }

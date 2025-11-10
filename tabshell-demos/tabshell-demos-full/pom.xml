@@ -120,9 +120,11 @@
                     <mainClass>com.techsenger.tabshell.demos.full.Demo</mainClass>
                     <options>
                         <option>-Xrunjdwp:transport=dt_socket,address=7700,server=y,suspend=n</option>
+                        <!--<option>-Xmx50m</option>-->
                     </options>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 </project>
+
