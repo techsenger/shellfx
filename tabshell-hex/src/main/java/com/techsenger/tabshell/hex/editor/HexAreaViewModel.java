@@ -49,6 +49,8 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
 
     private static final int OFFSET_MIN_LENGTH = 8;
 
+    private static final String INVALID_CHAR = "\u2022";
+
     private final HexToolBarViewModel toolBar;
 
     private final ObservableSource<CaretPosition> layoutUpdate = new SimpleObservableSource<>();
@@ -60,7 +62,8 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
     private final ReadOnlyIntegerWrapper columnCount = new ReadOnlyIntegerWrapper();
 
     /**
-     * Observable list is created only when file content is loaded, because it works faster.
+     * Observable list is created only when file content is loaded, because it works faster. The size of this
+     * list is equal to total (visible and invisible) row count.
      */
     private final ObservableList<Integer> offsets = FXCollections.observableArrayList();
 
@@ -73,20 +76,19 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
     /**
      * Caret uses {@link #charWidth}, so, it is declared after it.
      */
-    private final CaretViewModel caret = new CaretViewModel(charSize);
+    private final CaretViewModel caret;
 
     /**
      * Caret position is updated either via this source or via {@link #layoutUpdate}.
      */
     private final ObservableSource<CaretPosition> caretPosition = new SimpleObservableSource<>();
 
-    private final HeaderRowViewModel headerRow = new HeaderRowViewModel(this);
-
     private final Font monospaceFont;
 
     private final HexDocument document;
 
     public HexAreaViewModel(HexToolBarViewModel toolBar, Font monospaceFont, HexDocument document) {
+        this.caret = new CaretViewModel(this::getRowByteCount, charSize);
         this.toolBar = toolBar;
         this.monospaceFont = monospaceFont;
         this.document = document;
@@ -169,6 +171,14 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
         return new ComponentDescriptor(HexComponentNames.HEX_AREA);
     }
 
+    protected int getRowByteCount(int rowIndex) {
+        if (rowIndex + 1 == this.offsets.size()) {
+            return this.getLastRowByteCount();
+        } else {
+            return this.toolBar.getRowByteCount();
+        }
+    }
+
     void addListeners() {
         this.toolBar.rowByteCountProperty().addListener((ov, oldV, newV) -> updateLayout(true, null));
         this.toolBar.columnsEnabledProperty().addListener((ov, oldV, newV) -> updateLayout(false, null));
@@ -184,10 +194,6 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
         return toolBar;
     }
 
-    HeaderRowViewModel getHeaderRow() {
-        return headerRow;
-    }
-
     ObservableList<Integer> getOffsets() {
         return this.offsets;
     }
@@ -196,14 +202,9 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
         return layoutUpdate;
     }
 
-    int calculateRowIndex(BodyRowViewModel row) {
-        int rowIndex = row.getModel().getOffset() / this.toolBar.getRowByteCount();
+    int calculateRowIndex(RowData data) {
+        int rowIndex = data.getOffset() / this.toolBar.getRowByteCount();
         return rowIndex;
-    }
-
-    BodyRowViewModel createRow(Integer offset) {
-        var model = RowModel.create(offset, this);
-        return new BodyRowViewModel(this, model);
     }
 
     ObservableSource<CaretPosition> caretPositionSource() {
@@ -212,6 +213,29 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
 
     HexDocument getDocument() {
         return document;
+    }
+
+    RowData createRowData(Integer offset) {
+        if (offset == null) {
+            return null;
+        }
+        var content = getDocument().getContent();
+        int realLength = Math.min(getToolBar().getRowByteCount(), content.length - offset);
+        var data = new byte[realLength];
+        List<String> hexes = new ArrayList<>(data.length);
+        List<String> asciis = new ArrayList<>(data.length);
+        System.arraycopy(content, offset, data, 0, realLength);
+        for (var i = 0; i < data.length; i++) {
+            byte b = data[i];
+            hexes.add(NumberBaseUtils.convertToHex(b));
+            if (b <= 31 || b == 127) {
+                asciis.add(INVALID_CHAR);
+            } else {
+                asciis.add(Character.toString((char) (b & 0xFF)));
+            }
+        }
+        var index = calculateRowIndex(offset);
+        return new RowData(offset, index, hexes, asciis);
     }
 
     void moveCaretUp() {
@@ -235,7 +259,7 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
     void moveCaretLeft() {
         var currentPos = this.caret.getPosition();
         var atFirstByte = currentPos.getByteIndex() == 0;
-        var notAtFirstRow = !caret.getRow().isFirst();
+        var notAtFirstRow = !(currentPos.getRowIndex() == 0);
         var canChangeRow = ((currentPos.getPanel() == EditorPanel.HEX
                 && currentPos.getByteLocation() == CaretByteLocation.FIRST)
                     || currentPos.getPanel() == EditorPanel.ASCII
@@ -279,8 +303,9 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
 
     void moveCaretRight() {
         var currentPos = this.caret.getPosition();
-        var atLastByte = currentPos.getByteIndex() + 1 >= caret.getRow().getModel().getByteCount();
-        var atLastRow = isRowLast(caret.getRow().getModel().getOffset());
+        var rowByteCount = getRowByteCount(currentPos.getRowIndex());
+        var atLastByte = currentPos.getByteIndex() + 1 >= rowByteCount;
+        var atLastRow = currentPos.getRowIndex() == this.offsets.size() - 1;
         var canChangeRow = ((currentPos.getPanel() == EditorPanel.HEX
                 && currentPos.getByteLocation() != CaretByteLocation.FIRST)
                 || currentPos.getPanel() == EditorPanel.ASCII);
@@ -293,11 +318,11 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
             int byteIndex = currentPos.getByteIndex();
             var byteLocation = currentPos.getByteLocation();
             if (currentPos.getByteLocation() == CaretByteLocation.THIRD
-                    && currentPos.getByteIndex() == caret.getRow().getModel().getByteCount() - 1) {
+                    && currentPos.getByteIndex() == rowByteCount - 1) {
                 return;
             }
             if (currentPos.getPanel() == EditorPanel.HEX) {
-                if (!(currentPos.getByteIndex() + 1 >= this.caret.getRow().getModel().getByteCount()
+                if (!(currentPos.getByteIndex() + 1 >= rowByteCount
                         && currentPos.getByteLocation() == CaretByteLocation.SECOND)) {
                     if (currentPos.getByteLocation() == CaretByteLocation.FIRST) {
                         byteLocation = CaretByteLocation.SECOND;
@@ -313,7 +338,7 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
                     }
                 }
             } else {
-                if (currentPos.getByteIndex() + 1 != this.caret.getRow().getModel().getByteCount()) {
+                if (currentPos.getByteIndex() + 1 != rowByteCount) {
                     byteIndex = currentPos.getByteIndex() + 1;
                 } else {
                     if (this.caret.getShape() == CaretShape.BAR && atLastRow) {
@@ -335,13 +360,14 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
 
     void moveCaretEnd() {
         var currentPos = this.caret.getPosition();
+        var rowByteCount = getRowByteCount(currentPos.getRowIndex());
         var byteLocation = currentPos.getByteLocation();
         if (this.caret.getShape() == CaretShape.BAR) {
             byteLocation = CaretByteLocation.THIRD;
         } else {
             byteLocation = CaretByteLocation.SECOND;
         }
-        var byteIndex = caret.getRow().getModel().getByteCount() - 1;
+        var byteIndex = rowByteCount - 1;
         moveCaretTo(currentPos.getPanel(), currentPos.getRowIndex(), byteIndex, byteLocation);
     }
 

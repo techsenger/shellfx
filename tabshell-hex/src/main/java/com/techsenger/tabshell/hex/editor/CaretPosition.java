@@ -22,7 +22,7 @@ package com.techsenger.tabshell.hex.editor;
  */
 public final class CaretPosition {
 
-    public static CaretPosition create(EditorPanel panel, int rowIndex, int byteIndex,
+    static CaretPosition create(EditorPanel panel, int rowIndex, int byteIndex,
             CaretByteLocation byteLocation, HexAreaViewModel area) {
         int rowOffset = 0;
         if (!area.getOffsets().isEmpty()) {

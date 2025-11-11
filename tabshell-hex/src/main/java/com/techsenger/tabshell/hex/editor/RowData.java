@@ -16,39 +16,13 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-final class RowModel {
-
-    private static final String INVALID_CHAR = "\u2022";
-
-    static RowModel create(Integer offset, HexAreaViewModel area) {
-        if (offset == null) {
-            return null;
-        }
-        var content = area.getDocument().getContent();
-        int realLength = Math.min(area.getToolBar().getRowByteCount(), content.length - offset);
-        var data = new byte[realLength];
-        List<String> hexes = new ArrayList<>(data.length);
-        List<String> asciis = new ArrayList<>(data.length);
-        System.arraycopy(content, offset, data, 0, realLength);
-        for (var i = 0; i < data.length; i++) {
-            byte b = data[i];
-            hexes.add(NumberBaseUtils.convertToHex(b));
-            if (b <= 31 || b == 127) {
-                asciis.add(INVALID_CHAR);
-            } else {
-                asciis.add(Character.toString((char) (b & 0xFF)));
-            }
-        }
-        var index = area.calculateRowIndex(offset);
-        return new RowModel(offset, index, hexes, asciis);
-    }
+final class RowData {
 
     private final int offset;
 
@@ -58,7 +32,7 @@ final class RowModel {
 
     private final List<String> asciis;
 
-    private RowModel(int offset, int index, List<String> hexes, List<String> asciis) {
+    RowData(int offset, int index, List<String> hexes, List<String> asciis) {
         this.offset = offset;
         this.index = index;
         this.hexes = hexes;

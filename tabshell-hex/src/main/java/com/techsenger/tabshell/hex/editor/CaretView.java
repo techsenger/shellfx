@@ -24,6 +24,7 @@ import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -45,7 +46,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
 
     private final Timeline timeline = new Timeline();
 
-    private BodyRowView row;
+    private Region rowNode;
 
     CaretView(CaretViewModel viewModel) {
         super(viewModel);
@@ -91,25 +92,25 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         super.addHandlers(viewModel);
         this.timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), e -> {
             this.node.setVisible(!this.node.isVisible());
-            if (this.row != null && this.node.isVisible()) {
+            if (this.rowNode != null && this.node.isVisible()) {
                 //setting caret width and height, for example, when font changes,
                 //while we can calculate char width we can't calculate row width
                 switch (viewModel.getShape()) {
                     case BAR:
-                        this.node.setHeight(this.row.getNode().getHeight());
+                        this.node.setHeight(this.rowNode.getHeight());
                         break;
                     case BLOCK:
-                        this.node.setHeight(this.row.getNode().getHeight());
+                        this.node.setHeight(this.rowNode.getHeight());
                         break;
                     case UNDERSCORE:
-                        this.node.setTranslateY(this.row.getNode().getHeight() - 1);
+                        this.node.setTranslateY(this.rowNode.getHeight() - 1);
                         break;
                     default:
                         throw new AssertionError();
                 }
 
                 //setting indicator width, height, x
-                this.indicator.setHeight(this.row.getNode().getHeight());
+                this.indicator.setHeight(this.rowNode.getHeight());
             }
         }));
     }
@@ -156,47 +157,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         this.timeline.stop();
     }
 
-    BodyRowView getRow() {
-        return row;
-    }
-
-    /**
-     * Moves the caret to a new position in the view, based on the model state.
-     *
-     * @param position the new position of the caret
-     * @param newRow the target row, or {@code null} if the caret remains on the same row
-     */
-    void moveTo(CaretPosition position, BodyRowView newRow) {
-        var viewModel = getViewModel();
-        //if the position is null, it indicates that the caret has not moved,
-        //and only the view's caret needs to be updated.
-        if (position == null) {
-            position = viewModel.getPosition();
-        }
-
-        if (newRow == null) {
-            newRow = this.row;
-        }
-        viewModel.setRow(newRow.getViewModel());
-        var oldRow = this.row;
-        this.row = newRow;
-
-        if (oldRow != newRow) {
-            if (oldRow != null) {
-                oldRow.removeCaret();
-                oldRow.getViewModel().setFocused(false);
-            }
-        }
-        // The caret is added to the row in two cases: when this method is called and when row.updateItem(..) is called.
-        // That's why we always remove the caret first to avoid a 'duplicate children added' exception.
-        newRow.removeCaret();
-        newRow.addCaret(position);
-        newRow.getViewModel().setFocused(true);
-        //when cursor is moved it must always be visible
-        if (!getViewModel().isDisabled()) {
-            this.node.setVisible(true);
-        }
-        //and only now we change position
-        viewModel.setPosition(position);
+    void setRowNode(Region rowNode) {
+        this.rowNode = rowNode;
     }
 }

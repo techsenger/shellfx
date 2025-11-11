@@ -19,6 +19,7 @@ package com.techsenger.tabshell.hex.editor;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.ComponentName;
 import com.techsenger.tabshell.core.node.AbstractNodeViewModel;
+import java.util.function.Function;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -63,9 +64,10 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     private final ObjectProperty<CaretShape> shape = new SimpleObjectProperty<>(CaretShape.BAR);
 
-    private BodyRowViewModel row;
+    private final Function<Integer, Integer> rowByteCounter;
 
-    CaretViewModel(ReadOnlyObjectProperty<Dimension2D> charSize) {
+    CaretViewModel(Function<Integer, Integer> rowByteCounter, ReadOnlyObjectProperty<Dimension2D> charSize) {
+        this.rowByteCounter = rowByteCounter;
         shape.addListener((ov, oldV, newV) -> updateWidths(newV, charSize.get().getWidth()));
         panel.addListener((ov, oldV, newV) -> updateWidths(getShape(), charSize.get().getWidth()));
         charSize.addListener((ov, oldV, newV) -> updateWidths(getShape(), newV.getWidth()));
@@ -145,7 +147,8 @@ public final class CaretViewModel extends AbstractNodeViewModel {
      * @return {@code true} if the caret is at the last byte; {@code false} otherwise
      */
     public boolean isAtRowEnd() {
-        return getPosition().getByteIndex() == row.getModel().getByteCount() - 1;
+        var rowByteCount = this.rowByteCounter.apply(getPosition().getRowIndex());
+        return getPosition().getByteIndex() == rowByteCount - 1;
     }
 
     @Override
@@ -161,14 +164,6 @@ public final class CaretViewModel extends AbstractNodeViewModel {
 
     void setDisabled(boolean value) {
         this.disabled.set(value);
-    }
-
-    BodyRowViewModel getRow() {
-        return row;
-    }
-
-    void setRow(BodyRowViewModel row) {
-        this.row = row;
     }
 
     ReadOnlyDoubleWrapper xWrapper() {
