@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.data;
+package com.techsenger.tabshell.hex.inspector;
 
 /**
  *
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface NumberBaseConverter<T> {
+public interface SizeProvider {
 
-    NumberBases convert(T value, int bits);
-
+    /**
+     * Returns the size of the value in bits.
+     *
+     * @param values
+     * @return
+     */
+    int provide(Values values);
 }

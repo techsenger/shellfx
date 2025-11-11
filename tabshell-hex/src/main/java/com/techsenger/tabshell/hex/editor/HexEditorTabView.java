@@ -19,7 +19,7 @@ package com.techsenger.tabshell.hex.editor;
 import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
-import com.techsenger.tabshell.hex.data.DataInspectorTabView;
+import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;

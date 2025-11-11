@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.data;
+package com.techsenger.tabshell.hex.inspector;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.style.CoreIcons;

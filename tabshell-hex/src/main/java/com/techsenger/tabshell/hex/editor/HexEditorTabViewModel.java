@@ -24,7 +24,7 @@ import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.hex.HexComponentNames;
-import com.techsenger.tabshell.hex.data.DataInspectorTabViewModel;
+import com.techsenger.tabshell.hex.inspector.DataInspectorTabViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
 import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;

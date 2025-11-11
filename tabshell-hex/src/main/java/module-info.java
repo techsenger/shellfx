@@ -33,7 +33,7 @@ module com.techsenger.tabshell.hex {
     requires atlantafx.base;
 
     exports com.techsenger.tabshell.hex;
-    exports com.techsenger.tabshell.hex.data;
+    exports com.techsenger.tabshell.hex.inspector;
     exports com.techsenger.tabshell.hex.editor;
     exports com.techsenger.tabshell.hex.style;
 }

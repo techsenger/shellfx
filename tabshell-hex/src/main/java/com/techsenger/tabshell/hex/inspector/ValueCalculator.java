@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.data;
+package com.techsenger.tabshell.hex.inspector;
 
 import java.math.BigInteger;
 import java.nio.ByteOrder;
