@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.hex.model.ByteRange;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import javafx.geometry.Orientation;
@@ -62,6 +63,8 @@ public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractPaneV
     private final ComboBox<Integer> columnByteCountsComboBox = new ComboBox<>();
 
     private final ComboBox<NumberBase> offsetNumberBaseComboBox = new ComboBox<>();
+
+    private HexAreaView<?> area;
 
     private final ToolBar toolBar = new ToolBar(
             newButton,
@@ -146,6 +149,13 @@ public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractPaneV
         this.offsetNumberBaseComboBox.valueProperty().bindBidirectional(viewModel.offsetNumberBaseProperty());
     }
 
+    @Override
+    protected void addHandlers(T viewModel) {
+        super.addHandlers(viewModel);
+        newButton.setOnAction(e -> this.area.getViewModel().setSelection(new ByteRange(22, 26))); // TEMP TEMP
+        // newButton.setOnAction(e -> this.area.getViewModel().setSelection(new ByteRange(22, 71))); // TEMP TEMP
+    }
+
     public Button getNewButton() {
         return newButton;
     }
@@ -196,5 +206,13 @@ public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractPaneV
 
     public ComboBox<NumberBase> getOffsetNumberBaseComboBox() {
         return offsetNumberBaseComboBox;
+    }
+
+    protected HexAreaView<?> getArea() {
+        return area;
+    }
+
+    void setArea(HexAreaView<?> area) {
+        this.area = area;
     }
 }

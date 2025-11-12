@@ -18,8 +18,11 @@ package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.style.StyleUtils;
 import com.techsenger.tabshell.hex.HexComponentNames;
+import com.techsenger.tabshell.hex.model.ByteRange;
+import com.techsenger.tabshell.hex.model.HexDocument;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
@@ -35,7 +38,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Dimension2D;
-import javafx.scene.text.Font;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,43 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
     private static final int OFFSET_MIN_LENGTH = 8;
 
     private static final String INVALID_CHAR = "\u2022";
+
+    static SelectionInfo createSelection(ByteRange selection, int contentLength, int rowByteCount) {
+        if (selection == null) {
+            throw new IllegalArgumentException("Selection cannot be null");
+        }
+
+        int firstRowIndex = selection.getStart() / rowByteCount;
+        int lastRowIndex = (selection.getEnd() - 1) / rowByteCount;
+        int rowCount = lastRowIndex - firstRowIndex + 1;
+
+        int firstRowByteIndex = selection.getStart() % rowByteCount;
+        int firstRowEndByte = (firstRowIndex == lastRowIndex)
+            ? (selection.getEnd() - 1) % rowByteCount
+            : rowByteCount - 1;
+
+        int lastRowByteIndex = 0;
+        int lastRowEndByte = (selection.getEnd() - 1) % rowByteCount;
+
+        int firstRowByteCount = firstRowEndByte - firstRowByteIndex + 1;
+        int lastRowByteCount = lastRowEndByte - lastRowByteIndex + 1;
+
+        SelectionInfo.SelectionType type = SelectionInfo.SelectionType.SIMPLE;
+
+        // Check if selected byte ranges align vertically
+        if (rowCount == 2 && (lastRowEndByte >= firstRowByteIndex)) {
+            type = SelectionInfo.SelectionType.JOINED;
+        }
+        if (rowCount > 2) {
+            type = SelectionInfo.SelectionType.JOINED;
+        }
+        SelectionInfo.RowInfo firstRow = new SelectionInfo.RowInfo(firstRowIndex, firstRowByteIndex, firstRowByteCount);
+        SelectionInfo.RowInfo lastRow = null;
+        if (rowCount > 1) {
+            lastRow = new SelectionInfo.RowInfo(lastRowIndex, lastRowByteIndex, lastRowByteCount);
+        }
+        return new SelectionInfo(type, rowCount, firstRow, lastRow);
+    }
 
     private final HexToolBarViewModel toolBar;
 
@@ -83,16 +122,27 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
      */
     private final ObservableSource<CaretPosition> caretPosition = new SimpleObservableSource<>();
 
-    private final Font monospaceFont;
+    private final AppearanceSettings settings;
 
     private final HexDocument document;
 
-    public HexAreaViewModel(HexToolBarViewModel toolBar, Font monospaceFont, HexDocument document) {
+    private final ObjectProperty<ByteRange> selection = new SimpleObjectProperty<>();
+
+    private SelectionInfo selectionInfo;
+
+    public HexAreaViewModel(HexToolBarViewModel toolBar, AppearanceSettings settings, HexDocument document) {
         this.caret = new CaretViewModel(this::getRowByteCount, charSize);
         this.toolBar = toolBar;
-        this.monospaceFont = monospaceFont;
+        this.settings = settings;
         this.document = document;
         this.caret.shapeProperty().addListener((ov, oldV, newV) -> adjustCaretOnShapeChange(oldV, newV));
+        selection.addListener((ov, oldV, newV) -> {
+            if (newV == null) {
+                selectionInfo = null;
+            } else {
+                selectionInfo = createSelection(newV, document.getContent().length, toolBar.getRowByteCount());
+            }
+        });
     }
 
     public CaretViewModel getCaret() {
@@ -166,6 +216,18 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
         this.caretPosition.next(position);
     }
 
+    public ObjectProperty<ByteRange> selectionProperty() {
+        return selection;
+    }
+
+    public ByteRange getSelection() {
+        return selection.get();
+    }
+
+    public void setSelection(ByteRange range) {
+        selection.set(range);
+    }
+
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(HexComponentNames.HEX_AREA);
@@ -213,6 +275,10 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
 
     HexDocument getDocument() {
         return document;
+    }
+
+    SelectionInfo getSelectionInfo() {
+        return selectionInfo;
     }
 
     RowData createRowData(Integer offset) {
@@ -377,6 +443,10 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
         updateLayout(true, newPos);
     }
 
+    AppearanceSettings getSettings() {
+        return settings;
+    }
+
     private void adjustCaretOnShapeChange(CaretShape oldShape, CaretShape newShape) {
         var currentPos = this.caret.getPosition();
         if (oldShape == CaretShape.BAR && currentPos.getByteLocation() == CaretByteLocation.THIRD) {
@@ -426,7 +496,7 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
     }
 
     private void calculateFixedLayout() {
-        var chSize = StyleUtils.getMonospaceCharSize(this.monospaceFont);
+        var chSize = StyleUtils.getMonospaceCharSize(this.settings.getMonospaceFont());
         this.charSize.set(chSize);
         if (this.toolBar.areColumnsEnabled()) {
             this.columnCount.set(this.toolBar.getRowByteCount() / this.toolBar.getColumnByteCount());

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.hex.model;
 
 import com.techsenger.tabshell.storage.GenericFile;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class HexDocument {
         return file;
     }
 
-    boolean readFile() {
+    public boolean readFile() {
         try {
             this.content = this.file.getStorage().readFile(this.file.getUri());
             return true;
@@ -54,7 +54,7 @@ public class HexDocument {
         }
     }
 
-    boolean writeFile() {
+    public boolean writeFile() {
         try {
             this.file.getStorage().writeFile(this.file.getUri(), content);
             return true;
@@ -64,8 +64,7 @@ public class HexDocument {
         }
     }
 
-    void setFile(GenericFile file) {
+    public void setFile(GenericFile file) {
         this.file = file;
     }
-
 }

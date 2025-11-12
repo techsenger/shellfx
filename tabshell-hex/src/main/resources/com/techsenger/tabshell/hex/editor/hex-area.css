@@ -24,6 +24,7 @@
 
 .header-row {
     -fx-background-color: -color-bg-inset;
+    -fx-alignment: center-left;
 }
 
 .header-row > .scrollable-box > .info-label {
@@ -33,6 +34,10 @@
 
 .header-row > .scrollable-box > .hex-pane {
     -fx-background-color: -color-bg-default, -color-bg-inset;
+}
+
+.header-row > .scrollable-box > .hex-pane > .content-box {
+    -fx-alignment: center-left;
 }
 
 .header-row > .scrollable-box > .hex-pane > .content-box > .content {
@@ -59,6 +64,14 @@
     -fx-background-color: -color-bg-default, -color-bg-inset ;
 }
 
+.header-row > .scrollable-box > .ascii-pane > .content-box {
+    -fx-alignment: center-left;
+}
+
+.body-row {
+    -fx-alignment: center-left;
+}
+
 .body-row > .info-label {
     -fx-font-size: 1em;
     -fx-background-color: -color-bg-inset;
@@ -67,6 +80,7 @@
 
 .body-row > .hex-pane > .content-box {
     -fx-font-size: 1em;
+    -fx-alignment: center-left;
 }
 
 .body-row > .hex-pane > .content-box > .content {
@@ -107,6 +121,10 @@
 .body-row > .ascii-pane {
     -fx-border-color: -color-fg-default;
     -fx-border-width: 0 0 0 1;
+}
+
+.body-row > .ascii-pane > .content-box {
+    -fx-alignment: center-left;
 }
 
 .body-row > .ascii-pane > .content-box > .content {

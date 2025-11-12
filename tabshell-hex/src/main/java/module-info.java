@@ -34,6 +34,7 @@ module com.techsenger.tabshell.hex {
 
     exports com.techsenger.tabshell.hex;
     exports com.techsenger.tabshell.hex.inspector;
+    exports com.techsenger.tabshell.hex.model;
     exports com.techsenger.tabshell.hex.editor;
     exports com.techsenger.tabshell.hex.style;
 }

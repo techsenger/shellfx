@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.hex.editor;
 
+import com.techsenger.tabshell.hex.model.HexDocument;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
@@ -146,8 +147,7 @@ public class HexEditorTabViewModel extends AbstractShellTabViewModel
     }
 
     protected HexAreaViewModel createArea() {
-        var font = getShell().getSettings().getAppearance().getMonospaceFont();
-        return new HexAreaViewModel(toolBar, font, this.document);
+        return new HexAreaViewModel(toolBar, getShell().getSettings().getAppearance(), this.document);
     }
 
     protected DataInspectorTabViewModel createDataInspector() {

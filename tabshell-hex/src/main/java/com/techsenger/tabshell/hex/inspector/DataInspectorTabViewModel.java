@@ -19,7 +19,7 @@ package com.techsenger.tabshell.hex.inspector;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.hex.HexComponentNames;
-import com.techsenger.tabshell.hex.editor.HexDocument;
+import com.techsenger.tabshell.hex.model.HexDocument;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import javafx.beans.property.ReadOnlyIntegerProperty;

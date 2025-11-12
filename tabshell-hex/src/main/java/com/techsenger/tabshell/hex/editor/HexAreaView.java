@@ -18,10 +18,11 @@ package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.FIRST;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.SECOND;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.THIRD;
+import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
+import com.techsenger.toolkit.fx.color.ColorUtils;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import java.text.DecimalFormat;
@@ -33,6 +34,7 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import static javafx.scene.input.KeyCode.DOWN;
@@ -50,6 +52,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.fxmisc.flowless.Cell;
 import org.fxmisc.flowless.VirtualFlow;
@@ -97,71 +100,14 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
      */
     private static class ByteText extends Text {
 
-        private ByteTextPair pair;
+        private int index;
 
         ByteText() {
             setSmooth(false);
         }
 
-        public ByteTextPair getPair() {
-            return pair;
-        }
-
-        public void setPair(ByteTextPair pair) {
-            this.pair = pair;
-        }
-    }
-
-    /**
-     * Represents a paired set of textual representations (HEX and ASCII) for a single byte within a hex editor row.
-     *
-     * <p>This class links the visual displays of a byte's HEX value (e.g., "1A") and its ASCII character (e.g., ".")
-     * in synchronized fashion.
-     *
-     * @author Pavel Castornii
-     */
-    private static class ByteTextPair {
-
-        private final BodyRow row;
-
-        private final ByteText hexText;
-
-        private final ByteText asciiText;
-
-        private boolean empty;
-
-        private int index;
-
-        ByteTextPair(BodyRow row, ByteText hexText, ByteText asciiText) {
-            this.row = row;
-            this.hexText = hexText;
-            this.hexText.setPair(this);
-            this.asciiText = asciiText;
-            this.asciiText.setPair(this);
-        }
-
-        public ByteText getHexText() {
-            return hexText;
-        }
-
-        public ByteText getAsciiText() {
-            return asciiText;
-        }
-
-        public boolean isEmpty() {
-            return empty;
-        }
-
         public int getIndex() {
             return index;
-        }
-
-        public BodyRow getRow() {
-            return row;
-        }
-
-        public void setEmpty(boolean empty) {
-            this.empty = empty;
         }
 
         public void setIndex(int index) {
@@ -169,7 +115,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
         }
     }
 
-    private static class PanelRowPane extends StackPane {
+    private static class RowPane extends StackPane {
+
+        private final EditorPanel panel;
 
         /**
          * This canvas is used for background color, selection etc.
@@ -186,18 +134,21 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
          */
         private final HBox contentBox = new HBox();
 
-        PanelRowPane() {
+        /**
+         * Only texts that represent bytes. Its size is always equal to max rowByteCount.
+         */
+        private final List<ByteText> texts = new ArrayList<>();
+
+        RowPane(EditorPanel panel) {
+            this.panel = panel;
             this.getChildren().addAll(this.canvas, this.caretPane, this.contentBox);
             this.caretPane.setMouseTransparent(true);
             this.caretPane.getStyleClass().add("caret-pane");
             this.contentBox.getStyleClass().add("content-box");
         }
 
-        @Override
-        protected void layoutChildren() {
-            super.layoutChildren();
-            this.canvas.setWidth(getWidth());
-            this.canvas.setHeight(getHeight());
+        public EditorPanel getPanel() {
+            return panel;
         }
 
         public Canvas getCanvas() {
@@ -212,13 +163,24 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             return contentBox;
         }
 
+        public List<ByteText> getTexts() {
+            return texts;
+        }
+
+        @Override
+        protected void layoutChildren() {
+            super.layoutChildren();
+            this.canvas.setWidth(getWidth());
+            this.canvas.setHeight(getHeight());
+        }
+
         void clearCanvas() {
             var gc = this.canvas.getGraphicsContext2D();
             gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         }
 
         void clear() {
-            clearCanvas();
+            this.texts.clear();
             this.caretPane.getChildren().clear();
             this.contentBox.getChildren().clear();
         }
@@ -236,12 +198,12 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
         /**
          * Stack pane for hex panel.
          */
-        private final PanelRowPane hexPane = new PanelRowPane();
+        private final RowPane hexPane = new RowPane(EditorPanel.HEX);
 
         /**
          * Stack pane for ascii panel.
          */
-        private final PanelRowPane asciiPane = new PanelRowPane();
+        private final RowPane asciiPane = new RowPane(EditorPanel.ASCII);
 
         /**
          * The root node of the row.
@@ -267,11 +229,11 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             return infoLabel;
         }
 
-        protected PanelRowPane getHexPane() {
+        protected RowPane getHexPane() {
             return hexPane;
         }
 
-        protected PanelRowPane getAsciiPane() {
+        protected RowPane getAsciiPane() {
             return asciiPane;
         }
 
@@ -282,14 +244,11 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
     private static class BodyRow extends AbstractRow implements Cell<Integer, Node> {
 
+        private static final double SELECTION_BORDER_SIZE = 1.0;
+
         private RowData data;
 
         private boolean focused;
-
-        /**
-         * Only texts that represent bytes. Its size is always equal to max rowByteCount.
-         */
-        private final List<ByteTextPair> byteTextPairs = new ArrayList<>();
 
         BodyRow(RowData data, HexAreaView<?> area) {
             super(area);
@@ -314,17 +273,19 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
                 var offsetStr = NumberBaseUtils.convert(row.getOffset(), areaVM.getToolBar().getOffsetNumberBase(),
                         areaVM.getOffsetLength());
                 getInfoLabel().setText(offsetStr);
-                for (var i = 0; i < areaVM.getToolBar().getRowByteCount(); i++) {
-                    var bytePair = byteTextPairs.get(i);
-                    bytePair.setIndex(i);
+                var hexTexts = getHexPane().getTexts();
+                var asciiTexts = getAsciiPane().getTexts();
+                for (var i = 0; i < hexTexts.size(); i++) {
+                    var hexText = hexTexts.get(i);
+                    hexText.setIndex(i);
+                    var asciiText = asciiTexts.get(i);
+                    asciiText.setIndex(i);
                     if (i < row.getHexes().size()) {
-                        bytePair.setEmpty(false);
-                        bytePair.getHexText().setText(row.getHexes().get(i));
-                        bytePair.getAsciiText().setText(row.getAsciis().get(i));
+                        hexText.setText(row.getHexes().get(i));
+                        asciiText.setText(row.getAsciis().get(i));
                     } else {
-                        bytePair.setEmpty(true);
-                        bytePair.getHexText().setText("  ");
-                        bytePair.getAsciiText().setText(" ");
+                        hexText.setText("  ");
+                        asciiText.setText(" ");
                     }
                 }
                 var caretPos = getArea().getCaret().getViewModel().getPosition();
@@ -334,6 +295,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
                 } else {
                     this.focused = false;
                 }
+                drawSelection();
             } else {
                 this.focused = false;
                 getNode().setVisible(false);
@@ -357,13 +319,10 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             getHexPane().getCanvas().setWidth(0);
             getAsciiPane().clear();
             getAsciiPane().getCanvas().setWidth(0);
-            this.byteTextPairs.clear();
 
             var hexContentBox = getHexPane().getContentBox();
             hexContentBox.setPadding(new Insets(0, charWidth, 0, charWidth));
             hexContentBox.setSpacing(charWidth);
-
-            List<ByteText> asciiTexts = new ArrayList<>();
 
             for (var i = 0; i < areaViewModel.getToolBar().getRowByteCount(); i++) {
                 if (areaViewModel.getToolBar().areColumnsEnabled() && i != 0
@@ -380,16 +339,16 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
                     }
                 }
 
-                var hexText = createByteHexText();
+                var hexText = createHexText();
+                getHexPane().getTexts().add(hexText);
                 hexContentBox.getChildren().add(hexText);
-                var asciiText = createByteAsciiText();
-                asciiTexts.add(asciiText);
-                this.byteTextPairs.add(new ByteTextPair(this, hexText, asciiText));
+                var asciiText = createAsciiText();
+                getAsciiPane().getTexts().add(asciiText);
             }
 
             var asciiContentBox = getAsciiPane().getContentBox();
             asciiContentBox.setPadding(new Insets(0, charWidth, 0, charWidth));
-            asciiContentBox.getChildren().addAll(asciiTexts);
+            asciiContentBox.getChildren().addAll(getAsciiPane().getTexts());
         }
 
         /**
@@ -421,10 +380,6 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             return data;
         }
 
-        List<ByteTextPair> getByteTextPairs() {
-            return byteTextPairs;
-        }
-
         void removeCaret() {
             getHexPane().getCaretPane().getChildren().clear();
             getAsciiPane().getCaretPane().getChildren().clear();
@@ -444,9 +399,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
         ByteText getText(EditorPanel panel, int byteIndex) {
             if (panel == EditorPanel.HEX) {
-                return this.byteTextPairs.get(byteIndex).getHexText();
+                return getHexPane().getTexts().get(byteIndex);
             } else {
-                return this.byteTextPairs.get(byteIndex).getAsciiText();
+                return getAsciiPane().getTexts().get(byteIndex);
             }
         }
 
@@ -458,14 +413,185 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             this.focused = focused;
         }
 
-        private ByteText createByteHexText() {
+        /**
+         * The selection won't be visible if it is drawn on the row before the canvas is rendered, because at that
+         * moment the canvas size is still 0x0.
+         */
+        private void drawSelection() {
+            getHexPane().clearCanvas();
+            getAsciiPane().clearCanvas();
+            var info = getArea().getViewModel().getSelectionInfo();
+            if (info == null) {
+                return;
+            }
+            if (info.getRowCount() == 1) {
+                if (info.getFirstRow().getIndex() == this.data.getIndex()) {
+                    drawSimpleSelection(info.getFirstRow());
+                }
+            } else {
+                if ((info.getFirstRow().getIndex() <= this.data.getIndex())
+                        && (info.getLastRow().getIndex() >= this.data.getIndex())) {
+                    if (info.getType() == SelectionInfo.SelectionType.SIMPLE) {
+                        var rowInfo = info.getFirstRow();
+                        if (info.getLastRow().getIndex() == this.data.getIndex()) {
+                            rowInfo = info.getLastRow();
+                        }
+                        drawSimpleSelection(rowInfo);
+                    } else {
+                        drawJoinedSelection(info);
+                    }
+                }
+            }
+        }
+
+        private void drawSimpleSelection(SelectionInfo.RowInfo rowInfo) {
+            drawSimpleSelection(rowInfo, getHexPane());
+            drawSimpleSelection(rowInfo, getAsciiPane());
+        }
+
+        private void drawSimpleSelection(SelectionInfo.RowInfo rowInfo, RowPane pane) {
+            var startText = getStartText(pane, rowInfo);
+            var endText = getEndText(pane, rowInfo);
+            var leftX = startText.getBoundsInParent().getMinX();
+            var rightX = endText.getBoundsInParent().getMaxX();
+            var width = rightX - leftX;
+
+            GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
+            gc.setFill(getArea().getSelectionBgColor());
+            drawSelectionBg(gc, leftX, width);
+            gc.setFill(getArea().getSelectionFgColor());
+            drawSelectionFgTop(gc, leftX, width);
+            drawSelectionFgBottom(gc, leftX, width);
+            drawSelectionFgLeft(gc, leftX);
+            drawSelectionFgRight(gc, rightX);
+        }
+
+        private void drawJoinedSelection(SelectionInfo info) {
+            if (info.getFirstRow().getIndex() == this.data.getIndex()) {
+                drawJoinedSelectionFirstRow(getHexPane(), info.getFirstRow());
+                drawJoinedSelectionFirstRow(getAsciiPane(), info.getFirstRow());
+            } else if (info.getLastRow().getIndex() == this.data.getIndex()) {
+                drawJoinedSelectionLastRow(getHexPane(), info.getLastRow());
+                drawJoinedSelectionLastRow(getAsciiPane(), info.getLastRow());
+            } else {
+                drawJoinedSelectionMiddleRow(getHexPane());
+                drawJoinedSelectionMiddleRow(getAsciiPane());
+            }
+        }
+
+        private void drawJoinedSelectionFirstRow(RowPane pane, SelectionInfo.RowInfo rowInfo) {
+            var startText = getStartText(pane, rowInfo);
+            var endText = getEndText(pane, rowInfo);
+            var leftX = startText.getBoundsInParent().getMinX();
+            var rightX = endText.getBoundsInParent().getMaxX();
+            var width = rightX - leftX;
+
+            GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
+            gc.setFill(getArea().getSelectionBgColor());
+            drawSelectionBg(gc, leftX, width);
+            gc.setFill(getArea().getSelectionFgColor());
+            drawSelectionFgTop(gc, leftX, width);
+            drawSelectionFgLeft(gc, leftX);
+            drawSelectionFgRight(gc, rightX);
+            if (rowInfo.getByteIndex() > 0) {
+                var firstTextX = pane.getTexts().get(0).getBoundsInParent().getMinX();
+                drawSelectionFgBottom(gc, firstTextX - SELECTION_BORDER_SIZE, leftX - firstTextX);
+            }
+        }
+
+        private void drawJoinedSelectionMiddleRow(RowPane pane) {
+            var startIndex = 0;
+            var endIndex = pane.getTexts().size() - 1;
+            var startText = pane.getTexts().get(startIndex);
+            var endText = pane.getTexts().get(endIndex);
+            var leftX = startText.getBoundsInParent().getMinX();
+            var rightX = endText.getBoundsInParent().getMaxX();
+
+            GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
+            gc.setFill(getArea().getSelectionBgColor());
+            drawSelectionBg(gc, leftX, rightX - leftX);
+            gc.setFill(getArea().getSelectionFgColor());
+            drawSelectionFgLeft(gc, leftX);
+            drawSelectionFgRight(gc, rightX);
+        }
+
+        private void drawJoinedSelectionLastRow(RowPane pane, SelectionInfo.RowInfo rowInfo) {
+            var startText = getStartText(pane, rowInfo);
+            var endText = getEndText(pane, rowInfo);
+            var leftX = startText.getBoundsInParent().getMinX();
+            var rightX = endText.getBoundsInParent().getMaxX();
+            var width = rightX - leftX;
+
+            GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
+            gc.setFill(getArea().getSelectionBgColor());
+            drawSelectionBg(gc, leftX, rightX - leftX);
+            gc.setFill(getArea().getSelectionFgColor());
+            drawSelectionFgLeft(gc, leftX);
+            drawSelectionFgRight(gc, rightX);
+            drawSelectionFgBottom(gc, leftX, width);
+            if (rowInfo.getByteCount() != pane.getTexts().size()) {
+                var lastTextX = pane.getTexts().get(pane.getTexts().size() - 1).getBoundsInParent().getMaxX();
+                drawSelectionFgTop(gc, rightX, lastTextX - rightX + SELECTION_BORDER_SIZE);
+            }
+        }
+
+        private ByteText getStartText(RowPane pane, SelectionInfo.RowInfo rowInfo) {
+            var startIndex = rowInfo.getByteIndex();
+            var startText = pane.getTexts().get(startIndex);
+            return startText;
+        }
+
+        private ByteText getEndText(RowPane pane, SelectionInfo.RowInfo rowInfo) {
+            var endIndex = rowInfo.getByteIndex() + rowInfo.getByteCount() - 1;
+            var endText = pane.getTexts().get(endIndex);
+            return endText;
+        }
+
+        private void drawSelectionFgTop(GraphicsContext gc, double x, double width) {
+            var node = getNode();
+            x = node.snapPositionX(x);
+            width = node.snapSizeX(width);
+            gc.fillRect(x, 0, width, SELECTION_BORDER_SIZE);
+        }
+
+        private void drawSelectionFgBottom(GraphicsContext gc, double x, double width) {
+            var node = getNode();
+            x = node.snapPositionX(x);
+            width = node.snapSizeX(width);
+            var height = node.snapSizeY(getNode().getHeight());
+            gc.fillRect(x, height - SELECTION_BORDER_SIZE, width, height);
+        }
+
+        private void drawSelectionFgLeft(GraphicsContext gc, double x) {
+            var node = getNode();
+            x = node.snapPositionX(x);
+            var height = node.snapSizeY(getNode().getHeight());
+            gc.fillRect(x - SELECTION_BORDER_SIZE, 0, SELECTION_BORDER_SIZE, height);
+        }
+
+        private void drawSelectionFgRight(GraphicsContext gc, double x) {
+            var node = getNode();
+            x = node.snapPositionX(x);
+            var height = node.snapSizeY(getNode().getHeight());
+            gc.fillRect(x, 0, SELECTION_BORDER_SIZE, height);
+        }
+
+        private void drawSelectionBg(GraphicsContext gc, double x, double width) {
+            var node = getNode();
+            x = node.snapPositionX(x);
+            width = node.snapSizeX(width);
+            var height = node.snapSizeY(getNode().getHeight());
+            gc.fillRect(x, 0, width, height);
+        }
+
+        private ByteText createHexText() {
             var text = createByteText();
             text.setOnMouseClicked(e -> {
                 var areaVM = getArea().getViewModel();
                 var caretV = getArea().getCaret();
                 var location = resolveHexLocation(text, e.getX(), caretV.getViewModel().getShape());
                 var rowIndex = this.data.getIndex();
-                var newPos = CaretPosition.create(EditorPanel.HEX, rowIndex, text.getPair().getIndex(),
+                var newPos = CaretPosition.create(EditorPanel.HEX, rowIndex, text.getIndex(),
                         location, areaVM);
                 getArea().moveCaretTo(newPos, this);
             });
@@ -489,7 +615,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             }
         }
 
-        private ByteText createByteAsciiText() {
+        private ByteText createAsciiText() {
             var text = createByteText();
             text.setOnMouseClicked(e -> {
                 var areaVM = getArea().getViewModel();
@@ -500,7 +626,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
                 var location = resolveAsciiLocation(text, e.getX(), caretVM.getShape(), caretVM.isAtRowEnd());
                 var rowIndex = this.data.getIndex();
-                var newPos = CaretPosition.create(EditorPanel.ASCII, rowIndex, text.getPair().getIndex(), location,
+                var newPos = CaretPosition.create(EditorPanel.ASCII, rowIndex, text.getIndex(), location,
                         areaVM);
                 getArea().moveCaretTo(newPos, this);
 
@@ -542,39 +668,36 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             }
             double x;
             double indicatorX;
-            var bytePair = this.byteTextPairs.get(position.getByteIndex());
+            var hexText = getHexPane().getTexts().get(position.getByteIndex());
+            var asciiText = getAsciiPane().getTexts().get(position.getByteIndex());
             if (position.getPanel() == EditorPanel.HEX) {
                 //caret
-                var text = bytePair.getHexText();
                 switch (position.getByteLocation()) {
                     case FIRST:
-                        x = text.getBoundsInParent().getMinX();
+                        x = hexText.getBoundsInParent().getMinX() - SELECTION_BORDER_SIZE;
                         break;
                     case SECOND:
-                        double textWidth = text.getLayoutBounds().getWidth();
+                        double textWidth = hexText.getLayoutBounds().getWidth();
                         double widthHalf = textWidth / 2;
-                        x = text.getBoundsInParent().getMinX() + widthHalf;
+                        x = hexText.getBoundsInParent().getMinX() + widthHalf;
                         break;
                     case THIRD:
-                        x = text.getBoundsInParent().getMaxX();
+                        x = hexText.getBoundsInParent().getMaxX();
                         break;
                     default:
                         throw new AssertionError();
                 }
                 //indicator
-                text = bytePair.getAsciiText();
-                indicatorX = text.getBoundsInParent().getMinX();
+                indicatorX = asciiText.getBoundsInParent().getMinX();
             } else {
                 //caret
-                var text = bytePair.getAsciiText();
                 if (position.getByteLocation() == CaretByteLocation.THIRD) {
-                    x = text.getBoundsInParent().getMaxX();
+                    x = asciiText.getBoundsInParent().getMaxX();
                 } else {
-                    x = text.getBoundsInParent().getMinX();
+                    x = asciiText.getBoundsInParent().getMinX() - SELECTION_BORDER_SIZE;
                 }
                 //indicator
-                text = bytePair.getHexText();
-                indicatorX = text.getBoundsInParent().getMinX();
+                indicatorX = hexText.getBoundsInParent().getMinX();
             }
             caretVM.setX(x);
             caretVM.setIndicatorX(indicatorX);
@@ -739,6 +862,10 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
     private int pulseCounter;
 
+    private Color selectionFgColor;
+
+    private Color selectionBgColor;
+
     public HexAreaView(T viewModel) {
         super(viewModel);
         this.virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
@@ -769,6 +896,8 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
+        var css = HexAreaView.class.getResource("hex-area.css").toExternalForm();
+        getNode().getStylesheets().add(css);
         this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         VBox.setVgrow(virtualScrollPane, Priority.ALWAYS);
 
@@ -835,6 +964,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
     }
 
     private void updateLayout(CaretPosition newPosition) {
+        var theme = getViewModel().getSettings().getTheme();
+        this.selectionFgColor = ColorUtils.toColor(theme.getColorsByName().get("-color-fg-selection"));
+        this.selectionBgColor = ColorUtils.toColor(theme.getColorsByName().get("-color-bg-selection"));
         this.mainPane.setVisible(false);
         this.headerRow.rebuild();
         for (var r : bodyRows) {
@@ -1018,7 +1150,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
         }
         //and only now we change position
         caretVM.setPosition(position);
-        caret.setRowNode(this.caretRow.getNode());
+        caret.setRowHeight(this.caretRow.getNode().getHeight());
     }
 
     private PageScroll createPageScroll() {
@@ -1079,5 +1211,13 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
         var newPos = CaretPosition.create(curPos.getPanel(),
                 newCaretRowIndex, curPos.getByteIndex(), curPos.getByteLocation(), viewModel);
         moveCaretTo(newPos, newCaretRow);
+    }
+
+    private Color getSelectionFgColor() {
+        return selectionFgColor;
+    }
+
+    private Color getSelectionBgColor() {
+        return selectionBgColor;
     }
 }

@@ -84,6 +84,7 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
         this.layout.initialize();
         this.area = createArea(viewModel);
         this.area.initialize();
+        this.toolBar.setArea(area);
         this.dataInspector = createDataInspector();
         this.dataInspector.initialize();
     }
@@ -91,8 +92,6 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        var css = HexEditorTabView.class.getResource("hexeditor.css").toExternalForm();
-        getContentPane().getStylesheets().add(css);
         getContentPane().getChildren().addAll(this.toolBar.getNode(), this.layout.getNode());
         this.layout.setMain(this.area);
         var splitSpace = layout.createSplitSpace(Orientation.HORIZONTAL);

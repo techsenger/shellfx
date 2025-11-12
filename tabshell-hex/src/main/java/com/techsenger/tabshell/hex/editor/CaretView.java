@@ -24,7 +24,6 @@ import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -46,7 +45,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
 
     private final Timeline timeline = new Timeline();
 
-    private Region rowNode;
+    private double rowHeight = -1;
 
     CaretView(CaretViewModel viewModel) {
         super(viewModel);
@@ -92,25 +91,25 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         super.addHandlers(viewModel);
         this.timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), e -> {
             this.node.setVisible(!this.node.isVisible());
-            if (this.rowNode != null && this.node.isVisible()) {
+            if (this.rowHeight > 0 && this.node.isVisible()) {
                 //setting caret width and height, for example, when font changes,
                 //while we can calculate char width we can't calculate row width
                 switch (viewModel.getShape()) {
                     case BAR:
-                        this.node.setHeight(this.rowNode.getHeight());
+                        this.node.setHeight(this.rowHeight);
                         break;
                     case BLOCK:
-                        this.node.setHeight(this.rowNode.getHeight());
+                        this.node.setHeight(this.rowHeight);
                         break;
                     case UNDERSCORE:
-                        this.node.setTranslateY(this.rowNode.getHeight() - 1);
+                        this.node.setTranslateY(this.rowHeight - 1);
                         break;
                     default:
                         throw new AssertionError();
                 }
 
                 //setting indicator width, height, x
-                this.indicator.setHeight(this.rowNode.getHeight());
+                this.indicator.setHeight(this.rowHeight);
             }
         }));
     }
@@ -157,7 +156,7 @@ public final class CaretView extends AbstractNodeView<CaretViewModel> {
         this.timeline.stop();
     }
 
-    void setRowNode(Region rowNode) {
-        this.rowNode = rowNode;
+    void setRowHeight(double rowHeight) {
+        this.rowHeight = rowHeight;
     }
 }
