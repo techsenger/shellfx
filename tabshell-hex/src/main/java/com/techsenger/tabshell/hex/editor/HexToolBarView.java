@@ -20,7 +20,6 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.hex.model.ByteRange;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import javafx.geometry.Orientation;
@@ -147,13 +146,6 @@ public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractPaneV
         this.columnByteCountsComboBox.valueProperty().bindBidirectional(viewModel.columnByteCountProperty());
         this.columnsEnabledButton.selectedProperty().bindBidirectional(viewModel.columnsEnabledProperty());
         this.offsetNumberBaseComboBox.valueProperty().bindBidirectional(viewModel.offsetNumberBaseProperty());
-    }
-
-    @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
-        newButton.setOnAction(e -> this.area.getViewModel().setSelection(new ByteRange(22, 26))); // TEMP TEMP
-        // newButton.setOnAction(e -> this.area.getViewModel().setSelection(new ByteRange(22, 71))); // TEMP TEMP
     }
 
     public Button getNewButton() {

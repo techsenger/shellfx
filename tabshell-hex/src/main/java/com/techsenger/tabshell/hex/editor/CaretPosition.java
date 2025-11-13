@@ -30,7 +30,7 @@ public final class CaretPosition {
             if (rowIndex == area.getOffsets().size() - 1) {
                 if (byteIndex >= area.getLastRowByteCount()) {
                     byteIndex = area.getLastRowByteCount() - 1;
-                    if (area.getCaret().getShape() == CaretShape.BAR) {
+                    if (byteLocation != null && area.getCaret().getShape() == CaretShape.BAR) {
                         byteLocation = CaretByteLocation.THIRD;
                     } else {
                         byteLocation = CaretByteLocation.SECOND;
@@ -59,6 +59,9 @@ public final class CaretPosition {
      */
     private final int byteIndex;
 
+    /**
+     * Is null during selection.
+     */
     private final CaretByteLocation byteLocation;
 
     private final int offset;
@@ -96,4 +99,12 @@ public final class CaretPosition {
     public int getOffset() {
         return offset;
     }
+
+    @Override
+    public String toString() {
+        return "CaretPosition[" + "panel:" + panel + ", rowOffset:" + rowOffset + ", rowIndex:"
+                + rowIndex + ", byteIndex:" + byteIndex + ", byteLocation:" + byteLocation + ", offset:" + offset + ']';
+    }
+
+
 }

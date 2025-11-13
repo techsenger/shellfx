@@ -23,6 +23,7 @@ import com.techsenger.tabshell.core.style.StyleUtils;
 import com.techsenger.tabshell.hex.HexComponentNames;
 import com.techsenger.tabshell.hex.model.ByteRange;
 import com.techsenger.tabshell.hex.model.HexDocument;
+import com.techsenger.toolkit.fx.color.ColorUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Dimension2D;
+import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +58,9 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
     static SelectionInfo createSelection(ByteRange selection, int contentLength, int rowByteCount) {
         if (selection == null) {
             throw new IllegalArgumentException("Selection cannot be null");
+        }
+        if (selection.getStart() == selection.getEnd()) {
+            throw new IllegalArgumentException("Selection start cannot be equal to its end");
         }
 
         int firstRowIndex = selection.getStart() / rowByteCount;
@@ -130,6 +135,12 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
 
     private SelectionInfo selectionInfo;
 
+    private Color selectionFgColor;
+
+    private Color selectionBgColor;
+
+    private Color selectionBorderColor;
+
     public HexAreaViewModel(HexToolBarViewModel toolBar, AppearanceSettings settings, HexDocument document) {
         this.caret = new CaretViewModel(this::getRowByteCount, charSize);
         this.toolBar = toolBar;
@@ -141,8 +152,14 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
                 selectionInfo = null;
             } else {
                 selectionInfo = createSelection(newV, document.getContent().length, toolBar.getRowByteCount());
+                logger.debug("{} Selection updated. Range: {}. Info : {}",
+                        getDescriptor().getLogPrefix(), newV, selectionInfo);
             }
         });
+        var theme = settings.getTheme();
+        this.selectionFgColor = ColorUtils.toColor(theme.getPalette().getSelectionFgColor());
+        this.selectionBgColor = ColorUtils.toColor(theme.getPalette().getSelectionBgColor());
+        this.selectionBorderColor = ColorUtils.toColor(theme.getPalette().getSelectionBorderColor());
     }
 
     public CaretViewModel getCaret() {
@@ -445,6 +462,18 @@ public class HexAreaViewModel extends AbstractPaneViewModel {
 
     AppearanceSettings getSettings() {
         return settings;
+    }
+
+    Color getSelectionFgColor() {
+        return selectionFgColor;
+    }
+
+    Color getSelectionBgColor() {
+        return selectionBgColor;
+    }
+
+    Color getSelectionBorderColor() {
+        return selectionBorderColor;
     }
 
     private void adjustCaretOnShapeChange(CaretShape oldShape, CaretShape newShape) {

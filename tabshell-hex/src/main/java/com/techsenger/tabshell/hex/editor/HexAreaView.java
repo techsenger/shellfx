@@ -22,7 +22,7 @@ import static com.techsenger.tabshell.hex.editor.CaretByteLocation.FIRST;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.SECOND;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.THIRD;
 import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
-import com.techsenger.toolkit.fx.color.ColorUtils;
+import com.techsenger.tabshell.hex.model.ByteRange;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import java.text.DecimalFormat;
@@ -46,17 +46,19 @@ import static javafx.scene.input.KeyCode.PAGE_UP;
 import static javafx.scene.input.KeyCode.RIGHT;
 import static javafx.scene.input.KeyCode.UP;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.fxmisc.flowless.Cell;
 import org.fxmisc.flowless.VirtualFlow;
 import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The hex editor uses JavaFX nodes instead of rendering text directly on a canvas to achieve a balance between
@@ -254,6 +256,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             super(area);
             this.data = data;
             getNode().getStyleClass().addAll("body-row", StyleClasses.MONOSPACE);
+            addRowSelectionHandlers();
             rebuild();
             updateItem(this.data.getOffset());
         }
@@ -340,9 +343,11 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
                 }
 
                 var hexText = createHexText();
+                addTextSelectionHandlers(hexText);
                 getHexPane().getTexts().add(hexText);
                 hexContentBox.getChildren().add(hexText);
                 var asciiText = createAsciiText();
+                addTextSelectionHandlers(asciiText);
                 getAsciiPane().getTexts().add(asciiText);
             }
 
@@ -418,8 +423,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
          * moment the canvas size is still 0x0.
          */
         private void drawSelection() {
-            getHexPane().clearCanvas();
-            getAsciiPane().clearCanvas();
+            clearSelection();
             var info = getArea().getViewModel().getSelectionInfo();
             if (info == null) {
                 return;
@@ -457,9 +461,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             var width = rightX - leftX;
 
             GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
-            gc.setFill(getArea().getSelectionBgColor());
+            gc.setFill(getArea().getViewModel().getSelectionBgColor());
             drawSelectionBg(gc, leftX, width);
-            gc.setFill(getArea().getSelectionBorderColor());
+            gc.setFill(getArea().getViewModel().getSelectionBorderColor());
             drawSelectionTopBorder(gc, leftX, width);
             drawSelectionBottomBorder(gc, leftX, width);
             drawSelectionLeftBorder(gc, leftX);
@@ -487,9 +491,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             var width = rightX - leftX;
 
             GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
-            gc.setFill(getArea().getSelectionBgColor());
+            gc.setFill(getArea().getViewModel().getSelectionBgColor());
             drawSelectionBg(gc, leftX, width);
-            gc.setFill(getArea().getSelectionBorderColor());
+            gc.setFill(getArea().getViewModel().getSelectionBorderColor());
             drawSelectionTopBorder(gc, leftX, width);
             drawSelectionLeftBorder(gc, leftX);
             drawSelectionRightBorder(gc, rightX);
@@ -508,9 +512,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             var rightX = endText.getBoundsInParent().getMaxX();
 
             GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
-            gc.setFill(getArea().getSelectionBgColor());
+            gc.setFill(getArea().getViewModel().getSelectionBgColor());
             drawSelectionBg(gc, leftX, rightX - leftX);
-            gc.setFill(getArea().getSelectionBorderColor());
+            gc.setFill(getArea().getViewModel().getSelectionBorderColor());
             drawSelectionLeftBorder(gc, leftX);
             drawSelectionRightBorder(gc, rightX);
         }
@@ -523,9 +527,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             var width = rightX - leftX;
 
             GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
-            gc.setFill(getArea().getSelectionBgColor());
+            gc.setFill(getArea().getViewModel().getSelectionBgColor());
             drawSelectionBg(gc, leftX, rightX - leftX);
-            gc.setFill(getArea().getSelectionBorderColor());
+            gc.setFill(getArea().getViewModel().getSelectionBorderColor());
             drawSelectionLeftBorder(gc, leftX);
             drawSelectionRightBorder(gc, rightX);
             drawSelectionBottomBorder(gc, leftX, width);
@@ -584,6 +588,11 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             gc.fillRect(x, 0, width, height);
         }
 
+        private void clearSelection() {
+            getHexPane().clearCanvas();
+            getAsciiPane().clearCanvas();
+        }
+
         private ByteText createHexText() {
             var text = createByteText();
             text.setOnMouseClicked(e -> {
@@ -596,6 +605,66 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
                 getArea().moveCaretTo(newPos, this);
             });
             return text;
+        }
+
+        private void addTextSelectionHandlers(ByteText text) {
+            text.setOnDragDetected(e -> {
+                text.startFullDrag();
+                var offset = this.data.getOffset() + text.getIndex();
+                if (getArea().getViewModel().getSelection() != null) {
+                    getArea().clearSelection();
+                }
+                getArea().getViewModel().setSelection(new ByteRange(offset, offset + 1));
+                getArea().handleSelectionStarted(this, offset);
+                e.consume();
+            });
+            text.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER, e -> {
+                var offset = this.data.getOffset() + text.getIndex();
+                var currentSelection = getArea().getViewModel().getSelection();
+                boolean selectionChanged = false;
+                boolean specialCase = false;
+                if (currentSelection.getEnd() - currentSelection.getStart() == 2) { // two bytes selected - special case
+                    if (offset == getArea().selectionStartOffset) {
+                        selectionChanged = true;
+                        specialCase = true;
+                    }
+                }
+                if (offset != currentSelection.getStart() && offset != currentSelection.getEnd() - 1) {
+                    selectionChanged = true;
+                }
+
+                if (selectionChanged) {
+                    ByteRange range = null;
+                    if (offset < currentSelection.getStart()) { // moving left or up
+                        range = new ByteRange(offset, currentSelection.getEnd());
+                    } else { // moving right or down
+                        if (offset < getArea().selectionStartOffset) {
+                            range = new ByteRange(offset, currentSelection.getEnd());
+                        } else if (offset == getArea().selectionStartOffset && specialCase) {
+                            range = new ByteRange(offset, offset + 1);
+                        } else {
+                            range = new ByteRange(currentSelection.getStart(), offset + 1);
+                        }
+                    }
+                    getArea().getViewModel().setSelection(range);
+                    getArea().handleTextSelectionHovered(this);
+                }
+                e.consume();
+            });
+        }
+
+        private void addRowSelectionHandlers() {
+            getNode().addEventFilter(MouseDragEvent.MOUSE_DRAG_RELEASED, e -> {
+                getArea().handleSelectionFinished(this);
+            });
+            getNode().addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, e -> {
+                getArea().handleRowSelectionEntered(this);
+                e.consume();
+            });
+            getNode().addEventFilter(MouseDragEvent.MOUSE_DRAG_EXITED, e -> {
+                getArea().handleRowSelectionExited(this);
+                e.consume();
+            });
         }
 
         private CaretByteLocation resolveHexLocation(ByteText text, double x, CaretShape shape) {
@@ -622,8 +691,6 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
                 var caretV = getArea().getCaret();
                 var caretVM = caretV.getViewModel();
-                var curPos = caretV.getViewModel().getPosition();
-
                 var location = resolveAsciiLocation(text, e.getX(), caretVM.getShape(), caretVM.isAtRowEnd());
                 var rowIndex = this.data.getIndex();
                 var newPos = CaretPosition.create(EditorPanel.ASCII, rowIndex, text.getIndex(), location,
@@ -829,6 +896,8 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
     private static final double ROW_VISIBILITY_TOLERANCE = 2.0;
 
+    private static final Logger logger = LoggerFactory.getLogger(HexAreaView.class);
+
     /**
      * Contains information for pageUp and pageDown scroll.
      */
@@ -862,11 +931,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
     private int pulseCounter;
 
-    private Color selectionFgColor;
+    private int selectionStartOffset;
 
-    private Color selectionBgColor;
-
-    private Color selectionBorderColor;
+    private int previousSelectedRowIndex = -1;
 
     public HexAreaView(T viewModel) {
         super(viewModel);
@@ -966,10 +1033,6 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
     }
 
     private void updateLayout(CaretPosition newPosition) {
-        var theme = getViewModel().getSettings().getTheme();
-        this.selectionFgColor = ColorUtils.toColor(theme.getPalette().getSelectionFgColor());
-        this.selectionBgColor = ColorUtils.toColor(theme.getPalette().getSelectionBgColor());
-        this.selectionBorderColor = ColorUtils.toColor(theme.getPalette().getSelectionBorderColor());
         this.mainPane.setVisible(false);
         this.headerRow.rebuild();
         for (var r : bodyRows) {
@@ -1216,15 +1279,92 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
         moveCaretTo(newPos, newCaretRow);
     }
 
-    private Color getSelectionFgColor() {
-        return selectionFgColor;
+    private void handleSelectionStarted(BodyRow row, int offset) {
+        this.selectionStartOffset = offset;
+        this.previousSelectedRowIndex = -1;
+        row.drawSelection();
     }
 
-    private Color getSelectionBgColor() {
-        return selectionBgColor;
+    private void handleRowSelectionEntered(BodyRow row) {
+        ByteRange newByteRange = null;
+        if (isPreviousSelectedRowVisible(row.getData().getIndex(), previousSelectedRowIndex)) {
+            int prePreviousRowIndex;
+            var previousRow = this.virtualFlow.getCell(previousSelectedRowIndex);
+            var currentSelection = getViewModel().getSelection();
+            var currentInfo = getViewModel().getSelectionInfo();
+            var currentFirstRowIndex = currentInfo.getFirstRow().getIndex();
+            var currentLastRowIndex = currentFirstRowIndex;
+            if (currentInfo.getLastRow() != null) {
+                currentLastRowIndex = currentInfo.getLastRow().getIndex();
+            }
+            if (row.getData().getIndex() < previousSelectedRowIndex) { // moving up
+                prePreviousRowIndex = previousSelectedRowIndex + 1;
+                if (previousRow.getData().getOffset() < currentSelection.getStart()) { // selecting
+                    newByteRange = new ByteRange(previousRow.getData().getOffset(), currentSelection.getEnd());
+                } else if (previousRow.getData().getOffset() < currentSelection.getEnd()) { // unselecting
+                    if (row.getData().getIndex() == currentFirstRowIndex) {
+                        newByteRange = new ByteRange(currentSelection.getStart(), currentSelection.getStart() + 1);
+                    } else {
+                        newByteRange = new ByteRange(currentSelection.getStart(), previousRow.getData().getOffset());
+                    }
+                }
+            } else { // moving down
+                prePreviousRowIndex = previousSelectedRowIndex - 1;
+                var rowByteCount = getViewModel().getRowByteCount(row.getData().getIndex());
+                if (row.getData().getOffset() <= currentSelection.getEnd()) { // unselecting
+                    if (row.getData().getIndex() == currentLastRowIndex) {
+                        newByteRange = new ByteRange(currentSelection.getEnd() - 1, currentSelection.getEnd());
+                    } else {
+                        newByteRange = new ByteRange(row.getData().getOffset() + rowByteCount,
+                                currentSelection.getEnd());
+                    }
+                } else if (row.getData().getOffset() >= currentSelection.getEnd()) { // selecting
+                    newByteRange = new ByteRange(currentSelection.getStart(), row.getData().getOffset());
+                }
+            }
+            if (newByteRange != null) {
+                getViewModel().setSelection(newByteRange);
+                // it is necessary to redraw 3 rows
+                previousRow.drawSelection();
+                row.drawSelection();
+                if (prePreviousRowIndex >= 0 && prePreviousRowIndex < getViewModel().getOffsets().size()) {
+                    var prePreviousRow = this.virtualFlow.getCellIfVisible(prePreviousRowIndex);
+                    if (prePreviousRow.isPresent()) {
+                        prePreviousRow.get().drawSelection();
+                    }
+                }
+            }
+        }
     }
 
-    public Color getSelectionBorderColor() {
-        return selectionBorderColor;
+    private void handleRowSelectionExited(BodyRow row) {
+        this.previousSelectedRowIndex = row.getData().getIndex();
+    }
+
+    private void handleTextSelectionHovered(BodyRow row) {
+        row.drawSelection();
+        var currentRowIndex = row.getData().getIndex();
+        var previousRowIndex = previousSelectedRowIndex;
+        previousSelectedRowIndex = row.data.getIndex();
+        if (previousRowIndex != -1) {
+            if (isPreviousSelectedRowVisible(currentRowIndex, previousRowIndex)) {
+                this.virtualFlow.getCell(previousRowIndex).drawSelection();
+            }
+        }
+    }
+
+    private boolean isPreviousSelectedRowVisible(int currentRowIndex, int previousRowIndex) {
+        return (previousRowIndex > currentRowIndex && virtualFlow.getLastVisibleIndex() >= previousRowIndex)
+                    || (previousRowIndex < currentRowIndex && virtualFlow.getFirstVisibleIndex() <= previousRowIndex);
+    }
+
+    private void handleSelectionFinished(BodyRow row) {
+        this.selectionStartOffset = -1;
+    }
+
+    private void clearSelection() {
+        for (var row : this.virtualFlow.visibleCells()) {
+            row.clearSelection();
+        }
     }
 }

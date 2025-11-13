@@ -52,6 +52,11 @@ final class SelectionInfo {
         public int getByteCount() {
             return byteCount;
         }
+
+        @Override
+        public String toString() {
+            return "[" + "index:" + index + ", byteIndex:" + byteIndex + ", byteCount:" + byteCount + ']';
+        }
     }
 
     private final SelectionType type;
@@ -83,5 +88,11 @@ final class SelectionInfo {
 
     public RowInfo getLastRow() {
         return lastRow;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + "type:" + type + ", rowCount:" + rowCount + ", firstRow:" + firstRow
+                + ", lastRow:" + lastRow + ']';
     }
 }

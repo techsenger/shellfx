@@ -54,4 +54,9 @@ public class ByteRange {
     public int getEnd() {
         return end;
     }
+
+    @Override
+    public String toString() {
+        return "[" + "start:" + start + ", end:" + end + ']';
+    }
 }
