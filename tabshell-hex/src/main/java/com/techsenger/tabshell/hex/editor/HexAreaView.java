@@ -459,11 +459,11 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
             gc.setFill(getArea().getSelectionBgColor());
             drawSelectionBg(gc, leftX, width);
-            gc.setFill(getArea().getSelectionFgColor());
-            drawSelectionFgTop(gc, leftX, width);
-            drawSelectionFgBottom(gc, leftX, width);
-            drawSelectionFgLeft(gc, leftX);
-            drawSelectionFgRight(gc, rightX);
+            gc.setFill(getArea().getSelectionBorderColor());
+            drawSelectionTopBorder(gc, leftX, width);
+            drawSelectionBottomBorder(gc, leftX, width);
+            drawSelectionLeftBorder(gc, leftX);
+            drawSelectionRightBorder(gc, rightX);
         }
 
         private void drawJoinedSelection(SelectionInfo info) {
@@ -489,13 +489,13 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
             gc.setFill(getArea().getSelectionBgColor());
             drawSelectionBg(gc, leftX, width);
-            gc.setFill(getArea().getSelectionFgColor());
-            drawSelectionFgTop(gc, leftX, width);
-            drawSelectionFgLeft(gc, leftX);
-            drawSelectionFgRight(gc, rightX);
+            gc.setFill(getArea().getSelectionBorderColor());
+            drawSelectionTopBorder(gc, leftX, width);
+            drawSelectionLeftBorder(gc, leftX);
+            drawSelectionRightBorder(gc, rightX);
             if (rowInfo.getByteIndex() > 0) {
                 var firstTextX = pane.getTexts().get(0).getBoundsInParent().getMinX();
-                drawSelectionFgBottom(gc, firstTextX - SELECTION_BORDER_SIZE, leftX - firstTextX);
+                drawSelectionBottomBorder(gc, firstTextX - SELECTION_BORDER_SIZE, leftX - firstTextX);
             }
         }
 
@@ -510,9 +510,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
             gc.setFill(getArea().getSelectionBgColor());
             drawSelectionBg(gc, leftX, rightX - leftX);
-            gc.setFill(getArea().getSelectionFgColor());
-            drawSelectionFgLeft(gc, leftX);
-            drawSelectionFgRight(gc, rightX);
+            gc.setFill(getArea().getSelectionBorderColor());
+            drawSelectionLeftBorder(gc, leftX);
+            drawSelectionRightBorder(gc, rightX);
         }
 
         private void drawJoinedSelectionLastRow(RowPane pane, SelectionInfo.RowInfo rowInfo) {
@@ -525,13 +525,13 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             GraphicsContext gc = pane.getCanvas().getGraphicsContext2D();
             gc.setFill(getArea().getSelectionBgColor());
             drawSelectionBg(gc, leftX, rightX - leftX);
-            gc.setFill(getArea().getSelectionFgColor());
-            drawSelectionFgLeft(gc, leftX);
-            drawSelectionFgRight(gc, rightX);
-            drawSelectionFgBottom(gc, leftX, width);
+            gc.setFill(getArea().getSelectionBorderColor());
+            drawSelectionLeftBorder(gc, leftX);
+            drawSelectionRightBorder(gc, rightX);
+            drawSelectionBottomBorder(gc, leftX, width);
             if (rowInfo.getByteCount() != pane.getTexts().size()) {
                 var lastTextX = pane.getTexts().get(pane.getTexts().size() - 1).getBoundsInParent().getMaxX();
-                drawSelectionFgTop(gc, rightX, lastTextX - rightX + SELECTION_BORDER_SIZE);
+                drawSelectionTopBorder(gc, rightX, lastTextX - rightX + SELECTION_BORDER_SIZE);
             }
         }
 
@@ -547,14 +547,14 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             return endText;
         }
 
-        private void drawSelectionFgTop(GraphicsContext gc, double x, double width) {
+        private void drawSelectionTopBorder(GraphicsContext gc, double x, double width) {
             var node = getNode();
             x = node.snapPositionX(x);
             width = node.snapSizeX(width);
             gc.fillRect(x, 0, width, SELECTION_BORDER_SIZE);
         }
 
-        private void drawSelectionFgBottom(GraphicsContext gc, double x, double width) {
+        private void drawSelectionBottomBorder(GraphicsContext gc, double x, double width) {
             var node = getNode();
             x = node.snapPositionX(x);
             width = node.snapSizeX(width);
@@ -562,14 +562,14 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
             gc.fillRect(x, height - SELECTION_BORDER_SIZE, width, height);
         }
 
-        private void drawSelectionFgLeft(GraphicsContext gc, double x) {
+        private void drawSelectionLeftBorder(GraphicsContext gc, double x) {
             var node = getNode();
             x = node.snapPositionX(x);
             var height = node.snapSizeY(getNode().getHeight());
             gc.fillRect(x - SELECTION_BORDER_SIZE, 0, SELECTION_BORDER_SIZE, height);
         }
 
-        private void drawSelectionFgRight(GraphicsContext gc, double x) {
+        private void drawSelectionRightBorder(GraphicsContext gc, double x) {
             var node = getNode();
             x = node.snapPositionX(x);
             var height = node.snapSizeY(getNode().getHeight());
@@ -866,6 +866,8 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
     private Color selectionBgColor;
 
+    private Color selectionBorderColor;
+
     public HexAreaView(T viewModel) {
         super(viewModel);
         this.virtualFlow = VirtualFlow.createVertical(viewModel.getOffsets(), offset -> {
@@ -965,8 +967,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
     private void updateLayout(CaretPosition newPosition) {
         var theme = getViewModel().getSettings().getTheme();
-        this.selectionFgColor = ColorUtils.toColor(theme.getColorsByName().get("-color-fg-selection"));
-        this.selectionBgColor = ColorUtils.toColor(theme.getColorsByName().get("-color-bg-selection"));
+        this.selectionFgColor = ColorUtils.toColor(theme.getPalette().getSelectionFgColor());
+        this.selectionBgColor = ColorUtils.toColor(theme.getPalette().getSelectionBgColor());
+        this.selectionBorderColor = ColorUtils.toColor(theme.getPalette().getSelectionBorderColor());
         this.mainPane.setVisible(false);
         this.headerRow.rebuild();
         for (var r : bodyRows) {
@@ -1219,5 +1222,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T>
 
     private Color getSelectionBgColor() {
         return selectionBgColor;
+    }
+
+    public Color getSelectionBorderColor() {
+        return selectionBorderColor;
     }
 }

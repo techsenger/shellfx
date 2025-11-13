@@ -21,6 +21,7 @@
 .root {
     -color-fg-selection: -color-fg-default;
     -color-bg-selection: -color-accent-8;
+    -color-border-selection: -color-accent-5;
     -color-fg-found: -color-fg-default;
     -color-bg-found: -color-warning-7;
     -color-fg-link: -color-fg-default;

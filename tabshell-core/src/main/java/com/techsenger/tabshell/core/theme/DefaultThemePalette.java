@@ -246,6 +246,8 @@ class DefaultThemePalette implements ThemePalette {
 
     private final int selectionBgColor;
 
+    private final int selectionBorderColor;
+
     private final int foundFgColor;
 
     private final int foundBgColor;
@@ -381,6 +383,7 @@ class DefaultThemePalette implements ThemePalette {
 
         this.selectionFgColor = ThemeProvider.colorFromMap(colorsByName, "fg-selection");
         this.selectionBgColor = ThemeProvider.colorFromMap(colorsByName, "bg-selection");
+        this.selectionBorderColor = ThemeProvider.colorFromMap(colorsByName, "border-selection");
         this.foundFgColor = ThemeProvider.colorFromMap(colorsByName, "fg-found");
         this.foundBgColor = ThemeProvider.colorFromMap(colorsByName, "bg-found");
         this.hyperlinkFgColor = ThemeProvider.colorFromMap(colorsByName, "fg-link");
@@ -940,6 +943,11 @@ class DefaultThemePalette implements ThemePalette {
     @Override
     public int getSelectionBgColor() {
         return selectionBgColor;
+    }
+
+    @Override
+    public int getSelectionBorderColor() {
+        return selectionBorderColor;
     }
 
     @Override

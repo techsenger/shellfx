@@ -244,6 +244,8 @@ public interface ThemePalette {
 
     int getSelectionBgColor();
 
+    int getSelectionBorderColor();
+
     int getFoundFgColor();
 
     int getFoundBgColor();
