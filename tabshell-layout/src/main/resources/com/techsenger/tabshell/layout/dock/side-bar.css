@@ -18,23 +18,32 @@
     Author: Pavel Castornii
 */
 
-.tab-pane-pro.side-bar > .tab-header-area {
-    -fx-background-insets: 0;
-    -fx-background-color: -color-bg-default;
-    /* bottom line using border! */
-    -fx-border-width: 0 0 1 0;
+/* Side TabPane has a FLOATING style class */
+
+.tab-pane-pro.side-bar:right {
+    -fx-border-width: 0 0 0 1;
     -fx-border-color: -color-border-default;
 }
 
-/*.tab-pane.floating {
-  -color-tab-bg-selected: -color-base-6;
-  -color-tab-fg-selected: -color-fg-default;
-  -color-tab-border-selected: -color-border-default;
+.tab-pane-pro.side-bar:bottom {
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: -color-border-default;
 }
-.tab-pane.floating > .tab-header-area {
-  -fx-background-color: -color-border-default, -color-bg-inset;
-  -fx-background-insets: 0, 0 0 1px 0;
-}*/
+
+.tab-pane-pro.side-bar:left {
+    -fx-border-width: 0 1 0 0;
+    -fx-border-color: -color-border-default;
+}
+
+.tab-pane-pro.side-bar > .tab-header-area {
+    -fx-background-insets: 0, 0;
+    -fx-background-color: -color-bg-default;
+    -fx-padding: 0;
+}
+
+.tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: -color-bg-default;
+}
 
 .tab-pane-pro.side-bar > .tab-header-area > .tab-header-background {
     -fx-background-insets: 0, 0;
@@ -42,20 +51,21 @@
 
 .tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab {
     -fx-background-insets: 0, 0;
+    -fx-padding: 0.15em 0 0.15em 0;
 }
 
 .tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab > .tab-container {
     -fx-background-insets: 0, 0;
+    -fx-background-color: -color-bg-default;
 }
 
 .tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
     -fx-pref-width: -1;
     -fx-graphic-text-gap: 0;
-    -fx-padding: 0.20em 0.25em 0.20em 0.25em;
+    -fx-padding: 0.20em 0.3em 0.20em 0.3em;
 }
 
 .tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab.restore {
-    -fx-padding: 0 0.6em 0.3em 0.6em;
     -fx-background-color: transparent;
     -fx-padding: 0;
 }
@@ -67,10 +77,9 @@
 }
 
 /*
-    Graphic is inside label.
+    The graphic is inside the label.
 */
 .tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab.restore > .tab-container > .tab-label {
-    -fx-padding: 0;
-    -fx-padding: 0 0.4em 0.4em 0.4em;
+    -fx-padding: 0 0.4em 0.3em 0.4em;
     -fx-background-color: transparent;
 }
