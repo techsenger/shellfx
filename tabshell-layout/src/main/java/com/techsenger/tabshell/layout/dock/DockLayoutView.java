@@ -862,15 +862,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         this.borderPane.getStyleClass().add("dock-layout");
         var css = DockLayoutView.class.getResource("dock-layout.css").toExternalForm();
         this.borderPane.getStylesheets().add(css);
-
-        var sideBar = createSideBar(RIGHT);
-        this.borderPane.setRight(sideBar.getNode());
-
-        sideBar = createSideBar(BOTTOM);
-        this.borderPane.setBottom(sideBar.getNode());
-
-        sideBar = createSideBar(LEFT);
-        this.borderPane.setLeft(sideBar.getNode());
     }
 
     @Override
