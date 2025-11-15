@@ -1876,7 +1876,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             if (divSize < 0) {
                 divSize = finalParent.computeDividerSize();
             }
-            if (finalParent.getParent() != null) {
+            if (finalParent.getParent() != null && grandParentPositions != null) {
                 ((SplitSpaceView<?>) finalParent.getParent()).getNode().setDividerPositions(grandParentPositions);
             }
             var mainIndex = indexOfMain(finalParent);
