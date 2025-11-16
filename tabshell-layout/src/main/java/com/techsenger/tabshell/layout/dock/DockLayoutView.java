@@ -45,7 +45,6 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
@@ -736,9 +735,15 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return singlingInfo;
     }
 
-    private final BorderPane borderPane = new BorderPane();
+    /**
+     * Contains the root {@link SplitSpaceView} and the {@link TabPopupView}.
+     */
+    private final StackPane centerStackPane = new StackPane();
 
-    private final StackPane node = new StackPane(borderPane);
+    /**
+     * Contains the {@link DockLayoutView#centerStackPane} and three {@link SideBarView}.
+     */
+    private final BorderPane node = new BorderPane();
 
     private final DragAndDropContext dragAndDropContext = new DragAndDropContext();
 
@@ -772,7 +777,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     }
 
     @Override
-    public StackPane getNode() {
+    public BorderPane getNode() {
         return this.node;
     }
 
@@ -859,22 +864,24 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         super.build(viewModel);
         VBox.setVgrow(node, Priority.ALWAYS);
 
-        this.borderPane.getStyleClass().add("dock-layout");
+        this.node.getStyleClass().add("dock-layout");
         var css = DockLayoutView.class.getResource("dock-layout.css").toExternalForm();
-        this.borderPane.getStylesheets().add(css);
+        this.node.getStylesheets().add(css);
+        this.node.setCenter(centerStackPane);
     }
 
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         this.root.addListener((ov, oldV, newV) -> {
+            if (oldV != null) {
+                centerStackPane.getChildren().remove(0);
+            }
             if (newV != null) {
                 SplitSpaceContainer container = new SplitSpaceContainer(this, newV);
-                VBox.setVgrow(container, Priority.ALWAYS);
-                borderPane.setCenter(container);
+                centerStackPane.getChildren().add(0, container); // there can be tab popup
                 viewModel.setRoot(newV.getViewModel());
             } else {
-                borderPane.setCenter(null);
                 viewModel.setRoot(null);
             }
         });
@@ -1052,7 +1059,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 if (sideBar == null) {
                     sideBar = createSideBar(side);
                     setRightBar(sideBar);
-                    this.borderPane.setRight(sideBar.getNode());
+                    this.node.setRight(sideBar.getNode());
                 }
             }
             case LEFT -> {
@@ -1060,7 +1067,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 if (sideBar == null) {
                     sideBar = createSideBar(side);
                     setLeftBar(sideBar);
-                    this.borderPane.setLeft(sideBar.getNode());
+                    this.node.setLeft(sideBar.getNode());
                 }
             }
             case TOP, BOTTOM -> {
@@ -1068,7 +1075,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 if (sideBar == null) {
                     sideBar = createSideBar(side);
                     setBottomBar(sideBar);
-                    this.borderPane.setBottom(sideBar.getNode());
+                    this.node.setBottom(sideBar.getNode());
                 }
             }
             default -> throw new AssertionError();
@@ -1152,17 +1159,17 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         addTabDock(grandParentPositions, parent, dock, index, side, sideShouldBeChecked, dockSize);
     }
 
-    void showTabPopup(TabPopupView<?> popup) {
-        var popupNode = popup.getNode();
-        //popupNode.setManaged(false);
-        StackPane.setAlignment(popupNode, Pos.TOP_LEFT);
-        this.node.getChildren().add(popupNode);
+    Bounds getCenterBounds() {
+        return this.node.getCenter().getBoundsInParent();
     }
 
-    void hideTabPopup() {
-        if (this.node.getChildren().size() > 1) {
-            this.node.getChildren().remove(1);
-        }
+    void showTabPopup(TabPopupView<?> popup) {
+        var popupNode = popup.getNode();
+        this.centerStackPane.getChildren().add(popupNode);
+    }
+
+    void hideTabPopup(TabPopupView<?> popup) {
+        this.centerStackPane.getChildren().remove(popup.getNode());
     }
 
     private int resolveNewIndex(SplitSpaceView<?> parent, Side side) {
@@ -2118,15 +2125,15 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             switch (sideVM.getSide()) {
                 case RIGHT:
                     setRightBar(null);
-                    this.borderPane.setRight(null);
+                    this.node.setRight(null);
                     break;
                 case BOTTOM:
                     setBottomBar(null);
-                    this.borderPane.setBottom(null);
+                    this.node.setBottom(null);
                     break;
                 case LEFT:
                     setLeftBar(null);
-                    this.borderPane.setLeft(null);
+                    this.node.setLeft(null);
                     break;
                 default:
                     throw new AssertionError();

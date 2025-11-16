@@ -20,8 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.tab.TabView;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
 import static javafx.geometry.Side.RIGHT;
@@ -29,6 +28,7 @@ import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
@@ -47,17 +47,9 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
 
     private final TabView<?> tab;
 
-    private final Point2D sideBarPosition;
-
-    private final Bounds sideBarBounds;
-
     private double onResizeX;
 
     private double onResizeY;
-
-    private double onResizeTranslateX;
-
-    private double onResizeTranslateY;
 
     private double onResizeWidth;
 
@@ -71,8 +63,6 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
         super(viewModel);
         this.sideBar = sideBar;
         this.tab = tab;
-        this.sideBarPosition = sideBar.resolvePositionInLayout();
-        this.sideBarBounds = sideBar.getNode().getBoundsInLocal();
     }
 
     @Override
@@ -130,8 +120,6 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
                 isResizing = true;
                 onResizeX = e.getSceneX();
                 onResizeY = e.getSceneY();
-                onResizeTranslateX = this.node.getTranslateX();
-                onResizeTranslateY = this.node.getTranslateY();
                 onResizeWidth = this.node.getWidth();
                 onResizeHeight = this.node.getHeight();
                 e.consume();
@@ -186,38 +174,25 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
     }
 
     private void setInitialSizeAndPosition() {
-        double x = sideBarPosition.getX();
-        double y = sideBarPosition.getY();
-        double width = 0.0;
-        double height = 0.0;
-
-        double size;
+        var centerBounds = getSideBar().getCenterBounds();
+        double width = centerBounds.getWidth();
+        double height = centerBounds.getHeight();
         switch (getViewModel().getSideBar().getSide()) {
             case RIGHT:
-                size = getViewModel().getOldWidth();
-                size = Math.min(size, x);
-                x -= size;
-                width = size;
-                height = sideBarBounds.getHeight();
+                width = Math.min(getViewModel().getOldWidth(), width);
+                StackPane.setAlignment(node, Pos.TOP_RIGHT);
                 break;
             case BOTTOM:
-                size = getViewModel().getOldHeight();
-                size = Math.min(size, y);
-                y -= size;
-                width = sideBarBounds.getWidth();
-                height = size;
+                height = Math.min(getViewModel().getOldHeight(), height);
+                StackPane.setAlignment(node, Pos.BOTTOM_LEFT);
                 break;
             case LEFT:
-                size = getViewModel().getOldWidth();
-                x += sideBarBounds.getWidth();
-                width = size;
-                height = sideBarBounds.getHeight();
+                width = Math.min(getViewModel().getOldWidth(), width);
+                StackPane.setAlignment(node, Pos.TOP_LEFT);
                 break;
             default:
                 throw new AssertionError();
         }
-        node.setTranslateX(x);
-        node.setTranslateY(y);
         node.setPrefSize(width, height);
         node.setMinSize(width, height);
         node.setMaxSize(width, height);
@@ -258,7 +233,6 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
                 this.node.setPrefHeight(newHeight);
                 this.node.setMinHeight(newHeight);
                 this.node.setMaxHeight(newHeight);
-                this.node.setTranslateY(onResizeTranslateY + deltaY);
                 break;
             case LEFT:
                 newWidth = onResizeWidth + deltaX;
@@ -271,7 +245,6 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
                 this.node.setPrefWidth(newWidth);
                 this.node.setMinWidth(newWidth);
                 this.node.setMaxWidth(newWidth);
-                this.node.setTranslateX(onResizeTranslateX + deltaX);
                 break;
         }
     }

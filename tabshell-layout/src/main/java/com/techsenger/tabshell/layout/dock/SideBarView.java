@@ -31,13 +31,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import static javafx.geometry.Side.RIGHT;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
 
 /**
  *
@@ -221,16 +219,13 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
 
     protected void showPopup(TabView<?> minimizedTab) {
         saveState(minimizedTab);
-        var vm = getViewModel().createPopup(minimizedTab.getViewModel());
-        getViewModel().setPopup(vm);
-        this.popup = new TabPopupView(this, minimizedTab, vm);
-        this.popup.initialize();
+        this.popup = createPopup(minimizedTab);
         this.layout.showTabPopup(popup);
     }
 
     protected void hidePopup() {
         if (this.popup != null) {
-            this.layout.hideTabPopup();
+            this.layout.hideTabPopup(this.popup);
             var minimizedTab = this.popup.getTab();
             this.popup.deinitialize();
             getViewModel().setPopup(null);
@@ -239,14 +234,16 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         }
     }
 
-    Point2D resolvePositionInLayout() {
-        Bounds sideBarBounds = this.tabPane.getBoundsInLocal();
-        Point2D positionInScene = this.tabPane.localToScene(sideBarBounds.getMinX(), sideBarBounds.getMinY());
-        StackPane layoutNode = this.layout.getNode();
-        Point2D layoutPositionInScene = layoutNode.localToScene(0, 0);
-        double x = positionInScene.getX() - layoutPositionInScene.getX();
-        double y = positionInScene.getY() - layoutPositionInScene.getY();
-        return new Point2D(x, y);
+    protected TabPopupView<?> createPopup(TabView<?> minimizedTab) {
+        var vm = getViewModel().createPopup(minimizedTab.getViewModel());
+        getViewModel().setPopup(vm);
+        var popup = new TabPopupView(this, minimizedTab, vm);
+        popup.initialize();
+        return popup;
+    }
+
+    Bounds getCenterBounds() {
+        return this.layout.getCenterBounds();
     }
 
     private void addTabDocks(List<? extends TabDockView<?>> tabDocks) {
