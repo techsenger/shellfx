@@ -19,7 +19,6 @@ package com.techsenger.tabshell.layout.dock;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
-import com.techsenger.tabshell.core.tab.TabView;
 import javafx.geometry.Pos;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
@@ -45,7 +44,7 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
 
     private final VBox node = new VBox(tabPane);
 
-    private final TabView<?> tab;
+    private final SideBarTab sideBarTab;
 
     private double onResizeX;
 
@@ -59,10 +58,10 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
 
     private Cursor savedCursor;
 
-    public TabPopupView(SideBarView<?> sideBar, TabView<?> tab, T viewModel) {
+    public TabPopupView(SideBarView<?> sideBar, SideBarTab sideBarTab, T viewModel) {
         super(viewModel);
         this.sideBar = sideBar;
-        this.tab = tab;
+        this.sideBarTab = sideBarTab;
     }
 
     @Override
@@ -75,10 +74,6 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
         return this.node;
     }
 
-    public TabView<?> getTab() {
-        return tab;
-    }
-
     public SideBarView<?> getSideBar() {
         return sideBar;
     }
@@ -89,9 +84,9 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
         this.node.getStyleClass().addAll("tab-popup", viewModel.getSideBar().getSide().name().toLowerCase());
         VBox.setVgrow(tabPane, Priority.ALWAYS);
         tabPane.getStyleClass().add(Styles.DENSE);
-        var tabNode = tab.getNode();
+        var tabNode = this.sideBarTab.getMinimizedTab();
         tabNode.setClosable(false);
-        tabPane.getTabs().add(tab.getNode());
+        tabPane.getTabs().add(tabNode);
         setInitialSizeAndPosition();
         var css = TabPopupView.class.getResource("tab-popup.css").toExternalForm();
         this.getNode().getStylesheets().add(css);
@@ -101,7 +96,7 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
     protected void addHandlers(T viewModel) {
         super.addHandlers(viewModel);
         node.addEventFilter(MouseEvent.MOUSE_EXITED, (e) -> {
-            if (!hasMouseMovedToSideBar(e) && !isResizing) {
+            if (!hasMouseMovedToSideBar(e) && !isResizing && !this.sideBarTab.isSelected()) {
                 this.sideBar.hidePopup();
             }
         });
@@ -146,6 +141,35 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
         return tabPane;
     }
 
+    SideBarTab getSideBarTab() {
+        return this.sideBarTab;
+    }
+
+    void updateSize() {
+        var centerDimension = getSideBar().getCenterDimension();
+        double width = this.node.getWidth();
+        double height = this.node.getHeight();
+        switch (getViewModel().getSideBar().getSide()) {
+            case RIGHT:
+                width = Math.min(centerDimension.getWidth(), width);
+                height = centerDimension.getHeight();
+                break;
+            case BOTTOM:
+                height = Math.min(centerDimension.getHeight(), height);
+                width = centerDimension.getWidth();
+                break;
+            case LEFT:
+                width = Math.min(centerDimension.getWidth(), width);
+                height = centerDimension.getHeight();
+                break;
+            default:
+                throw new AssertionError();
+        }
+        node.setPrefSize(width, height);
+        node.setMinSize(width, height);
+        node.setMaxSize(width, height);
+    }
+
     private void setResizeCursor() {
         this.savedCursor = this.node.getCursor();
         if (this.savedCursor == null) {
@@ -174,9 +198,9 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
     }
 
     private void setInitialSizeAndPosition() {
-        var centerBounds = getSideBar().getCenterBounds();
-        double width = centerBounds.getWidth();
-        double height = centerBounds.getHeight();
+        var centerDimension = getSideBar().getCenterDimension();
+        double width = centerDimension.getWidth();
+        double height = centerDimension.getHeight();
         switch (getViewModel().getSideBar().getSide()) {
             case RIGHT:
                 width = Math.min(getViewModel().getOldWidth(), width);

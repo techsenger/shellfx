@@ -42,6 +42,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.geometry.Dimension2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
@@ -557,7 +558,6 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 Math.floor(eventContainer.getHeight() - tabHeaderArea.getHeight()));
     }
 
-
     private static Bounds createHalfIndicatorBounds(Side side, ContainerInfo anchorInfo) {
         var anchorContainer = anchorInfo.getContainer();
         var ratio = ONE_HALF;
@@ -868,6 +868,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         var css = DockLayoutView.class.getResource("dock-layout.css").toExternalForm();
         this.node.getStylesheets().add(css);
         this.node.setCenter(centerStackPane);
+        centerStackPane.setMinSize(0, 0);
     }
 
     @Override
@@ -895,6 +896,16 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         addListenerForSideBar(rightBar, viewModel.rightBarWrapper());
         addListenerForSideBar(bottomBar, viewModel.bottomBarWrapper());
         addListenerForSideBar(leftBar, viewModel.leftBarWrapper());
+        this.node.widthProperty().addListener((ov, oldV, newV) -> {
+            updatePopupSize(getRightBar());
+            updatePopupSize(getBottomBar());
+            updatePopupSize(getLeftBar());
+        });
+        this.node.heightProperty().addListener((ov, oldV, newV) -> {
+            updatePopupSize(getRightBar());
+            updatePopupSize(getBottomBar());
+            updatePopupSize(getLeftBar());
+        });
     }
 
     protected Node createTabDragContent(TabPaneProSkin.TabHeaderSkin tabHeader) {
@@ -1159,8 +1170,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         addTabDock(grandParentPositions, parent, dock, index, side, sideShouldBeChecked, dockSize);
     }
 
-    Bounds getCenterBounds() {
-        return this.node.getCenter().getBoundsInParent();
+    Dimension2D getCenterDimension() {
+        return new Dimension2D(this.centerStackPane.getWidth(), this.centerStackPane.getHeight());
     }
 
     void showTabPopup(TabPopupView<?> popup) {
@@ -2174,6 +2185,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 var position = tabDock.getViewModel().getMinimizedPosition();
                 position.updateUuid(oldUuid, newUuid);
             }
+        }
+    }
+
+    private void updatePopupSize(SideBarView<?> sideBar) {
+        if (sideBar != null) {
+            sideBar.updatePopupSize();
         }
     }
 }
