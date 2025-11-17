@@ -21,7 +21,11 @@ import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
+import java.util.Collections;
+import java.util.List;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -43,7 +47,7 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
 
     private final ObservableList<TabViewModel> modifiableTabs = FXCollections.observableArrayList();
 
-    private final ObservableList<TabViewModel> unmodifiableTabs =
+    private final ObservableList<? extends TabViewModel> tabs =
             FXCollections.unmodifiableObservableList(modifiableTabs);
 
     /**
@@ -52,6 +56,10 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
     private final BooleanProperty tabHeaderAutoHide = new SimpleBooleanProperty(false);
 
     private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
+
+    private List<? extends TabViewModel> detachedTabs = Collections.EMPTY_LIST;
+
+    private final ReadOnlyBooleanWrapper tabsDetached = new ReadOnlyBooleanWrapper();
 
     public TabHostViewModel() {
         super();
@@ -96,8 +104,8 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
     }
 
     @Override
-    public ObservableList<TabViewModel> getTabs() {
-        return this.unmodifiableTabs;
+    public ObservableList<? extends TabViewModel> getTabs() {
+        return this.tabs;
     }
 
     @Override
@@ -110,6 +118,14 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
         return this.selectedTabIndex.getReadOnlyProperty();
     }
 
+    /**
+     * Returns the unmodifiable list of the detached tabs.
+     * @return
+     */
+    public List<? extends TabViewModel> getDetachedTabs() {
+        return detachedTabs;
+    }
+
     public BooleanProperty tabHeaderAutoHideProperty() {
         return tabHeaderAutoHide;
     }
@@ -120,6 +136,14 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
 
     public void setTabHeaderAutoHide(boolean value) {
         this.tabHeaderAutoHide.set(value);
+    }
+
+    public ReadOnlyBooleanProperty tabsDetachedProperty() {
+        return tabsDetached.getReadOnlyProperty();
+    }
+
+    public boolean areTabsDetached() {
+        return tabsDetached.get();
     }
 
     @Override
@@ -149,6 +173,14 @@ public class TabHostViewModel extends AbstractPaneViewModel implements TabContai
 
     void setTabHeaderVisible(boolean value) {
         this.tabHeaderVisible.set(value);
+    }
+
+    void setDetachedTabs(List<? extends TabViewModel> detachedTabs) {
+        this.detachedTabs = detachedTabs;
+    }
+
+    void setTabsDetached(boolean detached) {
+        tabsDetached.set(detached);
     }
 
     private void resolveTabHeaderVisibility() {

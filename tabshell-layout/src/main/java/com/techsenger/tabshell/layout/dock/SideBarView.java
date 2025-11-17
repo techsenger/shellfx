@@ -31,9 +31,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Dimension2D;
 import static javafx.geometry.Side.RIGHT;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -42,26 +42,19 @@ import javafx.scene.input.MouseEvent;
  */
 public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T> {
 
-    private static class TabState {
+    private static class TabInfo {
 
-        private final TabPane tabPane;
-
-        private final int index;
+        private final SideBarTab sideBarTab;
 
         private final boolean closable;
 
-        TabState(TabPane tabPane, int index, boolean closable) {
-            this.tabPane = tabPane;
-            this.index = index;
+        TabInfo(SideBarTab sideBarTab, boolean closable) {
+            this.sideBarTab = sideBarTab;
             this.closable = closable;
         }
 
-        public TabPane getTabPane() {
-            return tabPane;
-        }
-
-        public int getIndex() {
-            return index;
+        public SideBarTab getSideBarTab() {
+            return sideBarTab;
         }
 
         public boolean isClosable() {
@@ -69,30 +62,75 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         }
     }
 
+    private static class SideBarTab extends Tab {
+
+        private final ComponentTab minimizedTab;
+
+        private boolean shownInPopup;
+
+        SideBarTab(ComponentTab minimizedTab) {
+            this.minimizedTab = minimizedTab;
+        }
+
+        public ComponentTab getMinimizedTab() {
+            return minimizedTab;
+        }
+
+        public boolean isShownInPopup() {
+            return shownInPopup;
+        }
+
+        public void setShownInPopup(boolean shownInPopup) {
+            this.shownInPopup = shownInPopup;
+        }
+    }
+
+    private static final class RestoreButton extends Button {
+
+        RestoreButton(String string, Node node) {
+            super(string, node);
+        }
+    }
+
+    private static final Object STATE_KEY = new Object();
+
     private class SideTabHeaderSkin extends TabPaneProSkin.TabHeaderSkin {
 
         SideTabHeaderSkin(TabPaneProSkin.TabHeaderContext context) {
             super(context);
             addEventHandler(MouseEvent.MOUSE_ENTERED, (e) -> {
-                if (!isRestoreTab(this) && this.getAnimationState() == TabPaneProSkin.TabAnimationState.NONE) {
+                if (!isRestoreTab(this) && isReady()) {
                     var sideBarTab = ((SideBarTab) context.getTab());
-                     if (popup != null) {
-                        if (popup.getSideBarTab() != sideBarTab) {
-                            hidePopup();
-                            showPopup(sideBarTab);
+                    if (!sideBarTab.isShownInPopup()) {
+                        if (popup == null) {
+                            showPopup();
                         }
-                    } else {
-                        showPopup(sideBarTab);
+                        openTabInPopup(sideBarTab);
                     }
                 }
 
             });
-            addEventFilter(MouseEvent.MOUSE_PRESSED, (e) -> {
-                if (!isRestoreTab(this) && getContext().getTab().isSelected()) {
-                    getContext().getTab().getTabPane().getSelectionModel().selectFirst();
-                    e.consume();
+            addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
+                if (!isRestoreTab(this) && isReady() && popup != null && popup.getTabPane().getTabs().size() > 1) {
+                    closeLastTabInPopup();
                 }
             });
+            addEventFilter(MouseEvent.MOUSE_PRESSED, (e) -> {
+                if (!isRestoreTab(this)) {
+                    SideBarTab sideBarTab = (SideBarTab) getContext().getTab();
+                    if (sideBarTab.isSelected()) {
+                        // only one tab is shown at the moment
+                        tabPane.getSelectionModel().selectFirst();
+                        e.consume();
+                    } else {
+                        closeOtherTabInPopup(sideBarTab.getMinimizedTab());
+                    }
+                }
+            });
+        }
+
+        private boolean isReady() {
+            return this.getAnimationState() == TabPaneProSkin.TabAnimationState.NONE;
         }
     }
 
@@ -102,18 +140,15 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
 
     private final TabPanePro tabPane = new TabPanePro();
 
-    private ListSynchronizer<TabDockView<?>, TabDockViewModel> listSynchronizer;
-
-    /**
-     * The original position of the tab.
-     */
-    private TabState popupTabState;
+    private final ListSynchronizer<TabDockView<?>, TabDockViewModel> tabDocksSynchronizer;
 
     private TabPopupView<?> popup;
 
     public SideBarView(DockLayoutView<?> layout, T viewModel) {
         super(viewModel);
         this.layout = layout;
+        this.tabDocksSynchronizer = new ListSynchronizer<TabDockView<?>, TabDockViewModel>(tabDocks,
+                viewModel.getModifiableTabDocks(), v -> v.getViewModel());
     }
 
     @Override
@@ -152,7 +187,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         super.addHandlers(viewModel);
         var tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
         tabPane.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-            if (this.popup != null && !hasMouseMovedToPopup(e) && !this.popup.getSideBarTab().isSelected()) {
+            if (this.popup != null && !hasMouseMovedToPopup(e) && !containsSelectedTab()) {
                 hidePopup();
             }
         });
@@ -161,8 +196,6 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
-        listSynchronizer = new ListSynchronizer<TabDockView<?>, TabDockViewModel>(tabDocks,
-                viewModel.getModifiableTabDocks(), v -> v.getViewModel());
         tabDocks.addListener((ListChangeListener<TabDockView<?>>) (change) -> {
             while (change.next()) {
                 if (change.wasAdded()) {
@@ -174,7 +207,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
 
     protected Tab createRestoreTab() {
         var tab = new Tab();
-        var button = new Button(null, new FontIconView(CoreIcons.RESTORE_WINDOW));
+        var button = new RestoreButton(null, new FontIconView(CoreIcons.RESTORE_WINDOW));
         button.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
         button.setOnAction(e -> {
             hidePopup();
@@ -186,15 +219,15 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         return tab;
     }
 
-    protected boolean isRestoreTab(SideTabHeaderSkin tabHeader) {
+    protected boolean isRestoreTab(TabPaneProSkin.TabHeaderSkin tabHeader) {
         var tab = tabHeader.getContext().getTab();
-        if (tab.getGraphic() != null && tab.getGraphic().getClass() == Button.class) {
+        if (tab.getGraphic() != null && tab.getGraphic().getClass() == RestoreButton.class) {
             return true;
         }
         return false;
     }
 
-    protected SideBarTab createTabFor(ComponentTab tab) {
+    protected SideBarTab createTab(ComponentTab tab) {
         var t = new SideBarTab(tab);
         t.setText(tab.getText());
         t.setGraphic(tab.getGraphic());
@@ -208,27 +241,68 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         this.layout.restoreTabDock(this, tabDock);
     }
 
-    protected void showPopup(SideBarTab sideTab) {
-        saveState(sideTab.getMinimizedTab());
-        this.popup = createPopup(sideTab);
+    protected void showPopup() {
+        this.popup = createPopup();
         this.layout.showTabPopup(popup);
     }
 
     protected void hidePopup() {
         if (this.popup != null) {
             this.layout.hideTabPopup(this.popup);
-            var minimizedTab = this.popup.getSideBarTab().getMinimizedTab();
             this.popup.deinitialize();
             getViewModel().setPopup(null);
             this.popup = null;
-            restoreState(minimizedTab);
         }
     }
 
-    protected TabPopupView<?> createPopup(SideBarTab sideBarTab) {
-        var vm = getViewModel().createPopup(sideBarTab.getMinimizedTab().getView().getViewModel());
+    protected void openTabInPopup(SideBarTab sideBarTab) {
+        sideBarTab.setShownInPopup(true);
+        var minimizedTab = sideBarTab.getMinimizedTab();
+        saveState(sideBarTab);
+        minimizedTab.setClosable(false);
+        var tabs = this.popup.getTabPane().getTabs();
+        if (tabs.size() == 1) {
+            var otherSideBarTab = getState(((ComponentTab) tabs.get(0))).getSideBarTab();
+            if (!otherSideBarTab.isSelected()) {
+                closeTabInPopup(otherSideBarTab.getMinimizedTab());
+            }
+        } else if (tabs.size() == 2) {
+            closeTabInPopup((ComponentTab) tabs.get(1));
+        }
+        tabs.add(minimizedTab);
+        this.popup.getTabPane().getSelectionModel().select(tabs.size() - 1);
+    }
+
+    protected void closeLastTabInPopup() {
+        var tp = this.popup.getTabPane();
+        if (!tp.getTabs().isEmpty()) {
+            var tab = tp.getTabs().get(tp.getTabs().size() - 1);
+            closeTabInPopup((ComponentTab) tab);
+        }
+    }
+
+    protected void closeOtherTabInPopup(ComponentTab tab) {
+        var tp = this.popup.getTabPane();
+        if (tp.getTabs().size() > 1) {
+            var tab0 = tp.getTabs().get(0);
+            if (tab0 != tab) {
+                closeTabInPopup((ComponentTab) tab0);
+            } else {
+                closeTabInPopup((ComponentTab) tp.getTabs().get(1));
+            }
+        }
+    }
+
+    protected void closeTabInPopup(ComponentTab tab) {
+        this.popup.getTabPane().getTabs().remove(tab);
+        var sideBarTab = restoreState(tab);
+        sideBarTab.setShownInPopup(false);
+    }
+
+    protected TabPopupView<?> createPopup() {
+        var vm = getViewModel().createPopup();
         getViewModel().setPopup(vm);
-        var popup = new TabPopupView(this, sideBarTab, vm);
+        var popup = new TabPopupView(this, vm);
         popup.initialize();
         return popup;
     }
@@ -243,11 +317,16 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         }
     }
 
+    boolean containsSelectedTab() {
+        var index = this.tabPane.getSelectionModel().getSelectedIndex();
+        return index > 0;
+    }
+
     private void addTabDocks(List<? extends TabDockView<?>> tabDocks) {
         for (var tabDock : tabDocks) {
             this.tabPane.getTabs().add(createRestoreTab());
-            for (var tab : tabDock.getNode().getTabs()) {
-                var t = createTabFor((ComponentTab) tab);
+            for (var tab : tabDock.getDetachedTabs()) {
+                var t = createTab((ComponentTab) tab.getNode());
                 this.tabPane.getTabs().add(t);
             }
         }
@@ -261,17 +340,21 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         return tabDock;
     }
 
-    private void saveState(ComponentTab minimizedTab) {
-        var minimizedTabPane = minimizedTab.getTabPane();
-        this.popupTabState = new TabState(minimizedTabPane, minimizedTabPane.getTabs().indexOf(minimizedTab),
-                minimizedTab.isClosable());
-        this.popupTabState.getTabPane().getTabs().remove(this.popupTabState.getIndex());
+    private void saveState(SideBarTab sideBarTab) {
+        var minimizedTab = sideBarTab.getMinimizedTab();
+        var state = new TabInfo(sideBarTab, minimizedTab.isClosable());
+        minimizedTab.getProperties().put(STATE_KEY, state);
     }
 
-    private void restoreState(ComponentTab minimizedTab) {
-        this.popupTabState.getTabPane().getTabs().add(this.popupTabState.getIndex(), minimizedTab);
-        minimizedTab.setClosable(this.popupTabState.isClosable());
-        this.popupTabState = null;
+    private SideBarTab restoreState(ComponentTab minimizedTab) {
+        TabInfo state = (TabInfo) minimizedTab.getProperties().remove(STATE_KEY);
+        minimizedTab.setClosable(state.isClosable());
+        return state.getSideBarTab();
+    }
+
+    private TabInfo getState(ComponentTab minimizedTab) {
+        TabInfo state = (TabInfo) minimizedTab.getProperties().get(STATE_KEY);
+        return state;
     }
 
     /**

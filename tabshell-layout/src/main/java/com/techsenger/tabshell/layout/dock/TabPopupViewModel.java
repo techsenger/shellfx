@@ -21,6 +21,8 @@ import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -30,15 +32,17 @@ public class TabPopupViewModel extends AbstractPaneViewModel {
 
     private final SideBarViewModel sideBar;
 
-    private final TabViewModel tab;
+    private final ObservableList<TabViewModel> modifiableTabs = FXCollections.observableArrayList();
+
+    private final ObservableList<? extends TabViewModel> tabs
+            = FXCollections.unmodifiableObservableList(modifiableTabs);
 
     private double oldWidth = 250;
 
     private double oldHeight = 250;
 
-    public TabPopupViewModel(SideBarViewModel sideBar, TabViewModel tab, TabPopupHistory<?> history) {
+    public TabPopupViewModel(SideBarViewModel sideBar, TabPopupHistory<?> history) {
         this.sideBar = sideBar;
-        this.tab = tab;
         getDescriptor().setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> history);
     }
@@ -47,8 +51,13 @@ public class TabPopupViewModel extends AbstractPaneViewModel {
         return sideBar;
     }
 
-    public TabViewModel getTab() {
-        return tab;
+    /**
+     * Returns the unmodifiable list of tabs.
+     *
+     * @return
+     */
+    public ObservableList<? extends TabViewModel> getTabs() {
+        return tabs;
     }
 
     public double getOldWidth() {
@@ -64,11 +73,15 @@ public class TabPopupViewModel extends AbstractPaneViewModel {
         return new ComponentDescriptor(LayoutComponentNames.TAB_POPUP);
     }
 
-    void setOldHeight(double oldHeight) {
+    protected void setOldHeight(double oldHeight) {
         this.oldHeight = oldHeight;
     }
 
-    void setOldWidth(double oldWidth) {
+    protected void setOldWidth(double oldWidth) {
         this.oldWidth = oldWidth;
+    }
+
+    ObservableList<TabViewModel> getModifiableTabs() {
+        return modifiableTabs;
     }
 }

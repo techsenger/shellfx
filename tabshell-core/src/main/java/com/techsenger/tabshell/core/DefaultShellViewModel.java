@@ -61,7 +61,7 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
 
     private ObservableList<ShellTabViewModel> modifiableTabs = FXCollections.observableArrayList();
 
-    private ObservableList<ShellTabViewModel> unmodifiableTabs =
+    private ObservableList<? extends ShellTabViewModel> tabs =
             FXCollections.unmodifiableObservableList(modifiableTabs);
 
     private ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper();
@@ -151,8 +151,8 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
     }
 
     @Override
-    public ObservableList<ShellTabViewModel> getTabs() {
-        return this.unmodifiableTabs;
+    public ObservableList<? extends ShellTabViewModel> getTabs() {
+        return this.tabs;
     }
 
     @Override

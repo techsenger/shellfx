@@ -29,8 +29,11 @@ import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.toolkit.fx.collections.ListSynchronizer;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -39,6 +42,8 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TabHost is the generic class for components that have TabPane and every tab is a separate component.
@@ -48,12 +53,34 @@ import javafx.scene.layout.VBox;
 public class TabHostView<T extends TabHostViewModel> extends AbstractPaneView<T>
         implements TabContainerView<TabView<?>>, MenuAware {
 
+    private static final Logger logger = LoggerFactory.getLogger(TabHostView.class);
+
     private final TabPanePro root = new TabPanePro();
 
     private final ReadOnlyObjectWrapper<TabView<?>> selectedTab = new ReadOnlyObjectWrapper<>();
 
+    private List<? extends TabView<?>> detachedTabs = Collections.EMPTY_LIST;
+
+    private int selectedIndex;
+
+    private final ListSynchronizer<Tab, TabViewModel> tabsSynchronizer;
+
     public TabHostView(T viewModel) {
         super(viewModel);
+        this.tabsSynchronizer = new ListSynchronizer<Tab, TabViewModel>(this.root.getTabs(),
+                viewModel.getModifiableTabs(),
+                t -> {
+                    var tabView = ((ComponentTab) t).getView();
+                    return tabView.getViewModel();
+                },
+                t -> {
+                    var tabView = ((ComponentTab) t).getView();
+                    tabView.setParent(this);
+                },
+                t -> {
+                    var tabView = ((ComponentTab) t).getView();
+                    tabView.setParent(null);
+                });
     }
 
     @Override
@@ -84,7 +111,7 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractPaneView<T>
         return ((ComponentTab) tab).getView();
     }
 
-    public List<TabView<?>> getTabs() {
+    public List<? extends TabView<?>> getTabs() {
         return (List) this.root.getTabs().stream().map(e -> ((ComponentTab) e).getView()).collect(Collectors.toList());
     }
 
@@ -138,6 +165,49 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractPaneView<T>
             return tab.getMenuItemHelper(menuItemName);
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Returns the unmodifiable list of the detached tabs or empty list.
+     *
+     * @return
+     */
+    public List<? extends TabView<?>> getDetachedTabs() {
+        return detachedTabs;
+    }
+
+    /**
+     * Attaches the detached tabs to the {@link TabPane}. This operation is required when the tabs need to be
+     * temporarily added to other {@link TabPane}s. The process involves several iteration loops, so it may be
+     * relatively costly.
+     */
+    public void attachTabs() {
+        if (getViewModel().areTabsDetached()) {
+            var tabs = this.detachedTabs.stream().map(t -> t.getNode()).collect(Collectors.toList());
+            this.root.getTabs().addAll(tabs);
+            this.root.getSelectionModel().select(selectedIndex);
+            this.detachedTabs = Collections.EMPTY_LIST;
+            getViewModel().setDetachedTabs(Collections.EMPTY_LIST);
+            getViewModel().setTabsDetached(false);
+            logger.debug("{} Attached tabs", getViewModel().getDescriptor().getLogPrefix());
+        }
+    }
+
+    /**
+     * Detaches the tabs from the {@link TabPane}. This operation is required when the tabs need to be temporarily added
+     * to other {@link TabPane}s. The process involves several iteration loops, so it may be relatively costly.
+     */
+    public void detachTabs() {
+        if (!getViewModel().areTabsDetached()) {
+            this.selectedIndex = this.root.getSelectionModel().getSelectedIndex();
+            this.detachedTabs = this.root.getTabs()
+                    .stream().map(t -> ((ComponentTab) t).getView()).collect(Collectors.toList());
+            var detachedTabsVM = this.detachedTabs.stream().map(v -> v.getViewModel()).collect(Collectors.toList());
+            getViewModel().setDetachedTabs(detachedTabsVM);
+            this.root.getTabs().clear();
+            getViewModel().setTabsDetached(true);
+            logger.debug("{} Detached tabs", getViewModel().getDescriptor().getLogPrefix());
         }
     }
 

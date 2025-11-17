@@ -18,7 +18,6 @@ package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
-import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +35,7 @@ public class SideBarViewModel extends AbstractPaneViewModel {
 
     private final ObservableList<TabDockViewModel> modifiableTabDocks = FXCollections.observableArrayList();
 
-    private final ObservableList<TabDockViewModel> tabDocks =
+    private final ObservableList<? extends TabDockViewModel> tabDocks =
             FXCollections.unmodifiableObservableList(modifiableTabDocks);
 
     private TabPopupViewModel popup;
@@ -55,7 +54,7 @@ public class SideBarViewModel extends AbstractPaneViewModel {
      *
      * @return
      */
-    public ObservableList<TabDockViewModel> getTabDocks() {
+    public ObservableList<? extends TabDockViewModel> getTabDocks() {
         return tabDocks;
     }
 
@@ -64,8 +63,8 @@ public class SideBarViewModel extends AbstractPaneViewModel {
         return new ComponentDescriptor(LayoutComponentNames.SIDE_BAR);
     }
 
-    protected TabPopupViewModel createPopup(TabViewModel tab) {
-        return new TabPopupViewModel(this, tab, this.history.getOrCreatePopup());
+    protected TabPopupViewModel createPopup() {
+        return new TabPopupViewModel(this, this.history.getOrCreatePopup());
     }
 
     protected TabPopupViewModel getPopup() {

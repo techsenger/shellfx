@@ -19,11 +19,15 @@ package com.techsenger.tabshell.layout.dock;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.tab.ComponentTab;
+import com.techsenger.tabshell.core.tab.TabViewModel;
+import com.techsenger.toolkit.fx.collections.ListSynchronizer;
 import javafx.geometry.Pos;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
 import static javafx.geometry.Side.RIGHT;
 import javafx.scene.Cursor;
+import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -31,6 +35,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
+ * A TabPopup can display either one or two tabs. Two tabs are shown when the first tab is pinned and the mouse
+ * is hovered over the second tab.
  *
  * @author Pavel Castornii
  */
@@ -44,7 +50,7 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
 
     private final VBox node = new VBox(tabPane);
 
-    private final SideBarTab sideBarTab;
+    private final ListSynchronizer<Tab, TabViewModel> tabsSynchronizer;
 
     private double onResizeX;
 
@@ -58,10 +64,11 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
 
     private Cursor savedCursor;
 
-    public TabPopupView(SideBarView<?> sideBar, SideBarTab sideBarTab, T viewModel) {
+    public TabPopupView(SideBarView<?> sideBar, T viewModel) {
         super(viewModel);
         this.sideBar = sideBar;
-        this.sideBarTab = sideBarTab;
+        this.tabsSynchronizer = new ListSynchronizer<Tab, TabViewModel>(this.tabPane.getTabs(),
+                viewModel.getModifiableTabs(), (t) -> ((ComponentTab) t).getView().getViewModel());
     }
 
     @Override
@@ -84,9 +91,7 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
         this.node.getStyleClass().addAll("tab-popup", viewModel.getSideBar().getSide().name().toLowerCase());
         VBox.setVgrow(tabPane, Priority.ALWAYS);
         tabPane.getStyleClass().add(Styles.DENSE);
-        var tabNode = this.sideBarTab.getMinimizedTab();
-        tabNode.setClosable(false);
-        tabPane.getTabs().add(tabNode);
+
         setInitialSizeAndPosition();
         var css = TabPopupView.class.getResource("tab-popup.css").toExternalForm();
         this.getNode().getStylesheets().add(css);
@@ -96,7 +101,8 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
     protected void addHandlers(T viewModel) {
         super.addHandlers(viewModel);
         node.addEventFilter(MouseEvent.MOUSE_EXITED, (e) -> {
-            if (!hasMouseMovedToSideBar(e) && !isResizing && !this.sideBarTab.isSelected()) {
+            if (!hasMouseMovedToSideBar(e) && !isResizing && !this.sideBar.containsSelectedTab()) {
+                this.sideBar.closeLastTabInPopup();
                 this.sideBar.hidePopup();
             }
         });
@@ -139,10 +145,6 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
 
     protected TabPanePro getTabPane() {
         return tabPane;
-    }
-
-    SideBarTab getSideBarTab() {
-        return this.sideBarTab;
     }
 
     void updateSize() {

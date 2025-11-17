@@ -1091,6 +1091,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             }
             default -> throw new AssertionError();
         }
+        dock.detachTabs();
         // adding the dock to the sidebar
         sideBar.getTabDocks().add(dock);
         printTreeDebugInfo();
@@ -1098,6 +1099,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     void restoreTabDock(SideBarView<?> sideBar, TabDockView<?> dock) {
         closeSideBarIfEmpty(sideBar);
+        dock.attachTabs();
 
         // attempt 0 - find the parent by UUID
         var position = dock.getViewModel().getMinimizedPosition();

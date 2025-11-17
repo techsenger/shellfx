@@ -73,5 +73,5 @@ public interface TabContainerViewModel<T extends TabViewModel> {
      *
      * @return
      */
-    ObservableList<T> getTabs();
+    ObservableList<? extends T> getTabs();
 }
