@@ -38,7 +38,11 @@ public class TabPopupHistory<T extends TabPopupViewModel> extends AbstractPaneHi
     @Override
     public void saveAppearance(T viewModel) {
         super.saveAppearance(viewModel);
-        this.width = viewModel.getWidth();
-        this.height = viewModel.getHeight();
+        // If the user moves the mouse quickly, components may be created
+        // and removed even before they have been rendered
+        if (viewModel.getWidth() > 0.1 && viewModel.getHeight() > 0.1) {
+            this.width = viewModel.getWidth();
+            this.height = viewModel.getHeight();
+        }
     }
 }
