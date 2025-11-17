@@ -178,8 +178,7 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractPaneView<T>
     }
 
     /**
-     * Attaches the detached tabs to the {@link TabPane}. This operation is required when the tabs need to be
-     * temporarily added to other {@link TabPane}s. The process involves several iteration loops, so it may be
+     * Attaches the detached tabs to the {@link TabPane}. The process involves several iteration loops, so it may be
      * relatively costly.
      */
     public void attachTabs() {
