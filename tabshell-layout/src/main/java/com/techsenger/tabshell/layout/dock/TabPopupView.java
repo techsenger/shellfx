@@ -69,8 +69,6 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
 
     private boolean isResizing = false;
 
-    private Cursor savedCursor;
-
     public TabPopupView(SideBarView<?> sideBar, T viewModel) {
         super(viewModel);
         this.sideBar = sideBar;
@@ -195,10 +193,6 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
     }
 
     private void setResizeCursor() {
-        this.savedCursor = this.node.getCursor();
-        if (this.savedCursor == null) {
-            this.savedCursor = Cursor.DEFAULT;
-        }
         switch (getViewModel().getSideBar().getSide()) {
             case RIGHT:
                 this.node.setCursor(Cursor.W_RESIZE);
@@ -215,10 +209,7 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
     }
 
     private void restoreCursor() {
-        if (this.savedCursor != null) {
-            this.node.setCursor(this.savedCursor);
-            this.savedCursor = null;
-        }
+        this.node.setCursor(Cursor.DEFAULT);
     }
 
     private void setInitialSizeAndPosition() {
