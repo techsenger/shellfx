@@ -119,11 +119,17 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
                 if (!isRestoreTab(this)) {
                     SideBarTab sideBarTab = (SideBarTab) getContext().getTab();
                     if (sideBarTab.isSelected()) {
-                        // only one tab is shown at the moment
+                        // there is one open tabs
                         tabPane.getSelectionModel().selectFirst();
                         e.consume();
                     } else {
-                        closeOtherTabInPopup(sideBarTab.getMinimizedTab());
+                        if (popup == null) {
+                            showPopup();
+                            openTabInPopup(sideBarTab);
+                        } else {
+                            // there are two open tabs
+                            closeOtherTabInPopup(sideBarTab.getMinimizedTab());
+                        }
                     }
                 }
             });
@@ -252,6 +258,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
             this.popup.deinitialize();
             getViewModel().setPopup(null);
             this.popup = null;
+            tabPane.getSelectionModel().selectFirst(); // resetting selection
         }
     }
 

@@ -18,15 +18,20 @@ package com.techsenger.tabshell.layout.dock;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.toolkit.fx.collections.ListSynchronizer;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
 import static javafx.geometry.Side.RIGHT;
 import javafx.scene.Cursor;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
@@ -49,6 +54,8 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
     private final TabPanePro tabPane = new TabPanePro();
 
     private final VBox node = new VBox(tabPane);
+
+    private final Button closeButton = new Button();
 
     private final ListSynchronizer<Tab, TabViewModel> tabsSynchronizer;
 
@@ -92,6 +99,12 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
         VBox.setVgrow(tabPane, Priority.ALWAYS);
         tabPane.getStyleClass().add(Styles.DENSE);
 
+        TabPaneProSkin tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
+        var lastArea = tabPaneSkin.getTabHeaderArea().getLastArea();
+        lastArea.getChildren().add(closeButton);
+        lastArea.setPadding(new Insets(0, SizeConstants.INSET, 0, 0));
+        closeButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
+
         setInitialSizeAndPosition();
         var css = TabPopupView.class.getResource("tab-popup.css").toExternalForm();
         this.getNode().getStylesheets().add(css);
@@ -101,7 +114,9 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
     protected void addHandlers(T viewModel) {
         super.addHandlers(viewModel);
         node.addEventFilter(MouseEvent.MOUSE_EXITED, (e) -> {
-            if (!hasMouseMovedToSideBar(e) && !isResizing && !this.sideBar.containsSelectedTab()) {
+            if (!hasMouseMovedToSideBar(e) && !isResizing && !this.sideBar.containsSelectedTab()
+                    && !viewModel.isClosing()) {
+                viewModel.setClosing(true);
                 this.sideBar.closeLastTabInPopup();
                 this.sideBar.hidePopup();
             }
@@ -139,6 +154,13 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
                 isResizing = false;
                 restoreCursor();
                 e.consume();
+            }
+        });
+        closeButton.setOnAction(e -> {
+            if (!viewModel.isClosing()) {
+                viewModel.setClosing(true);
+                this.sideBar.closeLastTabInPopup();
+                this.sideBar.hidePopup();
             }
         });
     }

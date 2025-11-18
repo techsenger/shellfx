@@ -41,6 +41,8 @@ public class TabPopupViewModel extends AbstractPaneViewModel {
 
     private double oldHeight = 250;
 
+    private boolean closing;
+
     public TabPopupViewModel(SideBarViewModel sideBar, TabPopupHistory<?> history) {
         this.sideBar = sideBar;
         getDescriptor().setHistoryPolicy(HistoryPolicy.APPEARANCE);
@@ -83,5 +85,13 @@ public class TabPopupViewModel extends AbstractPaneViewModel {
 
     ObservableList<TabViewModel> getModifiableTabs() {
         return modifiableTabs;
+    }
+
+    boolean isClosing() {
+        return closing;
+    }
+
+    void setClosing(boolean closing) {
+        this.closing = closing;
     }
 }
