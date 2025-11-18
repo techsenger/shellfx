@@ -167,22 +167,21 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
         return tabPane;
     }
 
-    void updateSize() {
-        var centerDimension = getSideBar().getCenterDimension();
+    void updateSize(double centerWidth, double centerHeight) {
         double width = this.node.getWidth();
         double height = this.node.getHeight();
         switch (getViewModel().getSideBar().getSide()) {
             case RIGHT:
-                width = Math.min(centerDimension.getWidth(), width);
-                height = centerDimension.getHeight();
+                width = Math.min(centerWidth, width);
+                height = centerHeight;
                 break;
             case BOTTOM:
-                height = Math.min(centerDimension.getHeight(), height);
-                width = centerDimension.getWidth();
+                height = Math.min(centerHeight, height);
+                width = centerWidth;
                 break;
             case LEFT:
-                width = Math.min(centerDimension.getWidth(), width);
-                height = centerDimension.getHeight();
+                width = Math.min(centerWidth, width);
+                height = centerHeight;
                 break;
             default:
                 throw new AssertionError();

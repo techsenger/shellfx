@@ -318,9 +318,9 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         return this.layout.getCenterDimension();
     }
 
-    void updatePopupSize() {
+    void updatePopupSize(double width, double height) {
         if (this.popup != null) {
-            this.popup.updateSize();
+            this.popup.updateSize(width, height);
         }
     }
 

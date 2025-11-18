@@ -893,19 +893,23 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 viewModel.setMain(null);
             }
         });
+        centerStackPane.widthProperty().addListener((ov2, oldV2, newV2) -> {
+            var w = centerStackPane.getWidth();
+            var h = centerStackPane.getHeight();
+            updatePopupSize(getRightBar(), w, h);
+            updatePopupSize(getBottomBar(), w, h);
+            updatePopupSize(getLeftBar(), w, h);
+        });
+        centerStackPane.heightProperty().addListener((ov2, oldV2, newV2) -> {
+            var w = centerStackPane.getWidth();
+            var h = centerStackPane.getHeight();
+            updatePopupSize(getRightBar(), w, h);
+            updatePopupSize(getBottomBar(), w, h);
+            updatePopupSize(getLeftBar(), w, h);
+        });
         addListenerForSideBar(rightBar, viewModel.rightBarWrapper());
         addListenerForSideBar(bottomBar, viewModel.bottomBarWrapper());
         addListenerForSideBar(leftBar, viewModel.leftBarWrapper());
-        this.node.widthProperty().addListener((ov, oldV, newV) -> {
-            updatePopupSize(getRightBar());
-            updatePopupSize(getBottomBar());
-            updatePopupSize(getLeftBar());
-        });
-        this.node.heightProperty().addListener((ov, oldV, newV) -> {
-            updatePopupSize(getRightBar());
-            updatePopupSize(getBottomBar());
-            updatePopupSize(getLeftBar());
-        });
     }
 
     protected Node createTabDragContent(TabPaneProSkin.TabHeaderSkin tabHeader) {
@@ -2190,9 +2194,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
     }
 
-    private void updatePopupSize(SideBarView<?> sideBar) {
+    private void updatePopupSize(SideBarView<?> sideBar, double width, double height) {
         if (sideBar != null) {
-            sideBar.updatePopupSize();
+            sideBar.updatePopupSize(width, height);
         }
     }
 }
