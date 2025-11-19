@@ -22,6 +22,7 @@ import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
+import com.techsenger.tabshell.layout.dock.SideBarPolicy;
 
 /**
  *
@@ -43,6 +44,7 @@ public class DockLayoutTabViewModel extends AbstractShellTabViewModel {
                 .getOrCreateHistory(DockLayoutTabHistory.class, DockLayoutTabHistory::new));
         this.history = (DockLayoutTabHistory) getHistoryProvider().provide();
         this.layout = new DockLayoutViewModel(this.history.getDockLayout());
+        this.layout.setBottomBarPolicy(SideBarPolicy.EXISTS_ALWAYS);
     }
 
     public DockLayoutViewModel getLayout() {

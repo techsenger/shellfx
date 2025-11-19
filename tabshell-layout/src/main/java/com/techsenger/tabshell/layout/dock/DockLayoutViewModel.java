@@ -19,8 +19,10 @@ package com.techsenger.tabshell.layout.dock;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.BOTTOM;
@@ -38,9 +40,18 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
 
     private final ReadOnlyObjectWrapper<SideBarViewModel> rightBar = new ReadOnlyObjectWrapper<>();
 
+    private final ObjectProperty<SideBarPolicy> rightBarPolicy =
+            new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
+
     private final ReadOnlyObjectWrapper<SideBarViewModel> bottomBar = new ReadOnlyObjectWrapper<>();
 
+    private final ObjectProperty<SideBarPolicy> bottomBarPolicy =
+            new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
+
     private final ReadOnlyObjectWrapper<SideBarViewModel> leftBar = new ReadOnlyObjectWrapper<>();
+
+    private final ObjectProperty<SideBarPolicy> leftBarPolicy =
+            new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
 
     private final DockLayoutHistory<?> history;
 
@@ -72,6 +83,18 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         return rightBar.getReadOnlyProperty();
     }
 
+    public ObjectProperty<SideBarPolicy> rightBarPolicyProperty() {
+        return rightBarPolicy;
+    }
+
+    public SideBarPolicy getRightBarPolicy() {
+        return rightBarPolicy.get();
+    }
+
+    public void setRightBarPolicy(SideBarPolicy policy) {
+        rightBarPolicy.set(policy);
+    }
+
     public final SideBarViewModel getBottomBar() {
         return bottomBar.get();
     }
@@ -80,12 +103,32 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         return bottomBar.getReadOnlyProperty();
     }
 
+    public ObjectProperty<SideBarPolicy> bottomBarPolicyProperty() {
+        return bottomBarPolicy;
+    }
+
+    public SideBarPolicy getBottomBarPolicy() {
+        return bottomBarPolicy.get();
+    }
+
+    public void setBottomBarPolicy(SideBarPolicy policy) {
+        bottomBarPolicy.set(policy);
+    }
+
     public final SideBarViewModel getLeftBar() {
         return leftBar.get();
     }
 
-    public final ReadOnlyObjectProperty<SideBarViewModel> leftBarProperty() {
-        return leftBar.getReadOnlyProperty();
+    public ObjectProperty<SideBarPolicy> leftBarPolicyProperty() {
+        return leftBarPolicy;
+    }
+
+    public SideBarPolicy getLeftBarPolicy() {
+        return leftBarPolicy.get();
+    }
+
+    public void setLeftBarPolicy(SideBarPolicy policy) {
+        leftBarPolicy.set(policy);
     }
 
     @Override

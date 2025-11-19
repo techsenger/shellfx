@@ -18,6 +18,7 @@ package com.techsenger.tabshell.layout.dock;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.CoreIcons;
@@ -35,6 +36,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 
 /**
  *
@@ -103,7 +105,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
                     var sideBarTab = ((SideBarTab) context.getTab());
                     if (!sideBarTab.isShownInPopup()) {
                         if (popup == null) {
-                            showPopup();
+                            addPopup();
                         }
                         openTabInPopup(sideBarTab);
                     }
@@ -124,7 +126,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
                         e.consume();
                     } else {
                         if (popup == null) {
-                            showPopup();
+                            addPopup();
                             openTabInPopup(sideBarTab);
                         } else {
                             // there are two open tabs
@@ -176,6 +178,16 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         return tabDocks;
     }
 
+    /**
+     * Returns the last area from {@link TabPanePro}.
+     *
+     * @return
+     */
+    public StackPane getLastArea() {
+        TabPaneProSkin tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
+        return tabPaneSkin.getTabHeaderArea().getLastArea();
+    }
+
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
@@ -183,6 +195,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         tabPane.getStyleClass().addAll(TabPanePro.STYLE_CLASS_FLOATING, "side-bar");
         TabPaneProSkin tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
         tabPaneSkin.getTabHeaderArea().setTabHeaderFactory((c) -> new SideTabHeaderSkin(c));
+        tabPaneSkin.getTabHeaderArea().setPolicy(TabHeaderAreaPolicy.ALWAYS_VISIBLE);
 
         var css = SideBarView.class.getResource("side-bar.css").toExternalForm();
         this.getNode().getStylesheets().add(css);
@@ -194,7 +207,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         var tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
         tabPane.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
             if (this.popup != null && !hasMouseMovedToPopup(e) && !containsSelectedTab()) {
-                hidePopup();
+                removePopup();
             }
         });
     }
@@ -211,12 +224,20 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         });
     }
 
+    @Override
+    protected void postDeinitialize(T viewModel) {
+        super.postDeinitialize(viewModel);
+        if (this.popup != null) {
+            this.popup.deinitialize();
+        }
+    }
+
     protected Tab createRestoreTab() {
         var tab = new Tab();
         var button = new RestoreButton(null, new FontIconView(CoreIcons.RESTORE_WINDOW));
         button.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
         button.setOnAction(e -> {
-            hidePopup();
+            removePopup();
             handleRestoreButtonAction(tab);
         });
         tab.setGraphic(button);
@@ -247,14 +268,14 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         this.layout.restoreTabDock(this, tabDock);
     }
 
-    protected void showPopup() {
+    protected void addPopup() {
         this.popup = createPopup();
-        this.layout.showTabPopup(popup);
+        this.layout.addTabPopup(popup);
     }
 
-    protected void hidePopup() {
+    protected void removePopup() {
         if (this.popup != null) {
-            this.layout.hideTabPopup(this.popup);
+            this.layout.removeTabPopup(this.popup);
             this.popup.deinitialize();
             getViewModel().setPopup(null);
             this.popup = null;
@@ -343,7 +364,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T>
         var dockIndex = findTabDockIndex(restoreTabIndex);
         var tabDock = this.tabDocks.remove(dockIndex);
         // removing restoreTab and dock tabs from side bar
-        tabPane.getTabs().remove(restoreTabIndex, restoreTabIndex + tabDock.getNode().getTabs().size() + 1);
+        tabPane.getTabs().remove(restoreTabIndex, restoreTabIndex + tabDock.getDetachedTabs().size() + 1);
         return tabDock;
     }
 

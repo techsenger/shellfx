@@ -116,7 +116,7 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
                     && !viewModel.isClosing()) {
                 viewModel.setClosing(true);
                 this.sideBar.closeLastTabInPopup();
-                this.sideBar.hidePopup();
+                this.sideBar.removePopup();
             }
         });
         // resizing
@@ -158,7 +158,7 @@ public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<
             if (!viewModel.isClosing()) {
                 viewModel.setClosing(true);
                 this.sideBar.closeLastTabInPopup();
-                this.sideBar.hidePopup();
+                this.sideBar.removePopup();
             }
         });
     }

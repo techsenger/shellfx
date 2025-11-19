@@ -23,9 +23,14 @@ import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
 import com.techsenger.tabshell.layout.dock.TabDockView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
+import javafx.scene.layout.HBox;
 
 /**
  *
@@ -53,18 +58,8 @@ public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewMod
     }
 
     @Override
-    protected void build(DockLayoutTabViewModel viewModel) {
-        super.build(viewModel);
-        var removeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
-        var addButton = new Button(null, new FontIconView(CoreIcons.ADD));
-        var toolbar = new ToolBar(removeButton, addButton);
-        toolbar.getStyleClass().add(StyleClasses.BLEND);
-        getContentPane().getChildren().addAll(toolbar, layout.getNode());
-    }
-
-    @Override
-    protected void postInitialize(DockLayoutTabViewModel viewModel) {
-        super.postInitialize(viewModel);
+    protected void preInitialize(DockLayoutTabViewModel viewModel) {
+        super.preInitialize(viewModel);
         textViewer.initialize();
 
         this.layout.initialize();
@@ -77,6 +72,32 @@ public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewMod
         var tabDockView = layout.createTabDock();
         fillTabs(tabDockView);
         splitSpaceView.getChildren().add(tabDockView);
+    }
+
+    @Override
+    protected void build(DockLayoutTabViewModel viewModel) {
+        super.build(viewModel);
+        var removeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
+        var addButton = new Button(null, new FontIconView(CoreIcons.ADD));
+        var toolbar = new ToolBar(removeButton, addButton);
+        toolbar.getStyleClass().add(StyleClasses.BLEND);
+        getContentPane().getChildren().addAll(toolbar, layout.getNode());
+
+
+        var lastArea = this.layout.getBottomBar().getLastArea();
+        var hBox = new HBox(new Label("Label 1"), new Separator(Orientation.VERTICAL),
+                new Label("Label 2"));
+        hBox.setRotate(-180);
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        hBox.setPadding(new Insets(0, 10, 0, 0));
+        lastArea.getChildren().add(hBox);
+    }
+
+    @Override
+    protected void postDeinitialize(DockLayoutTabViewModel viewModel) {
+        super.postDeinitialize(viewModel);
+        this.textViewer.deinitialize();
+        this.layout.deinitialize();
     }
 
     private void fillTabs(TabDockView<?> tabDock) {

@@ -860,6 +860,20 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     }
 
     @Override
+    protected void preInitialize(T viewModel) {
+        super.preInitialize(viewModel);
+        if (viewModel.getRightBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+            addSideBar(RIGHT);
+        }
+        if (viewModel.getBottomBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+            addSideBar(BOTTOM);
+        }
+        if (viewModel.getLeftBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+            addSideBar(LEFT);
+        }
+    }
+
+    @Override
     protected void build(T viewModel) {
         super.build(viewModel);
         VBox.setVgrow(node, Priority.ALWAYS);
@@ -908,8 +922,25 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             updatePopupSize(getLeftBar(), w, h);
         });
         addListenerForSideBar(rightBar, viewModel.rightBarWrapper());
+        addListenerForSideBar(rightBar, viewModel.rightBarPolicyProperty(), RIGHT);
         addListenerForSideBar(bottomBar, viewModel.bottomBarWrapper());
+        addListenerForSideBar(bottomBar, viewModel.bottomBarPolicyProperty(), BOTTOM);
         addListenerForSideBar(leftBar, viewModel.leftBarWrapper());
+        addListenerForSideBar(leftBar, viewModel.leftBarPolicyProperty(), LEFT);
+    }
+
+    @Override
+    protected void postDeinitialize(T viewModel) {
+        super.postDeinitialize(viewModel);
+        if (getRightBar() != null) {
+            getRightBar().deinitialize();
+        }
+        if (getBottomBar() != null) {
+            getBottomBar().deinitialize();
+        }
+        if (getLeftBar() != null) {
+            getLeftBar().deinitialize();
+        }
     }
 
     protected Node createTabDragContent(TabPaneProSkin.TabHeaderSkin tabHeader) {
@@ -1067,34 +1098,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         // removing the dock
         removeTabDock(dock.getNode());
         // createaing a sidebar if it is null
-        SideBarView<?> sideBar = null;
-        switch (side) {
-            case RIGHT -> {
-                sideBar = getRightBar();
-                if (sideBar == null) {
-                    sideBar = createSideBar(side);
-                    setRightBar(sideBar);
-                    this.node.setRight(sideBar.getNode());
-                }
-            }
-            case LEFT -> {
-                sideBar = getLeftBar();
-                if (sideBar == null) {
-                    sideBar = createSideBar(side);
-                    setLeftBar(sideBar);
-                    this.node.setLeft(sideBar.getNode());
-                }
-            }
-            case TOP, BOTTOM -> {
-                sideBar = getBottomBar();
-                if (sideBar == null) {
-                    sideBar = createSideBar(side);
-                    setBottomBar(sideBar);
-                    this.node.setBottom(sideBar.getNode());
-                }
-            }
-            default -> throw new AssertionError();
-        }
+        SideBarView<?> sideBar = addSideBar(side);
+
         dock.detachTabs();
         // adding the dock to the sidebar
         sideBar.getTabDocks().add(dock);
@@ -1102,7 +1107,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     }
 
     void restoreTabDock(SideBarView<?> sideBar, TabDockView<?> dock) {
-        closeSideBarIfEmpty(sideBar);
+        removeSideBarIfRequired(sideBar);
         dock.attachTabs();
 
         // attempt 0 - find the parent by UUID
@@ -1180,12 +1185,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return new Dimension2D(this.centerStackPane.getWidth(), this.centerStackPane.getHeight());
     }
 
-    void showTabPopup(TabPopupView<?> popup) {
+    void addTabPopup(TabPopupView<?> popup) {
         var popupNode = popup.getNode();
         this.centerStackPane.getChildren().add(popupNode);
     }
 
-    void hideTabPopup(TabPopupView<?> popup) {
+    void removeTabPopup(TabPopupView<?> popup) {
         this.centerStackPane.getChildren().remove(popup.getNode());
     }
 
@@ -2136,26 +2141,66 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         leftBar.set(value);
     }
 
-    private void closeSideBarIfEmpty(SideBarView<?> sideBar) {
-        if (sideBar.getTabDocks().isEmpty()) {
-            var sideVM = sideBar.getViewModel();
-            switch (sideVM.getSide()) {
-                case RIGHT:
+    private SideBarView<?> addSideBar(Side side) {
+        SideBarView<?> sideBar;
+        switch (side) {
+            case RIGHT -> {
+                sideBar = getRightBar();
+                if (sideBar == null) {
+                    sideBar = createSideBar(side);
+                    setRightBar(sideBar);
+                    this.node.setRight(sideBar.getNode());
+                }
+            }
+            case LEFT -> {
+                sideBar = getLeftBar();
+                if (sideBar == null) {
+                    sideBar = createSideBar(side);
+                    setLeftBar(sideBar);
+                    this.node.setLeft(sideBar.getNode());
+                }
+            }
+            case TOP, BOTTOM -> {
+                sideBar = getBottomBar();
+                if (sideBar == null) {
+                    sideBar = createSideBar(side);
+                    setBottomBar(sideBar);
+                    this.node.setBottom(sideBar.getNode());
+                }
+            }
+            default -> throw new AssertionError();
+        }
+        return sideBar;
+    }
+
+    private void removeSideBarIfRequired(SideBarView<?> sideBar) {
+        if (!sideBar.getTabDocks().isEmpty()) {
+            return;
+        }
+        switch (sideBar.getViewModel().getSide()) {
+            case RIGHT:
+                if (getViewModel().getRightBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
                     setRightBar(null);
                     this.node.setRight(null);
-                    break;
-                case BOTTOM:
+                    sideBar.deinitialize();
+                }
+                break;
+            case BOTTOM:
+                if (getViewModel().getBottomBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
                     setBottomBar(null);
                     this.node.setBottom(null);
-                    break;
-                case LEFT:
+                    sideBar.deinitialize();
+                }
+                break;
+            case LEFT:
+                if (getViewModel().getLeftBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
                     setLeftBar(null);
                     this.node.setLeft(null);
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-            sideBar.deinitialize();
+                    sideBar.deinitialize();
+                }
+                break;
+            default:
+                throw new AssertionError();
         }
     }
 
@@ -2166,6 +2211,23 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
                 viewModel.set(newV.getViewModel());
             } else {
                 viewModel.set(null);
+            }
+        });
+    }
+
+    private void addListenerForSideBar(ReadOnlyObjectWrapper<SideBarView<?>> view,
+            ObjectProperty<SideBarPolicy> policy, Side side) {
+        policy.addListener((ov, oldV, newV) -> {
+            if (newV == SideBarPolicy.EXISTS_ALWAYS) {
+                if (view.get() == null) {
+                    addSideBar(side);
+                }
+            } else if (newV == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+                if (view.get() != null) {
+                    removeSideBarIfRequired(view.get());
+                }
+            } else {
+                throw new AssertionError();
             }
         });
     }
