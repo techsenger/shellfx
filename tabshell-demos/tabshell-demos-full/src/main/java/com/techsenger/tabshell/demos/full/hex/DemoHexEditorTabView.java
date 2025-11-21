@@ -16,10 +16,9 @@
 
 package com.techsenger.tabshell.demos.full.hex;
 
-import com.techsenger.mvvm4fx.core.ComponentMediator;
+import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.hex.editor.HexEditorTabView;
-import com.techsenger.tabshell.hex.editor.HexToolBarView;
 
 /**
  *
@@ -27,27 +26,22 @@ import com.techsenger.tabshell.hex.editor.HexToolBarView;
  */
 public class DemoHexEditorTabView extends HexEditorTabView<DemoHexEditorTabViewModel> {
 
+    public interface Composer extends HexEditorTabView.Composer {
+
+        DemoHexToolBarView getToolBar();
+    }
+
     public DemoHexEditorTabView(ShellView<?> shell, DemoHexEditorTabViewModel viewModel) {
         super(shell, viewModel);
     }
 
     @Override
-    protected ComponentMediator createMediator() {
-        return new DemoHexEditorTabMediator(this);
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
     }
 
     @Override
-    protected void bind(DemoHexEditorTabViewModel viewModel) {
-        super.bind(viewModel);
-        DemoHexToolBarView toolBar = (DemoHexToolBarView) getToolBar();
-        toolBar.getCaretShapeComboBox().valueProperty()
-                .bindBidirectional(viewModel.getArea().getCaret().shapeProperty());
-        toolBar.getColumnSeparatorComboBox().valueProperty()
-                .bindBidirectional(viewModel.getArea().columnSeparatorProperty());
-    }
-
-    @Override
-    protected HexToolBarView<?> createToolBar(DemoHexEditorTabViewModel viewModel) {
-        return new DemoHexToolBarView((DemoHexToolBarViewModel) viewModel.getToolBar());
+    protected ComponentComposer<?> createComposer() {
+        return new DemoHexEditorComposer(this);
     }
 }

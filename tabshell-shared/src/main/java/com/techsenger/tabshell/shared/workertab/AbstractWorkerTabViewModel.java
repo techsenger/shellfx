@@ -20,7 +20,6 @@ import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.layout.splittab.AbstractSplitTabViewModel;
 import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
-import com.techsenger.tabshell.shared.SharedComponentNames;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -79,25 +78,20 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
         }
     }
 
-    @Override
-    public WorkerTabMediator<?> getMediator() {
-        return (WorkerTabMediator) super.getMediator();
-    }
-
     protected TabHostViewModel getBottomTabHost() {
         return bottomTabHost;
     }
 
     protected void openWorkerReportTab() {
         //firstly check if such tab is open
-        for (var tab : this.bottomTabHost.getTabs()) {
-            if (tab.getDescriptor().getName() == SharedComponentNames.WORKER_REPORT_TAB) {
-                return;
-            }
-        }
-        var reportViewModel = new WorkerReportTabViewModel(getWorkers());
-        getMediator().openWorkerReportTab(reportViewModel);
-        bottomPaneVisibleProperty().set(true);
+//        for (var tab : this.bottomTabHost.getTabs()) {
+//            if (tab.getDescriptor().getName() == SharedComponentNames.WORKER_REPORT_TAB) {
+//                return;
+//            }
+//        }
+//        var reportViewModel = new WorkerReportTabViewModel(getWorkers());
+//        getMediator().openWorkerReportTab(reportViewModel);
+//        bottomPaneVisibleProperty().set(true);
     }
 
     ReadOnlyIntegerProperty workerCountProperty() {

@@ -162,7 +162,7 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
     }
 
     @Override
-    public StandardDialogMediator getMediator() {
-        return (StandardDialogMediator) super.getMediator();
+    public StandardDialogComposer.ViewModelComposer getComposer() {
+        return (StandardDialogComposer.ViewModelComposer) super.getComposer();
     }
 }

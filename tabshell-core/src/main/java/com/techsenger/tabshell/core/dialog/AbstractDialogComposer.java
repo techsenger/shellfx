@@ -16,17 +16,21 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.mvvm4fx.core.AbstractComponentMediator;
-import com.techsenger.mvvm4fx.core.ParentView;
+import com.techsenger.tabshell.core.pane.AbstractPaneComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogMediator<T extends ParentView<?>> extends AbstractComponentMediator<T>
-        implements DialogMediator {
+public abstract class AbstractDialogComposer<T extends AbstractDialogView<?>> extends AbstractPaneComposer<T>
+        implements DialogComposer<T> {
 
-    public AbstractDialogMediator(T view) {
+    protected abstract class ViewModelComposer extends AbstractPaneComposer.ViewModelComposer
+            implements DialogComposer.ViewModelComposer {
+
+    }
+
+    public AbstractDialogComposer(T view) {
         super(view);
     }
 }

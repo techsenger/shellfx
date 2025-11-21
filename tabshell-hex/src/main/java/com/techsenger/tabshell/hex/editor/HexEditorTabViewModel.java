@@ -16,23 +16,21 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.hex.model.HexDocument;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.mvvm4fx.core.ParentViewModel;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
-import com.techsenger.tabshell.dialogs.StandardDialogMediator;
+import com.techsenger.tabshell.dialogs.StandardDialogComposer;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.hex.HexComponentNames;
 import com.techsenger.tabshell.hex.inspector.DataInspectorTabViewModel;
+import com.techsenger.tabshell.hex.model.HexDocument;
 import com.techsenger.tabshell.hex.style.HexIcons;
-import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
 import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
 import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
 /**
  *
@@ -41,13 +39,16 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 public class HexEditorTabViewModel extends AbstractShellTabViewModel
         implements FileOpenerViewModel, FileSaverViewModel {
 
-    private HexToolBarViewModel toolBar;
+    public interface Composer extends ParentViewModel.Composer, StandardDialogComposer.ViewModelComposer {
 
-    private DockLayoutViewModel layout;
+        HexToolBarViewModel getToolBar();
 
-    private HexAreaViewModel area;
+        DockLayoutViewModel getLayout();
 
-    private final ReadOnlyObjectWrapper<DataInspectorTabViewModel> dataInspector = new ReadOnlyObjectWrapper<>();
+        HexAreaViewModel getArea();
+
+        DataInspectorTabViewModel getDataInspector();
+    }
 
     private final HexDocument document;
 
@@ -60,33 +61,15 @@ public class HexEditorTabViewModel extends AbstractShellTabViewModel
         this.document = new HexDocument(file);
     }
 
-    public HexToolBarViewModel getToolBar() {
-        return toolBar;
-    }
-
-    public DockLayoutViewModel getLayout() {
-        return layout;
-    }
-
-    public HexAreaViewModel getArea() {
-        return area;
-    }
-
-    public DataInspectorTabViewModel getDataInspector() {
-        return dataInspector.get();
-    }
-
-    public ReadOnlyObjectProperty<DataInspectorTabViewModel> dataInspectorProperty() {
-        return dataInspector.getReadOnlyProperty();
-    }
-
     @Override
     public void readFile() {
-        this.area.getCaret().setDisabled(true);
+        var area = getComposer().getArea();
+        area.getCaret().setDisabled(true);
         if (this.document.readFile()) {
-            this.area.updateOnNewFile();
-            if (getDataInspector() != null) {
-                getDataInspector().updateTypeItems();
+            area.updateOnNewFile();
+            var dataInspector = getComposer().getDataInspector();
+            if (dataInspector != null) {
+                dataInspector.updateTypeItems();
             }
         }
     }
@@ -121,36 +104,12 @@ public class HexEditorTabViewModel extends AbstractShellTabViewModel
     }
 
     @Override
-    public StandardDialogMediator getMediator() {
-        return (StandardDialogMediator) super.getMediator();
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
     }
 
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(HexComponentNames.HEX_EDITOR_TAB);
-    }
-
-    protected void createComponents() {
-        HexEditorTabHistory<?> history = (HexEditorTabHistory<?>) getHistoryProvider().provide();
-        this.toolBar = createToolBar();
-        this.layout = createLayout(history.getDockLayout());
-        this.area = createArea();
-        this.dataInspector.set(createDataInspector());
-    }
-
-    protected HexToolBarViewModel createToolBar() {
-        return new HexToolBarViewModel();
-    }
-
-    protected DockLayoutViewModel createLayout(DockLayoutHistory<?> history) {
-        return new DockLayoutViewModel(history);
-    }
-
-    protected HexAreaViewModel createArea() {
-        return new HexAreaViewModel(toolBar, getShell().getSettings().getAppearance(), this.document);
-    }
-
-    protected DataInspectorTabViewModel createDataInspector() {
-        return new DataInspectorTabViewModel(this.document, this.area.getCaret().offsetProperty());
     }
 }

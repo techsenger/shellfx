@@ -17,8 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.dialogs.StandardDialogMediator;
-import com.techsenger.tabshell.shared.workertab.WorkerTabMediator;
+import com.techsenger.tabshell.dialogs.AbstractDialogShellTabComposer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.slf4j.Logger;
@@ -28,17 +27,48 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class ViewerTabMediator<T extends AbstractViewerTabView<?>> extends WorkerTabMediator<T>
-        implements StandardDialogMediator {
+public class ViewerTabComposer<T extends AbstractViewerTabView<?>>
+        extends AbstractDialogShellTabComposer<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewerTabMediator.class);
+    private static final Logger logger = LoggerFactory.getLogger(ViewerTabComposer.class);
 
-    public ViewerTabMediator(T view) {
+    protected class ViewModelComposer extends AbstractDialogShellTabComposer.ViewModelComposer
+            implements AbstractViewerTabViewModel.Composer {
+
+        @Override
+        public void openGoToLineDialog(GoToLineDialogViewModel viewModel) {
+            ViewerTabComposer.this.openGoToLineDialog(viewModel);
+        }
+
+        @Override
+        public void removeFindPane() {
+            ViewerTabComposer.this.removeFindPane();
+        }
+
+        @Override
+        public void addFindPane(DefaultFindPaneViewModel viewModel) {
+            ViewerTabComposer.this.addFindPane(viewModel);
+        }
+
+    }
+
+    public ViewerTabComposer(T view) {
         super(view);
     }
 
-    public void openGoToLineDialog(GoToLineDialogViewModel viewModel) {
-        var tabView = (AbstractViewerTabView<?>) getView();
+    @Override
+    public ViewModelComposer getViewModelComposer() {
+        return (ViewModelComposer) super.getViewModelComposer();
+    }
+
+    @Override
+    protected ViewModelComposer createViewModelComposer() {
+        return new ViewModelComposer();
+    }
+
+    private void openGoToLineDialog(GoToLineDialogViewModel viewModel) {
+        // todo:
+        var tabView = getView();
         var view = new GoToLineDialogView(viewModel);
         view.initialize();
         viewModel.okActionProperty().set(() -> {
@@ -70,7 +100,7 @@ public class ViewerTabMediator<T extends AbstractViewerTabView<?>> extends Worke
         tabView.getDialogManager().openDialog(view);
     }
 
-    public void addFindPane(DefaultFindPaneViewModel viewModel) {
+    private void addFindPane(DefaultFindPaneViewModel viewModel) {
         var view = new DefaultFindPaneView(getView().getTextArea(), viewModel);
         view.initialize();
         view.getNode().addEventHandler(KeyEvent.KEY_PRESSED, (e) -> {
@@ -84,7 +114,7 @@ public class ViewerTabMediator<T extends AbstractViewerTabView<?>> extends Worke
         getView().addFindPane(view);
     }
 
-    public void removeFindPane() {
+    private void removeFindPane() {
         getView().removeFindPane();
     }
 }

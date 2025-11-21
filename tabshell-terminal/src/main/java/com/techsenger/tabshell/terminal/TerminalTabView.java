@@ -19,7 +19,7 @@ package com.techsenger.tabshell.terminal;
 import atlantafx.base.theme.Styles;
 import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
-import com.techsenger.mvvm4fx.core.ComponentMediator;
+import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -47,7 +47,7 @@ import javafx.util.Callback;
  *
  * @author Pavel Castornii
  */
-public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> {
+public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShellTabView<T> {
 
     private final Button newButton = new Button(null, new FontIconView(CoreIcons.ADD));
 
@@ -83,7 +83,7 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
 
     private final KitJediTermFxWidget widget;
 
-    public TerminalTabView(ShellView<?> shell, TerminalTabViewModel viewModel) {
+    public TerminalTabView(ShellView<?> shell, T viewModel) {
         super(shell, viewModel);
         this.widget = new KitJediTermFxWidget(80, 24, viewModel.createSettingsProvider(), () -> {
             if (this.find == null) {
@@ -121,7 +121,7 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     }
 
     @Override
-    protected void build(TerminalTabViewModel viewModel) {
+    protected void build(T viewModel) {
         super.build(viewModel);
         VBox.setVgrow(widget.getPane(), Priority.ALWAYS);
         getContentPane().getChildren().addAll(toolBar, widget.getPane());
@@ -175,7 +175,7 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     }
 
     @Override
-    protected void bind(TerminalTabViewModel viewModel) {
+    protected void bind(T viewModel) {
         super.bind(viewModel);
         this.paletteTypesComboBox.valueProperty().bindBidirectional(viewModel.paletteTypeProperty());
         this.copyButton.disableProperty().bind(viewModel.copyDisableProperty());
@@ -184,7 +184,7 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     }
 
     @Override
-    protected void addListeners(TerminalTabViewModel viewModel) {
+    protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         viewModel.addListeners();
         viewModel.focusRequiredSource().addListener((value) -> {
@@ -195,7 +195,7 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     }
 
     @Override
-    protected void addHandlers(TerminalTabViewModel viewModel) {
+    protected void addHandlers(T viewModel) {
         super.addHandlers(viewModel);
         final TerminalPanel terminalPanel = this.widget.getTerminalPanel();
         this.newButton.setOnAction(e -> {
@@ -247,26 +247,26 @@ public class TerminalTabView extends AbstractShellTabView<TerminalTabViewModel> 
     }
 
     @Override
-    protected void postInitialize(TerminalTabViewModel viewModel) {
+    protected void postInitialize(T viewModel) {
         widget.start();
     }
 
     @Override
-    protected void preDeinitialize(TerminalTabViewModel viewModel) {
+    protected void preDeinitialize(T viewModel) {
         super.preDeinitialize(viewModel);
         widget.close();
         widget.getTtyConnector().close();
     }
 
     @Override
-    protected void removeListeners(TerminalTabViewModel viewModel) {
+    protected void removeListeners(T viewModel) {
         super.removeListeners(viewModel);
         viewModel.removeListeners();
     }
 
     @Override
-    protected ComponentMediator createMediator() {
-        return new TerminalTabMediator(this);
+    protected ComponentComposer<?> createComposer() {
+        return new TerminalTabComposer(this);
     }
 
     protected KitJediTermFxWidget getWidget() {

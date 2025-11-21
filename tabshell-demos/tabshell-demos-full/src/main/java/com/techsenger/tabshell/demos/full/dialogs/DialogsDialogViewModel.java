@@ -96,21 +96,21 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
                 "All done! Time for coffee.");
         viewModel.setPrefWidth(400);
-        getMediator().openAlertDialog(viewModel);
+        getComposer().openAlertDialog(viewModel);
     }
 
     private void showWarningDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
                 "Attention! You shouldn't do it!");
         viewModel.setPrefWidth(400);
-        getMediator().openAlertDialog(viewModel);
+        getComposer().openAlertDialog(viewModel);
     }
 
     private void showErrorDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
                 "Oops! That didn’t work.");
         viewModel.setPrefWidth(400);
-        getMediator().openAlertDialog(viewModel);
+        getComposer().openAlertDialog(viewModel);
     }
 
     private void showYesNoDialog() {
@@ -120,21 +120,21 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel {
         viewModel.setYesText("Yes");
         viewModel.setNoText("No");
         viewModel.setPrefWidth(400);
-        getMediator().openYesNoDialog(viewModel);
+        getComposer().openYesNoDialog(viewModel);
     }
 
     private void showOpenFileDialog() {
         var viewModel = new FileChooserDialogViewModel(DialogScope.SHELL, FileChooserType.OPEN,
                 shell.getSettings().getAppearance(), shell.getHistoryManager());
         viewModel.setPrefWidth(700);
-        getMediator().openFileChooserDialog(viewModel);
+        getComposer().openFileChooserDialog(viewModel);
     }
 
     private void showSaveFileDialog() {
         var viewModel = new FileChooserDialogViewModel(DialogScope.SHELL, FileChooserType.SAVE_AS,
                 shell.getSettings().getAppearance(), shell.getHistoryManager());
         viewModel.setPrefWidth(700);
-        getMediator().openFileChooserDialog(viewModel);
+        getComposer().openFileChooserDialog(viewModel);
     }
 
 }

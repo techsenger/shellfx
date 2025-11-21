@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.shared.workertab;
+package com.techsenger.tabshell.core.pane;
 
-import com.techsenger.tabshell.layout.splittab.SplitTabMediator;
+import com.techsenger.mvvm4fx.core.AbstractChildComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WorkerTabMediator<T extends AbstractWorkerTabView<?>> extends SplitTabMediator<T> {
+public abstract class AbstractPaneComposer<T extends AbstractPaneView<?>> extends AbstractChildComposer<T> {
 
-    public WorkerTabMediator(T view) {
+    protected abstract class ViewModelComposer extends AbstractChildComposer.ViewModelComposer {
+
+    }
+
+    public AbstractPaneComposer(T view) {
         super(view);
     }
 
-    public void openWorkerReportTab(WorkerReportTabViewModel viewModel) {
-        var reportView = new WorkerReportTabView(viewModel);
-        reportView.initialize();
-        getView().getBottomTabHost().openTab(reportView);
-    }
 }

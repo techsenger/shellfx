@@ -563,7 +563,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
 
     private void showWarning(String text) {
         var alerViewModel = new AlertDialogViewModel(getScope(), AlertDialogType.WARNING, text);
-        getMediator().openAlertDialog(alerViewModel);
+        getComposer().openAlertDialog(alerViewModel);
     }
 
     private void setDefaultStorageAndDirectory() {

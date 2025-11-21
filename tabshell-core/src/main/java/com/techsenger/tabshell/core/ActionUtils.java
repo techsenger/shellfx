@@ -40,6 +40,6 @@ public final class ActionUtils {
     }
 
     private ActionUtils() {
-        //empty
+        // empty
     }
 }

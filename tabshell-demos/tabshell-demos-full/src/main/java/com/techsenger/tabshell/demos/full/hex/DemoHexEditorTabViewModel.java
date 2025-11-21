@@ -21,7 +21,6 @@ import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.hex.editor.HexEditorTabViewModel;
-import com.techsenger.tabshell.hex.editor.HexToolBarViewModel;
 import com.techsenger.tabshell.storage.GenericFile;
 
 /**
@@ -29,6 +28,11 @@ import com.techsenger.tabshell.storage.GenericFile;
  * @author Pavel Castornii
  */
 public class DemoHexEditorTabViewModel extends HexEditorTabViewModel {
+
+    public interface Composer extends HexEditorTabViewModel.Composer {
+
+        DemoHexToolBarViewModel getToolBar();
+    }
 
     public DemoHexEditorTabViewModel(ShellViewModel shell, GenericFile file) {
         super(shell, file);
@@ -43,7 +47,7 @@ public class DemoHexEditorTabViewModel extends HexEditorTabViewModel {
     }
 
     @Override
-    protected HexToolBarViewModel createToolBar() {
-        return new DemoHexToolBarViewModel();
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
     }
 }

@@ -19,16 +19,17 @@ package com.techsenger.tabshell.text.viewer;
 import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.shared.menu.EditMenuNames;
-import com.techsenger.tabshell.shared.menu.FileMenuNames;
 import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.settings.ViewerSettings;
+import com.techsenger.tabshell.dialogs.StandardDialogComposer;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
+import com.techsenger.tabshell.shared.menu.EditMenuNames;
+import com.techsenger.tabshell.shared.menu.FileMenuNames;
 import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.tabshell.storage.FileStorages;
 import com.techsenger.tabshell.storage.FileTaskProvider;
@@ -63,6 +64,15 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewModel
         implements FileOpenerViewModel, FileSaverViewModel {
+
+    public interface Composer extends StandardDialogComposer.ViewModelComposer {
+
+        void openGoToLineDialog(GoToLineDialogViewModel dialog);
+
+        void removeFindPane();
+
+        void addFindPane(DefaultFindPaneViewModel viewModel);
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractViewerTabViewModel.class);
 
@@ -197,7 +207,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
 
     public void openGoToLineDialog() {
         var viewModel = new GoToLineDialogViewModel(getShell().getHistoryManager());
-        getMediator().openGoToLineDialog(viewModel);
+        getComposer().openGoToLineDialog(viewModel);
     }
 
     /**
@@ -212,7 +222,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 this.removeFindPane();
             });
             this.find.replaceModeProperty().set(replaceMode);
-            getMediator().addFindPane(this.find);
+            getComposer().addFindPane(this.find);
         }
     }
 
@@ -221,14 +231,14 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
      */
     public void removeFindPane() {
         if (this.find != null) {
-            getMediator().removeFindPane();
+            getComposer().removeFindPane();
             this.find = null;
         }
     }
 
     @Override
-    public ViewerTabMediator<?> getMediator() {
-        return (ViewerTabMediator) super.getMediator();
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
     }
 
     public ObjectProperty<GenericFile> fileProperty() {
@@ -261,7 +271,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 var message = "{} Error reading file " + file.getUri();
                 logger.warn(message, getDescriptor().getLogPrefix(), task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
-                getMediator().openAlertDialog(alertViewModel);
+                getComposer().openAlertDialog(alertViewModel);
             }
         });
         this.submitWorker(task);
@@ -283,7 +293,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 var message = "{} Error writing file " + file.getUri();
                 logger.warn(message, getDescriptor().getLogPrefix(), task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
-                getMediator().openAlertDialog(alertViewModel);
+                getComposer().openAlertDialog(alertViewModel);
             }
         });
         this.submitWorker(task);
@@ -323,7 +333,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             yesNoDialog.requestClose();
             readyToClose.run();
         });
-        getMediator().openYesNoDialog(yesNoDialog);
+        getComposer().openYesNoDialog(yesNoDialog);
     }
 
     public FileTaskProvider<String> createFileTaskProvider() {

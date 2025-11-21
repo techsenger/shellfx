@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
+package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.tab.AbstractShellTabMediator;
-import com.techsenger.tabshell.dialogs.StandardDialogMediator;
+import com.techsenger.tabshell.core.pane.AbstractPaneComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabMediator<T extends HexEditorTabView<?>> extends AbstractShellTabMediator<T>
-        implements StandardDialogMediator {
+public abstract class AbstractPageComposer<T extends AbstractPageView<?>> extends AbstractPaneComposer<T> {
 
-    public HexEditorTabMediator(T view) {
+    protected abstract class ViewModelComposer extends AbstractPaneComposer.ViewModelComposer {
+
+    }
+
+    public AbstractPageComposer(T view) {
         super(view);
     }
 

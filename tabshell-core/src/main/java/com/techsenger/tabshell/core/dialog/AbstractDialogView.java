@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.mvvm4fx.core.ComponentComposer;
+import com.techsenger.mvvm4fx.core.ComponentViewModel;
 import com.techsenger.tabshell.core.pane.AbstractPaneView;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.IconViewBox;
@@ -117,6 +119,11 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
         }
     }
 
+    @Override
+    public DialogComposer getComposer() {
+        return (DialogComposer) super.getComposer();
+    }
+
     protected VBox getContentPane() {
         return contentPane;
     }
@@ -212,13 +219,20 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     }
 
     @Override
-    protected DialogMediator createMediator() {
-        //we suppose that all child dialogs
-        //will be with the same scope
-        return new DialogMediator() {
+    protected ComponentComposer<?> createComposer() {
+        // we suppose that all child dialogs will be with the same scope
+        return new AbstractDialogComposer<AbstractDialogView<?>>(this) {
+
             @Override
-            public void openDialog(DialogView dialog) {
-                getDialogManager().openDialog(dialog);
+            protected ComponentViewModel.Composer createViewModelComposer() {
+                return new AbstractDialogComposer.ViewModelComposer() {
+
+                };
+            }
+
+            @Override
+            public void openDialog(DialogView<?> dialog) {
+                getView().getDialogManager().openDialog(dialog);
             }
         };
     }

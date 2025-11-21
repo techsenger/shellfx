@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.hex;
+package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.hex.editor.HexEditorTabMediator;
+import com.techsenger.mvvm4fx.core.ComponentComposer;
+import com.techsenger.mvvm4fx.core.ComponentView;
+import com.techsenger.mvvm4fx.core.ComponentViewModel;
 
 /**
+ * Different dialog composers can be created using interfaces with default methods.
  *
  * @author Pavel Castornii
  */
-public class DemoHexEditorTabMediator extends HexEditorTabMediator<DemoHexEditorTabView> {
+public interface DialogComposer<T extends ComponentView<?>> extends ComponentComposer<T> {
 
-    public DemoHexEditorTabMediator(DemoHexEditorTabView view) {
-        super(view);
+
+    interface ViewModelComposer extends ComponentViewModel.Composer {
+
     }
 
+    /**
+     * Opens a dialog.
+     * @param dialog
+     */
+    void openDialog(DialogView<?> dialog);
 }

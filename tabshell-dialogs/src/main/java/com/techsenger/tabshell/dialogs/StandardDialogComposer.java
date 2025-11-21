@@ -16,20 +16,37 @@
 
 package com.techsenger.tabshell.dialogs;
 
+import com.techsenger.mvvm4fx.core.ComponentView;
+import com.techsenger.tabshell.core.dialog.DialogComposer;
+import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogView;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogView;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
-import com.techsenger.tabshell.core.dialog.DialogMediator;
 
 /**
  * This dialog helper is used to open standard dialogs, like alert, info etc.
  *
  * @author Pavel Castornii
  */
-public interface StandardDialogMediator extends DialogMediator {
+public interface StandardDialogComposer<T extends ComponentView<?>> extends DialogComposer<T> {
+
+    interface ViewModelComposer extends DialogComposer.ViewModelComposer {
+
+        void openAlertDialog(AlertDialogViewModel viewModel);
+
+        void openYesNoDialog(YesNoDialogViewModel viewModel);
+
+        void openFileChooserDialog(FileChooserDialogViewModel viewModel);
+    }
+
+    /**
+     * Opens a dialog.
+     * @param dialog
+     */
+    void openDialog(DialogView<?> dialog);
 
     default void openAlertDialog(AlertDialogViewModel viewModel) {
         var view = new AlertDialogView<AlertDialogViewModel>(viewModel);

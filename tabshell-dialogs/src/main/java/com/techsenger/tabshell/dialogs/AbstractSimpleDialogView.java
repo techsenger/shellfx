@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.dialogs;
 
+import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
-import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import javafx.geometry.Insets;
@@ -41,6 +41,11 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
 
     public AbstractSimpleDialogView(T viewModel) {
         super(viewModel);
+    }
+
+    @Override
+    public StandardDialogComposer getComposer() {
+        return (StandardDialogComposer) super.getComposer();
     }
 
     @Override
@@ -84,12 +89,7 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     }
 
     @Override
-    protected StandardDialogMediator createMediator() {
-        return new StandardDialogMediator() {
-            @Override
-            public void openDialog(DialogView dialog) {
-                getDialogManager().openDialog(dialog);
-            }
-        };
+    protected ComponentComposer<?> createComposer() {
+        return new DefaultStandardDialogComposer(getDialogManager(), this);
     }
 }

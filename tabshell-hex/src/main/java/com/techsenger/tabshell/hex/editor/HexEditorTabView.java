@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.mvvm4fx.core.ComponentMediator;
+import com.techsenger.mvvm4fx.core.ComponentComposer;
+import com.techsenger.mvvm4fx.core.ComponentView;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
-import javafx.geometry.Orientation;
-import javafx.geometry.Side;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -30,13 +30,20 @@ import javafx.geometry.Side;
  */
 public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractShellTabView<T> {
 
-    private HexToolBarView<?> toolBar;
+    public interface Composer extends ComponentView.Composer {
 
-    private DockLayoutView<?> layout;
+        HexToolBarView<?> getToolBar();
 
-    private HexAreaView<?> area;
+        void addToolBar(VBox contentPane);
 
-    private DataInspectorTabView<?> dataInspector;
+        void addLayout(VBox contentPane);
+
+        DockLayoutView<?> getLayout();
+
+        HexAreaView<?> getArea();
+
+        DataInspectorTabView<?> getDataInspector();
+    }
 
     public HexEditorTabView(ShellView<?> shell, T viewModel) {
         super(shell, viewModel);
@@ -50,56 +57,30 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
     @Override
     public void doOnSelected() {
         super.doOnSelected();
-        this.area.requestFocus();
-    }
-
-    public HexToolBarView<?> getToolBar() {
-        return toolBar;
-    }
-
-    public DockLayoutView<?> getLayout() {
-        return layout;
-    }
-
-    public HexAreaView<?> getArea() {
-        return area;
-    }
-
-    public DataInspectorTabView<?> getDataInspector() {
-        return dataInspector;
+        getComposer().getArea().requestFocus();
     }
 
     @Override
-    protected ComponentMediator createMediator() {
-        return new HexEditorTabMediator(this);
+    protected ComponentComposer<?> createComposer() {
+        return new HexEditorTabComposer<>(this);
+    }
+
+    @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
     }
 
     @Override
     protected void preInitialize(T viewModel) {
         super.preInitialize(viewModel);
-        viewModel.createComponents();
-        this.toolBar = createToolBar(viewModel);
-        this.toolBar.initialize();
-        this.layout = createLayout(viewModel);
-        this.layout.initialize();
-        this.area = createArea(viewModel);
-        this.area.initialize();
-        this.toolBar.setArea(area);
-        this.dataInspector = createDataInspector();
-        this.dataInspector.initialize();
+        getComposer().initialize();
     }
 
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-        getContentPane().getChildren().addAll(this.toolBar.getNode(), this.layout.getNode());
-        this.layout.setMain(this.area);
-        var splitSpace = layout.createSplitSpace(Orientation.HORIZONTAL);
-        layout.setRoot(splitSpace);
-        splitSpace.getChildren().add(this.area);
-        var tabDock = layout.createTabDock();
-        tabDock.openTab(dataInspector);
-        this.layout.addTabDock(tabDock, Side.RIGHT, 250);
+        getComposer().addToolBar(getContentPane());
+        getComposer().addLayout(getContentPane());
     }
 
     @Override
@@ -111,28 +92,8 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
     @Override
     protected void postDeinitialize(T viewModel) {
         super.postDeinitialize(viewModel);
-        if (getDataInspector() != null) {
-            getDataInspector().deinitialize();
-        }
-        this.area.deinitialize();
-        this.layout.deinitialize();
-        this.toolBar.deinitialize();
+        getComposer().deinitialize();
     }
 
-    protected HexToolBarView<?> createToolBar(T viewModel) {
-        return new HexToolBarView<>(viewModel.getToolBar());
-    }
-
-    protected DockLayoutView<?> createLayout(T viewModel) {
-        return new DockLayoutView<>(viewModel.getLayout());
-    }
-
-    protected HexAreaView<?> createArea(T viewModel) {
-        return new HexAreaView<>(viewModel.getArea());
-    }
-
-    protected DataInspectorTabView<?> createDataInspector() {
-        return new DataInspectorTabView<>(getViewModel().getDataInspector());
-    }
 
 }

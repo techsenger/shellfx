@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.mvvm4fx.core.ComponentMediator;
+import com.techsenger.mvvm4fx.core.AbstractChildComposer;
 
 /**
- * Different dialog mediators can be created using interfaces with default methods.
  *
  * @author Pavel Castornii
  */
-public interface DialogMediator extends ComponentMediator {
+public abstract class AbstractTabComposer<T extends AbstractTabView<?>> extends AbstractChildComposer<T> {
 
-    /**
-     * Opens dialog.
-     * @param dialog
-     */
-    void openDialog(DialogView<?> dialog);
+    protected abstract class ViewModelComposer extends AbstractChildComposer.ViewModelComposer {
+
+    }
+
+    public AbstractTabComposer(T view) {
+        super(view);
+    }
+
 }

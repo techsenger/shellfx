@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demos.core.tab;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.mvvm4fx.core.ComponentViewModel;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
@@ -32,6 +33,11 @@ import javafx.beans.property.SimpleBooleanProperty;
  * @author Pavel Castornii
  */
 public class DemoTabViewModel extends AbstractShellTabViewModel {
+
+    public interface Composer extends ComponentViewModel.Composer {
+
+        void openDemoDialog(DemoDialogViewModel dialog);
+    }
 
     private static final ComponentName DEMO_TAB = new ComponentName("DemoTab");
 
@@ -101,8 +107,8 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
     }
 
     @Override
-    public DemoTabMediator getMediator() {
-        return (DemoTabMediator) super.getMediator();
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
     }
 
     @Override
@@ -112,6 +118,6 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
 
     void openDialog(DialogScope scope) {
         var dialogViewModel = new DemoDialogViewModel(scope, true);
-        getMediator().openDemoDialog(dialogViewModel);
+        getComposer().openDemoDialog(dialogViewModel);
     }
 }

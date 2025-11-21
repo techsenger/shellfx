@@ -80,7 +80,7 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
         };
         viewModel.cancelActionProperty().set(cancelAndCloseAction);
         viewModel.closeActionProperty().set(cancelAndCloseAction);
-        getMediator().openFileChooserDialog(viewModel);
+        getComposer().openFileChooserDialog(viewModel);
     }
 
     /**
