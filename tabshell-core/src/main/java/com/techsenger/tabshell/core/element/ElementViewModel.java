@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.node;
+package com.techsenger.tabshell.core.element;
 
-import com.techsenger.mvvm4fx.core.AbstractHistory;
+import com.techsenger.mvvm4fx.core.ChildViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractNodeHistory<T extends AbstractNodeViewModel> extends AbstractHistory<T> {
+public interface ElementViewModel extends ChildViewModel {
 
 }

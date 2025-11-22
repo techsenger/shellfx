@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.node;
+package com.techsenger.tabshell.core.element;
 
 import com.techsenger.mvvm4fx.core.AbstractChildView;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
@@ -23,12 +23,12 @@ import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractNodeView<T extends AbstractNodeViewModel> extends AbstractChildView<T>
-        implements NodeView<T> {
+public abstract class AbstractElementView<T extends AbstractElementViewModel> extends AbstractChildView<T>
+        implements ElementView<T> {
 
     private final PulseListenerManager pulseListenerManager;
 
-    public AbstractNodeView(T viewModel) {
+    public AbstractElementView(T viewModel) {
         super(viewModel);
         this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
                 () -> getNode().sceneProperty());

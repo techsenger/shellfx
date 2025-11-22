@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.core.node.AbstractNodeView;
+import com.techsenger.tabshell.core.element.AbstractElementView;
 import static com.techsenger.tabshell.hex.editor.CaretShape.BAR;
 import static com.techsenger.tabshell.hex.editor.CaretShape.BLOCK;
 import static com.techsenger.tabshell.hex.editor.CaretShape.UNDERSCORE;
@@ -34,7 +34,7 @@ import javafx.util.Duration;
  *
  * @author Pavel Castornii
  */
-public final class CaretView extends AbstractNodeView<CaretViewModel> {
+public final class CaretView extends AbstractElementView<CaretViewModel> {
 
     /**
      * Region is not use used because it can't always have 1 px width, but we don't need as the height is set via timer.

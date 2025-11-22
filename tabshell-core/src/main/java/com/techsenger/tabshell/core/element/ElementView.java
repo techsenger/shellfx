@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.node;
+package com.techsenger.tabshell.core.element;
 
 import com.techsenger.mvvm4fx.core.ChildView;
 import javafx.scene.Node;
@@ -23,7 +23,7 @@ import javafx.scene.Node;
  *
  * @author Pavel Castornii
  */
-public interface NodeView<T extends NodeViewModel> extends ChildView<T> {
+public interface ElementView<T extends ElementViewModel> extends ChildView<T> {
 
     @Override
     Node getNode();

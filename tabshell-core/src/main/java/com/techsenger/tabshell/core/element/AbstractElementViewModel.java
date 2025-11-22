@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.node;
+package com.techsenger.tabshell.core.element;
 
 import com.techsenger.mvvm4fx.core.AbstractChildViewModel;
 
@@ -22,9 +22,9 @@ import com.techsenger.mvvm4fx.core.AbstractChildViewModel;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractNodeViewModel extends AbstractChildViewModel implements NodeViewModel {
+public abstract class AbstractElementViewModel extends AbstractChildViewModel implements ElementViewModel {
 
-    public AbstractNodeViewModel() {
+    public AbstractElementViewModel() {
         super();
     }
 }
