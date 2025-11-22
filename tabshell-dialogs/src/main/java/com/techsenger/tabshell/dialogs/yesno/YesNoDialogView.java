@@ -111,7 +111,7 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
 
     @Override
     protected ComponentComposer<?> createComposer() {
-        return new DefaultStandardDialogComposer(getDialogManager(), this);
+        return new DefaultStandardDialogComposer(this);
     }
 
     protected Button getConfirmButton() {

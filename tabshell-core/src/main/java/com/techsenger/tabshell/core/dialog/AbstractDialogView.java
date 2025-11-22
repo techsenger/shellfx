@@ -237,13 +237,13 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
         };
     }
 
-    protected DialogManager getDialogManager() {
+    public DialogManager getDialogManager() {
         return dialogManager;
     }
 
     protected abstract void makeEqualButtons();
 
-    void setDialogManager(DialogManager dialogManager) {
+    protected void setDialogManager(DialogManager dialogManager) {
         this.dialogManager = dialogManager;
     }
 

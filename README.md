@@ -81,7 +81,7 @@ contexts simultaneously.
 
 Perfect for:
 
-* Code editors and IDEs where developers work with multiple files.
+* Code editors where developers work with multiple files.
 * Enterprise systems managing different data entities like orders, customers, and products.
 * Database administration tools running parallel queries and comparisons.
 * Data analysis applications with multiple datasets and visualization tabs.

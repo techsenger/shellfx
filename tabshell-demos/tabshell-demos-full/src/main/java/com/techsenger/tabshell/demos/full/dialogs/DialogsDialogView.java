@@ -43,6 +43,7 @@ public class DialogsDialogView extends AbstractSimpleDialogView<DialogsDialogVie
     public DialogsDialogView(ShellView<?> shell, DialogsDialogViewModel viewModel) {
         super(viewModel);
         this.shell = shell;
+        setDialogManager(shell.getDialogManager());
     }
 
     @Override

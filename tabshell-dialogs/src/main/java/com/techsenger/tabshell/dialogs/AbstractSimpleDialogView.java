@@ -90,6 +90,6 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
 
     @Override
     protected ComponentComposer<?> createComposer() {
-        return new DefaultStandardDialogComposer(getDialogManager(), this);
+        return new DefaultStandardDialogComposer(this);
     }
 }

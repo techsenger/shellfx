@@ -19,7 +19,6 @@ package com.techsenger.tabshell.dialogs;
 import com.techsenger.mvvm4fx.core.ComponentViewModel;
 import com.techsenger.tabshell.core.dialog.AbstractDialogComposer;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
-import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
@@ -52,11 +51,8 @@ public class DefaultStandardDialogComposer extends AbstractDialogComposer<Abstra
 
     }
 
-    private final DialogManager dialogManager;
-
-    public DefaultStandardDialogComposer(DialogManager dialogManager, AbstractDialogView<?> view) {
+    public DefaultStandardDialogComposer(AbstractDialogView<?> view) {
         super(view);
-        this.dialogManager = dialogManager;
     }
 
     @Override
@@ -66,7 +62,7 @@ public class DefaultStandardDialogComposer extends AbstractDialogComposer<Abstra
 
     @Override
     public void openDialog(DialogView dialog) {
-        dialogManager.openDialog(dialog);
+        getView().getDialogManager().openDialog(dialog);
     }
 
     @Override
