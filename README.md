@@ -13,6 +13,7 @@ final application.
     * [Terminal](#demo-terminal)
     * [Dialogs](#demo-dialogs)
 * [Features](#features)
+* [When to Use?](#when-to-use)
 * [Modules](#modules)
 * [Core Components](#core)
     * [Shell](#core-shell)
@@ -71,6 +72,25 @@ Currently, the primary ready-made components include:
 * Text Viewer/Editor.
 * Hex Editor.
 * Dialogs.
+
+## When to Use <a name="when-to-use"></a>
+
+With the widespread adoption of web browsers, tab-based interfaces have become familiar and intuitive for most users.
+TabShell leverages this familiarity to create desktop applications where users can comfortably work with multiple
+contexts simultaneously.
+
+Perfect for:
+
+* Code editors and IDEs where developers work with multiple files.
+* Enterprise systems managing different data entities like orders, customers, and products.
+* Database administration tools running parallel queries and comparisons.
+* Data analysis applications with multiple datasets and visualization tabs.
+* File managers and content browsers handling various file types.
+* Monitoring dashboards displaying different metrics and logs
+* Customer support systems with multiple client sessions open
+
+The tab-based approach allows users to maintain workflow context while switching between different tasks, making
+complex applications more intuitive and productive.
 
 ## Modules<a name="modules"></a>
 
