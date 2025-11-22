@@ -13,15 +13,15 @@ final application.
     * [Terminal](#demo-terminal)
     * [Dialogs](#demo-dialogs)
 * [Features](#features)
-* [Requirements](#requirements)
 * [Modules](#modules)
+* [Core Components](#core)
+    * [Shell](#core-shell)
+    * [ShellTab](#core-shelltab)
+    * [Tab](#core-tab)
+    * [Dialog](#core-dialog)
+* [Quick Start](#quick-start)
+* [Requirements](#requirements)
 * [Dependencies](#dependencies)
-* [Usage](#usage)
-    * [Quick Start](#usage-quick-start)
-    * [Component](#usage-component)
-    * [Shell](#usage-shell)
-    * [Tab](#usage-tab)
-    * [Dialog](#usage-dialog)
 * [Code building](#code-building)
 * [Running Demos](#running-demos)
     * [Core Demo](#running-core-demo)
@@ -52,24 +52,25 @@ final application.
 
 Key features of TabShell include:
 
-* Abstract classes to simplify component development.
 * Dynamically configurable menu.
+* Abstract classes to simplify component development.
+* A set of ready-made components that can be used out of the box.
+* Support for different layouts, including a docking layout.
 * Ability to preserve component history.
 * Support for inline dialogs with two scopes — shell and tab.
 * Window styling that matches the theme.
 * Support for 7 themes (4 dark and 3 light).
+* API for working with all colors in the palettes of all themes
 * Styling with CSS.
 
-Currently, TabShell contains the following ready-made components:
+Currently, the primary ready-made components include:
 
+* Shell.
+* Docking layout.
 * Terminal.
 * Text Viewer/Editor.
+* Hex Editor.
 * Dialogs.
-
-## Requirements <a name="requirements"></a>
-
-The library requires Java 17 or later. Due to some bugs, use JavaFX versions 19–20, or a version of JavaFX after
-24-ea+19 (see JDK-8344372).
 
 ## Modules<a name="modules"></a>
 
@@ -95,30 +96,20 @@ custom icons instead, simply create your own stylesheets and add them to Shell.
 only requires the material and core modules.
 * Full Demo — showcases the complete platform with all components. This comprehensive demo uses all modules.
 
-## Dependencies <a name="dependencies"></a>
+## Core Components <a name="core"></a>
 
-This project is available on Maven Central.
+Core components include:
 
-## Usage <a name="usage"></a>
-
-### Quick Start <a name="usage-quick-start"></a>
-To get started with TabShell, it is recommended to follow these steps:
-
-1. Familiarize yourself with the [mvvm4fx](https://github.com/techsenger/mvvm4fx) framework and its demo.
-2. Explore and run core demo. See [Core Demo](#running-core-demo) for details.
-3. Explore and run full demo. See [Full Demo](#running-full-demo) for details.
-
-### Component <a name="usage-component"></a>
-
-The component is the main building block for creating an application using this platform. There are the following
-types of components:
-
-* [Shell](#usage-shell) component.
-* [Tab](#usage-tab) component.
-* [Dialog](#usage-dialog) component.
+* [Shell](#core-shell) component.
+* [ShellTab](#core-shelltab) component.
+* [Tab](#core-tab) component.
+* [Dialog](#core-dialog) component.
 * Page component, which represents a titled component that can be selected.
 * Area component, which represents a rectangular area.
 * Element component, which is used for the simplest and smallest elements.
+
+`Shell` is the only fully ready-to-use component. All other components are templates for creating custom components.
+It is important to note that all platform components are built on the components listed above.
 
 When working with components, there are a few key points to remember:
 
@@ -130,9 +121,9 @@ component after initialization but before passing it to the parent component.
 a `requestClose()` method in its `ViewModel` and a `close()` method in its `View`. In all components, when the
 `ViewModel#requestClose()` method is called, it triggers the `View#close()` method via a listener.
 
-### Shell <a name="usage-shell"></a>
+### Shell <a name="core-shell"></a>
 
-`Shell` is the main component and it is responsible for the following tasks:
+`Shell` is the main and top-level component and it is responsible for the following tasks:
 
 * Window management.
 * Dynamic menu management.
@@ -172,16 +163,14 @@ Regarding `Shell` closure, it should be noted that as the top-level component (i
 `Shell` is unique in self-managing its own closure process (whereas all other components are closed by their
 parent components).
 
-### Tab <a name="usage-tab"></a>
+### ShellTab <a name="core-shelltab"></a>
 
-There are two types of tabs: `ShellTab` and `Tab`. A `ShellTab` component can be opened through the `Shell`, so
-`ShellTab` components are second-level components under the `Shell`. `ShellTab` manages tab-scoped dialogs.
+A `ShellTab` component can be opened through the `Shell`, so `ShellTab` components are second-level components
+under the `Shell`. `ShellTab` manages tab-scoped dialogs.
 
-A `Tab` component cannot be opened directly through the `Shell`, so it always resides inside a `ShellTab`.
-
-The `ShellTab` and `Tab` components are closed in the following way. When the `View#close()` method is called, control
-is transferred to their parent component (e.g., `Shell`, `TabDock`), which is responsible for their actual closure.
-Thus, these tabs can also be closed directly through their parent if a reference to the tab is available.
+The `ShellTab` component is closed in the following way. When the `View#close()` method is called, control
+is transferred to their parent component (`Shell`), which is responsible for their actual closure. Thus, these tabs
+can also be closed directly through their parent if a reference to the tab is available.
 
 The tab closing procedure is largely determined by the asynchronous nature of dialogs in the TabShell project and
 consists of the following steps:
@@ -203,7 +192,14 @@ boolean onCloseAttempt(CloseScope scope, Runnable retryCallback) {
 3. If `ViewModel#prepareForClose(CloseScope, Runnable)` successfully prepares the component for closure, it invokes
 the provided callback to restart the closing process. If preparation fails, the closing process is silently aborted.
 
-### Dialog <a name="usage-dialog"></a>
+### Tab <a name="core-tab"></a>
+
+A `Tab` component cannot be opened directly through the `Shell`, so it always resides inside a `ShellTab` in
+`TabHost` or in `TabDock` components.
+
+Closing a `Tab` is performed the same way as closing a `ShellTab`.
+
+### Dialog <a name="core-dialog"></a>
 
 All dialogs in TabShell are `inline`, `asynchronous` and have a `scope` that affects what will be blocked when the
 dialog is open.
@@ -233,6 +229,36 @@ Dialogs are invoked from the `ViewModel` using `ComponentHelper`.
 The `Dialog` component is closed in the following way. When the `View#close()` method is called on a `Dialog`, control
 is delegated to the `DialogManager`, which handles its actual closure. Therefore, a `Dialog` can also be closed
 directly through the `DialogManager` when holding a reference to the dialog instance.
+
+## Quick Start <a name="quick-start"></a>
+
+To get started with TabShell, it is recommended to follow these steps:
+
+1. Familiarize yourself with the [mvvm4fx](https://github.com/techsenger/mvvm4fx) framework and its demo.
+2. Explore and run core demo. See [Core Demo](#running-core-demo) for details.
+3. Explore and run full demo. See [Full Demo](#running-full-demo) for details.
+
+## Requirements <a name="requirements"></a>
+
+The library requires Java 17 or later. Due to some bugs, use JavaFX versions 19–20, or a version of JavaFX after
+24-ea+19 (see JDK-8344372).
+
+## Dependencies <a name="dependencies"></a>
+
+This project is available on Maven Central. Minimal set of required dependencies:
+
+```
+<dependency>
+    <groupId>com.techsenger.tabshell</groupId>
+    <artifactId>tabshell-material</artifactId>
+    <version>${tabshell.version}</version>
+</dependency>
+<dependency>
+    <groupId>com.techsenger.tabshell</groupId>
+    <artifactId>tabshell-core</artifactId>
+    <version>${tabshell.version}</version>
+</dependency>
+```
 
 ## Code Building <a name="code-building"></a>
 
