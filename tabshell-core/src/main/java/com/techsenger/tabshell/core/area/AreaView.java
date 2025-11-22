@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.pane;
+package com.techsenger.tabshell.core.area;
 
-import com.techsenger.mvvm4fx.core.ChildViewModel;
-import javafx.beans.property.ReadOnlyDoubleProperty;
+import com.techsenger.mvvm4fx.core.ChildView;
+import javafx.scene.layout.Region;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PaneViewModel extends ChildViewModel {
+public interface AreaView<T extends AreaViewModel> extends ChildView<T> {
 
-    ReadOnlyDoubleProperty widthProperty();
-
-    double getWidth();
-
-    ReadOnlyDoubleProperty heightProperty();
-
-    double getHeight();
+    @Override
+    Region getNode();
 }

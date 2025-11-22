@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.pane;
+package com.techsenger.tabshell.core.area;
 
 import com.techsenger.mvvm4fx.core.AbstractChildView;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
@@ -23,12 +23,12 @@ import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPaneView<T extends AbstractPaneViewModel> extends AbstractChildView<T>
-        implements PaneView<T> {
+public abstract class AbstractAreaView<T extends AbstractAreaViewModel> extends AbstractChildView<T>
+        implements AreaView<T> {
 
     private final PulseListenerManager pulseListenerManager;
 
-    public AbstractPaneView(T viewModel) {
+    public AbstractAreaView(T viewModel) {
         super(viewModel);
         this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
                 () -> getNode().sceneProperty());

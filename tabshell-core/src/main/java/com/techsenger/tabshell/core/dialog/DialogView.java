@@ -17,14 +17,14 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.CloseableView;
-import com.techsenger.tabshell.core.pane.PaneView;
+import com.techsenger.tabshell.core.area.AreaView;
 import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogView<T extends DialogViewModel> extends PaneView<T>, CloseableView {
+public interface DialogView<T extends DialogViewModel> extends AreaView<T>, CloseableView {
 
     @Override
     VBox getNode();

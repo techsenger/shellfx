@@ -22,7 +22,7 @@ import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_HALF;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
@@ -121,7 +121,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneView<T> {
+public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaView<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(DockLayoutView.class);
 
@@ -151,7 +151,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * <p>Containers are created when components are added to the {@link SplitSpaceView} and destroyed when they are
      * removed from there.
      */
-    private abstract static class AbstractContainer<T extends AbstractPaneView<?>> extends StackPane {
+    private abstract static class AbstractContainer<T extends AbstractAreaView<?>> extends StackPane {
 
         private final DockLayoutView<?> layout;
 
@@ -244,7 +244,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * {@link AbstractEventContainer}.
      *
      */
-    private abstract static class AbstractEventContainer<T extends AbstractPaneView<?>>  extends AbstractContainer<T> {
+    private abstract static class AbstractEventContainer<T extends AbstractAreaView<?>>
+            extends AbstractContainer<T> {
 
         private final Pane eventPane = new Pane();
 
@@ -312,9 +313,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
     }
 
-    private static class MainContainer extends AbstractEventContainer<AbstractPaneView<?>> {
+    private static class MainContainer extends AbstractEventContainer<AbstractAreaView<?>> {
 
-        MainContainer(DockLayoutView<?> layout, AbstractPaneView<?> component) {
+        MainContainer(DockLayoutView<?> layout, AbstractAreaView<?> component) {
             super(layout, component);
         }
 
@@ -530,7 +531,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * @param component
      * @return
      */
-    private static AbstractContainer<?> getContainer(AbstractPaneView<?> component) {
+    private static AbstractContainer<?> getContainer(AbstractAreaView<?> component) {
         return (AbstractContainer<?>) component.getNode().getParent();
     }
 
@@ -542,7 +543,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return (SplitSpaceContainer) component.getNode().getParent();
     }
 
-    private static UUID getUuid(AbstractPaneView<?> component) {
+    private static UUID getUuid(AbstractAreaView<?> component) {
         return component.getViewModel().getDescriptor().getUuid();
     }
 
@@ -765,7 +766,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
     private final ReadOnlyObjectWrapper<SideBarView<?>> leftBar = new ReadOnlyObjectWrapper<>();
 
-    private final ObjectProperty<AbstractPaneView<?>> main = new SimpleObjectProperty<>();
+    private final ObjectProperty<AbstractAreaView<?>> main = new SimpleObjectProperty<>();
 
     public DockLayoutView(T viewModel) {
         super(viewModel);
@@ -793,15 +794,15 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         this.root.set(root);
     }
 
-    public final AbstractPaneView<?> getMain() {
+    public final AbstractAreaView<?> getMain() {
         return main.get();
     }
 
-    public final void setMain(AbstractPaneView<?> value) {
+    public final void setMain(AbstractAreaView<?> value) {
         main.set(value);
     }
 
-    public final ObjectProperty<AbstractPaneView<?>> mainProperty() {
+    public final ObjectProperty<AbstractAreaView<?>> mainProperty() {
         return main;
     }
 
@@ -966,7 +967,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return container;
     }
 
-    StackPane createContainer(AbstractPaneView<?> child) {
+    StackPane createContainer(AbstractAreaView<?> child) {
         AbstractContainer container;
         if (child instanceof SplitSpaceView<?>) {
             var splitSpace = (SplitSpaceView<?>) child;
@@ -1085,7 +1086,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         var parentPos = parent.getNode().getDividerPositions();
         var index = parent.getChildren().indexOf(dock);
         var siblings = parent.getChildren().stream().filter(c -> c != dock)
-                .map(c -> getUuid((AbstractPaneView<?>) c)).collect(Collectors.toList());
+                .map(c -> getUuid((AbstractAreaView<?>) c)).collect(Collectors.toList());
         var pathFromRoot = findPathFromRoot(dock).stream().map(c -> getUuid(c)).collect(Collectors.toList());
         var pos = new ComponentPosition(pathFromRoot, siblings, parent.getNode().getOrientation(), side,
                 getUuid(dock), index, dock.getNode().getWidth(), dock.getNode().getHeight());
@@ -1117,7 +1118,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         var splitSpacesByUuid = new HashMap<UUID, SplitSpaceView<?>>();
         var iterator = getRoot().breadthFirstIterator();
         while (iterator.hasNext()) {
-            AbstractPaneView<?> component = (AbstractPaneView<?>) iterator.next();
+            AbstractAreaView<?> component = (AbstractAreaView<?>) iterator.next();
             if (component instanceof SplitSpaceView<?> c) {
                 splitSpacesByUuid.put(getUuid(c), c);
             }
@@ -1212,7 +1213,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
             tempIndex--;
             isLastPosition = true;
         }
-        var component = (AbstractPaneView<?>) parent.getChildren().get(tempIndex);
+        var component = (AbstractAreaView<?>) parent.getChildren().get(tempIndex);
 
         Side resolvedSide;
         if (component == getMain()) {
@@ -1238,13 +1239,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         return resolvedSide == side;
     }
 
-    private AbstractPaneView<?> findSibling(SplitSpaceView<?> splitSpace, List<UUID> siblingUuids, Side side) {
+    private AbstractAreaView<?> findSibling(SplitSpaceView<?> splitSpace, List<UUID> siblingUuids, Side side) {
         var siblingsByUuid = splitSpace.getChildren()
                 .stream()
-                .map(c -> (AbstractPaneView<?>) c)
+                .map(c -> (AbstractAreaView<?>) c)
                 .collect(Collectors.toMap(c -> getUuid(c), c -> c));
         boolean mainFound = false;
-        AbstractPaneView<?> sibling = null;
+        AbstractAreaView<?> sibling = null;
         for (var uuid : siblingUuids) {
             sibling = siblingsByUuid.get(uuid);
             if (sibling != null) {
@@ -1656,7 +1657,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         }
     }
 
-    private SplitSpaceView<?> wrap(AbstractPaneView<?> component, int index) {
+    private SplitSpaceView<?> wrap(AbstractAreaView<?> component, int index) {
         SplitSpaceView<?> parentComponent = null;
         Orientation currentOrientation;
         if (component != getRoot()) {
@@ -1700,7 +1701,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
     private void unwrap(SplitSpaceView<?> splitSpace, int index) {
         double[] childPositions;
         // now it has only one child
-        AbstractPaneView<?> child = (AbstractPaneView<?>) splitSpace.getChildren().get(0);
+        AbstractAreaView<?> child = (AbstractAreaView<?>) splitSpace.getChildren().get(0);
 
         if (splitSpace != getRoot()) {
             SplitSpaceView<?> grandparentComponent = (SplitSpaceView<?>) splitSpace.getParent();
@@ -1934,7 +1935,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      */
     private void removeTabDock(ContainerInfo parent, ContainerInfo tabDockInfo) {
         var tabDockContainer = tabDockInfo.getContainer();
-        AbstractPaneView<?> componentToRemove = tabDockContainer.getComponent();
+        AbstractAreaView<?> componentToRemove = tabDockContainer.getComponent();
         SplitSpaceView<?> splitSpace = (SplitSpaceView<?>) parent.getContainer().getComponent();
         var splitPane = splitSpace.getNode();
         var oldPositions = splitPane.getDividerPositions();
@@ -1987,7 +1988,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         this.dragInProgress = value;
         var iterator = getRoot().depthFirstIterator();
         while (iterator.hasNext()) {
-            AbstractPaneView<?> child = (AbstractPaneView<?>) iterator.next();
+            AbstractAreaView<?> child = (AbstractAreaView<?>) iterator.next();
             AbstractContainer container = getContainer(child);
             container.updateDragInProgress(value, type);
         }
@@ -2013,7 +2014,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
         StringBuilder builder = new StringBuilder();
         var iterator = getRoot().depthFirstIterator();
         while (iterator.hasNext()) {
-            AbstractPaneView<?> component = (AbstractPaneView<?>) iterator.next();
+            AbstractAreaView<?> component = (AbstractAreaView<?>) iterator.next();
             String orientation = "";
             UUID uuid = component.getViewModel().getDescriptor().getUuid();
             if (component instanceof SplitSpaceView<?> spaceV) {
@@ -2043,7 +2044,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * @param component
      * @return
      */
-    private Side resolveSide(AbstractPaneView<?> component) {
+    private Side resolveSide(AbstractAreaView<?> component) {
         if (component == getMain()) {
             throw new IllegalArgumentException("Can't resolve the side of the main component");
         }
@@ -2054,8 +2055,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
 
         var componentIterator = componentPath.iterator();
         var mainIterator = mainPath.iterator();
-        AbstractPaneView<?> componentAncestor = null;
-        AbstractPaneView<?> mainAncestor = null;
+        AbstractAreaView<?> componentAncestor = null;
+        AbstractAreaView<?> mainAncestor = null;
         while (componentIterator.hasNext() && mainIterator.hasNext()) {
             componentAncestor = componentIterator.next();
             mainAncestor = mainIterator.next();
@@ -2096,12 +2097,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      * @param startNode
      * @return
      */
-    private List<AbstractPaneView<?>> findPathFromRoot(AbstractPaneView<?> startNode) {
-        var result = new ArrayList<AbstractPaneView<?>>();
+    private List<AbstractAreaView<?>> findPathFromRoot(AbstractAreaView<?> startNode) {
+        var result = new ArrayList<AbstractAreaView<?>>();
         var current = startNode;
         while (current != null && current != this) {
             result.add(0, current);
-            current = (AbstractPaneView<?>) current.getParent();
+            current = (AbstractAreaView<?>) current.getParent();
         }
         if (logger.isTraceEnabled()) {
             var nodes = result.stream().map(c -> getFullName(c)).collect(Collectors.joining(", "));
@@ -2119,7 +2120,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractPaneV
      */
     private int indexOfMain(SplitSpaceView<?> splitSpaceView) {
         var deque = findPathFromRoot(getMain());
-        var set = new HashSet<AbstractPaneView<?>>(deque);
+        var set = new HashSet<AbstractAreaView<?>>(deque);
         for (var i = 0; i < splitSpaceView.getChildren().size(); i++) {
             var child = splitSpaceView.getChildren().get(i);
             if (set.contains(child)) {

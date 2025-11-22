@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ChildView;
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
 import com.techsenger.tabshell.material.pane.SplitPaneDividerBinder;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneView<T> {
+public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaView<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(SplitSpaceView.class);
 
@@ -84,7 +84,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
                     List<? extends ChildView<?>> addedElements = change.getAddedSubList();
                     for (int i = 0; i < addedElements.size(); i++) {
                         int actualIndex = startIndex + i;
-                        AbstractPaneView<?> child = (AbstractPaneView<?>) addedElements.get(i);
+                        AbstractAreaView<?> child = (AbstractAreaView<?>) addedElements.get(i);
                         addChild(child, actualIndex);
                     }
                 }
@@ -778,7 +778,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractPaneV
         return sizes;
     }
 
-    private void addChild(AbstractPaneView<?> child, int index) {
+    private void addChild(AbstractAreaView<?> child, int index) {
         Node container = this.layout.createContainer(child);
         splitPane.getItems().add(index, container);
     }

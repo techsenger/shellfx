@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.shared.find;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -43,7 +43,7 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> extends AbstractPaneView<T> {
+public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> extends AbstractAreaView<T> {
 
     protected static final String FOUND_STYLE_CLASS = "found";
 

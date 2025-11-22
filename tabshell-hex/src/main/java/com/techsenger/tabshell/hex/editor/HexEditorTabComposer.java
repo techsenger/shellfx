@@ -104,7 +104,6 @@ public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends Abstrac
 
     private final DataInspectorTabView<?> dataInspector;
 
-
     public HexEditorTabComposer(T view) {
         super(view);
         this.editor = getView();

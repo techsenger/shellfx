@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.style.StyleUtils;
 import com.techsenger.tabshell.hex.HexComponentNames;
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class HexAreaViewModel extends AbstractPaneViewModel {
+public class HexAreaViewModel extends AbstractAreaViewModel {
 
     private static final Logger logger = LoggerFactory.getLogger(HexAreaViewModel.class);
 

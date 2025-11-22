@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.FIRST;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.SECOND;
@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class HexAreaView<T extends HexAreaViewModel> extends AbstractPaneView<T> {
+public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T> {
 
     /**
      * This class represents the text for a single byte. We use {@link Text} instead of {@link Label} because the

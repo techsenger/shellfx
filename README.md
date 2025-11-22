@@ -117,8 +117,8 @@ types of components:
 * [Tab](#usage-tab) component.
 * [Dialog](#usage-dialog) component.
 * Page component, which represents a titled component that can be selected.
-* Pane component, which represents a rectangular area.
-* Node component, which is used for the simplest and smallest elements.
+* Area component, which represents a rectangular area.
+* Element component, which is used for the simplest and smallest elements.
 
 When working with components, there are a few key points to remember:
 

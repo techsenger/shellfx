@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -36,7 +36,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogViewModel extends AbstractPaneViewModel implements DialogViewModel {
+public abstract class AbstractDialogViewModel extends AbstractAreaViewModel implements DialogViewModel {
 
     private final DialogScope scope;
 

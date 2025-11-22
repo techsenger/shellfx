@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.shared.find;
 
 import com.techsenger.tabshell.core.history.HistoryUtils;
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,7 +31,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneViewModel extends AbstractPaneViewModel {
+public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel {
 
     private final StringProperty text = new SimpleStringProperty();
 

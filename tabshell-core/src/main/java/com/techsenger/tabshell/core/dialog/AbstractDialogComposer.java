@@ -16,16 +16,16 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneComposer;
+import com.techsenger.tabshell.core.area.AbstractAreaComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogComposer<T extends AbstractDialogView<?>> extends AbstractPaneComposer<T>
+public abstract class AbstractDialogComposer<T extends AbstractDialogView<?>> extends AbstractAreaComposer<T>
         implements DialogComposer<T> {
 
-    protected abstract class ViewModelComposer extends AbstractPaneComposer.ViewModelComposer
+    protected abstract class ViewModelComposer extends AbstractAreaComposer.ViewModelComposer
             implements DialogComposer.ViewModelComposer {
 
     }

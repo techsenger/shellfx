@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneHistory;
+import com.techsenger.tabshell.core.area.AbstractAreaHistory;
 
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageHistory<T extends AbstractPageViewModel> extends AbstractPaneHistory<T> {
+public abstract class AbstractPageHistory<T extends AbstractPageViewModel> extends AbstractAreaHistory<T> {
 
 }

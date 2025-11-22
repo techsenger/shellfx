@@ -17,12 +17,12 @@
 package com.techsenger.tabshell.core.page;
 
 import com.techsenger.tabshell.core.SelectableView;
-import com.techsenger.tabshell.core.pane.PaneView;
+import com.techsenger.tabshell.core.area.AreaView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageView<T extends PageViewModel> extends PaneView<T>, SelectableView {
+public interface PageView<T extends PageViewModel> extends AreaView<T>, SelectableView {
 
 }

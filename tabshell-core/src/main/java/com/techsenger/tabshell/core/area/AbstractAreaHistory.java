@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.pane;
+package com.techsenger.tabshell.core.area;
 
 import com.techsenger.mvvm4fx.core.AbstractHistory;
 
@@ -22,6 +22,6 @@ import com.techsenger.mvvm4fx.core.AbstractHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPaneHistory<T extends AbstractPaneViewModel> extends AbstractHistory<T> {
+public abstract class AbstractAreaHistory<T extends AbstractAreaViewModel> extends AbstractHistory<T> {
 
 }

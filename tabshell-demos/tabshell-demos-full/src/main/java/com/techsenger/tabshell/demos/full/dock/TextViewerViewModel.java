@@ -17,14 +17,14 @@
 package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TextViewerViewModel extends AbstractPaneViewModel {
+public class TextViewerViewModel extends AbstractAreaViewModel {
 
     @Override
     protected ComponentDescriptor createDescriptor() {

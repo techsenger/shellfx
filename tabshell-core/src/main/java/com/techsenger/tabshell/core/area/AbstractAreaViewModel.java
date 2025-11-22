@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.pane;
+package com.techsenger.tabshell.core.area;
 
 import com.techsenger.mvvm4fx.core.AbstractChildViewModel;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -24,13 +24,13 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPaneViewModel extends AbstractChildViewModel implements PaneViewModel {
+public abstract class AbstractAreaViewModel extends AbstractChildViewModel implements AreaViewModel {
 
     private final ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper();
 
     private final ReadOnlyDoubleWrapper height = new ReadOnlyDoubleWrapper();
 
-    public AbstractPaneViewModel() {
+    public AbstractAreaViewModel() {
         super();
     }
 

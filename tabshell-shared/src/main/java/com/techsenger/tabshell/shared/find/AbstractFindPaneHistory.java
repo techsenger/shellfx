@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.shared.find;
 
 import com.techsenger.tabshell.core.history.HistoryUtils;
-import com.techsenger.tabshell.core.pane.AbstractPaneHistory;
+import com.techsenger.tabshell.core.area.AbstractAreaHistory;
 import com.techsenger.tabshell.material.button.ToggleButtonHistory;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneHistory<T extends AbstractFindPaneViewModel> extends AbstractPaneHistory<T> {
+public abstract class AbstractFindPaneHistory<T extends AbstractFindPaneViewModel> extends AbstractAreaHistory<T> {
 
     private List<String> findTexts;
 

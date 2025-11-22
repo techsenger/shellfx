@@ -23,7 +23,7 @@ import com.techsenger.tabshell.core.CloseScope;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerView;
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class TabHostView<T extends TabHostViewModel> extends AbstractPaneView<T>
+public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
         implements TabContainerView<TabView<?>>, MenuAware {
 
     private static final Logger logger = LoggerFactory.getLogger(TabHostView.class);

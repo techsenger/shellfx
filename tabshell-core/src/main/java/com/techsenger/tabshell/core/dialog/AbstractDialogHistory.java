@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneHistory;
+import com.techsenger.tabshell.core.area.AbstractAreaHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogHistory<T extends AbstractDialogViewModel> extends AbstractPaneHistory<T> {
+public abstract class AbstractDialogHistory<T extends AbstractDialogViewModel> extends AbstractAreaHistory<T> {
 
     private double width;
 

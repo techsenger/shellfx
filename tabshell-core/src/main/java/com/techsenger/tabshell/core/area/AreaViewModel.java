@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.pane;
+package com.techsenger.tabshell.core.area;
 
-import com.techsenger.mvvm4fx.core.ChildView;
-import javafx.scene.layout.Region;
+import com.techsenger.mvvm4fx.core.ChildViewModel;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 
 /**
- * A view for components which Node is a "Pane".
  *
  * @author Pavel Castornii
  */
-public interface PaneView<T extends PaneViewModel> extends ChildView<T> {
+public interface AreaViewModel extends ChildViewModel {
 
-    /**
-     * TabPane is a pane, but it doesn't inherit Pane.
-     * @return
-     */
-    @Override
-    Region getNode();
+    ReadOnlyDoubleProperty widthProperty();
+
+    double getWidth();
+
+    ReadOnlyDoubleProperty heightProperty();
+
+    double getHeight();
 }

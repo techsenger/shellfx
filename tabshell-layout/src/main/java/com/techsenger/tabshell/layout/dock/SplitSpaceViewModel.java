@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,7 +27,7 @@ import javafx.geometry.Orientation;
  *
  * @author Pavel Castornii
  */
-public class SplitSpaceViewModel extends AbstractPaneViewModel {
+public class SplitSpaceViewModel extends AbstractAreaViewModel {
 
     private final Orientation orientation;
 

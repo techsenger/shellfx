@@ -19,12 +19,12 @@ package com.techsenger.tabshell.core.page;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.SelectableViewModel;
 import com.techsenger.tabshell.core.TitledViewModel;
-import com.techsenger.tabshell.core.pane.PaneViewModel;
+import com.techsenger.tabshell.core.area.AreaViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageViewModel extends PaneViewModel, TitledViewModel, IconedViewModel, SelectableViewModel {
+public interface PageViewModel extends AreaViewModel, TitledViewModel, IconedViewModel, SelectableViewModel {
 
 }

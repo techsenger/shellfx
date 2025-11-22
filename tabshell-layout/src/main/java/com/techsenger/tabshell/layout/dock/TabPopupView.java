@@ -19,7 +19,7 @@ package com.techsenger.tabshell.layout.dock;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
@@ -45,7 +45,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class TabPopupView<T extends TabPopupViewModel> extends AbstractPaneView<T> {
+public class TabPopupView<T extends TabPopupViewModel> extends AbstractAreaView<T> {
 
     private static final double RESIZE_MARGIN = 2.0;
 

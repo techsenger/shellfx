@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -32,11 +32,11 @@ import static javafx.geometry.Side.RIGHT;
  *
  * @author Pavel Castornii
  */
-public class DockLayoutViewModel extends AbstractPaneViewModel {
+public class DockLayoutViewModel extends AbstractAreaViewModel {
 
     private final ReadOnlyObjectWrapper<SplitSpaceViewModel> root = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectWrapper<AbstractPaneViewModel> main = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<AbstractAreaViewModel> main = new ReadOnlyObjectWrapper<>();
 
     private final ReadOnlyObjectWrapper<SideBarViewModel> rightBar = new ReadOnlyObjectWrapper<>();
 
@@ -67,11 +67,11 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         return root.getReadOnlyProperty();
     }
 
-    public final AbstractPaneViewModel getMain() {
+    public final AbstractAreaViewModel getMain() {
         return main.get();
     }
 
-    public final ReadOnlyObjectProperty<AbstractPaneViewModel> mainProperty() {
+    public final ReadOnlyObjectProperty<AbstractAreaViewModel> mainProperty() {
         return main.getReadOnlyProperty();
     }
 
@@ -165,7 +165,7 @@ public class DockLayoutViewModel extends AbstractPaneViewModel {
         root.set(value);
     }
 
-    void setMain(AbstractPaneViewModel value) {
+    void setMain(AbstractAreaViewModel value) {
         main.set(value);
     }
 

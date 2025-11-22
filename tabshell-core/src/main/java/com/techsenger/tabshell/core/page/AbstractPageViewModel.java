@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -29,7 +29,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageViewModel extends AbstractPaneViewModel implements PageViewModel {
+public abstract class AbstractPageViewModel extends AbstractAreaViewModel implements PageViewModel {
 
     private final StringProperty title = new SimpleStringProperty();
 

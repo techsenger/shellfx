@@ -19,13 +19,13 @@ package com.techsenger.tabshell.core.dialog;
 import com.techsenger.tabshell.core.CloseableViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.TitledViewModel;
-import com.techsenger.tabshell.core.pane.PaneViewModel;
+import com.techsenger.tabshell.core.area.AreaViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogViewModel extends PaneViewModel, TitledViewModel, IconedViewModel, CloseableViewModel {
+public interface DialogViewModel extends AreaViewModel, TitledViewModel, IconedViewModel, CloseableViewModel  {
 
     DialogScope getScope();
 

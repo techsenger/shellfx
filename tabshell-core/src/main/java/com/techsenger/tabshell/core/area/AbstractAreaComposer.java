@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.pane;
+package com.techsenger.tabshell.core.area;
 
 import com.techsenger.mvvm4fx.core.AbstractChildComposer;
 
@@ -22,13 +22,13 @@ import com.techsenger.mvvm4fx.core.AbstractChildComposer;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPaneComposer<T extends AbstractPaneView<?>> extends AbstractChildComposer<T> {
+public abstract class AbstractAreaComposer<T extends AbstractAreaView<?>> extends AbstractChildComposer<T> {
 
     protected abstract class ViewModelComposer extends AbstractChildComposer.ViewModelComposer {
 
     }
 
-    public AbstractPaneComposer(T view) {
+    public AbstractAreaComposer(T view) {
         super(view);
     }
 

@@ -16,15 +16,15 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneComposer;
+import com.techsenger.tabshell.core.area.AbstractAreaComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageComposer<T extends AbstractPageView<?>> extends AbstractPaneComposer<T> {
+public abstract class AbstractPageComposer<T extends AbstractPageView<?>> extends AbstractAreaComposer<T> {
 
-    protected abstract class ViewModelComposer extends AbstractPaneComposer.ViewModelComposer {
+    protected abstract class ViewModelComposer extends AbstractAreaComposer.ViewModelComposer {
 
     }
 

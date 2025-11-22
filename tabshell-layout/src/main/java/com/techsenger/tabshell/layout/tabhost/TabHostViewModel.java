@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.layout.tabhost;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
@@ -39,7 +39,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class TabHostViewModel extends AbstractPaneViewModel implements TabContainerViewModel<TabViewModel> {
+public class TabHostViewModel extends AbstractAreaViewModel implements TabContainerViewModel<TabViewModel> {
 
     private final ReadOnlyObjectWrapper<TabViewModel> selectedTab = new ReadOnlyObjectWrapper<>();
 

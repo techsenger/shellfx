@@ -18,7 +18,7 @@ package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.mvvm4fx.core.ComponentViewModel;
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.FocusTrap;
@@ -43,7 +43,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogView<T extends AbstractDialogViewModel> extends AbstractPaneView<T>
+public abstract class AbstractDialogView<T extends AbstractDialogViewModel> extends AbstractAreaView<T>
         implements DialogView<T> {
 
     private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");

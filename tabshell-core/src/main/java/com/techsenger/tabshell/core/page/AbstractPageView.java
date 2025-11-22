@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import javafx.scene.control.Label;
 
@@ -24,7 +24,7 @@ import javafx.scene.control.Label;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageView<T extends AbstractPageViewModel> extends AbstractPaneView<T>
+public abstract class AbstractPageView<T extends AbstractPageViewModel> extends AbstractAreaView<T>
         implements PageView<T> {
 
     private final Label titleLabel = new Label();

@@ -20,7 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import com.techsenger.tabshell.core.pane.AbstractPaneView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
@@ -41,7 +41,7 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public class SideBarView<T extends SideBarViewModel> extends AbstractPaneView<T> {
+public class SideBarView<T extends SideBarViewModel> extends AbstractAreaView<T> {
 
     private static final class BarRestoreTab extends Tab {
 

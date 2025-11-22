@@ -18,7 +18,7 @@ package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.pane.AbstractPaneViewModel;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.collections.FXCollections;
@@ -28,7 +28,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class TabPopupViewModel extends AbstractPaneViewModel {
+public class TabPopupViewModel extends AbstractAreaViewModel {
 
     private final SideBarViewModel sideBar;
 
