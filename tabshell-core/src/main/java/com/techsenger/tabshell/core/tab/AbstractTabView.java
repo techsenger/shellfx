@@ -135,6 +135,7 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
             }
         });
         viewModel.selectedWrapper().bind(this.root.selectedProperty());
+        this.root.closableProperty().bind(viewModel.closableProperty());
     }
 
     @Override

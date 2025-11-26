@@ -22,6 +22,7 @@ import com.techsenger.tabshell.core.CloseableViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.SelectableViewModel;
 import com.techsenger.tabshell.core.TitledViewModel;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 
 /**
@@ -94,4 +95,24 @@ public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedVie
      * @return
      */
     TabClosedCallback getOnClosed();
+
+    /**
+     * Returns the closable property of the component.
+     *
+     * @return
+     */
+    BooleanProperty closableProperty();
+
+    /**
+     * Returns the value of the {@link TabViewModel#closableProperty()}.
+     *
+     * @return
+     */
+    boolean isClosable();
+
+    /**
+     * Sets the value of the {@link TabViewModel#closableProperty()}.
+     * @param closable
+     */
+    void setClosable(boolean closable);
 }

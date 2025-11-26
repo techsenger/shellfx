@@ -58,6 +58,8 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
 
     private final ObservableSource<Boolean> close = new SimpleObservableSource<>();
 
+    private final BooleanProperty closable = new SimpleBooleanProperty();
+
     private TabClosedCallback onClosed;
 
     public AbstractTabViewModel() {
@@ -160,6 +162,21 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     @Override
     public void requestClose() {
         this.close.next(Boolean.TRUE);
+    }
+
+    @Override
+    public BooleanProperty closableProperty() {
+        return closable;
+    }
+
+    @Override
+    public boolean isClosable() {
+        return closable.get();
+    }
+
+    @Override
+    public void setClosable(boolean closable) {
+        this.closable.set(closable);
     }
 
     protected Map<MenuName, MenuHelper> getMenuHelpersByName() {
