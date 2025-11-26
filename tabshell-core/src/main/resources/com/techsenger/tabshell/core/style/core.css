@@ -317,8 +317,12 @@
 }
 
 .table-view.extra-dense .table-row-cell,
-.tree-table-view.extra-dense .table-row-cell {
+.tree-table-view.extra-dense .tree-table-row-cell {
     -fx-cell-size: 1.65em;
+}
+
+.tree-table-view.extra-dense .tree-table-row-cell > .tree-disclosure-node {
+  -fx-padding: 0 0.5em 0 0.5em;
 }
 
 .table-view.same-spacing-table .column-header-background .column-header .label,
