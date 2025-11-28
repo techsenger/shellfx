@@ -41,4 +41,6 @@ public interface DemoMenuNames {
     MenuItemName DIALOGS = new MenuItemName();
 
     MenuItemName DOCK_LAYOUT = new MenuItemName();
+
+    MenuItemName JFX_DOCK = new MenuItemName();
 }

@@ -24,6 +24,8 @@ import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabContainerView;
 import java.util.List;
+import javafx.application.HostServices;
+import javafx.stage.Stage;
 
 /**
  * There can be only one instance of Shell in VirtualMachine.
@@ -84,4 +86,18 @@ public interface ShellView<T extends ShellViewModel> extends ComponentView<T>, T
 
     @Override
     void close();
+
+    /**
+     * Returns application host services.
+     *
+     * @return
+     */
+    HostServices getHostServices();
+
+    /**
+     * Returns primary stage.
+     *
+     * @return
+     */
+    Stage getStage();
 }

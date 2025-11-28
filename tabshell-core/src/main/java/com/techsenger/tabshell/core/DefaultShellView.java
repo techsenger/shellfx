@@ -44,6 +44,8 @@ import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
 import java.util.List;
+import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -202,6 +204,8 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         }
     }
 
+    private final Application application;
+
     private final Stage stage;
 
     private final MenuBar menuBar = new MenuBar();
@@ -226,12 +230,14 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     private final ControlRegistry controlRegistry = new ControlRegistry();
 
-    public DefaultShellView(List<Stylesheet> stylesheets, DefaultShellViewModel viewModel) {
-        this(new Stage(), stylesheets, viewModel);
+    public DefaultShellView(Application application, List<Stylesheet> stylesheets, DefaultShellViewModel viewModel) {
+        this(application, new Stage(), stylesheets, viewModel);
     }
 
-    public DefaultShellView(Stage stage, List<Stylesheet> stylesheets, DefaultShellViewModel viewModel) {
+    public DefaultShellView(Application application, Stage stage, List<Stylesheet> stylesheets,
+            DefaultShellViewModel viewModel) {
         super(viewModel);
+        this.application = application;
         this.stage = stage;
         stageController = new ShellStageController(stage, viewModel.getDefaultWidth(),
                 viewModel.getDefaultHeight(), viewModel.dialogCountProperty());
@@ -338,6 +344,16 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         } else {
             return this;
         }
+    }
+
+    @Override
+    public HostServices getHostServices() {
+        return this.application.getHostServices();
+    }
+
+    @Override
+    public Stage getStage() {
+        return this.stage;
     }
 
     @Override

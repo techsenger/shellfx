@@ -58,7 +58,7 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
 
     private final ObservableSource<Boolean> close = new SimpleObservableSource<>();
 
-    private final BooleanProperty closable = new SimpleBooleanProperty();
+    private final BooleanProperty closable = new SimpleBooleanProperty(true);
 
     private TabClosedCallback onClosed;
 

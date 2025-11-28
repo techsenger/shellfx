@@ -43,7 +43,7 @@
 
     <properties>
         <publishing.plugin.exclusions>tabshell-demos-core,tabshell-demos-all</publishing.plugin.exclusions>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
     </properties>
 
     <repositories>
@@ -116,6 +116,11 @@
             </dependency>
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>
+                <artifactId>tabshell-jfx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.tabshell</groupId>
                 <artifactId>tabshell-registrars</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -145,6 +150,7 @@
         <module>tabshell-hex</module>
         <module>tabshell-registrars</module>
         <module>tabshell-demos</module>
+        <module>tabshell-jfx</module>
     </modules>
 
     <build>

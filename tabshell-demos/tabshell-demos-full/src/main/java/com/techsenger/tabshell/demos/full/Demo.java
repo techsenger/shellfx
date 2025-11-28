@@ -42,8 +42,7 @@ public class Demo extends Application {
         viewModel.setOnClosed(() -> {
             Platform.exit();
         });
-
-        var view = new DefaultShellView(stage, IconStylesheetProvider.createForAll(), viewModel);
+        var view = new DefaultShellView(this, stage, IconStylesheetProvider.createForAll(), viewModel);
         view.initialize();
 
         //adding menu

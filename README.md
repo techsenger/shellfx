@@ -112,6 +112,7 @@ working with the OS's default storage systems.
 * Registrars — provides default registrars (for menu items, etc.).
 * Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use
 custom icons instead, simply create your own stylesheets and add them to Shell.
+* JFX — contains tools for exploring JavaFX scene graph.
 * Core Demo — showcases TabShell's core functionality and provides examples for building custom components. This demo
 only requires the material and core modules.
 * Full Demo — showcases the complete platform with all components. This comprehensive demo uses all modules.

@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demos.full.menu;
 
 import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
@@ -30,7 +31,12 @@ import com.techsenger.tabshell.demos.full.hex.DemoHexEditorTabViewModel;
 import com.techsenger.tabshell.demos.full.text.Text;
 import com.techsenger.tabshell.demos.full.text.TextEditorTabView;
 import com.techsenger.tabshell.demos.full.text.TextEditorTabViewModel;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.hex.style.HexIcons;
+import com.techsenger.tabshell.jfx.JfxTabDockView;
+import com.techsenger.tabshell.jfx.JfxTabDockViewModel;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuGroup;
@@ -46,6 +52,7 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javafx.geometry.Side;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -69,6 +76,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
         registerTerminalItem();
         registerDialogsItem();
         registerDockLayoutItem();
+        registerJfxTabDockItem();
     }
 
     protected void registerMenu() {
@@ -146,7 +154,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
                 var shell = (ShellView<?>) v;
                 //terminal
                 var terminalViewModel = new TerminalTabViewModel(shell.getViewModel(), null);
-                var terminalView = new TerminalTabView(shell, terminalViewModel);
+                var terminalView = new TerminalTabView<>(shell, terminalViewModel);
                 terminalView.initialize();
                 shell.openTab(terminalView);
             });
@@ -179,6 +187,30 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
                 var dockTabView = new DockLayoutTabView(shell, dockTabViewModel);
                 dockTabView.initialize();
                 shell.openTab(dockTabView);
+            });
+            return item;
+        };
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoMenuNames.DEFAULT, f));
+    }
+
+    protected void registerJfxTabDockItem() {
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoMenuNames.JFX_DOCK, "JFX Tools", 10000);
+            item.setOnAction((e) -> {
+                var shell = (ShellView<?>) v;
+                var currentTab = shell.getSelectedTab();
+                if (currentTab != null && currentTab instanceof DockLayoutTabView tab) {
+                    var inspectorVM = new JfxTabDockViewModel();
+                    var inspectorV = new JfxTabDockView<>(shell, tab.getLayout(), inspectorVM);
+                    inspectorV.initialize();
+                    tab.getLayout().addTabDock(inspectorV, Side.BOTTOM, 300);
+                } else {
+                    var alertVM = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
+                            "Currently, use it only in the dock layout");
+                    var alertV  = new AlertDialogView<>(alertVM);
+                    alertV.initialize();
+                    shell.getDialogManager().openDialog(alertV);
+                }
             });
             return item;
         };
