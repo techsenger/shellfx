@@ -17,6 +17,7 @@
 module com.techsenger.tabshell.jfx {
     requires org.slf4j;
     requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.layout;
     requires javafx.base;
@@ -24,7 +25,6 @@ module com.techsenger.tabshell.jfx {
     requires javafx.controls;
     requires atlantafx.base;
     requires devtoolsfx.connector;
-    requires devtoolsfx.gui; // TEMP TEMP TEMP
 
     exports com.techsenger.tabshell.jfx;
 }

@@ -19,6 +19,10 @@
             <artifactId>mvvm4fx-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.toolkit</groupId>
+            <artifactId>toolkit-fx</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-core</artifactId>
         </dependency>
@@ -49,11 +53,6 @@
         <dependency>
             <groupId>io.github.mkpaz</groupId>
             <artifactId>devtoolsfx-connector</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.mkpaz</groupId>
-            <artifactId>devtoolsfx-gui</artifactId> <!-- TEMP TEMP TEMP -->
-            <version>1.0.1</version>
         </dependency>
      </dependencies>
 </project>

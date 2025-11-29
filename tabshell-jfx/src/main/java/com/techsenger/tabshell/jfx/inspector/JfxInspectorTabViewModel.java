@@ -20,6 +20,8 @@ import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
+import com.techsenger.toolkit.fx.value.ObservableSource;
+import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.connector.HighlightOptions;
 import devtoolsfx.event.AttributeListEvent;
@@ -61,6 +63,8 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
     private final ReadOnlyObjectWrapper<AttributeInfo> selectedAttribute = new ReadOnlyObjectWrapper<>();
 
     private final Map<AttributeCategory, AttributeInfo> attributeInfosByCategory = createAttributeInfosByCategory();
+
+    private final ObservableSource<Void> attributesUpdated = new SimpleObservableSource<>();
 
     private int windowUid;
 
@@ -125,6 +129,7 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
             switch (event) {
                 case AttributeListEvent ale -> {
                     addAttributes(ale);
+                    this.attributesUpdated.next(null);
                 }
                 default -> { }
             }
@@ -157,6 +162,10 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
 
     void setSelectedElement(Element element) {
         selectedElement.set(element);
+    }
+
+    ObservableSource<Void> getAttributesUpdated() {
+        return attributesUpdated;
     }
 
     private void setRootAttribute(AttributeInfo value) {

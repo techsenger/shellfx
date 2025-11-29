@@ -20,8 +20,6 @@ import devtoolsfx.scenegraph.attributes.Attribute;
 import devtoolsfx.scenegraph.attributes.AttributeCategory;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -31,7 +29,7 @@ import javafx.collections.ObservableList;
  */
 public class AttributeInfo {
 
-    private final StringProperty text = new SimpleStringProperty();
+    private final String text;
 
     private final AttributeCategory category;
 
@@ -45,13 +43,14 @@ public class AttributeInfo {
         this.category = null;
         this.attribute = attribute;
         this.children = FXCollections.emptyObservableList();
+        this.text = attribute.name();
     }
 
     public AttributeInfo(AttributeCategory category) {
         this.category = category;
         this.attribute = null;
         this.children = FXCollections.observableArrayList();
-        setText(category + " Properties");
+        this.text = category + " Properties";
     }
 
     public AttributeCategory getCategory() {
@@ -62,15 +61,7 @@ public class AttributeInfo {
         return attribute;
     }
 
-    public final String getText() {
-        return text.get();
-    }
-
-    public final void setText(String value) {
-        text.set(value);
-    }
-
-    public final StringProperty textProperty() {
+    public String getText() {
         return text;
     }
 

@@ -129,14 +129,6 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
     @Override
     protected void build(T viewModel) {
         super.build(viewModel);
-//        var button = new Button("Test");
-//        getContentPane().getChildren().add(button);
-//        button.setOnAction(e -> {
-//            ToolPane pane = GUI.createToolPane((Stage) button.getScene().getWindow(), getShell().getHostServices());
-//            pane.getConnector().start();
-//            VBox.setVgrow(pane, Priority.ALWAYS);
-//            getContentPane().getChildren().add(pane);
-//        });
         var styles = JfxInspectorTabView.class.getResource("inspector.css").toExternalForm();
         getContentPane().getStylesheets().add(styles);
 
@@ -147,18 +139,14 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         });
         nodeTableView.getColumns().add(nameColumn);
         nodeTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, "no-header");
-        nodeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
+        nodeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         VBox.setVgrow(nodeTableView, Priority.ALWAYS);
 
         TreeTableColumn<AttributeInfo, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
             // root is not shown
             var info = param.getValue().getValue();
-            if (info.getCategory() != null) {
-                return info.textProperty();
-            } else {
-                return new SimpleStringProperty(info.getAttribute().name());
-            }
+            return new SimpleStringProperty(info.getText());
         });
         TreeTableColumn<AttributeInfo, String> valueColumn = new TreeTableColumn<>("Value");
         valueColumn.setCellValueFactory(param -> {
@@ -176,7 +164,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         });
         attributeTableView.getColumns().addAll(propertyColumn, valueColumn);
         attributeTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
-        attributeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
+        attributeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         attributeTableView.setShowRoot(false);
         attributeTableView.setRoot(new RootAttributeTreeItem(viewModel.getRootAttribute()));
         VBox.setVgrow(attributeTableView, Priority.ALWAYS);
@@ -195,6 +183,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                 viewModel.setSelectedElement(newV.getValue());
             }
         });
+        viewModel.getAttributesUpdated().addListener((v) -> this.attributeTableView.refresh());
     }
 
     private TreeItem createNodeItem(Element element) {
