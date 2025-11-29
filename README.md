@@ -261,8 +261,7 @@ To get started with TabShell, it is recommended to follow these steps:
 
 ## Requirements <a name="requirements"></a>
 
-The library requires Java 17 or later. Due to some bugs, use JavaFX versions 19–20, or a version of JavaFX after
-24-ea+19 (see JDK-8344372).
+The library requires Java 25 and JavaFX 25.
 
 ## Dependencies <a name="dependencies"></a>
 
