@@ -78,7 +78,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractAreaView<T>
         }
 
         public void deinit() {
-            this.minimizedTab.setClosable(this.minimizedTabClosable);
+            this.minimizedTab.getView().getViewModel().setClosable(this.minimizedTabClosable);
             this.minimizedTab.getProperties().remove(BAR_TAB_KEY);
         }
     }
@@ -277,7 +277,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractAreaView<T>
     protected void openTabInPopup(BarTab barTab) {
         barTab.setShownInPopup(true);
         var minimizedTab = barTab.getMinimizedTab();
-        minimizedTab.setClosable(false);
+        minimizedTab.getView().getViewModel().setClosable(false);
         var tabs = this.popup.getTabPane().getTabs();
         if (tabs.size() == 1) {
             var otherBarTab = getBarTab(((ComponentTab) tabs.get(0)));
