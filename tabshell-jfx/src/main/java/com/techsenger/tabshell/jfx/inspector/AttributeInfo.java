@@ -50,7 +50,11 @@ public class AttributeInfo {
         this.category = category;
         this.attribute = null;
         this.children = FXCollections.observableArrayList();
-        this.text = category + " Properties";
+        if (category != null) {
+            this.text = Utils.toPascalCase(category.name()) + " Properties";
+        } else {
+            this.text = null;
+        }
     }
 
     public AttributeCategory getCategory() {
