@@ -341,6 +341,13 @@
 }
 
 /*
+    TreeView
+*/
+.tree-view.extra-dense .tree-cell {
+  -fx-padding: 0.176em 0 0.175em 0;
+}
+
+/*
     Menu item.
 */
 .menu-item {

@@ -22,14 +22,15 @@ import com.techsenger.tabshell.core.tab.AbstractTabView;
 import devtoolsfx.connector.LocalElement;
 import devtoolsfx.event.EventSource;
 import devtoolsfx.scenegraph.Element;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -91,11 +92,11 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
 
     }
 
-    private final TreeTableView<Element> nodeTableView = new TreeTableView<>();
+    private final TreeView<Element> nodeTreeView = new TreeView<>();
 
     private final TextField nodeTextField = new TextField();
 
-    private final VBox nodeVBox = new VBox(nodeTableView, nodeTextField);
+    private final VBox nodeVBox = new VBox(nodeTreeView, nodeTextField);
 
     private final TreeTableView<AttributeInfo> attributeTableView = new TreeTableView<>();
 
@@ -123,7 +124,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         var stage = shell.getStage();
         var root = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
         var rootItem = createNodeItem(root);
-        nodeTableView.setRoot(rootItem);
+        nodeTreeView.setRoot(rootItem);
     }
 
     @Override
@@ -132,15 +133,19 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         var styles = JfxInspectorTabView.class.getResource("inspector.css").toExternalForm();
         getContentPane().getStylesheets().add(styles);
 
-        TreeTableColumn<Element, String> nameColumn = new TreeTableColumn<>();
-        nameColumn.setCellValueFactory(param -> {
-            var t = viewModel.getElementText(param.getValue().getValue());
-            return new SimpleObjectProperty<>(t);
+        nodeTreeView.setCellFactory(tv -> new TreeCell<>() {
+            @Override
+            protected void updateItem(Element item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(viewModel.getElementText(item));
+                }
+            }
         });
-        nodeTableView.getColumns().add(nameColumn);
-        nodeTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, "no-header");
-        nodeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        VBox.setVgrow(nodeTableView, Priority.ALWAYS);
+        nodeTreeView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
 
         TreeTableColumn<AttributeInfo, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
@@ -176,7 +181,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
-        nodeTableView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+        nodeTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV == null) {
                 viewModel.setSelectedElement(null);
             } else {

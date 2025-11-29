@@ -18,6 +18,10 @@
     Author: Pavel Castornii
 */
 
+.tree-view {
+    -fx-border-width: 0;
+}
+
 .tree-table-view {
     -fx-border-width: 0;
 }
