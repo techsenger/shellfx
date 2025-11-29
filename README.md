@@ -20,6 +20,9 @@ final application.
     * [ShellTab](#core-shelltab)
     * [Tab](#core-tab)
     * [Dialog](#core-dialog)
+* [JFX Components](#jfx)
+    * [JFXTabDock](#jfx-tab-dock)
+    * [JFXInspector](#jfx-inspector)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
 * [Dependencies](#dependencies)
@@ -250,6 +253,22 @@ Dialogs are invoked from the `ViewModel` using `ComponentHelper`.
 The `Dialog` component is closed in the following way. When the `View#close()` method is called on a `Dialog`, control
 is delegated to the `DialogManager`, which handles its actual closure. Therefore, a `Dialog` can also be closed
 directly through the `DialogManager` when holding a reference to the dialog instance.
+
+## JFX Components <a name="jfx"></a>
+
+JFX components are tools for analyzing and inspecting JavaFX nodes, JavaFX settings, and so on. These components are
+intended primarily for developers who work on creating components for the platform.
+
+### JFXTabDock <a name="jfx-tab-dock"></a>
+
+This component is a container for Tab components and provides their shared mechanisms. It can be added to any layout,
+whether a simple one or a docking layout.
+
+### JFXInspector <a name="jfx-inspector"></a>
+
+JFX Inspector is a tool for analyzing JavaFX scene graph. It allows traversing the node tree and analyzing their
+properties. The component also enables opening information both for classes and their properties in the JavaFX
+reference documentation (Javadoc).
 
 ## Quick Start <a name="quick-start"></a>
 
