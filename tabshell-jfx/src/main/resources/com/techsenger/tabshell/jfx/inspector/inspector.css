@@ -22,12 +22,6 @@
     -fx-border-width: 0;
 }
 
-.tree-table-view .column-header-background {
-    -fx-pref-height: 0;
-    -fx-max-height: 0;
-    -fx-min-height: 0;
-}
-
 .tree-table-view .tree-table-row-cell {
     -fx-background-insets: 0, 0;
 }
