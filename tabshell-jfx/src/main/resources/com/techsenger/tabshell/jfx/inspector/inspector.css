@@ -30,3 +30,10 @@
     -fx-background-insets: 0, 0;
 }
 
+.tree-table-view .tree-table-row-cell .css-container {
+    -fx-alignment: TOP_LEFT;
+}
+
+.tree-table-view .tree-table-row-cell .css-container > .css-hint {
+    -fx-font-size: 0.65em;
+}

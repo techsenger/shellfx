@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.jfx.inspector;
 
 import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import devtoolsfx.connector.LocalElement;
@@ -24,13 +25,17 @@ import devtoolsfx.event.EventSource;
 import devtoolsfx.scenegraph.Element;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -153,6 +158,36 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             var info = param.getValue().getValue();
             return new SimpleStringProperty(info.getText());
         });
+        propertyColumn.setCellFactory(col -> new TreeTableCell<AttributeInfo, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    var info = getTableRow().getItem();
+                    if (info.getCategory() == null) {
+                        Label mainLabel = new Label(item);
+                        HBox box = new HBox(SizeConstants.THIRD_INSET, mainLabel);
+                        if (info.getAttribute() != null && info.getAttribute().cssProperty() != null) {
+                            Label cssHint = new Label("CSS");
+                            cssHint.getStyleClass().add("css-hint");
+                            var cssContainer = new HBox(cssHint);
+                            cssContainer.getStyleClass().add("css-container");
+                            cssContainer.setAlignment(Pos.TOP_LEFT);
+                            box.getChildren().add(cssContainer);
+                        }
+                        setText(null);
+                        setGraphic(box);
+                    } else {
+                        setText(item);
+                        setGraphic(null);
+                    }
+                }
+            }
+        });
+
         TreeTableColumn<AttributeInfo, String> valueColumn = new TreeTableColumn<>("Value");
         valueColumn.setCellValueFactory(param -> {
             // root is not shown
@@ -172,6 +207,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         attributeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         attributeTableView.setShowRoot(false);
         attributeTableView.setRoot(new RootAttributeTreeItem(viewModel.getRootAttribute()));
+        attributeTableView.setPlaceholder(null);
         VBox.setVgrow(attributeTableView, Priority.ALWAYS);
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
