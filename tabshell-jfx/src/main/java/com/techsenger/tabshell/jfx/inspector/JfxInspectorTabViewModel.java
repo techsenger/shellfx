@@ -26,8 +26,11 @@ import devtoolsfx.event.AttributeListEvent;
 import devtoolsfx.event.ConnectorEvent;
 import devtoolsfx.event.EventSource;
 import devtoolsfx.scenegraph.Element;
+import devtoolsfx.scenegraph.attributes.Attribute;
 import devtoolsfx.scenegraph.attributes.AttributeCategory;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -38,17 +41,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  * @author Pavel Castornii
  */
 public class JfxInspectorTabViewModel extends AbstractTabViewModel {
-
-    protected static String getElementText(Element element) {
-        var text = element.getClassInfo().simpleClassName();
-        if (element.getNodeProperties() != null) {
-            var styleClasses = element.getNodeProperties().styleClass();
-            if (styleClasses != null && !styleClasses.isEmpty()) {
-                text += " class=\"" + styleClasses + "\"";
-            }
-        }
-        return text;
-    }
 
     private static Map<AttributeCategory, AttributeInfo> createAttributeInfosByCategory() {
         var map = new HashMap<AttributeCategory, AttributeInfo>();
@@ -148,6 +140,17 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         });
     }
 
+    protected String getElementText(Element element) {
+        var text = element.getClassInfo().simpleClassName();
+        if (element.getNodeProperties() != null) {
+            var styleClasses = element.getNodeProperties().styleClass();
+            if (styleClasses != null && !styleClasses.isEmpty()) {
+                text += " class=\"" + styleClasses + "\"";
+            }
+        }
+        return text;
+    }
+
     void setRootElement(Element element) {
         rootElement.set(element);
     }
@@ -169,7 +172,9 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         var cat = attributeInfosByCategory.get(event.category());
         cat.getChildren().clear();
         root.getChildren().add(cat);
-        for (var a : event.attributes()) {
+        var sortedList = new ArrayList<>(event.attributes());
+        sortedList.sort(Comparator.comparing(Attribute::name));
+        for (var a : sortedList) {
             cat.getChildren().add(new AttributeInfo(a));
         }
     }

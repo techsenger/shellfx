@@ -195,13 +195,6 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                 viewModel.setSelectedElement(newV.getValue());
             }
         });
-//        viewModel.getRootAttribute().addListener((ov, oldV, newV) -> {
-//            if (newV == null) {
-//                attributeTableView.setRoot(null);
-//            } else {
-//                attributeTableView.setRoot(createAttributeRoot(newV));
-//            }
-//        });
     }
 
     private TreeItem createNodeItem(Element element) {
