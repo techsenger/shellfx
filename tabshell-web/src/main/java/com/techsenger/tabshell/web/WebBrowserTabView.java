@@ -20,8 +20,10 @@ import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.mvvm4fx.core.ComponentView;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
+import com.techsenger.toolkit.fx.collections.ListSynchronizer;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 
 /**
@@ -39,6 +41,8 @@ public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends Abstrac
     }
 
     private final WebView webView = new WebView();
+
+    private ListSynchronizer<WebHistory.Entry, String> synchronizer;
 
     public WebBrowserTabView(ShellView<?> shell, T viewModel) {
         super(shell, viewModel);
@@ -77,6 +81,18 @@ public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends Abstrac
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         viewModel.getUrlSource().addListener((ulr) -> this.webView.getEngine().load(ulr));
+        var webViewHistory = this.webView.getEngine().getHistory();
+        this.synchronizer = new ListSynchronizer<>(webViewHistory.getEntries(), viewModel.getModifiableHistoryEntries(),
+                (e) -> e.getUrl());
+        viewModel.historyIndexProperty().addListener((ov, oldV, newV) -> {
+            if (newV.intValue() != webViewHistory.getCurrentIndex()) {
+                int currentIndex = webViewHistory.getCurrentIndex();
+                int offset = newV.intValue() - currentIndex;
+                webViewHistory.go(offset);
+            }
+        });
+        webViewHistory.currentIndexProperty()
+                .addListener((ov, oldV, newV) -> viewModel.setHistoryIndex(newV.intValue()));
     }
 
     @Override

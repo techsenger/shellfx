@@ -24,8 +24,12 @@ import com.techsenger.tabshell.web.model.UrlUtils;
 import com.techsenger.tabshell.web.style.WebIcons;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -41,6 +45,13 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
     private final ObservableSource<String> urlSource = new SimpleObservableSource<>();
 
     private final StringProperty pageTitle = new SimpleStringProperty();
+
+    private final ObservableList<String> historyEntries = FXCollections.observableArrayList();
+
+    private final ObservableList<String> unmodifiableHistoryEntries =
+            FXCollections.unmodifiableObservableList(historyEntries);
+
+    private final IntegerProperty historyIndex = new SimpleIntegerProperty();
 
     public WebBrowserTabViewModel(ShellViewModel shell) {
         super(shell);
@@ -65,6 +76,46 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
         return pageTitle;
     }
 
+    /**
+     * Returns the unmodifiable list of history entries.
+     *
+     * @return
+     */
+    public ObservableList<String> getHistoryEntries() {
+        return unmodifiableHistoryEntries;
+    }
+
+    public int getHistoryIndex() {
+        return historyIndex.get();
+    }
+
+    public void setHistoryIndex(int index) {
+        historyIndex.set(index);
+    }
+
+    public IntegerProperty historyIndexProperty() {
+        return historyIndex;
+    }
+
+    public void goBack() {
+        var newIndex = getHistoryIndex();
+        if (newIndex > 0) {
+            newIndex--;
+            getComposer().getToolBar().setUrl(this.historyEntries.get(newIndex));
+            setHistoryIndex(newIndex);
+        }
+    }
+
+    public void goForward() {
+        var newIndex = getHistoryIndex();
+        if (newIndex + 1 < this.historyEntries.size()) {
+            newIndex++;
+            getComposer().getToolBar().setUrl(this.historyEntries.get(newIndex));
+            setHistoryIndex(newIndex);
+        }
+    }
+
+
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(WebComponentNames.WEB_BROWSER_TAB);
@@ -77,6 +128,19 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
             if (newV != null) {
                 setTitle(newV);
                 setTooltip(newV);
+            }
+        });
+        this.historyIndex.addListener((ov, oldV, newV) -> {
+            var toolBar = getComposer().getToolBar();
+            if (newV.intValue() > 0 && !this.historyEntries.isEmpty()) {
+                toolBar.setBackDisable(false);
+            } else {
+                toolBar.setBackDisable(true);
+            }
+            if (newV.intValue() + 1 < this.historyEntries.size()) {
+                toolBar.setForwardDisable(false);
+            } else {
+                toolBar.setForwardDisable(true);
             }
         });
     }
@@ -92,11 +156,16 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
                 url = UrlUtils.getSearch(url);
             }
             getComposer().getToolBar().setUrl(url);
+            getComposer().getToolBar().setReloadDisable(false);
             urlSource.next(url);
         }
     }
 
     ObservableSource<String> getUrlSource() {
         return urlSource;
+    }
+
+    ObservableList<String> getModifiableHistoryEntries() {
+        return historyEntries;
     }
 }

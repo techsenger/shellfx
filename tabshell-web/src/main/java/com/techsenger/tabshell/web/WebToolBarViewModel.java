@@ -18,6 +18,8 @@ package com.techsenger.tabshell.web;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -27,11 +29,53 @@ import javafx.beans.property.StringProperty;
  */
 public class WebToolBarViewModel extends AbstractAreaViewModel {
 
+    private final BooleanProperty backDisable = new SimpleBooleanProperty(true);
+
+    private final BooleanProperty forwardDisable = new SimpleBooleanProperty(true);
+
+    private final BooleanProperty reloadDisable = new SimpleBooleanProperty(true);
+
     private final StringProperty url = new SimpleStringProperty();
 
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(WebComponentNames.WEB_TOOL_BAR);
+    }
+
+    public boolean isBackDisable() {
+        return backDisable.get();
+    }
+
+    public void setBackDisable(boolean value) {
+        backDisable.set(value);
+    }
+
+    public BooleanProperty backDisableProperty() {
+        return backDisable;
+    }
+
+    public boolean isForwardDisable() {
+        return forwardDisable.get();
+    }
+
+    public void setForwardDisable(boolean value) {
+        forwardDisable.set(value);
+    }
+
+    public BooleanProperty forwardDisableProperty() {
+        return forwardDisable;
+    }
+
+    public boolean isReloadDisable() {
+        return reloadDisable.get();
+    }
+
+    public void setReloadDisable(boolean value) {
+        reloadDisable.set(value);
+    }
+
+    public BooleanProperty reloadDisableProperty() {
+        return reloadDisable;
     }
 
     public String getUrl() {

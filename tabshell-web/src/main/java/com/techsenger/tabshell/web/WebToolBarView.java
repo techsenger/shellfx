@@ -77,6 +77,9 @@ public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaV
     @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
+        backButton.disableProperty().bind(viewModel.backDisableProperty());
+        forwardButton.disableProperty().bind(viewModel.forwardDisableProperty());
+        reloadButton.disableProperty().bind(viewModel.reloadDisableProperty());
         urlTextField.textProperty().bindBidirectional(viewModel.urlProperty());
     }
 
@@ -89,6 +92,8 @@ public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaV
             }
         });
         reloadButton.setOnAction(e -> this.webBrowser.reload());
+        backButton.setOnAction(e -> this.webBrowser.getViewModel().goBack());
+        forwardButton.setOnAction(e -> this.webBrowser.getViewModel().goForward());
     }
 
     protected Button getBackButton() {
