@@ -179,16 +179,17 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         @Override
         public void run() {
             ShellTabView<?> selectedTab;
-            var allCanBeClosed = true;
-            for (var tab: tabPane.getTabs()) {
+            int nonClosableTabIndex = -1;
+            for (var i = 0; i < tabPane.getTabs().size(); i++) {
+                var tab = tabPane.getTabs().get(i);
                 var view = ((ComponentTab) tab).getView();
                 var callback = createCloseCallback(SHELL, null);
                 if (!view.doOnCloseAttempt(CloseScope.SHELL, callback)) {
-                    allCanBeClosed = false;
+                    nonClosableTabIndex = i;
                     break;
                 }
             }
-            if (allCanBeClosed) {
+            if (nonClosableTabIndex == -1) {
                 while ((selectedTab = getSelectedTab()) != null) {
                     doCloseTab(selectedTab);
                 }
@@ -201,6 +202,8 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
                         onClosed.call();
                     }
                 }
+            } else {
+                tabPane.getSelectionModel().select(nonClosableTabIndex);
             }
         }
     }
