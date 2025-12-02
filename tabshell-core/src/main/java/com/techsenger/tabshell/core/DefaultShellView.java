@@ -43,6 +43,7 @@ import com.techsenger.tabshell.core.theme.ShellTheme;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.List;
 import javafx.application.Application;
 import javafx.application.HostServices;
@@ -433,6 +434,8 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
                 close();
             }
         });
+        ValueUtils.callAndAddListener(viewModel.getSettings().getAppearance().regularFontProperty(),
+                (ov, oldV, newV) -> tabPane.setTabMaxWidth(newV.getSize() * 15));
     }
 
     @Override
