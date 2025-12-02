@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.techsenger.tabshell</groupId>
+        <artifactId>tabshell</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.techsenger.tabshell</groupId>
+    <artifactId>tabshell-web</artifactId>
+    <packaging>jar</packaging>
+    <name>TabShell - Web</name>
+    <description>A simple web browser</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.techsenger.mvvm4fx</groupId>
+            <artifactId>mvvm4fx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.tabshell</groupId>
+            <artifactId>tabshell-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.tabshell</groupId>
+            <artifactId>tabshell-material</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.tabshell</groupId>
+            <artifactId>tabshell-dialogs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+        </dependency>
+     </dependencies>
+</project>

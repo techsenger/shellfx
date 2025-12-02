@@ -48,6 +48,8 @@ import com.techsenger.tabshell.terminal.TerminalTabView;
 import com.techsenger.tabshell.terminal.TerminalTabViewModel;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.tabshell.text.style.TextIcons;
+import com.techsenger.tabshell.web.WebBrowserTabView;
+import com.techsenger.tabshell.web.WebBrowserTabViewModel;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
@@ -77,6 +79,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
         registerDialogsItem();
         registerDockLayoutItem();
         registerJfxTabDockItem();
+        registerWebBrowserItem();
     }
 
     protected void registerMenu() {
@@ -180,7 +183,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
 
     protected void registerDockLayoutItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoMenuNames.DOCK_LAYOUT, "Dock Layout", 1000);
+            var item = new NamedMenuItem(DemoMenuNames.DOCK_LAYOUT, "Dock Layout", 600);
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
                 var dockTabViewModel = new DockLayoutTabViewModel(shell.getViewModel());
@@ -195,7 +198,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
 
     protected void registerJfxTabDockItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoMenuNames.JFX_DOCK, "JFX Tools", 10000);
+            var item = new NamedMenuItem(DemoMenuNames.JFX_DOCK, "JFX Tools", 700);
             item.setOnAction((e) -> {
                 var shell = (ShellView<?>) v;
                 var currentTab = shell.getSelectedTab();
@@ -211,6 +214,21 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
                     alertV.initialize();
                     shell.getDialogManager().openDialog(alertV);
                 }
+            });
+            return item;
+        };
+        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoMenuNames.DEFAULT, f));
+    }
+
+    protected void registerWebBrowserItem() {
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoMenuNames.WEB_BROWSER, "Web Browser", 800);
+            item.setOnAction((e) -> {
+                var shell = (ShellView<?>) v;
+                var browserViewModel = new WebBrowserTabViewModel(shell.getViewModel());
+                var browserView = new WebBrowserTabView<>(shell, browserViewModel);
+                browserView.initialize();
+                shell.openTab(browserView);
             });
             return item;
         };

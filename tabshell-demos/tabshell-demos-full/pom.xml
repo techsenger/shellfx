@@ -72,6 +72,10 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
+            <artifactId>tabshell-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-registrars</artifactId>
         </dependency>
         <dependency>
@@ -126,7 +130,7 @@
                         <option>-Xrunjdwp:transport=dt_socket,address=7700,server=y,suspend=n</option>
                         <!--<option>-Xmx50m</option>-->
                         <option>--add-modules</option>
-                        <option>devtoolsfx.connector</option>
+                        <option>org.apache.logging.log4j</option>
                     </options>
                 </configuration>
             </plugin>

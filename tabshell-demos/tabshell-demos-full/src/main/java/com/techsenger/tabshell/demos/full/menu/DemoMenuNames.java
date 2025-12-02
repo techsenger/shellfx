@@ -43,4 +43,6 @@ public interface DemoMenuNames {
     MenuItemName DOCK_LAYOUT = new MenuItemName();
 
     MenuItemName JFX_DOCK = new MenuItemName();
+
+    MenuItemName WEB_BROWSER = new MenuItemName();
 }

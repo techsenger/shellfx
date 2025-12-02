@@ -21,8 +21,11 @@ final application.
     * [Tab](#core-tab)
     * [Dialog](#core-dialog)
 * [JFX Components](#jfx)
-    * [JFXTabDock](#jfx-tab-dock)
-    * [JFXInspector](#jfx-inspector)
+    * [JfxTabDock](#jfx-tab-dock)
+    * [JfxInspector](#jfx-inspector)
+* [Web Components](#web)
+    * [WebBrowserTab](#web-browser-tab)
+    * [WebToolBar](#web-tool-bar)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
 * [Dependencies](#dependencies)
@@ -116,6 +119,7 @@ working with the OS's default storage systems.
 * Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use
 custom icons instead, simply create your own stylesheets and add them to Shell.
 * JFX — contains tools for exploring JavaFX scene graph.
+* Web — includes a simple web browser built on JavaFX WebView.
 * Core Demo — showcases TabShell's core functionality and provides examples for building custom components. This demo
 only requires the material and core modules.
 * Full Demo — showcases the complete platform with all components. This comprehensive demo uses all modules.
@@ -259,16 +263,29 @@ directly through the `DialogManager` when holding a reference to the dialog inst
 JFX components are tools for analyzing and inspecting JavaFX nodes, JavaFX settings, and so on. These components are
 intended primarily for developers who work on creating components for the platform.
 
-### JFXTabDock <a name="jfx-tab-dock"></a>
+### JfxTabDock <a name="jfx-tab-dock"></a>
 
 This component is a container for Tab components and provides their shared mechanisms. It can be added to any layout,
 whether a simple one or a docking layout.
 
-### JFXInspector <a name="jfx-inspector"></a>
+### JfxInspector <a name="jfx-inspector"></a>
 
-JFX Inspector is a tool for analyzing JavaFX scene graph. It allows traversing the node tree and analyzing their
+JfxInspector is a tool for analyzing JavaFX scene graph. It allows traversing the node tree and analyzing their
 properties. The component also enables opening information both for classes and their properties in the JavaFX
 reference documentation (Javadoc).
+
+## Web Components <a name="web"></a>
+
+Web components are components that reside in the web module. Together, they form a simple web browser built on
+JavaFX WebView.
+
+### WebBrowserTab <a name="web-browser-tab"></a>
+
+WebBrowserTab is the main component. It represents a Tab for the Shell and can contain all other web components.
+
+### WebToolBar <a name="web-tool-bar"></a>
+
+WebToolBar is a component that represents the browser’s ToolBar.
 
 ## Quick Start <a name="quick-start"></a>
 

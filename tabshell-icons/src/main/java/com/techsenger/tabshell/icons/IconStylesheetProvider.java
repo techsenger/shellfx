@@ -71,6 +71,15 @@ public final class IconStylesheetProvider {
     }
 
     /**
+     * Creates and returns the stylesheet with icons for the 'web' module.
+     *
+     * @return
+     */
+    public static Stylesheet createForWeb() {
+        return new Stylesheet(IconStylesheetProvider.class.getResource("web.css"));
+    }
+
+    /**
      * Creates and returns the stylesheet with icons for the all modules.
      *
      * @return
@@ -80,7 +89,8 @@ public final class IconStylesheetProvider {
                 createForDialogs(),
                 createForTerminal(),
                 createForText(),
-                createForHex());
+                createForHex(),
+                createForWeb());
     }
 
     private IconStylesheetProvider() {

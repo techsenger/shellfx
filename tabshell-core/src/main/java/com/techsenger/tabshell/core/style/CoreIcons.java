@@ -93,4 +93,8 @@ public interface CoreIcons {
     StyleFontIcon DRAG_VERTICAL = new StyleFontIcon("drag-vertical-icon");
 
     StyleFontIcon RESTORE_WINDOW = new StyleFontIcon("restore-window-icon");
+
+    StyleFontIcon REFRESH = new StyleFontIcon("refresh-icon");
+
+    StyleFontIcon RELOAD = new StyleFontIcon("reload-icon");
 }
