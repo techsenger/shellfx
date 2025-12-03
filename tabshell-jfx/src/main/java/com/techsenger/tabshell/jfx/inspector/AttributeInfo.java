@@ -29,6 +29,8 @@ import javafx.collections.ObservableList;
  */
 public class AttributeInfo {
 
+    record ValueInfo(String value, boolean isDefault) { }
+
     private final String text;
 
     private final AttributeCategory category;
@@ -38,6 +40,8 @@ public class AttributeInfo {
     private final ObservableList<AttributeInfo> children;
 
     private final BooleanProperty expanded = new SimpleBooleanProperty();
+
+    private ValueInfo value;
 
     public AttributeInfo(Attribute<?> attribute) {
         this.category = null;
@@ -83,5 +87,13 @@ public class AttributeInfo {
 
     public final BooleanProperty expandedProperty() {
         return expanded;
+    }
+
+    ValueInfo getValue() {
+        return value;
+    }
+
+    void setValue(ValueInfo value) {
+        this.value = value;
     }
 }

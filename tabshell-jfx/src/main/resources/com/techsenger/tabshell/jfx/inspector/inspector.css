@@ -30,6 +30,10 @@
     -fx-background-insets: 0, 0;
 }
 
+.tree-table-view .tree-table-row-cell .label.default-value {
+    -fx-text-fill: -color-fg-muted;
+}
+
 .tree-table-view .tree-table-row-cell .css-container {
     -fx-alignment: TOP_LEFT;
 }

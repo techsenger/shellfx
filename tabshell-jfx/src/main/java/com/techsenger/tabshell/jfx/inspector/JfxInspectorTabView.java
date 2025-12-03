@@ -20,11 +20,19 @@ import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
+import com.techsenger.tabshell.jfx.inspector.AttributeInfo.ValueInfo;
 import devtoolsfx.connector.LocalElement;
 import devtoolsfx.event.EventSource;
 import devtoolsfx.scenegraph.Element;
+import devtoolsfx.scenegraph.attributes.Attribute;
+import static devtoolsfx.scenegraph.attributes.Attribute.DisplayHint.INSETS;
+import static devtoolsfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
+import devtoolsfx.scenegraph.attributes.Attribute.ValueState;
+import java.text.DecimalFormat;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
@@ -37,6 +45,7 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 /**
@@ -44,6 +53,55 @@ import javafx.scene.layout.VBox;
  * @author Pavel Castornii
  */
 public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends AbstractTabView<T> {
+
+    private static ValueInfo createValueInfo(Attribute<?> attr) {
+        switch (attr.displayHint()) {
+            case NUMERIC -> {
+                boolean isDefault = false;
+                if (attr.valueState() == ValueState.DEFAULT) {
+                    isDefault = true;
+                } else if (attr.value() instanceof Number number) {
+                    isDefault = isZero(number.doubleValue());
+                }
+                if (attr.value() instanceof Double num) {
+                    if (num == Region.USE_PREF_SIZE) {
+                        return new ValueInfo("USE_PREF_SIZE", true);
+                    }
+                    if (num == Region.USE_COMPUTED_SIZE) {
+                        return new ValueInfo("USE_COMPUTED_SIZE", true);
+                    }
+                    if (num == Double.MIN_VALUE) {
+                        return new ValueInfo("MIN_VALUE", true);
+                    }
+                    if (num == Double.MAX_VALUE) {
+                        return new ValueInfo("MAX_VALUE", true);
+                    }
+                    return new ValueInfo(FORMAT.format(num), isDefault);
+                }
+                return new ValueInfo(String.valueOf(attr.value()), isDefault);
+            }
+            case INSETS -> {
+                if (attr.value() instanceof Insets insets) {
+                    if (isZero(insets.getTop()) && isZero(insets.getRight())
+                            && isZero(insets.getBottom()) && isZero(insets.getLeft())) {
+                        return new ValueInfo("Insets.EMPTY", true);
+                    }
+                }
+                return new ValueInfo(String.valueOf(attr.value()), attr.valueState() == ValueState.DEFAULT);
+            }
+            default -> {
+                if (attr.value() instanceof List list && list.isEmpty()) {
+                    return new ValueInfo("[]", true);
+                }
+                boolean isDefault = false;
+                var strValue = String.valueOf(attr.value());
+                if (attr.valueState() == ValueState.DEFAULT || strValue.equals("null") || strValue.isEmpty())  {
+                    isDefault = true;
+                }
+                return new ValueInfo(strValue, isDefault);
+            }
+        }
+    }
 
     private static final class RootAttributeTreeItem extends TreeItem<AttributeInfo> {
 
@@ -74,6 +132,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             while (e.next()) {
                 if (e.wasAdded()) {
                     for (var added : e.getAddedSubList()) {
+                        added.setValue(createValueInfo(added.getAttribute()));
                         var c = new TreeItem(added);
                         getChildren().add(c);
                     }
@@ -94,7 +153,12 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             this.expandedProperty().unbindBidirectional(getValue().expandedProperty());
             getValue().getChildren().removeListener(listener);
         }
+    }
 
+    private static final DecimalFormat FORMAT = new DecimalFormat("#.###");
+
+    private static boolean isZero(double v) {
+        return Math.abs(v) < 1e-10;
     }
 
     private final TreeView<Element> nodeTreeView = new TreeView<>();
@@ -159,6 +223,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             return new SimpleStringProperty(info.getText());
         });
         propertyColumn.setCellFactory(col -> new TreeTableCell<AttributeInfo, String>() {
+
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -170,13 +235,19 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                     if (info.getCategory() == null) {
                         Label mainLabel = new Label(item);
                         HBox box = new HBox(SizeConstants.THIRD_INSET, mainLabel);
-                        if (info.getAttribute() != null && info.getAttribute().cssProperty() != null) {
-                            Label cssHint = new Label("CSS");
-                            cssHint.getStyleClass().add("css-hint");
-                            var cssContainer = new HBox(cssHint);
-                            cssContainer.getStyleClass().add("css-container");
-                            cssContainer.setAlignment(Pos.TOP_LEFT);
-                            box.getChildren().add(cssContainer);
+                        var attr = info.getAttribute();
+                        if (attr != null) {
+                            if (info.getValue().isDefault()) {
+                                mainLabel.getStyleClass().add("default-value");
+                            }
+                            if (info.getAttribute().cssProperty() != null) {
+                                Label cssHint = new Label("CSS");
+                                cssHint.getStyleClass().add("css-hint");
+                                var cssContainer = new HBox(cssHint);
+                                cssContainer.getStyleClass().add("css-container");
+                                cssContainer.setAlignment(Pos.TOP_LEFT);
+                                box.getChildren().add(cssContainer);
+                            }
                         }
                         setText(null);
                         setGraphic(box);
@@ -195,11 +266,27 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             if (info.getCategory() != null) {
                 return new SimpleStringProperty();
             } else {
-                var text = "";
-                if (info.getAttribute().value() != null) {
-                    text = info.getAttribute().value().toString();
+                return new SimpleStringProperty(info.getValue().value());
+            }
+        });
+        valueColumn.setCellFactory(col -> new TreeTableCell<AttributeInfo, String>() {
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    var info = getTableRow().getItem();
+                    var attr = info.getAttribute();
+                    Label mainLabel = new Label(item);
+                    if (attr != null && info.getValue().isDefault()) {
+                        mainLabel.getStyleClass().add("default-value");
+                    }
+                    setGraphic(mainLabel);
+                    setText(null);
                 }
-                return new SimpleStringProperty(text);
             }
         });
         attributeTableView.getColumns().addAll(propertyColumn, valueColumn);
@@ -207,7 +294,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         attributeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         attributeTableView.setShowRoot(false);
         attributeTableView.setRoot(new RootAttributeTreeItem(viewModel.getRootAttribute()));
-        attributeTableView.setPlaceholder(null);
+        attributeTableView.setPlaceholder(new Label(""));
         VBox.setVgrow(attributeTableView, Priority.ALWAYS);
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
