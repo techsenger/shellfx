@@ -47,6 +47,11 @@ public abstract class AbstractPageView<T extends AbstractPageViewModel> extends 
     }
 
     @Override
+    public PageComposer<?> getComposer() {
+        return (PageComposer<?>) super.getComposer();
+    }
+
+    @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
         this.iconViewBox.iconProperty().bind(viewModel.iconProperty());

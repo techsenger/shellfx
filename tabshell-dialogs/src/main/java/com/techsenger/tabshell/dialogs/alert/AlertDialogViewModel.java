@@ -18,7 +18,7 @@ package com.techsenger.tabshell.dialogs.alert;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.StyleFontIcon;

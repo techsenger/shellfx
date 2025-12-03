@@ -179,6 +179,11 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
         this.closable.set(closable);
     }
 
+    @Override
+    public TabMediator getMediator() {
+        return (TabMediator) super.getMediator();
+    }
+
     protected Map<MenuName, MenuHelper> getMenuHelpersByName() {
         return menuHelpersByName;
     }

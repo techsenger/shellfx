@@ -26,35 +26,39 @@ import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogShellTabComposer<T extends AbstractShellTabView<?>>
+public class DialogShellTabComposer<T extends AbstractShellTabView<?>>
         extends AbstractShellTabComposer<T> implements StandardDialogComposer<T> {
 
-    protected abstract class ViewModelComposer extends AbstractShellTabComposer.ViewModelComposer
-            implements StandardDialogComposer.ViewModelComposer {
+    protected class Mediator extends AbstractShellTabComposer.Mediator implements DialogShellTabMediator {
 
         @Override
         public void openAlertDialog(AlertDialogViewModel viewModel) {
-            AbstractDialogShellTabComposer.this.openAlertDialog(viewModel);
+            DialogShellTabComposer.this.openAlertDialog(viewModel);
         }
 
         @Override
         public void openYesNoDialog(YesNoDialogViewModel viewModel) {
-            AbstractDialogShellTabComposer.this.openYesNoDialog(viewModel);
+            DialogShellTabComposer.this.openYesNoDialog(viewModel);
         }
 
         @Override
         public void openFileChooserDialog(FileChooserDialogViewModel viewModel) {
-            AbstractDialogShellTabComposer.this.openFileChooserDialog(viewModel);
+            DialogShellTabComposer.this.openFileChooserDialog(viewModel);
         }
     }
 
-    public AbstractDialogShellTabComposer(T view) {
+    public DialogShellTabComposer(T view) {
         super(view);
     }
 
     @Override
-    public ViewModelComposer getViewModelComposer() {
-        return (ViewModelComposer) super.getViewModelComposer();
+    public DialogShellTabMediator getMediator() {
+        return (DialogShellTabMediator) super.getMediator();
+    }
+
+    @Override
+    protected DialogShellTabMediator createMediator() {
+        return new DialogShellTabComposer.Mediator();
     }
 }
 

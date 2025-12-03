@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.web;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.ComponentViewModel;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.web.model.UrlUtils;
@@ -37,11 +36,6 @@ import javafx.collections.ObservableList;
  */
 public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
 
-    public interface Composer extends ComponentViewModel.Composer {
-
-        WebToolBarViewModel getToolBar();
-    }
-
     private final ObservableSource<String> urlSource = new SimpleObservableSource<>();
 
     private final StringProperty pageTitle = new SimpleStringProperty();
@@ -60,8 +54,8 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
     }
 
     @Override
-    public WebBrowserTabViewModel.Composer getComposer() {
-        return (WebBrowserTabViewModel.Composer) super.getComposer();
+    public WebBrowserTabMediator getMediator() {
+        return (WebBrowserTabMediator) super.getMediator();
     }
 
     public String getPageTitle() {
@@ -101,7 +95,7 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
         var newIndex = getHistoryIndex();
         if (newIndex > 0) {
             newIndex--;
-            getComposer().getToolBar().setUrl(this.historyEntries.get(newIndex));
+            getMediator().getToolBar().setUrl(this.historyEntries.get(newIndex));
             setHistoryIndex(newIndex);
         }
     }
@@ -110,7 +104,7 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
         var newIndex = getHistoryIndex();
         if (newIndex + 1 < this.historyEntries.size()) {
             newIndex++;
-            getComposer().getToolBar().setUrl(this.historyEntries.get(newIndex));
+            getMediator().getToolBar().setUrl(this.historyEntries.get(newIndex));
             setHistoryIndex(newIndex);
         }
     }
@@ -131,7 +125,7 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
             }
         });
         this.historyIndex.addListener((ov, oldV, newV) -> {
-            var toolBar = getComposer().getToolBar();
+            var toolBar = getMediator().getToolBar();
             if (newV.intValue() > 0 && !this.historyEntries.isEmpty()) {
                 toolBar.setBackDisable(false);
             } else {
@@ -146,7 +140,7 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
     }
 
     protected void load() {
-        var toolBar = getComposer().getToolBar();
+        var toolBar = getMediator().getToolBar();
         var url = toolBar.getUrl();
         if (url != null) {
             var normalizedUrl = UrlUtils.normalize(url);
@@ -155,8 +149,8 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
             } else {
                 url = UrlUtils.getSearch(url);
             }
-            getComposer().getToolBar().setUrl(url);
-            getComposer().getToolBar().setReloadDisable(false);
+            getMediator().getToolBar().setUrl(url);
+            getMediator().getToolBar().setReloadDisable(false);
             urlSource.next(url);
         }
     }

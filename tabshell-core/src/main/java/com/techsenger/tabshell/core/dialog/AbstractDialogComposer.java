@@ -25,12 +25,16 @@ import com.techsenger.tabshell.core.area.AbstractAreaComposer;
 public abstract class AbstractDialogComposer<T extends AbstractDialogView<?>> extends AbstractAreaComposer<T>
         implements DialogComposer<T> {
 
-    protected abstract class ViewModelComposer extends AbstractAreaComposer.ViewModelComposer
-            implements DialogComposer.ViewModelComposer {
+    protected abstract class Mediator extends AbstractAreaComposer.Mediator implements DialogMediator {
 
     }
 
     public AbstractDialogComposer(T view) {
         super(view);
+    }
+
+    @Override
+    public DialogMediator getMediator() {
+        return (DialogMediator) super.getMediator();
     }
 }

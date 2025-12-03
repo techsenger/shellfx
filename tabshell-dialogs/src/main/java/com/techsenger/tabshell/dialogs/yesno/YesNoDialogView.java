@@ -22,7 +22,8 @@ import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.dialogs.DefaultStandardDialogComposer;
+import com.techsenger.tabshell.dialogs.base.BaseDialogComposer;
+import com.techsenger.tabshell.dialogs.base.DefaultBaseDialogComposer;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -61,6 +62,11 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
     @Override
     public void requestFocus() {
         NodeUtils.requestFocus(getNode());
+    }
+
+    @Override
+    public BaseDialogComposer<?> getComposer() {
+        return (BaseDialogComposer<?>) super.getComposer();
     }
 
     @Override
@@ -111,7 +117,7 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
 
     @Override
     protected ComponentComposer<?> createComposer() {
-        return new DefaultStandardDialogComposer(this);
+        return new DefaultBaseDialogComposer<>(this);
     }
 
     protected Button getConfirmButton() {

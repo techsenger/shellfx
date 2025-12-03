@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.dialog.DialogView;
 
@@ -25,10 +24,9 @@ import com.techsenger.tabshell.core.dialog.DialogView;
  * @author Pavel Castornii
  */
 public abstract class AbstractShellTabComposer<T extends AbstractShellTabView<?>> extends AbstractTabComposer<T>
-        implements DialogComposer<T> {
+        implements ShellTabComposer<T> {
 
-    protected abstract class ViewModelComposer extends AbstractTabComposer.ViewModelComposer
-            implements DialogComposer.ViewModelComposer {
+    protected abstract class Mediator extends AbstractTabComposer.Mediator implements ShellTabMediator {
 
     }
 
@@ -44,6 +42,11 @@ public abstract class AbstractShellTabComposer<T extends AbstractShellTabView<?>
         } else {
             getView().getDialogManager().openDialog(dialog);
         }
+    }
+
+    @Override
+    public ShellTabMediator getMediator() {
+        return (ShellTabMediator) super.getMediator();
     }
 }
 

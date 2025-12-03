@@ -277,8 +277,8 @@ public abstract class AbstractDialogViewModel extends AbstractAreaViewModel impl
     }
 
     @Override
-    public DialogComposer.ViewModelComposer getComposer() {
-        return (DialogComposer.ViewModelComposer) super.getComposer();
+    public DialogMediator getMediator() {
+        return (DialogMediator) super.getMediator();
     }
 
     ObservableSource<Boolean> closeRequestedSource() {

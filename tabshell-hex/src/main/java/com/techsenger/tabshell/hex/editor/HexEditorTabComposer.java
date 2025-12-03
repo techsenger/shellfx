@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.dialogs.AbstractDialogShellTabComposer;
+import com.techsenger.tabshell.dialogs.DialogShellTabComposer;
 import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
 import com.techsenger.tabshell.hex.inspector.DataInspectorTabViewModel;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
@@ -29,11 +29,9 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends AbstractDialogShellTabComposer<T>
-        implements HexEditorTabView.Composer {
+public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends DialogShellTabComposer<T> {
 
-    protected class ViewModelComposer extends AbstractDialogShellTabComposer.ViewModelComposer
-            implements HexEditorTabViewModel.Composer {
+    protected class Mediator extends DialogShellTabComposer.Mediator implements HexEditorTabMediator {
 
         private final HexEditorTabViewModel editor;
 
@@ -45,7 +43,7 @@ public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends Abstrac
 
         private final DataInspectorTabViewModel dataInspector;
 
-        public ViewModelComposer() {
+        public Mediator() {
             this.editor = getView().getViewModel();
             this.toolBar = createToolBar();
             this.layout = createLayout();
@@ -114,36 +112,30 @@ public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends Abstrac
     }
 
     @Override
-    public ViewModelComposer getViewModelComposer() {
-        return (ViewModelComposer) super.getViewModelComposer();
+    public HexEditorTabMediator getMediator() {
+        return (HexEditorTabMediator) super.getMediator();
     }
 
-    @Override
     public HexToolBarView<?> getToolBar() {
         return toolBar;
     }
 
-    @Override
     public void addToolBar(VBox content) {
         content.getChildren().add(toolBar.getNode());
     }
 
-    @Override
     public DockLayoutView<?> getLayout() {
         return layout;
     }
 
-    @Override
     public HexAreaView<?> getArea() {
         return area;
     }
 
-    @Override
     public DataInspectorTabView<?> getDataInspector() {
         return dataInspector;
     }
 
-    @Override
     public void addLayout(VBox contentPane) {
         contentPane.getChildren().add(layout.getNode());
     }
@@ -174,23 +166,23 @@ public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends Abstrac
     }
 
     protected HexToolBarView<?> createToolBar() {
-        return new HexToolBarView<>(getViewModelComposer().getToolBar());
+        return new HexToolBarView<>(getMediator().getToolBar());
     }
 
     protected DockLayoutView<?> createLayout() {
-        return new DockLayoutView<>(getViewModelComposer().getLayout());
+        return new DockLayoutView<>(getMediator().getLayout());
     }
 
     protected HexAreaView<?> createArea() {
-        return new HexAreaView<>(getViewModelComposer().getArea());
+        return new HexAreaView<>(getMediator().getArea());
     }
 
     protected DataInspectorTabView<?> createDataInspector() {
-        return new DataInspectorTabView<>(getViewModelComposer().getDataInspector());
+        return new DataInspectorTabView<>(getMediator().getDataInspector());
     }
 
     @Override
-    protected ViewModelComposer createViewModelComposer() {
-        return new ViewModelComposer();
+    protected HexEditorTabMediator createMediator() {
+        return new HexEditorTabComposer.Mediator();
     }
 }

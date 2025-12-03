@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaComposer;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractTabHostComposer<T extends TabHostView<?>> extends AbstractAreaComposer<T> {
+public abstract class AbstractTabHostComposer<T extends TabHostView<?>> extends AbstractAreaComposer<T>  {
 
     public AbstractTabHostComposer(T view) {
         super(view);

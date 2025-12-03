@@ -24,7 +24,7 @@ import com.techsenger.mvvm4fx.core.AbstractChildComposer;
  */
 public abstract class AbstractTabComposer<T extends AbstractTabView<?>> extends AbstractChildComposer<T> {
 
-    protected abstract class ViewModelComposer extends AbstractChildComposer.ViewModelComposer {
+    protected abstract class Mediator extends AbstractChildComposer.Mediator implements TabMediator {
 
     }
 
@@ -32,4 +32,8 @@ public abstract class AbstractTabComposer<T extends AbstractTabView<?>> extends 
         super(view);
     }
 
+    @Override
+    public TabMediator getMediator() {
+        return (TabMediator) super.getMediator();
+    }
 }

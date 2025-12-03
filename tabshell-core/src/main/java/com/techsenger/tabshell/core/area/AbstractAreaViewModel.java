@@ -54,6 +54,11 @@ public abstract class AbstractAreaViewModel extends AbstractChildViewModel imple
         return this.height.get();
     }
 
+    @Override
+    public AreaMediator getMediator() {
+        return (AreaMediator) super.getMediator();
+    }
+
     ReadOnlyDoubleWrapper getWidthWrapper() {
         return width;
     }

@@ -50,6 +50,11 @@ public abstract class AbstractShellTabViewModel extends AbstractTabViewModel imp
         return this.dialogCount.get();
     }
 
+    @Override
+    public ShellTabMediator getMediator() {
+        return (ShellTabMediator) super.getMediator();
+    }
+
     ReadOnlyIntegerWrapper dialogCountWrapper() {
         return dialogCount;
     }

@@ -17,12 +17,10 @@
 package com.techsenger.tabshell.demos.core.tab;
 
 import com.techsenger.mvvm4fx.core.ComponentComposer;
-import com.techsenger.mvvm4fx.core.ComponentView;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
-import com.techsenger.tabshell.demos.core.dialog.DemoDialogViewModel;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -34,11 +32,6 @@ import javafx.scene.layout.VBox;
  * @author Pavel Castornii
  */
 public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
-
-    public interface Composer extends ComponentView.Composer {
-
-        void openDemoDialog(DemoDialogViewModel dialog);
-    }
 
     private final CheckBox newValidCheckBox = new CheckBox("New Item Valid");
 

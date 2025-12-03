@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.dialogs;
 
 import com.techsenger.mvvm4fx.core.ComponentView;
-import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
@@ -31,16 +30,7 @@ import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
  *
  * @author Pavel Castornii
  */
-public interface StandardDialogComposer<T extends ComponentView<?>> extends DialogComposer<T> {
-
-    interface ViewModelComposer extends DialogComposer.ViewModelComposer {
-
-        void openAlertDialog(AlertDialogViewModel viewModel);
-
-        void openYesNoDialog(YesNoDialogViewModel viewModel);
-
-        void openFileChooserDialog(FileChooserDialogViewModel viewModel);
-    }
+public interface StandardDialogComposer<T extends ComponentView<?>> {
 
     /**
      * Opens a dialog.

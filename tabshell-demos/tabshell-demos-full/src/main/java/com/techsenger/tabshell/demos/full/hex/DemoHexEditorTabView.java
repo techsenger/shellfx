@@ -26,22 +26,17 @@ import com.techsenger.tabshell.hex.editor.HexEditorTabView;
  */
 public class DemoHexEditorTabView extends HexEditorTabView<DemoHexEditorTabViewModel> {
 
-    public interface Composer extends HexEditorTabView.Composer {
-
-        DemoHexToolBarView getToolBar();
-    }
-
     public DemoHexEditorTabView(ShellView<?> shell, DemoHexEditorTabViewModel viewModel) {
         super(shell, viewModel);
     }
 
     @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
+    public DemoHexEditorTabComposer getComposer() {
+        return (DemoHexEditorTabComposer) super.getComposer();
     }
 
     @Override
     protected ComponentComposer<?> createComposer() {
-        return new DemoHexEditorComposer(this);
+        return new DemoHexEditorTabComposer(this);
     }
 }

@@ -24,7 +24,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaComposer;
  */
 public abstract class AbstractPageComposer<T extends AbstractPageView<?>> extends AbstractAreaComposer<T> {
 
-    protected abstract class ViewModelComposer extends AbstractAreaComposer.ViewModelComposer {
+    protected abstract class Mediator extends AbstractAreaComposer.Mediator implements PageMediator {
 
     }
 
@@ -32,4 +32,8 @@ public abstract class AbstractPageComposer<T extends AbstractPageView<?>> extend
         super(view);
     }
 
+    @Override
+    public PageMediator getMediator() {
+        return (PageMediator) super.getMediator();
+    }
 }

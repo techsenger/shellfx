@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs;
+package com.techsenger.tabshell.dialogs.base;
 
-import com.techsenger.mvvm4fx.core.ComponentViewModel;
+import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.dialog.AbstractDialogComposer;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.dialog.DialogView;
@@ -28,45 +28,38 @@ import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
  *
  * @author Pavel Castornii
  */
-public class DefaultStandardDialogComposer extends AbstractDialogComposer<AbstractDialogView<?>>
-            implements StandardDialogComposer<AbstractDialogView<?>> {
+public class DefaultBaseDialogComposer<T extends AbstractDialogView<?>> extends AbstractDialogComposer<T>
+        implements BaseDialogComposer<T> {
 
-    private final class ViewModelComposer extends AbstractDialogComposer.ViewModelComposer
-            implements StandardDialogComposer.ViewModelComposer {
+    private final class Mediator extends AbstractDialogComposer.Mediator implements BaseDialogMediator {
 
         @Override
         public void openAlertDialog(AlertDialogViewModel viewModel) {
-            DefaultStandardDialogComposer.this.openAlertDialog(viewModel);
+            DefaultBaseDialogComposer.this.openAlertDialog(viewModel);
         }
 
         @Override
         public void openYesNoDialog(YesNoDialogViewModel viewModel) {
-            DefaultStandardDialogComposer.this.openYesNoDialog(viewModel);
+            DefaultBaseDialogComposer.this.openYesNoDialog(viewModel);
         }
 
         @Override
         public void openFileChooserDialog(FileChooserDialogViewModel viewModel) {
-            DefaultStandardDialogComposer.this.openFileChooserDialog(viewModel);
+            DefaultBaseDialogComposer.this.openFileChooserDialog(viewModel);
         }
-
     }
 
-    public DefaultStandardDialogComposer(AbstractDialogView<?> view) {
+    public DefaultBaseDialogComposer(T view) {
         super(view);
     }
 
     @Override
-    public ViewModelComposer getViewModelComposer() {
-        return (ViewModelComposer) super.getViewModelComposer();
-    }
-
-    @Override
-    public void openDialog(DialogView dialog) {
+    public void openDialog(DialogView<?> dialog) {
         getView().getDialogManager().openDialog(dialog);
     }
 
     @Override
-    protected ComponentViewModel.Composer createViewModelComposer() {
-        return new ViewModelComposer();
+    protected ComponentMediator createMediator() {
+        return new DefaultBaseDialogComposer.Mediator();
     }
 }

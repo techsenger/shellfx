@@ -20,6 +20,7 @@ import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.DialogComponentNames;
+import com.techsenger.tabshell.dialogs.base.BaseDialogMediator;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -242,6 +243,11 @@ public class YesNoDialogViewModel extends AbstractDialogViewModel {
 
     public void setMessage(String message) {
         this.message.set(message);
+    }
+
+    @Override
+    public BaseDialogMediator getMediator() {
+        return (BaseDialogMediator) super.getMediator();
     }
 
     @Override

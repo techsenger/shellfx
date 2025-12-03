@@ -17,18 +17,14 @@
 package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.ParentViewModel;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
-import com.techsenger.tabshell.dialogs.StandardDialogComposer;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.hex.HexComponentNames;
-import com.techsenger.tabshell.hex.inspector.DataInspectorTabViewModel;
 import com.techsenger.tabshell.hex.model.HexDocument;
 import com.techsenger.tabshell.hex.style.HexIcons;
-import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
 import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
 
@@ -38,17 +34,6 @@ import java.util.List;
  */
 public class HexEditorTabViewModel extends AbstractShellTabViewModel
         implements FileOpenerViewModel, FileSaverViewModel {
-
-    public interface Composer extends ParentViewModel.Composer, StandardDialogComposer.ViewModelComposer {
-
-        HexToolBarViewModel getToolBar();
-
-        DockLayoutViewModel getLayout();
-
-        HexAreaViewModel getArea();
-
-        DataInspectorTabViewModel getDataInspector();
-    }
 
     private final HexDocument document;
 
@@ -63,11 +48,11 @@ public class HexEditorTabViewModel extends AbstractShellTabViewModel
 
     @Override
     public void readFile() {
-        var area = getComposer().getArea();
+        var area = getMediator().getArea();
         area.getCaret().setDisabled(true);
         if (this.document.readFile()) {
             area.updateOnNewFile();
-            var dataInspector = getComposer().getDataInspector();
+            var dataInspector = getMediator().getDataInspector();
             if (dataInspector != null) {
                 dataInspector.updateTypeItems();
             }
@@ -104,8 +89,8 @@ public class HexEditorTabViewModel extends AbstractShellTabViewModel
     }
 
     @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
+    public HexEditorTabMediator getMediator() {
+        return (HexEditorTabMediator) super.getMediator();
     }
 
     @Override

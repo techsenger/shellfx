@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.page;
 
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogHistory;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogHistory;
 
 /**
  *

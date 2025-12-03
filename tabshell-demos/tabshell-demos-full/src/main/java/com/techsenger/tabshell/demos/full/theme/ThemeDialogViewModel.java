@@ -20,7 +20,7 @@ import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.theme.ShellTheme;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import java.util.Arrays;
 import java.util.stream.Collectors;

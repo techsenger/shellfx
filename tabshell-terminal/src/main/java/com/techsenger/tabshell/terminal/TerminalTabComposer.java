@@ -16,25 +16,26 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.dialogs.AbstractDialogShellTabComposer;
+import com.techsenger.tabshell.dialogs.DialogShellTabComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TerminalTabComposer<T extends TerminalTabView<?>> extends AbstractDialogShellTabComposer<T> {
+public class TerminalTabComposer<T extends TerminalTabView<?>> extends DialogShellTabComposer<T> {
 
-    protected class ViewModelComposer extends AbstractDialogShellTabComposer.ViewModelComposer
-            implements TerminalTabViewModel.Composer {
+    protected class Mediator extends DialogShellTabComposer.Mediator implements TerminalTabMediator {
 
         @Override
         public void showFindPane(FindPaneViewModel findViewModel) {
-            TerminalTabComposer.this.showFindPane(findViewModel);
+            var findView = new FindPaneView(getView().getWidget(), findViewModel);
+            findView.initialize();
+            getView().showFind(findView);
         }
 
         @Override
         public void hideFindPane() {
-            TerminalTabComposer.this.hideFindPane();
+            getView().hideFind();
         }
 
     }
@@ -44,24 +45,12 @@ public class TerminalTabComposer<T extends TerminalTabView<?>> extends AbstractD
     }
 
     @Override
-    public ViewModelComposer getViewModelComposer() {
-        return (ViewModelComposer) super.getViewModelComposer();
+    public TerminalTabMediator getMediator() {
+        return (TerminalTabMediator) super.getMediator();
     }
-
 
     @Override
-    protected ViewModelComposer createViewModelComposer() {
-        return new TerminalTabComposer.ViewModelComposer();
+    protected TerminalTabMediator createMediator() {
+        return new TerminalTabComposer.Mediator();
     }
-
-    private void showFindPane(FindPaneViewModel findViewModel) {
-        var findView = new FindPaneView(getView().getWidget(), findViewModel);
-        findView.initialize();
-        getView().showFind(findView);
-    }
-
-    private void hideFindPane() {
-        getView().hideFind();
-    }
-
 }

@@ -16,13 +16,19 @@
 
 package com.techsenger.tabshell.dialogs;
 
-import com.techsenger.tabshell.core.dialog.AbstractDialogHistory;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSimpleDialogHistory<T extends AbstractSimpleDialogViewModel>
-        extends AbstractDialogHistory<T> {
+public interface StandardDialogMediator {
 
+    void openAlertDialog(AlertDialogViewModel viewModel);
+
+    void openYesNoDialog(YesNoDialogViewModel viewModel);
+
+    void openFileChooserDialog(FileChooserDialogViewModel viewModel);
 }

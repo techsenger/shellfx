@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs;
+package com.techsenger.tabshell.dialogs.simple;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
@@ -24,6 +24,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import com.techsenger.tabshell.dialogs.base.BaseDialogMediator;
 
 /**
  *
@@ -162,7 +163,7 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
     }
 
     @Override
-    public StandardDialogComposer.ViewModelComposer getComposer() {
-        return (StandardDialogComposer.ViewModelComposer) super.getComposer();
+    public BaseDialogMediator getMediator() {
+        return (BaseDialogMediator) super.getMediator();
     }
 }

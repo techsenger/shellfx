@@ -16,25 +16,21 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.mvvm4fx.core.ComponentComposer;
-import com.techsenger.mvvm4fx.core.ComponentView;
-import com.techsenger.mvvm4fx.core.ComponentViewModel;
+import com.techsenger.tabshell.core.area.AreaComposer;
 
 /**
  * Different dialog composers can be created using interfaces with default methods.
  *
  * @author Pavel Castornii
  */
-public interface DialogComposer<T extends ComponentView<?>> extends ComponentComposer<T> {
-
-
-    interface ViewModelComposer extends ComponentViewModel.Composer {
-
-    }
+public interface DialogComposer<T extends DialogView<?>> extends AreaComposer<T> {
 
     /**
      * Opens a dialog.
      * @param dialog
      */
     void openDialog(DialogView<?> dialog);
+
+    @Override
+    DialogMediator getMediator();
 }

@@ -18,7 +18,7 @@ package com.techsenger.tabshell.text.viewer;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.style.SizeConstants;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogView;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.material.FxUtils;
 import com.techsenger.toolkit.fx.input.IntegerTextFormatter;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;

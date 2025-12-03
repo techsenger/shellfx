@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.core.history.HistoryUtils;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogHistory;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogHistory;
 import java.util.ArrayList;
 import java.util.List;
 

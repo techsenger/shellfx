@@ -35,6 +35,11 @@ public abstract class AbstractAreaView<T extends AbstractAreaViewModel> extends 
     }
 
     @Override
+    public AreaComposer<?> getComposer() {
+        return (AreaComposer<?>) super.getComposer();
+    }
+
+    @Override
     protected void postInitialize(T viewModel) {
         super.postInitialize(viewModel);
         var pane = getNode();

@@ -25,7 +25,6 @@ import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.theme.ShellTheme;
-import com.techsenger.tabshell.dialogs.StandardDialogComposer;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -49,13 +48,6 @@ import javafx.collections.ObservableList;
  * @author Pavel Castornii
  */
 public class TerminalTabViewModel extends AbstractShellTabViewModel {
-
-    public interface Composer extends StandardDialogComposer.ViewModelComposer {
-
-        void showFindPane(FindPaneViewModel findViewModel);
-
-        void hideFindPane();
-    }
 
     private TerminalPalette terminalPalette;
 
@@ -137,8 +129,8 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
     }
 
     @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
+    public TerminalTabMediator getMediator() {
+        return (TerminalTabMediator) super.getMediator();
     }
 
     @Override
@@ -183,7 +175,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
         }
         this.find = new FindPaneViewModel(getShell().getHistoryManager(), selectedText.get());
         this.find.closeActionProperty().set(() -> hideFind());
-        getComposer().showFindPane(this.find);
+        getMediator().showFindPane(this.find);
     }
 
     protected void hideFind() {
@@ -191,7 +183,7 @@ public class TerminalTabViewModel extends AbstractShellTabViewModel {
             return;
         }
         this.find = null;
-        getComposer().hideFindPane();
+        getMediator().hideFindPane();
     }
 
     protected void createNewTerminal() {

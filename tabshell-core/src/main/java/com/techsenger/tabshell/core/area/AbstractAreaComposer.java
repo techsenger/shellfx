@@ -22,9 +22,10 @@ import com.techsenger.mvvm4fx.core.AbstractChildComposer;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractAreaComposer<T extends AbstractAreaView<?>> extends AbstractChildComposer<T> {
+public abstract class AbstractAreaComposer<T extends AbstractAreaView<?>>
+        extends AbstractChildComposer<T> implements AreaComposer<T> {
 
-    protected abstract class ViewModelComposer extends AbstractChildComposer.ViewModelComposer {
+    protected abstract class Mediator extends AbstractChildComposer.Mediator implements AreaMediator {
 
     }
 
@@ -32,4 +33,8 @@ public abstract class AbstractAreaComposer<T extends AbstractAreaView<?>> extend
         super(view);
     }
 
+    @Override
+    public AreaMediator getMediator() {
+        return (AreaMediator) super.getMediator();
+    }
 }

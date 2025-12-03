@@ -16,18 +16,16 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.tabshell.dialogs.AbstractDialogShellTabComposer;
+import com.techsenger.tabshell.dialogs.DialogShellTabComposer;
 import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WebBrowserComposer<T extends WebBrowserTabView<?>> extends AbstractDialogShellTabComposer<T>
-        implements WebBrowserTabView.Composer {
+public class WebBrowserTabComposer<T extends WebBrowserTabView<?>> extends DialogShellTabComposer<T> {
 
-    protected class ViewModelComposer extends AbstractDialogShellTabComposer.ViewModelComposer
-            implements WebBrowserTabViewModel.Composer {
+    protected class Mediator extends DialogShellTabComposer.Mediator implements WebBrowserTabMediator {
 
         private final WebToolBarViewModel toolBar = createToolBar();
 
@@ -43,13 +41,13 @@ public class WebBrowserComposer<T extends WebBrowserTabView<?>> extends Abstract
 
     private WebToolBarView<?> toolBar = createToolBar();
 
-    public WebBrowserComposer(T view) {
+    public WebBrowserTabComposer(T view) {
         super(view);
     }
 
     @Override
-    public WebBrowserComposer.ViewModelComposer getViewModelComposer() {
-        return (WebBrowserComposer.ViewModelComposer) super.getViewModelComposer();
+    public WebBrowserTabMediator getMediator() {
+        return (WebBrowserTabMediator) super.getMediator();
     }
 
     @Override
@@ -64,22 +62,20 @@ public class WebBrowserComposer<T extends WebBrowserTabView<?>> extends Abstract
         this.toolBar.deinitialize();
     }
 
-    @Override
     public WebToolBarView<?> getToolBar() {
         return this.toolBar;
     }
 
-    @Override
     public void addToolBar(VBox contentPane) {
         contentPane.getChildren().add(this.toolBar.getNode());
     }
 
     @Override
-    protected WebBrowserComposer.ViewModelComposer createViewModelComposer() {
-        return new WebBrowserComposer.ViewModelComposer();
+    protected WebBrowserTabMediator createMediator() {
+        return new WebBrowserTabComposer.Mediator();
     }
 
     protected WebToolBarView<?> createToolBar() {
-        return new WebToolBarView(getView(), getViewModelComposer().getToolBar());
+        return new WebToolBarView(getView(), getMediator().getToolBar());
     }
 }

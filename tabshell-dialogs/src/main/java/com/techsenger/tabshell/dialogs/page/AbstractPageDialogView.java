@@ -18,7 +18,7 @@ package com.techsenger.tabshell.dialogs.page;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.page.PageView;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogView;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;

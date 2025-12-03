@@ -29,11 +29,6 @@ import com.techsenger.tabshell.storage.GenericFile;
  */
 public class DemoHexEditorTabViewModel extends HexEditorTabViewModel {
 
-    public interface Composer extends HexEditorTabViewModel.Composer {
-
-        DemoHexToolBarViewModel getToolBar();
-    }
-
     public DemoHexEditorTabViewModel(ShellViewModel shell, GenericFile file) {
         super(shell, file);
         getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
@@ -47,7 +42,7 @@ public class DemoHexEditorTabViewModel extends HexEditorTabViewModel {
     }
 
     @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
+    public DemoHexEditorTabMediator getMediator() {
+        return (DemoHexEditorTabMediator) super.getMediator();
     }
 }

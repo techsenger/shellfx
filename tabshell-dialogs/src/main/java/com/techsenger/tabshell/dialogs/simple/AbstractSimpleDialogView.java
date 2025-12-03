@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs;
+package com.techsenger.tabshell.dialogs.simple;
 
 import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ActionUtils;
@@ -25,6 +25,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import com.techsenger.tabshell.dialogs.base.BaseDialogComposer;
+import com.techsenger.tabshell.dialogs.base.DefaultBaseDialogComposer;
 
 /**
  * This dialog has two buttons - cancel and ok.
@@ -44,8 +46,8 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     }
 
     @Override
-    public StandardDialogComposer getComposer() {
-        return (StandardDialogComposer) super.getComposer();
+    public BaseDialogComposer<?> getComposer() {
+        return (BaseDialogComposer<?>) super.getComposer();
     }
 
     @Override
@@ -90,6 +92,6 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
 
     @Override
     protected ComponentComposer<?> createComposer() {
-        return new DefaultStandardDialogComposer(this);
+        return new DefaultBaseDialogComposer<>(this);
     }
 }

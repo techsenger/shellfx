@@ -20,11 +20,11 @@ import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -96,21 +96,21 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
                 "All done! Time for coffee.");
         viewModel.setPrefWidth(400);
-        getComposer().openAlertDialog(viewModel);
+        getMediator().openAlertDialog(viewModel);
     }
 
     private void showWarningDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
                 "Attention! You shouldn't do it!");
         viewModel.setPrefWidth(400);
-        getComposer().openAlertDialog(viewModel);
+        getMediator().openAlertDialog(viewModel);
     }
 
     private void showErrorDialog() {
         var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
                 "Oops! That didn’t work.");
         viewModel.setPrefWidth(400);
-        getComposer().openAlertDialog(viewModel);
+        getMediator().openAlertDialog(viewModel);
     }
 
     private void showYesNoDialog() {
@@ -120,21 +120,21 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel {
         viewModel.setYesText("Yes");
         viewModel.setNoText("No");
         viewModel.setPrefWidth(400);
-        getComposer().openYesNoDialog(viewModel);
+        getMediator().openYesNoDialog(viewModel);
     }
 
     private void showOpenFileDialog() {
         var viewModel = new FileChooserDialogViewModel(DialogScope.SHELL, FileChooserType.OPEN,
                 shell.getSettings().getAppearance(), shell.getHistoryManager());
         viewModel.setPrefWidth(700);
-        getComposer().openFileChooserDialog(viewModel);
+        getMediator().openFileChooserDialog(viewModel);
     }
 
     private void showSaveFileDialog() {
         var viewModel = new FileChooserDialogViewModel(DialogScope.SHELL, FileChooserType.SAVE_AS,
                 shell.getSettings().getAppearance(), shell.getHistoryManager());
         viewModel.setPrefWidth(700);
-        getComposer().openFileChooserDialog(viewModel);
+        getMediator().openFileChooserDialog(viewModel);
     }
 
 }

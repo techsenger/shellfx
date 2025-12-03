@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
+import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComposer;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogView;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogViewModel;
@@ -24,10 +25,9 @@ import com.techsenger.tabshell.demos.core.dialog.DemoDialogViewModel;
  *
  * @author Pavel Castornii
  */
-public class DemoTabComposer extends AbstractShellTabComposer<DemoTabView> implements DemoTabView.Composer {
+public class DemoTabComposer extends AbstractShellTabComposer<DemoTabView> {
 
-    protected class ViewModelComposer extends AbstractShellTabComposer.ViewModelComposer
-            implements DemoTabViewModel.Composer {
+    protected class Mediator extends AbstractShellTabComposer.Mediator implements DemoTabMediator {
 
         @Override
         public void openDemoDialog(DemoDialogViewModel dialog) {
@@ -40,11 +40,10 @@ public class DemoTabComposer extends AbstractShellTabComposer<DemoTabView> imple
     }
 
     @Override
-    public ViewModelComposer getViewModelComposer() {
-        return (ViewModelComposer) super.getViewModelComposer();
+    public Mediator getMediator() {
+        return (Mediator) super.getMediator();
     }
 
-    @Override
     public void openDemoDialog(DemoDialogViewModel dialogVM) {
         var dialogV = new DemoDialogView(dialogVM);
         dialogV.initialize(); //dont' forget!
@@ -52,7 +51,7 @@ public class DemoTabComposer extends AbstractShellTabComposer<DemoTabView> imple
     }
 
     @Override
-    protected ViewModelComposer createViewModelComposer() {
-        return new DemoTabComposer.ViewModelComposer();
+    protected ComponentMediator createMediator() {
+        return new DemoTabComposer.Mediator();
     }
 }

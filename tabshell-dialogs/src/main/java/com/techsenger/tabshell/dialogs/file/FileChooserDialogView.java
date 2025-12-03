@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogView;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.list.TextFieldColumnListCell;

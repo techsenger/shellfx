@@ -23,13 +23,11 @@ import com.techsenger.tabshell.hex.editor.HexToolBarViewModel;
  *
  * @author Pavel Castornii
  */
-public class DemoHexEditorComposer extends HexEditorTabComposer<DemoHexEditorTabView>
-        implements DemoHexEditorTabView.Composer {
+public class DemoHexEditorTabComposer extends HexEditorTabComposer<DemoHexEditorTabView> {
 
-    protected class ViewModelComposer extends HexEditorTabComposer.ViewModelComposer
-            implements DemoHexEditorTabViewModel.Composer {
+    protected class Mediator extends HexEditorTabComposer.Mediator implements DemoHexEditorTabMediator {
 
-        public ViewModelComposer() {
+        public Mediator() {
             super();
         }
 
@@ -44,13 +42,13 @@ public class DemoHexEditorComposer extends HexEditorTabComposer<DemoHexEditorTab
         }
     }
 
-    public DemoHexEditorComposer(DemoHexEditorTabView view) {
+    public DemoHexEditorTabComposer(DemoHexEditorTabView view) {
         super(view);
     }
 
     @Override
-    public ViewModelComposer getViewModelComposer() {
-        return (ViewModelComposer) super.getViewModelComposer();
+    public DemoHexEditorTabMediator getMediator() {
+        return (DemoHexEditorTabMediator) super.getMediator();
     }
 
     @Override
@@ -58,9 +56,9 @@ public class DemoHexEditorComposer extends HexEditorTabComposer<DemoHexEditorTab
         super.initialize();
         DemoHexToolBarView toolBar = getToolBar();
         toolBar.getCaretShapeComboBox().valueProperty()
-                .bindBidirectional(getViewModelComposer().getArea().getCaret().shapeProperty());
+                .bindBidirectional(getMediator().getArea().getCaret().shapeProperty());
         toolBar.getColumnSeparatorComboBox().valueProperty()
-                .bindBidirectional(getViewModelComposer().getArea().columnSeparatorProperty());
+                .bindBidirectional(getMediator().getArea().columnSeparatorProperty());
     }
 
     @Override
@@ -70,11 +68,13 @@ public class DemoHexEditorComposer extends HexEditorTabComposer<DemoHexEditorTab
 
     @Override
     protected DemoHexToolBarView createToolBar() {
-        return new DemoHexToolBarView(getViewModelComposer().getToolBar());
+        return new DemoHexToolBarView(getMediator().getToolBar());
     }
 
     @Override
-    protected ViewModelComposer createViewModelComposer() {
-        return new ViewModelComposer();
+    protected DemoHexEditorTabMediator createMediator() {
+        return new DemoHexEditorTabComposer.Mediator();
     }
+
+
 }

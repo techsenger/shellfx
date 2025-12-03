@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.dialogs.AbstractDialogShellTabComposer;
+import com.techsenger.tabshell.dialogs.DialogShellTabComposer;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.slf4j.Logger;
@@ -27,13 +27,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class ViewerTabComposer<T extends AbstractViewerTabView<?>>
-        extends AbstractDialogShellTabComposer<T> {
+public class ViewerTabComposer<T extends AbstractViewerTabView<?>> extends DialogShellTabComposer<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ViewerTabComposer.class);
 
-    protected class ViewModelComposer extends AbstractDialogShellTabComposer.ViewModelComposer
-            implements AbstractViewerTabViewModel.Composer {
+    protected class Mediator extends DialogShellTabComposer.Mediator implements ViewerTabMediator {
 
         @Override
         public void openGoToLineDialog(GoToLineDialogViewModel viewModel) {
@@ -57,13 +55,13 @@ public class ViewerTabComposer<T extends AbstractViewerTabView<?>>
     }
 
     @Override
-    public ViewModelComposer getViewModelComposer() {
-        return (ViewModelComposer) super.getViewModelComposer();
+    protected ViewerTabMediator createMediator() {
+        return new ViewerTabComposer.Mediator();
     }
 
     @Override
-    protected ViewModelComposer createViewModelComposer() {
-        return new ViewModelComposer();
+    public ViewerTabMediator getMediator() {
+        return (ViewerTabMediator) super.getMediator();
     }
 
     private void openGoToLineDialog(GoToLineDialogViewModel viewModel) {

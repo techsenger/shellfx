@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogViewModel;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
@@ -563,7 +563,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
 
     private void showWarning(String text) {
         var alerViewModel = new AlertDialogViewModel(getScope(), AlertDialogType.WARNING, text);
-        getComposer().openAlertDialog(alerViewModel);
+        getMediator().openAlertDialog(alerViewModel);
     }
 
     private void setDefaultStorageAndDirectory() {

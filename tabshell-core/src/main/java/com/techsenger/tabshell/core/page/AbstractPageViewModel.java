@@ -77,6 +77,11 @@ public abstract class AbstractPageViewModel extends AbstractAreaViewModel implem
         return this.selected.get();
     }
 
+    @Override
+    public PageMediator getMediator() {
+        return (PageMediator) super.getMediator();
+    }
+
     ReadOnlyBooleanWrapper selectedWrapper() {
         return selected;
     }

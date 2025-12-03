@@ -17,33 +17,14 @@
 package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.mvvm4fx.core.ComponentComposer;
-import com.techsenger.mvvm4fx.core.ComponentView;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
-import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
-import com.techsenger.tabshell.layout.dock.DockLayoutView;
-import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractShellTabView<T> {
-
-    public interface Composer extends ComponentView.Composer {
-
-        HexToolBarView<?> getToolBar();
-
-        void addToolBar(VBox contentPane);
-
-        void addLayout(VBox contentPane);
-
-        DockLayoutView<?> getLayout();
-
-        HexAreaView<?> getArea();
-
-        DataInspectorTabView<?> getDataInspector();
-    }
 
     public HexEditorTabView(ShellView<?> shell, T viewModel) {
         super(shell, viewModel);
@@ -66,8 +47,8 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
     }
 
     @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
+    public HexEditorTabComposer<?> getComposer() {
+        return (HexEditorTabComposer<?>) super.getComposer();
     }
 
     @Override

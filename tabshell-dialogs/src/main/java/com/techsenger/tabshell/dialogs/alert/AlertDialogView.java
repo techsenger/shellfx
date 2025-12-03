@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.dialogs.alert;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogView;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
 import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;

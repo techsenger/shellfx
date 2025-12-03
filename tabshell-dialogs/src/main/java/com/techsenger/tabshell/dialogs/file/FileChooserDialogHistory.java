@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.dialogs.AbstractSimpleDialogHistory;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogHistory;
 import com.techsenger.tabshell.material.button.ToggleButtonHistory;
 import com.techsenger.tabshell.material.table.TableHistory;
 

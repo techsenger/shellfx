@@ -136,8 +136,8 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
+    public ViewerTabComposer<?> getComposer() {
+        return (ViewerTabComposer<?>) super.getComposer();
     }
 
     @Override

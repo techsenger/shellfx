@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.jfx;
 
-import com.techsenger.mvvm4fx.core.ComponentViewModel;
+import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabView;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabViewModel;
@@ -61,14 +61,14 @@ public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTab
         return inpector;
     }
 
-    @Override
-    protected ComponentViewModel.Composer createViewModelComposer() {
-        return null;
-    }
-
     protected JfxInspectorTabView<?> createInspector() {
         var vm = new JfxInspectorTabViewModel(shell.getViewModel(), connector);
         var v = new JfxInspectorTabView<>(shell, vm);
         return v;
+    }
+
+    @Override
+    protected ComponentMediator createMediator() {
+        return new AbstractTabDockComposer.Mediator() { };
     }
 }

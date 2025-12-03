@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.web;
 
 import com.techsenger.mvvm4fx.core.ComponentComposer;
-import com.techsenger.mvvm4fx.core.ComponentView;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.toolkit.fx.collections.ListSynchronizer;
@@ -31,14 +30,6 @@ import javafx.scene.web.WebView;
  * @author Pavel Castornii
  */
 public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends AbstractShellTabView<T> {
-
-    public interface Composer extends ComponentView.Composer {
-
-        WebToolBarView<?> getToolBar();
-
-        void addToolBar(VBox contentPane);
-
-    }
 
     private final WebView webView = new WebView();
 
@@ -54,13 +45,13 @@ public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends Abstrac
     }
 
     @Override
-    public WebBrowserTabView.Composer getComposer() {
-        return (WebBrowserTabView.Composer) super.getComposer();
+    public WebBrowserTabComposer getComposer() {
+        return (WebBrowserTabComposer) super.getComposer();
     }
 
     @Override
     protected ComponentComposer<?> createComposer() {
-        return new WebBrowserComposer<>(this);
+        return new WebBrowserTabComposer<>(this);
     }
 
     @Override
