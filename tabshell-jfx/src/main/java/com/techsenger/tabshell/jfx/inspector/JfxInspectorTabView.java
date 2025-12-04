@@ -116,21 +116,40 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         }
     }
 
-    private static final class RootAttributeTreeItem extends TreeItem<AttributeInfo> {
+    private static TreeItem<Element> createNodeItem(Element element) {
+        var item = new TreeItem<>(element);
+        // element.hasChildren() has a bug
+        if (element.getChildren().size() > 0) {
+            item.getChildren().add(new TreeItem(null));
+            item.expandedProperty().addListener((ov, oldV, newV) -> {
+                var children = item.getChildren();
+                if (newV && children.size() == 1 && children.get(0).getValue() == null) {
+                    item.getChildren().clear();
+                    for (var child : element.getChildren()) {
+                        var childItem = createNodeItem(child);
+                        item.getChildren().add(childItem);
+                    }
+                }
+            });
+        }
+        return item;
+    }
 
-        private RootAttributeTreeItem(AttributeInfo rootAttribute) {
+    private static final class RootTreeItem extends TreeItem<AttributeInfo> {
+
+        private RootTreeItem(AttributeInfo rootAttribute) {
             setValue(rootAttribute);
             rootAttribute.getChildren().addListener((ListChangeListener<AttributeInfo>) (e) -> {
                 while (e.next()) {
                     if (e.wasAdded()) {
                         for (var added : e.getAddedSubList()) {
-                            var c = new AttributeCategoryTreeItem(added);
+                            var c = new CategoryTreeItem(added);
                             getChildren().add(c);
                         }
                     }
                     if (e.wasRemoved()) {
                         for (var c: getChildren()) {
-                            ((AttributeCategoryTreeItem) c).dispose();
+                            ((CategoryTreeItem) c).dispose();
                         }
                         getChildren().clear();
                     }
@@ -139,7 +158,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         }
     }
 
-    private static final class AttributeCategoryTreeItem extends TreeItem<AttributeInfo> {
+    private static final class CategoryTreeItem extends TreeItem<AttributeInfo> {
 
         private ListChangeListener<AttributeInfo> listener =  (e) -> {
             while (e.next()) {
@@ -156,7 +175,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             }
         };
 
-        private AttributeCategoryTreeItem(AttributeInfo categoryAttribute) {
+        private CategoryTreeItem(AttributeInfo categoryAttribute) {
             setValue(categoryAttribute);
             this.expandedProperty().bindBidirectional(categoryAttribute.expandedProperty());
             categoryAttribute.getChildren().addListener(listener);
@@ -303,7 +322,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         attributeTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
         attributeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         attributeTableView.setShowRoot(false);
-        attributeTableView.setRoot(new RootAttributeTreeItem(viewModel.getRootAttribute()));
+        attributeTableView.setRoot(new RootTreeItem(viewModel.getRootAttribute()));
         attributeTableView.setPlaceholder(new Label(""));
         VBox.setVgrow(attributeTableView, Priority.ALWAYS);
 
@@ -322,21 +341,5 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             }
         });
         viewModel.getAttributesUpdated().addListener((v) -> this.attributeTableView.refresh());
-    }
-
-    private TreeItem<Element> createNodeItem(Element element) {
-        var item = new TreeItem<>(element);
-        item.expandedProperty().addListener((ov, oldV, newV) -> {
-            var children = item.getChildren();
-            if (newV && children.size() == 1 && children.get(0).getValue() == null) {
-                item.getChildren().clear();
-                for (var child : element.getChildren()) {
-                    var childItem = createNodeItem(child);
-                    item.getChildren().add(childItem);
-                }
-            }
-        });
-        item.getChildren().add(new TreeItem(null));
-        return item;
     }
 }
