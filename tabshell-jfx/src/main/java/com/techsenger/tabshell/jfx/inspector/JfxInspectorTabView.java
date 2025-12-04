@@ -90,7 +90,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                 return new ValueInfo(String.valueOf(attr.value()), attr.valueState() == ValueState.DEFAULT);
             }
             default -> {
-                if (attr.value() instanceof List list && list.isEmpty()) {
+                if (attr.value() instanceof List<?> list && list.isEmpty()) {
                     return new ValueInfo("[]", true);
                 }
                 boolean isDefault = false;
@@ -99,6 +99,19 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                     isDefault = true;
                 }
                 return new ValueInfo(strValue, isDefault);
+            }
+        }
+    }
+
+    private static final class NodeCell extends TreeCell<Element> {
+
+        @Override
+        protected void updateItem(Element item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+            } else {
+                setText(JfxInspectorTabViewModel.getElementText(item));
             }
         }
     }
@@ -133,7 +146,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                 if (e.wasAdded()) {
                     for (var added : e.getAddedSubList()) {
                         added.setValue(createValueInfo(added.getAttribute()));
-                        var c = new TreeItem(added);
+                        var c = new TreeItem<AttributeInfo>(added);
                         getChildren().add(c);
                     }
                 }
@@ -152,6 +165,67 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         private void dispose() {
             this.expandedProperty().unbindBidirectional(getValue().expandedProperty());
             getValue().getChildren().removeListener(listener);
+        }
+    }
+
+    private static final class PropertyTableCell extends TreeTableCell<AttributeInfo, String> {
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                var info = getTableRow().getItem();
+                if (info.getCategory() == null) {
+                    Label mainLabel = new Label(item);
+                    HBox box = new HBox(SizeConstants.THIRD_INSET, mainLabel);
+                    var attr = info.getAttribute();
+                    if (attr != null) {
+                        if (info.getValue().isDefault()) {
+                            mainLabel.getStyleClass().add("default-value");
+                        }
+                        if (info.getAttribute().cssProperty() != null) {
+                            Label cssHint = new Label("CSS");
+                            cssHint.getStyleClass().add("css-hint");
+                            if (info.getValue().isDefault()) {
+                                cssHint.getStyleClass().add("default-value");
+                            }
+                            var cssContainer = new HBox(cssHint);
+                            cssContainer.getStyleClass().add("css-container");
+                            cssContainer.setAlignment(Pos.TOP_LEFT);
+                            box.getChildren().add(cssContainer);
+                        }
+                    }
+                    setText(null);
+                    setGraphic(box);
+                } else {
+                    setText(item);
+                    setGraphic(null);
+                }
+            }
+        }
+    }
+
+    private static final class ValueTableCell extends TreeTableCell<AttributeInfo, String> {
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                var info = getTableRow().getItem();
+                var attr = info.getAttribute();
+                Label mainLabel = new Label(item);
+                if (attr != null && info.getValue().isDefault()) {
+                    mainLabel.getStyleClass().add("default-value");
+                }
+                setGraphic(mainLabel);
+                setText(null);
+            }
         }
     }
 
@@ -202,17 +276,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         var styles = JfxInspectorTabView.class.getResource("inspector.css").toExternalForm();
         getContentPane().getStylesheets().add(styles);
 
-        nodeTreeView.setCellFactory(tv -> new TreeCell<>() {
-            @Override
-            protected void updateItem(Element item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(viewModel.getElementText(item));
-                }
-            }
-        });
+        nodeTreeView.setCellFactory(tv -> new NodeCell());
         nodeTreeView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
 
@@ -222,42 +286,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             var info = param.getValue().getValue();
             return new SimpleStringProperty(info.getText());
         });
-        propertyColumn.setCellFactory(col -> new TreeTableCell<AttributeInfo, String>() {
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    var info = getTableRow().getItem();
-                    if (info.getCategory() == null) {
-                        Label mainLabel = new Label(item);
-                        HBox box = new HBox(SizeConstants.THIRD_INSET, mainLabel);
-                        var attr = info.getAttribute();
-                        if (attr != null) {
-                            if (info.getValue().isDefault()) {
-                                mainLabel.getStyleClass().add("default-value");
-                            }
-                            if (info.getAttribute().cssProperty() != null) {
-                                Label cssHint = new Label("CSS");
-                                cssHint.getStyleClass().add("css-hint");
-                                var cssContainer = new HBox(cssHint);
-                                cssContainer.getStyleClass().add("css-container");
-                                cssContainer.setAlignment(Pos.TOP_LEFT);
-                                box.getChildren().add(cssContainer);
-                            }
-                        }
-                        setText(null);
-                        setGraphic(box);
-                    } else {
-                        setText(item);
-                        setGraphic(null);
-                    }
-                }
-            }
-        });
+        propertyColumn.setCellFactory(col -> new PropertyTableCell());
 
         TreeTableColumn<AttributeInfo, String> valueColumn = new TreeTableColumn<>("Value");
         valueColumn.setCellValueFactory(param -> {
@@ -269,26 +298,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                 return new SimpleStringProperty(info.getValue().value());
             }
         });
-        valueColumn.setCellFactory(col -> new TreeTableCell<AttributeInfo, String>() {
-
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    var info = getTableRow().getItem();
-                    var attr = info.getAttribute();
-                    Label mainLabel = new Label(item);
-                    if (attr != null && info.getValue().isDefault()) {
-                        mainLabel.getStyleClass().add("default-value");
-                    }
-                    setGraphic(mainLabel);
-                    setText(null);
-                }
-            }
-        });
+        valueColumn.setCellFactory(col -> new ValueTableCell());
         attributeTableView.getColumns().addAll(propertyColumn, valueColumn);
         attributeTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
         attributeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
@@ -314,7 +324,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         viewModel.getAttributesUpdated().addListener((v) -> this.attributeTableView.refresh());
     }
 
-    private TreeItem createNodeItem(Element element) {
+    private TreeItem<Element> createNodeItem(Element element) {
         var item = new TreeItem<>(element);
         item.expandedProperty().addListener((ov, oldV, newV) -> {
             var children = item.getChildren();

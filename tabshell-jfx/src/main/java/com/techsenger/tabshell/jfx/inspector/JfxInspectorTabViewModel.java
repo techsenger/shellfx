@@ -52,6 +52,17 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         return Collections.unmodifiableMap(map);
     }
 
+    protected static String getElementText(Element element) {
+        var text = element.getClassInfo().simpleClassName();
+        if (element.getNodeProperties() != null) {
+            var styleClasses = element.getNodeProperties().styleClass();
+            if (styleClasses != null && !styleClasses.isEmpty()) {
+                text += " class=\"" + styleClasses + "\"";
+            }
+        }
+        return text;
+    }
+
     private final Connector connector;
 
     private final ReadOnlyObjectWrapper<Element> rootElement = new ReadOnlyObjectWrapper<>();
@@ -143,17 +154,6 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
                 this.connector.selectNode(windowUid, newV, highlightOptions);
             }
         });
-    }
-
-    protected String getElementText(Element element) {
-        var text = element.getClassInfo().simpleClassName();
-        if (element.getNodeProperties() != null) {
-            var styleClasses = element.getNodeProperties().styleClass();
-            if (styleClasses != null && !styleClasses.isEmpty()) {
-                text += " class=\"" + styleClasses + "\"";
-            }
-        }
-        return text;
     }
 
     void setRootElement(Element element) {
