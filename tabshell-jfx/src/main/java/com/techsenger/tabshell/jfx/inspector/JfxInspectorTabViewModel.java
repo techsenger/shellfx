@@ -44,15 +44,15 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  */
 public class JfxInspectorTabViewModel extends AbstractTabViewModel {
 
-    private static Map<AttributeCategory, AttributeInfo> createAttributeInfosByCategory() {
-        var map = new HashMap<AttributeCategory, AttributeInfo>();
+    private static Map<AttributeCategory, NodeInfo> createAttributeInfosByCategory() {
+        var map = new HashMap<AttributeCategory, NodeInfo>();
         for (var c : AttributeCategory.values()) {
-            map.put(c, new AttributeInfo(c));
+            map.put(c, new NodeInfo(c));
         }
         return Collections.unmodifiableMap(map);
     }
 
-    protected static String getElementText(Element element) {
+    protected static String getNodeText(Element element) {
         var text = element.getClassInfo().simpleClassName();
         if (element.getNodeProperties() != null) {
             var styleClasses = element.getNodeProperties().styleClass();
@@ -63,17 +63,21 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         return text;
     }
 
+    protected static String getCategoryText(AttributeCategory category) {
+        return Utils.toPascalCase(category.name()) + " Properties";
+    }
+
     private final Connector connector;
 
     private final ReadOnlyObjectWrapper<Element> rootElement = new ReadOnlyObjectWrapper<>();
 
     private final ReadOnlyObjectWrapper<Element> selectedElement = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectWrapper<AttributeInfo> rootAttribute = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<NodeInfo> rootInfo = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectWrapper<AttributeInfo> selectedAttribute = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<NodeInfo> selectedInfo = new ReadOnlyObjectWrapper<>();
 
-    private final Map<AttributeCategory, AttributeInfo> attributeInfosByCategory = createAttributeInfosByCategory();
+    private final Map<AttributeCategory, NodeInfo> infosByCategory = createAttributeInfosByCategory();
 
     private final ObservableSource<Void> attributesUpdated = new SimpleObservableSource<>();
 
@@ -88,7 +92,7 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         this.connector = connector;
         setTitle("Inspector");
         setClosable(false);
-        setRootAttribute(new AttributeInfo((AttributeCategory) null));
+        setRootInfo(new NodeInfo((AttributeCategory) null));
     }
 
     public Connector getConnector() {
@@ -111,20 +115,20 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         return selectedElement.get();
     }
 
-    public ReadOnlyObjectProperty<AttributeInfo> rootAttributeProperty() {
-        return rootAttribute.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<NodeInfo> rootInfoProperty() {
+        return rootInfo.getReadOnlyProperty();
     }
 
-    public AttributeInfo getRootAttribute() {
-        return rootAttribute.get();
+    public NodeInfo getRootInfo() {
+        return rootInfo.get();
     }
 
-    public ReadOnlyObjectProperty<AttributeInfo> selectedAttributeProperty() {
-        return selectedAttribute.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<NodeInfo> selectedInfoProperty() {
+        return selectedInfo.getReadOnlyProperty();
     }
 
-    public AttributeInfo getSelectedAttribute() {
-        return selectedAttribute.get();
+    public NodeInfo getSelectedInfo() {
+        return selectedInfo.get();
     }
 
     @Override
@@ -149,8 +153,8 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
             if (newV == null) {
                 this.connector.clearSelection(windowUid);
             } else {
-                this.setSelectedAttribute(null);
-                getRootAttribute().getChildren().clear();
+                this.setSelectedInfo(null);
+                getRootInfo().getChildren().clear();
                 this.connector.selectNode(windowUid, newV, highlightOptions);
             }
         });
@@ -168,23 +172,23 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         return attributesUpdated;
     }
 
-    private void setRootAttribute(AttributeInfo value) {
-        rootAttribute.set(value);
+    private void setRootInfo(NodeInfo value) {
+        rootInfo.set(value);
     }
 
-    private void setSelectedAttribute(AttributeInfo value) {
-        selectedAttribute.set(value);
+    private void setSelectedInfo(NodeInfo value) {
+        selectedInfo.set(value);
     }
 
     private void addAttributes(AttributeListEvent event) {
-        var root = getRootAttribute();
-        var cat = attributeInfosByCategory.get(event.category());
+        var root = getRootInfo();
+        var cat = infosByCategory.get(event.category());
         cat.getChildren().clear();
         root.getChildren().add(cat);
         var sortedList = new ArrayList<>(event.attributes());
         sortedList.sort(Comparator.comparing(Attribute::name));
         for (var a : sortedList) {
-            cat.getChildren().add(new AttributeInfo(a));
+            cat.getChildren().add(new NodeInfo(event.category(), a));
         }
     }
 }

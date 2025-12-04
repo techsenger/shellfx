@@ -20,7 +20,7 @@ import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.jfx.inspector.AttributeInfo.ValueInfo;
+import com.techsenger.tabshell.jfx.inspector.NodeInfo.ValueInfo;
 import devtoolsfx.connector.LocalElement;
 import devtoolsfx.event.EventSource;
 import devtoolsfx.scenegraph.Element;
@@ -28,6 +28,7 @@ import devtoolsfx.scenegraph.attributes.Attribute;
 import static devtoolsfx.scenegraph.attributes.Attribute.DisplayHint.INSETS;
 import static devtoolsfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
 import devtoolsfx.scenegraph.attributes.Attribute.ValueState;
+import devtoolsfx.scenegraph.attributes.AttributeCategory;
 import java.text.DecimalFormat;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
@@ -54,7 +55,8 @@ import javafx.scene.layout.VBox;
  */
 public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends AbstractTabView<T> {
 
-    private static ValueInfo createValueInfo(Attribute<?> attr) {
+    private static ValueInfo createValue(NodeInfo info) {
+        Attribute<?> attr = info.getAttribute();
         switch (attr.displayHint()) {
             case NUMERIC -> {
                 boolean isDefault = false;
@@ -95,6 +97,14 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                 }
                 boolean isDefault = false;
                 var strValue = String.valueOf(attr.value());
+                if (info.getAttribute().displayHint() == Attribute.DisplayHint.TRANSFORMS
+                        || (info.getCategory() == AttributeCategory.REFLECTIVE
+                        && (attr.name().equals("localToSceneTransform")
+                        || attr.name().equals("localToParentTransform")))) {
+                    strValue = strValue.replaceAll("\\R", "")
+                            .replaceAll("\\[\\s+", "[")
+                            .replaceAll("[\t]| {3,}", "  ");
+                }
                 if (attr.valueState() == ValueState.DEFAULT || strValue.equals("null") || strValue.isEmpty())  {
                     isDefault = true;
                 }
@@ -111,7 +121,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             if (empty || item == null) {
                 setText(null);
             } else {
-                setText(JfxInspectorTabViewModel.getElementText(item));
+                setText(JfxInspectorTabViewModel.getNodeText(item));
             }
         }
     }
@@ -135,11 +145,11 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         return item;
     }
 
-    private static final class RootTreeItem extends TreeItem<AttributeInfo> {
+    private static final class RootTreeItem extends TreeItem<NodeInfo> {
 
-        private RootTreeItem(AttributeInfo rootAttribute) {
+        private RootTreeItem(NodeInfo rootAttribute) {
             setValue(rootAttribute);
-            rootAttribute.getChildren().addListener((ListChangeListener<AttributeInfo>) (e) -> {
+            rootAttribute.getChildren().addListener((ListChangeListener<NodeInfo>) (e) -> {
                 while (e.next()) {
                     if (e.wasAdded()) {
                         for (var added : e.getAddedSubList()) {
@@ -158,14 +168,14 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         }
     }
 
-    private static final class CategoryTreeItem extends TreeItem<AttributeInfo> {
+    private static final class CategoryTreeItem extends TreeItem<NodeInfo> {
 
-        private ListChangeListener<AttributeInfo> listener =  (e) -> {
+        private ListChangeListener<NodeInfo> listener =  (e) -> {
             while (e.next()) {
                 if (e.wasAdded()) {
                     for (var added : e.getAddedSubList()) {
-                        added.setValue(createValueInfo(added.getAttribute()));
-                        var c = new TreeItem<AttributeInfo>(added);
+                        added.setValue(createValue(added));
+                        var c = new TreeItem<NodeInfo>(added);
                         getChildren().add(c);
                     }
                 }
@@ -175,7 +185,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             }
         };
 
-        private CategoryTreeItem(AttributeInfo categoryAttribute) {
+        private CategoryTreeItem(NodeInfo categoryAttribute) {
             setValue(categoryAttribute);
             this.expandedProperty().bindBidirectional(categoryAttribute.expandedProperty());
             categoryAttribute.getChildren().addListener(listener);
@@ -187,7 +197,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         }
     }
 
-    private static final class PropertyTableCell extends TreeTableCell<AttributeInfo, String> {
+    private static final class PropertyTableCell extends TreeTableCell<NodeInfo, String> {
 
         @Override
         protected void updateItem(String item, boolean empty) {
@@ -197,7 +207,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                 setText(null);
             } else {
                 var info = getTableRow().getItem();
-                if (info.getCategory() == null) {
+                if (!info.isCategory()) {
                     Label mainLabel = new Label(item);
                     HBox box = new HBox(SizeConstants.THIRD_INSET, mainLabel);
                     var attr = info.getAttribute();
@@ -227,7 +237,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         }
     }
 
-    private static final class ValueTableCell extends TreeTableCell<AttributeInfo, String> {
+    private static final class ValueTableCell extends TreeTableCell<NodeInfo, String> {
 
         @Override
         protected void updateItem(String item, boolean empty) {
@@ -260,13 +270,13 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
 
     private final VBox nodeVBox = new VBox(nodeTreeView, nodeTextField);
 
-    private final TreeTableView<AttributeInfo> attributeTableView = new TreeTableView<>();
+    private final TreeTableView<NodeInfo> infoTableView = new TreeTableView<>();
 
-    private final TextField attributeTextField = new TextField();
+    private final TextField infoTextField = new TextField();
 
-    private final VBox attributeVBox = new VBox(attributeTableView, attributeTextField);
+    private final VBox infoVBox = new VBox(infoTableView, infoTextField);
 
-    private final SplitPane splitPane = new SplitPane(nodeVBox, attributeVBox);
+    private final SplitPane splitPane = new SplitPane(nodeVBox, infoVBox);
 
     private final ShellView<?> shell;
 
@@ -299,32 +309,38 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         nodeTreeView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
 
-        TreeTableColumn<AttributeInfo, String> propertyColumn = new TreeTableColumn<>("Property");
+        TreeTableColumn<NodeInfo, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
             // root is not shown
             var info = param.getValue().getValue();
-            return new SimpleStringProperty(info.getText());
+            String text;
+            if (info.isCategory()) {
+                text = JfxInspectorTabViewModel.getCategoryText(info.getCategory());
+            } else {
+                text = info.getAttribute().name();
+            }
+            return new SimpleStringProperty(text);
         });
         propertyColumn.setCellFactory(col -> new PropertyTableCell());
 
-        TreeTableColumn<AttributeInfo, String> valueColumn = new TreeTableColumn<>("Value");
+        TreeTableColumn<NodeInfo, String> valueColumn = new TreeTableColumn<>("Value");
         valueColumn.setCellValueFactory(param -> {
             // root is not shown
             var info = param.getValue().getValue();
-            if (info.getCategory() != null) {
+            if (info.isCategory()) {
                 return new SimpleStringProperty();
             } else {
                 return new SimpleStringProperty(info.getValue().value());
             }
         });
         valueColumn.setCellFactory(col -> new ValueTableCell());
-        attributeTableView.getColumns().addAll(propertyColumn, valueColumn);
-        attributeTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
-        attributeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        attributeTableView.setShowRoot(false);
-        attributeTableView.setRoot(new RootTreeItem(viewModel.getRootAttribute()));
-        attributeTableView.setPlaceholder(new Label(""));
-        VBox.setVgrow(attributeTableView, Priority.ALWAYS);
+        infoTableView.getColumns().addAll(propertyColumn, valueColumn);
+        infoTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
+        infoTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        infoTableView.setShowRoot(false);
+        infoTableView.setRoot(new RootTreeItem(viewModel.getRootInfo()));
+        infoTableView.setPlaceholder(new Label(""));
+        VBox.setVgrow(infoTableView, Priority.ALWAYS);
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         getContentPane().getChildren().add(splitPane);
@@ -340,6 +356,6 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
                 viewModel.setSelectedElement(newV.getValue());
             }
         });
-        viewModel.getAttributesUpdated().addListener((v) -> this.attributeTableView.refresh());
+        viewModel.getAttributesUpdated().addListener((v) -> this.infoTableView.refresh());
     }
 }
