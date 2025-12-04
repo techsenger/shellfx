@@ -31,7 +31,7 @@ import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 public class DefaultBaseDialogComposer<T extends AbstractDialogView<?>> extends AbstractDialogComposer<T>
         implements BaseDialogComposer<T> {
 
-    private final class Mediator extends AbstractDialogComposer.Mediator implements BaseDialogMediator {
+    protected class Mediator extends AbstractDialogComposer.Mediator implements BaseDialogMediator {
 
         @Override
         public void openAlertDialog(AlertDialogViewModel viewModel) {

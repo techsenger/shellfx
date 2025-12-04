@@ -20,6 +20,8 @@ module com.techsenger.tabshell.jfx {
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.layout;
+    requires com.techsenger.tabshell.dialogs;
+    requires com.techsenger.tabshell.web;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
@@ -27,4 +29,6 @@ module com.techsenger.tabshell.jfx {
     requires devtoolsfx.connector;
 
     exports com.techsenger.tabshell.jfx;
+    exports com.techsenger.tabshell.jfx.inspector;
+    exports com.techsenger.tabshell.jfx.model;
 }

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.jfx;
 
-import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
 import com.techsenger.tabshell.layout.dock.TabDockView;
 
@@ -26,9 +26,12 @@ import com.techsenger.tabshell.layout.dock.TabDockView;
  */
 public class JfxTabDockView<T extends JfxTabDockViewModel> extends TabDockView<T> {
 
-    public JfxTabDockView(ShellView<?> shell, DockLayoutView<?> layout, T viewModel) {
+    private final ShellTabView<?> shellTab;
+
+    public JfxTabDockView(ShellTabView<?> shellTab, DockLayoutView<?> layout, T viewModel) {
         super(layout, viewModel);
-        var composer = new JfxTabDockComposer<>(shell, this);
+        this.shellTab = shellTab;
+        var composer = new JfxTabDockComposer<>(shellTab, this);
         setComposer(composer);
     }
 
@@ -53,5 +56,9 @@ public class JfxTabDockView<T extends JfxTabDockViewModel> extends TabDockView<T
     protected void postDeinitialize(T viewModel) {
         super.postDeinitialize(viewModel);
         getComposer().deinitialize();
+    }
+
+    protected ShellTabView<?> getShellTab() {
+        return shellTab;
     }
 }

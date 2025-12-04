@@ -527,6 +527,39 @@
     -fx-underline: false;
 }
 
+.hyperlink.no-url, .hyperlink.no-url:hover, .hyperlink.no-url:armed, hyperlink.no-url:visited, .hyperlink.no-url:disabled {
+    -fx-text-fill: -color-fg-default;
+    -fx-cursor: default;
+}
+
+/* ========= ВАРИАНТЫ ДЛЯ РАЗНЫХ ТИПОВ ДЕЙСТВИЙ ========= */
+
+/* Для информационных действий (показать справку, детали) */
+.hyperlink.no-url.info {
+    -fx-text-fill: #0099CC;
+    -fx-graphic: url("info-icon.png");
+}
+
+/* Для опасных действий (удаление, отмена) */
+.hyperlink.no-url.danger {
+    -fx-text-fill: #CC3333;
+}
+
+.hyperlink.no-url.danger:hover {
+    -fx-text-fill: #990000;
+    -fx-background-color: rgba(204, 51, 51, 0.1);
+}
+
+/* Для успешных действий (подтверждение, сохранение) */
+.hyperlink.no-url.success {
+    -fx-text-fill: #339933;
+}
+
+.hyperlink.no-url.success:hover {
+    -fx-text-fill: #267326;
+    -fx-background-color: rgba(51, 153, 51, 0.1);
+}
+
 /*
     TabPane
 */

@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.jfx.inspector;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
+import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -44,10 +44,10 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  */
 public class JfxInspectorTabViewModel extends AbstractTabViewModel {
 
-    private static Map<AttributeCategory, NodeInfo> createAttributeInfosByCategory() {
-        var map = new HashMap<AttributeCategory, NodeInfo>();
+    private static Map<AttributeCategory, PropertyInfo> createAttributeInfosByCategory() {
+        var map = new HashMap<AttributeCategory, PropertyInfo>();
         for (var c : AttributeCategory.values()) {
-            map.put(c, new NodeInfo(c));
+            map.put(c, new PropertyInfo(c));
         }
         return Collections.unmodifiableMap(map);
     }
@@ -73,26 +73,26 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
 
     private final ReadOnlyObjectWrapper<Element> selectedElement = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectWrapper<NodeInfo> rootInfo = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<PropertyInfo> rootInfo = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectWrapper<NodeInfo> selectedInfo = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<PropertyInfo> selectedInfo = new ReadOnlyObjectWrapper<>();
 
-    private final Map<AttributeCategory, NodeInfo> infosByCategory = createAttributeInfosByCategory();
+    private final Map<AttributeCategory, PropertyInfo> infosByCategory = createAttributeInfosByCategory();
 
     private final ObservableSource<Void> attributesUpdated = new SimpleObservableSource<>();
 
     private int windowUid;
 
-    private ShellViewModel shell;
+    private ShellTabViewModel shellTab;
 
     private HighlightOptions highlightOptions = new HighlightOptions(true, false, false);
 
-    public JfxInspectorTabViewModel(ShellViewModel shell, Connector connector) {
-        this.shell = shell;
+    public JfxInspectorTabViewModel(ShellTabViewModel shellTab, Connector connector) {
+        this.shellTab = shellTab;
         this.connector = connector;
         setTitle("Inspector");
         setClosable(false);
-        setRootInfo(new NodeInfo((AttributeCategory) null));
+        setRootInfo(new PropertyInfo((AttributeCategory) null));
     }
 
     public Connector getConnector() {
@@ -115,25 +115,30 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         return selectedElement.get();
     }
 
-    public ReadOnlyObjectProperty<NodeInfo> rootInfoProperty() {
+    public ReadOnlyObjectProperty<PropertyInfo> rootInfoProperty() {
         return rootInfo.getReadOnlyProperty();
     }
 
-    public NodeInfo getRootInfo() {
+    public PropertyInfo getRootInfo() {
         return rootInfo.get();
     }
 
-    public ReadOnlyObjectProperty<NodeInfo> selectedInfoProperty() {
+    public ReadOnlyObjectProperty<PropertyInfo> selectedInfoProperty() {
         return selectedInfo.getReadOnlyProperty();
     }
 
-    public NodeInfo getSelectedInfo() {
+    public PropertyInfo getSelectedInfo() {
         return selectedInfo.get();
     }
 
     @Override
+    public JfxInspectorMediator getMediator() {
+        return (JfxInspectorMediator) super.getMediator();
+    }
+
+    @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(JfxComponentNames.JFX_INSPECTOR);
+        return new ComponentDescriptor(JfxComponentNames.JFX_INSPECTOR_TAB);
     }
 
     @Override
@@ -160,6 +165,25 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         });
     }
 
+    protected void handleInfoClick() {
+        Element element = getSelectedElement();
+        if (element == null) {
+            return;
+        }
+        var info = getSelectedInfo();
+        if (info == null) {
+            return;
+        }
+        var field = info.getAttribute().field();
+        String declaringClassName = this.connector.getDeclaringClass(element.getClassInfo().className(), field);
+        var vm = new PropertyDialogViewModel(shellTab, element, info, declaringClassName);
+        getMediator().openPropertyDialog(vm);
+    }
+
+    protected ShellTabViewModel getShellTab() {
+        return shellTab;
+    }
+
     void setRootElement(Element element) {
         rootElement.set(element);
     }
@@ -168,16 +192,16 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         selectedElement.set(element);
     }
 
-    ObservableSource<Void> getAttributesUpdated() {
-        return attributesUpdated;
+    void setSelectedInfo(PropertyInfo value) {
+        selectedInfo.set(value);
     }
 
-    private void setRootInfo(NodeInfo value) {
+    private void setRootInfo(PropertyInfo value) {
         rootInfo.set(value);
     }
 
-    private void setSelectedInfo(NodeInfo value) {
-        selectedInfo.set(value);
+    ObservableSource<Void> getAttributesUpdated() {
+        return attributesUpdated;
     }
 
     private void addAttributes(AttributeListEvent event) {
@@ -188,7 +212,7 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         var sortedList = new ArrayList<>(event.attributes());
         sortedList.sort(Comparator.comparing(Attribute::name));
         for (var a : sortedList) {
-            cat.getChildren().add(new NodeInfo(event.category(), a));
+            cat.getChildren().add(new PropertyInfo(event.category(), a));
         }
     }
 }

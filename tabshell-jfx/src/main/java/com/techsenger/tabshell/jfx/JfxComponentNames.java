@@ -24,7 +24,9 @@ import com.techsenger.mvvm4fx.core.ComponentName;
  */
 public interface JfxComponentNames {
 
-    ComponentName JFX_TAB_DOCK = new ComponentName("JFX Tab Dock");
+    ComponentName JFX_TAB_DOCK = new ComponentName("JFXTabDock");
 
-    ComponentName JFX_INSPECTOR = new ComponentName("JFX Inspector");
+    ComponentName JFX_INSPECTOR_TAB = new ComponentName("JFXInspectorTab");
+
+    ComponentName PROPERTY_DIALOG = new ComponentName("PropertyDialog");
 }

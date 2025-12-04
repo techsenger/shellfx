@@ -109,6 +109,19 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
         }
     }
 
+    public void load(String url) {
+        if (url != null) {
+            var normalizedUrl = UrlUtils.normalize(url);
+            if (!normalizedUrl.isEmpty() && UrlUtils.isValid(normalizedUrl)) {
+                url = normalizedUrl;
+            } else {
+                url = UrlUtils.getSearch(url);
+            }
+            getMediator().getToolBar().setUrl(url);
+            getMediator().getToolBar().setReloadDisable(false);
+            urlSource.next(url);
+        }
+    }
 
     @Override
     protected ComponentDescriptor createDescriptor() {
@@ -142,17 +155,7 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
     protected void load() {
         var toolBar = getMediator().getToolBar();
         var url = toolBar.getUrl();
-        if (url != null) {
-            var normalizedUrl = UrlUtils.normalize(url);
-            if (!normalizedUrl.isEmpty() && UrlUtils.isValid(normalizedUrl)) {
-                url = normalizedUrl;
-            } else {
-                url = UrlUtils.getSearch(url);
-            }
-            getMediator().getToolBar().setUrl(url);
-            getMediator().getToolBar().setReloadDisable(false);
-            urlSource.next(url);
-        }
+        load(url);
     }
 
     ObservableSource<String> getUrlSource() {

@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.jfx;
 
 import com.techsenger.mvvm4fx.core.ComponentMediator;
-import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabView;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabViewModel;
 import com.techsenger.tabshell.layout.dock.AbstractTabDockComposer;
@@ -30,16 +30,16 @@ import devtoolsfx.connector.LocalConnector;
  */
 public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTabDockComposer<T> {
 
-    private final ShellView<?> shell;
+    private final ShellTabView<?> shellTab;
 
     private final Connector connector;
 
     private final JfxInspectorTabView<?> inpector;
 
-    public JfxTabDockComposer(ShellView<?> shell, T view) {
+    public JfxTabDockComposer(ShellTabView<?> shellTab, T view) {
         super(view);
-        this.shell = shell;
-        this.connector = new LocalConnector(shell.getStage(), null);
+        this.shellTab = shellTab;
+        this.connector = new LocalConnector(shellTab.getShell().getStage(), null);
         this.inpector = createInspector();
     }
 
@@ -62,8 +62,8 @@ public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTab
     }
 
     protected JfxInspectorTabView<?> createInspector() {
-        var vm = new JfxInspectorTabViewModel(shell.getViewModel(), connector);
-        var v = new JfxInspectorTabView<>(shell, vm);
+        var vm = new JfxInspectorTabViewModel(shellTab.getViewModel(), connector);
+        var v = new JfxInspectorTabView<>(shellTab, vm);
         return v;
     }
 

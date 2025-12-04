@@ -118,4 +118,9 @@ public interface StyleClasses {
      * distinct elevated elements.
      */
     String BLEND = "blend";
+
+    /**
+     * Use this class for Hyperlinks to make them look like labels.
+     */
+    String NO_URL = "no-url";
 }

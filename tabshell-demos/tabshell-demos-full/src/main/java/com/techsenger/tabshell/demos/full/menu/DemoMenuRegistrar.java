@@ -203,8 +203,8 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
                 var shell = (ShellView<?>) v;
                 var currentTab = shell.getSelectedTab();
                 if (currentTab != null && currentTab instanceof DockLayoutTabView tab) {
-                    var inspectorVM = new JfxTabDockViewModel();
-                    var inspectorV = new JfxTabDockView<>(shell, tab.getLayout(), inspectorVM);
+                    var inspectorVM = new JfxTabDockViewModel(currentTab.getViewModel());
+                    var inspectorV = new JfxTabDockView<>(currentTab, tab.getLayout(), inspectorVM);
                     inspectorV.initialize();
                     tab.getLayout().addTabDock(inspectorV, Side.BOTTOM, 300);
                 } else {

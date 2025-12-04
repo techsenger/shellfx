@@ -27,15 +27,15 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class NodeInfo {
+public class PropertyInfo {
 
-    record ValueInfo(String value, boolean isDefault) { }
+    record ValueInfo(String text, boolean isDefault) { }
 
     private final AttributeCategory category;
 
     private final Attribute<?> attribute;
 
-    private final ObservableList<NodeInfo> children;
+    private final ObservableList<PropertyInfo> children;
 
     private final BooleanProperty expanded = new SimpleBooleanProperty();
 
@@ -43,14 +43,14 @@ public class NodeInfo {
 
     private ValueInfo value;
 
-    public NodeInfo(AttributeCategory category, Attribute<?> attribute) {
+    public PropertyInfo(AttributeCategory category, Attribute<?> attribute) {
         this.category = category;
         this.isCategory = false;
         this.attribute = attribute;
         this.children = FXCollections.emptyObservableList();
     }
 
-    public NodeInfo(AttributeCategory category) {
+    public PropertyInfo(AttributeCategory category) {
         this.category = category;
         this.isCategory = true;
         this.attribute = null;
@@ -69,7 +69,7 @@ public class NodeInfo {
         return attribute;
     }
 
-    public ObservableList<NodeInfo> getChildren() {
+    public ObservableList<PropertyInfo> getChildren() {
         return children;
     }
 

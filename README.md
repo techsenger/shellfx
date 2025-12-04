@@ -23,6 +23,7 @@ final application.
 * [JFX Components](#jfx)
     * [JfxTabDock](#jfx-tab-dock)
     * [JfxInspector](#jfx-inspector)
+    * [PropertyDialog](#jfx-property-dialog)
 * [Web Components](#web)
     * [WebBrowserTab](#web-browser-tab)
     * [WebToolBar](#web-tool-bar)
@@ -273,6 +274,11 @@ whether a simple one or a docking layout.
 JfxInspector is a tool for analyzing JavaFX scene graph. It allows traversing the node tree and analyzing their
 properties. The component also enables opening information both for classes and their properties in the JavaFX
 reference documentation (Javadoc).
+
+### PropertyDialog <a name="jfx-property-dialog"></a>
+
+This dialog opens the selected JavaFX node property and displays its detailed characteristics. From this dialog,
+you can also open the JavaFX documentation for the property.
 
 ## Web Components <a name="web"></a>
 

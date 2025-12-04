@@ -14,30 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx;
+package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.tab.ShellTabViewModel;
-import com.techsenger.tabshell.layout.dock.TabDockViewModel;
+import com.techsenger.tabshell.dialogs.base.BaseDialogMediator;
+import com.techsenger.tabshell.web.WebBrowserTabViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class JfxTabDockViewModel extends TabDockViewModel {
+public interface PropertyDialogMediator extends BaseDialogMediator {
 
-    private final ShellTabViewModel shellTab;
-
-    public JfxTabDockViewModel(ShellTabViewModel shellTab) {
-        this.shellTab = shellTab;
-    }
-
-    protected ShellTabViewModel getShellTab() {
-        return shellTab;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(JfxComponentNames.JFX_TAB_DOCK);
-    }
+    void openBrowser(WebBrowserTabViewModel vm);
 }
