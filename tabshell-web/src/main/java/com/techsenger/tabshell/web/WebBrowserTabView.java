@@ -84,6 +84,7 @@ public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends Abstrac
         });
         webViewHistory.currentIndexProperty()
                 .addListener((ov, oldV, newV) -> viewModel.setHistoryIndex(newV.intValue()));
+        viewModel.getLocationWrapper().bind(this.webView.getEngine().locationProperty());
     }
 
     @Override

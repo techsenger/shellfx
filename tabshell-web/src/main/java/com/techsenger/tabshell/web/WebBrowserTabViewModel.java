@@ -24,6 +24,8 @@ import com.techsenger.tabshell.web.style.WebIcons;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -46,6 +48,8 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
             FXCollections.unmodifiableObservableList(historyEntries);
 
     private final IntegerProperty historyIndex = new SimpleIntegerProperty();
+
+    private final ReadOnlyStringWrapper location = new ReadOnlyStringWrapper();
 
     public WebBrowserTabViewModel(ShellViewModel shell) {
         super(shell);
@@ -123,6 +127,14 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
         }
     }
 
+    public ReadOnlyStringProperty locationProperty() {
+        return location.getReadOnlyProperty();
+    }
+
+    public String getLocation() {
+        return location.get();
+    }
+
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(WebComponentNames.WEB_BROWSER_TAB);
@@ -137,8 +149,8 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
                 setTooltip(newV);
             }
         });
+        var toolBar = getMediator().getToolBar();
         this.historyIndex.addListener((ov, oldV, newV) -> {
-            var toolBar = getMediator().getToolBar();
             if (newV.intValue() > 0 && !this.historyEntries.isEmpty()) {
                 toolBar.setBackDisable(false);
             } else {
@@ -148,6 +160,13 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
                 toolBar.setForwardDisable(false);
             } else {
                 toolBar.setForwardDisable(true);
+            }
+        });
+        location.addListener((ov, oldV, newV) -> {
+            if (newV != null) {
+                toolBar.setUrl(newV);
+            } else {
+                toolBar.setUrl("");
             }
         });
     }
@@ -164,5 +183,9 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
 
     ObservableList<String> getModifiableHistoryEntries() {
         return historyEntries;
+    }
+
+    ReadOnlyStringWrapper getLocationWrapper() {
+        return location;
     }
 }
