@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.tab.AbstractTabComposer;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 
@@ -45,8 +44,12 @@ public class JfxInspectorComposer<T extends JfxInspectorTabView<?>> extends Abst
     }
 
     @Override
-    protected ComponentMediator createMediator() {
-        return new JfxInspectorComposer.Mediator();
+    public JfxInspectorMediator getMediator() {
+        return (JfxInspectorMediator) super.getMediator();
     }
 
+    @Override
+    protected JfxInspectorMediator createMediator() {
+        return new JfxInspectorComposer.Mediator();
+    }
 }

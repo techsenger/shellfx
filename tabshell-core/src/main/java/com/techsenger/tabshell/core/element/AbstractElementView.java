@@ -34,7 +34,17 @@ public abstract class AbstractElementView<T extends AbstractElementViewModel> ex
                 () -> getNode().sceneProperty());
     }
 
+    @Override
+    public ElementComposer<?> getComposer() {
+        return (ElementComposer<?>) super.getComposer();
+    }
+
     protected PulseListenerManager getPulseListenerManager() {
         return pulseListenerManager;
+    }
+
+    @Override
+    protected ElementComposer<?> createComposer() {
+        return (ElementComposer<?>) super.createComposer();
     }
 }

@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.dialogs.yesno;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -116,7 +115,7 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
     }
 
     @Override
-    protected ComponentComposer<?> createComposer() {
+    protected DefaultBaseDialogComposer<?> createComposer() {
         return new DefaultBaseDialogComposer<>(this);
     }
 

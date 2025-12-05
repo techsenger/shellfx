@@ -211,6 +211,16 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
     }
 
     @Override
+    public AbstractTabHostComposer<?> getComposer() {
+        return (AbstractTabHostComposer<?>) super.getComposer();
+    }
+
+    @Override
+    protected AbstractTabHostComposer<?> createComposer() {
+        return (AbstractTabHostComposer<?>) super.createComposer();
+    }
+
+    @Override
     protected void build(T viewModel) {
         super.build(viewModel);
         TabContainerViewUtils.initTabPane(root, this);

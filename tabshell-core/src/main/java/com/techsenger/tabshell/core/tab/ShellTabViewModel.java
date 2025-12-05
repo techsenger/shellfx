@@ -40,4 +40,7 @@ public interface ShellTabViewModel extends TabViewModel {
      * @return
      */
     int getDialogCount();
+
+    @Override
+    ShellTabMediator getMediator();
 }

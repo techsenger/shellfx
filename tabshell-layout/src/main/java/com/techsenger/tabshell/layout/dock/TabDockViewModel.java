@@ -85,6 +85,11 @@ public class TabDockViewModel extends TabHostViewModel {
     }
 
     @Override
+    public TabDockMediator getMediator() {
+        return (TabDockMediator) super.getMediator();
+    }
+
+    @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(LayoutComponentNames.TAB_DOCK);
     }

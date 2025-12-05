@@ -114,6 +114,11 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
         return (TabComposer<?>) super.getComposer();
     }
 
+    @Override
+    protected TabComposer<?> createComposer() {
+        return (TabComposer<?>) super.createComposer();
+    }
+
     protected VBox getContentPane() {
         return contentPane;
     }

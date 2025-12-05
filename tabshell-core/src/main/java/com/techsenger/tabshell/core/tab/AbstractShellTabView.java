@@ -58,4 +58,9 @@ public abstract class AbstractShellTabView<T extends AbstractShellTabViewModel> 
     public void doOnSelected() {
         requestFocus();
     }
+
+    @Override
+    protected ShellTabComposer<?> createComposer() {
+        return (ShellTabComposer<?>) super.createComposer();
+    }
 }

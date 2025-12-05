@@ -27,4 +27,7 @@ public interface AreaView<T extends AreaViewModel> extends ChildView<T> {
 
     @Override
     Region getNode();
+
+    @Override
+    AreaComposer<?> getComposer();
 }

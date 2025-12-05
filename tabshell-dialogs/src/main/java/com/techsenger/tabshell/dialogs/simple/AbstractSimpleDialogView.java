@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.dialogs.simple;
 
-import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -91,7 +90,7 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     }
 
     @Override
-    protected ComponentComposer<?> createComposer() {
+    protected DefaultBaseDialogComposer<?> createComposer() {
         return new DefaultBaseDialogComposer<>(this);
     }
 }

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.style.SizeConstants;
@@ -85,7 +84,7 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
     }
 
     @Override
-    protected ComponentComposer<?> createComposer() {
+    protected DemoTabComposer createComposer() {
         return new DemoTabComposer(this);
     }
 }

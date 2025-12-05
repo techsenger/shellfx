@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.toolkit.fx.collections.ListSynchronizer;
@@ -50,14 +49,8 @@ public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends Abstrac
     }
 
     @Override
-    protected ComponentComposer<?> createComposer() {
+    protected WebBrowserTabComposer<?> createComposer() {
         return new WebBrowserTabComposer<>(this);
-    }
-
-    @Override
-    protected void preInitialize(T viewModel) {
-        super.preInitialize(viewModel);
-        getComposer().initialize();
     }
 
     @Override
@@ -97,12 +90,6 @@ public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends Abstrac
     protected void preDeinitialize(T viewModel) {
         super.preDeinitialize(viewModel);
         webView.getEngine().load(null);
-    }
-
-    @Override
-    protected void postDeinitialize(T viewModel) {
-        super.postDeinitialize(viewModel);
-        getComposer().deinitialize();
     }
 
     protected void reload() {

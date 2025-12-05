@@ -37,4 +37,7 @@ public abstract class AbstractDialogComposer<T extends AbstractDialogView<?>> ex
     public DialogMediator getMediator() {
         return (DialogMediator) super.getMediator();
     }
+
+    @Override
+    protected abstract DialogMediator createMediator();
 }

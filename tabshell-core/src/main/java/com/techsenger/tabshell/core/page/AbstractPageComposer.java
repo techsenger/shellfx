@@ -36,4 +36,7 @@ public abstract class AbstractPageComposer<T extends AbstractPageView<?>> extend
     public PageMediator getMediator() {
         return (PageMediator) super.getMediator();
     }
+
+    @Override
+    protected abstract PageMediator createMediator();
 }

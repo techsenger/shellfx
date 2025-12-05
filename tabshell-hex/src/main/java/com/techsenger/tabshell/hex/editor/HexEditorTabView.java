@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 
@@ -42,19 +41,13 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
     }
 
     @Override
-    protected ComponentComposer<?> createComposer() {
+    protected HexEditorTabComposer<?> createComposer() {
         return new HexEditorTabComposer<>(this);
     }
 
     @Override
     public HexEditorTabComposer<?> getComposer() {
         return (HexEditorTabComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected void preInitialize(T viewModel) {
-        super.preInitialize(viewModel);
-        getComposer().initialize();
     }
 
     @Override
@@ -69,12 +62,4 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
         super.postInitialize(viewModel);
         viewModel.readFile();
     }
-
-    @Override
-    protected void postDeinitialize(T viewModel) {
-        super.postDeinitialize(viewModel);
-        getComposer().deinitialize();
-    }
-
-
 }

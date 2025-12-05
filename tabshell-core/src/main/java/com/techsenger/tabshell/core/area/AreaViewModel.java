@@ -32,4 +32,7 @@ public interface AreaViewModel extends ChildViewModel {
     ReadOnlyDoubleProperty heightProperty();
 
     double getHeight();
+
+    @Override
+    AreaMediator getMediator();
 }

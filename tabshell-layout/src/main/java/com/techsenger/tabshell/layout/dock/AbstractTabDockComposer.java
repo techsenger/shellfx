@@ -24,7 +24,19 @@ import com.techsenger.tabshell.layout.tabhost.AbstractTabHostComposer;
  */
 public abstract class AbstractTabDockComposer<T extends TabDockView<?>> extends AbstractTabHostComposer<T> {
 
+    protected class Mediator extends AbstractTabHostComposer.Mediator implements TabDockMediator {
+
+    }
+
     public AbstractTabDockComposer(T view) {
         super(view);
     }
+
+    @Override
+    public TabDockMediator getMediator() {
+        return (TabDockMediator) super.getMediator();
+    }
+
+    @Override
+    protected abstract TabDockMediator createMediator();
 }

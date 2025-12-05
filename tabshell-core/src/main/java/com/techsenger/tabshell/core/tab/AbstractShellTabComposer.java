@@ -48,5 +48,8 @@ public abstract class AbstractShellTabComposer<T extends AbstractShellTabView<?>
     public ShellTabMediator getMediator() {
         return (ShellTabMediator) super.getMediator();
     }
+
+    @Override
+    protected abstract ShellTabMediator createMediator();
 }
 

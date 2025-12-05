@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.dialogs.base;
 
-import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.dialog.AbstractDialogComposer;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.dialog.DialogView;
@@ -59,7 +58,12 @@ public class DefaultBaseDialogComposer<T extends AbstractDialogView<?>> extends 
     }
 
     @Override
-    protected ComponentMediator createMediator() {
+    protected BaseDialogMediator createMediator() {
         return new DefaultBaseDialogComposer.Mediator();
+    }
+
+    @Override
+    public BaseDialogMediator getMediator() {
+        return (BaseDialogMediator) super.getMediator();
     }
 }

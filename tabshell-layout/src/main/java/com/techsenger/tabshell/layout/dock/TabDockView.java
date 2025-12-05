@@ -53,6 +53,16 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
     }
 
     @Override
+    public AbstractTabDockComposer<?> getComposer() {
+        return (AbstractTabDockComposer<?>) super.getComposer();
+    }
+
+    @Override
+    protected AbstractTabDockComposer<?> createComposer() {
+        return (AbstractTabDockComposer<?>) super.createComposer();
+    }
+
+    @Override
     protected void build(T viewModel) {
         super.build(viewModel);
         var tabPane = getNode();

@@ -29,4 +29,6 @@ public interface ShellTabView<T extends ShellTabViewModel> extends TabView<T> {
     DialogManager getDialogManager();
 
     ShellView<?> getShell();
+
+    ShellTabComposer<?> getComposer();
 }

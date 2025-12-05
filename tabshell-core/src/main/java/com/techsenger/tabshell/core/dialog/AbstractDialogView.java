@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.IconViewBox;
@@ -218,7 +217,7 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     }
 
     @Override
-    protected ComponentComposer<?> createComposer() {
+    protected DialogComposer<?> createComposer() {
         // we suppose that all child dialogs will be with the same scope
         return new AbstractDialogComposer<AbstractDialogView<?>>(this) {
 

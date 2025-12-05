@@ -31,8 +31,6 @@ public class JfxTabDockView<T extends JfxTabDockViewModel> extends TabDockView<T
     public JfxTabDockView(ShellTabView<?> shellTab, DockLayoutView<?> layout, T viewModel) {
         super(layout, viewModel);
         this.shellTab = shellTab;
-        var composer = new JfxTabDockComposer<>(shellTab, this);
-        setComposer(composer);
     }
 
     @Override
@@ -41,21 +39,14 @@ public class JfxTabDockView<T extends JfxTabDockViewModel> extends TabDockView<T
     }
 
     @Override
-    protected void preInitialize(T viewModel) {
-        super.preInitialize(viewModel);
-        getComposer().initialize();
+    protected JfxTabDockComposer<?> createComposer() {
+        return new JfxTabDockComposer<>(shellTab, this);
     }
 
     @Override
     protected void postInitialize(T viewModel) {
         super.postInitialize(viewModel);
         openTab(getComposer().getInpector());
-    }
-
-    @Override
-    protected void postDeinitialize(T viewModel) {
-        super.postDeinitialize(viewModel);
-        getComposer().deinitialize();
     }
 
     protected ShellTabView<?> getShellTab() {

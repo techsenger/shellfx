@@ -27,4 +27,9 @@ public abstract class AbstractElementViewModel extends AbstractChildViewModel im
     public AbstractElementViewModel() {
         super();
     }
+
+    @Override
+    public ElementMediator getMediator() {
+        return (ElementMediator) super.getMediator();
+    }
 }

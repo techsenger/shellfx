@@ -58,7 +58,6 @@ public class PropertyDialogView<T extends PropertyDialogViewModel> extends Abstr
     public PropertyDialogView(ShellTabView<?> shellTab, T viewModel) {
         super(viewModel);
         this.shellTab = shellTab;
-        setComposer(new PropertyDialogComposer<>(shellTab, this));
     }
 
     @Override
@@ -69,6 +68,11 @@ public class PropertyDialogView<T extends PropertyDialogViewModel> extends Abstr
     @Override
     public void requestFocus() {
         wrapper.requestFocus();
+    }
+
+    @Override
+    public PropertyDialogComposer<?> getComposer() {
+        return (PropertyDialogComposer<?>) super.getComposer();
     }
 
     @Override
@@ -129,6 +133,11 @@ public class PropertyDialogView<T extends PropertyDialogViewModel> extends Abstr
 
         getButtonBox().getChildren().add(getOkButton());
         getContentPane().getChildren().addAll(wrapper, getButtonBox());
+    }
+
+    @Override
+    protected PropertyDialogComposer<?> createComposer() {
+        return new PropertyDialogComposer<>(shellTab, this);
     }
 }
 

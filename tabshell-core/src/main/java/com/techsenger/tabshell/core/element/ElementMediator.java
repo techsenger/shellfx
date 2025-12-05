@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.core.element;
 
-import com.techsenger.tabshell.core.CloseableView;
-import com.techsenger.tabshell.core.area.AreaView;
-import javafx.scene.layout.VBox;
+import com.techsenger.mvvm4fx.core.ChildMediator;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogView<T extends DialogViewModel> extends AreaView<T>, CloseableView {
+public interface ElementMediator extends ChildMediator {
 
-    @Override
-    VBox getNode();
-
-    @Override
-    void close();
-
-    @Override
-    DialogComposer<?> getComposer();
 }

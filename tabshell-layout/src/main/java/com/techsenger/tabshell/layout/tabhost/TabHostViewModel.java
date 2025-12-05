@@ -147,6 +147,11 @@ public class TabHostViewModel extends AbstractAreaViewModel implements TabContai
     }
 
     @Override
+    public TabHostMediator getMediator() {
+        return (TabHostMediator) super.getMediator();
+    }
+
+    @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(LayoutComponentNames.TAB_HOST);
     }

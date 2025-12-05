@@ -50,4 +50,7 @@ public interface TabView<T extends TabViewModel> extends ChildView<T>, Selectabl
 
     @Override
     void close();
+
+    @Override
+    TabComposer<?> getComposer();
 }

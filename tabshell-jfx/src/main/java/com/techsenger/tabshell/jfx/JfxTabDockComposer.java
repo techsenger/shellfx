@@ -16,11 +16,11 @@
 
 package com.techsenger.tabshell.jfx;
 
-import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabView;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabViewModel;
 import com.techsenger.tabshell.layout.dock.AbstractTabDockComposer;
+import com.techsenger.tabshell.layout.dock.TabDockMediator;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.connector.LocalConnector;
 
@@ -68,7 +68,7 @@ public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTab
     }
 
     @Override
-    protected ComponentMediator createMediator() {
+    protected TabDockMediator createMediator() {
         return new AbstractTabDockComposer.Mediator() { };
     }
 }

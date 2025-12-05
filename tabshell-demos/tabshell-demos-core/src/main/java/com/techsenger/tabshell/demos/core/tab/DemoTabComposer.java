@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComposer;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogView;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogViewModel;
@@ -51,7 +50,7 @@ public class DemoTabComposer extends AbstractShellTabComposer<DemoTabView> {
     }
 
     @Override
-    protected ComponentMediator createMediator() {
+    protected DemoTabMediator createMediator() {
         return new DemoTabComposer.Mediator();
     }
 }

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demos.full.hex;
 
-import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.hex.editor.HexEditorTabView;
 
@@ -36,7 +35,7 @@ public class DemoHexEditorTabView extends HexEditorTabView<DemoHexEditorTabViewM
     }
 
     @Override
-    protected ComponentComposer<?> createComposer() {
+    protected DemoHexEditorTabComposer createComposer() {
         return new DemoHexEditorTabComposer(this);
     }
 }

@@ -27,4 +27,7 @@ public interface ElementView<T extends ElementViewModel> extends ChildView<T> {
 
     @Override
     Node getNode();
+
+    @Override
+    ElementComposer<?> getComposer();
 }

@@ -37,4 +37,7 @@ public abstract class AbstractAreaComposer<T extends AbstractAreaView<?>>
     public AreaMediator getMediator() {
         return (AreaMediator) super.getMediator();
     }
+
+    @Override
+    protected abstract AreaMediator createMediator();
 }

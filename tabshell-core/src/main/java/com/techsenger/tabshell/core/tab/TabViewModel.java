@@ -115,4 +115,7 @@ public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedVie
      * @param closable
      */
     void setClosable(boolean closable);
+
+    @Override
+    TabMediator getMediator();
 }

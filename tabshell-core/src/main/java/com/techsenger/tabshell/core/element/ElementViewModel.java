@@ -24,4 +24,6 @@ import com.techsenger.mvvm4fx.core.ChildViewModel;
  */
 public interface ElementViewModel extends ChildViewModel {
 
+    @Override
+    ElementMediator getMediator();
 }

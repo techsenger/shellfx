@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.mvvm4fx.core.ComponentMediator;
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.dialogs.base.DefaultBaseDialogComposer;
@@ -47,7 +46,12 @@ public class PropertyDialogComposer<T extends PropertyDialogView<?>> extends Def
     }
 
     @Override
-    protected ComponentMediator createMediator() {
+    public PropertyDialogMediator getMediator() {
+        return (PropertyDialogMediator) super.getMediator();
+    }
+
+    @Override
+    protected PropertyDialogMediator createMediator() {
         return new PropertyDialogComposer.Mediator();
     }
 

@@ -284,7 +284,6 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
     public JfxInspectorTabView(ShellTabView<?> shellTab, T viewModel) {
         super(viewModel);
         this.shellTab = shellTab;
-        setComposer(new JfxInspectorComposer<>(shellTab, this));
     }
 
     @Override
@@ -380,6 +379,11 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
             });
             return row;
         });
+    }
+
+    @Override
+    protected JfxInspectorComposer<?> createComposer() {
+        return new JfxInspectorComposer<>(shellTab, this);
     }
 
     protected ShellTabView getShellTab() {

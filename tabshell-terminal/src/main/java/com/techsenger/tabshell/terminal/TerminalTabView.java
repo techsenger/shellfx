@@ -19,7 +19,6 @@ package com.techsenger.tabshell.terminal;
 import atlantafx.base.theme.Styles;
 import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
-import com.techsenger.mvvm4fx.core.ComponentComposer;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.StyleClasses;
@@ -265,8 +264,8 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
     }
 
     @Override
-    protected ComponentComposer<?> createComposer() {
-        return new TerminalTabComposer(this);
+    protected TerminalTabComposer<?> createComposer() {
+        return new TerminalTabComposer<>(this);
     }
 
     protected KitJediTermFxWidget getWidget() {

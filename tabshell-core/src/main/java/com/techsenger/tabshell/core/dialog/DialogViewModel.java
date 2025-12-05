@@ -31,4 +31,7 @@ public interface DialogViewModel extends AreaViewModel, TitledViewModel, IconedV
 
     @Override
     void requestClose();
+
+    @Override
+    DialogMediator getMediator();
 }
