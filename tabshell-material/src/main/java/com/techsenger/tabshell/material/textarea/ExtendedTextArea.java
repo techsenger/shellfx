@@ -39,8 +39,8 @@ import org.fxmisc.richtext.util.UndoUtils;
 import org.reactfx.SuspendableYes;
 
 /**
- * This code area is the CodeArea that works with TextAreaStyle. As no StyleClassesTextArea no CodeArea support generics
- * code from these two classes was copied to this class.
+ * This code area is the CodeArea that works with TextAreaStyle. As neither StyleClassedTextArea nor CodeArea
+ * support generics, code from these two classes has been copied into this class.
  *
  * Generics:
  * <ol>
