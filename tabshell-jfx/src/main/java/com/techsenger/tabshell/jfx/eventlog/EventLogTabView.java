@@ -120,6 +120,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
                 viewModel.stop();
             }
         });
+        this.clearButton.setOnAction(e -> viewModel.clear());
     }
 
     private void print(List<? extends LogEntry> entries) {

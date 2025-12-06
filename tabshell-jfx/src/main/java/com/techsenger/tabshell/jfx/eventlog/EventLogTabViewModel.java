@@ -92,6 +92,11 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         this.connector.getEventBus().unsubscribe(eventListener);
     }
 
+    void clear() {
+        allEntries.clear();
+        filteredEntries.clear();
+    }
+
     ObservableList<LogEntry> getFilteredEntries() {
         return filteredEntries;
     }
