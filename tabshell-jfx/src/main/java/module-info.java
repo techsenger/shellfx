@@ -21,14 +21,18 @@ module com.techsenger.tabshell.jfx {
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.layout;
     requires com.techsenger.tabshell.dialogs;
+    requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.web;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
+    requires jfx.incubator.richtext;
     requires atlantafx.base;
     requires devtoolsfx.connector;
 
     exports com.techsenger.tabshell.jfx;
+    exports com.techsenger.tabshell.jfx.eventlog;
     exports com.techsenger.tabshell.jfx.inspector;
     exports com.techsenger.tabshell.jfx.model;
+    exports com.techsenger.tabshell.jfx.style;
 }

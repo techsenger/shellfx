@@ -46,7 +46,9 @@ public class JfxTabDockView<T extends JfxTabDockViewModel> extends TabDockView<T
     @Override
     protected void postInitialize(T viewModel) {
         super.postInitialize(viewModel);
-        openTab(getComposer().getInpector());
+        getComposer().addTabToDock(getComposer().getInpectorTab()); // todo: This is a temp solution, open via composer
+        getComposer().addTabToDock(getComposer().getEventLogTab());
+        viewModel.selectTab(0);
     }
 
     protected ShellTabView<?> getShellTab() {

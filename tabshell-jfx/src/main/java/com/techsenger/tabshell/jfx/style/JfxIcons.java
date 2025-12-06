@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.jfx.style;
 
-@font-face {
-    src: url('font/materialdesignicons-webfont.ttf');
-}
+import com.techsenger.tabshell.material.icon.StyleFontIcon;
 
-.font-icon-view.web-browser-icon {
-    -fx-code-point: 984479; /* web */
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface JfxIcons {
+
+    StyleFontIcon TARGET_NODE = new StyleFontIcon("target-node-icon");
+
+    StyleFontIcon RECORD = new StyleFontIcon("record-icon");
+
+    StyleFontIcon FILTER = new StyleFontIcon("filter-icon");
+
+    StyleFontIcon NODE_ONLY = new StyleFontIcon("node-only-icon");
 }

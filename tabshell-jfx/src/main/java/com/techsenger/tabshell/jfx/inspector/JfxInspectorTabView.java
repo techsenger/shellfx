@@ -309,6 +309,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         nodeTreeView.setCellFactory(tv -> new NodeCell());
         nodeTreeView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
+        nodeTextField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
 
         TreeTableColumn<PropertyInfo, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
@@ -342,6 +343,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         infoTableView.setRoot(new RootTreeItem(viewModel.getRootInfo()));
         infoTableView.setPlaceholder(new Label(""));
         VBox.setVgrow(infoTableView, Priority.ALWAYS);
+        infoTextField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         getContentPane().getChildren().add(splitPane);

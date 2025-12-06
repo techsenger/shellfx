@@ -28,5 +28,7 @@ public interface JfxComponentNames {
 
     ComponentName JFX_INSPECTOR_TAB = new ComponentName("JFXInspectorTab");
 
+    ComponentName EVENT_LOG_TAB = new ComponentName("EventLogTab");
+
     ComponentName PROPERTY_DIALOG = new ComponentName("PropertyDialog");
 }

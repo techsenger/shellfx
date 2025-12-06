@@ -1,0 +1,133 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.jfx.eventlog;
+
+import atlantafx.base.theme.Styles;
+import com.techsenger.tabshell.core.style.CoreIcons;
+import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.core.tab.AbstractTabView;
+import com.techsenger.tabshell.jfx.style.JfxIcons;
+import com.techsenger.tabshell.material.icon.FontIconView;
+import java.util.List;
+import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
+import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import jfx.incubator.scene.control.richtext.RichTextArea;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTabView<T> {
+
+    private final ToggleButton recordButton = new ToggleButton(null, new FontIconView(JfxIcons.RECORD));
+
+    private final Button clearButton = new Button(null, new FontIconView(CoreIcons.CLEAR));
+
+    private final ToggleButton filterButton = new ToggleButton(null, new FontIconView(JfxIcons.FILTER));
+
+    private final ToggleButton nodeOnlyButton = new ToggleButton(null, new FontIconView(JfxIcons.NODE_ONLY));
+
+    private final TextField searchTextField = new TextField();
+
+    private final MenuButton eventTypesButton = new MenuButton("Event Types");
+
+    private final ToolBar toolBar = new ToolBar(recordButton, clearButton, new Separator(Orientation.VERTICAL),
+            filterButton, nodeOnlyButton, searchTextField, eventTypesButton);
+
+    private final RichTextArea textArea = new RichTextArea();
+
+    public EventLogTabView(T viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+
+    }
+
+    @Override
+    protected void build(T viewModel) {
+        super.build(viewModel);
+        this.recordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
+        this.recordButton.setTooltip(new Tooltip("Start/Stop"));
+        this.clearButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
+        this.clearButton.setTooltip(new Tooltip("Clear"));
+        this.filterButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
+        this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
+        this.nodeOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
+        this.nodeOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
+        nodeOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
+        HBox.setHgrow(searchTextField, Priority.ALWAYS);
+        searchTextField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
+        this.toolBar.getStyleClass().add(Styles.DENSE);
+
+        textArea.setEditable(false);
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+        getContentPane().getChildren().addAll(toolBar, textArea);
+    }
+
+    @Override
+    protected void addListeners(T viewModel) {
+        super.addListeners(viewModel);
+        viewModel.getEntries().addListener((ListChangeListener<LogEntry>) e -> {
+            while (e.next()) {
+                if (e.wasAdded()) {
+                    print(e.getAddedSubList());
+                }
+                if (e.wasRemoved()) {
+                    this.textArea.clear();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void addHandlers(T viewModel) {
+        super.addHandlers(viewModel);
+        this.recordButton.setOnAction(e -> {
+            if (this.recordButton.isSelected()) {
+                viewModel.start();
+            } else {
+                viewModel.stop();
+            }
+        });
+    }
+
+    private void print(List<? extends LogEntry> entries) {
+        var builder = new StringBuilder();
+        entries.forEach(e -> builder.append(e.text()));
+        var text = builder.toString();
+
+        Platform.runLater(() -> {
+            this.textArea.appendText(text + "\n");
+            // this.textArea.moveDocumentEnd();
+        });
+
+    }
+}

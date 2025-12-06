@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.jfx.eventlog;
 
-@font-face {
-    src: url('font/materialdesignicons-webfont.ttf');
-}
+import devtoolsfx.event.ConnectorEvent;
 
-.font-icon-view.web-browser-icon {
-    -fx-code-point: 984479; /* web */
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public record LogEntry(String date, String text, ConnectorEvent event) { }

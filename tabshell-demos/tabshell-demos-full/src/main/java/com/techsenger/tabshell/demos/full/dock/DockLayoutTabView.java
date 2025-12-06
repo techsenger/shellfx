@@ -79,6 +79,9 @@ public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewMod
         super.build(viewModel);
         var removeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
         var addButton = new Button(null, new FontIconView(CoreIcons.ADD));
+        addButton.setOnAction((e) -> {
+            removeButton.setVisible(!removeButton.isVisible());
+        });
         var toolbar = new ToolBar(removeButton, addButton);
         toolbar.getStyleClass().add(StyleClasses.BLEND);
         getContentPane().getChildren().addAll(toolbar, layout.getNode());

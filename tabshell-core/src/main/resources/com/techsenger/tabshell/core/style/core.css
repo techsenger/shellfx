@@ -279,17 +279,6 @@
     -fx-font-size: 1.2em;
 }
 
-.toggle-button.flat {
-    -fx-background-color: -color-bg-default;
-    -fx-text-fill: -color-fg-default;
-    -fx-effect: null;
-}
-
-.toggle-button.flat:hover {
-    -fx-background-color: -color-bg-subtle;
-    -fx-opacity: 0.9;
-}
-
 /*
     Table/TreeTable
 */
@@ -395,6 +384,13 @@
     -fx-min-height: 2.1em;
     -fx-pref-height: 2.1em;
     -fx-max-height: 2.1em;
+}
+
+.text-field.extra-dense {
+    -fx-padding: 0.15em 0.6em 0.15em 0.6em;
+/*    -fx-min-height: 2.1em;
+    -fx-pref-height: 2.1em;
+    -fx-max-height: 2.1em;*/
 }
 
 /*
@@ -532,32 +528,11 @@
     -fx-cursor: default;
 }
 
-/* ========= ВАРИАНТЫ ДЛЯ РАЗНЫХ ТИПОВ ДЕЙСТВИЙ ========= */
-
-/* Для информационных действий (показать справку, детали) */
-.hyperlink.no-url.info {
-    -fx-text-fill: #0099CC;
-    -fx-graphic: url("info-icon.png");
-}
-
-/* Для опасных действий (удаление, отмена) */
-.hyperlink.no-url.danger {
-    -fx-text-fill: #CC3333;
-}
-
-.hyperlink.no-url.danger:hover {
-    -fx-text-fill: #990000;
-    -fx-background-color: rgba(204, 51, 51, 0.1);
-}
-
-/* Для успешных действий (подтверждение, сохранение) */
-.hyperlink.no-url.success {
-    -fx-text-fill: #339933;
-}
-
-.hyperlink.no-url.success:hover {
-    -fx-text-fill: #267326;
-    -fx-background-color: rgba(51, 153, 51, 0.1);
+/*
+    MenuButton
+*/
+.menu-button.extra-dense > .label {
+  -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 }
 
 /*

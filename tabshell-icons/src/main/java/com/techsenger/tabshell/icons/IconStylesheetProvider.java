@@ -80,6 +80,15 @@ public final class IconStylesheetProvider {
     }
 
     /**
+     * Creates and returns the stylesheet with icons for the 'jfx' module.
+     *
+     * @return
+     */
+    public static Stylesheet createForJfx() {
+        return new Stylesheet(IconStylesheetProvider.class.getResource("jfx.css"));
+    }
+
+    /**
      * Creates and returns the stylesheet with icons for the all modules.
      *
      * @return
@@ -90,7 +99,8 @@ public final class IconStylesheetProvider {
                 createForTerminal(),
                 createForText(),
                 createForHex(),
-                createForWeb());
+                createForWeb(),
+                createForJfx());
     }
 
     private IconStylesheetProvider() {

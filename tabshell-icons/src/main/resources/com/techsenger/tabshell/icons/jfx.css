@@ -22,6 +22,19 @@
     src: url('font/materialdesignicons-webfont.ttf');
 }
 
-.font-icon-view.web-browser-icon {
-    -fx-code-point: 984479; /* web */
+.font-icon-view.target-node-icon {
+    -fx-code-point: 984318; /* target */
 }
+
+.font-icon-view.record-icon {
+    -fx-code-point: 986819; /* record-circle-outline */
+}
+
+.font-icon-view.filter-icon {
+    -fx-code-point: 983603; /* filter-outline */
+}
+
+.font-icon-view.node-only-icon {
+    -fx-code-point: 983459; /* crosshairs */
+}
+

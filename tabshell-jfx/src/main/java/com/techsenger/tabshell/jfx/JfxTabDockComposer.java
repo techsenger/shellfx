@@ -17,6 +17,9 @@
 package com.techsenger.tabshell.jfx;
 
 import com.techsenger.tabshell.core.tab.ShellTabView;
+import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.jfx.eventlog.EventLogTabView;
+import com.techsenger.tabshell.jfx.eventlog.EventLogTabViewModel;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabView;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabViewModel;
 import com.techsenger.tabshell.layout.dock.AbstractTabDockComposer;
@@ -34,36 +37,55 @@ public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTab
 
     private final Connector connector;
 
-    private final JfxInspectorTabView<?> inpector;
+    private final JfxInspectorTabView<?> inpectorTab;
+
+    private final EventLogTabView<?> eventLogTab;
 
     public JfxTabDockComposer(ShellTabView<?> shellTab, T view) {
         super(view);
         this.shellTab = shellTab;
         this.connector = new LocalConnector(shellTab.getShell().getStage(), null);
-        this.inpector = createInspector();
+        this.inpectorTab = createInspectorTab();
+        this.eventLogTab = createEventLogTab();
     }
 
     @Override
     public void initialize() {
         super.initialize();
         this.connector.start();
-        this.inpector.initialize();
+        this.inpectorTab.initialize();
+        this.eventLogTab.initialize();
     }
 
     @Override
     public void deinitialize() {
         super.deinitialize();
-        this.inpector.deinitialize();
+        this.eventLogTab.deinitialize();
+        this.inpectorTab.deinitialize();
         this.connector.stop();
     }
 
-    public JfxInspectorTabView<?> getInpector() {
-        return inpector;
+    public void addTabToDock(TabView<?> tab) {
+        getView().openTab(tab);
     }
 
-    protected JfxInspectorTabView<?> createInspector() {
+    public JfxInspectorTabView<?> getInpectorTab() {
+        return inpectorTab;
+    }
+
+    public EventLogTabView<?> getEventLogTab() {
+        return eventLogTab;
+    }
+
+    protected JfxInspectorTabView<?> createInspectorTab() {
         var vm = new JfxInspectorTabViewModel(shellTab.getViewModel(), connector);
         var v = new JfxInspectorTabView<>(shellTab, vm);
+        return v;
+    }
+
+    protected EventLogTabView<?> createEventLogTab() {
+        var vm = new EventLogTabViewModel(shellTab.getViewModel(), connector);
+        var v = new EventLogTabView<>(vm);
         return v;
     }
 
