@@ -61,6 +61,8 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
 
     private final RichTextArea textArea = new RichTextArea();
 
+    private final StringBuilder textBuilder = new StringBuilder();
+
     public EventLogTabView(T viewModel) {
         super(viewModel);
     }
@@ -88,6 +90,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         this.toolBar.getStyleClass().add(Styles.DENSE);
 
         textArea.setEditable(false);
+        textArea.getStyleClass().add(StyleClasses.MONOSPACE);
         VBox.setVgrow(textArea, Priority.ALWAYS);
         getContentPane().getChildren().addAll(toolBar, textArea);
     }
@@ -95,7 +98,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
-        viewModel.getEntries().addListener((ListChangeListener<LogEntry>) e -> {
+        viewModel.getFilteredEntries().addListener((ListChangeListener<LogEntry>) e -> {
             while (e.next()) {
                 if (e.wasAdded()) {
                     print(e.getAddedSubList());
@@ -120,9 +123,9 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
     }
 
     private void print(List<? extends LogEntry> entries) {
-        var builder = new StringBuilder();
-        entries.forEach(e -> builder.append(e.text()));
-        var text = builder.toString();
+        textBuilder.setLength(0);
+        entries.forEach(e -> textBuilder.append(e.date()).append(" ").append(e.message()));
+        var text = textBuilder.toString();
 
         Platform.runLater(() -> {
             this.textArea.appendText(text + "\n");
