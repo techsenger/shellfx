@@ -72,6 +72,7 @@ public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaV
         reloadButton.setTooltip(new Tooltip("Reload"));
 
         HBox.setHgrow(urlTextField, Priority.ALWAYS);
+        toolBar.getStyleClass().add(StyleClasses.BLEND);
     }
 
     @Override
