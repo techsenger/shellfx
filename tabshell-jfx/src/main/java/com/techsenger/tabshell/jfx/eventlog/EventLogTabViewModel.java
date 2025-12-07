@@ -21,11 +21,32 @@ import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
 import devtoolsfx.connector.Connector;
+import devtoolsfx.event.AttributeListEvent;
+import devtoolsfx.event.AttributeUpdatedEvent;
 import devtoolsfx.event.ConnectorEvent;
-import java.time.LocalTime;
+import devtoolsfx.event.ExceptionEvent;
+import devtoolsfx.event.JavaFXEvent;
+import devtoolsfx.event.MousePosEvent;
+import devtoolsfx.event.NodeAddedEvent;
+import devtoolsfx.event.NodeRemovedEvent;
+import devtoolsfx.event.NodeSelectedEvent;
+import devtoolsfx.event.NodeStyleClassEvent;
+import devtoolsfx.event.NodeVisibilityEvent;
+import devtoolsfx.event.RootChangedEvent;
+import devtoolsfx.event.WindowClosedEvent;
+import devtoolsfx.event.WindowPropertiesEvent;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -35,29 +56,32 @@ import javafx.collections.ObservableList;
  */
 public class EventLogTabViewModel extends AbstractTabViewModel {
 
+    private static final char[] TIME_ARRAY = new char[12]; // HH:mm:ss.SSS
+
     private static String getTime() {
-        LocalTime now = LocalTime.now();
-        char[] buffer = new char[12]; // HH:mm:ss.SSS
+        long millis = System.currentTimeMillis();
+        long seconds = millis / 1000;
+        long ms = millis % 1000;
 
-        int hour = now.getHour();
-        int minute = now.getMinute();
-        int second = now.getSecond();
-        int millis = now.getNano() / 1_000_000;
+        int totalSeconds = (int) (seconds % 86400);
+        int hour = totalSeconds / 3600;
+        int minute = (totalSeconds % 3600) / 60;
+        int second = totalSeconds % 60;
 
-        buffer[0] = (char) ('0' + hour / 10);
-        buffer[1] = (char) ('0' + hour % 10);
-        buffer[2] = ':';
-        buffer[3] = (char) ('0' + minute / 10);
-        buffer[4] = (char) ('0' + minute % 10);
-        buffer[5] = ':';
-        buffer[6] = (char) ('0' + second / 10);
-        buffer[7] = (char) ('0' + second % 10);
-        buffer[8] = '.';
-        buffer[9] = (char) ('0' + millis / 100);
-        buffer[10] = (char) ('0' + (millis / 10) % 10);
-        buffer[11] = (char) ('0' + millis % 10);
+        TIME_ARRAY[0] = (char) ('0' + hour / 10);
+        TIME_ARRAY[1] = (char) ('0' + hour % 10);
+        TIME_ARRAY[2] = ':';
+        TIME_ARRAY[3] = (char) ('0' + minute / 10);
+        TIME_ARRAY[4] = (char) ('0' + minute % 10);
+        TIME_ARRAY[5] = ':';
+        TIME_ARRAY[6] = (char) ('0' + second / 10);
+        TIME_ARRAY[7] = (char) ('0' + second % 10);
+        TIME_ARRAY[8] = '.';
+        TIME_ARRAY[9] = (char) ('0' + ms / 100);
+        TIME_ARRAY[10] = (char) ('0' + (ms / 10) % 10);
+        TIME_ARRAY[11] = (char) ('0' + ms % 10);
 
-        return new String(buffer);
+        return new String(TIME_ARRAY);
     }
 
     private final ShellTabViewModel shellTab;
@@ -66,11 +90,42 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
     private final List<LogEntry> allEntries = new ArrayList<>();
 
+    private final BooleanProperty filterEnabled = new SimpleBooleanProperty(true);
+
+    private final BooleanProperty selectedOnly = new SimpleBooleanProperty(true);
+
     private final ObservableList<LogEntry> filteredEntries = FXCollections.observableArrayList();
 
     private final Consumer<ConnectorEvent> eventListener = this::handleEvent;
 
     private final StringBuilder messageBuilder = new StringBuilder();
+
+    private final StringProperty searchText = new SimpleStringProperty();
+
+    private final Map<Class<? extends ConnectorEvent>, EventType> eventTypesByClass =
+            Collections.unmodifiableMap(
+                Stream.of(
+                    createEventType(AttributeListEvent.class, true),
+                    createEventType(AttributeUpdatedEvent.class, true),
+                    createEventType(ExceptionEvent.class, false),
+                    createEventType(JavaFXEvent.class, false),
+                    createEventType(MousePosEvent.class, false),
+                    createEventType(NodeAddedEvent.class, false),
+                    createEventType(NodeRemovedEvent.class, false),
+                    createEventType(NodeSelectedEvent.class, false),
+                    createEventType(NodeStyleClassEvent.class, false),
+                    createEventType(NodeVisibilityEvent.class, false),
+                    createEventType(RootChangedEvent.class, false),
+                    createEventType(WindowClosedEvent.class, false),
+                    createEventType(WindowPropertiesEvent.class, false)
+                )
+                .collect(Collectors.toMap(
+                    EventType::getType,
+                    eventType -> eventType,
+                    (v1, v2) -> v1,
+                    LinkedHashMap::new
+                ))
+            );
 
     public EventLogTabViewModel(ShellTabViewModel shellTab, Connector connector) {
         this.shellTab = shellTab;
@@ -79,9 +134,65 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         setClosable(false);
     }
 
+    public final boolean isFilterEnabled() {
+        return filterEnabled.get();
+    }
+
+    public final void setFilterEnabled(boolean value) {
+        filterEnabled.set(value);
+    }
+
+    public final BooleanProperty filterEnabledProperty() {
+        return filterEnabled;
+    }
+
+    public boolean isSelectedOnly() {
+        return selectedOnly.get();
+    }
+
+    public void setSelectedOnly(boolean value) {
+        selectedOnly.set(value);
+    }
+
+    public BooleanProperty selectedOnlyProperty() {
+        return selectedOnly;
+    }
+
+    public Map<Class<? extends ConnectorEvent>, EventType> getEventTypesByClass() {
+        return eventTypesByClass;
+    }
+
+    public Connector getConnector() {
+        return connector;
+    }
+
+    public String getSearchText() {
+        return searchText.get();
+    }
+
+    public void setSearchText(String value) {
+        searchText.set(value);
+    }
+
+    public StringProperty searchTextProperty() {
+        return searchText;
+    }
+
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(JfxComponentNames.EVENT_LOG_TAB);
+    }
+
+    protected boolean matchesFilter(LogEntry entry) {
+        var type = this.eventTypesByClass.get(entry.event().getClass());
+        if (type != null && !type.isEnabled()) {
+            return false;
+        }
+        var text = getSearchText();
+        if (!text.isEmpty() && !entry.message().contains(text)) {
+            return false;
+        }
+        return true;
     }
 
     void start() {
@@ -107,6 +218,18 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         messageBuilder.append(event.toLogString());
         var entry = new LogEntry(getTime(), messageBuilder.toString(), event);
         this.allEntries.add(entry);
-        this.filteredEntries.add(entry);
+        if (isFilterEnabled()) {
+            if (matchesFilter(entry)) {
+                this.filteredEntries.add(entry);
+            }
+        } else {
+            this.filteredEntries.add(entry);
+        }
+    }
+
+    private <T extends ConnectorEvent> EventType<T> createEventType(Class<T> clazz, boolean enabled) {
+        var type = new EventType(clazz);
+        type.setEnabled(enabled);
+        return type;
     }
 }

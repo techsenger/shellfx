@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
-import com.techsenger.tabshell.jfx.model.UrlUtils;
+import com.techsenger.tabshell.jfx.UrlUtils;
 import com.techsenger.tabshell.web.WebBrowserTabViewModel;
 import devtoolsfx.scenegraph.Element;
 

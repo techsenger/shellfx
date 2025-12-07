@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx.model;
+package com.techsenger.tabshell.jfx;
 
 import com.techsenger.tabshell.jfx.inspector.PropertyInfo;
 

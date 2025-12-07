@@ -27,6 +27,7 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
@@ -50,14 +51,14 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
 
     private final ToggleButton filterButton = new ToggleButton(null, new FontIconView(JfxIcons.FILTER));
 
-    private final ToggleButton nodeOnlyButton = new ToggleButton(null, new FontIconView(JfxIcons.NODE_ONLY));
+    private final ToggleButton selectedOnlyButton = new ToggleButton(null, new FontIconView(JfxIcons.NODE_ONLY));
 
     private final TextField searchTextField = new TextField();
 
     private final MenuButton eventTypesButton = new MenuButton("Event Types");
 
     private final ToolBar toolBar = new ToolBar(recordButton, clearButton, new Separator(Orientation.VERTICAL),
-            filterButton, nodeOnlyButton, searchTextField, eventTypesButton);
+            filterButton, selectedOnlyButton, searchTextField, eventTypesButton);
 
     private final RichTextArea textArea = new RichTextArea();
 
@@ -81,12 +82,18 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         this.clearButton.setTooltip(new Tooltip("Clear"));
         this.filterButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
         this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
-        this.nodeOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
-        this.nodeOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
-        nodeOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
+        this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
+        this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
+        selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
         HBox.setHgrow(searchTextField, Priority.ALWAYS);
         searchTextField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
+        viewModel.getEventTypesByClass().values().forEach(t -> {
+            var menuItem = new CheckMenuItem(t.getType().getSimpleName());
+            menuItem.selectedProperty().bindBidirectional(t.enabledProperty());
+            this.eventTypesButton.getItems().add(menuItem);
+        });
+
         this.toolBar.getStyleClass().add(Styles.DENSE);
 
         textArea.setEditable(false);
@@ -111,6 +118,14 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
     }
 
     @Override
+    protected void bind(T viewModel) {
+        super.bind(viewModel);
+        this.filterButton.selectedProperty().bindBidirectional(viewModel.filterEnabledProperty());
+        this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
+        this.searchTextField.textProperty().bindBidirectional(viewModel.searchTextProperty());
+    }
+
+    @Override
     protected void addHandlers(T viewModel) {
         super.addHandlers(viewModel);
         this.recordButton.setOnAction(e -> {
@@ -120,7 +135,8 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
                 viewModel.stop();
             }
         });
-        this.clearButton.setOnAction(e -> viewModel.clear());
+        // this.clearButton.setOnAction(e -> viewModel.clear());
+        this.clearButton.setOnAction(e -> viewModel.getConnector().getOptions().setInspectMode(true));
     }
 
     private void print(List<? extends LogEntry> entries) {

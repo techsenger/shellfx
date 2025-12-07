@@ -33,6 +33,5 @@ module com.techsenger.tabshell.jfx {
     exports com.techsenger.tabshell.jfx;
     exports com.techsenger.tabshell.jfx.eventlog;
     exports com.techsenger.tabshell.jfx.inspector;
-    exports com.techsenger.tabshell.jfx.model;
     exports com.techsenger.tabshell.jfx.style;
 }
