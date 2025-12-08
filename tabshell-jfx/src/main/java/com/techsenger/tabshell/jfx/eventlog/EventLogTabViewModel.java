@@ -104,7 +104,7 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
     private final List<LogEntry> allEntries = new ArrayList<>();
 
-    private final BooleanProperty filterEnabled = new SimpleBooleanProperty(true);
+    private final BooleanProperty filterActive = new SimpleBooleanProperty(true);
 
     private final ObjectProperty<GenericFontIcon<?>> recordIcon = new SimpleObjectProperty<>(JfxIcons.RECORD_START);
 
@@ -155,16 +155,16 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         });
     }
 
-    public final boolean isFilterEnabled() {
-        return filterEnabled.get();
+    public final boolean isFilterActive() {
+        return filterActive.get();
     }
 
-    public final void setFilterEnabled(boolean value) {
-        filterEnabled.set(value);
+    public final void setFilterActive(boolean value) {
+        filterActive.set(value);
     }
 
-    public final BooleanProperty filterEnabledProperty() {
-        return filterEnabled;
+    public final BooleanProperty filterActiveProperty() {
+        return filterActive;
     }
 
     public boolean isSelectedOnly() {
@@ -267,7 +267,7 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         messageBuilder.append(event.toLogString());
         var entry = new LogEntry(getTime(), messageBuilder.toString(), event);
         this.allEntries.add(entry);
-        if (isFilterEnabled()) {
+        if (isFilterActive()) {
             if (matchesFilter(entry)) {
                 this.filteredEntries.add(entry);
             }

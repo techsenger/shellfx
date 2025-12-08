@@ -128,7 +128,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
     @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
-        this.filterButton.selectedProperty().bindBidirectional(viewModel.filterEnabledProperty());
+        this.filterButton.selectedProperty().bindBidirectional(viewModel.filterActiveProperty());
         this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
         this.searchTextField.textProperty().bindBidirectional(viewModel.searchTextProperty());
         this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
