@@ -51,7 +51,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
 
     private final ToggleButton filterButton = new ToggleButton(null, new FontIconView(JfxIcons.FILTER));
 
-    private final ToggleButton selectedOnlyButton = new ToggleButton(null, new FontIconView(JfxIcons.NODE_ONLY));
+    private final ToggleButton selectedOnlyButton = new ToggleButton(null, new FontIconView(JfxIcons.SELECTED_ONLY));
 
     private final TextField searchTextField = new TextField();
 
@@ -135,8 +135,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
                 viewModel.stop();
             }
         });
-        // this.clearButton.setOnAction(e -> viewModel.clear());
-        this.clearButton.setOnAction(e -> viewModel.getConnector().getOptions().setInspectMode(true));
+        this.clearButton.setOnAction(e -> viewModel.clear());
     }
 
     private void print(List<? extends LogEntry> entries) {

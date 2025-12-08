@@ -24,6 +24,7 @@ import devtoolsfx.connector.Connector;
 import devtoolsfx.event.AttributeListEvent;
 import devtoolsfx.event.AttributeUpdatedEvent;
 import devtoolsfx.event.ConnectorEvent;
+import devtoolsfx.event.ElementEvent;
 import devtoolsfx.event.ExceptionEvent;
 import devtoolsfx.event.JavaFXEvent;
 import devtoolsfx.event.MousePosEvent;
@@ -35,15 +36,19 @@ import devtoolsfx.event.NodeVisibilityEvent;
 import devtoolsfx.event.RootChangedEvent;
 import devtoolsfx.event.WindowClosedEvent;
 import devtoolsfx.event.WindowPropertiesEvent;
+import devtoolsfx.scenegraph.Element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -102,6 +107,8 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
     private final StringProperty searchText = new SimpleStringProperty();
 
+    private final ReadOnlyObjectWrapper<Element> selectedElement = new ReadOnlyObjectWrapper<>();
+
     private final Map<Class<? extends ConnectorEvent>, EventType> eventTypesByClass =
             Collections.unmodifiableMap(
                 Stream.of(
@@ -132,6 +139,9 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         this.connector = connector;
         setTitle("Event Log");
         setClosable(false);
+        this.connector.getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
+            setSelectedElement(e.getElement());
+        });
     }
 
     public final boolean isFilterEnabled() {
@@ -178,18 +188,32 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         return searchText;
     }
 
+    public ReadOnlyObjectProperty<Element> selectedElementProperty() {
+        return selectedElement.getReadOnlyProperty();
+    }
+
+    public Element getSelectedElement() {
+        return selectedElement.get();
+    }
+
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(JfxComponentNames.EVENT_LOG_TAB);
     }
 
     protected boolean matchesFilter(LogEntry entry) {
+        if (isSelectedOnly()) {
+            if (!(entry.event() instanceof ElementEvent elementEvent)
+                    || !Objects.equals(elementEvent.getElement(), getSelectedElement())) {
+                return false;
+            }
+        }
         var type = this.eventTypesByClass.get(entry.event().getClass());
         if (type != null && !type.isEnabled()) {
             return false;
         }
         var text = getSearchText();
-        if (!text.isEmpty() && !entry.message().contains(text)) {
+        if (text != null && !text.isEmpty() && !entry.message().contains(text)) {
             return false;
         }
         return true;
@@ -231,5 +255,9 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         var type = new EventType(clazz);
         type.setEnabled(enabled);
         return type;
+    }
+
+    private void setSelectedElement(Element element) {
+        selectedElement.set(element);
     }
 }

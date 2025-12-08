@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx.style;
+/*
+    Author: Pavel Castornii
+*/
 
-import com.techsenger.tabshell.material.icon.StyleFontIcon;
+.tab-dock.tab-pane-pro > .tab-header-area > .first-area > .tab-header-first-box {
+    -fx-padding: 0 4 0 0;
+}
 
-/**
- *
- * @author Pavel Castornii
- */
-public interface JfxIcons {
+.tab-dock.tab-pane-pro > .tab-header-area > .first-area > .tab-header-first-box > .select-button {
+    -fx-padding: 0;
+    -fx-min-height: 1.4em;
+    -fx-max-height: 1.4em;
+    -fx-pref-height: 1.4em;
+    -fx-min-width: 1.4em;
+    -fx-max-width: 1.4em;
+    -fx-pref-width: 1.4em;
+}
 
-    StyleFontIcon SELECT = new StyleFontIcon("select-icon");
-
-    StyleFontIcon RECORD = new StyleFontIcon("record-icon");
-
-    StyleFontIcon FILTER = new StyleFontIcon("filter-icon");
-
-    StyleFontIcon SELECTED_ONLY = new StyleFontIcon("selected-only-icon");
+.tab-dock.tab-pane-pro > .tab-header-area > .first-area > .tab-header-first-box > .select-button .font-icon-view {
+    -fx-font-size: 1.2em;
 }

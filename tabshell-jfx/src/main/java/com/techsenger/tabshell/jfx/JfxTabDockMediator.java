@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx.style;
+package com.techsenger.tabshell.jfx;
 
-import com.techsenger.tabshell.material.icon.StyleFontIcon;
+import com.techsenger.tabshell.layout.dock.TabDockMediator;
+import devtoolsfx.connector.Connector;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface JfxIcons {
+public interface JfxTabDockMediator extends TabDockMediator {
 
-    StyleFontIcon SELECT = new StyleFontIcon("select-icon");
-
-    StyleFontIcon RECORD = new StyleFontIcon("record-icon");
-
-    StyleFontIcon FILTER = new StyleFontIcon("filter-icon");
-
-    StyleFontIcon SELECTED_ONLY = new StyleFontIcon("selected-only-icon");
+    Connector getConnector();
 }

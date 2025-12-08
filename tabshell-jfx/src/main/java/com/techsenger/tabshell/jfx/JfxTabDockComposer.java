@@ -33,6 +33,15 @@ import devtoolsfx.connector.LocalConnector;
  */
 public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTabDockComposer<T> {
 
+    protected class Mediator extends AbstractTabDockComposer.Mediator implements JfxTabDockMediator {
+
+        @Override
+        public Connector getConnector() {
+            return connector;
+        }
+
+    }
+
     private final ShellTabView<?> shellTab;
 
     private final Connector connector;
@@ -91,6 +100,6 @@ public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTab
 
     @Override
     protected TabDockMediator createMediator() {
-        return new AbstractTabDockComposer.Mediator() { };
+        return new JfxTabDockComposer.Mediator();
     }
 }

@@ -26,7 +26,6 @@ import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.collections.ListChangeListener;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -43,9 +42,13 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
 
     private final DockLayoutView<?> layout;
 
+    private final FontIconView dragIconView = new FontIconView(CoreIcons.DRAG_VERTICAL);
+
+    private final HBox tabHeaderFirstBox = new HBox();
+
     private final Button minimizeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
 
-    private final HBox controlContainer = new HBox(minimizeButton);
+    private final HBox tabHeaderLastBox = new HBox(minimizeButton);
 
     protected TabDockView(DockLayoutView<?> layout, T viewModel) {
         super(viewModel);
@@ -70,16 +73,17 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         tabPane.setTabDropEnabled(true);
         tabPane.setDragAndDropContext(this.layout.getDragAndDropContext());
 
+        tabHeaderFirstBox.getStyleClass().add("tab-header-first-box");
         minimizeButton.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
-        controlContainer.setAlignment(Pos.CENTER_LEFT);
-        controlContainer.getStyleClass().add("control-container");
+        tabHeaderLastBox.getStyleClass().add("tab-header-last-box");
 
         var css = TabDockView.class.getResource("tab-dock.css").toExternalForm();
         this.getNode().getStylesheets().add(css);
         this.getNode().getStyleClass().add("tab-dock");
 
         var tabHeaderArea = getTabHeaderArea();
-        tabHeaderArea.getLastArea().getChildren().add(controlContainer);
+        tabHeaderArea.getFirstArea().getChildren().add(tabHeaderFirstBox);
+        tabHeaderArea.getLastArea().getChildren().add(tabHeaderLastBox);
         tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
         tabHeaderArea.setTabDragContentFactory(this.layout::createTabDragContent);
         tabHeaderArea.setTabDragScrollStep(10.0);
@@ -90,14 +94,13 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
         ValueUtils.callAndAddListener(viewModel.draggableProperty(), (ov, oldV, newV) -> {
-            var tabHeaderArea = getTabHeaderArea();
-            tabHeaderArea.getFirstArea().getChildren().clear();
-            if (newV != null) {
-                var iconView = new FontIconView(CoreIcons.DRAG_VERTICAL);
-                iconView.setOnDragDetected(e -> this.layout.handleDockDragDetected(this, iconView, e));
-                iconView.setOnMouseDragged(e -> this.layout.handleDockMouseDragged(this, iconView, e));
-                iconView.setOnMouseReleased(e -> this.layout.handleDockMouseReleased(this, iconView, e));
-                tabHeaderArea.getFirstArea().getChildren().add(iconView);
+            if (newV) {
+                dragIconView.setOnDragDetected(e -> this.layout.handleDockDragDetected(this, dragIconView, e));
+                dragIconView.setOnMouseDragged(e -> this.layout.handleDockMouseDragged(this, dragIconView, e));
+                dragIconView.setOnMouseReleased(e -> this.layout.handleDockMouseReleased(this, dragIconView, e));
+                tabHeaderFirstBox.getChildren().add(0, dragIconView);
+            } else {
+                tabHeaderFirstBox.getChildren().remove(dragIconView);
             }
         });
         var tabPane = getNode();
@@ -133,5 +136,17 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
 
     protected Button getMinimizeButton() {
         return minimizeButton;
+    }
+
+    protected FontIconView getDragIconView() {
+        return dragIconView;
+    }
+
+    protected HBox getTabHeaderFirstBox() {
+        return tabHeaderFirstBox;
+    }
+
+    protected HBox getTabHeaderLastBox() {
+        return tabHeaderLastBox;
     }
 }

@@ -16,9 +16,13 @@
 
 package com.techsenger.tabshell.jfx;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.tab.ShellTabView;
+import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
 import com.techsenger.tabshell.layout.dock.TabDockView;
+import com.techsenger.tabshell.material.icon.FontIconView;
+import javafx.scene.control.Button;
 
 /**
  *
@@ -27,6 +31,8 @@ import com.techsenger.tabshell.layout.dock.TabDockView;
 public class JfxTabDockView<T extends JfxTabDockViewModel> extends TabDockView<T> {
 
     private final ShellTabView<?> shellTab;
+
+    private final Button selectButton = new Button(null, new FontIconView(JfxIcons.SELECT));
 
     public JfxTabDockView(ShellTabView<?> shellTab, DockLayoutView<?> layout, T viewModel) {
         super(layout, viewModel);
@@ -41,6 +47,21 @@ public class JfxTabDockView<T extends JfxTabDockViewModel> extends TabDockView<T
     @Override
     protected JfxTabDockComposer<?> createComposer() {
         return new JfxTabDockComposer<>(shellTab, this);
+    }
+
+    @Override
+    protected void build(T viewModel) {
+        super.build(viewModel);
+        selectButton.getStyleClass().addAll(Styles.FLAT, "select-button");
+        getTabHeaderFirstBox().getChildren().add(selectButton);
+        var styles = JfxTabDockView.class.getResource("jfx-tab-dock.css").toExternalForm();
+        getNode().getStylesheets().add(styles);
+    }
+
+    @Override
+    protected void addHandlers(T viewModel) {
+        super.addHandlers(viewModel);
+        selectButton.setOnAction(e -> viewModel.updateInspectMode());
     }
 
     @Override
