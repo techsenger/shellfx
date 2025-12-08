@@ -128,14 +128,14 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
                     createEventType(ExceptionEvent.class, false),
                     createEventType(JavaFXEvent.class, false),
                     createEventType(MousePosEvent.class, false),
-                    createEventType(NodeAddedEvent.class, false),
-                    createEventType(NodeRemovedEvent.class, false),
-                    createEventType(NodeSelectedEvent.class, false),
-                    createEventType(NodeStyleClassEvent.class, false),
-                    createEventType(NodeVisibilityEvent.class, false),
-                    createEventType(RootChangedEvent.class, false),
-                    createEventType(WindowClosedEvent.class, false),
-                    createEventType(WindowPropertiesEvent.class, false)
+                    createEventType(NodeAddedEvent.class, true),
+                    createEventType(NodeRemovedEvent.class, true),
+                    createEventType(NodeSelectedEvent.class, true),
+                    createEventType(NodeStyleClassEvent.class, true),
+                    createEventType(NodeVisibilityEvent.class, true),
+                    createEventType(RootChangedEvent.class, true),
+                    createEventType(WindowClosedEvent.class, true),
+                    createEventType(WindowPropertiesEvent.class, true)
                 )
                 .collect(Collectors.toMap(
                     EventType::getType,
@@ -225,11 +225,6 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
     }
 
     protected boolean matchesFilter(LogEntry entry) {
-        if (entry.event().getClass() == JavaFXEvent.class
-                || entry.event().getClass() == WindowPropertiesEvent.class
-                || entry.event().getClass() == MousePosEvent.class) {
-            return false;
-        }
         if (isSelectedOnly()) {
             if (!(entry.event() instanceof ElementEvent elementEvent)
                     || !Objects.equals(elementEvent.getElement(), getSelectedElement())) {
@@ -279,6 +274,14 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         } else {
             this.filteredEntries.add(entry);
         }
+    }
+
+    protected void selectAllEvents() {
+        this.eventTypesByClass.values().forEach(e -> e.setEnabled(true));
+    }
+
+    protected void deselectAllEvents() {
+        this.eventTypesByClass.values().forEach(e -> e.setEnabled(false));
     }
 
     private <T extends ConnectorEvent> EventType<T> createEventType(Class<T> clazz, boolean enabled) {

@@ -29,7 +29,9 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
@@ -95,7 +97,11 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
             menuItem.selectedProperty().bindBidirectional(t.enabledProperty());
             this.eventTypesButton.getItems().add(menuItem);
         });
-
+        var selectAllEvents = new MenuItem("Select All Events");
+        selectAllEvents.setOnAction(e -> viewModel.selectAllEvents());
+        var deselectAllEvents = new MenuItem("Deselect All Events");
+        deselectAllEvents.setOnAction(e -> viewModel.deselectAllEvents());
+        eventTypesButton.getItems().addAll(new SeparatorMenuItem(), selectAllEvents, deselectAllEvents);
         this.toolBar.getStyleClass().add(Styles.DENSE);
 
         textArea.setEditable(false);
