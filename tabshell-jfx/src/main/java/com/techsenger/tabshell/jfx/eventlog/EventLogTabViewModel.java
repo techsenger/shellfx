@@ -37,6 +37,8 @@ import devtoolsfx.event.RootChangedEvent;
 import devtoolsfx.event.WindowClosedEvent;
 import devtoolsfx.event.WindowPropertiesEvent;
 import devtoolsfx.scenegraph.Element;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -61,10 +63,13 @@ import javafx.collections.ObservableList;
  */
 public class EventLogTabViewModel extends AbstractTabViewModel {
 
+    private static final long ZONE_OFFSET_MILLIS = ZoneId.systemDefault().getRules().getOffset(Instant.now())
+            .getTotalSeconds() * 1000L;
+
     private static final char[] TIME_ARRAY = new char[12]; // HH:mm:ss.SSS
 
     private static String getTime() {
-        long millis = System.currentTimeMillis();
+        long millis = System.currentTimeMillis() + ZONE_OFFSET_MILLIS;
         long seconds = millis / 1000;
         long ms = millis % 1000;
 
