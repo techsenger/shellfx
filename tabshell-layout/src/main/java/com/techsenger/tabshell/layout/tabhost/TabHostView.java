@@ -24,7 +24,7 @@ import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;

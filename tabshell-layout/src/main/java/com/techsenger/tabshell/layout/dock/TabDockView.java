@@ -20,7 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.ParentView;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.material.icon.FontIconView;

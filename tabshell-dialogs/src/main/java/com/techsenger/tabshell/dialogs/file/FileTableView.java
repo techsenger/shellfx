@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.table.NamedTableColumn;
 import com.techsenger.tabshell.material.table.TableHistoryUtils;
 import com.techsenger.tabshell.storage.FileColumnBuilder;

@@ -19,7 +19,7 @@ package com.techsenger.tabshell.hex.editor;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import javafx.geometry.Orientation;

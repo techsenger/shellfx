@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.theme;
+package com.techsenger.tabshell.material.theme;
 
 import atlantafx.base.theme.CupertinoDark;
 import atlantafx.base.theme.CupertinoLight;
@@ -28,56 +28,41 @@ import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-import javafx.application.Application;
 import javafx.scene.text.Font;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum ShellTheme {
+public enum AtlantaFxTheme implements Theme {
 
     CUPERTINO_LIGHT("Cupertino Light", "cupertino-light.css", false, 6,
             () -> new CupertinoLight().getUserAgentStylesheet(),
-            () -> ThemeProvider.getInstance().createCupertinoPalettes(false), true),
+            () -> ThemeProvider.getInstance().createCupertinoPalettes(false)),
 
     CUPERTINO_DARK("Cupertino Dark", "cupertino-dark.css", true, 6,
             () -> new CupertinoDark().getUserAgentStylesheet(),
-            () -> ThemeProvider.getInstance().createCupertinoPalettes(true), true),
+            () -> ThemeProvider.getInstance().createCupertinoPalettes(true)),
 
     PRIMER_LIGHT("Primer Light", "primer-light.css", false, 4,
             () -> new PrimerLight().getUserAgentStylesheet(),
-            () -> ThemeProvider.getInstance().createPrimerPalettes(false), true),
+            () -> ThemeProvider.getInstance().createPrimerPalettes(false)),
 
     PRIMER_DARK("Primer Dark", "primer-dark.css", true, 4,
             () -> new PrimerDark().getUserAgentStylesheet(),
-            () -> ThemeProvider.getInstance().createPrimerPalettes(true), true),
+            () -> ThemeProvider.getInstance().createPrimerPalettes(true)),
 
     NORD_LIGHT("Nord Light", "nord-light.css", false, 1,
             () -> new NordLight().getUserAgentStylesheet(),
-            () -> ThemeProvider.getInstance().createNordPalettes(false), true),
+            () -> ThemeProvider.getInstance().createNordPalettes(false)),
 
     NORD_DARK("Nord Dark", "nord-dark.css", true, 1,
             () -> new NordDark().getUserAgentStylesheet(),
-            () -> ThemeProvider.getInstance().createNordPalettes(true), true),
+            () -> ThemeProvider.getInstance().createNordPalettes(true)),
 
     DRACULA("Dracula", "dracula.css", true, 6,
             () -> new Dracula().getUserAgentStylesheet(),
-            () -> ThemeProvider.getInstance().createDraculaPalettes(), true),
-
-    /**
-     * NOT SUPPORTED. Use this theme only for testing debugging purposes.
-     */
-    MODENA("Modena", "modena.css", false, 4,
-            () -> Application.STYLESHEET_MODENA,
-            () -> ThemeProvider.getInstance().createJavaFxPalettes(), false),
-
-    /**
-     * NOT SUPPORTED. Use this theme only for testing debugging purposes.
-     */
-    CASPIAN("Caspian", "caspian.css", false, 4,
-            () -> Application.STYLESHEET_CASPIAN,
-            () -> ThemeProvider.getInstance().createJavaFxPalettes(), false);
+            () -> ThemeProvider.getInstance().createDraculaPalettes());
 
     private final String name;
 
@@ -86,8 +71,6 @@ public enum ShellTheme {
     private final boolean dark;
 
     private final int borderRadius;
-
-    private final boolean supported;
 
     private final Supplier<String> stylesheetSupplier;
 
@@ -105,109 +88,72 @@ public enum ShellTheme {
 
     private volatile boolean palettesCreated;
 
-    ShellTheme(String name, String fileName, boolean dark, int borderRadius, Supplier<String> stylesheetSupplier,
-            Factory<ThemeProvider.ThemePalettes> palletesFactory, boolean supported) {
+    AtlantaFxTheme(String name, String fileName, boolean dark, int borderRadius, Supplier<String> stylesheetSupplier,
+            Factory<ThemeProvider.ThemePalettes> palletesFactory) {
         this.name = name;
         this.fileName = fileName;
         this.dark = dark;
         this.borderRadius = borderRadius;
         this.stylesheetSupplier = stylesheetSupplier;
         this.palettesFactory = palletesFactory;
-        this.supported = supported;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * Returns file name that has CSS rules for this theme.
-     *
-     */
+    @Override
     public String getFileName() {
         return fileName;
     }
 
+    @Override
     public boolean isDark() {
         return dark;
     }
 
+    @Override
     public int getBorderRadius() {
         return borderRadius;
     }
 
+    @Override
     public Supplier<String> getStylesheetSupplier() {
         return stylesheetSupplier;
     }
 
-    /**
-     * Returns palette with 16 colors.
-     * @return
-     */
+    @Override
     public ThemePalette16 getSimplePalette16() {
         createPalettes();
         return simplePalette16;
     }
 
-    /**
-     * Returns high contrast palette with 32 colors. There are 4 colors for red, blue, green, yellow, magenta, cyan
-     * that have indexes from 0 to 3 (from the lightest tone to the darkest one).
-     *
-     * For light themes lighter colors (0, 1) are in BG palette, while darker colors (2, 3) are in FG palette. For dark
-     * themes lighter colors (0, 1) are in FG palette, while darker colors (2, 3) are in BG palette.
-     *
-     * Black and white colors are equal for foreground and background.
-     *
-     * @return
-     */
+    @Override
     public ThemePalette32 getHighContrastPalette32() {
         createPalettes();
         return highContrastPalette32;
     }
 
-    /**
-     * Returns low contrast palette with 32 colors. There are 4 colors for red, blue, green, yellow, magenta, cyan
-     * that have indexes from 0 to 3 (from the lightest tone to the darkest one).
-     *
-     * For light themes colors (0, 2) are in BG palette and colors (1, 3) are in FG palette. For dark themes
-     * colors (0, 2) are in FG palette and colors (1, 3) are in BG palette.
-     *
-     * Black and white colors are equal for foreground and background.
-     *
-     * @return
-     */
+    @Override
     public ThemePalette32 getLowContrastPalette32() {
         createPalettes();
         return lowContrastPalette32;
     }
 
-    /**
-     * Returns palette for text elements.
-     *
-     * @return
-     */
+    @Override
     public ThemePalette getPalette() {
         createPalettes();
         return palette;
     }
 
-    /**
-     * Returns colors by name. All color names start with "-color-". For example, .get("-color-bg-default");
-     * Returned map contains colors from .root{} from altantafx themes, tabshell themes, base colors.
-     *
-     * @return
-     */
+    @Override
     public Map<String, Integer> getColorsByName() {
         createPalettes();
         return colorsByName;
     }
 
-    /**
-     * Returns web CSS declarations for this theme, for example - background-color - red. Returned map can be used
-     * for creating styles for WebView etc.
-     *
-     * @return
-     */
+    @Override
     public Map<String, String> getWebStyle(Font font) {
         var map = new HashMap<String, String>();
         var palette = getPalette();
@@ -218,16 +164,6 @@ public enum ShellTheme {
         map.put("font-size", String.valueOf(Math.round(font.getSize())) + "px");
         map.put("font-family", "'" + font.getFamily() + "'");
         return map;
-    }
-
-    /**
-     * Indicates if this theme is supported by Shell. Returns false for Modena and Caspian themes
-     * and true for all others.
-     *
-     * @return
-     */
-    public boolean isSupported() {
-        return supported;
     }
 
     /**

@@ -18,10 +18,11 @@ package com.techsenger.tabshell.demos.full.theme;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.theme.ShellTheme;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.material.icon.FontIcon;
+import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
+import com.techsenger.tabshell.material.theme.Theme;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
@@ -35,12 +36,12 @@ import javafx.collections.ObservableList;
  */
 public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
 
-    private final ObservableList<ShellTheme> themes = FXCollections.observableArrayList(Arrays
-            .stream(ShellTheme.values()).filter(t -> t.isSupported()).collect(Collectors.toList()));
+    private final ObservableList<Theme> themes = FXCollections.observableArrayList(Arrays
+            .stream(AtlantaFxTheme.values()).collect(Collectors.toList()));
 
-    private final ObjectProperty<ShellTheme> theme = new SimpleObjectProperty<>();
+    private final ObjectProperty<Theme> theme = new SimpleObjectProperty<>();
 
-    public ThemeDialogViewModel(ShellTheme currentTheme) {
+    public ThemeDialogViewModel(Theme currentTheme) {
         super(DialogScope.SHELL, false);
         setPrefWidth(500);
         setTitle("Select Theme");
@@ -50,19 +51,19 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
         setButtonWidthEqual(true);
     }
 
-    public ObservableList<ShellTheme> getThemes() {
+    public ObservableList<Theme> getThemes() {
         return themes;
     }
 
-    public ObjectProperty<ShellTheme> themeProperty() {
+    public ObjectProperty<Theme> themeProperty() {
         return theme;
     }
 
-    public ShellTheme getTheme() {
+    public Theme getTheme() {
         return theme.get();
     }
 
-    public void setTheme(ShellTheme theme) {
+    public void setTheme(Theme theme) {
         this.theme.set(theme);
     }
 

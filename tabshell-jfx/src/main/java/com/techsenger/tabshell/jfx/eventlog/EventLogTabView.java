@@ -18,10 +18,11 @@ package com.techsenger.tabshell.jfx.eventlog;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.search.SearchPane;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -32,7 +33,6 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
@@ -57,12 +57,12 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
 
     private final ToggleButton selectedOnlyButton = new ToggleButton(null, new FontIconView(JfxIcons.SELECTED_ONLY));
 
-    private final TextField searchTextField = new TextField();
+    private final SearchPane searchPane = new SearchPane();
 
     private final MenuButton eventTypesButton = new MenuButton("Event Types");
 
     private final ToolBar toolBar = new ToolBar(recordButton, clearButton, new Separator(Orientation.VERTICAL),
-            filterButton, selectedOnlyButton, searchTextField, eventTypesButton);
+            filterButton, selectedOnlyButton, searchPane, eventTypesButton);
 
     private final RichTextArea textArea = new RichTextArea();
 
@@ -89,8 +89,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
         selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
-        HBox.setHgrow(searchTextField, Priority.ALWAYS);
-        searchTextField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        HBox.setHgrow(searchPane, Priority.ALWAYS);
         eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
         viewModel.getEventTypesByClass().values().forEach(t -> {
             var menuItem = new CheckMenuItem(t.getType().getSimpleName());
@@ -130,7 +129,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         super.bind(viewModel);
         this.filterButton.selectedProperty().bindBidirectional(viewModel.filterActiveProperty());
         this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
-        this.searchTextField.textProperty().bindBidirectional(viewModel.searchTextProperty());
+        // this.searchPane.getTextField().textProperty().bindBidirectional(viewModel.searchTextProperty());
         this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
     }
 

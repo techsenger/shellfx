@@ -21,7 +21,7 @@ import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.utils.NodeUtils;

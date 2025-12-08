@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.theme;
+package com.techsenger.tabshell.material.theme;
 
 import javafx.util.StringConverter;
 
@@ -22,10 +22,10 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class ThemeStringConverter extends StringConverter<ShellTheme> {
+public class ThemeStringConverter extends StringConverter<Theme> {
 
     @Override
-    public String toString(ShellTheme t) {
+    public String toString(Theme t) {
         if (t != null) {
             return t.getName();
         } else {
@@ -34,7 +34,7 @@ public class ThemeStringConverter extends StringConverter<ShellTheme> {
     }
 
     @Override
-    public ShellTheme fromString(String string) {
+    public Theme fromString(String string) {
         throw new IllegalStateException();
     }
 }

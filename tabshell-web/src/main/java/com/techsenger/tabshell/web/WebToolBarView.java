@@ -18,7 +18,7 @@ package com.techsenger.tabshell.web;
 
 import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;

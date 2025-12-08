@@ -16,15 +16,15 @@
 
 package com.techsenger.tabshell.core.settings.xml;
 
-import com.techsenger.tabshell.core.theme.ShellTheme;
+import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ThemeAdapter extends EnumAdapter<ShellTheme> {
+public class ThemeAdapter extends EnumAdapter<AtlantaFxTheme> {
 
     public ThemeAdapter() {
-        super(ShellTheme.class);
+        super(AtlantaFxTheme.class);
     }
 }

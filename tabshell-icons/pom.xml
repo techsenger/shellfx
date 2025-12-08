@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-core</artifactId>
+            <artifactId>tabshell-material</artifactId>
         </dependency>
         <!-- testing -->
         <dependency>

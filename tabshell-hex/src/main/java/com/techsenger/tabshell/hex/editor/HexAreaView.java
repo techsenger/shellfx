@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.FIRST;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.SECOND;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.THIRD;

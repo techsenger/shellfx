@@ -24,6 +24,10 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.toolkit</groupId>
+            <artifactId>toolkit-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.techsenger.toolkit</groupId>
             <artifactId>toolkit-fx</artifactId>
         </dependency>
         <dependency>

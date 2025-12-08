@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.icons;
 
-import com.techsenger.tabshell.core.style.Stylesheet;
+import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
 
 /**

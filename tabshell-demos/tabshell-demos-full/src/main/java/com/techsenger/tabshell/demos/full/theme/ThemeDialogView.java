@@ -18,8 +18,8 @@ package com.techsenger.tabshell.demos.full.theme;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.style.SizeConstants;
-import com.techsenger.tabshell.core.theme.ShellTheme;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
+import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -38,7 +38,7 @@ public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewMod
 
     private final Label themeLabel = new Label("Theme");
 
-    private final ComboBox<ShellTheme> themeComboBox = new ComboBox<>();
+    private final ComboBox<Theme> themeComboBox = new ComboBox<>();
 
     private final HBox hBox = new HBox(themeLabel, themeComboBox);
 
@@ -57,14 +57,14 @@ public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewMod
         themeLabel.setMinWidth(Region.USE_PREF_SIZE);
         themeComboBox.setItems(viewModel.getThemes());
         themeComboBox.setMaxWidth(Double.MAX_VALUE);
-        themeComboBox.setConverter(new StringConverter<ShellTheme>() {
+        themeComboBox.setConverter(new StringConverter<Theme>() {
             @Override
-            public String toString(ShellTheme t) {
+            public String toString(Theme t) {
                 return t.getName();
             }
 
             @Override
-            public ShellTheme fromString(String string) {
+            public Theme fromString(String string) {
                 return null;
             }
         });

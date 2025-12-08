@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.jfx.inspector;
 
 import com.techsenger.tabshell.core.style.SizeConstants;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.jfx.inspector.PropertyInfo.ValueInfo;

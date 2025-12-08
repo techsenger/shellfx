@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core.settings.xml;
 
 import com.techsenger.tabshell.core.settings.AbstractAppearanceSettings;
-import com.techsenger.tabshell.core.theme.ShellTheme;
+import com.techsenger.tabshell.material.theme.Theme;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -40,12 +40,12 @@ public class XmlAppearanceSettings extends AbstractAppearanceSettings {
 
     @XmlAttribute(name = "theme")
     @XmlJavaTypeAdapter(ThemeAdapter.class)
-    public void setTheme(ShellTheme theme) {
+    public void setTheme(Theme theme) {
         super.setTheme(theme);
     }
 
     @Override
-    public ShellTheme getTheme() {
+    public Theme getTheme() {
         return super.getTheme();
     }
 

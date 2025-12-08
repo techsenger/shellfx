@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.theme;
+package com.techsenger.tabshell.material.theme;
 
 import atlantafx.base.theme.Theme;
-import com.techsenger.tabshell.core.style.Stylesheet;
+import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.toolkit.core.StringUtils;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.io.BufferedReader;

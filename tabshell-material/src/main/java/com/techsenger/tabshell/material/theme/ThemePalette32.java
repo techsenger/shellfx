@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.file;
-
-import com.techsenger.tabshell.storage.GenericFile;
-import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.material.list.ColumnListView;
-import javafx.scene.control.ContextMenu;
+package com.techsenger.tabshell.material.theme;
 
 /**
+ * This palette32 contains 16 colors for foreground and 16 colors for background.
+ *
+ * However, such approach may contain not very good results because when some application was developed
+ * without knowing anything about themes, then rendered colors can be wrong for this application. It terminal were
+ * used only for running commands, then it wouldn't be a big problem. But if someone starts a TUI application in
+ * this terminal, for example, mc, then it will become a problem.
  *
  * @author Pavel Castornii
  */
-class FileListView extends ColumnListView<GenericFile> {
+public interface ThemePalette32 {
 
-    private final FileStringConverter stringConverter = new FileStringConverter();
+    int[] getFgColors();
 
-    FileListView(FileChooserDialogViewModel viewModel, ContextMenu cellContextMenu) {
-        setManualRefresh(true);
-        setEditable(true);
-        setItems(viewModel.getFiles());
-        getStyleClass().add(StyleClasses.EXTRA_DENSE);
-
-    }
+    int[] getBgColors();
 }

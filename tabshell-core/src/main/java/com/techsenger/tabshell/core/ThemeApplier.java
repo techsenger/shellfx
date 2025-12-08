@@ -18,8 +18,8 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.core.style.Stylesheet;
-import com.techsenger.tabshell.core.theme.ShellTheme;
+import com.techsenger.tabshell.material.style.Stylesheet;
+import com.techsenger.tabshell.material.theme.Theme;
 import java.util.List;
 import javafx.application.Application;
 import javafx.collections.ListChangeListener;
@@ -32,9 +32,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-class ThemeManager {
+class ThemeApplier {
 
-    private static final Logger logger = LoggerFactory.getLogger(ThemeManager.class);
+    private static String getThemedStylesheetUrl(String url, Theme theme) {
+        int lastSlash = url.lastIndexOf('/');
+        var fileName = url.substring(lastSlash + 1);
+        fileName = fileName.substring(0, fileName.length() - 4);
+        fileName = fileName + "-" + theme.name().toLowerCase().replace("_", "-") + ".css";
+        var newUrl = url.substring(0, lastSlash + 1) + fileName;
+        return newUrl;
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(ThemeApplier.class);
 
     private final Scene scene;
 
@@ -46,7 +55,7 @@ class ThemeManager {
      * @param root the root of the scene. We can't get the root from stage.getScene().getRoot() because of custom stage.
      * @param theme
      */
-    ThemeManager(StandardStageController controller, ObservableList<Stylesheet> stylesheets,
+    ThemeApplier(StandardStageController controller, ObservableList<Stylesheet> stylesheets,
             AppearanceSettings settings) {
         var theme = settings.themeProperty();
         this.stylesheets = stylesheets;
@@ -74,7 +83,7 @@ class ThemeManager {
         });
     }
 
-    private void addTheme(ShellTheme theme, boolean setStageColors) {
+    private void addTheme(Theme theme, boolean setStageColors) {
         if (theme == null) {
             return;
         }
@@ -82,27 +91,31 @@ class ThemeManager {
         addStylesheets(theme, stylesheets);
     }
 
-    private void removeTheme(ShellTheme theme) {
+    private void removeTheme(Theme theme) {
         if (theme == null) {
             return;
         }
         removeStylesheets(theme, stylesheets);
     }
 
-    private void addStylesheets(ShellTheme theme, List<? extends Stylesheet> sheets) {
+    private void addStylesheets(Theme theme, List<? extends Stylesheet> sheets) {
         for (var s : sheets) {
-            if (s.getTheme() == null || s.getTheme().equals(theme)) {
-                var url = s.getUrl().toExternalForm();
-                this.scene.getStylesheets().add(url);
+            var url = s.getUrl().toExternalForm();
+            this.scene.getStylesheets().add(url);
+            if (s.getExtendedThemes().contains(theme)) {
+                var themedUrl = getThemedStylesheetUrl(url, theme);
+                this.scene.getStylesheets().add(themedUrl);
             }
         }
     }
 
-    private void removeStylesheets(ShellTheme theme, List<? extends Stylesheet> sheets) {
+    private void removeStylesheets(Theme theme, List<? extends Stylesheet> sheets) {
         for (var s : sheets) {
-            if (s.getTheme() == null || s.getTheme().equals(theme)) {
-                var url = s.getUrl().toExternalForm();
-                this.scene.getStylesheets().remove(url);
+            var url = s.getUrl().toExternalForm();
+            this.scene.getStylesheets().remove(url);
+            if (s.getExtendedThemes().contains(theme)) {
+                var themedUrl = getThemedStylesheetUrl(url, theme);
+                this.scene.getStylesheets().remove(themedUrl);
             }
         }
     }

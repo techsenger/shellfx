@@ -19,8 +19,8 @@ package com.techsenger.tabshell.terminal;
 import com.techsenger.jeditermfx.core.Color;
 import com.techsenger.jeditermfx.core.TerminalColor;
 import com.techsenger.jeditermfx.core.emulator.ColorPalette;
-import com.techsenger.tabshell.core.theme.ShellTheme;
-import com.techsenger.tabshell.core.theme.ThemePalette;
+import com.techsenger.tabshell.material.theme.Theme;
+import com.techsenger.tabshell.material.theme.ThemePalette;
 
 /**
  * The main purpose of this terminal is not run TUI applications, but to execute some commands because there is no
@@ -35,7 +35,7 @@ class TerminalPalette extends ColorPalette {
 
     private Color[] bgColors;
 
-    private ShellTheme theme;
+    private Theme theme;
 
     private TerminalPaletteType paletteType;
 
@@ -45,7 +45,7 @@ class TerminalPalette extends ColorPalette {
 
     private ThemePalette textPalette;
 
-    TerminalPalette(ShellTheme theme, TerminalPaletteType paletteType) {
+    TerminalPalette(Theme theme, TerminalPaletteType paletteType) {
         this.paletteType = paletteType;
         setTheme(theme);
     }
@@ -80,7 +80,7 @@ class TerminalPalette extends ColorPalette {
      * We assume, that theme is always changed on JavaFX thread.
      * @param theme
      */
-    public void setTheme(ShellTheme theme) {
+    public void setTheme(Theme theme) {
         this.theme = theme;
         if (theme.isDark()) {
             fgColorIndex = 15;

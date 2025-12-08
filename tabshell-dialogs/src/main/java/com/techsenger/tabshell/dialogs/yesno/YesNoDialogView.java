@@ -20,7 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
 import com.techsenger.tabshell.core.style.SizeConstants;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.dialogs.base.BaseDialogComposer;
 import com.techsenger.tabshell.dialogs.base.DefaultBaseDialogComposer;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;

@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.theme;
+/*
+    Author     : Pavel Castornii
+*/
 
-/**
- *
- * @author Pavel Castornii
- */
-public interface ThemePalette16 {
 
-    int[] getColors();
-}

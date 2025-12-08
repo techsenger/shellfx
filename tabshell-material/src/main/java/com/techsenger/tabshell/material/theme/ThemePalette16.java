@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.theme;
+package com.techsenger.tabshell.material.theme;
 
 /**
- * This palette32 contains 16 colors for foreground and 16 colors for background.
- *
- * However, such approach may contain not very good results because when some application was developed
- * without knowing anything about themes, then rendered colors can be wrong for this application. It terminal were
- * used only for running commands, then it wouldn't be a big problem. But if someone starts a TUI application in
- * this terminal, for example, mc, then it will become a problem.
  *
  * @author Pavel Castornii
  */
-public interface ThemePalette32 {
+public interface ThemePalette16 {
 
-    int[] getFgColors();
-
-    int[] getBgColors();
+    int[] getColors();
 }

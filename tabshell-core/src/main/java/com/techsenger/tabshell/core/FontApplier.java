@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.core.style.StyleUtils;
+import com.techsenger.tabshell.material.style.StyleUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.scene.layout.Pane;
 
@@ -25,11 +25,11 @@ import javafx.scene.layout.Pane;
  *
  * @author Pavel Castornii
  */
-public class FontManager {
+public class FontApplier {
 
     private String monoStylesheet;
 
-    public FontManager(Pane root, AppearanceSettings settings) {
+    public FontApplier(Pane root, AppearanceSettings settings) {
         ValueUtils.callAndAddListener(settings.regularFontProperty(), (ov, t, t1) -> {
             root.setStyle(StyleUtils.toStyle(t1));
         });

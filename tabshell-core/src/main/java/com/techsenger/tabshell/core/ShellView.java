@@ -20,7 +20,7 @@ import com.techsenger.mvvm4fx.core.ComponentView;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.style.Stylesheet;
+import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabContainerView;
 import java.util.List;

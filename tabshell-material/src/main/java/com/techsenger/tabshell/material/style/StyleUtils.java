@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.style;
+package com.techsenger.tabshell.material.style;
 
 import javafx.geometry.Dimension2D;
 import javafx.scene.text.Font;

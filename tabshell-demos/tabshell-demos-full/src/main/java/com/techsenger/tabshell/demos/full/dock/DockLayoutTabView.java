@@ -18,7 +18,7 @@ package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.style.CoreIcons;
-import com.techsenger.tabshell.core.style.StyleClasses;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
 import com.techsenger.tabshell.layout.dock.TabDockView;

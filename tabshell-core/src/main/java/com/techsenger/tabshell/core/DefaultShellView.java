@@ -34,17 +34,24 @@ import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.style.SizeConstants;
-import com.techsenger.tabshell.core.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
-import com.techsenger.tabshell.core.theme.ShellTheme;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.material.style.Stylesheet;
+import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
+import com.techsenger.tabshell.material.theme.JavaFxTheme;
+import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.value.ValueUtils;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.beans.binding.Bindings;
@@ -222,9 +229,9 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     private final TabPanePro tabPane = new TabPanePro();
 
-    private final ThemeManager themeManager;
+    private final ThemeApplier themeApplier;
 
-    private final FontManager fontManager;
+    private final FontApplier fontApplier;
 
     private final ShellStageController stageController;
 
@@ -249,11 +256,11 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         if (stylesheets != null) {
             this.stylesheets.addAll(stylesheets);
         }
-        themeManager = new ThemeManager(stageController, this.stylesheets, viewModel.getSettings().getAppearance());
+        themeApplier = new ThemeApplier(stageController, this.stylesheets, viewModel.getSettings().getAppearance());
         this.dialogManager = new ShellDialogManager(stageController, stackPane, contentPane,
                 viewModel.dialogCountWrapper());
         this.menuManager = new MenuManager(this, this.menuBar);
-        this.fontManager = new FontManager(stackPane, viewModel.getSettings().getAppearance());
+        this.fontApplier = new FontApplier(stackPane, viewModel.getSettings().getAppearance());
     }
 
     @Override
@@ -517,19 +524,13 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
     }
 
     private List<Stylesheet> createDefaultStylesheets() {
+        Set<Theme> allThemes = Stream.concat(
+                Arrays.stream(AtlantaFxTheme.values()),
+                Arrays.stream(JavaFxTheme.values()))
+                .collect(Collectors.toSet());
         return List.of(
-                new Stylesheet(Stylesheet.class.getResource("core.css")),
-                new Stylesheet(ShellTheme.CASPIAN, Stylesheet.class.getResource("core-caspian.css")),
-                new Stylesheet(ShellTheme.CUPERTINO_DARK, Stylesheet.class.getResource("core-cupertino-dark.css")),
-                new Stylesheet(ShellTheme.CUPERTINO_LIGHT,
-                        Stylesheet.class.getResource("core-cupertino-light.css")),
-                new Stylesheet(ShellTheme.DRACULA, Stylesheet.class.getResource("core-dracula.css")),
-                new Stylesheet(ShellTheme.MODENA, Stylesheet.class.getResource("core-modena.css")),
-                new Stylesheet(ShellTheme.NORD_DARK, Stylesheet.class.getResource("core-nord-dark.css")),
-                new Stylesheet(ShellTheme.NORD_LIGHT, Stylesheet.class.getResource("core-nord-light.css")),
-                new Stylesheet(ShellTheme.PRIMER_DARK, Stylesheet.class.getResource("core-primer-dark.css")),
-                new Stylesheet(ShellTheme.PRIMER_LIGHT, Stylesheet.class.getResource("core-primer-light.css"))
-        );
+                new Stylesheet(SizeConstants.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
+                new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
     }
 
     private Runnable createCloseCallback(CloseScope scope, ShellTabView<?> tab) {

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.settings;
 
-import com.techsenger.tabshell.core.theme.ShellTheme;
+import com.techsenger.tabshell.material.theme.Theme;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.text.Font;
@@ -27,7 +27,7 @@ import javafx.scene.text.Font;
  */
 public abstract class AbstractAppearanceSettings implements AppearanceSettings {
 
-    private final ObjectProperty<ShellTheme> theme = new SimpleObjectProperty<>();
+    private final ObjectProperty<Theme> theme = new SimpleObjectProperty<>();
 
     private final ObjectProperty<Font> regularFont = new SimpleObjectProperty<>();
 
@@ -43,17 +43,17 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
     }
 
     @Override
-    public ObjectProperty<ShellTheme> themeProperty() {
+    public ObjectProperty<Theme> themeProperty() {
         return theme;
     }
 
     @Override
-    public ShellTheme getTheme() {
+    public Theme getTheme() {
         return theme.get();
     }
 
     @Override
-    public void setTheme(ShellTheme theme) {
+    public void setTheme(Theme theme) {
         this.theme.set(theme);
     }
 

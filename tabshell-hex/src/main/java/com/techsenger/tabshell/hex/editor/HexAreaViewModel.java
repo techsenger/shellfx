@@ -19,7 +19,7 @@ package com.techsenger.tabshell.hex.editor;
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.core.style.StyleUtils;
+import com.techsenger.tabshell.material.style.StyleUtils;
 import com.techsenger.tabshell.hex.HexComponentNames;
 import com.techsenger.tabshell.hex.model.ByteRange;
 import com.techsenger.tabshell.hex.model.HexDocument;

@@ -16,7 +16,7 @@
 
 module com.techsenger.tabshell.icons {
     requires org.slf4j;
-    requires com.techsenger.tabshell.core;
+    requires com.techsenger.tabshell.material;
 
     exports com.techsenger.tabshell.icons;
 

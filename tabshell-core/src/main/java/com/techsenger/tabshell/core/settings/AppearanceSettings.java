@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.settings;
 
-import com.techsenger.tabshell.core.theme.ShellTheme;
+import com.techsenger.tabshell.material.theme.Theme;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.text.Font;
 
@@ -26,11 +26,11 @@ import javafx.scene.text.Font;
  */
 public interface AppearanceSettings {
 
-    ObjectProperty<ShellTheme> themeProperty();
+    ObjectProperty<Theme> themeProperty();
 
-    ShellTheme getTheme();
+    Theme getTheme();
 
-    void setTheme(ShellTheme theme);
+    void setTheme(Theme theme);
 
     /**
      * Regular font that used for UI etc.

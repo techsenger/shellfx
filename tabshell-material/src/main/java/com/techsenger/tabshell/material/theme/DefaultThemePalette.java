@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.theme;
+package com.techsenger.tabshell.material.theme;
 
 import java.util.Map;
 
