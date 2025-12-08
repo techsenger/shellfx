@@ -19,7 +19,6 @@ package com.techsenger.tabshell.layout.dock;
 import atlantafx.base.theme.Styles;
 import com.techsenger.mvvm4fx.core.ParentView;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.layout.tabhost.TabHostView;
@@ -31,6 +30,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.HBox;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -42,11 +42,11 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
 
     private final DockLayoutView<?> layout;
 
-    private final FontIconView dragIconView = new FontIconView(CoreIcons.DRAG_VERTICAL);
+    private final FontIconView dragIconView = new FontIconView(SharedIcons.DRAG_VERTICAL);
 
     private final HBox tabHeaderFirstBox = new HBox();
 
-    private final Button minimizeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
+    private final Button minimizeButton = new Button(null, new FontIconView(SharedIcons.REMOVE));
 
     private final HBox tabHeaderLastBox = new HBox(minimizeButton);
 

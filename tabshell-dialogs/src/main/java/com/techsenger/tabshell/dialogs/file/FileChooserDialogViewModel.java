@@ -21,7 +21,6 @@ import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
@@ -63,6 +62,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -146,12 +146,12 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         switch (type) {
             case OPEN:
                 setTitle("Open");
-                setIcon(CoreIcons.OPEN);
+                setIcon(SharedIcons.OPEN);
                 setLocationText("Look In");
                 break;
             case SAVE_AS:
                 setTitle("Save As");
-                setIcon(CoreIcons.SAVE_AS);
+                setIcon(SharedIcons.SAVE_AS);
                 setLocationText("Save In");
                 break;
             default:
@@ -540,7 +540,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
                     var segment = segments.get(i);
                     var segmentUri = UriUtils.resolvePath(previousUri, segment);
                     var directoryLocation = new Location(
-                            CoreIcons.DIRECTORY,
+                            SharedIcons.DIRECTORY,
                             segment,
                             i + 1,
                             storage,
@@ -589,7 +589,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
             l = createLocation(storage.get());
         } else {
             l = new Location(
-                    CoreIcons.DIRECTORY,
+                    SharedIcons.DIRECTORY,
                     segments.get(segments.size() - 1),
                     segments.size(),
                     storage.get(),

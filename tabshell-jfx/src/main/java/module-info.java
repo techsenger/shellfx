@@ -20,6 +20,7 @@ module com.techsenger.tabshell.jfx {
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.tabshell.core;
+    requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabshell.layout;
     requires com.techsenger.tabshell.dialogs;
     requires com.techsenger.tabshell.material;

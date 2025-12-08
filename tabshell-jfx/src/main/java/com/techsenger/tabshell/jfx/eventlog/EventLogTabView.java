@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.jfx.eventlog;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
@@ -40,6 +39,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import jfx.incubator.scene.control.richtext.RichTextArea;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -51,7 +51,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
 
     private final ToggleButton recordButton = new ToggleButton(null, recordIconView);
 
-    private final Button clearButton = new Button(null, new FontIconView(CoreIcons.CLEAR));
+    private final Button clearButton = new Button(null, new FontIconView(SharedIcons.CLEAR));
 
     private final ToggleButton filterButton = new ToggleButton(null, new FontIconView(JfxIcons.FILTER));
 

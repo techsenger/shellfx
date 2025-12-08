@@ -29,7 +29,7 @@ import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 import com.techsenger.tabshell.shared.menu.EditMenuNames;
 import com.techsenger.tabshell.shared.menu.FileMenuNames;
-import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabViewModel;
+import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.tabshell.storage.FileStorages;
 import com.techsenger.tabshell.storage.FileTaskProvider;
 import com.techsenger.tabshell.storage.GenericFile;

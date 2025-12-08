@@ -27,6 +27,10 @@
             <artifactId>tabshell-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.tabshell</groupId>
+            <artifactId>tabshell-shared</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.toolkit</groupId>
             <artifactId>toolkit-core</artifactId>
         </dependency>

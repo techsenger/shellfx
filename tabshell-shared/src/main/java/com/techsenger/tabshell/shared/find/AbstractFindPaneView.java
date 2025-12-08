@@ -18,7 +18,6 @@ package com.techsenger.tabshell.shared.find;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -38,6 +37,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -61,17 +61,17 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
 
     private final StackPane findComboBoxWrapper = new StackPane(findComboBox, resultLabel);
 
-    private final Button findPreviousButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_UP));
+    private final Button findPreviousButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_UP));
 
-    private final Button findNextButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_DOWN));
+    private final Button findNextButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_DOWN));
 
-    private final ToggleButton caseButton = new ToggleButton(null, new FontIconView(CoreIcons.MATCH_CASE));
+    private final ToggleButton caseButton = new ToggleButton(null, new FontIconView(SharedIcons.MATCH_CASE));
 
-    private final ToggleButton wholeWordButton = new ToggleButton(null, new FontIconView(CoreIcons.WHOLE_WORD));
+    private final ToggleButton wholeWordButton = new ToggleButton(null, new FontIconView(SharedIcons.WHOLE_WORD));
 
-    private final ToggleButton regExpButton = new ToggleButton(null, new FontIconView(CoreIcons.REG_EXP));
+    private final ToggleButton regExpButton = new ToggleButton(null, new FontIconView(SharedIcons.REG_EXP));
 
-    private final ToggleButton highlightButton = new ToggleButton(null, new FontIconView(CoreIcons.HIGHLIGHT));
+    private final ToggleButton highlightButton = new ToggleButton(null, new FontIconView(SharedIcons.HIGHLIGHT));
 
     private final Button closeButton = new Button();
 

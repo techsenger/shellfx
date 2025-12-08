@@ -21,18 +21,16 @@ module com.techsenger.tabshell.shared {
     requires com.techsenger.mvvm4fx.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
-    requires com.techsenger.tabshell.layout;
     requires com.techsenger.tabpanepro.core;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
     requires javafx.swing;
-    requires org.controlsfx.controls;
     requires atlantafx.base;
     requires jakarta.xml.bind;
 
     exports com.techsenger.tabshell.shared;
     exports com.techsenger.tabshell.shared.find;
     exports com.techsenger.tabshell.shared.menu;
-    exports com.techsenger.tabshell.shared.workertab;
+    exports com.techsenger.tabshell.shared.style;
 }

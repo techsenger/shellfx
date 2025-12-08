@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.storage;
 
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.table.NamedTableColumn;
 import com.techsenger.toolkit.core.file.FileUtils;
@@ -28,6 +27,7 @@ import java.util.Comparator;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TableCell;
 import javafx.scene.text.Font;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -60,9 +60,9 @@ public class FileColumnBuilder {
                     } else {
                         if (file.getType() != null) {
                             if (file.isDirectory()) {
-                                this.setGraphic(new FontIconView(CoreIcons.DIRECTORY));
+                                this.setGraphic(new FontIconView(SharedIcons.DIRECTORY));
                             } else {
-                                this.setGraphic(new FontIconView(CoreIcons.FILE));
+                                this.setGraphic(new FontIconView(SharedIcons.FILE));
                             }
                         } else {
                             setGraphic(null);

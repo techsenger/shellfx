@@ -21,7 +21,6 @@ import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -36,6 +35,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -233,7 +233,7 @@ public class SideBarView<T extends SideBarViewModel> extends AbstractAreaView<T>
 
     protected Tab createRestoreTab() {
         var tab = new BarRestoreTab();
-        var button = new Button(null, new FontIconView(CoreIcons.RESTORE_WINDOW));
+        var button = new Button(null, new FontIconView(SharedIcons.RESTORE_WINDOW));
         button.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
         button.setOnAction(e -> {
             removePopup();

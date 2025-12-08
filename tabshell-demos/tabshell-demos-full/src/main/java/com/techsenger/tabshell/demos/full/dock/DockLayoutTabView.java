@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
@@ -31,6 +30,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -77,8 +77,8 @@ public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewMod
     @Override
     protected void build(DockLayoutTabViewModel viewModel) {
         super.build(viewModel);
-        var removeButton = new Button(null, new FontIconView(CoreIcons.REMOVE));
-        var addButton = new Button(null, new FontIconView(CoreIcons.ADD));
+        var removeButton = new Button(null, new FontIconView(SharedIcons.REMOVE));
+        var addButton = new Button(null, new FontIconView(SharedIcons.ADD));
         addButton.setOnAction((e) -> {
             removeButton.setVisible(!removeButton.isVisible());
         });

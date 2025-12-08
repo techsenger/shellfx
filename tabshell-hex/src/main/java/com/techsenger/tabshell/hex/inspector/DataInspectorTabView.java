@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.hex.inspector;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
@@ -37,6 +36,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -65,9 +65,9 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
 
     private final ComboBox<ByteOrder> byteOrderCheckBox = new ComboBox<>();
 
-    private final Button previousButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_LEFT));
+    private final Button previousButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_LEFT));
 
-    private final Button nextButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_RIGHT));
+    private final Button nextButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_RIGHT));
 
     private final ToolBar toolBar = new ToolBar(previousButton, nextButton, new Spacer());
 

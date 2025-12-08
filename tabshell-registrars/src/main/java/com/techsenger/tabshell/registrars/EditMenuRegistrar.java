@@ -22,7 +22,6 @@ import com.techsenger.tabshell.shared.menu.EditMenuNames;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuGroup;
@@ -33,6 +32,7 @@ import com.techsenger.tabshell.text.viewer.AbstractViewerTabViewModel;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -102,7 +102,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
     protected void registerUndoItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(EditMenuNames.UNDO, false, true, false, "_Undo",
-                    new FontIconView(CoreIcons.UNDO), 100);
+                    new FontIconView(SharedIcons.UNDO), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((ShellView<?>) v).getSelectedTab();
@@ -118,7 +118,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
     protected void registerRedoItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(EditMenuNames.REDO, false, true, false, "_Redo",
-                    new FontIconView(CoreIcons.REDO), 200);
+                    new FontIconView(SharedIcons.REDO), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((ShellView<?>) v).getSelectedTab();
@@ -134,7 +134,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
     protected void registerCutItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(EditMenuNames.CUT, false, true, false, "Cu_t",
-                    new FontIconView(CoreIcons.CUT), 100);
+                    new FontIconView(SharedIcons.CUT), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((ShellView<?>) v).getSelectedTab();
@@ -150,7 +150,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
     protected void registerCopyItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(EditMenuNames.COPY, false, true, false, "Cop_y",
-                    new FontIconView(CoreIcons.COPY), 200);
+                    new FontIconView(SharedIcons.COPY), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((ShellView<?>) v).getSelectedTab();
@@ -166,7 +166,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
     protected void registerPasteItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(EditMenuNames.PASTE, false, true, false, "_Paste",
-                    new FontIconView(CoreIcons.PASTE), 300);
+                    new FontIconView(SharedIcons.PASTE), 300);
             item.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((ShellView<?>) v).getSelectedTab();
@@ -182,7 +182,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
     protected void registerFindItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(EditMenuNames.FIND, false, true, false, "_Find",
-                    new FontIconView(CoreIcons.FIND), 100);
+                    new FontIconView(SharedIcons.FIND), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((ShellView<?>) v).getSelectedTab();
@@ -199,7 +199,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
     protected void registerReplaceItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(EditMenuNames.REPLACE, false, true, false, "R_eplace",
-                    new FontIconView(CoreIcons.REPLACE), 200);
+                    new FontIconView(SharedIcons.REPLACE), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
             item.setOnAction(e -> {
                 var tab = ((ShellView<?>) v).getSelectedTab();

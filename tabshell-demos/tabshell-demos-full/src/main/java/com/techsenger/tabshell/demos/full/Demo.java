@@ -22,7 +22,7 @@ import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
 import com.techsenger.tabshell.demos.full.menu.DemoFileMenuRegistrar;
 import com.techsenger.tabshell.demos.full.menu.DemoMenuRegistrar;
-import com.techsenger.tabshell.icons.IconStylesheetProvider;
+import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.registrars.EditMenuRegistrar;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -42,7 +42,7 @@ public class Demo extends Application {
         viewModel.setOnClosed(() -> {
             Platform.exit();
         });
-        var view = new DefaultShellView(this, stage, IconStylesheetProvider.createForAll(), viewModel);
+        var view = new DefaultShellView(this, stage, IconStylesheetFactory.forAll(), viewModel);
         view.initialize();
 
         //adding menu

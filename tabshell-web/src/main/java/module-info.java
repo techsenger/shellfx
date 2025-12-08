@@ -20,6 +20,7 @@ module com.techsenger.tabshell.web {
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
+    requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabshell.dialogs;
     requires javafx.base;
     requires javafx.graphics;

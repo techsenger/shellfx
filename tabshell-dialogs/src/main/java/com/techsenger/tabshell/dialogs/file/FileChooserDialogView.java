@@ -18,7 +18,6 @@ package com.techsenger.tabshell.dialogs.file;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
@@ -51,6 +50,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  * There two modes - details and list. As both modes require sorting we use table and its sorting in both modes. But
@@ -272,9 +272,9 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
                 } else {
                     if (item.getType() != null) {
                         if (item.isDirectory()) {
-                            setGraphic(new FontIconView(CoreIcons.DIRECTORY));
+                            setGraphic(new FontIconView(SharedIcons.DIRECTORY));
                         } else {
-                            setGraphic(new FontIconView(CoreIcons.FILE));
+                            setGraphic(new FontIconView(SharedIcons.FILE));
                         }
                     } else {
                         setGraphic(null);

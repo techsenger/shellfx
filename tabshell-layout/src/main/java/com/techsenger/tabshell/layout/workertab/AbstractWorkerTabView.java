@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.shared.workertab;
+package com.techsenger.tabshell.layout.workertab;
 
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.layout.splittab.AbstractSplitTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -25,6 +24,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.StatusBar;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -34,7 +34,7 @@ public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel
 
     private final StatusBar statusBar = new StatusBar();
 
-    private final Hyperlink workerCountLink = new Hyperlink("0", new FontIconView(CoreIcons.PROCESS));
+    private final Hyperlink workerCountLink = new Hyperlink("0", new FontIconView(SharedIcons.PROCESS));
 
     private final TabHostView bottomTabHost;
 

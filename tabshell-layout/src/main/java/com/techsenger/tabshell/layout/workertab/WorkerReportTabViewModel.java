@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.shared.workertab;
+package com.techsenger.tabshell.layout.workertab;
 
 import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;

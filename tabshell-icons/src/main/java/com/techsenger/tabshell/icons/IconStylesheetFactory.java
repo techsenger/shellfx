@@ -23,15 +23,15 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public final class IconStylesheetProvider {
+public final class IconStylesheetFactory {
 
     /**
-     * Creates and returns the stylesheet with icons for the 'core' module.
+     * Creates and returns the stylesheet with icons for the 'shared' module.
      *
      * @return
      */
-    public static Stylesheet createForCore() {
-        return new Stylesheet(IconStylesheetProvider.class.getResource("core.css"));
+    public static Stylesheet forShared() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("shared.css"));
     }
 
     /**
@@ -39,8 +39,8 @@ public final class IconStylesheetProvider {
      *
      * @return
      */
-    public static Stylesheet createForDialogs() {
-        return new Stylesheet(IconStylesheetProvider.class.getResource("dialogs.css"));
+    public static Stylesheet forDialogs() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("dialogs.css"));
     }
 
     /**
@@ -48,8 +48,8 @@ public final class IconStylesheetProvider {
      *
      * @return
      */
-    public static Stylesheet createForTerminal() {
-        return new Stylesheet(IconStylesheetProvider.class.getResource("terminal.css"));
+    public static Stylesheet forTerminal() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("terminal.css"));
     }
 
     /**
@@ -57,8 +57,8 @@ public final class IconStylesheetProvider {
      *
      * @return
      */
-    public static Stylesheet createForText() {
-        return new Stylesheet(IconStylesheetProvider.class.getResource("text.css"));
+    public static Stylesheet forText() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("text.css"));
     }
 
     /**
@@ -66,8 +66,8 @@ public final class IconStylesheetProvider {
      *
      * @return
      */
-    public static Stylesheet createForHex() {
-        return new Stylesheet(IconStylesheetProvider.class.getResource("hex.css"));
+    public static Stylesheet forHex() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("hex.css"));
     }
 
     /**
@@ -75,8 +75,8 @@ public final class IconStylesheetProvider {
      *
      * @return
      */
-    public static Stylesheet createForWeb() {
-        return new Stylesheet(IconStylesheetProvider.class.getResource("web.css"));
+    public static Stylesheet forWeb() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("web.css"));
     }
 
     /**
@@ -84,8 +84,8 @@ public final class IconStylesheetProvider {
      *
      * @return
      */
-    public static Stylesheet createForJfx() {
-        return new Stylesheet(IconStylesheetProvider.class.getResource("jfx.css"));
+    public static Stylesheet forJfx() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("jfx.css"));
     }
 
     /**
@@ -93,17 +93,17 @@ public final class IconStylesheetProvider {
      *
      * @return
      */
-    public static List<Stylesheet> createForAll() {
-        return List.of(createForCore(),
-                createForDialogs(),
-                createForTerminal(),
-                createForText(),
-                createForHex(),
-                createForWeb(),
-                createForJfx());
+    public static List<Stylesheet> forAll() {
+        return List.of(forShared(),
+                forDialogs(),
+                forTerminal(),
+                forText(),
+                forHex(),
+                forWeb(),
+                forJfx());
     }
 
-    private IconStylesheetProvider() {
+    private IconStylesheetFactory() {
         //empty
     }
 }

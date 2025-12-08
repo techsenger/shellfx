@@ -17,14 +17,13 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.style.StyleUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.RichTextFxUtils;
-import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabView;
+import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabView;
 import com.techsenger.tabshell.text.style.TextIcons;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
@@ -54,6 +53,7 @@ import org.fxmisc.richtext.Caret;
 import org.fxmisc.wellbehaved.event.EventPattern;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -67,15 +67,15 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
 
     private final VirtualizedScrollPane textScrollPane;
 
-    private final Button copyButton = new Button(null, new FontIconView(CoreIcons.COPY));
+    private final Button copyButton = new Button(null, new FontIconView(SharedIcons.COPY));
 
-    private final Button findButton = new Button(null, new FontIconView(CoreIcons.FIND));
+    private final Button findButton = new Button(null, new FontIconView(SharedIcons.FIND));
 
     private final ToggleButton wrapTextButton = new ToggleButton(null, new FontIconView(TextIcons.WRAP));
 
     private final ContextMenu textAreaMenu = new ContextMenu();
 
-    private final MenuItem copyItem = new MenuItem("Copy", new FontIconView(CoreIcons.COPY));
+    private final MenuItem copyItem = new MenuItem("Copy", new FontIconView(SharedIcons.COPY));
 
     private final HBox statusBarLeftBox = new HBox();
 

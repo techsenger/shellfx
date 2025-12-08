@@ -20,7 +20,6 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -41,6 +40,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -48,27 +48,27 @@ import javafx.util.Callback;
  */
 public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShellTabView<T> {
 
-    private final Button newButton = new Button(null, new FontIconView(CoreIcons.ADD));
+    private final Button newButton = new Button(null, new FontIconView(SharedIcons.ADD));
 
-    private final Button clearButton = new Button(null, new FontIconView(CoreIcons.CLEAR));
+    private final Button clearButton = new Button(null, new FontIconView(SharedIcons.CLEAR));
 
-    private final Button copyButton = new Button(null, new FontIconView(CoreIcons.COPY));
+    private final Button copyButton = new Button(null, new FontIconView(SharedIcons.COPY));
 
-    private final Button pasteButton = new Button(null, new FontIconView(CoreIcons.PASTE));
+    private final Button pasteButton = new Button(null, new FontIconView(SharedIcons.PASTE));
 
-    private final Button selectAllButton = new Button(null, new FontIconView(CoreIcons.SELECT_ALL));
+    private final Button selectAllButton = new Button(null, new FontIconView(SharedIcons.SELECT_ALL));
 
-    private final Button openUrlButton = new Button(null, new FontIconView(CoreIcons.OPEN_IN_NEW));
+    private final Button openUrlButton = new Button(null, new FontIconView(SharedIcons.OPEN_IN_NEW));
 
-    private final Button findButton = new Button(null, new FontIconView(CoreIcons.FIND));
+    private final Button findButton = new Button(null, new FontIconView(SharedIcons.FIND));
 
-    private final Button pageUpButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_DOUBLE_UP));
+    private final Button pageUpButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_DOUBLE_UP));
 
-    private final Button pageDownButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_DOUBLE_DOWN));
+    private final Button pageDownButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_DOUBLE_DOWN));
 
-    private final Button lineUpButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_UP));
+    private final Button lineUpButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_UP));
 
-    private final Button lineDownButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_DOWN));
+    private final Button lineDownButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_DOWN));
 
     private final Label paletteLabel = new Label("Palette");
 

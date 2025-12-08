@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.tabshell.shared.workertab.AbstractWorkerTabHistory;
+import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabHistory;
 
 /**
  *

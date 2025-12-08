@@ -20,6 +20,7 @@ module com.techsenger.tabshell.dialogs {
     requires com.techsenger.mvvm4fx.core;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
+    requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabshell.storage;
     requires javafx.base;
     requires javafx.graphics;

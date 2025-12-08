@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.web;
 
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import javafx.scene.control.Button;
@@ -27,6 +26,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -36,11 +36,11 @@ public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaV
 
     private final WebBrowserTabView<?> webBrowser;
 
-    private final Button backButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_LEFT));
+    private final Button backButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_LEFT));
 
-    private final Button forwardButton = new Button(null, new FontIconView(CoreIcons.CHEVRON_RIGHT));
+    private final Button forwardButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_RIGHT));
 
-    private final Button reloadButton = new Button(null, new FontIconView(CoreIcons.RELOAD));
+    private final Button reloadButton = new Button(null, new FontIconView(SharedIcons.RELOAD));
 
     private final TextField urlTextField = new TextField();
 

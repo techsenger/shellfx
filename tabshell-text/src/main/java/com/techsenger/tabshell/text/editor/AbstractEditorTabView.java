@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.text.editor;
 
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -45,6 +44,7 @@ import javafx.scene.layout.HBox;
 import org.fxmisc.richtext.Caret;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.TwoDimensional;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  * Abstract class for editors.
@@ -53,27 +53,27 @@ import org.fxmisc.richtext.model.TwoDimensional;
  */
 public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel> extends AbstractViewerTabView<T> {
 
-    private final Button newButton = new Button(null, new FontIconView(CoreIcons.ADD));
+    private final Button newButton = new Button(null, new FontIconView(SharedIcons.ADD));
 
-    private final Button clearButton = new Button(null, new FontIconView(CoreIcons.CLEAR));
+    private final Button clearButton = new Button(null, new FontIconView(SharedIcons.CLEAR));
 
-    private final Button cutButton = new Button(null, new FontIconView(CoreIcons.CUT));
+    private final Button cutButton = new Button(null, new FontIconView(SharedIcons.CUT));
 
-    private final Button pasteButton = new Button(null, new FontIconView(CoreIcons.PASTE));
+    private final Button pasteButton = new Button(null, new FontIconView(SharedIcons.PASTE));
 
-    private final Button undoButton = new Button(null, new FontIconView(CoreIcons.UNDO));
+    private final Button undoButton = new Button(null, new FontIconView(SharedIcons.UNDO));
 
-    private final Button redoButton = new Button(null, new FontIconView(CoreIcons.REDO));
+    private final Button redoButton = new Button(null, new FontIconView(SharedIcons.REDO));
 
-    private final Button replaceButton = new Button(null, new FontIconView(CoreIcons.REPLACE));
+    private final Button replaceButton = new Button(null, new FontIconView(SharedIcons.REPLACE));
 
     private final Label positionLabel = new Label();
 
     private final Label areaOverwriteModeLabel = new Label();
 
-    private final MenuItem cutItem = new MenuItem("Cut", new FontIconView(CoreIcons.CUT));
+    private final MenuItem cutItem = new MenuItem("Cut", new FontIconView(SharedIcons.CUT));
 
-    private final MenuItem pasteItem = new MenuItem("Paste", new FontIconView(CoreIcons.PASTE));
+    private final MenuItem pasteItem = new MenuItem("Paste", new FontIconView(SharedIcons.PASTE));
 
     /**
      * Listener for tabSize.

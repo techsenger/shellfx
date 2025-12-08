@@ -22,7 +22,6 @@ import com.techsenger.tabshell.shared.menu.FileMenuNames;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuGroup;
@@ -30,6 +29,7 @@ import com.techsenger.tabshell.material.menu.NamedMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -77,7 +77,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var shellView = (ShellView<?>) v;
             var item = new NamedMenuItem(FileMenuNames.OPEN, true, true, false, "_Open",
-                    new FontIconView(CoreIcons.OPEN), 100);
+                    new FontIconView(SharedIcons.OPEN), 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
@@ -94,7 +94,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var shellView = (ShellView<?>) v;
             var item = new NamedMenuItem(FileMenuNames.SAVE, true, true, false, "_Save",
-                    new FontIconView(CoreIcons.SAVE), 200);
+                    new FontIconView(SharedIcons.SAVE), 200);
             item.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
@@ -111,7 +111,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var shellView = (ShellView<?>) v;
             var item = new NamedMenuItem(FileMenuNames.SAVE_AS, true, true, false, "Sa_ve As",
-                    new FontIconView(CoreIcons.SAVE_AS), 300);
+                    new FontIconView(SharedIcons.SAVE_AS), 300);
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
                 var helper = view.getMenuItemHelper(item.getName());
@@ -125,7 +125,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     protected void registerExitItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var shellView = (ShellView<?>) v;
-            var item = new NamedMenuItem(FileMenuNames.EXIT, "E_xit", new FontIconView(CoreIcons.EXIT), 10000);
+            var item = new NamedMenuItem(FileMenuNames.EXIT, "E_xit", new FontIconView(SharedIcons.EXIT), 10000);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> ((ShellView<?>) v).close());
             return item;

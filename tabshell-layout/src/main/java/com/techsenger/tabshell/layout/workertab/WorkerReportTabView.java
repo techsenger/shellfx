@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.shared.workertab;
+package com.techsenger.tabshell.layout.workertab;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.tab.AbstractTabView;

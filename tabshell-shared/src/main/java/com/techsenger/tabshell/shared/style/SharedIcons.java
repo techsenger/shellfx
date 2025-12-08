@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.style;
+package com.techsenger.tabshell.shared.style;
 
 import com.techsenger.tabshell.material.icon.StyleFontIcon;
 
@@ -22,7 +22,7 @@ import com.techsenger.tabshell.material.icon.StyleFontIcon;
  *
  * @author Pavel Castornii
  */
-public interface CoreIcons {
+public interface SharedIcons {
 
     StyleFontIcon OPEN = new StyleFontIcon("open-icon");
 

@@ -18,7 +18,6 @@ package com.techsenger.tabshell.hex.editor;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -29,6 +28,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -36,23 +36,23 @@ import javafx.scene.control.Tooltip;
  */
 public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractAreaView<T> {
 
-    private final Button newButton = new Button(null, new FontIconView(CoreIcons.ADD));
+    private final Button newButton = new Button(null, new FontIconView(SharedIcons.ADD));
 
-    private final Button clearButton = new Button(null, new FontIconView(CoreIcons.CLEAR));
+    private final Button clearButton = new Button(null, new FontIconView(SharedIcons.CLEAR));
 
-    private final Button cutButton = new Button(null, new FontIconView(CoreIcons.CUT));
+    private final Button cutButton = new Button(null, new FontIconView(SharedIcons.CUT));
 
-    private final Button copyButton = new Button(null, new FontIconView(CoreIcons.COPY));
+    private final Button copyButton = new Button(null, new FontIconView(SharedIcons.COPY));
 
-    private final Button pasteButton = new Button(null, new FontIconView(CoreIcons.PASTE));
+    private final Button pasteButton = new Button(null, new FontIconView(SharedIcons.PASTE));
 
-    private final Button undoButton = new Button(null, new FontIconView(CoreIcons.UNDO));
+    private final Button undoButton = new Button(null, new FontIconView(SharedIcons.UNDO));
 
-    private final Button redoButton = new Button(null, new FontIconView(CoreIcons.REDO));
+    private final Button redoButton = new Button(null, new FontIconView(SharedIcons.REDO));
 
-    private final Button findButton = new Button(null, new FontIconView(CoreIcons.FIND));
+    private final Button findButton = new Button(null, new FontIconView(SharedIcons.FIND));
 
-    private final Button replaceButton = new Button(null, new FontIconView(CoreIcons.REPLACE));
+    private final Button replaceButton = new Button(null, new FontIconView(SharedIcons.REPLACE));
 
     private final ComboBox<Integer> rowByteCountsComboBox = new ComboBox<>();
 
