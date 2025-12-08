@@ -26,8 +26,12 @@
     -fx-code-point: 984197; /* select */
 }
 
-.font-icon-view.record-icon {
+.font-icon-view.record-start-icon {
     -fx-code-point: 986819; /* record-circle-outline */
+}
+
+.font-icon-view.record-stop-icon {
+    -fx-code-point: 984679; /* stop-circle-outline */
 }
 
 .font-icon-view.filter-icon {

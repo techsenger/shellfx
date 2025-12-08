@@ -45,7 +45,9 @@ import jfx.incubator.scene.control.richtext.RichTextArea;
  */
 public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTabView<T> {
 
-    private final ToggleButton recordButton = new ToggleButton(null, new FontIconView(JfxIcons.RECORD));
+    private final FontIconView recordIconView = new FontIconView();
+
+    private final ToggleButton recordButton = new ToggleButton(null, recordIconView);
 
     private final Button clearButton = new Button(null, new FontIconView(CoreIcons.CLEAR));
 
@@ -123,6 +125,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         this.filterButton.selectedProperty().bindBidirectional(viewModel.filterEnabledProperty());
         this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
         this.searchTextField.textProperty().bindBidirectional(viewModel.searchTextProperty());
+        this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
     }
 
     @Override

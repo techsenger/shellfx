@@ -20,6 +20,8 @@ import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
+import com.techsenger.tabshell.jfx.style.JfxIcons;
+import com.techsenger.tabshell.material.icon.GenericFontIcon;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.event.AttributeListEvent;
 import devtoolsfx.event.AttributeUpdatedEvent;
@@ -49,9 +51,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -101,6 +105,8 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
     private final List<LogEntry> allEntries = new ArrayList<>();
 
     private final BooleanProperty filterEnabled = new SimpleBooleanProperty(true);
+
+    private final ObjectProperty<GenericFontIcon<?>> recordIcon = new SimpleObjectProperty<>(JfxIcons.RECORD_START);
 
     private final BooleanProperty selectedOnly = new SimpleBooleanProperty(true);
 
@@ -201,12 +207,29 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         return selectedElement.get();
     }
 
+    public GenericFontIcon<?> getRecordIcon() {
+        return recordIcon.get();
+    }
+
+    protected ObjectProperty<GenericFontIcon<?>> recordIconProperty() {
+        return recordIcon;
+    }
+
+    protected void setRecordIcon(GenericFontIcon<?> icon) {
+        recordIcon.set(icon);
+    }
+
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(JfxComponentNames.EVENT_LOG_TAB);
     }
 
     protected boolean matchesFilter(LogEntry entry) {
+        if (entry.event().getClass() == JavaFXEvent.class
+                || entry.event().getClass() == WindowPropertiesEvent.class
+                || entry.event().getClass() == MousePosEvent.class) {
+            return false;
+        }
         if (isSelectedOnly()) {
             if (!(entry.event() instanceof ElementEvent elementEvent)
                     || !Objects.equals(elementEvent.getElement(), getSelectedElement())) {
@@ -224,24 +247,26 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         return true;
     }
 
-    void start() {
+    protected void start() {
+        this.setRecordIcon(JfxIcons.RECORD_STOP);
         this.connector.getEventBus().subscribe(ConnectorEvent.class, eventListener);
     }
 
-    void stop() {
+    protected void stop() {
+        this.setRecordIcon(JfxIcons.RECORD_START);
         this.connector.getEventBus().unsubscribe(eventListener);
     }
 
-    void clear() {
+    protected void clear() {
         allEntries.clear();
         filteredEntries.clear();
     }
 
-    ObservableList<LogEntry> getFilteredEntries() {
+    protected ObservableList<LogEntry> getFilteredEntries() {
         return filteredEntries;
     }
 
-    private void handleEvent(ConnectorEvent event) {
+    protected void handleEvent(ConnectorEvent event) {
         messageBuilder.setLength(0);
         messageBuilder.append(String.format("%-22s", event.getClass().getSimpleName()));
         messageBuilder.append(event.toLogString());

@@ -26,7 +26,9 @@ public interface JfxIcons {
 
     StyleFontIcon SELECT = new StyleFontIcon("select-icon");
 
-    StyleFontIcon RECORD = new StyleFontIcon("record-icon");
+    StyleFontIcon RECORD_START = new StyleFontIcon("record-start-icon");
+
+    StyleFontIcon RECORD_STOP = new StyleFontIcon("record-stop-icon");
 
     StyleFontIcon FILTER = new StyleFontIcon("filter-icon");
 
