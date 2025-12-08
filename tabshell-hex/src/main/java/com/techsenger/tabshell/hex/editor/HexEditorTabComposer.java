@@ -33,62 +33,27 @@ public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends DialogS
 
     protected class Mediator extends DialogShellTabComposer.Mediator implements HexEditorTabMediator {
 
-        private final HexEditorTabViewModel editor;
-
-        private final HexToolBarViewModel toolBar;
-
-        private final DockLayoutViewModel layout;
-
-        private final HexAreaViewModel area;
-
-        private final DataInspectorTabViewModel dataInspector;
-
         public Mediator() {
-            this.editor = getView().getViewModel();
-            this.toolBar = createToolBar();
-            this.layout = createLayout();
-            this.area = createArea();
-            this.dataInspector = createDataInspector();
         }
 
         @Override
         public HexToolBarViewModel getToolBar() {
-            return toolBar;
+            return toolBar.getViewModel();
         }
 
         @Override
         public DockLayoutViewModel getLayout() {
-            return layout;
+            return layout.getViewModel();
         }
 
         @Override
         public HexAreaViewModel getArea() {
-            return area;
+            return area.getViewModel();
         }
 
         @Override
         public DataInspectorTabViewModel getDataInspector() {
-            return dataInspector;
-        }
-
-        protected HexToolBarViewModel createToolBar() {
-            return new HexToolBarViewModel();
-        }
-
-        protected DockLayoutViewModel createLayout() {
-            HexEditorTabHistory<?> history =
-                    (HexEditorTabHistory<?>) editor.getHistoryProvider().provide();
-            return new DockLayoutViewModel(history.getDockLayout());
-        }
-
-        protected HexAreaViewModel createArea() {
-            var appearance = editor.getShell().getSettings().getAppearance();
-            var areaVM = new HexAreaViewModel(toolBar, appearance, editor.getDocument());
-            return areaVM;
-        }
-
-        protected DataInspectorTabViewModel createDataInspector() {
-            return new DataInspectorTabViewModel(editor.getDocument(), this.area.getCaret().offsetProperty());
+            return dataInspector.getViewModel();
         }
     }
 
@@ -109,11 +74,6 @@ public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends DialogS
         this.layout = createLayout();
         this.area = createArea();
         this.dataInspector = createDataInspector();
-    }
-
-    @Override
-    public HexEditorTabMediator getMediator() {
-        return (HexEditorTabMediator) super.getMediator();
     }
 
     public HexToolBarView<?> getToolBar() {
@@ -165,24 +125,30 @@ public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends DialogS
         this.toolBar.deinitialize();
     }
 
+    @Override
+    public HexEditorTabMediator createMediator() {
+        return new HexEditorTabComposer.Mediator();
+    }
+
     protected HexToolBarView<?> createToolBar() {
-        return new HexToolBarView<>(getMediator().getToolBar());
+        return new HexToolBarView<>(new HexToolBarViewModel());
     }
 
     protected DockLayoutView<?> createLayout() {
-        return new DockLayoutView<>(getMediator().getLayout());
+        HexEditorTabHistory<?> history = (HexEditorTabHistory<?>) editor.getViewModel().getHistoryProvider().provide();
+        var vm = new DockLayoutViewModel(history.getDockLayout());
+        return new DockLayoutView<>(vm);
     }
 
     protected HexAreaView<?> createArea() {
-        return new HexAreaView<>(getMediator().getArea());
+        var appearance = editor.getShell().getViewModel().getSettings().getAppearance();
+        var areaVM = new HexAreaViewModel(toolBar.getViewModel(), appearance, editor.getViewModel().getDocument());
+        return new HexAreaView<>(areaVM);
     }
 
     protected DataInspectorTabView<?> createDataInspector() {
-        return new DataInspectorTabView<>(getMediator().getDataInspector());
-    }
-
-    @Override
-    protected HexEditorTabMediator createMediator() {
-        return new HexEditorTabComposer.Mediator();
+        var vm = new DataInspectorTabViewModel(editor.getViewModel().getDocument(),
+                this.area.getCaret().getViewModel().offsetProperty());
+        return new DataInspectorTabView<>(vm);
     }
 }

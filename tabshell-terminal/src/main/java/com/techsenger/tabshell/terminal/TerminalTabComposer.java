@@ -45,12 +45,7 @@ public class TerminalTabComposer<T extends TerminalTabView<?>> extends DialogShe
     }
 
     @Override
-    public TerminalTabMediator getMediator() {
-        return (TerminalTabMediator) super.getMediator();
-    }
-
-    @Override
-    protected TerminalTabMediator createMediator() {
+    public TerminalTabMediator createMediator() {
         return new TerminalTabComposer.Mediator();
     }
 }

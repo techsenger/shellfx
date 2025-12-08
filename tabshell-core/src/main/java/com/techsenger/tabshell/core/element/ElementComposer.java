@@ -25,5 +25,5 @@ import com.techsenger.mvvm4fx.core.ChildComposer;
 public interface ElementComposer<T extends ElementView<?>> extends ChildComposer<T> {
 
     @Override
-    ElementMediator getMediator();
+    ElementMediator createMediator();
 }

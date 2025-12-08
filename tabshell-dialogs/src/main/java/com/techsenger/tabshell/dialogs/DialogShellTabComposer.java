@@ -52,12 +52,7 @@ public class DialogShellTabComposer<T extends AbstractShellTabView<?>>
     }
 
     @Override
-    public DialogShellTabMediator getMediator() {
-        return (DialogShellTabMediator) super.getMediator();
-    }
-
-    @Override
-    protected DialogShellTabMediator createMediator() {
+    public DialogShellTabMediator createMediator() {
         return new DialogShellTabComposer.Mediator();
     }
 }

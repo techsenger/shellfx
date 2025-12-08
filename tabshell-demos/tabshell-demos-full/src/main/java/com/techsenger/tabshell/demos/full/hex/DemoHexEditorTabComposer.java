@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demos.full.hex;
 
 import com.techsenger.tabshell.hex.editor.HexEditorTabComposer;
-import com.techsenger.tabshell.hex.editor.HexToolBarViewModel;
 
 /**
  *
@@ -27,18 +26,9 @@ public class DemoHexEditorTabComposer extends HexEditorTabComposer<DemoHexEditor
 
     protected class Mediator extends HexEditorTabComposer.Mediator implements DemoHexEditorTabMediator {
 
-        public Mediator() {
-            super();
-        }
-
         @Override
         public DemoHexToolBarViewModel getToolBar() {
             return (DemoHexToolBarViewModel) super.getToolBar();
-        }
-
-        @Override
-        protected HexToolBarViewModel createToolBar() {
-            return new DemoHexToolBarViewModel();
         }
     }
 
@@ -47,18 +37,13 @@ public class DemoHexEditorTabComposer extends HexEditorTabComposer<DemoHexEditor
     }
 
     @Override
-    public DemoHexEditorTabMediator getMediator() {
-        return (DemoHexEditorTabMediator) super.getMediator();
-    }
-
-    @Override
     public void initialize() {
         super.initialize();
         DemoHexToolBarView toolBar = getToolBar();
         toolBar.getCaretShapeComboBox().valueProperty()
-                .bindBidirectional(getMediator().getArea().getCaret().shapeProperty());
+                .bindBidirectional(getArea().getViewModel().getCaret().shapeProperty());
         toolBar.getColumnSeparatorComboBox().valueProperty()
-                .bindBidirectional(getMediator().getArea().columnSeparatorProperty());
+                .bindBidirectional(getArea().getViewModel().columnSeparatorProperty());
     }
 
     @Override
@@ -67,14 +52,13 @@ public class DemoHexEditorTabComposer extends HexEditorTabComposer<DemoHexEditor
     }
 
     @Override
-    protected DemoHexToolBarView createToolBar() {
-        return new DemoHexToolBarView(getMediator().getToolBar());
-    }
-
-    @Override
-    protected DemoHexEditorTabMediator createMediator() {
+    public DemoHexEditorTabMediator createMediator() {
         return new DemoHexEditorTabComposer.Mediator();
     }
 
-
+    @Override
+    protected DemoHexToolBarView createToolBar() {
+        var vm = new DemoHexToolBarViewModel();
+        return new DemoHexToolBarView(vm);
+    }
 }

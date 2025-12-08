@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.RegionResizer;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
@@ -222,7 +222,7 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
         return new AbstractDialogComposer<AbstractDialogView<?>>(this) {
 
             @Override
-            protected DialogMediator createMediator() {
+            public DialogMediator createMediator() {
                 return new AbstractDialogComposer.Mediator() { };
             }
 

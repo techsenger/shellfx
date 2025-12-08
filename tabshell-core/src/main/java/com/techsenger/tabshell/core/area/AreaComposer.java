@@ -25,5 +25,5 @@ import com.techsenger.mvvm4fx.core.ChildComposer;
 public interface AreaComposer<T extends AreaView<?>> extends ChildComposer<T> {
 
     @Override
-    AreaMediator getMediator();
+    AreaMediator createMediator();
 }

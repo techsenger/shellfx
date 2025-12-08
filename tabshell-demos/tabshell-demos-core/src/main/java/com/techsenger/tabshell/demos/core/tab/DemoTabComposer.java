@@ -38,11 +38,6 @@ public class DemoTabComposer extends AbstractShellTabComposer<DemoTabView> {
         super(view);
     }
 
-    @Override
-    public Mediator getMediator() {
-        return (Mediator) super.getMediator();
-    }
-
     public void openDemoDialog(DemoDialogViewModel dialogVM) {
         var dialogV = new DemoDialogView(dialogVM);
         dialogV.initialize(); //dont' forget!
@@ -50,7 +45,7 @@ public class DemoTabComposer extends AbstractShellTabComposer<DemoTabView> {
     }
 
     @Override
-    protected DemoTabMediator createMediator() {
+    public DemoTabMediator createMediator() {
         return new DemoTabComposer.Mediator();
     }
 }

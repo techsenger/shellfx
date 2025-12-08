@@ -43,13 +43,5 @@ public abstract class AbstractShellTabComposer<T extends AbstractShellTabView<?>
             getView().getDialogManager().openDialog(dialog);
         }
     }
-
-    @Override
-    public ShellTabMediator getMediator() {
-        return (ShellTabMediator) super.getMediator();
-    }
-
-    @Override
-    protected abstract ShellTabMediator createMediator();
 }
 

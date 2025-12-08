@@ -25,5 +25,5 @@ import com.techsenger.tabshell.core.area.AreaComposer;
 public interface PageComposer<T extends PageView<?>> extends AreaComposer<T> {
 
     @Override
-    PageMediator getMediator();
+    PageMediator createMediator();
 }

@@ -27,15 +27,9 @@ public class WebBrowserTabComposer<T extends WebBrowserTabView<?>> extends Dialo
 
     protected class Mediator extends DialogShellTabComposer.Mediator implements WebBrowserTabMediator {
 
-        private final WebToolBarViewModel toolBar = createToolBar();
-
         @Override
         public WebToolBarViewModel getToolBar() {
-            return toolBar;
-        }
-
-        protected WebToolBarViewModel createToolBar() {
-            return new WebToolBarViewModel();
+            return toolBar.getViewModel();
         }
     }
 
@@ -43,11 +37,6 @@ public class WebBrowserTabComposer<T extends WebBrowserTabView<?>> extends Dialo
 
     public WebBrowserTabComposer(T view) {
         super(view);
-    }
-
-    @Override
-    public WebBrowserTabMediator getMediator() {
-        return (WebBrowserTabMediator) super.getMediator();
     }
 
     @Override
@@ -71,11 +60,12 @@ public class WebBrowserTabComposer<T extends WebBrowserTabView<?>> extends Dialo
     }
 
     @Override
-    protected WebBrowserTabMediator createMediator() {
+    public WebBrowserTabMediator createMediator() {
         return new WebBrowserTabComposer.Mediator();
     }
 
     protected WebToolBarView<?> createToolBar() {
-        return new WebToolBarView(getView(), getMediator().getToolBar());
+        var vm = new WebToolBarViewModel();
+        return new WebToolBarView(getView(), vm);
     }
 }

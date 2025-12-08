@@ -44,12 +44,7 @@ public class JfxInspectorComposer<T extends JfxInspectorTabView<?>> extends Abst
     }
 
     @Override
-    public JfxInspectorMediator getMediator() {
-        return (JfxInspectorMediator) super.getMediator();
-    }
-
-    @Override
-    protected JfxInspectorMediator createMediator() {
+    public JfxInspectorMediator createMediator() {
         return new JfxInspectorComposer.Mediator();
     }
 }

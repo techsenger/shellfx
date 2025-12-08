@@ -32,5 +32,5 @@ public interface DialogComposer<T extends DialogView<?>> extends AreaComposer<T>
     void openDialog(DialogView<?> dialog);
 
     @Override
-    DialogMediator getMediator();
+    DialogMediator createMediator();
 }

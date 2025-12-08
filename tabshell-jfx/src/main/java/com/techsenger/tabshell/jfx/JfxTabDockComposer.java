@@ -86,6 +86,11 @@ public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTab
         return eventLogTab;
     }
 
+    @Override
+    public TabDockMediator createMediator() {
+        return new JfxTabDockComposer.Mediator();
+    }
+
     protected JfxInspectorTabView<?> createInspectorTab() {
         var vm = new JfxInspectorTabViewModel(shellTab.getViewModel(), connector);
         var v = new JfxInspectorTabView<>(shellTab, vm);
@@ -96,10 +101,5 @@ public class JfxTabDockComposer<T extends JfxTabDockView<?>> extends AbstractTab
         var vm = new EventLogTabViewModel(shellTab.getViewModel(), connector);
         var v = new EventLogTabView<>(vm);
         return v;
-    }
-
-    @Override
-    protected TabDockMediator createMediator() {
-        return new JfxTabDockComposer.Mediator();
     }
 }

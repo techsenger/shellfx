@@ -31,12 +31,4 @@ public abstract class AbstractElementComposer<T extends AbstractElementView<?>> 
     public AbstractElementComposer(T view) {
         super(view);
     }
-
-    @Override
-    public ElementMediator getMediator() {
-        return (ElementMediator) super.getMediator();
-    }
-
-    @Override
-    protected abstract ElementMediator createMediator();
 }

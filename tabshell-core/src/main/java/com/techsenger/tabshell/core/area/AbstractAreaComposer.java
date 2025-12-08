@@ -32,12 +32,4 @@ public abstract class AbstractAreaComposer<T extends AbstractAreaView<?>>
     public AbstractAreaComposer(T view) {
         super(view);
     }
-
-    @Override
-    public AreaMediator getMediator() {
-        return (AreaMediator) super.getMediator();
-    }
-
-    @Override
-    protected abstract AreaMediator createMediator();
 }

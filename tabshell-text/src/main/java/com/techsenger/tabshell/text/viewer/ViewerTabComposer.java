@@ -55,13 +55,8 @@ public class ViewerTabComposer<T extends AbstractViewerTabView<?>> extends Dialo
     }
 
     @Override
-    protected ViewerTabMediator createMediator() {
+    public ViewerTabMediator createMediator() {
         return new ViewerTabComposer.Mediator();
-    }
-
-    @Override
-    public ViewerTabMediator getMediator() {
-        return (ViewerTabMediator) super.getMediator();
     }
 
     private void openGoToLineDialog(GoToLineDialogViewModel viewModel) {

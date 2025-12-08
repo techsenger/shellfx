@@ -46,12 +46,7 @@ public class PropertyDialogComposer<T extends PropertyDialogView<?>> extends Def
     }
 
     @Override
-    public PropertyDialogMediator getMediator() {
-        return (PropertyDialogMediator) super.getMediator();
-    }
-
-    @Override
-    protected PropertyDialogMediator createMediator() {
+    public PropertyDialogMediator createMediator() {
         return new PropertyDialogComposer.Mediator();
     }
 

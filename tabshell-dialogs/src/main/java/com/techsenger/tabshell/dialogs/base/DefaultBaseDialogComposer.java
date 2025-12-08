@@ -58,12 +58,7 @@ public class DefaultBaseDialogComposer<T extends AbstractDialogView<?>> extends 
     }
 
     @Override
-    protected BaseDialogMediator createMediator() {
+    public BaseDialogMediator createMediator() {
         return new DefaultBaseDialogComposer.Mediator();
-    }
-
-    @Override
-    public BaseDialogMediator getMediator() {
-        return (BaseDialogMediator) super.getMediator();
     }
 }

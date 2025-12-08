@@ -33,10 +33,5 @@ public abstract class AbstractTabDockComposer<T extends TabDockView<?>> extends 
     }
 
     @Override
-    public TabDockMediator getMediator() {
-        return (TabDockMediator) super.getMediator();
-    }
-
-    @Override
-    protected abstract TabDockMediator createMediator();
+    public abstract TabDockMediator createMediator();
 }

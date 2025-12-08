@@ -33,10 +33,5 @@ public abstract class AbstractTabHostComposer<T extends TabHostView<?>> extends 
     }
 
     @Override
-    public TabHostMediator getMediator() {
-        return (TabHostMediator) super.getMediator();
-    }
-
-    @Override
-    protected abstract TabHostMediator createMediator();
+    public abstract TabHostMediator createMediator();
 }

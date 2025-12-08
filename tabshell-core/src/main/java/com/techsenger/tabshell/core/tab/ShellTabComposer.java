@@ -25,7 +25,7 @@ import com.techsenger.tabshell.core.dialog.DialogView;
 public interface ShellTabComposer<T extends ShellTabView<?>> extends TabComposer<T> {
 
     @Override
-    ShellTabMediator getMediator();
+    ShellTabMediator createMediator();
 
     void openDialog(DialogView<?> dialog);
 }

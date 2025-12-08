@@ -25,5 +25,5 @@ import com.techsenger.mvvm4fx.core.ChildComposer;
 public interface TabComposer<T extends TabView<?>> extends ChildComposer<T> {
 
     @Override
-    TabMediator getMediator();
+    TabMediator createMediator();
 }

@@ -32,12 +32,4 @@ public abstract class AbstractTabComposer<T extends AbstractTabView<?>> extends
     public AbstractTabComposer(T view) {
         super(view);
     }
-
-    @Override
-    public TabMediator getMediator() {
-        return (TabMediator) super.getMediator();
-    }
-
-    @Override
-    protected abstract TabMediator createMediator();
 }
