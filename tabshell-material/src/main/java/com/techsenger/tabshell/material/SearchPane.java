@@ -40,7 +40,7 @@ public class SearchPane extends StackPane {
         StackPane.setMargin(this.clearButton, new Insets(0, SizeConstants.INSET * 2, 0, 0));
         textComboBox.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         textComboBox.setEditable(true);
-        textComboBox.setMaxWidth(Double.MAX_VALUE);
+        textComboBox.maxWidthProperty().bind(widthProperty());
         setAlignment(Pos.CENTER_RIGHT);
         getChildren().add(textComboBox);
         getStyleClass().addAll("search-pane", StyleClasses.EXTRA_DENSE);
