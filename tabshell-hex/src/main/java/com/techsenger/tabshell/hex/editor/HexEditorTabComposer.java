@@ -112,7 +112,7 @@ public class HexEditorTabComposer<T extends HexEditorTabView<?>> extends DialogS
         splitSpace.getChildren().add(this.area);
         var tabDock = layout.createTabDock();
         tabDock.openTab(dataInspector);
-        this.layout.addTabDock(tabDock, Side.RIGHT, 250);
+        this.layout.addTabDock(tabDock, Side.RIGHT, 300);
     }
 
     @Override
