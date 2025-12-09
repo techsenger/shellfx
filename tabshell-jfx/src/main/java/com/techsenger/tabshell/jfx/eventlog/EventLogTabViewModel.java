@@ -284,6 +284,10 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         this.eventTypesByClass.values().forEach(e -> e.setEnabled(false));
     }
 
+    protected void search(String text) {
+        System.out.println("TEXT: " + text);
+    }
+
     private <T extends ConnectorEvent> EventType<T> createEventType(Class<T> clazz, boolean enabled) {
         var type = new EventType(clazz);
         type.setEnabled(enabled);

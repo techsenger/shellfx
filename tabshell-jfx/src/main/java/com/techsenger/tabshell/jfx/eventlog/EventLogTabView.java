@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.material.SearchField;
+import com.techsenger.tabshell.material.SearchField.SearchMode;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
@@ -57,12 +58,12 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
 
     private final ToggleButton selectedOnlyButton = new ToggleButton(null, new FontIconView(JfxIcons.SELECTED_ONLY));
 
-    private final SearchField searchPane = new SearchField();
+    private final SearchField searchField = new SearchField(SearchMode.AUTO);
 
     private final MenuButton eventTypesButton = new MenuButton("Event Types");
 
     private final ToolBar toolBar = new ToolBar(recordButton, clearButton, new Separator(Orientation.VERTICAL),
-            filterButton, selectedOnlyButton, searchPane, eventTypesButton);
+            filterButton, selectedOnlyButton, searchField, eventTypesButton);
 
     private final RichTextArea textArea = new RichTextArea();
 
@@ -89,7 +90,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
         selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
-        HBox.setHgrow(searchPane, Priority.ALWAYS);
+        HBox.setHgrow(searchField, Priority.ALWAYS);
         eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
         viewModel.getEventTypesByClass().values().forEach(t -> {
             var menuItem = new CheckMenuItem(t.getType().getSimpleName());
@@ -129,7 +130,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         super.bind(viewModel);
         this.filterButton.selectedProperty().bindBidirectional(viewModel.filterActiveProperty());
         this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
-        this.searchPane.getTextComboBox().getEditor().textProperty().bindBidirectional(viewModel.searchTextProperty());
+        this.searchField.getTextComboBox().getEditor().textProperty().bindBidirectional(viewModel.searchTextProperty());
         this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
     }
 
@@ -144,6 +145,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
             }
         });
         this.clearButton.setOnAction(e -> viewModel.clear());
+        this.searchField.setHandler(t -> viewModel.search(t));
     }
 
     private void print(List<? extends LogEntry> entries) {

@@ -20,6 +20,7 @@ import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.jfx.inspector.PropertyInfo.ValueInfo;
 import com.techsenger.tabshell.material.SearchField;
+import com.techsenger.tabshell.material.SearchField.SearchMode;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import devtoolsfx.connector.LocalElement;
@@ -267,13 +268,13 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
 
     private final TreeView<Element> nodeTreeView = new TreeView<>();
 
-    private final SearchField nodeSearchField = new SearchField();
+    private final SearchField nodeSearchField = new SearchField(SearchMode.AUTO);
 
     private final VBox nodeBox = new VBox(nodeTreeView, nodeSearchField);
 
     private final TreeTableView<PropertyInfo> infoTableView = new TreeTableView<>();
 
-    private final SearchField infoSearchField = new SearchField();
+    private final SearchField infoSearchField = new SearchField(SearchMode.AUTO);
 
     private final VBox infoBox = new VBox(infoTableView, infoSearchField);
 
