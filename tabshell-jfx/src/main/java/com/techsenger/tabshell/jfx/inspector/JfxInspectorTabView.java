@@ -16,11 +16,12 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.tabshell.material.style.SizeConstants;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.jfx.inspector.PropertyInfo.ValueInfo;
+import com.techsenger.tabshell.material.SearchField;
+import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import devtoolsfx.connector.LocalElement;
 import devtoolsfx.event.EventSource;
 import devtoolsfx.scenegraph.Element;
@@ -37,7 +38,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
@@ -267,15 +267,15 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
 
     private final TreeView<Element> nodeTreeView = new TreeView<>();
 
-    private final TextField nodeTextField = new TextField();
+    private final SearchField nodeSearchField = new SearchField();
 
-    private final VBox nodeBox = new VBox(nodeTreeView, nodeTextField);
+    private final VBox nodeBox = new VBox(nodeTreeView, nodeSearchField);
 
     private final TreeTableView<PropertyInfo> infoTableView = new TreeTableView<>();
 
-    private final TextField infoTextField = new TextField();
+    private final SearchField infoSearchField = new SearchField();
 
-    private final VBox infoBox = new VBox(infoTableView, infoTextField);
+    private final VBox infoBox = new VBox(infoTableView, infoSearchField);
 
     private final SplitPane splitPane = new SplitPane(nodeBox, infoBox);
 
@@ -309,7 +309,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         nodeTreeView.setCellFactory(tv -> new NodeCell());
         nodeTreeView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
-        nodeTextField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        nodeSearchField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
 
         TreeTableColumn<PropertyInfo, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
@@ -343,7 +343,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         infoTableView.setRoot(new RootTreeItem(viewModel.getRootInfo()));
         infoTableView.setPlaceholder(new Label(""));
         VBox.setVgrow(infoTableView, Priority.ALWAYS);
-        infoTextField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        infoSearchField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         getContentPane().getChildren().add(splitPane);
@@ -396,8 +396,8 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         return nodeTreeView;
     }
 
-    protected TextField getNodeTextField() {
-        return nodeTextField;
+    protected SearchField getNodeSearchField() {
+        return nodeSearchField;
     }
 
     protected VBox getNodeBox() {
@@ -408,8 +408,8 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         return infoTableView;
     }
 
-    protected TextField getInfoTextField() {
-        return infoTextField;
+    protected SearchField getInfoSearchField() {
+        return infoSearchField;
     }
 
     protected VBox getInfoBox() {
