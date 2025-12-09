@@ -17,11 +17,11 @@
 /*
     Author     : Pavel Castornii
 */
-.search-pane.extra-dense > .combo-box {
+.search-field.extra-dense > .combo-box {
     -fx-padding: 0;
 }
 
-.search-pane.extra-dense > .combo-box > .text-field {
+.search-field.extra-dense > .combo-box > .text-field {
     -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 }
 

@@ -19,7 +19,7 @@ package com.techsenger.tabshell.jfx.eventlog;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
-import com.techsenger.tabshell.material.SearchPane;
+import com.techsenger.tabshell.material.SearchField;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
@@ -57,7 +57,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
 
     private final ToggleButton selectedOnlyButton = new ToggleButton(null, new FontIconView(JfxIcons.SELECTED_ONLY));
 
-    private final SearchPane searchPane = new SearchPane();
+    private final SearchField searchPane = new SearchField();
 
     private final MenuButton eventTypesButton = new MenuButton("Event Types");
 

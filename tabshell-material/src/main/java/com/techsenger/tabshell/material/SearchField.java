@@ -28,13 +28,13 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public class SearchPane extends StackPane {
+public class SearchField extends StackPane {
 
     private final ComboBox<String> textComboBox = new ComboBox<>();
 
     private final Button clearButton = new Button();
 
-    public SearchPane() {
+    public SearchField() {
         clearButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
         clearButton.setFocusTraversable(false);
         StackPane.setMargin(this.clearButton, new Insets(0, SizeConstants.INSET * 2, 0, 0));
@@ -43,8 +43,8 @@ public class SearchPane extends StackPane {
         textComboBox.maxWidthProperty().bind(widthProperty());
         setAlignment(Pos.CENTER_RIGHT);
         getChildren().add(textComboBox);
-        getStyleClass().addAll("search-pane", StyleClasses.EXTRA_DENSE);
-        var styles = SearchPane.class.getResource("search-pane.css").toExternalForm();
+        getStyleClass().addAll("search-field", StyleClasses.EXTRA_DENSE);
+        var styles = SearchField.class.getResource("search-field.css").toExternalForm();
         getStylesheets().add(styles);
         textComboBox.getEditor().textProperty().addListener((ov, oldV, newV) -> {
             if (clearButton.getParent() == null) {

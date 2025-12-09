@@ -71,6 +71,6 @@
     -fx-background-color: -color-base-7;
 }
 
-.search-pane > .button.cross {
+.search-field > .button.cross {
     -fx-background-color: -color-fg-muted;
 }
