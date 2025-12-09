@@ -17,10 +17,11 @@
 package com.techsenger.tabshell.hex.inspector;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.material.style.SizeConstants;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.Spacer;
 import java.nio.ByteOrder;
 import javafx.geometry.Insets;
@@ -36,7 +37,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.DefaultStringConverter;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -130,12 +130,15 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
         baseGridPane.add(hexadecimalLabel, 0, 1);
         baseGridPane.add(hexadecimalTextField, 1, 1);
         GridPane.setHgrow(hexadecimalTextField, Priority.ALWAYS);
+        hexadecimalTextField.getStyleClass().add(Styles.DENSE);
         baseGridPane.add(octalLabel, 0, 2);
         baseGridPane.add(octalTextField, 1, 2);
         GridPane.setHgrow(octalTextField, Priority.ALWAYS);
+        octalTextField.getStyleClass().add(Styles.DENSE);
         baseGridPane.add(binaryLabel, 0, 3);
         baseGridPane.add(binaryTextField, 1, 3);
         GridPane.setHgrow(binaryTextField, Priority.ALWAYS);
+        binaryTextField.getStyleClass().add(Styles.DENSE);
         baseGridPane.setVgap(SizeConstants.INSET);
         baseGridPane.setHgap(SizeConstants.INSET);
         baseGridPane.setPadding(new Insets(SizeConstants.INSET));
