@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.style.StyleUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;

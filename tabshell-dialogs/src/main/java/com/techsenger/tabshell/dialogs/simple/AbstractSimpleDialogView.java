@@ -18,7 +18,7 @@ package com.techsenger.tabshell.dialogs.simple;
 
 import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

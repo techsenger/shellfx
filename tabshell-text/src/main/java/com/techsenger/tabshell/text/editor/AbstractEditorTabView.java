@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.editor;
 
 import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;

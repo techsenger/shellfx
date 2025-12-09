@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;

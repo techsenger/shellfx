@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-/*
-    Author     : Pavel Castornii
-*/
+package com.techsenger.tabshell.core.style;
 
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class CssAnchor {
 
+}

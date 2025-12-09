@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.hex.inspector;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;

@@ -71,3 +71,7 @@
     /* it seems that -color-accent-subtle is used with some opacity ??? */
     -fx-background-color: rgba(149, 128, 255, 0.623);
 }
+
+.search-pane > .button.cross {
+    -fx-background-color: -color-accent-fg;
+}

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.utils;
 
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;

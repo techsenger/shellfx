@@ -18,7 +18,7 @@ package com.techsenger.tabshell.demos.core.tab;
 
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

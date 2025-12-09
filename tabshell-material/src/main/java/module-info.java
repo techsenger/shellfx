@@ -35,7 +35,6 @@ module com.techsenger.tabshell.material {
     exports com.techsenger.tabshell.material.list;
     exports com.techsenger.tabshell.material.menu;
     exports com.techsenger.tabshell.material.pane;
-    exports com.techsenger.tabshell.material.search;
     exports com.techsenger.tabshell.material.style;
     exports com.techsenger.tabshell.material.table;
     exports com.techsenger.tabshell.material.textarea;

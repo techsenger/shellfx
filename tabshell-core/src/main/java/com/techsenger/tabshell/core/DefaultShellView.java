@@ -33,7 +33,7 @@ import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.core.style.CssAnchor;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
@@ -41,6 +41,7 @@ import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
@@ -529,7 +530,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
                 Arrays.stream(JavaFxTheme.values()))
                 .collect(Collectors.toSet());
         return List.of(
-                new Stylesheet(SizeConstants.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
+                new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
                 new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
     }
 

@@ -17,11 +17,12 @@
 package com.techsenger.tabshell.jfx.eventlog;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
+import com.techsenger.tabshell.material.SearchPane;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.material.search.SearchPane;
+import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -39,7 +40,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import jfx.incubator.scene.control.richtext.RichTextArea;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -129,7 +129,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         super.bind(viewModel);
         this.filterButton.selectedProperty().bindBidirectional(viewModel.filterActiveProperty());
         this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
-        // this.searchPane.getTextField().textProperty().bindBidirectional(viewModel.searchTextProperty());
+        this.searchPane.getTextComboBox().getEditor().textProperty().bindBidirectional(viewModel.searchTextProperty());
         this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
     }
 

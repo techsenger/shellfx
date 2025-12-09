@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demos.core.dialog;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

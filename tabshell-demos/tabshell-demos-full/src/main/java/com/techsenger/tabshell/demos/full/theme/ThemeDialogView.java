@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demos.full.theme;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.style.SizeConstants;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
