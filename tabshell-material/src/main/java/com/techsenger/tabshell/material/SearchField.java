@@ -40,7 +40,7 @@ public class SearchField extends StackPane {
         StackPane.setMargin(this.clearButton, new Insets(0, SizeConstants.INSET * 2, 0, 0));
         textComboBox.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         textComboBox.setEditable(true);
-        textComboBox.maxWidthProperty().bind(widthProperty());
+        textComboBox.maxWidthProperty().bind(widthProperty().subtract(1));
         setAlignment(Pos.CENTER_RIGHT);
         getChildren().add(textComboBox);
         getStyleClass().addAll("search-field", StyleClasses.EXTRA_DENSE);

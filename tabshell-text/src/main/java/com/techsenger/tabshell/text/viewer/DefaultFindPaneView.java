@@ -156,7 +156,7 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
         viewModel.textAreaEditableProperty().bind(this.textArea.editableProperty());
         viewModel.caretPositionProperty().bind(this.textArea.caretPositionProperty());
         viewModel.selectionProperty().bind(this.textArea.selectionProperty());
-        this.replaceComboBox.maxWidthProperty().bind(this.replaceComboBoxWrapper.widthProperty());
+        this.replaceComboBox.maxWidthProperty().bind(this.replaceComboBoxWrapper.widthProperty().subtract(1));
         viewModel.replaceTextProperty().bindBidirectional(this.replaceComboBox.getEditor().textProperty());
     }
 

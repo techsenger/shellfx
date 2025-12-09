@@ -18,9 +18,10 @@ package com.techsenger.tabshell.shared.find;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
+import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.Spacer;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
@@ -37,7 +38,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -171,7 +171,7 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
     @Override
     protected void bind(T viewModel) {
         super.bind(viewModel);
-        this.findComboBox.maxWidthProperty().bind(this.findComboBoxWrapper.widthProperty());
+        this.findComboBox.maxWidthProperty().bind(this.findComboBoxWrapper.widthProperty().subtract(1));
         this.findComboBox.getEditor().textProperty().bindBidirectional(viewModel.findTextProperty());
         this.wholeWordButton.selectedProperty().bindBidirectional(viewModel.wholeWordSelectedProperty());
         this.wholeWordButton.disableProperty().bindBidirectional(viewModel.wholeWordDisableProperty());
