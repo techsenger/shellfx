@@ -17,13 +17,14 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabView;
+import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.style.StyleUtils;
-import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.RichTextFxUtils;
-import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabView;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.text.style.TextIcons;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
@@ -53,7 +54,6 @@ import org.fxmisc.richtext.Caret;
 import org.fxmisc.wellbehaved.event.EventPattern;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -65,7 +65,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
 
     private final ExtendedTextArea textArea;
 
-    private final VirtualizedScrollPane textScrollPane;
+    private final VirtualizedScrollPane<? extends ExtendedTextArea> textScrollPane;
 
     private final Button copyButton = new Button(null, new FontIconView(SharedIcons.COPY));
 
@@ -253,7 +253,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         return toolBar;
     }
 
-    protected VirtualizedScrollPane getTextScrollPane() {
+    protected VirtualizedScrollPane<? extends ExtendedTextArea> getTextScrollPane() {
         return textScrollPane;
     }
 
