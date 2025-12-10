@@ -24,12 +24,11 @@ import com.techsenger.tabshell.material.SearchField.SearchMode;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
-import java.util.List;
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
@@ -40,7 +39,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import jfx.incubator.scene.control.richtext.RichTextArea;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.InlineCssTextArea;
 
 /**
  *
@@ -62,12 +62,19 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
 
     private final MenuButton eventTypesButton = new MenuButton("Event Types");
 
+    private final Label entriesInfoLabel = new Label("Events: ");
+
+    private final Label entriesCountLabel = new Label();
+
     private final ToolBar toolBar = new ToolBar(recordButton, clearButton, new Separator(Orientation.VERTICAL),
-            filterButton, selectedOnlyButton, searchField, eventTypesButton);
+            filterButton, selectedOnlyButton, searchField, eventTypesButton, entriesInfoLabel, entriesCountLabel);
 
-    private final RichTextArea textArea = new RichTextArea();
+    /**
+     * JFX RichTextArea and JFX ListView generates too many events (NodeAdd, NodeRemove), so we use RTFX text area.
+     */
+    private final InlineCssTextArea textArea = new InlineCssTextArea();
 
-    private final StringBuilder textBuilder = new StringBuilder();
+    private final VirtualizedScrollPane<InlineCssTextArea> textScrollPane = new VirtualizedScrollPane(textArea);
 
     public EventLogTabView(T viewModel) {
         super(viewModel);
@@ -89,7 +96,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
         this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
-        selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
+        //selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
         HBox.setHgrow(searchField, Priority.ALWAYS);
         eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
         viewModel.getEventTypesByClass().values().forEach(t -> {
@@ -102,26 +109,38 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         var deselectAllEvents = new MenuItem("Deselect All Events");
         deselectAllEvents.setOnAction(e -> viewModel.deselectAllEvents());
         eventTypesButton.getItems().addAll(new SeparatorMenuItem(), selectAllEvents, deselectAllEvents);
+        entriesInfoLabel.setMinWidth(Label.USE_PREF_SIZE);
+        entriesCountLabel.setStyle("-fx-min-width: 8em");
+        entriesCountLabel.setTooltip(new Tooltip("Displayed Events / Total Events"));
+        updateCountLabel();
         this.toolBar.getStyleClass().add(Styles.DENSE);
 
         textArea.setEditable(false);
         textArea.getStyleClass().add(StyleClasses.MONOSPACE);
-        VBox.setVgrow(textArea, Priority.ALWAYS);
-        getContentPane().getChildren().addAll(toolBar, textArea);
+        VBox.setVgrow(textScrollPane, Priority.ALWAYS);
+        getContentPane().getChildren().addAll(toolBar, textScrollPane);
     }
 
     @Override
     protected void addListeners(T viewModel) {
         super.addListeners(viewModel);
-        viewModel.getFilteredEntries().addListener((ListChangeListener<LogEntry>) e -> {
-            while (e.next()) {
-                if (e.wasAdded()) {
-                    print(e.getAddedSubList());
-                }
-                if (e.wasRemoved()) {
+        viewModel.getTextSource().addListener(text -> {
+            // called from non-JavaFX thread
+            if (text != null) {
+                Platform.runLater(() -> {
+                    this.textArea.appendText(text);
+                    updateCountLabel();
+                });
+            } else {
+                Platform.runLater(() -> {
                     this.textArea.clear();
-                }
+                    updateCountLabel();
+                });
             }
+        });
+        viewModel.entriesCountProperty().addListener((ov, oldV, newV) -> {
+            // can be called from non-JavaFX thread
+            Platform.runLater(() -> updateCountLabel());
         });
     }
 
@@ -130,7 +149,6 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         super.bind(viewModel);
         this.filterButton.selectedProperty().bindBidirectional(viewModel.filterActiveProperty());
         this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
-        this.searchField.getTextComboBox().getEditor().textProperty().bindBidirectional(viewModel.searchTextProperty());
         this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
     }
 
@@ -139,24 +157,19 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         super.addHandlers(viewModel);
         this.recordButton.setOnAction(e -> {
             if (this.recordButton.isSelected()) {
-                viewModel.start();
+                viewModel.subscribe();
             } else {
-                viewModel.stop();
+                viewModel.unsubscribe();
             }
         });
         this.clearButton.setOnAction(e -> viewModel.clear());
-        this.searchField.setHandler(t -> viewModel.search(t));
+        this.searchField.setSearchHandler(t -> viewModel.applyTextFilter(t));
+        this.searchField.setClearHandler(() -> viewModel.cancelTextFilter());
     }
 
-    private void print(List<? extends LogEntry> entries) {
-        textBuilder.setLength(0);
-        entries.forEach(e -> textBuilder.append(e.date()).append(" ").append(e.message()));
-        var text = textBuilder.toString();
-
-        Platform.runLater(() -> {
-            this.textArea.appendText(text + "\n");
-            // this.textArea.moveDocumentEnd();
-        });
-
+    private void updateCountLabel() {
+        var entryCount = this.textArea.getParagraphs().size();
+        entryCount--; // always empty last line
+        this.entriesCountLabel.textProperty().set(entryCount + " / " + getViewModel().getEntriesCount());
     }
 }

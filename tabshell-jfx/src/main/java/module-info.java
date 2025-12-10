@@ -28,7 +28,7 @@ module com.techsenger.tabshell.jfx {
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
-    requires jfx.incubator.richtext;
+    requires org.fxmisc.richtext;
     requires atlantafx.base;
     requires devtoolsfx.connector;
 

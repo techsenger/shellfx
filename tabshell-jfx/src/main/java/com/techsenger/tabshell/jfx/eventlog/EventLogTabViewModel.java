@@ -22,6 +22,8 @@ import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.material.icon.GenericFontIcon;
+import com.techsenger.toolkit.fx.value.ObservableSource;
+import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.event.AttributeListEvent;
 import devtoolsfx.event.AttributeUpdatedEvent;
@@ -47,19 +49,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -67,13 +75,21 @@ import javafx.collections.ObservableList;
  */
 public class EventLogTabViewModel extends AbstractTabViewModel {
 
+    protected record Filter(
+            boolean active,
+            boolean selectedOnly,
+            String text,
+            Set<Class<? extends ConnectorEvent>> enabledEvents) { }
+
     private static final long ZONE_OFFSET_MILLIS = ZoneId.systemDefault().getRules().getOffset(Instant.now())
             .getTotalSeconds() * 1000L;
 
     private static final char[] TIME_ARRAY = new char[12]; // HH:mm:ss.SSS
 
-    private static String getTime() {
-        long millis = System.currentTimeMillis() + ZONE_OFFSET_MILLIS;
+    private static final Logger logger = LoggerFactory.getLogger(EventLogTabViewModel.class);
+
+    private static String getZonedTime(long timestamp) {
+        long millis = timestamp + ZONE_OFFSET_MILLIS;
         long seconds = millis / 1000;
         long ms = millis % 1000;
 
@@ -102,7 +118,11 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
     private final Connector connector;
 
-    private final List<LogEntry> allEntries = new ArrayList<>();
+    private final List<LogEntry> oldEntries = new CopyOnWriteArrayList<>();
+
+    private final ConcurrentLinkedQueue<LogEntry> newEntries = new ConcurrentLinkedQueue();
+
+    private final ObservableSource<String> textSource = new SimpleObservableSource<>();
 
     private final BooleanProperty filterActive = new SimpleBooleanProperty(true);
 
@@ -110,15 +130,17 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
     private final BooleanProperty selectedOnly = new SimpleBooleanProperty(true);
 
-    private final ObservableList<LogEntry> filteredEntries = FXCollections.observableArrayList();
-
     private final Consumer<ConnectorEvent> eventListener = this::handleEvent;
 
     private final StringBuilder messageBuilder = new StringBuilder();
 
-    private final StringProperty searchText = new SimpleStringProperty();
+    private final StringBuilder textBuilder = new StringBuilder();
 
     private final ReadOnlyObjectWrapper<Element> selectedElement = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyBooleanWrapper subscribed = new ReadOnlyBooleanWrapper();
+
+    private final ReadOnlyIntegerWrapper entriesCount = new ReadOnlyIntegerWrapper();
 
     private final Map<Class<? extends ConnectorEvent>, EventType> eventTypesByClass =
             Collections.unmodifiableMap(
@@ -144,6 +166,12 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
                     LinkedHashMap::new
                 ))
             );
+
+    private Thread entryProcessor;
+
+    private volatile Filter filter;
+
+    private Filter previousFilter;
 
     public EventLogTabViewModel(ShellTabViewModel shellTab, Connector connector) {
         this.shellTab = shellTab;
@@ -187,18 +215,6 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         return connector;
     }
 
-    public String getSearchText() {
-        return searchText.get();
-    }
-
-    public void setSearchText(String value) {
-        searchText.set(value);
-    }
-
-    public StringProperty searchTextProperty() {
-        return searchText;
-    }
-
     public ReadOnlyObjectProperty<Element> selectedElementProperty() {
         return selectedElement.getReadOnlyProperty();
     }
@@ -209,6 +225,43 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
     public GenericFontIcon<?> getRecordIcon() {
         return recordIcon.get();
+    }
+
+    public boolean isSubscribed() {
+        return subscribed.get();
+    }
+
+    public ReadOnlyBooleanProperty subscribedProperty() {
+        return subscribed.getReadOnlyProperty();
+    }
+
+    public int getEntriesCount() {
+        return entriesCount.get();
+    }
+
+    public ReadOnlyIntegerProperty entriesCountProperty() {
+        return entriesCount.getReadOnlyProperty();
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        this.filterActive.addListener((ov, oldV, newV) -> updateFilter(null));
+        this.selectedOnly.addListener((ov, oldV, newV) -> updateFilter(null));
+        updateFilter(null);
+        selectedProperty().addListener((ov, oldV, newV) -> {
+            if (newV) {
+                createAndStartProcessor();
+            } else {
+                stopAndDestroyProcessor();
+            }
+        });
+    }
+
+    @Override
+    protected void deinitialize() {
+        super.deinitialize();
+        stopAndDestroyProcessor();
     }
 
     protected ObjectProperty<GenericFontIcon<?>> recordIconProperty() {
@@ -224,56 +277,49 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         return new ComponentDescriptor(JfxComponentNames.EVENT_LOG_TAB);
     }
 
-    protected boolean matchesFilter(LogEntry entry) {
-        if (isSelectedOnly()) {
+    protected boolean matchesFilter(Filter filter, LogEntry entry) {
+        if (filter.selectedOnly()) {
             if (!(entry.event() instanceof ElementEvent elementEvent)
                     || !Objects.equals(elementEvent.getElement(), getSelectedElement())) {
                 return false;
             }
         }
-        var type = this.eventTypesByClass.get(entry.event().getClass());
-        if (type != null && !type.isEnabled()) {
+        if (!filter.enabledEvents.contains(entry.event().getClass())) {
             return false;
         }
-        var text = getSearchText();
-        if (text != null && !text.isEmpty() && !entry.message().contains(text)) {
+        if (filter.text() != null && !filter.text().isEmpty() && !entry.message().contains(filter.text())) {
             return false;
         }
         return true;
     }
 
-    protected void start() {
+    protected void subscribe() {
         this.setRecordIcon(JfxIcons.RECORD_STOP);
         this.connector.getEventBus().subscribe(ConnectorEvent.class, eventListener);
+        setSubscribed(true);
     }
 
-    protected void stop() {
+    protected void unsubscribe() {
         this.setRecordIcon(JfxIcons.RECORD_START);
         this.connector.getEventBus().unsubscribe(eventListener);
+        setSubscribed(false);
     }
 
     protected void clear() {
-        allEntries.clear();
-        filteredEntries.clear();
-    }
-
-    protected ObservableList<LogEntry> getFilteredEntries() {
-        return filteredEntries;
+        oldEntries.clear();
+        newEntries.clear();
+        textSource.next(null);
+        // after all
+        setEntriesCount(0);
     }
 
     protected void handleEvent(ConnectorEvent event) {
         messageBuilder.setLength(0);
         messageBuilder.append(String.format("%-22s", event.getClass().getSimpleName()));
         messageBuilder.append(event.toLogString());
-        var entry = new LogEntry(getTime(), messageBuilder.toString(), event);
-        this.allEntries.add(entry);
-        if (isFilterActive()) {
-            if (matchesFilter(entry)) {
-                this.filteredEntries.add(entry);
-            }
-        } else {
-            this.filteredEntries.add(entry);
-        }
+        var timestamp = System.currentTimeMillis();
+        var entry = new LogEntry(timestamp, getZonedTime(timestamp), messageBuilder.toString(), event);
+        this.newEntries.offer(entry);
     }
 
     protected void selectAllEvents() {
@@ -284,17 +330,108 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         this.eventTypesByClass.values().forEach(e -> e.setEnabled(false));
     }
 
-    protected void search(String text) {
-        System.out.println("TEXT: " + text);
+    protected void applyTextFilter(String text) {
+        updateFilter(text);
+    }
+
+    protected void cancelTextFilter() {
+        updateFilter(null);
+    }
+
+    public ObservableSource<String> getTextSource() {
+        return textSource;
     }
 
     private <T extends ConnectorEvent> EventType<T> createEventType(Class<T> clazz, boolean enabled) {
         var type = new EventType(clazz);
         type.setEnabled(enabled);
+        type.enabledProperty().addListener((ov, oldV, newV) -> updateFilter(null));
         return type;
     }
 
     private void setSelectedElement(Element element) {
         selectedElement.set(element);
+    }
+
+    private void setSubscribed(boolean value) {
+        subscribed.set(value);
+    }
+
+    protected void setEntriesCount(int value) {
+        entriesCount.set(value);
+    }
+
+    protected void createAndStartProcessor() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                while (!Thread.currentThread().isInterrupted()) {
+                    List<LogEntry> processedEntries = new ArrayList<>(1000);
+                    final var f = filter;
+                    if (f != previousFilter) {
+                        previousFilter = f;
+                        textSource.next(null);
+                        if (f.active()) {
+                            oldEntries.stream().filter(e -> matchesFilter(f, e)).forEach(processedEntries::add);
+                        } else {
+                            processedEntries.addAll(oldEntries);
+                        }
+                    }
+                    var now = System.currentTimeMillis();
+                    while (true) {
+                        LogEntry entry = newEntries.poll();
+                        if (entry == null) {
+                            break;
+                        }
+                        oldEntries.add(entry);
+                        if (f.active()) {
+                            if (matchesFilter(f, entry)) {
+                                processedEntries.add(entry);
+                            }
+                        } else {
+                            processedEntries.add(entry);
+                        }
+                        if (entry.timestamp() > now) {
+                            break;
+                        }
+                    }
+                    sendText(processedEntries);
+                    setEntriesCount(oldEntries.size());
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+                return null;
+            }
+        };
+        this.entryProcessor = new Thread(task);
+        this.entryProcessor.start();
+        logger.debug("{} EntryProcessor started", getDescriptor().getLogPrefix());
+    }
+
+    protected void sendText(List<LogEntry> entries) {
+        textBuilder.setLength(0);
+        entries.forEach(e -> textBuilder.append(e.zonedTime()).append(" ").append(e.message()).append("\n"));
+        var text = textBuilder.toString();
+        textSource.next(text);
+    }
+
+    protected void stopAndDestroyProcessor() {
+        if (this.entryProcessor == null) {
+            return;
+        }
+        this.entryProcessor.interrupt();
+        this.entryProcessor = null;
+        logger.debug("{} EntryProcessor stopped", getDescriptor().getLogPrefix());
+    }
+
+    private void updateFilter(String text) {
+        // JFX properties are not thread safe
+        Set<Class<? extends ConnectorEvent>> events = this.eventTypesByClass.entrySet().stream()
+                .filter(e -> e.getValue().isEnabled())
+                .map(e -> e.getKey()).collect(Collectors.toSet());
+        this.filter = new Filter(isFilterActive(), isSelectedOnly(), text, events);
     }
 }

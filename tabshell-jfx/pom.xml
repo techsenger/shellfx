@@ -67,8 +67,8 @@
             <artifactId>javafx-controls</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>jfx-incubator-richtext</artifactId>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
         </dependency>
         <dependency>
             <groupId>io.github.mkpaz</groupId>

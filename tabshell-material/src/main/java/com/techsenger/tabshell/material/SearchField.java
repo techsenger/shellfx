@@ -55,7 +55,9 @@ public class SearchField extends StackPane {
 
     private final Button clearButton = new Button();
 
-    private Consumer<String> handler;
+    private Consumer<String> searchHandler;
+
+    private Runnable clearHandler;
 
     /**
      * Debounce duration in milliseconds.
@@ -103,6 +105,9 @@ public class SearchField extends StackPane {
                     debouncePause.playFromStart();
                 }
             }
+            if (this.clearHandler != null && (newV == null || newV.isEmpty())) {
+                this.clearHandler.run();
+            }
         });
 
         // Enter key: immediate invocation (useful for manual search and also useful to allow
@@ -131,12 +136,20 @@ public class SearchField extends StackPane {
         return clearButton;
     }
 
-    public Consumer<String> getHandler() {
-        return handler;
+    public Consumer<String> getSearchHandler() {
+        return searchHandler;
     }
 
-    public void setHandler(Consumer<String> handler) {
-        this.handler = handler;
+    public void setSearchHandler(Consumer<String> handler) {
+        this.searchHandler = handler;
+    }
+
+    public Runnable getClearHandler() {
+        return clearHandler;
+    }
+
+    public void setClearHandler(Runnable handler) {
+        this.clearHandler = handler;
     }
 
     /**
@@ -191,11 +204,11 @@ public class SearchField extends StackPane {
     }
 
     private void invokeHandler(String text) {
-        if (this.handler != null && text != null && !text.isEmpty()) {
+        if (this.searchHandler != null && text != null && !text.isEmpty()) {
             if (this.mode == SearchMode.AUTO && text.length() < minSearchLength) {
                 return;
             }
-            this.handler.accept(text);
+            this.searchHandler.accept(text);
         }
     }
 }

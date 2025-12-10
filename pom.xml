@@ -100,11 +100,6 @@
                 <artifactId>javafx-swing</artifactId>
                 <version>${javafx.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>jfx-incubator-richtext</artifactId>
-                <version>${javafx.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>

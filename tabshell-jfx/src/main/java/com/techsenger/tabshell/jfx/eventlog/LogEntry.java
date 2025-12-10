@@ -22,4 +22,4 @@ import devtoolsfx.event.ConnectorEvent;
  *
  * @author Pavel Castornii
  */
-public record LogEntry(String date, String message, ConnectorEvent event) { }
+public record LogEntry(long timestamp, String zonedTime, String message, ConnectorEvent event) { }
