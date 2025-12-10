@@ -150,6 +150,8 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
         this.filterButton.selectedProperty().bindBidirectional(viewModel.filterActiveProperty());
         this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
         this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
+        this.searchField.getTextComboBox().getEditor().textProperty()
+                .bindBidirectional(viewModel.getSearchTextWrappper());
     }
 
     @Override
@@ -163,7 +165,7 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
             }
         });
         this.clearButton.setOnAction(e -> viewModel.clear());
-        this.searchField.setSearchHandler(t -> viewModel.applyTextFilter(t));
+        this.searchField.setSearchHandler(t -> viewModel.applyTextFilter());
         this.searchField.setClearHandler(() -> viewModel.cancelTextFilter());
     }
 

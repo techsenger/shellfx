@@ -63,6 +63,8 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
@@ -141,6 +143,8 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
     private final ReadOnlyBooleanWrapper subscribed = new ReadOnlyBooleanWrapper();
 
     private final ReadOnlyIntegerWrapper entriesCount = new ReadOnlyIntegerWrapper();
+
+    private final ReadOnlyStringWrapper searchText = new ReadOnlyStringWrapper();
 
     private final Map<Class<? extends ConnectorEvent>, EventType> eventTypesByClass =
             Collections.unmodifiableMap(
@@ -243,12 +247,20 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         return entriesCount.getReadOnlyProperty();
     }
 
+    public String getSearchText() {
+        return searchText.get();
+    }
+
+    public ReadOnlyStringProperty searchTextProperty() {
+        return searchText.getReadOnlyProperty();
+    }
+
     @Override
     protected void initialize() {
         super.initialize();
-        this.filterActive.addListener((ov, oldV, newV) -> updateFilter(null));
-        this.selectedOnly.addListener((ov, oldV, newV) -> updateFilter(null));
-        updateFilter(null);
+        this.filterActive.addListener((ov, oldV, newV) -> updateFilter());
+        this.selectedOnly.addListener((ov, oldV, newV) -> updateFilter());
+        updateFilter();
         selectedProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
                 createAndStartProcessor();
@@ -262,6 +274,10 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
     protected void deinitialize() {
         super.deinitialize();
         stopAndDestroyProcessor();
+    }
+
+    protected void setSearchText(String value) {
+        searchText.set(value);
     }
 
     protected ObjectProperty<GenericFontIcon<?>> recordIconProperty() {
@@ -330,22 +346,26 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         this.eventTypesByClass.values().forEach(e -> e.setEnabled(false));
     }
 
-    protected void applyTextFilter(String text) {
-        updateFilter(text);
+    protected void applyTextFilter() {
+        updateFilter();
     }
 
     protected void cancelTextFilter() {
-        updateFilter(null);
+        updateFilter();
     }
 
-    public ObservableSource<String> getTextSource() {
+    protected ObservableSource<String> getTextSource() {
         return textSource;
+    }
+
+    ReadOnlyStringWrapper getSearchTextWrappper() {
+        return this.searchText;
     }
 
     private <T extends ConnectorEvent> EventType<T> createEventType(Class<T> clazz, boolean enabled) {
         var type = new EventType(clazz);
         type.setEnabled(enabled);
-        type.enabledProperty().addListener((ov, oldV, newV) -> updateFilter(null));
+        type.enabledProperty().addListener((ov, oldV, newV) -> updateFilter());
         return type;
     }
 
@@ -412,6 +432,9 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
     }
 
     protected void sendText(List<LogEntry> entries) {
+        if (entries.size() == 0) {
+            return;
+        }
         textBuilder.setLength(0);
         entries.forEach(e -> textBuilder.append(e.zonedTime()).append(" ").append(e.message()).append("\n"));
         var text = textBuilder.toString();
@@ -427,11 +450,11 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         logger.debug("{} EntryProcessor stopped", getDescriptor().getLogPrefix());
     }
 
-    private void updateFilter(String text) {
+    private void updateFilter() {
         // JFX properties are not thread safe
         Set<Class<? extends ConnectorEvent>> events = this.eventTypesByClass.entrySet().stream()
                 .filter(e -> e.getValue().isEnabled())
                 .map(e -> e.getKey()).collect(Collectors.toSet());
-        this.filter = new Filter(isFilterActive(), isSelectedOnly(), text, events);
+        this.filter = new Filter(isFilterActive(), isSelectedOnly(), getSearchText(), events);
     }
 }
