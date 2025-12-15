@@ -16,14 +16,16 @@
 
 package com.techsenger.tabshell.demos.full.theme;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
+import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -34,7 +36,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
+public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel<SimpleDialogMediator> {
 
     private final ObservableList<Theme> themes = FXCollections.observableArrayList(Arrays
             .stream(AtlantaFxTheme.values()).collect(Collectors.toList()));
@@ -68,7 +70,12 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel {
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DEMO_THEME_DIALOG);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

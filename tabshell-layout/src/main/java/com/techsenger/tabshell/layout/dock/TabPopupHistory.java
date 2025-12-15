@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaHistory;
  *
  * @author Pavel Castornii
  */
-public class TabPopupHistory<T extends TabPopupViewModel> extends AbstractAreaHistory<T> {
+public class TabPopupHistory<T extends TabPopupViewModel<?>> extends AbstractAreaHistory<T> {
 
     private double width;
 

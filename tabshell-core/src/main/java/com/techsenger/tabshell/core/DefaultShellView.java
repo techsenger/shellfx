@@ -17,15 +17,13 @@
 package com.techsenger.tabshell.core;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.mvvm4fx.core.AbstractParentView;
+import com.techsenger.patternfx.core.AbstractParentView;
 import com.techsenger.stagepro.core.StageResizeEvent;
 import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import static com.techsenger.tabshell.core.CloseScope.SHELL;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
-import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
@@ -37,7 +35,6 @@ import com.techsenger.tabshell.core.style.CssAnchor;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
-import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
@@ -59,14 +56,12 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -83,37 +78,37 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> implements
-        ShellView<DefaultShellViewModel> {
+public class DefaultShellView<T extends DefaultShellViewModel<?>, S extends DefaultShellComponent<?>>
+        extends AbstractParentView<T, S> implements ShellView<T, S> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultShellView.class);
 
     private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");
 
-    private static class ShellDialogManager extends DefaultDialogManager {
+    private class ShellDialogManager extends DefaultDialogManager {
 
         private final ShellStageController controller;
 
         ShellDialogManager(ShellStageController controller, StackPane stackPane, VBox mainPane,
                 ReadOnlyIntegerWrapper dialogCount) {
-            super(DialogScope.SHELL, stackPane, mainPane, dialogCount);
+            super(stackPane, mainPane, dialogCount);
             this.controller = controller;
         }
 
         @Override
-        public void closeDialog(DialogView<?> dialogView) {
-            super.closeDialog(dialogView);
+        public void hideDialog(DialogView<?, ?> dialogView) {
+            super.hideDialog(dialogView);
             if (getDialogCount() == 0) {
                 controller.setUnfocused(false);
             }
         }
 
         @Override
-        public void openDialog(DialogView<?> dialogView) {
+        public void showDialog(DialogView<?, ?> dialogView) {
             if (getDialogCount() == 0) {
                 controller.setUnfocused(true);
             }
-            super.openDialog(dialogView);
+            super.showDialog(dialogView);
         }
     }
 
@@ -135,7 +130,7 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
             HBox.setHgrow(leftSpacer, Priority.ALWAYS);
             HBox.setHgrow(rightSpacer, Priority.ALWAYS);
             getButtonBox().getChildren().addAll(getMinimizeButton(), getMaximizeButton(), getCloseButton());
-            getCloseButton().setOnAction(e -> close());
+            getCloseButton().setOnAction(e -> getViewModel().close());
             getTitleBar().getChildren().addAll(iconViewBox, menuBar, leftSpacer, getTitleLabel(), rightSpacer,
                     getButtonBox());
             getTitleBar().widthProperty().addListener((ov, oldV, newV) -> updateSpacers());
@@ -172,49 +167,12 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
             leftSpacer.setMaxWidth(leftSpacerWidth);
             rightSpacer.setMaxWidth(rightSpacerWidth);
 
-            logger.trace("{} Title centered. TitleBar: {}, iconBox: {}, menuBar: {}, leftSpacer: {}, label: {}, "
-                    + "rightSpacer: {}, buttonBox: {}", getDescriptor().getLogPrefix(), titleBarWidth, iconBox,
-                    menuBarWidth, leftSpacerWidth, labelHalfWidth * 2, rightSpacerWidth, buttonBoxWidth);
+//            logger.trace("Title centered. TitleBar: {}, iconBox: {}, menuBar: {}, leftSpacer: {}, label: {}, "
+//                    + "rightSpacer: {}, buttonBox: {}", titleBarWidth, iconBox,
+//                    menuBarWidth, leftSpacerWidth, labelHalfWidth * 2, rightSpacerWidth, buttonBoxWidth);
         }
     }
 
-    /**
-     * The instance of this class it passed to tab, they run it (if they agree to be closed). Finally this class
-     * closes application.
-     */
-    private final class Closer implements Runnable {
-
-        @Override
-        public void run() {
-            ShellTabView<?> selectedTab;
-            int nonClosableTabIndex = -1;
-            for (var i = 0; i < tabPane.getTabs().size(); i++) {
-                var tab = tabPane.getTabs().get(i);
-                var view = ((ComponentTab) tab).getView();
-                var callback = createCloseCallback(SHELL, null);
-                if (!view.doOnCloseAttempt(CloseScope.SHELL, callback)) {
-                    nonClosableTabIndex = i;
-                    break;
-                }
-            }
-            if (nonClosableTabIndex == -1) {
-                while ((selectedTab = getSelectedTab()) != null) {
-                    doCloseTab(selectedTab);
-                }
-                if (tabPane.getTabs().size() == 0) {
-                    stage.hide();
-                    deinitialize();
-                    stage.close();
-                    var onClosed = getViewModel().getOnClosed();
-                    if (onClosed != null) {
-                        onClosed.call();
-                    }
-                }
-            } else {
-                tabPane.getSelectionModel().select(nonClosableTabIndex);
-            }
-        }
-    }
 
     private final Application application;
 
@@ -230,10 +188,6 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     private final TabPanePro tabPane = new TabPanePro();
 
-    private final ThemeApplier themeApplier;
-
-    private final FontApplier fontApplier;
-
     private final ShellStageController stageController;
 
     private final DialogManager dialogManager;
@@ -242,53 +196,27 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
 
     private final ControlRegistry controlRegistry = new ControlRegistry();
 
-    public DefaultShellView(Application application, List<Stylesheet> stylesheets, DefaultShellViewModel viewModel) {
-        this(application, new Stage(), stylesheets, viewModel);
+    private ThemeApplier themeApplier;
+
+    private FontApplier fontApplier;
+
+    public DefaultShellView(T viewModel, Application application, List<Stylesheet> stylesheets) {
+        this(viewModel, application, new Stage(), stylesheets);
     }
 
-    public DefaultShellView(Application application, Stage stage, List<Stylesheet> stylesheets,
-            DefaultShellViewModel viewModel) {
+    public DefaultShellView(T viewModel, Application application, Stage stage, List<Stylesheet> stylesheets) {
         super(viewModel);
         this.application = application;
         this.stage = stage;
-        stageController = new ShellStageController(stage, viewModel.getDefaultWidth(),
-                viewModel.getDefaultHeight(), viewModel.dialogCountProperty());
         this.stylesheets = FXCollections.observableArrayList(createDefaultStylesheets());
         if (stylesheets != null) {
             this.stylesheets.addAll(stylesheets);
         }
-        themeApplier = new ThemeApplier(stageController, this.stylesheets, viewModel.getSettings().getAppearance());
+        stageController = new ShellStageController(stage, viewModel.getDefaultWidth(),
+                viewModel.getDefaultHeight(), viewModel.dialogCountProperty());
+        this.menuManager = new MenuManager(this, this.menuBar);
         this.dialogManager = new ShellDialogManager(stageController, stackPane, contentPane,
                 viewModel.dialogCountWrapper());
-        this.menuManager = new MenuManager(this, this.menuBar);
-        this.fontApplier = new FontApplier(stackPane, viewModel.getSettings().getAppearance());
-    }
-
-    @Override
-    public void openTab(ShellTabView<?> tabView) {
-        tabPane.getTabs().add((Tab) tabView.getNode());
-    }
-
-    @Override
-    public void closeTab(ComponentTab tab) {
-        this.closeTab((ShellTabView<?>) tab.getView());
-    }
-
-    @Override
-    public void closeTab(ShellTabView<?> tabView) {
-        if (tabView.doOnCloseAttempt(CloseScope.TAB, createCloseCallback(CloseScope.TAB, tabView))) {
-            this.doCloseTab(tabView);
-        }
-    }
-
-    @Override
-    public ShellTabView<?> getSelectedTab() {
-        var tab = (ComponentTab) this.tabPane.getSelectionModel().getSelectedItem();
-        if (tab != null) {
-            return (ShellTabView<?>) tab.getView();
-        } else {
-            return null;
-        }
     }
 
     @Override
@@ -302,25 +230,14 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         var builder = new ControlBuilder(controlRegistry);
         var menus = builder.buildMenuBarElements(this);
         this.menuBar.getMenus().addAll(menus);
-        logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());
+        logger.debug("{} Menu bar upgraded", getComponent().getLogPrefix());
         updateMenuBar();
     }
 
     @Override
     public void updateMenuBar() {
         this.menuManager.updateMenuBar(getCurrentMenuAware());
-        logger.debug("{} Menu bar updated", getDescriptor().getLogPrefix());
-    }
-
-    @Override
-    public DialogManager getDialogManager() {
-        return this.dialogManager;
-    }
-
-    @Override
-    public void close() {
-        var closer = this.new Closer();
-        closer.run();
+        logger.debug("{} Menu bar updated", getComponent().getLogPrefix());
     }
 
     @Override
@@ -369,13 +286,33 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
     }
 
     @Override
-    protected void build(DefaultShellViewModel viewModel) {
-        super.build(viewModel);
+    public ShellTabView<?, ?> getSelectedTab() {
+        var tab = (ComponentTab) this.tabPane.getSelectionModel().getSelectedItem();
+        if (tab != null) {
+            return (ShellTabView<?, ?>) tab.getView();
+        } else {
+            return null;
+        }
+    }
+
+    protected DialogManager getDialogManager() {
+        return this.dialogManager;
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
+        themeApplier = new ThemeApplier(stageController, this.stylesheets,
+                getComponent().getSettings().getAppearance());
+        this.fontApplier = new FontApplier(stackPane,
+                getComponent().getSettings().getAppearance());
+
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
         tabPane.getStyleClass().addAll("shell-tab-pane", Styles.DENSE);
         VBox.setVgrow(tabPane, Priority.ALWAYS);
         this.contentPane.getChildren().add(tabPane);
-        TabContainerViewUtils.initTabPane(tabPane, this);
+        TabContainerViewUtils.initTabPane(tabPane, getViewModel());
         var tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
         tabHeaderArea.setTabGap(-10.0);
@@ -397,8 +334,9 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
     }
 
     @Override
-    protected void bind(DefaultShellViewModel viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         viewModel.widthWrapper().bind(this.contentPane.widthProperty());
         viewModel.heightWrapper().bind(this.contentPane.heightProperty());
         stage.titleProperty().bind(viewModel.titleProperty());
@@ -407,66 +345,37 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
     }
 
     @Override
-    protected void addListeners(DefaultShellViewModel viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         this.tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV != null) {
-                ShellTabView<?> view = (ShellTabView<?>) ((ComponentTab) newV).getView();
+                ShellTabView<?, ?> view = (ShellTabView<?, ?>) ((ComponentTab) newV).getView();
                 viewModel.selectedTabWrapper().set(view.getViewModel());
             } else {
                 viewModel.selectedTabWrapper().set(null);
             }
             this.doOnTabChanged((ComponentTab) oldV, (ComponentTab) newV);
         });
-        //tabs can be added/removed using open/close methods, and close button in tab.
-        this.tabPane.getTabs().addListener((ListChangeListener<? super Tab>) (change) -> {
-
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    for (Tab tab : change.getAddedSubList()) {
-                        ShellTabView<?> tabView = (ShellTabView<?>) ((ComponentTab) tab).getView();
-                        tabView.setParent(this);
-                    }
-                }
-                if (change.wasRemoved()) {
-                    for (Tab tab : change.getRemoved()) {
-                        ShellTabView<?> tabView = (ShellTabView<?>) ((ComponentTab) tab).getView();
-                        tabView.setParent(null);
-                    }
-                }
-            }
-        });
         viewModel.selectedTabIndexWrapper().addListener((ov, oldV, newV) ->
                 this.tabPane.getSelectionModel().select(newV.intValue()));
         this.tabPane.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
                 viewModel.selectedTabIndexWrapper().set(newV.intValue()));
-        viewModel.closeRequestedSource().addListener(v -> {
-            if (Boolean.TRUE.equals(v)) {
-                close();
-            }
-        });
-        ValueUtils.callAndAddListener(viewModel.getSettings().getAppearance().regularFontProperty(),
+        ValueUtils.callAndAddListener(getComponent().getSettings().getAppearance().regularFontProperty(),
                 (ov, oldV, newV) -> tabPane.setTabMaxWidth(newV.getSize() * 15));
     }
 
     @Override
-    protected void addHandlers(DefaultShellViewModel viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         this.stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::fixAcceleratorKeyPressed);
-        stage.setOnCloseRequest((e) -> {
-            close();
-        });
         stage.addEventHandler(StageResizeEvent.STAGE_RESIZE_FINISHED, e -> {
             if (!stage.isMaximized()) {
                 viewModel.setDefaultWidth(stage.getWidth());
                 viewModel.setDefaultHeight(stage.getHeight());
             }
         });
-    }
-
-    @Override
-    protected void postDeinitialize(DefaultShellViewModel viewModel) {
-        super.postDeinitialize(viewModel);
     }
 
     protected ShellStageController getStageController() {
@@ -479,13 +388,8 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         return tabHeaderArea;
     }
 
-    private void doCloseTab(TabView<?> tabView) {
-        this.tabPane.getTabs().remove(tabView.getNode());
-        tabView.deinitialize();
-        var closedCallback = tabView.getViewModel().getOnClosed();
-        if (closedCallback != null) {
-            closedCallback.call();
-        }
+    protected TabPanePro getTabPane() {
+        return tabPane;
     }
 
     /**
@@ -510,7 +414,6 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
     }
 
     /**
-     * See {@link TabPaneHolderViewUtils}.
      * Attention! This method called in two situations - when new tab is created and when another tab gets selected.
      * That's why this method is not called from view.
      */
@@ -532,16 +435,5 @@ public class DefaultShellView extends AbstractParentView<DefaultShellViewModel> 
         return List.of(
                 new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
                 new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
-    }
-
-    private Runnable createCloseCallback(CloseScope scope, ShellTabView<?> tab) {
-        switch (scope) {
-            case SHELL:
-                return () -> close();
-            case TAB:
-                return () -> closeTab(tab);
-            default:
-                throw new AssertionError();
-        }
     }
 }

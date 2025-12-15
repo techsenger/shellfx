@@ -16,35 +16,30 @@
 
 package com.techsenger.tabshell.core.element;
 
-import com.techsenger.mvvm4fx.core.AbstractChildView;
+import com.techsenger.patternfx.core.AbstractChildView;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractElementView<T extends AbstractElementViewModel> extends AbstractChildView<T>
-        implements ElementView<T> {
+public abstract class AbstractElementView<T extends AbstractElementViewModel<?>, S extends AbstractElementComponent<?>>
+        extends AbstractChildView<T, S> implements ElementView<T, S> {
 
-    private final PulseListenerManager pulseListenerManager;
+    private PulseListenerManager pulseListenerManager;
 
     public AbstractElementView(T viewModel) {
         super(viewModel);
-        this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
-                () -> getNode().sceneProperty());
     }
 
     @Override
-    public ElementComposer<?> getComposer() {
-        return (ElementComposer<?>) super.getComposer();
+    protected void initialize() {
+        this.pulseListenerManager = new PulseListenerManager(getComponent().getFullName(),
+                () -> getNode().sceneProperty());
+        super.initialize();
     }
 
     protected PulseListenerManager getPulseListenerManager() {
         return pulseListenerManager;
-    }
-
-    @Override
-    protected ElementComposer<?> createComposer() {
-        return (ElementComposer<?>) super.createComposer();
     }
 }

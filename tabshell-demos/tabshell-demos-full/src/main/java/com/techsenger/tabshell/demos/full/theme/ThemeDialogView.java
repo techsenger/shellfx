@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.demos.full.theme;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import javafx.geometry.Insets;
@@ -34,7 +34,7 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewModel> {
+public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewModel, ThemeDialogComponent> {
 
     private final Label themeLabel = new Label("Theme");
 
@@ -52,10 +52,10 @@ public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewMod
     }
 
     @Override
-    protected void build(ThemeDialogViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         themeLabel.setMinWidth(Region.USE_PREF_SIZE);
-        themeComboBox.setItems(viewModel.getThemes());
+        themeComboBox.setItems(getViewModel().getThemes());
         themeComboBox.setMaxWidth(Double.MAX_VALUE);
         themeComboBox.setConverter(new StringConverter<Theme>() {
             @Override
@@ -79,9 +79,9 @@ public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewMod
     }
 
     @Override
-    protected void bind(ThemeDialogViewModel viewModel) {
-        super.bind(viewModel);
-        themeComboBox.valueProperty().bindBidirectional(viewModel.themeProperty());
+    protected void bind() {
+        super.bind();
+        themeComboBox.valueProperty().bindBidirectional(getViewModel().themeProperty());
     }
 
     @Override
@@ -90,6 +90,4 @@ public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewMod
             ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
         }
     }
-
-
 }

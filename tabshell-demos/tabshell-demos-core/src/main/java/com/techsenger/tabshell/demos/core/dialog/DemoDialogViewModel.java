@@ -16,18 +16,18 @@
 
 package com.techsenger.tabshell.demos.core.dialog;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DemoDialogViewModel extends AbstractDialogViewModel {
-
-    private static final ComponentName DEMO_DIALOG = new ComponentName("DemoDialog");
+public class DemoDialogViewModel extends AbstractDialogViewModel<DialogMediator> {
 
     public DemoDialogViewModel(DialogScope scope, boolean resizable) {
         super(scope, resizable);
@@ -37,7 +37,12 @@ public class DemoDialogViewModel extends AbstractDialogViewModel {
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DEMO_DIALOG);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

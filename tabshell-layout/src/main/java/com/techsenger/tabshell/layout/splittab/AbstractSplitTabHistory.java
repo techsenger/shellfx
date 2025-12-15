@@ -22,7 +22,8 @@ import com.techsenger.tabshell.core.tab.AbstractShellTabHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewModel> extends AbstractShellTabHistory<T> {
+public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewModel<?>>
+        extends AbstractShellTabHistory<T> {
 
     private double leftDivider;
 

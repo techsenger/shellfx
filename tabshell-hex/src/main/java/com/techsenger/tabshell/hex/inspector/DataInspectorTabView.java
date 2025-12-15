@@ -42,7 +42,8 @@ import javafx.util.converter.DefaultStringConverter;
  *
  * @author Pavel Castornii
  */
-public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends AbstractTabView<T> {
+public class DataInspectorTabView<T extends DataInspectorTabViewModel, S extends DataInspectorTabComponent<?>>
+        extends AbstractTabView<T, S> {
 
     private static class SelectableTableCell<T> extends TextFieldTableCell<T, String> {
 
@@ -101,8 +102,9 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
 
         byteOrderCheckBox.getStyleClass().add(Styles.DENSE);
         byteOrderCheckBox.setItems(viewModel.getByteOrders());
@@ -148,8 +150,9 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel> extends A
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         byteOrderCheckBox.valueProperty().bindBidirectional(viewModel.byteOrderWrapper());
         viewModel.selectedTypeItemWrapper().bind(typeTableView.getSelectionModel().selectedItemProperty());
         decimalTextField.textProperty().bind(viewModel.decimalProperty());

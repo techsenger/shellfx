@@ -46,7 +46,8 @@ import org.fxmisc.richtext.InlineCssTextArea;
  *
  * @author Pavel Castornii
  */
-public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTabView<T> {
+public class EventLogTabView<T extends EventLogTabViewModel, S extends EventLogTabComponent<?>>
+        extends AbstractTabView<T, S> {
 
     private final FontIconView recordIconView = new FontIconView();
 
@@ -86,8 +87,9 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         this.recordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
         this.recordButton.setTooltip(new Tooltip("Start/Stop"));
         this.clearButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
@@ -122,8 +124,9 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         viewModel.getTextSource().addListener(text -> {
             // called from non-JavaFX thread
             if (text != null) {
@@ -145,8 +148,9 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         this.filterButton.selectedProperty().bindBidirectional(viewModel.filterActiveProperty());
         this.selectedOnlyButton.selectedProperty().bindBidirectional(viewModel.selectedOnlyProperty());
         this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
@@ -155,8 +159,9 @@ public class EventLogTabView<T extends EventLogTabViewModel> extends AbstractTab
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         this.recordButton.setOnAction(e -> {
             if (this.recordButton.isSelected()) {
                 viewModel.subscribe();

@@ -16,10 +16,8 @@
 
 package com.techsenger.tabshell.layout.workertab;
 
-import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.TabWorker;
 import com.techsenger.tabshell.layout.splittab.AbstractSplitTabViewModel;
-import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -33,7 +31,7 @@ import javafx.concurrent.Worker;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewModel {
+public abstract class AbstractWorkerTabViewModel<T extends WorkerTabMediator> extends AbstractSplitTabViewModel<T> {
 
     /**
      * Worker can be either Task or Service.
@@ -42,17 +40,9 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
 
     private ReadOnlyIntegerWrapper workerCount = new ReadOnlyIntegerWrapper(0);
 
-    private final TabHostViewModel bottomTabHost;
-
-    public AbstractWorkerTabViewModel(ShellViewModel shell) {
-        super(shell);
-        this.bottomTabHost = new TabHostViewModel();
+    public AbstractWorkerTabViewModel() {
+        super();
         this.workers.addListener((InvalidationListener) (change) -> this.workerCount.set(workers.size()));
-        this.bottomTabHost.getTabs().addListener((InvalidationListener) (change) -> {
-            if (this.bottomTabHost.getTabs().size() == 0) {
-                this.setBottomPaneVisible(false);
-            }
-        });
     }
 
     public void submitWorker(TabWorker<?> worker) {
@@ -78,8 +68,10 @@ public abstract class AbstractWorkerTabViewModel extends AbstractSplitTabViewMod
         }
     }
 
-    protected TabHostViewModel getBottomTabHost() {
-        return bottomTabHost;
+    @Override
+    protected void deinitialize() {
+        cancelAllWorkers();
+        super.deinitialize();
     }
 
     protected void openWorkerReportTab() {

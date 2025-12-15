@@ -19,7 +19,7 @@ module com.techsenger.tabshell.demos.core {
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
-    requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.patternfx.core;
 
     requires org.slf4j;
     requires javafx.base;

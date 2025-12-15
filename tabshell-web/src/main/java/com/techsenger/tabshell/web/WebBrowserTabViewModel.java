@@ -16,13 +16,14 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.web.model.UrlUtils;
 import com.techsenger.tabshell.web.style.WebIcons;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
+import java.util.function.Consumer;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -36,7 +37,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
+public class WebBrowserTabViewModel<T extends WebBrowserTabMediator> extends AbstractShellTabViewModel<T> {
 
     private final ObservableSource<String> urlSource = new SimpleObservableSource<>();
 
@@ -51,15 +52,10 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
 
     private final ReadOnlyStringWrapper location = new ReadOnlyStringWrapper();
 
-    public WebBrowserTabViewModel(ShellViewModel shell) {
-        super(shell);
+    public WebBrowserTabViewModel() {
+        super();
         setIcon(WebIcons.WEB_BROWSER);
         setTitle("Web Browser");
-    }
-
-    @Override
-    public WebBrowserTabMediator getMediator() {
-        return (WebBrowserTabMediator) super.getMediator();
     }
 
     public String getPageTitle() {
@@ -136,8 +132,13 @@ public class WebBrowserTabViewModel extends AbstractShellTabViewModel {
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(WebComponentNames.WEB_BROWSER_TAB);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

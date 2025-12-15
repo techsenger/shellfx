@@ -23,8 +23,7 @@ import com.techsenger.tabshell.core.area.AreaView;
  *
  * @author Pavel Castornii
  */
-public interface PageView<T extends PageViewModel> extends AreaView<T>, SelectableView {
+public interface PageView<T extends PageViewModel<?>, S extends PageComponent<?>> extends AreaView<T, S>,
+        SelectableView {
 
-    @Override
-    PageComposer<?> getComposer();
 }

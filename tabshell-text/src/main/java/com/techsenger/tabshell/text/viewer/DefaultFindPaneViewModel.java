@@ -16,13 +16,9 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
 import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
-import com.techsenger.tabshell.text.TextComponentNames;
 import java.util.Collection;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
@@ -50,7 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements FindPaneViewModel {
+public class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements FindPaneViewModel {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFindPaneViewModel.class);
 
@@ -74,7 +70,7 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
 
     private final BooleanProperty highlightActive = new SimpleBooleanProperty(false);
 
-    DefaultFindPaneViewModel(FindMatchesResetPolicy resetPolicy, HistoryManager historyManager) {
+    DefaultFindPaneViewModel(FindMatchesResetPolicy resetPolicy) {
         super();
         this.finder = new MatchFinder(resetPolicy);
         regExpSelectedProperty().addListener((ov, oldV, newV) -> wholeWordDisableProperty().set(newV));
@@ -85,9 +81,6 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
                 highlightActive.set(false);
             }
         });
-        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPaneHistory.class,
-                FindPaneHistory::new));
     }
 
     public BooleanProperty replaceModeProperty() {
@@ -147,11 +140,6 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
 
     public void setHighlightActive(boolean value) {
         this.highlightActive.set(value);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(TextComponentNames.FIND_PANE);
     }
 
     StringProperty replaceTextProperty() {
@@ -275,7 +263,7 @@ class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements Find
     void moveToRange(MatchRange range) {
         this.finder.matchRangeProperty().set(range);
         this.updateInfoLabel(range);
-        logger.debug("{} Current range: {}", getDescriptor().getLogPrefix(), range);
+        logger.debug("{} Current range: {}", getMediator().getLogPrefix(), range);
     }
 
     void setReplacingIsDone(boolean replacingIsDone) {

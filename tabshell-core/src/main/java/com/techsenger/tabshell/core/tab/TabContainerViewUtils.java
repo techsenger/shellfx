@@ -26,7 +26,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 
 /**
- * This class has logic that can't be added via default interface method because it can't be public.
  *
  * @author Pavel Castornii
  */
@@ -34,23 +33,19 @@ public final class TabContainerViewUtils {
 
     private static final Object TAB_KEY = new Object();
 
-    /**
-     * Tab can be closed via close button and via model. In both cases doOnCloseRequest is called.
-     */
-    public static void initTabPane(TabPane tabPane, TabContainerView<?> view) {
+    public static <T extends TabViewModel<?>> void initTabPane(TabPane tabPane, TabContainerViewModel<T> viewModel) {
         tabPane.getTabs().addListener((ListChangeListener<? super Tab>) (change)  -> {
             while (change.next()) {
                 if (change.wasAdded()) {
                     for (var t : change.getAddedSubList()) {
                         ComponentTab tab = (ComponentTab) t;
                         tab.setOnCloseRequest((e) -> {
-                            view.closeTab(tab);
+                            viewModel.closeTab((T) tab.getView().getViewModel());
                             e.consume();
                         });
                         //tabs can be added only by one
                         tabPane.getSelectionModel().select(t);
-                        tab.setContextMenu(createTabContextMenu((ObservableList) tabPane.getTabs(),
-                                tab, view));
+                        tab.setContextMenu(createTabContextMenu((ObservableList) tabPane.getTabs(), tab, viewModel));
                     }
                 } else if (change.wasRemoved()) {
                     for (var t : change.getRemoved()) {
@@ -62,8 +57,8 @@ public final class TabContainerViewUtils {
         });
     }
 
-    private static ContextMenu createTabContextMenu(ObservableList<ComponentTab> tabs, ComponentTab tab,
-            TabContainerView<?> view) {
+    private static <T extends TabViewModel<?>> ContextMenu createTabContextMenu(ObservableList<ComponentTab> tabs,
+            ComponentTab tab, TabContainerViewModel<T> viewModel) {
         ContextMenu contextMenu = new ContextMenu();
         // we use a weak reference as a workaround for JDK-8283449
         contextMenu.getProperties().put(TAB_KEY, new WeakReference<ComponentTab>(tab));
@@ -72,32 +67,32 @@ public final class TabContainerViewUtils {
         close.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                view.closeTab(t);
+                viewModel.closeTab((T) t.getView().getViewModel());
             }
         });
         MenuItem closeAll = new MenuItem("Close All");
         closeAll.setOnAction((e) -> {
-            view.closeAllTabs(tabs);
+            viewModel.closeAllTabs();
         });
         MenuItem closeOther = new MenuItem("Close Other");
         closeOther.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                view.closeOtherTabs(tabs, t);
+                viewModel.closeOtherTabs((T) t.getView().getViewModel());
             }
         });
         MenuItem closeRight = new MenuItem("Close to the Right");
         closeRight.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                view.closeRightTabs(tabs, t);
+                viewModel.closeRightTabs((T) t.getView().getViewModel());
             }
         });
         MenuItem closeLeft = new MenuItem("Close to the Left");
         closeLeft.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                view.closeLeftTabs(tabs, t);
+                viewModel.closeLeftTabs((T) t.getView().getViewModel());
             }
         });
 

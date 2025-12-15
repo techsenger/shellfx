@@ -16,71 +16,27 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Orientation;
-import javafx.geometry.Side;
-import static javafx.geometry.Side.BOTTOM;
-import static javafx.geometry.Side.RIGHT;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockLayoutViewModel extends AbstractAreaViewModel {
-
-    private final ReadOnlyObjectWrapper<SplitSpaceViewModel> root = new ReadOnlyObjectWrapper<>();
-
-    private final ReadOnlyObjectWrapper<AbstractAreaViewModel> main = new ReadOnlyObjectWrapper<>();
-
-    private final ReadOnlyObjectWrapper<SideBarViewModel> rightBar = new ReadOnlyObjectWrapper<>();
+public class DockLayoutViewModel<T extends DockLayoutMediator> extends AbstractAreaViewModel<T> {
 
     private final ObjectProperty<SideBarPolicy> rightBarPolicy =
             new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
 
-    private final ReadOnlyObjectWrapper<SideBarViewModel> bottomBar = new ReadOnlyObjectWrapper<>();
-
     private final ObjectProperty<SideBarPolicy> bottomBarPolicy =
             new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
-
-    private final ReadOnlyObjectWrapper<SideBarViewModel> leftBar = new ReadOnlyObjectWrapper<>();
 
     private final ObjectProperty<SideBarPolicy> leftBarPolicy =
             new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
 
-    private final DockLayoutHistory<?> history;
+    public DockLayoutViewModel() {
 
-    public DockLayoutViewModel(DockLayoutHistory<?> history) {
-        this.history = history;
-    }
-
-    public final SplitSpaceViewModel getRoot() {
-        return root.get();
-    }
-
-    public final ReadOnlyObjectProperty<SplitSpaceViewModel> rootProperty() {
-        return root.getReadOnlyProperty();
-    }
-
-    public final AbstractAreaViewModel getMain() {
-        return main.get();
-    }
-
-    public final ReadOnlyObjectProperty<AbstractAreaViewModel> mainProperty() {
-        return main.getReadOnlyProperty();
-    }
-
-    public final SideBarViewModel getRightBar() {
-        return rightBar.get();
-    }
-
-    public final ReadOnlyObjectProperty<SideBarViewModel> rightBarProperty() {
-        return rightBar.getReadOnlyProperty();
     }
 
     public ObjectProperty<SideBarPolicy> rightBarPolicyProperty() {
@@ -95,14 +51,6 @@ public class DockLayoutViewModel extends AbstractAreaViewModel {
         rightBarPolicy.set(policy);
     }
 
-    public final SideBarViewModel getBottomBar() {
-        return bottomBar.get();
-    }
-
-    public final ReadOnlyObjectProperty<SideBarViewModel> bottomBarProperty() {
-        return bottomBar.getReadOnlyProperty();
-    }
-
     public ObjectProperty<SideBarPolicy> bottomBarPolicyProperty() {
         return bottomBarPolicy;
     }
@@ -113,10 +61,6 @@ public class DockLayoutViewModel extends AbstractAreaViewModel {
 
     public void setBottomBarPolicy(SideBarPolicy policy) {
         bottomBarPolicy.set(policy);
-    }
-
-    public final SideBarViewModel getLeftBar() {
-        return leftBar.get();
     }
 
     public ObjectProperty<SideBarPolicy> leftBarPolicyProperty() {
@@ -131,53 +75,68 @@ public class DockLayoutViewModel extends AbstractAreaViewModel {
         leftBarPolicy.set(policy);
     }
 
+
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponentNames.DOCK_LAYOUT);
+    protected void initialize() {
+        super.initialize();
+//        if (getRightBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+//            getComponent().addSideBar(RIGHT);
+//        }
+//        if (viewModel.getBottomBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+//            getComponent().addSideBar(BOTTOM);
+//        }
+//        if (viewModel.getLeftBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+//            getComponent().addSideBar(LEFT);
+//        }
+//
+//        addListenerForSideBar(rightBar, viewModel.rightBarPolicyProperty(), RIGHT);
+//        addListenerForSideBar(bottomBar, viewModel.bottomBarPolicyProperty(), BOTTOM);
+//        addListenerForSideBar(leftBar, viewModel.leftBarPolicyProperty(), LEFT);
     }
 
-    protected TabDockViewModel createTabDock() {
-        var tabDock = new TabDockViewModel();
-        return tabDock;
-    }
+//    private void addListenerForSideBar(ReadOnlyObjectWrapper<SideBarView<?, ?>> view,
+//            ObjectProperty<SideBarPolicy> policy, Side side) {
+//        policy.addListener((ov, oldV, newV) -> {
+//            if (newV == SideBarPolicy.EXISTS_ALWAYS) {
+//                if (view.get() == null) {
+//                    addSideBar(side);
+//                }
+//            } else if (newV == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+//                if (view.get() != null) {
+//                    removeSideBarIfRequired(view.get());
+//                }
+//            } else {
+//                throw new AssertionError();
+//            }
+//        });
+//    }
 
-    protected SplitSpaceViewModel createSplitSpace(Orientation orientation) {
-        var workspace = new SplitSpaceViewModel(orientation);
-        return workspace;
-    }
 
-    protected SideBarViewModel createSideBar(Side side) {
-        SideBarHistory<?> sideBarHistory = null;
-        switch (side) {
-            case RIGHT -> sideBarHistory = this.history.getOrCreateRightSideBar();
-            case LEFT -> sideBarHistory = this.history.getOrCreateLeftSideBar();
-            case TOP, BOTTOM -> {
-                side = Side.BOTTOM;
-                sideBarHistory = this.history.getOrCreateBottomSideBar();
-            }
-            default -> throw new AssertionError();
-        }
-        var sideBar = new SideBarViewModel(side, sideBarHistory);
-        return sideBar;
-    }
-
-    void setRoot(SplitSpaceViewModel value) {
-        root.set(value);
-    }
-
-    void setMain(AbstractAreaViewModel value) {
-        main.set(value);
-    }
-
-    ReadOnlyObjectWrapper<SideBarViewModel> rightBarWrapper() {
-        return rightBar;
-    }
-
-    ReadOnlyObjectWrapper<SideBarViewModel> bottomBarWrapper() {
-        return bottomBar;
-    }
-
-    ReadOnlyObjectWrapper<SideBarViewModel> leftBarWrapper() {
-        return leftBar;
+    void removeSideBarIfRequired(SideBarViewModel<?> sideBar) {
+//        switch (sideBar.getSide()) {
+//            case RIGHT:
+//                if (getViewModel().getRightBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+//                    setRightBar(null);
+//                    this.node.setRight(null);
+//                    sideBar.deinitialize();
+//                }
+//                break;
+//            case BOTTOM:
+//                if (getViewModel().getBottomBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+//                    setBottomBar(null);
+//                    this.node.setBottom(null);
+//                    sideBar.deinitialize();
+//                }
+//                break;
+//            case LEFT:
+//                if (getViewModel().getLeftBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+//                    setLeftBar(null);
+//                    this.node.setLeft(null);
+//                    sideBar.deinitialize();
+//                }
+//                break;
+//            default:
+//                throw new AssertionError();
+//        }
     }
 }

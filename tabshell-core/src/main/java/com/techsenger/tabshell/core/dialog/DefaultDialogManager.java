@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -39,9 +41,9 @@ public class DefaultDialogManager implements DialogManager {
 
         private final StackPane stackPane;
 
-        private final AbstractDialogView<?> dialogView;
+        private final AbstractDialogView<?, ?> dialogView;
 
-        WindowAligner(StackPane stackPane, AbstractDialogView<?> dialogView) {
+        WindowAligner(StackPane stackPane, AbstractDialogView<?, ?> dialogView) {
             this.stackPane = stackPane;
             this.dialogView = dialogView;
         }
@@ -69,80 +71,69 @@ public class DefaultDialogManager implements DialogManager {
      */
     private final EventHandler<? super Event> eventConsumer = event -> event.consume();
 
-    private final DialogScope scope;
-
     private final StackPane stackPane;
 
     private final VBox mainPane;
 
-    private final LinkedList<AbstractDialogView<?>> dialogs = new LinkedList<>();
+    private final LinkedList<DialogView<?, ?>> modifiableDialogs = new LinkedList<>();
+
+    private final List<DialogView<?, ?>> dialogs = Collections.unmodifiableList(modifiableDialogs);
+
+    private final LinkedList<Pane> bgPanes = new LinkedList<>();
 
     private final ReadOnlyIntegerWrapper dialogCount;
 
-    public DefaultDialogManager(DialogScope scope, StackPane stackPane, VBox mainPane,
-            ReadOnlyIntegerWrapper dialogCount) {
-        this.scope = scope;
+    public DefaultDialogManager(StackPane stackPane, VBox mainPane, ReadOnlyIntegerWrapper dialogCount) {
         this.stackPane = stackPane;
         this.mainPane = mainPane;
         this.dialogCount = dialogCount;
     }
 
     @Override
-    public DialogScope getScope() {
-        return scope;
-    }
-
-    /**
-     * Opens dialog.
-     *
-     * @param dialogView
-     */
-    @Override
-    public void openDialog(DialogView<?> dialogView) {
-        if (dialogs.isEmpty()) {
+    public void showDialog(DialogView<?, ?> dialogView) {
+        if (modifiableDialogs.isEmpty()) {
             //event consumer added only once for all dialogs
             mainPane.addEventFilter(KeyEvent.ANY, eventConsumer);
         } else {
-            var last = dialogs.peekLast();
-            last.setUnfocused(true);
+            var last = modifiableDialogs.peekLast();
+            last.getViewModel().setActive(true);
         }
         var d = (AbstractDialogView) dialogView;
-        d.setDialogManager(this);
         var window = d.getNode();
         //for every dialog window a bg pane is created
         var bgPane = new Pane(window);
         bgPane.setMouseTransparent(false);
         stackPane.getChildren().add(bgPane);
-        d.setBackgroundPane(bgPane);
-        dialogs.addLast(d);
+        modifiableDialogs.addLast(d);
+        bgPanes.addLast(bgPane);
         var aligner = new WindowAligner(stackPane, d);
         stackPane.getScene().addPostLayoutPulseListener(aligner);
-        this.dialogCount.set(this.dialogs.size());
+        this.dialogCount.set(this.modifiableDialogs.size());
     }
 
-    /**
-     * Closes dialog.
-     *
-     * @param dialogView
-     */
     @Override
-    public void closeDialog(DialogView<?> dialogView) {
-        var dialog = dialogs.pollLast();
+    public void hideDialog(DialogView<?, ?> dialogView) {
+        var dialog = modifiableDialogs.pollLast();
         if (dialog == null) {
             return;
         }
-        stackPane.getChildren().remove(dialog.getBackgroundPane());
-        dialogView.deinitialize();
-        if (dialogs.isEmpty()) {
+        var bgPane = bgPanes.pollLast();
+        stackPane.getChildren().remove(bgPane);
+        if (modifiableDialogs.isEmpty()) {
             mainPane.removeEventFilter(KeyEvent.ANY, eventConsumer);
         } else {
-            var last = dialogs.peekLast();
-            last.setUnfocused(false);
+            var last = modifiableDialogs.peekLast();
+            last.getViewModel().setActive(false);
         }
-        this.dialogCount.set(this.dialogs.size());
+        this.dialogCount.set(this.modifiableDialogs.size());
+    }
+
+    @Override
+    public List<DialogView<?, ?>> getDialogs() {
+        return dialogs;
     }
 
     protected int getDialogCount() {
-        return dialogs.size();
+        return modifiableDialogs.size();
     }
 }

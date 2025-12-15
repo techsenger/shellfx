@@ -16,80 +16,11 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
- * This interface contains methods that can be used in the component view, that contains a TabPane.
  *
  * @author Pavel Castornii
  */
-public interface TabContainerView<T extends TabView<?>> {
+public interface TabContainerView<T extends TabView<?, ?>> {
 
-    /**
-     * Opens tabs and makes it selected.
-     *
-     * @param tabView
-     */
-    void openTab(T tabView);
-
-    /**
-     * Closes tab.
-     *
-     * @param tabView
-     */
-    void closeTab(T tabView);
-
-    /**
-     * Returns current tab or null.
-     *
-     * @return
-     */
     T getSelectedTab();
-
-    default void closeOtherTabs(List<ComponentTab> tabs, ComponentTab tab) {
-        var otherTabs = tabs.stream().filter((t) -> t != tab).collect(Collectors.toList());
-        for (var t: otherTabs) {
-            this.closeTab(t);
-        }
-    }
-
-    default void closeTabs(Collection<ComponentTab> tabs) {
-        for (var tab : tabs) {
-            this.closeTab(tab);
-        }
-    }
-
-    default void closeAllTabs(List<ComponentTab> tabs) {
-        //new list is created to avoid concurrent modification exception
-        this.closeTabs(new ArrayList<>(tabs));
-    }
-
-    default void closeRightTabs(List<ComponentTab> tabs, ComponentTab tab) {
-        var index = tabs.indexOf(tab);
-        if (index == -1 || index + 1 == tabs.size()) {
-            return;
-        }
-        List<ComponentTab> tabsToClose = new ArrayList<>();
-        for (var i = index + 1; i < tabs.size(); i++) {
-            tabsToClose.add(tabs.get(i));
-            this.closeTabs(tabsToClose);
-        }
-    }
-
-    default void closeLeftTabs(List<ComponentTab> tabs, ComponentTab tab) {
-        var index = tabs.indexOf(tab);
-        if (index == -1 || index == 0) {
-            return;
-        }
-        List<ComponentTab> tabsToClose = new ArrayList<>();
-        for (var i = index - 1; i >= 0; i--) {
-            tabsToClose.add(tabs.get(i));
-            this.closeTabs(tabsToClose);
-        }
-    }
-
-    void closeTab(ComponentTab tab);
 }

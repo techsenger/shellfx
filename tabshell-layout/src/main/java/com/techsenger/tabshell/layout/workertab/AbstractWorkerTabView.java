@@ -16,44 +16,33 @@
 
 package com.techsenger.tabshell.layout.workertab;
 
-import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.layout.splittab.AbstractSplitTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Pos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import org.controlsfx.control.StatusBar;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel> extends AbstractSplitTabView<T> {
+public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel<?>,
+        S extends AbstractWorkerTabComponent<?>> extends AbstractSplitTabView<T, S> {
 
     private final StatusBar statusBar = new StatusBar();
 
     private final Hyperlink workerCountLink = new Hyperlink("0", new FontIconView(SharedIcons.PROCESS));
 
-    private final TabHostView bottomTabHost;
-
-    public AbstractWorkerTabView(ShellView<?> shell, T viewModel) {
-        super(shell, viewModel);
-        this.bottomTabHost = new TabHostView(viewModel.getBottomTabHost());
+    public AbstractWorkerTabView(T viewModel) {
+        super(viewModel);
     }
 
     @Override
-    protected void preInitialize(T viewModel) {
-        super.preInitialize(viewModel);
-        this.bottomTabHost.initialize();
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
-        this.getBottomPane().getChildren().add(bottomTabHost.getNode());
-        workerCountLink.setOnAction((e) -> viewModel.openWorkerReportTab());
+    protected void build() {
+        super.build();
+        // workerCountLink.setOnAction((e) -> viewModel.openWorkerReportTab());
         statusBar.setText(""); //to remove ok
         var hBox = new HBox(workerCountLink);
         hBox.getStyleClass().add("worker-pane");
@@ -65,29 +54,12 @@ public abstract class AbstractWorkerTabView<T extends AbstractWorkerTabViewModel
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
-        viewModel.workerCountProperty().addListener((ov, oldV, newV) ->
-                this.workerCountLink.setText(Integer.toString(newV.intValue())));
-    }
-
-    @Override
-    protected void preDeinitialize(T viewModel) {
-        super.preDeinitialize(viewModel);
-        getViewModel().cancelAllWorkers();
-    }
-
-    @Override
-    protected void postDeinitialize(T viewModel) {
-        super.postDeinitialize(viewModel);
-        this.bottomTabHost.deinitialize();
+    protected void addListeners() {
+        super.addListeners();
+        this.workerCountLink.textProperty().bind(getViewModel().workerCountProperty().asString());
     }
 
     protected StatusBar getStatusBar() {
         return statusBar;
-    }
-
-    protected TabHostView getBottomTabHost() {
-        return bottomTabHost;
     }
 }

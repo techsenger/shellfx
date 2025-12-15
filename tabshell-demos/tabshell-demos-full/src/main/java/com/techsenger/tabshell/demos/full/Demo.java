@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demos.full;
 
+import com.techsenger.tabshell.core.DefaultShellComponent;
 import com.techsenger.tabshell.core.DefaultShellView;
 import com.techsenger.tabshell.core.DefaultShellViewModel;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
@@ -25,7 +26,6 @@ import com.techsenger.tabshell.demos.full.menu.DemoMenuRegistrar;
 import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.registrars.EditMenuRegistrar;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -37,13 +37,11 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
+        var viewModel = new DefaultShellViewModel<>();
         viewModel.setTitle("TabShell Full Demo");
-        viewModel.setOnClosed(() -> {
-            Platform.exit();
-        });
-        var view = new DefaultShellView(this, stage, IconStylesheetFactory.forAll(), viewModel);
-        view.initialize();
+        var view = new DefaultShellView<>(viewModel, this, stage, IconStylesheetFactory.forAll());
+        var component = new DefaultShellComponent<>(view, DemoSettings.createSettings(), new DemoHistoryManager());
+        component.initialize();
 
         //adding menu
         var controlRegistry = view.getControlRegistry();

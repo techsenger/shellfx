@@ -16,12 +16,14 @@
 
 package com.techsenger.tabshell.hex.inspector;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
-import com.techsenger.tabshell.hex.HexComponentNames;
+import com.techsenger.tabshell.core.tab.TabMediator;
 import com.techsenger.tabshell.hex.model.HexDocument;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
+import java.util.function.Consumer;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -34,7 +36,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class DataInspectorTabViewModel extends AbstractTabViewModel {
+public class DataInspectorTabViewModel extends AbstractTabViewModel<TabMediator> {
 
     private final ObservableList<ByteOrder> byteOrders = FXCollections.observableArrayList(
             ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN);
@@ -159,8 +161,13 @@ public class DataInspectorTabViewModel extends AbstractTabViewModel {
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(HexComponentNames.DATA_INSPECTOR_TAB);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     protected ObservableList<ByteOrder> getByteOrders() {

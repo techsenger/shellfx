@@ -22,6 +22,7 @@ import com.techsenger.tabshell.text.viewer.AbstractViewerTabHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractEditorTabHistory extends AbstractViewerTabHistory {
+public abstract class AbstractEditorTabHistory<T extends AbstractEditorTabViewModel<?>>
+        extends AbstractViewerTabHistory<T> {
 
 }

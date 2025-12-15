@@ -1,0 +1,115 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.layout.dock;
+
+import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.tabshell.core.area.AbstractAreaComponent;
+import com.techsenger.tabshell.layout.LayoutComponentNames;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class SideBarComponent<T extends SideBarView<?, ?>> extends AbstractAreaComponent<T> {
+
+    protected class Mediator extends AbstractAreaComponent.Mediator implements SideBarMediator {
+
+        @Override
+        public ObservableList<? extends TabDockViewModel<?>> getTabDocks() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+    }
+
+    private final SideBarHistory<?> history;
+
+    private final DockLayoutComponent<?> layout;
+
+    // todo: do we need this collection?
+    private final ObservableList<TabDockComponent<?>> modifiableTabDocks = FXCollections.observableArrayList();
+
+    private final ObservableList<TabDockComponent<?>> tabDocks =
+            FXCollections.unmodifiableObservableList(modifiableTabDocks);
+
+    private final ReadOnlyObjectWrapper<TabPopupComponent<?>> popup = new ReadOnlyObjectWrapper<>();
+
+    public SideBarComponent(T view, SideBarHistory<?> history, DockLayoutComponent<?> layout) {
+        super(view);
+        this.history = history;
+        this.layout = layout;
+    }
+
+    @Override
+    public ComponentName getName() {
+        return LayoutComponentNames.SIDE_BAR;
+    }
+
+    /**
+     * Returns an unmodifiable list of minimized tab docks.
+     *
+     * @return
+     */
+    public ObservableList<TabDockComponent<?>> getTabDocks() {
+        return tabDocks;
+    }
+
+    public ReadOnlyObjectProperty<TabPopupComponent<?>> popupProperty() {
+        return popup.getReadOnlyProperty();
+    }
+
+    public TabPopupComponent<?> getPopup() {
+        return popup.get();
+    }
+
+    @Override
+    protected Mediator createMediator() {
+        return new Mediator();
+    }
+
+    void addTabDock(TabDockComponent<?> tabDock) {
+        modifiableTabDocks.add(tabDock);
+        getModifiableChildren().add(tabDock);
+    }
+
+    void removeTabDock(TabDockComponent<?> tabDock) {
+        modifiableTabDocks.remove(tabDock);
+        getModifiableChildren().remove(tabDock);
+    }
+//
+//    protected void addPopup() {
+//        var vm = new TabPopupViewModel<>();
+//        var v = new TabPopupView<>(vm);
+//        this.popup = new TabPopupComponent<>(v, this.history.getOrCreatePopup(), this);
+//        this.popup.initialize();
+//        this.layout.addTabPopup(popup);
+//    }
+//
+//    protected void removePopup() {
+//        if (this.popup != null) {
+//            this.layout.removeTabPopup(this.popup);
+//            this.popup = null;
+//        }
+//    }
+
+    protected void setPopup(TabPopupComponent<?> value) {
+        popup.set(value);
+    }
+}

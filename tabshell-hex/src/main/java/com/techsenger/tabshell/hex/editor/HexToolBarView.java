@@ -18,9 +18,10 @@ package com.techsenger.tabshell.hex.editor;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -28,13 +29,13 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.Tooltip;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractAreaView<T> {
+public class HexToolBarView<T extends HexToolBarViewModel, S extends HexToolBarComponent<?>>
+        extends AbstractAreaView<T, S> {
 
     private final Button newButton = new Button(null, new FontIconView(SharedIcons.ADD));
 
@@ -62,8 +63,6 @@ public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractAreaV
     private final ComboBox<Integer> columnByteCountsComboBox = new ComboBox<>();
 
     private final ComboBox<NumberBase> offsetNumberBaseComboBox = new ComboBox<>();
-
-    private HexAreaView<?> area;
 
     private final ToolBar toolBar = new ToolBar(
             newButton,
@@ -100,8 +99,9 @@ public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractAreaV
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         newButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
         newButton.setTooltip(new Tooltip("New"));
         clearButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
@@ -140,8 +140,9 @@ public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractAreaV
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         this.rowByteCountsComboBox.valueProperty().bindBidirectional(viewModel.rowByteCountProperty());
         this.columnByteCountsComboBox.valueProperty().bindBidirectional(viewModel.columnByteCountProperty());
         this.columnsEnabledButton.selectedProperty().bindBidirectional(viewModel.columnsEnabledProperty());
@@ -198,13 +199,5 @@ public class HexToolBarView<T extends HexToolBarViewModel> extends AbstractAreaV
 
     public ComboBox<NumberBase> getOffsetNumberBaseComboBox() {
         return offsetNumberBaseComboBox;
-    }
-
-    protected HexAreaView<?> getArea() {
-        return area;
-    }
-
-    void setArea(HexAreaView<?> area) {
-        this.area = area;
     }
 }

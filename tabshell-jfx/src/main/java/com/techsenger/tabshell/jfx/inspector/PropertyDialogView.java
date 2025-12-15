@@ -16,10 +16,9 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.core.tab.ShellTabView;
-import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.Hyperlink;
@@ -35,9 +34,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogView<T extends PropertyDialogViewModel> extends AbstractSimpleDialogView<T> {
-
-    private final ShellTabView<?> shellTab;
+public class PropertyDialogView<T extends PropertyDialogViewModel, S extends PropertyDialogComponent<?>>
+        extends AbstractSimpleDialogView<T, S> {
 
     private final GridPane gridPane = new GridPane();
 
@@ -55,9 +53,8 @@ public class PropertyDialogView<T extends PropertyDialogViewModel> extends Abstr
 
     private final TextField stateTextField = new TextField();
 
-    public PropertyDialogView(ShellTabView<?> shellTab, T viewModel) {
+    public PropertyDialogView(T viewModel) {
         super(viewModel);
-        this.shellTab = shellTab;
     }
 
     @Override
@@ -71,13 +68,9 @@ public class PropertyDialogView<T extends PropertyDialogViewModel> extends Abstr
     }
 
     @Override
-    public PropertyDialogComposer<?> getComposer() {
-        return (PropertyDialogComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         var info = viewModel.getInfo();
 
         var propUrl = viewModel.getPropertyUrl();
@@ -133,11 +126,6 @@ public class PropertyDialogView<T extends PropertyDialogViewModel> extends Abstr
 
         getButtonBox().getChildren().add(getOkButton());
         getContentPane().getChildren().addAll(wrapper, getButtonBox());
-    }
-
-    @Override
-    protected PropertyDialogComposer<?> createComposer() {
-        return new PropertyDialogComposer<>(shellTab, this);
     }
 }
 

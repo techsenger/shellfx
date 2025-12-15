@@ -24,15 +24,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
-import com.techsenger.tabshell.dialogs.base.BaseDialogComposer;
-import com.techsenger.tabshell.dialogs.base.DefaultBaseDialogComposer;
 
 /**
  * This dialog has two buttons - cancel and ok.
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogViewModel> extends AbstractDialogView<T> {
+public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogViewModel<?>,
+        S extends AbstractSimpleDialogComponent<?>> extends AbstractDialogView<T, S> {
 
     private final Button okButton = new Button();
 
@@ -45,13 +44,8 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     }
 
     @Override
-    public BaseDialogComposer<?> getComposer() {
-        return (BaseDialogComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         this.buttonBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
         this.buttonBox.setPadding(new Insets(SizeConstants.INSET));
         buttonBox.setAlignment(Pos.BOTTOM_RIGHT);
@@ -59,8 +53,9 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         okButton.disableProperty().bind(viewModel.okDisableProperty());
         okButton.defaultButtonProperty().bind(viewModel.okDefault());
         okButton.textProperty().bind(viewModel.okTextProperty());
@@ -71,8 +66,9 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         okButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
         cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.cancelActionProperty()));
     }
@@ -87,10 +83,5 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
 
     protected HBox getButtonBox() {
         return buttonBox;
-    }
-
-    @Override
-    protected DefaultBaseDialogComposer<?> createComposer() {
-        return new DefaultBaseDialogComposer<>(this);
     }
 }

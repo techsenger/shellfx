@@ -16,8 +16,6 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
 import com.techsenger.tabshell.layout.tabhost.TabHostViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -28,7 +26,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @author Pavel Castornii
  */
-public class TabDockViewModel extends TabHostViewModel {
+public class TabDockViewModel<T extends TabDockMediator> extends TabHostViewModel<T> {
 
     private final BooleanProperty draggable = new SimpleBooleanProperty(true);
 
@@ -82,16 +80,6 @@ public class TabDockViewModel extends TabHostViewModel {
      */
     public final ReadOnlyProperty<ComponentPosition> minimizedPositionProperty() {
         return minimizedPosition.getReadOnlyProperty();
-    }
-
-    @Override
-    public TabDockMediator getMediator() {
-        return (TabDockMediator) super.getMediator();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponentNames.TAB_DOCK);
     }
 
     /**

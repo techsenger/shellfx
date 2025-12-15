@@ -20,18 +20,46 @@ import com.techsenger.tabshell.core.CloseableViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.TitledViewModel;
 import com.techsenger.tabshell.core.area.AreaViewModel;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogViewModel extends AreaViewModel, TitledViewModel, IconedViewModel, CloseableViewModel  {
+public interface DialogViewModel<T extends DialogMediator> extends AreaViewModel<T>,
+        TitledViewModel, IconedViewModel, CloseableViewModel<T>  {
 
+    /**
+     * Returns the scope of the dialog.
+     *
+     * @return
+     */
     DialogScope getScope();
 
-    @Override
-    void requestClose();
+    /**
+     * Indicates whether this dialog is currently active.
+     *
+     * <p>An active dialog is the top-most dialog managed by the {@code DialogManager}
+     * and is allowed to receive user interaction.
+     *
+     * @return the active state property
+     */
+    ReadOnlyBooleanProperty activeProperty();
 
-    @Override
-    DialogMediator getMediator();
+    /**
+     * Returns the value of {@link #activeProperty()}.
+     *
+     * @return {@code true} if the dialog is active, {@code false} otherwise
+     */
+    boolean isActive();
+
+    /**
+     * Sets the value of {@link #activeProperty()}.
+     *
+     * <p>This method is intended to be called exclusively by the {@code DialogManager}. Application code and dialog
+     * implementations should not invoke this method directly.
+     *
+     * @param active {@code true} to mark the dialog as active, {@code false} otherwise
+     */
+    void setActive(boolean active);
 }

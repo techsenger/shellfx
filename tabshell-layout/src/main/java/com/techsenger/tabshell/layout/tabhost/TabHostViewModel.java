@@ -16,11 +16,9 @@
 
 package com.techsenger.tabshell.layout.tabhost;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 import com.techsenger.tabshell.core.tab.TabViewModel;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
 import java.util.Collections;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
@@ -39,15 +37,16 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class TabHostViewModel extends AbstractAreaViewModel implements TabContainerViewModel<TabViewModel> {
+public class TabHostViewModel<T extends TabHostMediator> extends AbstractAreaViewModel<T>
+        implements TabContainerViewModel<TabViewModel<?>> {
 
-    private final ReadOnlyObjectWrapper<TabViewModel> selectedTab = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<TabViewModel<?>> selectedTab = new ReadOnlyObjectWrapper<>();
 
     private final ReadOnlyIntegerWrapper selectedTabIndex = new ReadOnlyIntegerWrapper();
 
-    private final ObservableList<TabViewModel> modifiableTabs = FXCollections.observableArrayList();
+    private final ObservableList<TabViewModel<?>> modifiableTabs = FXCollections.observableArrayList();
 
-    private final ObservableList<? extends TabViewModel> tabs =
+    private final ObservableList<? extends TabViewModel<?>> tabs =
             FXCollections.unmodifiableObservableList(modifiableTabs);
 
     /**
@@ -57,13 +56,13 @@ public class TabHostViewModel extends AbstractAreaViewModel implements TabContai
 
     private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
 
-    private List<? extends TabViewModel> detachedTabs = Collections.EMPTY_LIST;
+    private List<? extends TabViewModel<?>> detachedTabs = Collections.EMPTY_LIST;
 
     private final ReadOnlyBooleanWrapper tabsDetached = new ReadOnlyBooleanWrapper();
 
     public TabHostViewModel() {
         super();
-        this.modifiableTabs.addListener((ListChangeListener<? super TabViewModel>) (change) -> {
+        this.modifiableTabs.addListener((ListChangeListener<? super TabViewModel<?>>) (change) -> {
             if (this.tabHeaderAutoHide.get()) {
                 resolveTabHeaderVisibility();
             }
@@ -79,17 +78,17 @@ public class TabHostViewModel extends AbstractAreaViewModel implements TabContai
     }
 
     @Override
-    public ReadOnlyObjectProperty<TabViewModel> selectedTabProperty() {
+    public ReadOnlyObjectProperty<TabViewModel<?>> selectedTabProperty() {
         return selectedTab.getReadOnlyProperty();
     }
 
     @Override
-    public TabViewModel getSelectedTab() {
+    public TabViewModel<?> getSelectedTab() {
         return selectedTab.get();
     }
 
     @Override
-    public void selectTab(TabViewModel tabViewModel) {
+    public void selectTab(TabViewModel<?> tabViewModel) {
         var tabIndex = modifiableTabs.indexOf(tabViewModel);
         if (tabIndex >= 0) {
             selectTab(tabIndex);
@@ -104,7 +103,7 @@ public class TabHostViewModel extends AbstractAreaViewModel implements TabContai
     }
 
     @Override
-    public ObservableList<? extends TabViewModel> getTabs() {
+    public ObservableList<? extends TabViewModel<?>> getTabs() {
         return this.tabs;
     }
 
@@ -146,17 +145,7 @@ public class TabHostViewModel extends AbstractAreaViewModel implements TabContai
         return tabsDetached.get();
     }
 
-    @Override
-    public TabHostMediator getMediator() {
-        return (TabHostMediator) super.getMediator();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponentNames.TAB_HOST);
-    }
-
-    ReadOnlyObjectWrapper<TabViewModel> selectedTabWrapper() {
+    ReadOnlyObjectWrapper<TabViewModel<?>> selectedTabWrapper() {
         return this.selectedTab;
     }
 
@@ -164,7 +153,7 @@ public class TabHostViewModel extends AbstractAreaViewModel implements TabContai
         return selectedTabIndex;
     }
 
-    ObservableList<TabViewModel> getModifiableTabs() {
+    ObservableList<TabViewModel<?>> getModifiableTabs() {
         return modifiableTabs;
     }
 
@@ -180,7 +169,7 @@ public class TabHostViewModel extends AbstractAreaViewModel implements TabContai
         this.tabHeaderVisible.set(value);
     }
 
-    void setDetachedTabs(List<? extends TabViewModel> detachedTabs) {
+    void setDetachedTabs(List<? extends TabViewModel<?>> detachedTabs) {
         this.detachedTabs = detachedTabs;
     }
 

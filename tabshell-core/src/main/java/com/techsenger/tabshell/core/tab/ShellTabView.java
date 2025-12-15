@@ -16,19 +16,11 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.core.dialog.DialogManager;
-
 /**
  * This is the tab that is added to Shell.
  *
  * @author Pavel Castornii
  */
-public interface ShellTabView<T extends ShellTabViewModel> extends TabView<T> {
+public interface ShellTabView<T extends ShellTabViewModel<?>, S extends ShellTabComponent<?>> extends TabView<T, S> {
 
-    DialogManager getDialogManager();
-
-    ShellView<?> getShell();
-
-    ShellTabComposer<?> getComposer();
 }

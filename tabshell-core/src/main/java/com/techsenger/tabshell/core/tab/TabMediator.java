@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.mvvm4fx.core.ChildMediator;
+import com.techsenger.patternfx.core.ChildMediator;
 
 /**
  *
@@ -24,4 +24,5 @@ import com.techsenger.mvvm4fx.core.ChildMediator;
  */
 public interface TabMediator extends ChildMediator {
 
+    void remove();
 }

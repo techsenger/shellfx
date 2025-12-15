@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.dialogs.alert;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
@@ -30,7 +30,8 @@ import javafx.scene.layout.HBox;
  *
  * @author Pavel Castornii
  */
-public class AlertDialogView<T extends AlertDialogViewModel> extends AbstractSimpleDialogView<T> {
+public class AlertDialogView<T extends AlertDialogViewModel<?>, S extends AlertDialogComponent<?>>
+        extends AbstractSimpleDialogView<T, S> {
 
     private final FontIconView messageIconView = new FontIconView();
 
@@ -48,8 +49,9 @@ public class AlertDialogView<T extends AlertDialogViewModel> extends AbstractSim
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         getButtonBox().getChildren().addAll(getCancelButton(), getOkButton());
         getContentPane().getStylesheets().add(AlertDialogView.class.getResource("alert.css").toExternalForm());
         messageIconView.getStyleClass().add("message-icon-view");

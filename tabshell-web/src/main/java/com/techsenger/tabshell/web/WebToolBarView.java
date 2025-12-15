@@ -17,8 +17,9 @@
 package com.techsenger.tabshell.web;
 
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
@@ -26,15 +27,15 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaView<T> {
+public class WebToolBarView<T extends WebToolBarViewModel, S extends WebToolBarComponent<?>>
+        extends AbstractAreaView<T, S> {
 
-    private final WebBrowserTabView<?> webBrowser;
+    private final WebBrowserTabView<?, ?> webBrowser;
 
     private final Button backButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_LEFT));
 
@@ -46,7 +47,7 @@ public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaV
 
     private final ToolBar toolBar = new ToolBar(backButton, forwardButton, reloadButton, urlTextField);
 
-    public WebToolBarView(WebBrowserTabView<?> webBrowser, T viewModel) {
+    public WebToolBarView(T viewModel, WebBrowserTabView<?, ?> webBrowser) {
         super(viewModel);
         this.webBrowser = webBrowser;
     }
@@ -62,8 +63,8 @@ public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaV
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         backButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
         backButton.setTooltip(new Tooltip("Back"));
         forwardButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
@@ -76,8 +77,9 @@ public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaV
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         backButton.disableProperty().bind(viewModel.backDisableProperty());
         forwardButton.disableProperty().bind(viewModel.forwardDisableProperty());
         reloadButton.disableProperty().bind(viewModel.reloadDisableProperty());
@@ -85,8 +87,8 @@ public class WebToolBarView<T extends WebToolBarViewModel> extends AbstractAreaV
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
         urlTextField.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
                 this.webBrowser.getViewModel().load();

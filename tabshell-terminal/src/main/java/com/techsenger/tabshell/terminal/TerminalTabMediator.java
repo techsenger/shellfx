@@ -16,15 +16,15 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.dialogs.DialogShellTabMediator;
+import com.techsenger.tabshell.core.tab.ShellTabMediator;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TerminalTabMediator extends DialogShellTabMediator {
+public interface TerminalTabMediator extends ShellTabMediator {
 
-    void showFindPane(FindPaneViewModel findViewModel);
+    void addFindPane(FindPaneViewModel findViewModel);
 
-    void hideFindPane();
+    void removeFindPane();
 }

@@ -23,6 +23,6 @@ import com.techsenger.tabshell.core.area.AbstractAreaHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageHistory<T extends AbstractPageViewModel> extends AbstractAreaHistory<T> {
+public abstract class AbstractPageHistory<T extends AbstractPageViewModel<?>> extends AbstractAreaHistory<T> {
 
 }

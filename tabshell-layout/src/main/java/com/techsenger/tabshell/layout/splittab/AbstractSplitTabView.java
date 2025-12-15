@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.layout.splittab;
 
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import java.util.ArrayList;
@@ -32,7 +31,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel> extends AbstractShellTabView<T>  {
+public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel<?>,
+        S extends AbstractSplitTabComponent<?>> extends AbstractShellTabView<T, S> {
 
     private final SplitPane horizontalSplitPane = new SplitPane();
 
@@ -55,8 +55,8 @@ public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel> 
 
     private final VBox rightPane = new VBox();
 
-    public AbstractSplitTabView(ShellView<?> shell, T viewModel) {
-        super(shell, viewModel);
+    public AbstractSplitTabView(T viewModel) {
+        super(viewModel);
     }
 
     protected VBox getLeftPane() {
@@ -76,8 +76,9 @@ public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel> 
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         //to avoid SplitPane to resize one of the panes when the window resizes
         SplitPane.setResizableWithParent(this.leftPane, Boolean.FALSE);
         SplitPane.setResizableWithParent(this.topPane, Boolean.FALSE);
@@ -100,8 +101,9 @@ public abstract class AbstractSplitTabView<T extends AbstractSplitTabViewModel> 
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
             List<StackPane> dividers = new ArrayList<>();
             //we need only the dividers of these two split panes, so, we check every divider parent

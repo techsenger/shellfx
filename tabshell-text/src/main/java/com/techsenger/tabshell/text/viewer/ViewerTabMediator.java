@@ -16,15 +16,21 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.tabshell.dialogs.DialogShellTabMediator;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
+import com.techsenger.tabshell.layout.workertab.WorkerTabMediator;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ViewerTabMediator extends DialogShellTabMediator {
+public interface ViewerTabMediator extends WorkerTabMediator {
 
-    void openGoToLineDialog(GoToLineDialogViewModel dialog);
+    void addAlertDialog(AlertDialogViewModel dialog);
+
+    void addYesNoDialog(YesNoDialogViewModel dialog);
+
+    void addGoToLineDialog(GoToLineDialogViewModel dialog);
 
     void removeFindPane();
 

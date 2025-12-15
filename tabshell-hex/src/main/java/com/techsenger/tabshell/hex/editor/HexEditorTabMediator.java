@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.dialogs.DialogShellTabMediator;
+import com.techsenger.tabshell.core.tab.ShellTabMediator;
 import com.techsenger.tabshell.hex.inspector.DataInspectorTabViewModel;
 import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
 
@@ -24,13 +24,13 @@ import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
  *
  * @author Pavel Castornii
  */
-public interface HexEditorTabMediator extends DialogShellTabMediator {
+public interface HexEditorTabMediator extends ShellTabMediator {
 
     HexToolBarViewModel getToolBar();
 
-    DockLayoutViewModel getLayout();
+    DockLayoutViewModel<?> getLayout();
 
-    HexAreaViewModel getArea();
+    HexAreaViewModel<?> getArea();
 
     DataInspectorTabViewModel getDataInspector();
 }

@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.ComponentName;
-import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogViewModel;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuNames;
+import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
@@ -31,9 +31,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @author Pavel Castornii
  */
-public class DemoTabViewModel extends AbstractShellTabViewModel {
-
-    private static final ComponentName DEMO_TAB = new ComponentName("DemoTab");
+public class DemoTabViewModel<T extends DemoTabMediator> extends AbstractShellTabViewModel<T> {
 
     private final BooleanProperty newValid = new SimpleBooleanProperty();
 
@@ -41,8 +39,8 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
 
     private final BooleanProperty exitValid = new SimpleBooleanProperty();
 
-    public DemoTabViewModel(ShellViewModel shell) {
-        super(shell);
+    public DemoTabViewModel() {
+        super();
         setTitle("Tab");
         addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuNames.NEW) {
                 @Override
@@ -101,17 +99,17 @@ public class DemoTabViewModel extends AbstractShellTabViewModel {
     }
 
     @Override
-    public DemoTabMediator getMediator() {
-        return (DemoTabMediator) super.getMediator();
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DEMO_TAB);
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     void openDialog(DialogScope scope) {
         var dialogViewModel = new DemoDialogViewModel(scope, true);
-        getMediator().openDemoDialog(dialogViewModel);
+        getMediator().addDemoDialog(dialogViewModel);
     }
 }

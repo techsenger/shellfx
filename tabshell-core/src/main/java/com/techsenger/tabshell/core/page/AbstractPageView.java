@@ -24,8 +24,8 @@ import javafx.scene.control.Label;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageView<T extends AbstractPageViewModel> extends AbstractAreaView<T>
-        implements PageView<T> {
+public abstract class AbstractPageView<T extends AbstractPageViewModel<?>, S extends AbstractPageComponent<?>>
+        extends AbstractAreaView<T, S> implements PageView<T, S> {
 
     private final Label titleLabel = new Label();
 
@@ -47,20 +47,10 @@ public abstract class AbstractPageView<T extends AbstractPageViewModel> extends 
     }
 
     @Override
-    public PageComposer<?> getComposer() {
-        return (PageComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected PageComposer<?> createComposer() {
-        return (PageComposer<?>) super.createComposer();
-    }
-
-    @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
-        this.iconViewBox.iconProperty().bind(viewModel.iconProperty());
-        this.titleLabel.textProperty().bind(viewModel.titleProperty());
+    protected void bind() {
+        super.bind();
+        this.iconViewBox.iconProperty().bind(getViewModel().iconProperty());
+        this.titleLabel.textProperty().bind(getViewModel().titleProperty());
     }
 
     protected Label getTitleLabel() {

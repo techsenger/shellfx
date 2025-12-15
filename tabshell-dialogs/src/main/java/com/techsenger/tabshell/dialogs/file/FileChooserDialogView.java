@@ -18,13 +18,14 @@ package com.techsenger.tabshell.dialogs.file;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
-import com.techsenger.tabshell.material.style.SizeConstants;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.list.TextFieldColumnListCell;
+import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.table.TableHistoryUtils;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
@@ -50,7 +51,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  * There two modes - details and list. As both modes require sorting we use table and its sorting in both modes. But
@@ -84,7 +84,8 @@ import com.techsenger.tabshell.shared.style.SharedIcons;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserDialogViewModel> {
+public class FileChooserDialogView<T extends FileChooserDialogViewModel<?>, S extends FileChooserDialogComponent<?>>
+        extends AbstractSimpleDialogView<T, S> {
 
     private static class LocationCell extends ListCell<Location> {
 
@@ -163,7 +164,7 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
 
     private final ContextMenu itemContextMenu = new ContextMenu(createRenameMenuItem(), createRefreshMenuItem());
 
-    public FileChooserDialogView(FileChooserDialogViewModel viewModel) {
+    public FileChooserDialogView(T viewModel) {
         super(viewModel);
         this.fileTableView = new FileTableView(viewModel);
         this.nameColumn = this.fileTableView.findNameColumn();
@@ -176,8 +177,21 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
     }
 
     @Override
-    protected void build(FileChooserDialogViewModel viewModel) {
-        super.build(viewModel);
+    protected void initialize() {
+        super.initialize();
+        getViewModel().updateFiles(null);
+    }
+
+    @Override
+    protected void deinitialize() {
+        getViewModel().setTableHistory(TableHistoryUtils.createHistory(fileTableView));
+        super.deinitialize();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         locationLabel.setMinWidth(Region.USE_PREF_SIZE);
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.getStyleClass().add(Styles.DENSE);
@@ -315,8 +329,9 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
     }
 
     @Override
-    protected void bind(FileChooserDialogViewModel viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         locationLabel.textProperty().bind(viewModel.locationTextProperty());
         locationComboBox.valueProperty().bind(viewModel.locationProperty());
         listButton.selectedProperty().bindBidirectional(viewModel.listSelectedProperty());
@@ -326,8 +341,9 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
     }
 
     @Override
-    protected void addListeners(FileChooserDialogViewModel viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         ValueUtils.callAndAddListener(listButton.selectedProperty(), (ov, oldV, newV) -> {
             if (newV) {
                 //index can be set to -1 when nodes are removed, so it is saved
@@ -385,8 +401,9 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
     }
 
     @Override
-    protected void addHandlers(FileChooserDialogViewModel viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         this.levelUpButton.setOnAction(e -> viewModel.navigateUp());
         this.homeButton.setOnAction(e -> viewModel.navigateHome());
         this.createButton.setOnAction(e -> {
@@ -441,18 +458,6 @@ public class FileChooserDialogView extends AbstractSimpleDialogView<FileChooserD
                 this.fileListView.doOnResizeFinished();
             }
         });
-    }
-
-    @Override
-    protected void postInitialize(FileChooserDialogViewModel viewModel) {
-        super.postInitialize(viewModel);
-        viewModel.updateFiles(null);
-    }
-
-    @Override
-    protected void preDeinitialize(FileChooserDialogViewModel viewModel) {
-        super.preDeinitialize(viewModel);
-        viewModel.setTableHistory(TableHistoryUtils.createHistory(fileTableView));
     }
 
     protected Label getLocationLabel() {

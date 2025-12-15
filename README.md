@@ -22,7 +22,7 @@ final application.
     * [Dialog](#core-dialog)
 * [JFX Components](#jfx)
     * [JfxTabDock](#jfx-tab-dock)
-    * [JfxInspector](#jfx-inspector)
+    * [JfxInspectorTab](#jfx-inspector-tab)
     * [PropertyDialog](#jfx-property-dialog)
 * [Web Components](#web)
     * [WebBrowserTab](#web-browser-tab)
@@ -269,9 +269,9 @@ intended primarily for developers who work on creating components for the platfo
 This component is a container for Tab components and provides their shared mechanisms. It can be added to any layout,
 whether a simple one or a docking layout.
 
-### JfxInspector <a name="jfx-inspector"></a>
+### JfxInspectorTab <a name="jfx-inspector-tab"></a>
 
-JfxInspector is a tool for analyzing JavaFX scene graph. It allows traversing the node tree and analyzing their
+JfxInspectorTab is a tool for analyzing JavaFX scene graph. It allows traversing the node tree and analyzing their
 properties. The component also enables opening information both for classes and their properties in the JavaFX
 reference documentation (Javadoc).
 
@@ -297,7 +297,7 @@ WebToolBar is a component that represents the browser’s ToolBar.
 
 To get started with TabShell, it is recommended to follow these steps:
 
-1. Familiarize yourself with the [mvvm4fx](https://github.com/techsenger/mvvm4fx) framework and its demo.
+1. Familiarize yourself with the [PatternFX](https://github.com/techsenger/patternfx) framework and its demo.
 2. Explore and run core demo. See [Core Demo](#running-core-demo) for details.
 3. Explore and run full demo. See [Full Demo](#running-full-demo) for details.
 

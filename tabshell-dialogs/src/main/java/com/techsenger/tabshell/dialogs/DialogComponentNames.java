@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs;
 
-import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.patternfx.core.ComponentName;
 
 /**
  *

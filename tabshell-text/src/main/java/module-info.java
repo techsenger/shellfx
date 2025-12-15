@@ -18,7 +18,7 @@ module com.techsenger.tabshell.text {
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires org.slf4j;
-    requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.patternfx.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.layout;

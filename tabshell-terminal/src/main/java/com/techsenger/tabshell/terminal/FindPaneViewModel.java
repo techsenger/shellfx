@@ -23,9 +23,6 @@ import com.techsenger.jeditermfx.core.model.SubCharBuffer;
 import com.techsenger.jeditermfx.core.model.TerminalTextBuffer;
 import com.techsenger.jeditermfx.ui.FindResult;
 import com.techsenger.jeditermfx.ui.SubstringFinder;
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -40,7 +37,7 @@ public class FindPaneViewModel extends AbstractFindPaneViewModel {
 
     private final ObjectProperty<FindResult> result = new SimpleObjectProperty<>();
 
-    public FindPaneViewModel(HistoryManager historyManager, String selectedText) {
+    public FindPaneViewModel(String selectedText) {
         findTextProperty().set(selectedText);
         wholeWordDisableProperty().set(true);
         regExpDisableProperty().set(true);
@@ -50,9 +47,6 @@ public class FindPaneViewModel extends AbstractFindPaneViewModel {
                 addFindText();
             }
         });
-        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPaneHistory.class,
-                FindPaneHistory::new));
     }
 
     public void find() {
@@ -103,11 +97,6 @@ public class FindPaneViewModel extends AbstractFindPaneViewModel {
     protected void resetMatches() {
         result.set(null);
         notFoundProperty().set(false);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(TerminalComponentNames.FIND_PANE);
     }
 
     protected void updateResultText() {

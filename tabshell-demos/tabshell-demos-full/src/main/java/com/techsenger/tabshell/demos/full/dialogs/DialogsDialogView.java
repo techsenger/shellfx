@@ -17,9 +17,8 @@
 package com.techsenger.tabshell.demos.full.dialogs;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import javafx.geometry.Insets;
 import javafx.scene.control.ListCell;
@@ -32,23 +31,20 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class DialogsDialogView extends AbstractSimpleDialogView<DialogsDialogViewModel> {
-
-    private final ShellView<?> shell;
+public class DialogsDialogView extends AbstractSimpleDialogView<DialogsDialogViewModel, DialogsDialogComponent> {
 
     private final ListView<DialogItem> listView = new ListView<>();
 
     private final StackPane wrapper = new StackPane(listView);
 
-    public DialogsDialogView(ShellView<?> shell, DialogsDialogViewModel viewModel) {
+    public DialogsDialogView(DialogsDialogViewModel viewModel) {
         super(viewModel);
-        this.shell = shell;
-        setDialogManager(shell.getDialogManager());
     }
 
     @Override
-    protected void build(DialogsDialogViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         listView.getStyleClass().add(Styles.DENSE);
         listView.setItems(viewModel.getItems());
         listView.setCellFactory(lv -> new ListCell<DialogItem>() {
@@ -70,9 +66,9 @@ public class DialogsDialogView extends AbstractSimpleDialogView<DialogsDialogVie
     }
 
     @Override
-    protected void bind(DialogsDialogViewModel viewModel) {
-        super.bind(viewModel);
-        viewModel.itemWrapper().bind(listView.getSelectionModel().selectedItemProperty());
+    protected void bind() {
+        super.bind();
+        getViewModel().itemWrapper().bind(listView.getSelectionModel().selectedItemProperty());
     }
 
     @Override

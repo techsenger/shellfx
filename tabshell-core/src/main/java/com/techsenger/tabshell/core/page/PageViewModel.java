@@ -25,8 +25,7 @@ import com.techsenger.tabshell.core.area.AreaViewModel;
  *
  * @author Pavel Castornii
  */
-public interface PageViewModel extends AreaViewModel, TitledViewModel, IconedViewModel, SelectableViewModel {
+public interface PageViewModel<T extends PageMediator> extends AreaViewModel<T>, TitledViewModel, IconedViewModel,
+        SelectableViewModel {
 
-    @Override
-    PageMediator getMediator();
 }

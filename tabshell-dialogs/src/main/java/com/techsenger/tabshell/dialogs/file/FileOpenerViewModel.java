@@ -47,9 +47,9 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
      */
     default void openFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
-        var viewModel = new FileChooserDialogViewModel(scope, FileChooserType.OPEN,
-                getShell().getSettings().getAppearance(), storages,
-                getShell().getHistoryManager());
+        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.OPEN,
+                getShell().getMediator().getSettings().getAppearance(), storages,
+                getShell().getMediator().getHistoryManager());
         var filters = createOpenExtensionFilters();
         if (filters != null) {
             viewModel.getExtensionFilters().addAll(filters);
@@ -80,7 +80,8 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
         };
         viewModel.cancelActionProperty().set(cancelAndCloseAction);
         viewModel.closeActionProperty().set(cancelAndCloseAction);
-        getMediator().openFileChooserDialog(viewModel);
+        // todo:
+        // getMediator().openFileChooserDialog(viewModel);
     }
 
     /**

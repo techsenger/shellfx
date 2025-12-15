@@ -18,11 +18,11 @@ package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
-import com.techsenger.toolkit.fx.value.ObservableSource;
-import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -36,7 +36,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogViewModel extends AbstractAreaViewModel implements DialogViewModel {
+public abstract class AbstractDialogViewModel<T extends DialogMediator> extends AbstractAreaViewModel<T>
+        implements DialogViewModel<T> {
 
     private final DialogScope scope;
 
@@ -70,15 +71,15 @@ public abstract class AbstractDialogViewModel extends AbstractAreaViewModel impl
      * If it is necessary to close a dialog then dialog helper should be used. Default implementation uses window
      * closer set from view.
      */
-    private final ObjectProperty<Runnable> closeAction = new SimpleObjectProperty<>(() -> requestClose());
-
-    private final ObservableSource<Boolean> closeRequested = new SimpleObservableSource<>();
+    private final ObjectProperty<Runnable> closeAction = new SimpleObjectProperty<>(() -> close());
 
     /**
      * If it is true user can move dialog only with minimum top constrain. If this value is false user
      * can only move the dialog within the bounds of the parent Pane.
      */
     private boolean outOfBoundsAllowed = true;
+
+    private final ReadOnlyBooleanWrapper active = new ReadOnlyBooleanWrapper();
 
     public AbstractDialogViewModel(DialogScope scope, boolean resizable) {
         super();
@@ -272,17 +273,23 @@ public abstract class AbstractDialogViewModel extends AbstractAreaViewModel impl
     }
 
     @Override
-    public void requestClose() {
-        closeRequested.next(Boolean.TRUE);
+    public void close() {
+        getMediator().remove();
     }
 
     @Override
-    public DialogMediator getMediator() {
-        return (DialogMediator) super.getMediator();
+    public ReadOnlyBooleanProperty activeProperty() {
+        return active.getReadOnlyProperty();
     }
 
-    ObservableSource<Boolean> closeRequestedSource() {
-        return closeRequested;
+    @Override
+    public boolean isActive() {
+        return active.get();
+    }
+
+    @Override
+    public void setActive(boolean active) {
+        this.active.set(active);
     }
 
     ReadOnlyDoubleWrapper widthWrapper() {

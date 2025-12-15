@@ -16,9 +16,8 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
+import com.techsenger.tabshell.core.area.AreaMediator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -27,7 +26,7 @@ import javafx.geometry.Orientation;
  *
  * @author Pavel Castornii
  */
-public class SplitSpaceViewModel extends AbstractAreaViewModel {
+public class SplitSpaceViewModel extends AbstractAreaViewModel<AreaMediator> {
 
     private final Orientation orientation;
 
@@ -44,11 +43,6 @@ public class SplitSpaceViewModel extends AbstractAreaViewModel {
      */
     public final Orientation getOrientation() {
         return orientation;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponentNames.SPLIT_SPACE);
     }
 
     protected ObservableList<Double> getDividerPositions() {

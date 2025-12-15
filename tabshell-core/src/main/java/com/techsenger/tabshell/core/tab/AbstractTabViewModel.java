@@ -16,15 +16,12 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.mvvm4fx.core.AbstractChildViewModel;
-import com.techsenger.tabshell.core.CloseScope;
+import com.techsenger.patternfx.core.AbstractChildViewModel;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
-import com.techsenger.toolkit.fx.value.ObservableSource;
-import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.beans.property.BooleanProperty;
@@ -40,7 +37,8 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractTabViewModel extends AbstractChildViewModel implements TabViewModel {
+public abstract class AbstractTabViewModel<T extends TabMediator> extends AbstractChildViewModel<T>
+        implements TabViewModel<T> {
 
     private final StringProperty title = new SimpleStringProperty();
 
@@ -56,11 +54,7 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
 
     private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper();
 
-    private final ObservableSource<Boolean> close = new SimpleObservableSource<>();
-
     private final BooleanProperty closable = new SimpleBooleanProperty(true);
-
-    private TabClosedCallback onClosed;
 
     public AbstractTabViewModel() {
         super();
@@ -122,29 +116,8 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     }
 
     @Override
-    public void setOnClosed(TabClosedCallback closedCallback) {
-        this.onClosed = closedCallback;
-    }
-
-    @Override
-    public TabClosedCallback getOnClosed() {
-        return this.onClosed;
-    }
-
-    @Override
     public boolean isReadyToClose() {
         return true;
-    }
-
-    /**
-     * Default implementation throws UnsupportedOperationException.
-     *
-     * @param scope
-     * @param retryCallback
-     */
-    @Override
-    public void prepareForClose(CloseScope scope, Runnable retryCallback) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public BooleanProperty waitingProperty() {
@@ -160,8 +133,8 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     }
 
     @Override
-    public void requestClose() {
-        this.close.next(Boolean.TRUE);
+    public void close() {
+        getMediator().remove();
     }
 
     @Override
@@ -177,11 +150,6 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
     @Override
     public void setClosable(boolean closable) {
         this.closable.set(closable);
-    }
-
-    @Override
-    public TabMediator getMediator() {
-        return (TabMediator) super.getMediator();
     }
 
     protected Map<MenuName, MenuHelper> getMenuHelpersByName() {
@@ -218,9 +186,5 @@ public abstract class AbstractTabViewModel extends AbstractChildViewModel implem
 
     ReadOnlyBooleanWrapper selectedWrapper() {
         return selected;
-    }
-
-    ObservableSource<Boolean> closeSource() {
-        return close;
     }
 }

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
@@ -59,7 +58,8 @@ import org.fxmisc.wellbehaved.event.Nodes;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel> extends AbstractWorkerTabView<T> {
+public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel<?>,
+        S extends AbstractViewerTabComponent<?>> extends AbstractWorkerTabView<T, S> {
 
     private final ToolBar toolBar = new ToolBar();
 
@@ -110,8 +110,8 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         }
     };
 
-    public AbstractViewerTabView(ShellView<?> shell, T viewModel, ExtendedTextArea textArea) {
-        super(shell, viewModel);
+    public AbstractViewerTabView(T viewModel, ExtendedTextArea textArea) {
+        super(viewModel);
         this.textArea = textArea;
         this.textScrollPane = new VirtualizedScrollPane(textArea);
     }
@@ -130,24 +130,10 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
-    protected ViewerTabComposer<?> createComposer() {
-        return new ViewerTabComposer<>(this);
-    }
-
-    @Override
-    public ViewerTabComposer<?> getComposer() {
-        return (ViewerTabComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected void preInitialize(T viewModel) {
-        super.preInitialize(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         viewModel.undoManagerWrapper().set(this.textArea.getUndoManager());
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
         VBox.setVgrow(textScrollPane, Priority.ALWAYS);
         //in richtextfx padding via css doesn't work, so, we do this way
         textArea.setPadding(new Insets(0, 0, 0, 0));
@@ -170,8 +156,9 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         wrapTextButton.selectedProperty().bindBidirectional(viewModel.wrapTextProperty());
         textArea.wrapTextProperty().bind(viewModel.wrapTextProperty());
         viewModel.textFocusedWrapper().bind(textArea.focusedProperty());
@@ -190,8 +177,9 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
 
         var viewerSettings = viewModel.getSettings();
         ValueUtils.callAndAddListener(viewerSettings.fontProperty(), fontListener);
@@ -220,8 +208,9 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         this.getTextArea().addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 viewModel.removeFindPane();
@@ -237,8 +226,9 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     }
 
     @Override
-    protected void removeListeners(T viewModel) {
-        super.removeListeners(viewModel);
+    protected void removeListeners() {
+        super.removeListeners();
+        var viewModel = getViewModel();
         var viewerSettings = viewModel.getSettings();
         viewerSettings.fontProperty().removeListener(fontListener);
         viewerSettings.getTabSymbol().sizeProperty().removeListener(this.tabSizeListener);

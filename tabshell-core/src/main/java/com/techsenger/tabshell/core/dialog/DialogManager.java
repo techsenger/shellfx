@@ -16,15 +16,22 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import java.util.List;
+
 /**
  *
  * @author Pavel Castornii
  */
 public interface DialogManager {
 
-    DialogScope getScope();
+    void showDialog(DialogView<?, ?> dialogView);
 
-    void openDialog(DialogView<?> dialogView);
+    void hideDialog(DialogView<?, ?> dialogView);
 
-    void closeDialog(DialogView<?> dialogView);
+    /**
+     * Returns an unmodifiable list of dialogs.
+     *
+     * @return the list of dialogs. If no dialogs are present, an empty list is returned.
+     */
+    List<DialogView<?, ?>> getDialogs();
 }

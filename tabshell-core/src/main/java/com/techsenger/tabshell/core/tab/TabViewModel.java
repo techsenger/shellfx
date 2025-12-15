@@ -16,8 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.mvvm4fx.core.ChildViewModel;
-import com.techsenger.tabshell.core.CloseScope;
+import com.techsenger.patternfx.core.ChildViewModel;
 import com.techsenger.tabshell.core.CloseableViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.SelectableViewModel;
@@ -29,8 +28,8 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedViewModel, SelectableViewModel,
-        CloseableViewModel {
+public interface TabViewModel<T extends TabMediator> extends ChildViewModel<T>, TitledViewModel, IconedViewModel,
+        SelectableViewModel, CloseableViewModel<T> {
 
     /**
      * Returns the tooltip property of the component.
@@ -60,43 +59,6 @@ public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedVie
     boolean isReadyToClose();
 
     /**
-     * Prepares the tab for closure (e.g., saves data or validates state).
-     *
-     * <p>Callback contract:
-     * <ul>
-     * <li>Called only if preparation succeeds.
-     * <li>Must transition tab to "ready-to-close" state ({@code isReadyToClose() == true}).
-     * </ul>
-     *
-     * <p>Failure handling:
-     * <ul>
-     * <li>If preparation fails, the closing process is silently aborted.
-     * <li>No automatic retries or fallbacks are implemented.
-     * </ul>
-     *
-     * @param scope determines closure context (TAB/SHELL)
-     * @param retryCallback runnable to execute if preparation succeeds
-     */
-    void prepareForClose(CloseScope scope, Runnable retryCallback);
-
-    @Override
-    void requestClose();
-
-    /**
-     * Sets a callback that is called when the tab is closed, removed from the TabPane and deinitialized.
-     *
-     * @param closedCallback
-     */
-    void setOnClosed(TabClosedCallback closedCallback);
-
-    /**
-     * Returns a callback that is called when the tab is closed, removed from the TabPane and deinitialized.
-     *
-     * @return
-     */
-    TabClosedCallback getOnClosed();
-
-    /**
      * Returns the closable property of the component.
      *
      * @return
@@ -115,7 +77,4 @@ public interface TabViewModel extends ChildViewModel, TitledViewModel, IconedVie
      * @param closable
      */
     void setClosable(boolean closable);
-
-    @Override
-    TabMediator getMediator();
 }

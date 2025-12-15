@@ -16,26 +16,15 @@
 
 package com.techsenger.tabshell.demos.full.hex;
 
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.hex.editor.HexEditorTabView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DemoHexEditorTabView extends HexEditorTabView<DemoHexEditorTabViewModel> {
+public class DemoHexEditorTabView extends HexEditorTabView<DemoHexEditorTabViewModel, DemoHexEditorTabComponent> {
 
-    public DemoHexEditorTabView(ShellView<?> shell, DemoHexEditorTabViewModel viewModel) {
-        super(shell, viewModel);
-    }
-
-    @Override
-    public DemoHexEditorTabComposer getComposer() {
-        return (DemoHexEditorTabComposer) super.getComposer();
-    }
-
-    @Override
-    protected DemoHexEditorTabComposer createComposer() {
-        return new DemoHexEditorTabComposer(this);
+    public DemoHexEditorTabView(DemoHexEditorTabViewModel viewModel) {
+        super(viewModel);
     }
 }

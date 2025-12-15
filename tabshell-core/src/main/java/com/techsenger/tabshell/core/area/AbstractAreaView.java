@@ -16,40 +16,35 @@
 
 package com.techsenger.tabshell.core.area;
 
-import com.techsenger.mvvm4fx.core.AbstractChildView;
+import com.techsenger.patternfx.core.AbstractChildView;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractAreaView<T extends AbstractAreaViewModel> extends AbstractChildView<T>
-        implements AreaView<T> {
+public abstract class AbstractAreaView<T extends AbstractAreaViewModel<?>, S extends AbstractAreaComponent<?>>
+        extends AbstractChildView<T, S> implements AreaView<T, S> {
 
-    private final PulseListenerManager pulseListenerManager;
+    private PulseListenerManager pulseListenerManager;
 
     public AbstractAreaView(T viewModel) {
         super(viewModel);
-        this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
+    }
+
+    @Override
+    protected void initialize() {
+        this.pulseListenerManager = new PulseListenerManager(getComponent().getFullName(),
                 () -> getNode().sceneProperty());
+        super.initialize();
     }
 
     @Override
-    public AreaComposer<?> getComposer() {
-        return (AreaComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected AreaComposer<?> createComposer() {
-        return (AreaComposer<?>) super.createComposer();
-    }
-
-    @Override
-    protected void postInitialize(T viewModel) {
-        super.postInitialize(viewModel);
+    protected void bind() {
+        super.bind();
         var pane = getNode();
-        viewModel.getWidthWrapper().bind(pane.widthProperty());
-        viewModel.getHeightWrapper().bind(pane.heightProperty());
+        getViewModel().getWidthWrapper().bind(pane.widthProperty());
+        getViewModel().getHeightWrapper().bind(pane.heightProperty());
     }
 
     protected PulseListenerManager getPulseListenerManager() {

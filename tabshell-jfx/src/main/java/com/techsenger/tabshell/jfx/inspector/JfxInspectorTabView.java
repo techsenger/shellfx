@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.jfx.inspector;
 
 import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.jfx.inspector.PropertyInfo.ValueInfo;
 import com.techsenger.tabshell.material.SearchField;
 import com.techsenger.tabshell.material.SearchField.SearchMode;
@@ -55,7 +54,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends AbstractTabView<T> {
+public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extends JfxInspectorTabComponent<?>>
+        extends AbstractTabView<T, S> {
 
     private static ValueInfo createValue(PropertyInfo info) {
         Attribute<?> attr = info.getAttribute();
@@ -280,11 +280,8 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
 
     private final SplitPane splitPane = new SplitPane(nodeBox, infoBox);
 
-    private final ShellTabView<?> shellTab;
-
-    public JfxInspectorTabView(ShellTabView<?> shellTab, T viewModel) {
+    public JfxInspectorTabView(T viewModel) {
         super(viewModel);
-        this.shellTab = shellTab;
     }
 
     @Override
@@ -293,17 +290,13 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
     }
 
     @Override
-    protected void preInitialize(T viewModel) {
-        super.preInitialize(viewModel);
-        var stage = shellTab.getShell().getStage();
+    protected void build() {
+        super.build();
+        var stage = getComponent().getShellTab().getShell().getView().getStage();
         var root = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
         var rootItem = createNodeItem(root);
         nodeTreeView.setRoot(rootItem);
-    }
 
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
         var styles = JfxInspectorTabView.class.getResource("inspector-tab.css").toExternalForm();
         getContentPane().getStylesheets().add(styles);
 
@@ -341,7 +334,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
         infoTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
         infoTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         infoTableView.setShowRoot(false);
-        infoTableView.setRoot(new RootTreeItem(viewModel.getRootInfo()));
+        infoTableView.setRoot(new RootTreeItem(getViewModel().getRootInfo()));
         infoTableView.setPlaceholder(new Label(""));
         VBox.setVgrow(infoTableView, Priority.ALWAYS);
         infoSearchField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
@@ -351,8 +344,9 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         nodeTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV == null) {
                 viewModel.setSelectedElement(null);
@@ -371,26 +365,17 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel> extends Abs
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
         infoTableView.setRowFactory(ttv -> {
             TreeTableRow<PropertyInfo> row = new TreeTableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    viewModel.handleInfoClick();
+                    getViewModel().handleInfoClick();
                 }
             });
             return row;
         });
-    }
-
-    @Override
-    protected JfxInspectorComposer<?> createComposer() {
-        return new JfxInspectorComposer<>(shellTab, this);
-    }
-
-    protected ShellTabView getShellTab() {
-        return shellTab;
     }
 
     protected TreeView<Element> getNodeTreeView() {

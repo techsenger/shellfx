@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.demos.core.tab.DemoTabComponent;
 import com.techsenger.tabshell.demos.core.tab.DemoTabView;
 import com.techsenger.tabshell.demos.core.tab.DemoTabViewModel;
 import com.techsenger.tabshell.material.menu.NamedMenu;
@@ -79,11 +80,13 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
             var item = new NamedMenuItem(DemoMenuNames.NEW, false, true, false, "_New", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
-                var shellView  = (ShellView<?>) v;
-                var tabViewModel = new DemoTabViewModel(shellView.getViewModel());
-                var tabView = new DemoTabView(shellView, tabViewModel);
-                tabView.initialize();
-                shellView.openTab(tabView);
+                var shellView  = (ShellView<?, ?>) v;
+                var shellComponent = shellView.getComponent();
+                var tabViewModel = new DemoTabViewModel();
+                var tabView = new DemoTabView(tabViewModel);
+                var tabComponent = new DemoTabComponent(tabView, shellComponent);
+                tabComponent.initialize();
+                shellComponent.addTab(tabComponent);
             });
             return item;
 
@@ -98,7 +101,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(DemoMenuNames.EXIT, true, true, false, "E_xit", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> ((ShellView<?>) v).close());
+            item.setOnAction((e) -> ((ShellView<?, ?>) v).getViewModel().close());
             return item;
 
         };

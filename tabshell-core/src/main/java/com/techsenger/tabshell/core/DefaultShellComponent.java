@@ -1,0 +1,168 @@
+/*
+ * Copyright 2024-2025 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.core;
+
+import com.techsenger.patternfx.core.AbstractParentComponent;
+import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.dialog.DialogComponent;
+import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.Settings;
+import com.techsenger.tabshell.core.tab.ComponentTab;
+import com.techsenger.tabshell.core.tab.ShellTabComponent;
+import com.techsenger.tabshell.core.tab.ShellTabView;
+import java.util.List;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class DefaultShellComponent<T extends DefaultShellView<?, ?>> extends AbstractParentComponent<T>
+        implements ShellComponent<T> {
+
+    protected class Mediator extends AbstractParentComponent.Mediator implements ShellMediator {
+
+        @Override
+        public HistoryManager getHistoryManager() {
+            return DefaultShellComponent.this.historyManager;
+        }
+
+        @Override
+        public Settings getSettings() {
+            return DefaultShellComponent.this.settings;
+        }
+
+        @Override
+        public <T extends Settings> T getSettings(Class<T> settingsClass) {
+            return (T) getSettings();
+        }
+
+        @Override
+        public void deinitialize() {
+            DefaultShellComponent.this.deinitialize();
+        }
+    }
+
+    private final Settings settings;
+
+    private final HistoryManager historyManager;
+
+    public DefaultShellComponent(T view, Settings settings, HistoryManager historyManager) {
+        super(view);
+        this.settings = settings;
+        this.historyManager = historyManager;
+        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
+    }
+
+    @Override
+    protected Mediator createMediator() {
+        return new DefaultShellComponent.Mediator();
+    }
+
+    @Override
+    public ComponentName getName() {
+        return CoreComponentNames.SHELL;
+    }
+
+    @Override
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
+
+    @Override
+    public Settings getSettings() {
+        return settings;
+    }
+
+    @Override
+    public <T extends Settings> T getSettings(Class<T> settingsClass) {
+        return (T) settings;
+    }
+
+    @Override
+    public List<? extends ShellTabComponent<?>> getTabs() {
+        return getView().getTabPane().getTabs().stream()
+                .map(t -> ((ComponentTab) t).getView())
+                .map(v -> ((ShellTabView<?, ?>) v).getComponent())
+                .toList();
+    }
+
+    @Override
+    public void addTab(ShellTabComponent<?> tab) {
+        getView().getTabPane().getTabs().add(tab.getView().getNode());
+        getModifiableChildren().add(tab);
+    }
+
+    @Override
+    public void removeTab(ShellTabComponent<?> tab) {
+        getView().getTabPane().getTabs().remove(tab.getView().getNode());
+        getModifiableChildren().remove(tab);
+        tab.deinitialize();
+    }
+
+    @Override
+    public ShellTabComponent<?> getSelectedTab() {
+        var tab = getView().getSelectedTab();
+        if (tab != null) {
+            return (tab.getComponent());
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DialogScope getSupportedDialogScope() {
+        return DialogScope.SHELL;
+    }
+
+    @Override
+    public void addDialog(DialogComponent<?> dialog) {
+        var scope = dialog.getView().getViewModel().getScope();
+        if (scope == getSupportedDialogScope()) {
+            getView().getDialogManager().showDialog(dialog.getView());
+            getModifiableChildren().add(dialog);
+        } else {
+            var selectedTab = getView().getSelectedTab();
+            if (selectedTab != null) {
+                selectedTab.getComponent().addDialog(dialog);
+            }
+        }
+    }
+
+    @Override
+    public void removeDialog(DialogComponent<?> dialog) {
+        var scope = dialog.getView().getViewModel().getScope();
+        if (scope == getSupportedDialogScope()) {
+            getView().getDialogManager().hideDialog(dialog.getView());
+            getModifiableChildren().remove(dialog);
+            dialog.deinitialize();
+        } else {
+            var selectedTab = getView().getSelectedTab();
+            if (selectedTab != null) {
+                selectedTab.getComponent().removeDialog(dialog);
+            }
+        }
+    }
+
+    @Override
+    public List<? extends DialogComponent<?>> getDialogs() {
+        return getView().getDialogManager().getDialogs().stream().map(d -> d.getComponent()).toList();
+    }
+}

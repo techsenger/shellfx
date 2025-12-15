@@ -23,7 +23,7 @@ import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabHistory<T extends HexEditorTabViewModel> extends AbstractShellTabHistory<T> {
+public class HexEditorTabHistory<T extends HexEditorTabViewModel<?>> extends AbstractShellTabHistory<T> {
 
     private DockLayoutHistory<?> dockLayout = new DockLayoutHistory<>();
 

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demos.full.text;
 
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabView;
 
@@ -24,15 +23,15 @@ import com.techsenger.tabshell.text.editor.AbstractEditorTabView;
  *
  * @author Pavel Castornii
  */
-public class TextEditorTabView extends AbstractEditorTabView<TextEditorTabViewModel> {
+public class TextEditorTabView extends AbstractEditorTabView<TextEditorTabViewModel, TextEditorTabComponent> {
 
-    public TextEditorTabView(ShellView<?> shell, TextEditorTabViewModel viewModel) {
-        super(shell, viewModel, new ExtendedTextArea());
+    public TextEditorTabView(TextEditorTabViewModel viewModel) {
+        super(viewModel, new ExtendedTextArea());
     }
 
     @Override
-    protected void build(TextEditorTabViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         getToolBar().getItems().addAll(getClearButton(), getCopyButton(), getCutButton(), getPasteButton(),
                 getUndoButton(), getRedoButton(), getWrapTextButton());
         getTopPane().getChildren().addAll(getToolBar(), this.getTextScrollPane());

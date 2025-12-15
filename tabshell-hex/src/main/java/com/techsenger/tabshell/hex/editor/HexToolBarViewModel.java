@@ -16,9 +16,8 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
-import com.techsenger.tabshell.hex.HexComponentNames;
+import com.techsenger.tabshell.core.area.AreaMediator;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
@@ -32,7 +31,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class HexToolBarViewModel extends AbstractAreaViewModel {
+public class HexToolBarViewModel extends AbstractAreaViewModel<AreaMediator> {
 
     private final ObservableList<Integer> rowByteCounts =
             FXCollections.observableArrayList(8, 16, 24, 32, 40, 48, 56, 64);
@@ -49,11 +48,6 @@ public class HexToolBarViewModel extends AbstractAreaViewModel {
             .stream(NumberBase.values()).filter(e -> e != NumberBase.BIN).collect(Collectors.toList()));
 
     private final ObjectProperty<NumberBase> offsetNumberBase = new SimpleObjectProperty<>(NumberBase.HEX);
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(HexComponentNames.HEX_TOOL_BAR);
-    }
 
     public ObservableList<Integer> getRowByteCounts() {
         return rowByteCounts;

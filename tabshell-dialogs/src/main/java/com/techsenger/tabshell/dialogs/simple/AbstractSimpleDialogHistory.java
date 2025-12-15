@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSimpleDialogHistory<T extends AbstractSimpleDialogViewModel>
+public abstract class AbstractSimpleDialogHistory<T extends AbstractSimpleDialogViewModel<?>>
         extends AbstractDialogHistory<T> {
 
 }

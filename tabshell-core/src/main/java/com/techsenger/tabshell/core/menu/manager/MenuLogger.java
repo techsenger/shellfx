@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
+import com.techsenger.patternfx.core.ComponentView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuGroup;
@@ -62,7 +63,7 @@ final class MenuLogger {
             StringBuilder logMessageBuilder) {
         if (logMessageBuilder != null) {
             logger.atLevel(CONFIGURED_MENU_LOG_LEVEL).log("{} Configuration of '{}' menu: {}",
-                menuAware.getViewModel().getDescriptor().getLogPrefix(), menuName.replace("_", ""),
+                ((ComponentView<?, ?>) menuAware).getComponent().getLogPrefix(), menuName.replace("_", ""),
                 logMessageBuilder.toString());
         }
     }

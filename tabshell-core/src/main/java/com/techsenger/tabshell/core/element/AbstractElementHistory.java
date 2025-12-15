@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.core.element;
 
-import com.techsenger.mvvm4fx.core.AbstractHistory;
+import com.techsenger.patternfx.core.AbstractHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractElementHistory<T extends AbstractElementViewModel> extends AbstractHistory<T> {
+public abstract class AbstractElementHistory<T extends AbstractElementViewModel<?>> extends AbstractHistory<T> {
 
 }

@@ -19,10 +19,10 @@ package com.techsenger.tabshell.terminal;
 import atlantafx.base.theme.Styles;
 import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
-import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
@@ -40,13 +40,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShellTabView<T> {
+public class TerminalTabView<T extends TerminalTabViewModel<?>, S extends TerminalTabComponent<?>>
+        extends AbstractShellTabView<T, S> {
 
     private final Button newButton = new Button(null, new FontIconView(SharedIcons.ADD));
 
@@ -74,21 +74,19 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
 
     private final ComboBox<TerminalPaletteType> paletteTypesComboBox = new ComboBox<>();
 
-    private FindPaneView find;
-
     private final ToolBar toolBar = new ToolBar(clearButton, new Separator(Orientation.VERTICAL),
             copyButton, pasteButton, selectAllButton, new Separator(Orientation.VERTICAL), openUrlButton, findButton,
             new Separator(Orientation.VERTICAL), pageUpButton, pageDownButton, lineUpButton, lineDownButton);
 
     private final KitJediTermFxWidget widget;
 
-    public TerminalTabView(ShellView<?> shell, T viewModel) {
-        super(shell, viewModel);
+    public TerminalTabView(T viewModel) {
+        super(viewModel);
         this.widget = new KitJediTermFxWidget(80, 24, viewModel.createSettingsProvider(), () -> {
-            if (this.find == null) {
+            if (getComponent().getFindPane() == null) {
                 viewModel.showFind();
             } else {
-                this.find.getFindComboBox().getEditor().requestFocus();
+                getComponent().getFindPane().getView().getFindComboBox().getEditor().requestFocus();
             }
         });
         widget.setTtyConnector(viewModel.getTtyConnector());
@@ -107,21 +105,18 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
     }
 
     protected void showFind(FindPaneView find) {
-        this.find = find;
-        getContentPane().getChildren().add(this.find.getNode());
-        this.find.requestFocus();
+        getContentPane().getChildren().add(find.getNode());
+        find.requestFocus();
     }
 
-    protected void hideFind() {
-        getContentPane().getChildren().remove(this.find.getNode());
-        this.find.deinitialize();
-        this.find = null;
+    protected void hideFind(FindPaneView find) {
+        getContentPane().getChildren().remove(find.getNode());
         widget.getTerminalPanel().getCanvas().requestFocus();
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         VBox.setVgrow(widget.getPane(), Priority.ALWAYS);
         getContentPane().getChildren().addAll(toolBar, widget.getPane());
 
@@ -151,7 +146,7 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
         var stretchablePane = new Pane();
         HBox.setHgrow(stretchablePane, Priority.ALWAYS);
         this.paletteTypesComboBox.setStyle("-fx-min-width:16em");
-        this.paletteTypesComboBox.setItems(viewModel.getPaletteTypes());
+        this.paletteTypesComboBox.setItems(getViewModel().getPaletteTypes());
         this.paletteTypesComboBox.getStyleClass().add(Styles.DENSE);
         Callback<ListView<TerminalPaletteType>, ListCell<TerminalPaletteType>> cellFactory = (p) -> {
             return new ListCell<TerminalPaletteType>() {
@@ -174,8 +169,9 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         this.paletteTypesComboBox.valueProperty().bindBidirectional(viewModel.paletteTypeProperty());
         this.copyButton.disableProperty().bind(viewModel.copyDisableProperty());
         this.openUrlButton.disableProperty().bind(viewModel.openUrlDisableProperty());
@@ -183,10 +179,9 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
-        viewModel.addListeners();
-        viewModel.focusRequiredSource().addListener((value) -> {
+    protected void addListeners() {
+        super.addListeners();
+        getViewModel().focusRequiredSource().addListener((value) -> {
             if (value) {
                 requestFocusSimply();
             }
@@ -194,8 +189,9 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         final TerminalPanel terminalPanel = this.widget.getTerminalPanel();
         this.newButton.setOnAction(e -> {
             viewModel.createNewTerminal();
@@ -238,7 +234,7 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
             requestFocusSimply();
         });
         getContentPane().addEventFilter(KeyEvent.KEY_PRESSED, (e) -> {
-            if (this.find != null && e.getCode() == KeyCode.ESCAPE) {
+            if (getComponent().getFindPane() != null && e.getCode() == KeyCode.ESCAPE) {
                 viewModel.hideFind();
                 e.consume();
             }
@@ -246,26 +242,16 @@ public class TerminalTabView<T extends TerminalTabViewModel> extends AbstractShe
     }
 
     @Override
-    protected void postInitialize(T viewModel) {
+    protected void initialize() {
+        super.initialize();
         widget.start();
     }
 
     @Override
-    protected void preDeinitialize(T viewModel) {
-        super.preDeinitialize(viewModel);
+    protected void deinitialize() {
         widget.close();
         widget.getTtyConnector().close();
-    }
-
-    @Override
-    protected void removeListeners(T viewModel) {
-        super.removeListeners(viewModel);
-        viewModel.removeListeners();
-    }
-
-    @Override
-    protected TerminalTabComposer<?> createComposer() {
-        return new TerminalTabComposer<>(this);
+        super.deinitialize();
     }
 
     protected KitJediTermFxWidget getWidget() {

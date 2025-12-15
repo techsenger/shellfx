@@ -16,8 +16,6 @@
 
 package com.techsenger.tabshell.demos.full.hex;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.hex.editor.CaretShape;
 import com.techsenger.tabshell.hex.editor.ColumnSeparator;
 import com.techsenger.tabshell.hex.editor.HexToolBarViewModel;
@@ -44,10 +42,5 @@ public class DemoHexToolBarViewModel extends HexToolBarViewModel {
 
     public ObservableList<ColumnSeparator> getColumnSeparators() {
         return columnSeparators;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DEMO_HEX_TOOL_BAR);
     }
 }

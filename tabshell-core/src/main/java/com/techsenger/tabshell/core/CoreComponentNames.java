@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.patternfx.core.ComponentName;
 
 /**
  *

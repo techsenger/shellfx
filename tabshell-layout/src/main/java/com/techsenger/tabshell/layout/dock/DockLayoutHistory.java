@@ -16,14 +16,13 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
 import com.techsenger.tabshell.core.area.AbstractAreaHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockLayoutHistory<T extends AbstractDialogViewModel> extends AbstractAreaHistory<T> {
+public class DockLayoutHistory<T extends DockLayoutViewModel<?>> extends AbstractAreaHistory<T> {
 
     private SideBarHistory<?> rightSideBar;
 

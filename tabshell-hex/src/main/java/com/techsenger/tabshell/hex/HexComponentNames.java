@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.hex;
 
-import com.techsenger.mvvm4fx.core.ComponentGroupName;
-import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.patternfx.core.ComponentGroupName;
+import com.techsenger.patternfx.core.ComponentName;
 
 /**
  *
@@ -30,6 +30,8 @@ public interface HexComponentNames {
     ComponentName HEX_AREA = new ComponentName("HexArea");
 
     ComponentName HEX_EDITOR_TAB = new ComponentName("HexEditorTab");
+
+    ComponentName HEX_EDITOR_CARET = new ComponentName("HexEditorCaret");
 
     ComponentName DATA_INSPECTOR_TAB = new ComponentName("DataInspectorTab");
 

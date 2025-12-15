@@ -16,18 +16,15 @@
 
 package com.techsenger.tabshell.core.element;
 
-import com.techsenger.mvvm4fx.core.ChildView;
+import com.techsenger.patternfx.core.ChildView;
 import javafx.scene.Node;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ElementView<T extends ElementViewModel> extends ChildView<T> {
+public interface ElementView<T extends ElementViewModel<?>, S extends ElementComponent<?>> extends ChildView<T, S> {
 
     @Override
     Node getNode();
-
-    @Override
-    ElementComposer<?> getComposer();
 }

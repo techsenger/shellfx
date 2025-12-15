@@ -16,12 +16,13 @@
 
 package com.techsenger.tabshell.dialogs.alert;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.StyleFontIcon;
+import java.util.function.Consumer;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -29,7 +30,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public class AlertDialogViewModel extends AbstractSimpleDialogViewModel {
+public class AlertDialogViewModel<T extends AlertDialogMediator> extends AbstractSimpleDialogViewModel<T> {
 
     private final AlertDialogType dialogType;
 
@@ -83,7 +84,12 @@ public class AlertDialogViewModel extends AbstractSimpleDialogViewModel {
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DialogComponentNames.ALERT_DIALOG);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

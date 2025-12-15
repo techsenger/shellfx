@@ -24,13 +24,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import com.techsenger.tabshell.dialogs.base.BaseDialogMediator;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewModel {
+public abstract class AbstractSimpleDialogViewModel<T extends SimpleDialogMediator> extends AbstractDialogViewModel<T> {
 
     private final ObjectProperty<Runnable> okAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
 
@@ -160,10 +159,5 @@ public abstract class AbstractSimpleDialogViewModel extends AbstractDialogViewMo
 
     public void setCancelText(String text) {
         this.cancelText.set(text);
-    }
-
-    @Override
-    public BaseDialogMediator getMediator() {
-        return (BaseDialogMediator) super.getMediator();
     }
 }

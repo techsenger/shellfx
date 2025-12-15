@@ -16,26 +16,13 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
-import com.techsenger.tabshell.core.tab.TabViewModel;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabPopupViewModel extends AbstractAreaViewModel {
-
-    private final SideBarViewModel sideBar;
-
-    private final ObservableList<TabViewModel> modifiableTabs = FXCollections.observableArrayList();
-
-    private final ObservableList<? extends TabViewModel> tabs
-            = FXCollections.unmodifiableObservableList(modifiableTabs);
+public class TabPopupViewModel<T extends TabDockMediator> extends AbstractAreaViewModel<T> {
 
     private double oldWidth = 250;
 
@@ -43,23 +30,7 @@ public class TabPopupViewModel extends AbstractAreaViewModel {
 
     private boolean closing;
 
-    public TabPopupViewModel(SideBarViewModel sideBar, TabPopupHistory<?> history) {
-        this.sideBar = sideBar;
-        getDescriptor().setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> history);
-    }
-
-    public SideBarViewModel getSideBar() {
-        return sideBar;
-    }
-
-    /**
-     * Returns the unmodifiable list of tabs.
-     *
-     * @return
-     */
-    public ObservableList<? extends TabViewModel> getTabs() {
-        return tabs;
+    public TabPopupViewModel() {
     }
 
     public double getOldWidth() {
@@ -70,21 +41,12 @@ public class TabPopupViewModel extends AbstractAreaViewModel {
         return oldHeight;
     }
 
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponentNames.TAB_POPUP);
-    }
-
     protected void setOldHeight(double oldHeight) {
         this.oldHeight = oldHeight;
     }
 
     protected void setOldWidth(double oldWidth) {
         this.oldWidth = oldWidth;
-    }
-
-    ObservableList<TabViewModel> getModifiableTabs() {
-        return modifiableTabs;
     }
 
     boolean isClosing() {

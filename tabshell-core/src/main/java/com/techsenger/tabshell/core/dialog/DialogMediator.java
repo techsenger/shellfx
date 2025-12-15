@@ -24,4 +24,5 @@ import com.techsenger.tabshell.core.area.AreaMediator;
  */
 public interface DialogMediator extends AreaMediator {
 
+    void remove();
 }

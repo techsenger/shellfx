@@ -19,13 +19,11 @@ package com.techsenger.tabshell.dialogs.yesno;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
-import com.techsenger.tabshell.material.style.SizeConstants;
-import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.dialogs.base.BaseDialogComposer;
-import com.techsenger.tabshell.dialogs.base.DefaultBaseDialogComposer;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.geometry.Insets;
@@ -38,7 +36,8 @@ import javafx.scene.layout.HBox;
  *
  * @author Pavel Castornii
  */
-public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
+public class YesNoDialogView<T extends YesNoDialogViewModel<?>, S extends YesNoDialogComponent<?>>
+        extends AbstractDialogView<T, S> {
 
     private final FontIconView messageIconView = new FontIconView();
 
@@ -54,7 +53,7 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
 
     private final HBox buttonBox = new HBox();
 
-    public YesNoDialogView(YesNoDialogViewModel viewModel) {
+    public YesNoDialogView(T viewModel) {
         super(viewModel);
     }
 
@@ -64,13 +63,9 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
     }
 
     @Override
-    public BaseDialogComposer<?> getComposer() {
-        return (BaseDialogComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected void build(YesNoDialogViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         getContentPane().getStylesheets()
                 .add(YesNoDialogView.class.getResource("yesno.css").toExternalForm());
         messageIconView.setIcon(DialogIcons.QUESTION);
@@ -90,8 +85,9 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
     }
 
     @Override
-    protected void bind(YesNoDialogViewModel viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         yesButton.disableProperty().bind(viewModel.yesDisableProperty());
         yesButton.defaultButtonProperty().bind(viewModel.yesDefaultProperty());
         yesButton.textProperty().bind(viewModel.yesTextProperty());
@@ -107,16 +103,12 @@ public class YesNoDialogView extends AbstractDialogView<YesNoDialogViewModel> {
     }
 
     @Override
-    protected void addHandlers(YesNoDialogViewModel viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         yesButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.yesActionProperty()));
         noButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.noActionProperty()));
         cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.cancelActionProperty()));
-    }
-
-    @Override
-    protected DefaultBaseDialogComposer<?> createComposer() {
-        return new DefaultBaseDialogComposer<>(this);
     }
 
     protected Button getConfirmButton() {

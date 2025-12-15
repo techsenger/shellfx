@@ -16,11 +16,11 @@
 
 package com.techsenger.tabshell.text.editor;
 
-import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.text.viewer.AbstractViewerTabView;
 import com.techsenger.toolkit.core.StringUtils;
 import java.util.function.IntConsumer;
@@ -44,14 +44,14 @@ import javafx.scene.layout.HBox;
 import org.fxmisc.richtext.Caret;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.TwoDimensional;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  * Abstract class for editors.
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel> extends AbstractViewerTabView<T> {
+public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel<?>,
+        S extends AbstractEditorTabComponent<?>> extends AbstractViewerTabView<T, S> {
 
     private final Button newButton = new Button(null, new FontIconView(SharedIcons.ADD));
 
@@ -82,8 +82,8 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
         this.getViewModel().updateTextTabValues();
     };
 
-    public AbstractEditorTabView(ShellView<?> shell, T viewModel, ExtendedTextArea textArea) {
-        super(shell, viewModel, textArea);
+    public AbstractEditorTabView(T viewModel, ExtendedTextArea textArea) {
+        super(viewModel, textArea);
     }
 
     public void undo() {
@@ -109,8 +109,8 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         newButton.setTooltip(new Tooltip("New"));
         newButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
         clearButton.setTooltip(new Tooltip("Clear"));
@@ -146,8 +146,9 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         var textArea = this.getTextArea();
         viewModel.currentParagraphWrapper().bind(textArea.currentParagraphProperty());
         viewModel.currentColumnWrapper().bind(textArea.caretColumnProperty());
@@ -167,16 +168,18 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         this.getTextArea().overwriteModeProperty().addListener((ov, oldV, newV) -> this.updateAreaMode(newV));
         var viewerSettings = viewModel.getSettings();
         viewerSettings.getTabSymbol().sizeProperty().addListener(tabSizeListener);
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         //shift selected text right/left on tab/shift+tab
         getTextArea().addEventFilter(KeyEvent.KEY_PRESSED, (e) -> this.shiftTextForTab(e));
         this.clearButton.setOnAction((t) -> this.getTextArea().clear());
@@ -203,8 +206,9 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
     }
 
     @Override
-    protected void removeListeners(T viewModel) {
-        super.removeListeners(viewModel);
+    protected void removeListeners() {
+        super.removeListeners();
+        var viewModel = getViewModel();
         var viewerSettings = viewModel.getSettings();
         viewerSettings.getTabSymbol().sizeProperty().removeListener(tabSizeListener);
     }

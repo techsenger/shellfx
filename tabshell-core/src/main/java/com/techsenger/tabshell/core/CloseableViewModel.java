@@ -16,19 +16,166 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.patternfx.core.ParentMediator;
+import com.techsenger.patternfx.core.ParentViewModel;
+import java.util.Objects;
+import java.util.function.Consumer;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface CloseableViewModel {
+public interface CloseableViewModel<T extends ParentMediator> extends ParentViewModel<T> {
+
+    int CLOSE_REQUEST_MAX_ATTEMPTS = 5;
 
     /**
-     * Initiates the component's closure process.
+     * Closes this component using a force close strategy.
      *
-     * <p>When called, this method will trigger the {@link CloseableView#close()} method
-     * on the corresponding View through a registered listener. The actual closure
-     * is delegated to the parent component (like {@code Shell} or {@code DialogManager})
-     * if the View is not a top-level component.
+     * <p>This method immediately deinitializes the component and all its descendants and removes this component
+     * from the component tree, without performing any readiness checks or preparation steps. This method should only
+     * in exceptional situations where a forced shutdown is required.
+     *
      */
-    void requestClose();
+    void close();
+
+    /**
+     * Initiates a close request for this component using a gentle close strategy.
+     *
+     * <p>This method coordinates a close operation over the component subtree, preparing components for closing if
+     * necessary, and ensures that the system remains in a consistent state even in a live UI where components may
+     * change during preparation.
+     *
+     * <p>The algorithm works as follows:
+     * <ol>
+     *     <li>Traverse this component and all its descendants.</li>
+     *     <li>For each component, call {@link #canClose()} to obtain its current readiness state. Note that this is
+     *         a momentary snapshot; a component may return a different value in a subsequent iteration if its state
+     *         changes.
+     *     </li>
+     *     <li>If any component returns {@link CloseCheckResult#NOT_READY}, the close request is aborted.</li>
+     *     <li>If one or more components return {@link CloseCheckResult#PREPARATION_REQUIRED},
+     *         {@link #prepareToClose(Callback)} is invoked for the first such component only, and the close request
+     *         is suspended until the preparation callback completes. This avoids partially preparing multiple
+     *         components if the user cancels the operation.</li>
+     *     <li>Once a component completes preparation and calls the callback, the algorithm restarts
+     *         from the beginning with a fresh traversal of {@link #canClose()} over the entire component subtree.</li>
+     *     <li>When all components report {@link CloseCheckResult#READY} in a full traversal, {@link #close()}
+     *         is invoked to perform the actual close operation.</li>
+     * </ol>
+     *
+     * <p>Important: During a close request, the system may be live: new components can appear, existing components
+     * may change state, and user actions may continue. The iterative check ensures that the close operation only
+     * proceeds when the entire component subtree is truly ready.
+     *
+     * <p>The result of the close request is provided asynchronously via the given {@link Consumer}. The consumer will
+     * be invoked once the request completes, is cancelled, or fails due to a component being not ready after all
+     * attempts.
+     *
+     * <p>This method never force-closes components. If any component cannot be closed, the request is cancelled and
+     * no component is deinitialized.
+     *
+     * @param maxAttempts maximum number of iterations over the component tree. If this limit is exceeded, the close
+     *        request is aborted
+     * @param resultConsumer a {@link Consumer} that receives the {@link RequestCloseResult} when the close
+     *        request finishes
+     */
+    default void requestClose(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {
+        class Requester {
+
+            private int attemptCount = 0;
+
+            private void run() {
+                attemptCount++;
+                CloseCheckResult canClose = null;
+                CloseableViewModel<?> closeable = null;
+                CloseableViewModel<?> preparationCloseable = null;
+                var iterator = getMediator().depthFirstIterator();
+                while (iterator.hasNext()) {
+                    closeable = (CloseableViewModel<?>) iterator.next();
+                    canClose = closeable.canClose();
+                    Objects.requireNonNull(canClose, "Preparation result can't be null");
+                    if (canClose == CloseCheckResult.NOT_READY) {
+                        break;
+                    } else if (canClose == CloseCheckResult.PREPARATION_REQUIRED && preparationCloseable == null) {
+                        preparationCloseable = closeable;
+                    }
+                }
+                if (canClose == CloseCheckResult.NOT_READY) {
+                    acceptResult(CloseRequestResult.NOT_READY_TO_CLOSE);
+                } else if (preparationCloseable != null) {
+                    preparationCloseable.prepareToClose(this::handlePreparationResult);
+                } else {
+                    close();
+                    acceptResult(CloseRequestResult.SUCCESS);
+                }
+            }
+
+            private void handlePreparationResult(ClosePreparationResult prepResult) {
+                Objects.requireNonNull(prepResult, "Preparation result can't be null");
+                if (prepResult == ClosePreparationResult.CANCELLED) {
+                    acceptResult(CloseRequestResult.PREPARATION_CANCELLED);
+                } else {
+                    if (attemptCount == maxAttempts) {
+                        acceptResult(CloseRequestResult.MAX_ATTEMPTS_REACHED);
+                    } else {
+                        run();
+                    }
+                }
+            }
+
+            private void acceptResult(CloseRequestResult result) {
+                if (resultConsumer != null) {
+                    resultConsumer.accept(result);
+                }
+            }
+        }
+        new Requester().run();
+    }
+
+    /**
+     * Initiates a close request using the default maximum number of iterations ({@link #CLOSE_REQUEST_MAX_ATTEMPTS}).
+     *
+     * <p>Behaves the same as {@link #requestClose(int, Consumer)} but uses the predefined default limit.
+     *
+     * @param resultCallback a {@link Consumer} that receives the {@link RequestCloseResult} when
+     *                       the close request finishes;
+     */
+    default void requestClose(Consumer<CloseRequestResult> resultCallback) {
+        requestClose(CLOSE_REQUEST_MAX_ATTEMPTS, resultCallback);
+    }
+
+    /**
+     * Initiates a close request using the default maximum number of iterations ({@link #CLOSE_REQUEST_MAX_ATTEMPTS})
+     * without a result callback.
+     *
+     * <p>Behaves the same as {@link #requestClose(Consumer)} but does not notify any consumer.
+     */
+    default void requestClose() {
+        requestClose(CLOSE_REQUEST_MAX_ATTEMPTS, null);
+    }
+
+    /**
+     * Checks whether this component can be closed.
+     *
+     * <p>This method must not perform any destructive actions or release resources. It is a pure readiness check.
+     *
+     * @return {@link CloseCheckResult#READY} if the component is ready to close,
+     *         {@link CloseCheckResult#PREPARATION_REQUIRED} if preparation is required,
+     *         or {@link CloseCheckResult#NOT_READY} if closing is disallowed
+     */
+    CloseCheckResult canClose();
+
+    /**
+     * Prepares the component for closing.
+     *
+     * <p>This method is invoked only if {@link #canClose()} returned {@link CloseCheckResult#PREPARATION_REQUIRED}.
+     * Implementations may perform actions such as saving data, stopping background tasks, or waiting for
+     * asynchronous operations to complete. Once the component is fully prepared and guaranteed to be closable,
+     * the provided callback must be invoked.
+     *
+     * @param resultCallback the callback to be called when preparation is complete, receiving a
+     *                       {@link ClosePreparationResult} that describes the result
+     */
+    void prepareToClose(Consumer<ClosePreparationResult> resultCallback);
 }

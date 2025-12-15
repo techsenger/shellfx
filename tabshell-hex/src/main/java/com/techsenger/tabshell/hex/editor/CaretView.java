@@ -34,7 +34,7 @@ import javafx.util.Duration;
  *
  * @author Pavel Castornii
  */
-public final class CaretView extends AbstractElementView<CaretViewModel> {
+public final class CaretView<T extends CaretViewModel, S extends CaretComponent<?>> extends AbstractElementView<T, S> {
 
     /**
      * Region is not use used because it can't always have 1 px width, but we don't need as the height is set via timer.
@@ -47,7 +47,7 @@ public final class CaretView extends AbstractElementView<CaretViewModel> {
 
     private double rowHeight = -1;
 
-    CaretView(CaretViewModel viewModel) {
+    CaretView(T viewModel) {
         super(viewModel);
     }
 
@@ -66,8 +66,8 @@ public final class CaretView extends AbstractElementView<CaretViewModel> {
     }
 
     @Override
-    protected void build(CaretViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         this.node.getStyleClass().add("caret");
         this.node.setSmooth(false);
         this.node.setManaged(false);
@@ -78,8 +78,9 @@ public final class CaretView extends AbstractElementView<CaretViewModel> {
     }
 
     @Override
-    protected void bind(CaretViewModel viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         this.node.widthProperty().bind(viewModel.widthProperty());
         this.indicator.widthProperty().bind(viewModel.indicatorWidthProperty());
         this.node.translateXProperty().bind(viewModel.xProperty());
@@ -87,14 +88,14 @@ public final class CaretView extends AbstractElementView<CaretViewModel> {
     }
 
     @Override
-    protected void addHandlers(CaretViewModel viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
         this.timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), e -> {
             this.node.setVisible(!this.node.isVisible());
             if (this.rowHeight > 0 && this.node.isVisible()) {
                 //setting caret width and height, for example, when font changes,
                 //while we can calculate char width we can't calculate row width
-                switch (viewModel.getShape()) {
+                switch (getViewModel().getShape()) {
                     case BAR:
                         this.node.setHeight(this.rowHeight);
                         break;
@@ -115,8 +116,9 @@ public final class CaretView extends AbstractElementView<CaretViewModel> {
     }
 
     @Override
-    protected void addListeners(CaretViewModel viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         viewModel.disabledProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
                 this.timeline.pause();
@@ -151,9 +153,9 @@ public final class CaretView extends AbstractElementView<CaretViewModel> {
     }
 
     @Override
-    protected void preDeinitialize(CaretViewModel viewModel) {
-        super.preDeinitialize(viewModel);
+    protected void deinitialize() {
         this.timeline.stop();
+        super.deinitialize();
     }
 
     void setRowHeight(double rowHeight) {

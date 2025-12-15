@@ -21,7 +21,7 @@ module com.techsenger.tabshell.terminal {
     requires javafx.controls;
     requires atlantafx.base;
     requires pty4j;
-    requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.patternfx.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.jeditermfx.ui;

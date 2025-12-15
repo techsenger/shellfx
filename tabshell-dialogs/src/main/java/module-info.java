@@ -17,7 +17,7 @@
 module com.techsenger.tabshell.dialogs {
     requires org.slf4j;
     requires com.techsenger.toolkit.core;
-    requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.patternfx.core;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.shared;
@@ -31,7 +31,6 @@ module com.techsenger.tabshell.dialogs {
 
     exports com.techsenger.tabshell.dialogs;
     exports com.techsenger.tabshell.dialogs.alert;
-    exports com.techsenger.tabshell.dialogs.base;
     exports com.techsenger.tabshell.dialogs.file;
     exports com.techsenger.tabshell.dialogs.page;
     exports com.techsenger.tabshell.dialogs.simple;

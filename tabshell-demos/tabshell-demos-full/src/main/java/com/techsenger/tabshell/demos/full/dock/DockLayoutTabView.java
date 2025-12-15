@@ -16,12 +16,11 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.tabshell.core.ShellView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
-import com.techsenger.tabshell.layout.dock.TabDockView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -30,22 +29,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewModel> {
+public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewModel, DockLayoutTabComponent> {
 
-    private final DockLayoutView<?> layout;
+    public DockLayoutTabView(DockLayoutTabViewModel viewModel) {
+        super(viewModel);
 
-    private final TextViewerView textViewer;
-
-    public DockLayoutTabView(ShellView<?> shell, DockLayoutTabViewModel viewModel) {
-        super(shell, viewModel);
-        this.layout = new DockLayoutView<>(viewModel.getLayout());
-        this.textViewer = new TextViewerView(viewModel.getTextViewer());
     }
 
     @Override
@@ -53,30 +46,9 @@ public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewMod
 
     }
 
-    public DockLayoutView<?> getLayout() {
-        return layout;
-    }
-
     @Override
-    protected void preInitialize(DockLayoutTabViewModel viewModel) {
-        super.preInitialize(viewModel);
-        textViewer.initialize();
-
-        this.layout.initialize();
-        this.layout.setMain(this.textViewer);
-
-        var splitSpaceView = layout.createSplitSpace(Orientation.HORIZONTAL);
-        layout.setRoot(splitSpaceView);
-        splitSpaceView.getChildren().add(textViewer);
-
-        var tabDockView = layout.createTabDock();
-        fillTabs(tabDockView);
-        splitSpaceView.getChildren().add(tabDockView);
-    }
-
-    @Override
-    protected void build(DockLayoutTabViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         var removeButton = new Button(null, new FontIconView(SharedIcons.REMOVE));
         var addButton = new Button(null, new FontIconView(SharedIcons.ADD));
         addButton.setOnAction((e) -> {
@@ -84,10 +56,11 @@ public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewMod
         });
         var toolbar = new ToolBar(removeButton, addButton);
         toolbar.getStyleClass().add(StyleClasses.BLEND);
-        getContentPane().getChildren().addAll(toolbar, layout.getNode());
+        var layout = getComponent().getLayout();
+        getContentPane().getChildren().addAll(toolbar, layout.getView().getNode());
 
 
-        var lastArea = this.layout.getBottomBar().getLastArea();
+        var lastArea = layout.getBottomSideBar().getView().getLastArea();
         var hBox = new HBox(new Label("Label 1"), new Separator(Orientation.VERTICAL),
                 new Label("Label 2"));
         hBox.setRotate(-180);
@@ -96,19 +69,7 @@ public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewMod
         lastArea.getChildren().add(hBox);
     }
 
-    @Override
-    protected void postDeinitialize(DockLayoutTabViewModel viewModel) {
-        super.postDeinitialize(viewModel);
-        this.textViewer.deinitialize();
-        this.layout.deinitialize();
-    }
+    void addLayout(DockLayoutView<?, ?> layout) {
 
-    private void fillTabs(TabDockView<?> tabDock) {
-        for (var i = 0; i < 10; i++) {
-            var tabViewModel = new DockableTabViewModel(i);
-            var tabView = new DockableTabView(tabViewModel);
-            tabView.initialize();
-            tabDock.openTab(tabView);
-        }
     }
 }

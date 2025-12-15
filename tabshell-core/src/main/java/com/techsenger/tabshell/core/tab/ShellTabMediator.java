@@ -16,10 +16,13 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.tabshell.core.ShellViewModel;
+
 /**
  *
  * @author Pavel Castornii
  */
 public interface ShellTabMediator extends TabMediator {
 
+    ShellViewModel<?> getShell();
 }

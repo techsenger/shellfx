@@ -16,42 +16,41 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.patternfx.core.ComponentState;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
-import com.techsenger.tabshell.hex.HexComponentNames;
 import com.techsenger.tabshell.hex.model.HexDocument;
 import com.techsenger.tabshell.hex.style.HexIcons;
 import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabViewModel extends AbstractShellTabViewModel
+public class HexEditorTabViewModel<T extends HexEditorTabMediator> extends AbstractShellTabViewModel<T>
         implements FileOpenerViewModel, FileSaverViewModel {
 
     private final HexDocument document;
 
-    public HexEditorTabViewModel(ShellViewModel shell, GenericFile file) {
-        super(shell);
+    public HexEditorTabViewModel(GenericFile file) {
         setIcon(HexIcons.EDITOR);
         setTitle("Hex Editor");
-        setHistoryProvider(() -> shell.getHistoryManager()
-                .getOrCreateHistory(HexEditorTabHistory.class, HexEditorTabHistory:: new));
         this.document = new HexDocument(file);
     }
 
     @Override
     public void readFile() {
-        var area = getMediator().getArea();
-        area.getCaret().setDisabled(true);
+        var caret = getMediator().getArea().getMediator().getCaret();
+        caret.setDisabled(true);
         if (this.document.readFile()) {
-            area.updateOnNewFile();
+            getMediator().getArea().updateOnNewFile();
             var dataInspector = getMediator().getDataInspector();
             if (dataInspector != null) {
                 dataInspector.updateTypeItems();
@@ -89,12 +88,27 @@ public class HexEditorTabViewModel extends AbstractShellTabViewModel
     }
 
     @Override
-    public HexEditorTabMediator getMediator() {
-        return (HexEditorTabMediator) super.getMediator();
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(HexComponentNames.HEX_EDITOR_TAB);
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public ShellViewModel<?> getShell() {
+        return (ShellViewModel<?>) this;
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        getMediator().stateProperty().addListener((ov, oldV, newV) -> {
+            if (newV == ComponentState.INITIALIZED) {
+                readFile();
+            }
+        });
     }
 }

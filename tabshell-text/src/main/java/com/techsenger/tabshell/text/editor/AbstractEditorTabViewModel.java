@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.text.editor;
 
-import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
+import com.techsenger.tabshell.shared.menu.EditMenuNames;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.storage.UriUtils;
 import com.techsenger.tabshell.text.viewer.AbstractViewerTabViewModel;
@@ -27,14 +27,13 @@ import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.input.Clipboard;
-import com.techsenger.tabshell.shared.menu.EditMenuNames;
 
 /**
  * Abstract class for editors in exported package.
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewModel {
+public abstract class AbstractEditorTabViewModel<T extends EditorTabMediator> extends AbstractViewerTabViewModel<T> {
 
     /**
      * Current paragraph (it corresponds to a single line when the text is not wrapped or spans multiple lines when the
@@ -61,8 +60,8 @@ public abstract class AbstractEditorTabViewModel extends AbstractViewerTabViewMo
 
     private SimpleStringProperty positionText = new SimpleStringProperty();
 
-    public AbstractEditorTabViewModel(ShellViewModel shell, GenericFile file) {
-        super(shell, file);
+    public AbstractEditorTabViewModel(GenericFile file) {
+        super(file);
         this.updateTextTabValues();
         this.currentParagraph.addListener((ov, oldV, newV)
                 -> this.updatePosition(newV.intValue(), this.currentColumn.get()));

@@ -25,5 +25,5 @@ import com.techsenger.tabshell.demos.core.dialog.DemoDialogViewModel;
  */
 public interface DemoTabMediator extends ShellTabMediator {
 
-    void openDemoDialog(DemoDialogViewModel dialog);
+    void addDemoDialog(DemoDialogViewModel dialog);
 }

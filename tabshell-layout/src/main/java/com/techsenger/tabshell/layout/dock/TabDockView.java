@@ -17,12 +17,12 @@
 package com.techsenger.tabshell.layout.dock;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.mvvm4fx.core.ParentView;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.layout.tabhost.TabHostView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
@@ -30,17 +30,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.HBox;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
+public class TabDockView<T extends TabDockViewModel<?>, S extends TabDockComponent<?>> extends TabHostView<T, S> {
 
     static final double MIN_SIZE = 100; // temp
-
-    private final DockLayoutView<?> layout;
 
     private final FontIconView dragIconView = new FontIconView(SharedIcons.DRAG_VERTICAL);
 
@@ -50,28 +47,18 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
 
     private final HBox tabHeaderLastBox = new HBox(minimizeButton);
 
-    protected TabDockView(DockLayoutView<?> layout, T viewModel) {
+    protected TabDockView(T viewModel) {
         super(viewModel);
-        this.layout = layout;
     }
 
     @Override
-    public AbstractTabDockComposer<?> getComposer() {
-        return (AbstractTabDockComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected AbstractTabDockComposer<?> createComposer() {
-        return (AbstractTabDockComposer<?>) super.createComposer();
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var layoutView = getComponent().getLayout().getView();
         var tabPane = getNode();
         tabPane.setTabDragEnabled(true);
         tabPane.setTabDropEnabled(true);
-        tabPane.setDragAndDropContext(this.layout.getDragAndDropContext());
+        tabPane.setDragAndDropContext(layoutView.getDragAndDropContext());
 
         tabHeaderFirstBox.getStyleClass().add("tab-header-first-box");
         minimizeButton.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
@@ -85,19 +72,21 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         tabHeaderArea.getFirstArea().getChildren().add(tabHeaderFirstBox);
         tabHeaderArea.getLastArea().getChildren().add(tabHeaderLastBox);
         tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
-        tabHeaderArea.setTabDragContentFactory(this.layout::createTabDragContent);
+        tabHeaderArea.setTabDragContentFactory(layoutView::createTabDragContent);
         tabHeaderArea.setTabDragScrollStep(10.0);
 
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
+        var layoutView = getComponent().getLayout().getView();
         ValueUtils.callAndAddListener(viewModel.draggableProperty(), (ov, oldV, newV) -> {
             if (newV) {
-                dragIconView.setOnDragDetected(e -> this.layout.handleDockDragDetected(this, dragIconView, e));
-                dragIconView.setOnMouseDragged(e -> this.layout.handleDockMouseDragged(this, dragIconView, e));
-                dragIconView.setOnMouseReleased(e -> this.layout.handleDockMouseReleased(this, dragIconView, e));
+                dragIconView.setOnDragDetected(e -> layoutView.handleDockDragDetected(this, dragIconView, e));
+                dragIconView.setOnMouseDragged(e -> layoutView.handleDockMouseDragged(this, dragIconView, e));
+                dragIconView.setOnMouseReleased(e -> layoutView.handleDockMouseReleased(this, dragIconView, e));
                 tabHeaderFirstBox.getChildren().add(0, dragIconView);
             } else {
                 tabHeaderFirstBox.getChildren().remove(dragIconView);
@@ -106,32 +95,24 @@ public class TabDockView<T extends TabDockViewModel> extends TabHostView<T> {
         var tabPane = getNode();
         tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
             if (tabPane.getTabs().isEmpty() && viewModel.getMinimizedPosition() == null) {
-                this.layout.processEmptyTabPane(tabPane);
+                layoutView.processEmptyTabPane(tabPane);
             }
         });
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
-        minimizeButton.setOnAction(e -> this.layout.minimizeTabDock(this));
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
+        var layoutView = getComponent().getLayout().getView();
+        minimizeButton.setOnAction(e -> layoutView.minimizeTabDock(this));
         var tabPane = getNode();
-        tabPane.addTabDragHandler(tab -> this.layout.handleTabDrag((ComponentTab) tab));
+        tabPane.addTabDragHandler(tab -> layoutView.handleTabDrag((ComponentTab) tab));
         // this handler is called when mouse is over TabHeaderArea
-        tabPane.addTabDropHandler((tab, s) -> this.layout.handleTabDrop((ComponentTab) tab));
+        tabPane.addTabDropHandler((tab, s) -> layoutView.handleTabDrop((ComponentTab) tab));
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
-                e -> this.layout.handleTabHeaderAreaMouseDragOver(tabPane, e));
-    }
-
-    /**
-     * Provide access to {@link AbstractDockTabView}.
-     *
-     * @param parent
-     */
-    @Override
-    protected void setParent(ParentView<?> parent) {
-        super.setParent(parent);
+                e -> layoutView.handleTabHeaderAreaMouseDragOver(tabPane, e));
     }
 
     protected Button getMinimizeButton() {

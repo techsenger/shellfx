@@ -16,14 +16,12 @@
 
 package com.techsenger.tabshell.core.element;
 
-import com.techsenger.mvvm4fx.core.ChildViewModel;
+import com.techsenger.patternfx.core.ChildViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ElementViewModel extends ChildViewModel {
+public interface ElementViewModel<T extends ElementMediator> extends ChildViewModel<T> {
 
-    @Override
-    ElementMediator getMediator();
 }

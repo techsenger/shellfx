@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.material.textarea;
 
-import com.techsenger.mvvm4fx.core.Name;
+import com.techsenger.patternfx.core.Name;
 
 /**
  *

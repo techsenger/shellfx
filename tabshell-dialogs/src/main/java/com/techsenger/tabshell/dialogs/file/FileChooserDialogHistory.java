@@ -24,7 +24,7 @@ import com.techsenger.tabshell.material.table.TableHistory;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogHistory<T extends FileChooserDialogViewModel>
+public class FileChooserDialogHistory<T extends FileChooserDialogViewModel<?>>
         extends AbstractSimpleDialogHistory<T> {
 
     private ToggleButtonHistory listButton = new ToggleButtonHistory();

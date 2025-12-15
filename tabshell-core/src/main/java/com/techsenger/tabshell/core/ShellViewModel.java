@@ -16,11 +16,9 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.mvvm4fx.core.ComponentViewModel;
-import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.patternfx.core.ParentViewModel;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
-import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemName;
@@ -34,22 +32,8 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public interface ShellViewModel extends ComponentViewModel, TabContainerViewModel<ShellTabViewModel>, IconedViewModel,
-        CloseableViewModel {
-
-    /**
-     * Defines a function to be called after closing stage.
-     *
-     * @param onClose
-     */
-    void setOnClosed(ShellClosedCallback onClose);
-
-    /**
-     * Returns a function to be called after closing stage.
-     *
-     * @return
-     */
-    ShellClosedCallback getOnClosed();
+public interface ShellViewModel<T extends ShellMediator> extends ParentViewModel<T>,
+        TabContainerViewModel<ShellTabViewModel<?>>, IconedViewModel, CloseableViewModel<T> {
 
     /**
      * Returns shell current width property.
@@ -99,27 +83,6 @@ public interface ShellViewModel extends ComponentViewModel, TabContainerViewMode
      * @param title
      */
     void setTitle(String title);
-
-    /**
-     * Returns the settings of the shell.
-     *
-     * @return
-     */
-    Settings getSettings();
-
-    /**
-     * Returns the settings of the shell as an instance of the specified class using type casting.
-     *
-     * @return
-     */
-    <T extends Settings> T getSettings(Class<T> settingsClass);
-
-    /**
-     * Returns the history manager.
-     *
-     * @return
-     */
-    HistoryManager getHistoryManager();
 
     /**
      * Indicates if the shell stage is maximized.
@@ -176,7 +139,4 @@ public interface ShellViewModel extends ComponentViewModel, TabContainerViewMode
      * @param itemNames
      */
     void removeMenuItemHelpers(MenuItemName... itemNames);
-
-    @Override
-    void requestClose();
 }

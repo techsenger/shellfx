@@ -16,9 +16,8 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.ComponentName;
 import com.techsenger.tabshell.core.element.AbstractElementViewModel;
+import com.techsenger.tabshell.core.element.ElementMediator;
 import java.util.function.Function;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -35,9 +34,7 @@ import javafx.geometry.Dimension2D;
  *
  * @author Pavel Castornii
  */
-public final class CaretViewModel extends AbstractElementViewModel {
-
-    private static final ComponentName HEX_EDITOR_CARET = new ComponentName("HexEditorCaret");
+public final class CaretViewModel extends AbstractElementViewModel<ElementMediator> {
 
     private final ReadOnlyObjectWrapper<CaretPosition> position = new ReadOnlyObjectWrapper<>();
 
@@ -149,11 +146,6 @@ public final class CaretViewModel extends AbstractElementViewModel {
     public boolean isAtRowEnd() {
         var rowByteCount = this.rowByteCounter.apply(getPosition().getRowIndex());
         return getPosition().getByteIndex() == rowByteCount - 1;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(HEX_EDITOR_CARET);
     }
 
     void setPosition(CaretPosition position) {

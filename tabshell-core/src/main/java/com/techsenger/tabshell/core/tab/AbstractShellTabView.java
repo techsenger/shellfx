@@ -16,42 +16,22 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogManager;
-import com.techsenger.tabshell.core.dialog.DialogScope;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractShellTabView<T extends AbstractShellTabViewModel> extends AbstractTabView<T>
-        implements ShellTabView<T> {
+public abstract class AbstractShellTabView<T extends AbstractShellTabViewModel<?>,
+        S extends AbstractShellTabComponent<?>> extends AbstractTabView<T, S> implements ShellTabView<T, S> {
 
     private final DialogManager dialogManager;
 
-    private final ShellView<?> shell;
-
-    public AbstractShellTabView(ShellView<?> shell, T viewModel) {
+    public AbstractShellTabView(T viewModel) {
         super(viewModel);
-        this.shell = shell;
-        this.dialogManager = new DefaultDialogManager(DialogScope.TAB, getWrapperPane(), getContentPane(),
+        this.dialogManager = new DefaultDialogManager(getWrapperPane(), getContentPane(),
                 viewModel.dialogCountWrapper());
-    }
-
-    @Override
-    public DialogManager getDialogManager() {
-        return dialogManager;
-    }
-
-    @Override
-    public ShellView<?> getShell() {
-        return this.shell;
-    }
-
-    @Override
-    public ShellTabComposer<?> getComposer() {
-        return (ShellTabComposer<?>) super.getComposer();
     }
 
     @Override
@@ -59,8 +39,7 @@ public abstract class AbstractShellTabView<T extends AbstractShellTabViewModel> 
         requestFocus();
     }
 
-    @Override
-    protected ShellTabComposer<?> createComposer() {
-        return (ShellTabComposer<?>) super.createComposer();
+    protected DialogManager getDialogManager() {
+        return dialogManager;
     }
 }

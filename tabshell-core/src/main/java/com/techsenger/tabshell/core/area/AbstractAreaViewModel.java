@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.area;
 
-import com.techsenger.mvvm4fx.core.AbstractChildViewModel;
+import com.techsenger.patternfx.core.AbstractChildViewModel;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 
@@ -24,7 +24,8 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractAreaViewModel extends AbstractChildViewModel implements AreaViewModel {
+public abstract class AbstractAreaViewModel<T extends AreaMediator> extends AbstractChildViewModel<T>
+        implements AreaViewModel<T> {
 
     private final ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper();
 
@@ -52,11 +53,6 @@ public abstract class AbstractAreaViewModel extends AbstractChildViewModel imple
     @Override
     public double getHeight() {
         return this.height.get();
-    }
-
-    @Override
-    public AreaMediator getMediator() {
-        return (AreaMediator) super.getMediator();
     }
 
     ReadOnlyDoubleWrapper getWidthWrapper() {

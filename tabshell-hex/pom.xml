@@ -55,8 +55,8 @@
             <artifactId>tabshell-shared</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.techsenger.mvvm4fx</groupId>
-            <artifactId>mvvm4fx-core</artifactId>
+            <groupId>com.techsenger.patternfx</groupId>
+            <artifactId>patternfx-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.fxmisc.flowless</groupId>

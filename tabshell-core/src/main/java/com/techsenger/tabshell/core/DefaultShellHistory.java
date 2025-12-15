@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.mvvm4fx.core.AbstractHistory;
+import com.techsenger.patternfx.core.AbstractHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultShellHistory extends AbstractHistory<DefaultShellViewModel> {
+public class DefaultShellHistory extends AbstractHistory<DefaultShellViewModel<?>> {
 
     private double width;
 

@@ -16,15 +16,19 @@
 
 package com.techsenger.tabshell.text.viewer;
 
+import com.techsenger.patternfx.core.ComponentHistory;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
+import com.techsenger.tabshell.material.textarea.TextAreaStyleNames;
+import com.techsenger.toolkit.core.function.Factory;
 import com.techsenger.toolkit.fx.FxPlatform;
 import java.util.List;
+import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import com.techsenger.tabshell.material.textarea.TextAreaStyleNames;
 
 /**
  *
@@ -40,7 +44,8 @@ public class DefaultFindViewTest {
     @Test @Disabled
     public void replace_autoMovingToNext_success() {
         var textArea = new ExtendedTextArea(Texts.TEXT);
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         var viewModel = view.getViewModel();
         viewModel.regExpSelectedProperty().set(true);
         view.getFindComboBox().getEditor().setText("an.*(?=<)");
@@ -56,7 +61,8 @@ public class DefaultFindViewTest {
     @Test
     public void replaceAll_textPresent_success() {
         var textArea = new ExtendedTextArea(Texts.TEXT);
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         var viewModel = view.getViewModel();
         viewModel.regExpSelectedProperty().set(true);
         view.getFindComboBox().getEditor().setText("an.*(?=<)");
@@ -68,7 +74,8 @@ public class DefaultFindViewTest {
     @Test
     public void removeHighlighting_insertionStyleSpanModifed_highlightingRemoved() {
         var textArea = new ExtendedTextArea("ansiansi");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         view.getHighlightButton().setSelected(true);
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -89,7 +96,8 @@ public class DefaultFindViewTest {
     @Test
     public void removeHighlighting_insertionStyleSpanNotModified_highlightingNotRemoved() {
         var textArea = new ExtendedTextArea("ansiansi");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         view.getHighlightButton().setSelected(true);
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -113,7 +121,8 @@ public class DefaultFindViewTest {
     @Test
     public void removeHighlighting_removalStyleSpanModifed_highlightingRemoved() {
         var textArea = new ExtendedTextArea("ansiansi");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         view.getHighlightButton().setSelected(true);
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -134,7 +143,8 @@ public class DefaultFindViewTest {
     @Test
     public void removeHighlighting_removalStyleSpanNotModified_highlightingNotRemoved() {
         var textArea = new ExtendedTextArea("ansi ansi");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         view.getHighlightButton().setSelected(true);
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -155,7 +165,8 @@ public class DefaultFindViewTest {
     @Test
     public void doOnTextChange_deletionLastCharater_intersectingRangeRemoved() {
         var textArea = new ExtendedTextArea("ansi b ansi b");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         var viewModel = view.getViewModel();
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -174,7 +185,8 @@ public class DefaultFindViewTest {
     @Test
     public void doOnTextChange_deletionFirstCharater_intersectingRangeRemoved() {
         var textArea = new ExtendedTextArea("ansi b ansi b");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         var viewModel = view.getViewModel();
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -193,7 +205,8 @@ public class DefaultFindViewTest {
     @Test
     public void doOnTextChange_insertInMiddle_intersectingRangeRemoved() {
         var textArea = new ExtendedTextArea("ansi ansi");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         var viewModel = view.getViewModel();
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -212,7 +225,8 @@ public class DefaultFindViewTest {
     @Test
     public void doOnTextChange_insertBefore_rangeUpdated() {
         var textArea = new ExtendedTextArea("ansi ansi");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         var viewModel = view.getViewModel();
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -233,7 +247,8 @@ public class DefaultFindViewTest {
     @Test
     public void doOnTextChange_insertAfter_rangeUpdated() {
         var textArea = new ExtendedTextArea("ansi ansi");
-        var view = this.createView(textArea);
+        var component = createComponent(textArea);
+        var view = component.getView();
         var viewModel = view.getViewModel();
         view.getFindComboBox().getEditor().setText("ansi");
         view.getViewModel().findNext();
@@ -251,11 +266,53 @@ public class DefaultFindViewTest {
         );
     }
 
-    private DefaultFindPaneView createView(ExtendedTextArea codeArea) {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
-        var view = new DefaultFindPaneView(codeArea, viewModel);
-        view.initialize();
+    private DefaultFindPaneComponent<?> createComponent(ExtendedTextArea codeArea) {
+        var viewModel = new DefaultFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var view = new DefaultFindPaneView<>(viewModel, codeArea);
+        var historyManger = new HistoryManager() {
+            @Override
+            public <T extends ComponentHistory<?>> T getHistory(Class<T> historyClass) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public <T extends ComponentHistory<?>> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
+                return (T) new FindPaneHistory();
+            }
+
+            @Override
+            public <T extends ComponentHistory<?>> void putHistory(Class<T> historyClass, T history) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public <T extends ComponentHistory<?>> T removeHistory(Class<T> historyClass) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public ComponentHistory<?> getHistory(UUID uuid) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public ComponentHistory<?> getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory<?>> factory) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void putHistory(UUID uuid, ComponentHistory<?> history) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public ComponentHistory<?> removeHistory(UUID uuid) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        var component = new DefaultFindPaneComponent<>(view, historyManger);
+        component.initialize();
         viewModel.replaceModeProperty().set(true);
-        return view;
+        return component;
     }
 }

@@ -16,14 +16,13 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.mvvm4fx.core.ChildView;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
 import com.techsenger.tabshell.material.pane.SplitPaneDividerBinder;
+import com.techsenger.tabshell.core.area.AreaView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.LEFT;
@@ -38,17 +37,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaView<T> {
+public class SplitSpaceView<T extends SplitSpaceViewModel, S extends SplitSpaceComponent<?>>
+        extends AbstractAreaView<T, S> {
 
     private static final Logger logger = LoggerFactory.getLogger(SplitSpaceView.class);
 
-    private final DockLayoutView<?> layout;
-
     private final SplitPane splitPane = new SplitPane();
 
-    protected SplitSpaceView(DockLayoutView<?> layout, T viewModel) {
+    protected SplitSpaceView(T viewModel) {
         super(viewModel);
-        this.layout = layout;
     }
 
     @Override
@@ -62,46 +59,19 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
-        this.splitPane.setOrientation(viewModel.getOrientation());
+    protected void build() {
+        super.build();
+        this.splitPane.setOrientation(getViewModel().getOrientation());
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
-        new SplitPaneDividerBinder(splitPane, viewModel.getDividerPositions());
-    }
-
-    @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
-        getChildren().addListener((ListChangeListener<ChildView<?>>) (change) -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    int startIndex = change.getFrom();
-                    int endIndex = change.getTo();
-                    List<? extends ChildView<?>> addedElements = change.getAddedSubList();
-                    for (int i = 0; i < addedElements.size(); i++) {
-                        int actualIndex = startIndex + i;
-                        AbstractAreaView<?> child = (AbstractAreaView<?>) addedElements.get(i);
-                        addChild(child, actualIndex);
-                    }
-                }
-                if (change.wasRemoved()) {
-                    int removedFrom = change.getFrom();
-                    List<? extends ChildView<?>> removedItems = change.getRemoved();
-                    for (int i = 0; i < removedItems.size(); i++) {
-                        int oldIndex = removedFrom + i;
-                        removeChild(oldIndex);
-                    }
-                }
-            }
-        });
+    protected void bind() {
+        super.bind();
+        new SplitPaneDividerBinder(splitPane, getViewModel().getDividerPositions());
     }
 
     void logState(String note) {
-        logger.debug("{} {} child sizes: {}, dividers: {}", getDescriptor().getLogPrefix(), note,
+        logger.debug("{} {} child sizes: {}, dividers: {}", getComponent().getLogPrefix(), note,
                 getChildSizes(), this.splitPane.getDividerPositions());
     }
 
@@ -135,7 +105,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
         }
         getNode().setDividerPositions(newPositions);
         logger.debug("{} Updated dividers on half split; oldPositions: {}, newPositions: {}",
-                getDescriptor().getLogPrefix(), oldPositions, newPositions);
+                getComponent().getLogPrefix(), oldPositions, newPositions);
     }
 
     /**
@@ -173,7 +143,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
         }
         getNode().setDividerPositions(newPositions);
         logger.debug("{} Updated dividers on third split; oldPositions: {}, newPositions: {}",
-                getDescriptor().getLogPrefix(), oldPositions, newPositions);
+                getComponent().getLogPrefix(), oldPositions, newPositions);
     }
 
     /**
@@ -243,7 +213,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
         }
         getNode().setDividerPositions(newPositions);
         logger.debug("{} Updated dividers on insert between; oldPositions: {}, newPositions: {}",
-                getDescriptor().getLogPrefix(), oldPositions, newPositions);
+                getComponent().getLogPrefix(), oldPositions, newPositions);
     }
 
     /**
@@ -289,7 +259,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
 
         getNode().setDividerPositions(newPositions);
         logger.debug("{} Updated dividers on unwrap; oldPositions: {}, childPositions: {}, newPositions: {}",
-                getDescriptor().getLogPrefix(), oldPositions, childPositions, newPositions);
+                getComponent().getLogPrefix(), oldPositions, childPositions, newPositions);
     }
 
     /**
@@ -329,7 +299,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
             newPositions[0] = Math.max(0.0, Math.min(1.0, newPositions[0]));
 
             logger.debug("{} Initial dividers setup with main; newSize: {}, flexibleChildIndex: {}, "
-                    + "newChildIndex: {}, newChildSize: {}, newPositions: {}", getDescriptor().getLogPrefix(),
+                    + "newChildIndex: {}, newChildSize: {}, newPositions: {}", getComponent().getLogPrefix(),
                     newSize, flexibleChildIndex, newChildIndex, newChildSize, newPositions);
             splitPane.setDividerPositions(newPositions);
             return;
@@ -396,7 +366,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
 
         logger.debug("{} Updated dividers on add with main; oldSize: {}, newSize: {}, flexibleChildIndex: {}, "
                 + "newChildIndex: {}, newChildSize: {}, oldPositions: {}, newPositions: {}",
-                getDescriptor().getLogPrefix(), oldSize, newSize, flexibleChildIndex, newChildIndex, newChildSize,
+                getComponent().getLogPrefix(), oldSize, newSize, flexibleChildIndex, newChildIndex, newChildSize,
                 oldPositions, newPositions);
 
         splitPane.setDividerPositions(newPositions);
@@ -464,7 +434,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
         }
 
         logger.debug("{} Updated dividers on remove with main; oldSize: {}, newSize: {}, flexibleChildIndex: {}, "
-                + "removedChildIndex: {}, oldPositions: {}, newPositions: {}", getDescriptor().getLogPrefix(),
+                + "removedChildIndex: {}, oldPositions: {}, newPositions: {}", getComponent().getLogPrefix(),
                 oldSize, newSize, flexibleChildIndex, removedChildIndex, oldPositions, newPositions);
         splitPane.setDividerPositions(newPositions);
     }
@@ -513,7 +483,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
             newPositions[0] = Math.max(0.0, Math.min(1.0, newPositions[0]));
 
             logger.debug("{} Initial dividers setup; newSize: {}, newChildIndex: {}, newChildSize: {}, "
-                    + "newPositions: {}", getDescriptor().getLogPrefix(), newSize, newChildIndex, newChildSize,
+                    + "newPositions: {}", getComponent().getLogPrefix(), newSize, newChildIndex, newChildSize,
                     newPositions);
 
             splitPane.setDividerPositions(newPositions);
@@ -626,7 +596,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
 
         logger.debug("{} Updated dividers on resize and add without main; oldSize: {}, newSize: {}, "
                 + "newChildIndex: {}, newChildSize: {}, oldPositions: {}, newPositions: {}",
-                getDescriptor().getLogPrefix(), oldSize, newSize, newChildIndex, newChildSize, oldPositions,
+                getComponent().getLogPrefix(), oldSize, newSize, newChildIndex, newChildSize, oldPositions,
                 newPositions);
 
         splitPane.setDividerPositions(newPositions);
@@ -725,7 +695,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
         }
 
         logger.debug("{} Updated dividers on remove without main; oldSize: {}, newSize: {}, "
-                + "removedChildIndex: {}, oldPositions: {}, newPositions: {}", getDescriptor().getLogPrefix(),
+                + "removedChildIndex: {}, oldPositions: {}, newPositions: {}", getComponent().getLogPrefix(),
                 oldSize, newSize, removedChildIndex, oldPositions, newPositions);
         splitPane.setDividerPositions(newPositions);
     }
@@ -757,8 +727,23 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
         }
         double totalDividersSize = paneSize - totalItemsSize;
         double dividerSize = totalDividersSize / (splitPane.getItems().size() - 1);
-        logger.debug("{} Computed dividerSize: {}", getDescriptor().getLogPrefix(), dividerSize);
+        logger.debug("{} Computed dividerSize: {}", getComponent().getLogPrefix(), dividerSize);
         return dividerSize;
+    }
+
+    void addChild(AreaView<?, ?> child) {
+        Node container = getComponent().getLayout().getView().createContainer(child);
+        splitPane.getItems().add(container);
+    }
+
+    void addChild(int index, AreaView<?, ?> child) {
+        Node container = getComponent().getLayout().getView().createContainer(child);
+        splitPane.getItems().add(index, container);
+    }
+
+    void removeChild(int childIndex) {
+        StackPane container = (StackPane) splitPane.getItems().remove(childIndex);
+        getComponent().getLayout().getView().destroyContainer(container);
     }
 
     /**
@@ -778,23 +763,13 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
         return sizes;
     }
 
-    private void addChild(AbstractAreaView<?> child, int index) {
-        Node container = this.layout.createContainer(child);
-        splitPane.getItems().add(index, container);
-    }
-
-    private void removeChild(int childIndex) {
-        StackPane container = (StackPane) splitPane.getItems().remove(childIndex); // removing container
-        this.layout.destroyContainer(container);
-    }
-
     private double computeOldSize(double oldSize, double[] oldPositions, double dividerSize) {
         var dividersCount = 0;
         if (oldPositions.length > 0) {
             dividersCount = splitPane.getItems().size() - 1;
         }
         var oldSizeWithoutDividers = oldSize - (dividersCount * dividerSize);
-        logger.debug("{} SplitPane total old size: {}, without dividers: {}", getDescriptor().getLogPrefix(),
+        logger.debug("{} SplitPane total old size: {}, without dividers: {}", getComponent().getLogPrefix(),
                 oldSize, oldSizeWithoutDividers);
         return oldSizeWithoutDividers;
     }
@@ -809,7 +784,7 @@ public class SplitSpaceView<T extends SplitSpaceViewModel> extends AbstractAreaV
             dividersCount = splitPane.getItems().size() - 1;
         }
         var newSizeWithoutDividers = newSize - (dividersCount * dividerSize);
-        logger.debug("{} SplitPane total new size: {}, without dividers: {}", getDescriptor().getLogPrefix(),
+        logger.debug("{} SplitPane total new size: {}, without dividers: {}", getComponent().getLogPrefix(),
                 newSize, newSizeWithoutDividers);
         return newSizeWithoutDividers;
     }

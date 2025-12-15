@@ -16,66 +16,22 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class SideBarViewModel extends AbstractAreaViewModel {
+public class SideBarViewModel<T extends SideBarMediator> extends AbstractAreaViewModel<T> {
 
     private final Side side;
 
-    private final SideBarHistory<?> history;
-
-    private final ObservableList<TabDockViewModel> modifiableTabDocks = FXCollections.observableArrayList();
-
-    private final ObservableList<? extends TabDockViewModel> tabDocks =
-            FXCollections.unmodifiableObservableList(modifiableTabDocks);
-
-    private TabPopupViewModel popup;
-
-    public SideBarViewModel(Side side, SideBarHistory<?> history) {
+    public SideBarViewModel(Side side) {
         this.side = side;
-        this.history = history;
     }
 
     public Side getSide() {
         return side;
-    }
-
-    /**
-     * Returns an unmodifiable list of minimized tab docks.
-     *
-     * @return
-     */
-    public ObservableList<? extends TabDockViewModel> getTabDocks() {
-        return tabDocks;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponentNames.SIDE_BAR);
-    }
-
-    protected TabPopupViewModel createPopup() {
-        return new TabPopupViewModel(this, this.history.getOrCreatePopup());
-    }
-
-    protected TabPopupViewModel getPopup() {
-        return popup;
-    }
-
-    ObservableList<TabDockViewModel> getModifiableTabDocks() {
-        return modifiableTabDocks;
-    }
-
-    void setPopup(TabPopupViewModel popup) {
-        this.popup = popup;
     }
 }

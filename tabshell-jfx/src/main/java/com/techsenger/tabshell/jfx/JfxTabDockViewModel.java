@@ -16,8 +16,6 @@
 
 package com.techsenger.tabshell.jfx;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.layout.dock.TabDockViewModel;
 import devtoolsfx.event.NodeSelectedEvent;
 
@@ -25,17 +23,10 @@ import devtoolsfx.event.NodeSelectedEvent;
  *
  * @author Pavel Castornii
  */
-public class JfxTabDockViewModel extends TabDockViewModel {
+public class JfxTabDockViewModel<T extends JfxTabDockMediator> extends TabDockViewModel<T> {
 
-    private final ShellTabViewModel shellTab;
+    public JfxTabDockViewModel() {
 
-    public JfxTabDockViewModel(ShellTabViewModel shellTab) {
-        this.shellTab = shellTab;
-    }
-
-    @Override
-    public JfxTabDockMediator getMediator() {
-        return (JfxTabDockMediator) super.getMediator();
     }
 
     @Override
@@ -44,15 +35,6 @@ public class JfxTabDockViewModel extends TabDockViewModel {
         getMediator().getConnector().getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
             getMediator().getConnector().getOptions().setInspectMode(false);
         });
-    }
-
-    protected ShellTabViewModel getShellTab() {
-        return shellTab;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(JfxComponentNames.JFX_TAB_DOCK);
     }
 
     void updateInspectMode() {

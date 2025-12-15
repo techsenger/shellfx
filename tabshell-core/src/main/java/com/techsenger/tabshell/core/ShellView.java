@@ -16,13 +16,12 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.mvvm4fx.core.ComponentView;
-import com.techsenger.tabshell.core.dialog.DialogManager;
+import com.techsenger.patternfx.core.ParentView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabContainerView;
+import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
 import javafx.application.HostServices;
 import javafx.stage.Stage;
@@ -32,17 +31,8 @@ import javafx.stage.Stage;
  *
  * @author Pavel Castornii
  */
-public interface ShellView<T extends ShellViewModel> extends ComponentView<T>, TabContainerView<ShellTabView<?>>,
-        MenuAware, CloseableView {
-
-    @Override
-    void openTab(ShellTabView<?> tabView);
-
-    @Override
-    void closeTab(ShellTabView<?> tabView);
-
-    @Override
-    ShellTabView<?> getSelectedTab();
+public interface ShellView<T extends ShellViewModel<?>, S extends ShellComponent<?>>
+        extends ParentView<T, S>, MenuAware, TabContainerView<ShellTabView<?, ?>> {
 
     /**
      * Returns the control registry. There can be only one registry in the application.
@@ -64,13 +54,6 @@ public interface ShellView<T extends ShellViewModel> extends ComponentView<T>, T
     void updateMenuBar();
 
     /**
-     * Returns dialog manager.
-     *
-     * @return
-     */
-    DialogManager getDialogManager();
-
-    /**
      * Adds stylesheets to TabShell.
      *
      * @param sheets
@@ -83,9 +66,6 @@ public interface ShellView<T extends ShellViewModel> extends ComponentView<T>, T
      * @param sheets
      */
     void removeStylesheets(List<Stylesheet> sheets);
-
-    @Override
-    void close();
 
     /**
      * Returns application host services.

@@ -16,10 +16,9 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
-import com.techsenger.tabshell.core.tab.ShellTabViewModel;
-import com.techsenger.tabshell.jfx.JfxComponentNames;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import devtoolsfx.connector.Connector;
@@ -35,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
@@ -42,7 +42,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  *
  * @author Pavel Castornii
  */
-public class JfxInspectorTabViewModel extends AbstractTabViewModel {
+public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends AbstractTabViewModel<T> {
 
     private static Map<AttributeCategory, PropertyInfo> createAttributeInfosByCategory() {
         var map = new HashMap<AttributeCategory, PropertyInfo>();
@@ -83,12 +83,9 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
 
     private int windowUid;
 
-    private ShellTabViewModel shellTab;
-
     private HighlightOptions highlightOptions = new HighlightOptions(true, false, false);
 
-    public JfxInspectorTabViewModel(ShellTabViewModel shellTab, Connector connector) {
-        this.shellTab = shellTab;
+    public JfxInspectorTabViewModel(Connector connector) {
         this.connector = connector;
         setTitle("Inspector");
         setClosable(false);
@@ -132,13 +129,13 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
     }
 
     @Override
-    public JfxInspectorMediator getMediator() {
-        return (JfxInspectorMediator) super.getMediator();
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(JfxComponentNames.JFX_INSPECTOR_TAB);
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -176,12 +173,8 @@ public class JfxInspectorTabViewModel extends AbstractTabViewModel {
         }
         var field = info.getAttribute().field();
         String declaringClassName = this.connector.getDeclaringClass(element.getClassInfo().className(), field);
-        var vm = new PropertyDialogViewModel(shellTab, element, info, declaringClassName);
-        getMediator().openPropertyDialog(vm);
-    }
-
-    protected ShellTabViewModel getShellTab() {
-        return shellTab;
+        var vm = new PropertyDialogViewModel(element, info, declaringClassName);
+        getMediator().addPropertyDialog(vm);
     }
 
     void setRootElement(Element element) {

@@ -16,19 +16,19 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import com.techsenger.tabshell.material.table.TableColumnHistory;
 import com.techsenger.tabshell.material.table.TableHistory;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.storage.FileColumnNames;
 import com.techsenger.tabshell.storage.FileStorage;
 import static com.techsenger.tabshell.storage.FileStorageType.BASE;
@@ -45,6 +45,7 @@ import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -62,13 +63,12 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
+public class FileChooserDialogViewModel<T extends FileChooserDialogMediator> extends AbstractSimpleDialogViewModel<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileChooserDialogViewModel.class);
 
@@ -157,9 +157,6 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
             default:
                 throw new AssertionError();
         }
-        getDescriptor().setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(FileChooserDialogHistory.class,
-                FileChooserDialogHistory::new));
         setButtonWidthEqual(true);
         setCancelVisible(true);
 
@@ -349,8 +346,13 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DialogComponentNames.FILE_CHOOSER_DIALOG);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     protected void updateFiles(GenericFile selectedFile) {
@@ -471,7 +473,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
             this.storage.get().createDirectory(dirUri);
             updateFiles(file);
         } catch (Exception ex) {
-            logger.error("{} Error creating new directory at {}", getDescriptor().getLogPrefix(), dirUri, ex);
+            logger.error("{} Error creating new directory at {}", getMediator().getLogPrefix(), dirUri, ex);
         }
     }
 
@@ -480,7 +482,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
             this.storage.get().renameFile(newFile.getUri(), newFile.getName());
             updateFiles(newFile);
         } catch (Exception ex) {
-            logger.error("{} Error renaming file at {} to {}", getDescriptor().getLogPrefix(), newFile.getUri(),
+            logger.error("{} Error renaming file at {} to {}", getMediator().getLogPrefix(), newFile.getUri(),
                     newFile.getName(), ex);
         }
     }
@@ -563,7 +565,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
 
     private void showWarning(String text) {
         var alerViewModel = new AlertDialogViewModel(getScope(), AlertDialogType.WARNING, text);
-        getMediator().openAlertDialog(alerViewModel);
+        getMediator().addAlertDialog(alerViewModel);
     }
 
     private void setDefaultStorageAndDirectory() {
@@ -577,7 +579,7 @@ public class FileChooserDialogViewModel extends AbstractSimpleDialogViewModel {
         try {
             return this.storage.get().getFiles(directory.get());
         } catch (Exception ex) {
-            logger.error("{} Error getting files at {}", getDescriptor().getLogPrefix(), this.directory.get(), ex);
+            logger.error("{} Error getting files at {}", getMediator().getLogPrefix(), this.directory.get(), ex);
         }
         return null;
     }

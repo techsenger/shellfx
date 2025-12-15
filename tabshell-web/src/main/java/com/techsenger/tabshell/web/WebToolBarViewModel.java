@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
+import com.techsenger.tabshell.core.area.AreaMediator;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,7 +27,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public class WebToolBarViewModel extends AbstractAreaViewModel {
+public class WebToolBarViewModel extends AbstractAreaViewModel<AreaMediator> {
 
     private final BooleanProperty backDisable = new SimpleBooleanProperty(true);
 
@@ -36,11 +36,6 @@ public class WebToolBarViewModel extends AbstractAreaViewModel {
     private final BooleanProperty reloadDisable = new SimpleBooleanProperty(true);
 
     private final StringProperty url = new SimpleStringProperty();
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(WebComponentNames.WEB_TOOL_BAR);
-    }
 
     public boolean isBackDisable() {
         return backDisable.get();

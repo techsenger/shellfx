@@ -16,12 +16,13 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
+import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.text.TextComponentNames;
+import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
+import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -31,7 +32,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
+public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<SimpleDialogMediator> {
 
     private final ObjectProperty<Integer> line = new SimpleObjectProperty<>();
 
@@ -41,11 +42,8 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
 
     private final ObservableList<Integer> columns = FXCollections.observableArrayList();
 
-    GoToLineDialogViewModel(HistoryManager historyManager) {
+    GoToLineDialogViewModel() {
         super(DialogScope.TAB, false);
-        getDescriptor().setHistoryPolicy(HistoryPolicy.DATA);
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(GoToLineDialogHistory.class,
-                GoToLineDialogHistory::new));
         prefWidthProperty().set(400);
         titleProperty().set("Go To Line");
         okDisableProperty().set(true);
@@ -86,15 +84,20 @@ class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel {
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(TextComponentNames.GO_TO_LINE_DIALOG);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     protected void postHistoryRestore() {
         super.postHistoryRestore();
         //history is always loaded but not always saved
-        getDescriptor().setHistoryPolicy(HistoryPolicy.NONE);
+        getMediator().setHistoryPolicy(HistoryPolicy.NONE);
     }
 
     /**

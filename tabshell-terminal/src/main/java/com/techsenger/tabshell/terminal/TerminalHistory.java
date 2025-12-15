@@ -22,18 +22,18 @@ import com.techsenger.tabshell.core.tab.AbstractShellTabHistory;
  *
  * @author Pavel Castornii
  */
-public class TerminalHistory extends AbstractShellTabHistory<TerminalTabViewModel> {
+public class TerminalHistory<T extends TerminalTabViewModel<?>> extends AbstractShellTabHistory<T> {
 
     private TerminalPaletteType paletteType;
 
     @Override
-    public void saveAppearance(TerminalTabViewModel viewModel) {
+    public void saveAppearance(T viewModel) {
         super.saveAppearance(viewModel);
         this.paletteType = viewModel.paletteTypeProperty().get();
     }
 
     @Override
-    public void restoreAppearance(TerminalTabViewModel viewModel) {
+    public void restoreAppearance(T viewModel) {
         super.restoreAppearance(viewModel);
         viewModel.paletteTypeProperty().set(paletteType);
     }

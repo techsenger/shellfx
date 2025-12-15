@@ -43,7 +43,8 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> extends AbstractAreaView<T> {
+public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel, S extends AbstractFindPaneComponent<?>>
+        extends AbstractAreaView<T, S> {
 
     protected static final String FOUND_STYLE_CLASS = "found";
 
@@ -103,8 +104,8 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         var css = AbstractFindPaneView.class.getResource("find.css").toExternalForm();
         this.gridPane.getStylesheets().add(css);
         this.gridPane.getStyleClass().add("find");
@@ -124,7 +125,7 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
         GridPane.setVgrow(this.findLabelWrapper, Priority.ALWAYS);
         this.findComboBox.setEditable(true);
         this.findComboBox.getStyleClass().addAll(Styles.DENSE, StyleClasses.NO_SELECTED);
-        this.findComboBox.setItems(viewModel.getFindTexts());
+        this.findComboBox.setItems(getViewModel().getFindTexts());
         this.resultLabel.getStyleClass().add(RESULT_LABEL_STYLE_CLASS);
         StackPane.setMargin(this.resultLabel, new Insets(0, SizeConstants.INSET * 2, 0, 0));
         this.findComboBoxWrapper.setAlignment(Pos.CENTER_RIGHT);
@@ -169,8 +170,9 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         this.findComboBox.maxWidthProperty().bind(this.findComboBoxWrapper.widthProperty().subtract(1));
         this.findComboBox.getEditor().textProperty().bindBidirectional(viewModel.findTextProperty());
         this.wholeWordButton.selectedProperty().bindBidirectional(viewModel.wholeWordSelectedProperty());
@@ -184,8 +186,9 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         this.caseButton.setOnAction((event) -> viewModel.resetMatches());
         this.wholeWordButton.setOnAction((event) -> viewModel.resetMatches());
         this.regExpButton.setOnAction((event) -> viewModel.resetMatches());
@@ -193,8 +196,9 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel> 
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         viewModel.notFoundProperty().addListener((ov, oldV, newV) -> {
             if (Boolean.TRUE.equals(newV)) {
                 this.findComboBox.getEditor().pseudoClassStateChanged(Styles.STATE_DANGER, true);

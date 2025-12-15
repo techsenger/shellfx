@@ -19,27 +19,20 @@ package com.techsenger.tabshell.layout.tabhost;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import com.techsenger.tabshell.core.CloseScope;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
-import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerView;
 import com.techsenger.tabshell.core.tab.TabContainerViewUtils;
 import com.techsenger.tabshell.core.tab.TabView;
-import com.techsenger.tabshell.core.tab.TabViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
-import com.techsenger.toolkit.fx.collections.ListSynchronizer;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.ListChangeListener;
-import javafx.scene.control.Tab;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -50,73 +43,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
-        implements TabContainerView<TabView<?>>, MenuAware {
+public class TabHostView<T extends TabHostViewModel<?>, S extends TabHostComponent<?>>
+        extends AbstractAreaView<T, S> implements MenuAware, TabContainerView<TabView<?, ?>> {
 
     private static final Logger logger = LoggerFactory.getLogger(TabHostView.class);
 
     private final TabPanePro root = new TabPanePro();
 
-    private final ReadOnlyObjectWrapper<TabView<?>> selectedTab = new ReadOnlyObjectWrapper<>();
-
-    private List<? extends TabView<?>> detachedTabs = Collections.EMPTY_LIST;
+    private List<? extends TabView<?, ?>> detachedTabs = Collections.EMPTY_LIST;
 
     private int selectedIndex;
 
-    private final ListSynchronizer<Tab, TabViewModel> tabsSynchronizer;
-
     public TabHostView(T viewModel) {
         super(viewModel);
-        this.tabsSynchronizer = new ListSynchronizer<Tab, TabViewModel>(this.root.getTabs(),
-                viewModel.getModifiableTabs(),
-                t -> {
-                    var tabView = ((ComponentTab) t).getView();
-                    return tabView.getViewModel();
-                },
-                t -> {
-                    var tabView = ((ComponentTab) t).getView();
-                    tabView.setParent(this);
-                },
-                t -> {
-                    var tabView = ((ComponentTab) t).getView();
-                    tabView.setParent(null);
-                });
     }
 
     @Override
-    public void openTab(TabView<?> tabView) {
-        root.getTabs().add(tabView.getNode());
-    }
-
-    @Override
-    public void closeTab(ComponentTab tab) {
-        this.closeTab(tab.getView());
-    }
-
-    @Override
-    public void closeTab(TabView<?> tabView) {
-        if (tabView.doOnCloseAttempt(CloseScope.TAB, () -> closeTab(tabView))) {
-            root.getTabs().remove(tabView.getNode());
-            tabView.deinitialize();
-            var closedCallback = tabView.getViewModel().getOnClosed();
-            if (closedCallback != null) {
-                closedCallback.call();
-            }
-        }
-    }
-
-    @Override
-    public TabView<?> getSelectedTab() {
+    public TabView<?, ?> getSelectedTab() {
         var tab = this.root.getSelectionModel().getSelectedItem();
         return ((ComponentTab) tab).getView();
-    }
-
-    public List<? extends TabView<?>> getTabs() {
-        return (List) this.root.getTabs().stream().map(e -> ((ComponentTab) e).getView()).collect(Collectors.toList());
-    }
-
-    public ReadOnlyObjectProperty<TabView<?>> selectedTabProperty() {
-        return this.selectedTab.getReadOnlyProperty();
     }
 
     @Override
@@ -134,7 +79,7 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
 
     @Override
     public void doOnMenuShowing(MenuName menuName) {
-        var tab = this.selectedTab.get();
+        var tab = getSelectedTab();
         if (tab != null) {
             tab.doOnMenuShowing(menuName);
         }
@@ -142,7 +87,7 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
 
     @Override
     public void doOnMenuHiding(MenuName menuName) {
-        var tab = this.selectedTab.get();
+        var tab = getSelectedTab();
         if (tab != null) {
             tab.doOnMenuHiding(menuName);
         }
@@ -150,7 +95,7 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
 
     @Override
     public MenuHelper getMenuHelper(MenuName menuName) {
-        var tab = this.selectedTab.get();
+        var tab = getSelectedTab();
         if (tab != null) {
             return tab.getMenuHelper(menuName);
         } else {
@@ -160,7 +105,7 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
 
     @Override
     public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-        var tab = this.selectedTab.get();
+        var tab = getSelectedTab();
         if (tab != null) {
             return tab.getMenuItemHelper(menuItemName);
         } else {
@@ -173,7 +118,7 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
      *
      * @return
      */
-    public List<? extends TabView<?>> getDetachedTabs() {
+    public List<? extends TabView<?, ?>> getDetachedTabs() {
         return detachedTabs;
     }
 
@@ -189,7 +134,7 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
             this.detachedTabs = Collections.EMPTY_LIST;
             getViewModel().setDetachedTabs(Collections.EMPTY_LIST);
             getViewModel().setTabsDetached(false);
-            logger.debug("{} Attached tabs", getViewModel().getDescriptor().getLogPrefix());
+            logger.debug("{} Attached tabs", getComponent().getLogPrefix());
         }
     }
 
@@ -206,36 +151,22 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
             getViewModel().setDetachedTabs(detachedTabsVM);
             this.root.getTabs().clear();
             getViewModel().setTabsDetached(true);
-            logger.debug("{} Detached tabs", getViewModel().getDescriptor().getLogPrefix());
+            logger.debug("{} Detached tabs", getComponent().getLogPrefix());
         }
     }
 
     @Override
-    public AbstractTabHostComposer<?> getComposer() {
-        return (AbstractTabHostComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected AbstractTabHostComposer<?> createComposer() {
-        return (AbstractTabHostComposer<?>) super.createComposer();
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
-        TabContainerViewUtils.initTabPane(root, this);
+    protected void build() {
+        super.build();
+        TabContainerViewUtils.initTabPane(root, getViewModel());
         this.root.getStyleClass().add(Styles.DENSE);
         VBox.setVgrow(this.root, Priority.ALWAYS);
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
-    }
-
-    @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         this.root.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (oldV != null) {
                 var tab = (ComponentTab) oldV;
@@ -243,29 +174,10 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
             }
             if (newV != null) {
                 var tab = (ComponentTab) newV;
-                this.selectedTab.set(tab.getView());
                 viewModel.selectedTabWrapper().set(tab.getView().getViewModel());
                 tab.getView().doOnSelected();
             } else {
-                this.selectedTab.set(null);
                 viewModel.selectedTabWrapper().set(null);
-            }
-        });
-        this.root.getTabs().addListener((ListChangeListener<? super Tab>) (change) -> {
-
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    for (Tab tab : change.getAddedSubList()) {
-                        var tabView = ((ComponentTab) tab).getView();
-                        tabView.setParent(this);
-                    }
-                }
-                if (change.wasRemoved()) {
-                    for (Tab tab : change.getRemoved()) {
-                        var tabView = ((ComponentTab) tab).getView();
-                        tabView.setParent(null);
-                    }
-                }
             }
         });
         viewModel.tabHeaderVisibleProperty().addListener((ov, oldV, newV) -> {
@@ -279,14 +191,6 @@ public class TabHostView<T extends TabHostViewModel> extends AbstractAreaView<T>
                 this.root.getSelectionModel().select(newV.intValue()));
         this.root.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
                 viewModel.selectedTabIndexWrapper().set(newV.intValue()));
-    }
-
-    @Override
-    protected void postDeinitialize(T viewModel) {
-        super.postDeinitialize(viewModel);
-        for (var t : this.root.getTabs()) {
-            ((ComponentTab) t).getView().deinitialize();
-        }
     }
 
     protected TabPaneProSkin.TabHeaderArea getTabHeaderArea() {

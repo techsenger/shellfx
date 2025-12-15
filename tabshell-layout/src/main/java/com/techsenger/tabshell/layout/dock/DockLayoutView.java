@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.mvvm4fx.core.ChildView;
-import com.techsenger.mvvm4fx.core.ComponentView;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
 import com.techsenger.tabshell.core.area.AbstractAreaView;
+import com.techsenger.tabshell.core.area.AreaComponent;
+import com.techsenger.tabshell.core.area.AreaView;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_HALF;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
@@ -36,10 +36,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Dimension2D;
@@ -121,7 +117,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaView<T> {
+public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayoutComponent<?>>
+        extends AbstractAreaView<T, S> {
 
     private static final Logger logger = LoggerFactory.getLogger(DockLayoutView.class);
 
@@ -151,39 +148,39 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * <p>Containers are created when components are added to the {@link SplitSpaceView} and destroyed when they are
      * removed from there.
      */
-    private abstract static class AbstractContainer<T extends AbstractAreaView<?>> extends StackPane {
+    private abstract static class AbstractContainer<T extends AreaView<?, ?>> extends StackPane {
 
-        private final DockLayoutView<?> layout;
+        private final DockLayoutView<?, ?> layout;
 
-        private final T component;
+        private final T area;
 
-        AbstractContainer(DockLayoutView<?> layout, T component) {
+        AbstractContainer(DockLayoutView<?, ?> layout, T area) {
             this.layout = layout;
-            this.component = component;
-            getChildren().add(component.getNode());
+            this.area = area;
+            getChildren().add(area.getNode());
         }
 
-        DockLayoutView<?> getLayout() {
+        DockLayoutView<?, ?> getLayout() {
             return layout;
         }
 
-        T getComponent() {
-            return component;
+        T getArea() {
+            return area;
         }
 
         abstract void updateDragInProgress(boolean value, DraggableType type);
 
         ContainerInfo createInfo() {
             ContainerInfo result;
-            if (component != layout.getRoot()) {
-                result = createInfo((SplitSpaceView<?>) component.getParent());
+            if (area != layout.getComponent().getRoot().getView()) {
+                result = createInfo((SplitSpaceView<?, ?>) area.getComponent().getParent().getView());
             } else {
                 result = createInfo(null);
             }
             return result;
         }
 
-        ContainerInfo createInfo(SplitSpaceView<?> parent) {
+        ContainerInfo createInfo(SplitSpaceView<?, ?> parent) {
             if (parent != null) {
                 var parentSplitPane = parent.getNode();
                 var containerIndex = parentSplitPane.getItems().indexOf(this);
@@ -194,12 +191,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
     }
 
-    private static class SplitSpaceContainer extends AbstractContainer<SplitSpaceView<?>> {
+    private static class SplitSpaceContainer extends AbstractContainer<SplitSpaceView<?, ?>> {
 
         private final Rectangle indicator = createIndicator();
 
-        SplitSpaceContainer(DockLayoutView<?> layout, SplitSpaceView<?> component) {
-            super(layout, component);
+        SplitSpaceContainer(DockLayoutView<?, ?> layout, SplitSpaceView<?, ?> view) {
+            super(layout, view);
             this.indicator.setMouseTransparent(true);
         }
 
@@ -244,13 +241,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * {@link AbstractEventContainer}.
      *
      */
-    private abstract static class AbstractEventContainer<T extends AbstractAreaView<?>>
+    private abstract static class AbstractEventContainer<T extends AreaView<?, ?>>
             extends AbstractContainer<T> {
 
         private final Pane eventPane = new Pane();
 
-        AbstractEventContainer(DockLayoutView<?> layout, T component) {
-            super(layout, component);
+        AbstractEventContainer(DockLayoutView<?, ?> layout, T area) {
+            super(layout, area);
             eventPane.setMouseTransparent(false);
             // eventPane.setStyle("-fx-background-color: yellow");
             eventPane.setOnMouseDragOver(e -> getLayout().handleContainerMouseDragOver(provideMousePosition(e)));
@@ -313,23 +310,23 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
     }
 
-    private static class MainContainer extends AbstractEventContainer<AbstractAreaView<?>> {
+    private static class MainContainer extends AbstractEventContainer<AreaView<?, ?>> {
 
-        MainContainer(DockLayoutView<?> layout, AbstractAreaView<?> component) {
-            super(layout, component);
+        MainContainer(DockLayoutView<?, ?> layout, AreaView<?, ?> area) {
+            super(layout, area);
         }
 
     }
 
-    private static class TabDockContainer extends AbstractEventContainer<TabDockView<?>> {
+    private static class TabDockContainer extends AbstractEventContainer<TabDockView<?, ?>> {
 
-        TabDockContainer(DockLayoutView<?> layout, TabDockView<?> component) {
-            super(layout, component);
+        TabDockContainer(DockLayoutView<?, ?> layout, TabDockView<?, ?> tabDock) {
+            super(layout, tabDock);
         }
 
         @Override
         Insets provideEventPanePadding() {
-            TabPanePro tabPane = getComponent().getNode();
+            TabPanePro tabPane = getArea().getNode();
             TabPaneProSkin sourceSkin = (TabPaneProSkin) tabPane.getSkin();
             TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
             return new Insets(tabHeaderArea.getHeight(), 0, 0, 0);
@@ -378,7 +375,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
             if (this.index == -1) { // root
                 return false;
             }
-            var splitPane = ((SplitSpaceView<?>) container.getComponent().getParent()).getNode();
+            var splitPane = ((SplitSpaceView<?, ?>) container.getArea().getComponent().getParent().getView()).getNode();
             return index == splitPane.getItems().size() - 1;
         }
 
@@ -424,7 +421,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         /**
          * Creates and returns a new TabDock.
          */
-        private Function<DockInfo, TabDockView<?>> factory;
+        private Function<DockInfo, TabDockView<?, ?>> factory;
 
         private boolean valid;
 
@@ -448,11 +445,11 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
             this.indicatorBounds = indicatorBounds;
         }
 
-        public Function<DockInfo, TabDockView<?>> getFactory() {
+        public Function<DockInfo, TabDockView<?, ?>> getFactory() {
             return factory;
         }
 
-        public void setFactory(Function<DockInfo, TabDockView<?>> factory) {
+        public void setFactory(Function<DockInfo, TabDockView<?, ?>> factory) {
             this.factory = factory;
         }
 
@@ -522,35 +519,27 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
     }
 
-    private static String getFullName(ComponentView<?> c) {
-        return c.getViewModel().getDescriptor().getFullName();
-    }
-
     /**
      * Returns the existing container node for a component that is currently on the scene.
-     * @param component
+     * @param view
      * @return
      */
-    private static AbstractContainer<?> getContainer(AbstractAreaView<?> component) {
-        return (AbstractContainer<?>) component.getNode().getParent();
+    private static AbstractContainer<?> getContainer(AreaView<?, ?> view) {
+        return (AbstractContainer<?>) view.getNode().getParent();
     }
 
-    private static TabDockContainer getContainer(TabDockView<?> component) {
-        return (TabDockContainer) component.getNode().getParent();
+    private static TabDockContainer getContainer(TabDockView<?, ?> view) {
+        return (TabDockContainer) view.getNode().getParent();
     }
 
-    private static SplitSpaceContainer getContainer(SplitSpaceView<?> component) {
-        return (SplitSpaceContainer) component.getNode().getParent();
-    }
-
-    private static UUID getUuid(AbstractAreaView<?> component) {
-        return component.getViewModel().getDescriptor().getUuid();
+    private static SplitSpaceContainer getContainer(SplitSpaceView<?, ?> view) {
+        return (SplitSpaceContainer) view.getNode().getParent();
     }
 
     private static Bounds createTabPaneIndicatorBounds(MousePosition position, TabDockContainer tabDockContainer) {
         var eventContainer = position.getEventContainer();
         var eventSceneXY = getSceneXY(eventContainer);
-        TabPaneProSkin skin = (TabPaneProSkin) tabDockContainer.getComponent().getNode().getSkin();
+        TabPaneProSkin skin = (TabPaneProSkin) tabDockContainer.getArea().getNode().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = skin.getTabHeaderArea();
         return new BoundingBox(
                 Math.floor(eventSceneXY.getFirst()),
@@ -637,7 +626,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
     private static Bounds createIntermediateIndicatorBounds(Side side, ContainerInfo parentInfo,
             ContainerInfo anchorInfo, ContainerInfo siblingInfo) {
         SplitSpaceContainer splitSpaceContainer = (SplitSpaceContainer) parentInfo.getContainer();
-        var splitPane = splitSpaceContainer.getComponent().getNode();
+        var splitPane = splitSpaceContainer.getArea().getNode();
         var anchorContainer = anchorInfo.getContainer();
 
         double width;
@@ -730,7 +719,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
 
     private static ContainerInfo createSiblingInfo(ContainerInfo parentInfo,
             ContainerInfo anchorInfo, int siblingIndex) {
-        SplitPane splitPane = (SplitPane) parentInfo.getContainer().getComponent().getNode();
+        SplitPane splitPane = (SplitPane) parentInfo.getContainer().getArea().getNode();
         var siblingContainer = ((AbstractContainer<?>) splitPane.getItems().get(siblingIndex));
         var singlingInfo = siblingContainer.createInfo();
         return singlingInfo;
@@ -748,25 +737,15 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
 
     private final DragAndDropContext dragAndDropContext = new DragAndDropContext();
 
-    private final ObjectProperty<SplitSpaceView<?>> root = new SimpleObjectProperty<>();
-
     private ComponentTab dragTab;
 
-    private TabDockView<?> dragDock;
+    private TabDockView<?, ?> dragDock;
 
     private Popup dragDockPopup;
 
     private DockInfo dockInfo;
 
     private boolean dragInProgress;
-
-    private final ReadOnlyObjectWrapper<SideBarView<?>> rightBar = new ReadOnlyObjectWrapper<>();
-
-    private final ReadOnlyObjectWrapper<SideBarView<?>> bottomBar = new ReadOnlyObjectWrapper<>();
-
-    private final ReadOnlyObjectWrapper<SideBarView<?>> leftBar = new ReadOnlyObjectWrapper<>();
-
-    private final ObjectProperty<AbstractAreaView<?>> main = new SimpleObjectProperty<>();
 
     public DockLayoutView(T viewModel) {
         super(viewModel);
@@ -782,101 +761,18 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         return this.node;
     }
 
-    public final ObjectProperty<SplitSpaceView<?>> rootProperty() {
-        return root;
-    }
-
-    public final SplitSpaceView<?> getRoot() {
-        return root.get();
-    }
-
-    public final void setRoot(SplitSpaceView root) {
-        this.root.set(root);
-    }
-
-    public final AbstractAreaView<?> getMain() {
-        return main.get();
-    }
-
-    public final void setMain(AbstractAreaView<?> value) {
-        main.set(value);
-    }
-
-    public final ObjectProperty<AbstractAreaView<?>> mainProperty() {
-        return main;
-    }
-
-    public SplitSpaceView<?> createSplitSpace(Orientation orientation) {
-        var viewModel = getViewModel().createSplitSpace(orientation);
-        var view = new SplitSpaceView<SplitSpaceViewModel>(this, viewModel);
-        view.initialize();
-        return view;
-    }
-
-    public TabDockView<?> createTabDock() {
-        var tabDockViewModel = getViewModel().createTabDock();
-        var tabDockView = new TabDockView<TabDockViewModel>(this, tabDockViewModel);
-        tabDockView.initialize();
-        return tabDockView;
-    }
-
-    public SideBarView<?> createSideBar(Side side) {
-        var barViewModel = getViewModel().createSideBar(side);
-        var barView = new SideBarView<SideBarViewModel>(this, barViewModel);
-        barView.initialize();
-        return barView;
-    }
-
     public DragAndDropContext getDragAndDropContext() {
         return dragAndDropContext;
     }
 
-    public final SideBarView<?> getRightBar() {
-        return rightBar.get();
-    }
-
-    public final ReadOnlyObjectProperty<SideBarView<?>> rightBarProperty() {
-        return rightBar.getReadOnlyProperty();
-    }
-
-    public final SideBarView<?> getBottomBar() {
-        return bottomBar.get();
-    }
-
-    public final ReadOnlyObjectProperty<SideBarView<?>> bottomBarProperty() {
-        return bottomBar.getReadOnlyProperty();
-    }
-
-    public final SideBarView<?> getLeftBar() {
-        return leftBar.get();
-    }
-
-    public final ReadOnlyObjectProperty<SideBarView<?>> leftBarProperty() {
-        return leftBar.getReadOnlyProperty();
-    }
-
-    public void addTabDock(TabDockView<?> dock, Side side, double size) {
+    void addTabDock(TabDockView<?, ?> dock, Side side, double size) {
         var index = resolveNewIndex(getRoot(), side);
         addTabDock(null, getRoot(), dock, index, side, true, size);
     }
 
     @Override
-    protected void preInitialize(T viewModel) {
-        super.preInitialize(viewModel);
-        if (viewModel.getRightBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
-            addSideBar(RIGHT);
-        }
-        if (viewModel.getBottomBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
-            addSideBar(BOTTOM);
-        }
-        if (viewModel.getLeftBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
-            addSideBar(LEFT);
-        }
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         VBox.setVgrow(node, Priority.ALWAYS);
 
         this.node.getStyleClass().add("dock-layout");
@@ -887,61 +783,31 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
-        this.root.addListener((ov, oldV, newV) -> {
+    protected void addListeners() {
+        super.addListeners();
+        getComponent().rootProperty().addListener((ov, oldV, newV) -> {
             if (oldV != null) {
                 centerStackPane.getChildren().remove(0);
             }
             if (newV != null) {
-                SplitSpaceContainer container = new SplitSpaceContainer(this, newV);
+                SplitSpaceContainer container = new SplitSpaceContainer(this, newV.getView());
                 centerStackPane.getChildren().add(0, container); // there can be tab popup
-                viewModel.setRoot(newV.getViewModel());
-            } else {
-                viewModel.setRoot(null);
-            }
-        });
-        this.main.addListener((ov, oldV, newV) -> {
-            if (newV != null) {
-                viewModel.setMain(newV.getViewModel());
-            } else {
-                viewModel.setMain(null);
             }
         });
         centerStackPane.widthProperty().addListener((ov2, oldV2, newV2) -> {
             var w = centerStackPane.getWidth();
             var h = centerStackPane.getHeight();
-            updatePopupSize(getRightBar(), w, h);
-            updatePopupSize(getBottomBar(), w, h);
-            updatePopupSize(getLeftBar(), w, h);
+            updatePopupSize(getComponent().getRightSideBar(), w, h);
+            updatePopupSize(getComponent().getBottomSideBar(), w, h);
+            updatePopupSize(getComponent().getLeftSideBar(), w, h);
         });
         centerStackPane.heightProperty().addListener((ov2, oldV2, newV2) -> {
             var w = centerStackPane.getWidth();
             var h = centerStackPane.getHeight();
-            updatePopupSize(getRightBar(), w, h);
-            updatePopupSize(getBottomBar(), w, h);
-            updatePopupSize(getLeftBar(), w, h);
+            updatePopupSize(getComponent().getRightSideBar(), w, h);
+            updatePopupSize(getComponent().getBottomSideBar(), w, h);
+            updatePopupSize(getComponent().getLeftSideBar(), w, h);
         });
-        addListenerForSideBar(rightBar, viewModel.rightBarWrapper());
-        addListenerForSideBar(rightBar, viewModel.rightBarPolicyProperty(), RIGHT);
-        addListenerForSideBar(bottomBar, viewModel.bottomBarWrapper());
-        addListenerForSideBar(bottomBar, viewModel.bottomBarPolicyProperty(), BOTTOM);
-        addListenerForSideBar(leftBar, viewModel.leftBarWrapper());
-        addListenerForSideBar(leftBar, viewModel.leftBarPolicyProperty(), LEFT);
-    }
-
-    @Override
-    protected void postDeinitialize(T viewModel) {
-        super.postDeinitialize(viewModel);
-        if (getRightBar() != null) {
-            getRightBar().deinitialize();
-        }
-        if (getBottomBar() != null) {
-            getBottomBar().deinitialize();
-        }
-        if (getLeftBar() != null) {
-            getLeftBar().deinitialize();
-        }
     }
 
     protected Node createTabDragContent(TabPaneProSkin.TabHeaderSkin tabHeader) {
@@ -967,14 +833,14 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         return container;
     }
 
-    StackPane createContainer(AbstractAreaView<?> child) {
+    StackPane createContainer(AreaView<?, ?> child) {
         AbstractContainer container;
-        if (child instanceof SplitSpaceView<?>) {
-            var splitSpace = (SplitSpaceView<?>) child;
+        if (child instanceof SplitSpaceView<?, ?>) {
+            var splitSpace = (SplitSpaceView<?, ?>) child;
             container = new SplitSpaceContainer(this, splitSpace);
             SplitPane.setResizableWithParent(container, false);
-        } else if (child instanceof TabDockView<?>) {
-            var tabDock = (TabDockView<?>) child;
+        } else if (child instanceof TabDockView<?, ?>) {
+            var tabDock = (TabDockView<?, ?>) child;
             container = new TabDockContainer(this, tabDock);
             SplitPane.setResizableWithParent(container, false);
         } else {
@@ -993,7 +859,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
     void processEmptyTabPane(TabPanePro tabPane) {
         removeTabDock(tabPane);
         printTreeDebugInfo();
-        logger.debug("{} Removed empty TabDock", getDescriptor().getLogPrefix());
+        logger.debug("{} Removed empty TabDock", getComponent().getLogPrefix());
     }
 
     void handleTabDragDetected(ComponentTab tab) {
@@ -1026,7 +892,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * @param dock
      * @param position
      */
-    void handleDockDragDetected(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
+    void handleDockDragDetected(TabDockView<?, ?> dock, FontIconView iconView, MouseEvent e) {
         this.dragDock = dock;
         TabPaneProSkin sourceSkin = (TabPaneProSkin) dock.getNode().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
@@ -1043,7 +909,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         updateDragInProgress(true, DraggableType.TAB_DOCK);
     }
 
-    void handleDockMouseDragged(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
+    void handleDockMouseDragged(TabDockView<?, ?> dock, FontIconView iconView, MouseEvent e) {
         if (this.dragDockPopup != null) {
             this.dragDockPopup.setAnchorX(e.getScreenX());
             this.dragDockPopup.setAnchorY(e.getScreenY());
@@ -1051,7 +917,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
     }
 
-    void handleDockMouseReleased(TabDockView<?> dock, FontIconView iconView, MouseEvent e) {
+    void handleDockMouseReleased(TabDockView<?, ?> dock, FontIconView iconView, MouseEvent e) {
         hideDragDockPopup();
         updateDragInProgress(false, DraggableType.TAB_DOCK);
     }
@@ -1079,52 +945,58 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
     }
 
-    void minimizeTabDock(TabDockView<?> dock) {
+    void minimizeTabDock(TabDockView<?, ?> dock) {
         // saving current position
         var side = resolveSide(dock);
-        SplitSpaceView<?> parent = (SplitSpaceView<?>) dock.getParent();
-        var parentPos = parent.getNode().getDividerPositions();
+        SplitSpaceComponent<?> parent = (SplitSpaceComponent<?>) dock.getComponent().getParent();
+        var parentPos = parent.getView().getNode().getDividerPositions();
         var index = parent.getChildren().indexOf(dock);
-        var siblings = parent.getChildren().stream().filter(c -> c != dock)
-                .map(c -> getUuid((AbstractAreaView<?>) c)).collect(Collectors.toList());
-        var pathFromRoot = findPathFromRoot(dock).stream().map(c -> getUuid(c)).collect(Collectors.toList());
-        var pos = new ComponentPosition(pathFromRoot, siblings, parent.getNode().getOrientation(), side,
-                getUuid(dock), index, dock.getNode().getWidth(), dock.getNode().getHeight());
+        var siblings = parent.getChildren().stream().filter(c -> c != dock.getComponent())
+                .map(c -> c.getUuid()).collect(Collectors.toList());
+        var pathFromRoot = findPathFromRoot(dock)
+                .stream()
+                .map(v -> v.getComponent().getUuid())
+                .collect(Collectors.toList());
+        var pos = new ComponentPosition(pathFromRoot, siblings, parent.getView().getNode().getOrientation(), side,
+                dock.getComponent().getUuid(), index, dock.getNode().getWidth(), dock.getNode().getHeight());
         pos.buildMaps();
         dock.getViewModel().setMinimizedPosition(pos);
         if (logger.isDebugEnabled()) {
-            parent.logState("Before minimizing");
-            logger.debug("{} Minimized position: {}", getDescriptor().getLogPrefix(), pos);
+            parent.getView().logState("Before minimizing");
+            logger.debug("{} Minimized position: {}", getComponent().getLogPrefix(), pos);
         }
         // removing the dock
         removeTabDock(dock.getNode());
         // createaing a sidebar if it is null
-        SideBarView<?> sideBar = addSideBar(side);
+        var sideBar = getComponent().addSideBar(side);
 
         dock.detachTabs();
         // adding the dock to the sidebar
-        sideBar.getTabDocks().add(dock);
+        sideBar.addTabDock(dock.getComponent());
         printTreeDebugInfo();
     }
 
-    void restoreTabDock(SideBarView<?> sideBar, TabDockView<?> dock) {
-        removeSideBarIfRequired(sideBar);
+    void restoreTabDock(SideBarView<?, ?> sideBar, TabDockView<?, ?> dock) {
+        if (!sideBar.getComponent().getTabDocks().isEmpty()) {
+            return;
+        }
+        getViewModel().removeSideBarIfRequired(sideBar.getViewModel());
         dock.attachTabs();
 
         // attempt 0 - find the parent by UUID
         var position = dock.getViewModel().getMinimizedPosition();
         var pathFromRoot = position.getPathFromRoot();
         dock.getViewModel().setMinimizedPosition(null);
-        var splitSpacesByUuid = new HashMap<UUID, SplitSpaceView<?>>();
-        var iterator = getRoot().breadthFirstIterator();
+        var splitSpacesByUuid = new HashMap<UUID, SplitSpaceView<?, ?>>();
+        var iterator = getComponent().getRoot().breadthFirstIterator();
         while (iterator.hasNext()) {
-            AbstractAreaView<?> component = (AbstractAreaView<?>) iterator.next();
-            if (component instanceof SplitSpaceView<?> c) {
-                splitSpacesByUuid.put(getUuid(c), c);
+            AreaComponent<?> component = (AreaComponent<?>) iterator.next();
+            if (component instanceof SplitSpaceComponent<?> c) {
+                splitSpacesByUuid.put(c.getUuid(), c.getView());
             }
         }
         var parentUuid = pathFromRoot.get(pathFromRoot.size() - 2); // excluding the node itself
-        SplitSpaceView<?> parent = splitSpacesByUuid.get(parentUuid);
+        SplitSpaceView<?, ?> parent = splitSpacesByUuid.get(parentUuid);
         double[] grandParentPositions = null;
 
         var side = position.getSide(); // the position side can differ from the side bar side
@@ -1132,10 +1004,11 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         int index;
         if (parent != null) {
             index = position.getIndex();
-            if (index > parent.getChildren().size()) {
-                index = parent.getChildren().size();
+            var childCount = parent.getComponent().getChildren().size();
+            if (index > childCount) {
+                index = childCount;
             }
-            logger.debug("{} Original parent SplitSpace available", getDescriptor().getLogPrefix());
+            logger.debug("{} Original parent SplitSpace available", getComponent().getLogPrefix());
         } else {
             // attempt 1 - find the nearest living ancestor
             if (pathFromRoot.size() > 2) {
@@ -1150,11 +1023,11 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
                                 parent = wrap(sibling, getContainer(sibling).createInfo().getIndex());
                                 // we created a new component in place of a removed one, so, now it is
                                 // necessary to update all UUID collections in all minimized TabDocks.
-                                updateUuidInPositions(parentUuid, getUuid(parent));
+                                updateUuidInPositions(parentUuid, parent.getComponent().getUuid());
                             }
                         }
                         logger.debug("{} Original parent SplitSpace not available; nearest living ancestor {} is used",
-                                getDescriptor().getLogPrefix(), getFullName(parent));
+                                getComponent().getLogPrefix(), parent.getComponent().getFullName());
                         break;
                     }
                 }
@@ -1163,7 +1036,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
             if (parent == null) {
                 parent = getRoot();
                 logger.debug("{} Original parent SplitSpace not available; root is used",
-                        getDescriptor().getLogPrefix());
+                        getComponent().getLogPrefix());
             }
             index = resolveNewIndex(parent, side);
             sideShouldBeChecked = true;
@@ -1171,7 +1044,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
 
         if (logger.isDebugEnabled()) {
             parent.logState("Before restoring");
-            logger.debug("{} Minimized position: {}", getDescriptor().getLogPrefix(), position);
+            logger.debug("{} Minimized position: {}", getComponent().getLogPrefix(), position);
         }
 
         var splitPane = parent.getNode();
@@ -1186,17 +1059,17 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         return new Dimension2D(this.centerStackPane.getWidth(), this.centerStackPane.getHeight());
     }
 
-    void addTabPopup(TabPopupView<?> popup) {
+    void addTabPopup(TabPopupView<?, ?> popup) {
         var popupNode = popup.getNode();
         this.centerStackPane.getChildren().add(popupNode);
     }
 
-    void removeTabPopup(TabPopupView<?> popup) {
+    void removeTabPopup(TabPopupView<?, ?> popup) {
         this.centerStackPane.getChildren().remove(popup.getNode());
     }
 
-    private int resolveNewIndex(SplitSpaceView<?> parent, Side side) {
-        int index = parent.getChildren().size();
+    private int resolveNewIndex(SplitSpaceView<?, ?> parent, Side side) {
+        int index = parent.getComponent().getChildren().size();
         if (side == LEFT || side == TOP) {
             var mainIndex = indexOfMain(parent);
             if (mainIndex >= 0 && index >= mainIndex) {
@@ -1206,18 +1079,18 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         return index;
     }
 
-    private boolean checkNewSide(SplitSpaceView<?> parent, int index, Side side) {
+    private boolean checkNewSide(SplitSpaceView<?, ?> parent, int index, Side side) {
         var tempIndex = index;
         boolean isLastPosition = false;
-        if (parent.getChildren().size() - 1 < tempIndex) {
+        if (parent.getComponent().getChildren().size() - 1 < tempIndex) {
             tempIndex--;
             isLastPosition = true;
         }
-        var component = (AbstractAreaView<?>) parent.getChildren().get(tempIndex);
+        var component = (AreaComponent<?>) parent.getComponent().getChildren().get(tempIndex);
 
         Side resolvedSide;
-        if (component == getMain()) {
-            SplitSpaceView<?> parentSplitSpace = (SplitSpaceView<?>) component.getParent();
+        if (component == getComponent().getMain().getView()) {
+            SplitSpaceView<?, ?> parentSplitSpace = (SplitSpaceView<?, ?>) component.getParent().getView();
             if (parentSplitSpace.getViewModel().getOrientation() == Orientation.HORIZONTAL) {
                 resolvedSide = LEFT;
                 if (isLastPosition) {
@@ -1230,26 +1103,26 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
                 }
             }
         } else {
-            resolvedSide = resolveSide(component);
+            resolvedSide = resolveSide(component.getView());
         }
         if (logger.isDebugEnabled()) {
             logger.debug("{} If tabDock is added into {} at {} its side will be {}, when {} is required",
-                    getDescriptor().getLogPrefix(), getFullName(parent), index, resolvedSide, side);
+                    getComponent().getLogPrefix(), parent.getComponent().getFullName(), index, resolvedSide, side);
         }
         return resolvedSide == side;
     }
 
-    private AbstractAreaView<?> findSibling(SplitSpaceView<?> splitSpace, List<UUID> siblingUuids, Side side) {
-        var siblingsByUuid = splitSpace.getChildren()
+    private AreaView<?, ?> findSibling(SplitSpaceView<?, ?> splitSpace, List<UUID> siblingUuids, Side side) {
+        var siblingsByUuid = splitSpace.getComponent().getChildren()
                 .stream()
-                .map(c -> (AbstractAreaView<?>) c)
-                .collect(Collectors.toMap(c -> getUuid(c), c -> c));
+                .map(c -> (AreaComponent<?>) c)
+                .collect(Collectors.toMap(c -> c.getUuid(), c -> c.getView()));
         boolean mainFound = false;
-        AbstractAreaView<?> sibling = null;
+        AreaView<?, ?> sibling = null;
         for (var uuid : siblingUuids) {
             sibling = siblingsByUuid.get(uuid);
             if (sibling != null) {
-                if (sibling == getMain()) {
+                if (sibling == getComponent().getMain().getView()) {
                     mainFound = true;
                 } else if (resolveSide(sibling) == side) {
                     break;
@@ -1257,7 +1130,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
             }
         }
         if (sibling == null && mainFound) {
-            return getMain();
+            return getComponent().getMain().getView();
         }
         return sibling;
     }
@@ -1270,7 +1143,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
 
     private void processDropInsideTabHeaderArea() {
         updateDragInProgress(false, DraggableType.TAB);
-        logger.debug("{} Processed drop inside TabHeaderArea", getDescriptor().getLogPrefix());
+        logger.debug("{} Processed drop inside TabHeaderArea", getComponent().getLogPrefix());
     }
 
     private void processDropOutsideTabHeaderArea() {
@@ -1286,24 +1159,26 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
                 // longer be actual, and it will therefore be very difficult to understand what the user intended.
 
                 // saving TabDock old parent and old container
-                SplitSpaceView<?> oldParent = (SplitSpaceView<?>) this.dragDock.getParent();
+                SplitSpaceView<?, ?> oldParent =
+                        (SplitSpaceView<?, ?>) this.dragDock.getComponent().getParent().getView();
                 var oldContainer = getContainer(dragDock);
                 // adding TabDock to a new location
                 dockInfo.getFactory().apply(dockInfo);
                 // saving the new parent, because it will be null after removal
-                SplitSpaceView<?> newParent = (SplitSpaceView<?>) this.dragDock.getParent();
+                SplitSpaceView<?, ?> newParent =
+                        (SplitSpaceView<?, ?>) this.dragDock.getComponent().getParent().getView();
                 // it is necessary to create a new info with a new index for example,
                 // if there are new children, besides the old parent should be used
                 var oldInfo = oldContainer.createInfo(oldParent);
                 // removing
                 removeTabDock(oldParent, oldInfo);
                 // finally setting the new parent
-                this.dragDock.setParent(newParent);
+                // todo: this.dragDock.setParent(newParent);
             }
             printTreeDebugInfo();
         }
         updateDragInProgress(false, this.dragDock == null ? DraggableType.TAB : DraggableType.TAB_DOCK);
-        logger.debug("{} Processed drop outside TabHeaderArea", getDescriptor().getLogPrefix());
+        logger.debug("{} Processed drop outside TabHeaderArea", getComponent().getLogPrefix());
     }
 
     /**
@@ -1323,7 +1198,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         info.setMousePosition(position);
         var indicatorBounds = createTabPaneIndicatorBounds(position, tabDockContainer);
         info.setIndicatorBounds(indicatorBounds);
-        SplitSpaceView<?> splitSpace = (SplitSpaceView<?>) tabDockContainer.getComponent().getParent();
+        SplitSpaceView<?, ?> splitSpace =
+                (SplitSpaceView<?, ?>) tabDockContainer.getArea().getComponent().getParent().getView();
         SplitSpaceContainer splitSpaceContainer = (SplitSpaceContainer) splitSpace.getNode().getParent();
         info.setIndicatorInfo(splitSpaceContainer.createInfo());
         info.setValid(true);
@@ -1350,21 +1226,23 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         var eventInfo = eventContainer.createInfo();
         info.setEventInfo(eventInfo);
 
-        SplitSpaceView<?> parentComponent = (SplitSpaceView<?>) eventInfo.getContainer().getComponent().getParent();
+        var parentComponent =
+                (SplitSpaceView<?, ?>) eventInfo.getContainer().getArea().getComponent().getParent().getView();
         var parentInfo = getContainer(parentComponent).createInfo();
 
-        SplitSpaceView<?> grandparentComponent = null;
+        SplitSpaceView<?, ?> grandparentComponent = null;
         ContainerInfo grandparentInfo = null;
 
-        SplitSpaceView<?> greatGrandparentComponent = null;
+        SplitSpaceView<?, ?> greatGrandparentComponent = null;
         ContainerInfo greatGrandparentInfo = null;
 
         if (parentComponent != getRoot()) {
-            grandparentComponent = (SplitSpaceView<?>) parentComponent.getParent();
+            grandparentComponent = (SplitSpaceView<?, ?>) parentComponent.getComponent().getParent().getView();
             grandparentInfo = getContainer(grandparentComponent).createInfo();
 
             if (grandparentComponent != getRoot()) {
-                greatGrandparentComponent = (SplitSpaceView<?>) grandparentComponent.getParent();
+                greatGrandparentComponent =
+                        (SplitSpaceView<?, ?>) grandparentComponent.getComponent().getParent().getView();
                 greatGrandparentInfo = getContainer(greatGrandparentComponent).createInfo();
             }
         }
@@ -1477,7 +1355,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         boolean isFirst = side == Side.TOP || side == Side.LEFT;
 
         var eventInfo = info.getEventInfo();
-        Function<DockInfo, TabDockView<?>> factory = null;
+        Function<DockInfo, TabDockView<?, ?>> factory = null;
         boolean isBoundary = isFirst ? eventInfo.isFirst() : eventInfo.isLast();
         int indexDelta = isFirst ? 0 : 1;
         int siblingDelta = isFirst ? -1 : 1;
@@ -1536,13 +1414,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
         info.setFactory(factory);
         logger.trace("{} Prepared dock info for same orientation on edge; side: {}, case: {}, info: {}",
-                getDescriptor().getLogPrefix(), side, caseIndex, info);
+                getComponent().getLogPrefix(), side, caseIndex, info);
     }
 
     private void prepareDockInfoForOppositeOrientationOnEdge(DockInfo info, Side side) {
         boolean isFirst = side == Side.TOP || side == Side.LEFT;
         var eventInfo = info.getEventInfo();
-        Function<DockInfo, TabDockView<?>> factory = null;
+        Function<DockInfo, TabDockView<?, ?>> factory = null;
 
         info.setIndicatorInfo(info.getParentInfo());
         info.setIndicatorBounds(createThirdIndicatorBounds(side, eventInfo, info.getParentInfo()));
@@ -1568,13 +1446,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
         info.setFactory(factory);
         logger.trace("{} Prepared dock info for opposite orientation on edge; side: {}, case: {}, info: {}",
-                getDescriptor().getLogPrefix(), side, caseIndex, info);
+                getComponent().getLogPrefix(), side, caseIndex, info);
     }
 
     private void prepareDockInfoForSameOrientationOffEdge(DockInfo info, Side side) {
         boolean isFirst = side == Side.TOP || side == Side.LEFT;
 
-        Function<DockInfo, TabDockView<?>> addFactory = dockInfo -> {
+        Function<DockInfo, TabDockView<?, ?>> addFactory = dockInfo -> {
             var newTabDock = provideTabDockOnDrop();
             addTabDock(info.getMousePosition().getSide(), info.getEventInfo(), null, info.getNewInfo(), newTabDock);
             return newTabDock;
@@ -1584,13 +1462,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         int index = info.getEventInfo().getIndex() + (isFirst ? 0 : 1);
         info.setNewInfo(new ContainerInfo(index, ONE_HALF));
         logger.trace("{} Prepared dock info for same orientation off edge; side: {}, info: {}",
-                getDescriptor().getLogPrefix(), side, info);
+                getComponent().getLogPrefix(), side, info);
     }
 
     private void prepareDockInfoForOppositeOrientationOffEdge(DockInfo info, Side side) {
         boolean isFirst = side == Side.TOP || side == Side.LEFT;
         Orientation orientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-        Function<DockInfo, TabDockView<?>> wrapFactory = dockInfo -> {
+        Function<DockInfo, TabDockView<?, ?>> wrapFactory = dockInfo -> {
             var tabDock = provideTabDockOnDrop();
             wrapAndAddTabDock(orientation, info.getEventInfo(), info.getNewInfo(), tabDock);
             return tabDock;
@@ -1600,17 +1478,18 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         int index = isFirst ? 0 : 1;
         info.setNewInfo(new ContainerInfo(index, ONE_HALF));
         logger.trace("{} Prepared dock info for opposite orientation off edge; side: {}, info: {}",
-                getDescriptor().getLogPrefix(), side, info);
+                getComponent().getLogPrefix(), side, info);
     }
 
     private void validateDockInfo(DockInfo info) {
         info.setValid(true);
         if (this.dragDock != null) {
-            if (info.getEventInfo().getContainer().getComponent().getParent() == this.dragDock.getParent()) {
+            if (info.getEventInfo().getContainer()
+                    .getArea().getComponent().getParent() == this.dragDock.getComponent().getParent()) {
                 var dragDockInfo = getContainer(this.dragDock).createInfo();
                 var dragDockIndex = dragDockInfo.getIndex();
                 var eventIndex = info.getEventInfo().getIndex();
-                SplitPane splitPane = (SplitPane) info.getParentInfo().getContainer().getComponent().getNode();
+                SplitPane splitPane = (SplitPane) info.getParentInfo().getContainer().getArea().getNode();
                 var side = info.getMousePosition().getSide();
                 var edgeMode = info.getMousePosition().isEdgeMode();
 
@@ -1632,8 +1511,14 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
     }
 
-    private TabDockView<?> provideTabDockOnDrop() {
-        return this.dragDock == null ? createTabDock() : this.dragDock;
+    private TabDockView<?, ?> provideTabDockOnDrop() {
+        if (this.dragDock == null) {
+            var dock = getComponent().createTabDock();
+            dock.initialize();
+            return dock.getView();
+        } else {
+            return this.dragDock;
+        }
     }
 
     private void hideIndicator() {
@@ -1657,11 +1542,11 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
     }
 
-    private SplitSpaceView<?> wrap(AbstractAreaView<?> component, int index) {
-        SplitSpaceView<?> parentComponent = null;
+    private SplitSpaceView<?, ?> wrap(AreaView<?, ?> area, int index) {
+        SplitSpaceView<?, ?> parentComponent = null;
         Orientation currentOrientation;
-        if (component != getRoot()) {
-            parentComponent = (SplitSpaceView<?>) component.getParent();
+        if (area != getRoot()) {
+            parentComponent = (SplitSpaceView<?, ?>) area.getComponent().getParent().getView();
             currentOrientation = parentComponent.getNode().getOrientation();
         } else {
             currentOrientation = getRoot().getNode().getOrientation();
@@ -1670,45 +1555,48 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         if (currentOrientation == Orientation.HORIZONTAL) {
             newOrientation = Orientation.VERTICAL;
         }
-        var newSplitSpace = createSplitSpace(newOrientation);
+        var newSplitSpace = getComponent().createSplitSpace(newOrientation);
+        newSplitSpace.initialize();
 
         double[] parentOldPositions = null;
         SplitPane parentSplitPane = null;
 
         //removing wrapped component and adding a wrapper component
         if (parentComponent == null) {
-            setRoot(newSplitSpace);
+            getComponent().setRoot(newSplitSpace);
         } else {
             parentSplitPane = (SplitPane) parentComponent.getNode();
             parentOldPositions = parentSplitPane.getDividerPositions();
-            parentComponent.getChildren().remove(index);
-            parentComponent.getChildren().add(index, newSplitSpace);
+            parentComponent.getComponent().removeChild(index);
+            parentComponent.getComponent().addChild(index, newSplitSpace);
         }
 
         //adding the wrapped component to the wrapper component
-        newSplitSpace.getChildren().add(component);
+        newSplitSpace.addChild(area.getComponent());
         if (parentOldPositions != null) {
             parentSplitPane.setDividerPositions(parentOldPositions);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("{} Wrapped {} into {}", getDescriptor().getLogPrefix(),
-                    getFullName(component), getFullName(newSplitSpace));
+            logger.debug("{} Wrapped {} into {}", getComponent().getLogPrefix(),
+                    area.getComponent().getFullName(), newSplitSpace.getFullName());
         }
 
-        return newSplitSpace;
+        return newSplitSpace.getView();
     }
 
-    private void unwrap(SplitSpaceView<?> splitSpace, int index) {
+    private void unwrap(SplitSpaceView<?, ?> splitSpace, int index) {
         double[] childPositions;
         // now it has only one child
-        AbstractAreaView<?> child = (AbstractAreaView<?>) splitSpace.getChildren().get(0);
+        AreaComponent<?> child =
+                (AreaComponent<?>) splitSpace.getComponent().getChildren().get(0);
 
         if (splitSpace != getRoot()) {
-            SplitSpaceView<?> grandparentComponent = (SplitSpaceView<?>) splitSpace.getParent();
-            List<ChildView<?>> otherTabDocks;
-            if (child instanceof SplitSpaceView<?>) {
-                SplitSpaceView<?> otherSplitSpace = (SplitSpaceView<?>) child;
-                otherTabDocks = otherSplitSpace.getChildren();
+            SplitSpaceView<?, ?> grandparentComponent =
+                    (SplitSpaceView<?, ?>) splitSpace.getComponent().getParent().getView();
+            List<AreaComponent<?>> otherTabDocks;
+            if (child instanceof SplitSpaceView<?, ?>) {
+                SplitSpaceView<?, ?> otherSplitSpace = (SplitSpaceView<?, ?>) child;
+                otherTabDocks = (List) otherSplitSpace.getComponent().getChildren();
                 childPositions = otherSplitSpace.getNode().getDividerPositions();
             } else {
                 otherTabDocks = List.of(child);
@@ -1716,27 +1604,30 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
             }
             var oldPositions = grandparentComponent.getNode().getDividerPositions();
             // removing parent
-            grandparentComponent.getChildren().remove(index);
+            grandparentComponent.getComponent().removeChild(index);
             // adding tab docks
-            grandparentComponent.getChildren().addAll(index, otherTabDocks);
+            for (var i = 0; i < otherTabDocks.size(); i++) {
+                grandparentComponent.getComponent().addChild(index + i, otherTabDocks.get(i));
+            }
+
             // last child has parent space provider
             getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
                 grandparentComponent.updateDividersOnUnwrap(index, oldPositions, childPositions);
                 if (logger.isDebugEnabled()) {
                     logger.debug("{} Unwrapped {} into {}",
-                        getDescriptor().getLogPrefix(),
-                        otherTabDocks.stream().map(e -> getFullName(e)).collect(Collectors.joining(", ")),
-                        getFullName(grandparentComponent));
+                        getComponent().getLogPrefix(),
+                        otherTabDocks.stream().map(e -> e.getFullName()).collect(Collectors.joining(", ")),
+                        grandparentComponent.getComponent().getFullName());
                 }
                 return false;
             });
 
         } else {
-            if (child instanceof SplitSpaceView) {
-                setRoot((SplitSpaceView<?>) child);
+            if (child instanceof SplitSpaceView<?, ?> c) {
+                getComponent().setRoot(c.getComponent());
                 if (logger.isDebugEnabled()) {
-                logger.debug("{} Unwrapped {} and set it as a root", getDescriptor().getLogPrefix(),
-                        getFullName(child));
+                logger.debug("{} Unwrapped {} and set it as a root", getComponent().getLogPrefix(),
+                        c.getComponent().getFullName());
                 }
             } // otherwise there is a splitSpace with one main component
         }
@@ -1750,23 +1641,24 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
     private void removeTabDock(TabPanePro tabPane) {
         TabDockContainer tabDockContainer = (TabDockContainer) tabPane.getParent();
         ContainerInfo tabDockInfo = tabDockContainer.createInfo();
-        SplitSpaceView<?> parent = (SplitSpaceView<?>) tabDockContainer.getComponent().getParent();
+        SplitSpaceView<?, ?> parent =
+                (SplitSpaceView<?, ?>) tabDockContainer.getArea().getComponent().getParent().getView();
         removeTabDock(parent, tabDockInfo);
     }
 
-    private void removeTabDock(SplitSpaceView<?> parent, ContainerInfo tabDockInfo) {
+    private void removeTabDock(SplitSpaceView<?, ?> parent, ContainerInfo tabDockInfo) {
         var parentInfo = getContainer(parent).createInfo();
-        if (parent.getChildren().size() == 2) {
+        if (parent.getComponent().getChildren().size() == 2) {
             removeTabDockAndUnwrap(parentInfo, tabDockInfo);
         } else {
             removeTabDock(parentInfo, tabDockInfo);
         }
     }
 
-    private TabDockView<?> wrapAndAddTabDock(Orientation newOrientation, ContainerInfo anchorInfo,
-            ContainerInfo newInfo, TabDockView<?> newTabDock) {
-        var newSplitSpace = wrap(anchorInfo.getContainer().getComponent(), anchorInfo.getIndex());
-        newSplitSpace.getChildren().add(newInfo.getIndex(), newTabDock);
+    private TabDockView<?, ?> wrapAndAddTabDock(Orientation newOrientation, ContainerInfo anchorInfo,
+            ContainerInfo newInfo, TabDockView<?, ?> newTabDock) {
+        var newSplitSpace = wrap(anchorInfo.getContainer().getArea(), anchorInfo.getIndex());
+        newSplitSpace.getComponent().addChild(newInfo.getIndex(), newTabDock.getComponent());
 
         if (newInfo.getFraction() == ONE_THIRD) {
             var splitPane = newSplitSpace.getNode();
@@ -1788,9 +1680,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("{} Added {} to {}", getDescriptor().getLogPrefix(),
-                    getFullName(newTabDock),
-                    getFullName(newSplitSpace));
+            logger.debug("{} Added {} to {}", getComponent().getLogPrefix(),
+                    newTabDock.getComponent().getFullName(),
+                    newSplitSpace.getComponent().getFullName());
         }
         return newTabDock;
     }
@@ -1804,16 +1696,16 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      */
     private void removeTabDockAndUnwrap(ContainerInfo parentInfo, ContainerInfo anchorInfo) {
         // parent has only two children
-        var parentComponent = parentInfo.getContainer().getComponent();
+        SplitSpaceView<?, ?> parentComponent = (SplitSpaceView<?, ?>) parentInfo.getContainer().getArea();
         // removing empty tabdock
-        parentComponent.getChildren().remove(anchorInfo.getIndex());
+        parentComponent.getComponent().removeChild(anchorInfo.getIndex());
         if (logger.isDebugEnabled()) {
             logger.debug("{} Removed {} from {}",
-                    getDescriptor().getLogPrefix(),
-                    getFullName(anchorInfo.getContainer().getComponent()),
-                    getFullName(parentComponent));
+                    getComponent().getLogPrefix(),
+                    anchorInfo.getContainer().getArea().getComponent().getFullName(),
+                    parentComponent.getComponent().getFullName());
         }
-        unwrap((SplitSpaceView<?>) parentComponent, parentInfo.getIndex());
+        unwrap((SplitSpaceView<?, ?>) parentComponent, parentInfo.getIndex());
     }
 
     /**
@@ -1826,11 +1718,12 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * @param newTabDock
      */
     private void addTabDock(Side side, ContainerInfo anchorInfo, ContainerInfo siblingInfo,
-            ContainerInfo newInfo, TabDockView<?> newTabDock) {
-        SplitSpaceView<?> parentComponent = (SplitSpaceView<?>) anchorInfo.getContainer().getComponent().getParent();
+            ContainerInfo newInfo, TabDockView<?, ?> newTabDock) {
+        var parentComponent =
+                (SplitSpaceView<?, ?>) anchorInfo.getContainer().getArea().getComponent().getParent().getView();
         var splitPane = parentComponent.getNode();
         double[] oldPositions = splitPane.getDividerPositions();
-        parentComponent.getChildren().add(newInfo.getIndex(), newTabDock);
+        parentComponent.getComponent().addChild(newInfo.getIndex(), newTabDock.getComponent());
         if (siblingInfo == null) {
             if (newInfo.getFraction() == ONE_HALF) {
                 parentComponent.updateDividersOnHalfSplit(anchorInfo.getIndex(), oldPositions);
@@ -1853,8 +1746,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
                     afterProportion, oldPositions);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("{} Added {} into {}", getDescriptor().getLogPrefix(),
-                getFullName(newTabDock), getFullName(parentComponent));
+            logger.debug("{} Added {} into {}", getComponent().getLogPrefix(),
+                newTabDock.getComponent().getFullName(), parentComponent.getComponent().getFullName());
         }
     }
 
@@ -1869,7 +1762,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * @param sideShouldBeChecked
      * @param size
      */
-    private void addTabDock(double[] grandParentPositions, SplitSpaceView<?> parent, TabDockView<?> dock,
+    private void addTabDock(double[] grandParentPositions, SplitSpaceView<?, ?> parent, TabDockView<?, ?> dock,
             int index, Side side, boolean sideShouldBeChecked, double size) {
         if (sideShouldBeChecked && !checkNewSide(parent, index, side)) {
             boolean wrapParent = false;
@@ -1896,7 +1789,7 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         final var dividerSize = parent.computeDividerSize();
 
         var oldPositions = parent.getNode().getDividerPositions();
-        parent.getChildren().add(index, dock);
+        parent.getComponent().addChild(index, dock.getComponent());
 
         final var finalOldSplitPaneSize = oldSplitPaneSize;
         final var finalIndex = index;
@@ -1906,8 +1799,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
             if (divSize < 0) {
                 divSize = finalParent.computeDividerSize();
             }
-            if (finalParent.getParent() != null && grandParentPositions != null) {
-                ((SplitSpaceView<?>) finalParent.getParent()).getNode().setDividerPositions(grandParentPositions);
+            if (finalParent.getComponent().getParent() != null && grandParentPositions != null) {
+                ((SplitSpaceComponent<?>) finalParent.getComponent().getParent())
+                        .getView().getNode().setDividerPositions(grandParentPositions);
             }
             var mainIndex = indexOfMain(finalParent);
             if (mainIndex >= 0) {
@@ -1918,9 +1812,9 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
                         finalIndex, size);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("{} Added {} into {}", getDescriptor().getLogPrefix(),
-                        getFullName(dock),
-                        getFullName(dock.getParent()));
+                logger.debug("{} Added {} into {}", getComponent().getLogPrefix(),
+                        dock.getComponent().getFullName(),
+                        dock.getComponent().getParent().getFullName());
                 printTreeDebugInfo();
             }
             return false;
@@ -1935,18 +1829,18 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      */
     private void removeTabDock(ContainerInfo parent, ContainerInfo tabDockInfo) {
         var tabDockContainer = tabDockInfo.getContainer();
-        AbstractAreaView<?> componentToRemove = tabDockContainer.getComponent();
-        SplitSpaceView<?> splitSpace = (SplitSpaceView<?>) parent.getContainer().getComponent();
+        AreaView<?, ?> componentToRemove = tabDockContainer.getArea();
+        SplitSpaceView<?, ?> splitSpace = (SplitSpaceView<?, ?>) parent.getContainer().getArea();
         var splitPane = splitSpace.getNode();
         var oldPositions = splitPane.getDividerPositions();
         var oldSplitPaneSize = splitPane.getWidth();
-        var removedChildSize = tabDockInfo.getContainer().getComponent().getNode().getWidth();
+        var removedChildSize = tabDockInfo.getContainer().getArea().getNode().getWidth();
         if (splitPane.getOrientation() == Orientation.VERTICAL) {
             oldSplitPaneSize = splitPane.getHeight();
-            removedChildSize = tabDockInfo.getContainer().getComponent().getNode().getHeight();
+            removedChildSize = tabDockInfo.getContainer().getArea().getNode().getHeight();
         }
 
-        splitSpace.getChildren().remove(tabDockInfo.getIndex());
+        splitSpace.getComponent().removeChild(tabDockInfo.getIndex());
         final var dividerSize = splitSpace.computeDividerSize();
 
         final var finalOldSplitSpaneSize = oldSplitPaneSize;
@@ -1966,13 +1860,13 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
             return false;
         });
         if (logger.isDebugEnabled()) {
-            logger.debug("{} Removed {} from {}", getDescriptor().getLogPrefix(),
-                    getFullName(componentToRemove),
-                    getFullName(parent.getContainer().getComponent()));
+            logger.debug("{} Removed {} from {}", getComponent().getLogPrefix(),
+                    componentToRemove.getComponent().getFullName(),
+                    parent.getContainer().getArea().getComponent().getFullName());
         }
     }
 
-    private void moveTab(TabDockView<?> newTabDock) {
+    private void moveTab(TabDockView<?, ?> newTabDock) {
         TabPaneProSkin skin = (TabPaneProSkin) this.dragTab.getTabPane().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = skin.getTabHeaderArea();
         this.dragTab.getTabPane().getTabs().remove(this.dragTab);
@@ -1986,10 +1880,10 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
             return;
         }
         this.dragInProgress = value;
-        var iterator = getRoot().depthFirstIterator();
+        var iterator = getComponent().getRoot().depthFirstIterator();
         while (iterator.hasNext()) {
-            AbstractAreaView<?> child = (AbstractAreaView<?>) iterator.next();
-            AbstractContainer container = getContainer(child);
+            AreaComponent<?> child = (AreaComponent<?>) iterator.next();
+            AbstractContainer container = getContainer(child.getView());
             container.updateDragInProgress(value, type);
         }
     }
@@ -2006,23 +1900,23 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
 
     private void printTreeDebugInfo() {
         if (logger.isDebugEnabled()) {
-            logger.debug("{} Component tree: {}", getDescriptor().getLogPrefix(), getTreeDebugInfo());
+            logger.debug("{} Component tree: {}", getComponent().getLogPrefix(), getTreeDebugInfo());
         }
     }
 
     private String getTreeDebugInfo() {
         StringBuilder builder = new StringBuilder();
-        var iterator = getRoot().depthFirstIterator();
+        var iterator = getComponent().depthFirstIterator();
         while (iterator.hasNext()) {
-            AbstractAreaView<?> component = (AbstractAreaView<?>) iterator.next();
+            AreaView<?, ?> view = (AreaView<?, ?>) iterator.next().getView();
             String orientation = "";
-            UUID uuid = component.getViewModel().getDescriptor().getUuid();
-            if (component instanceof SplitSpaceView<?> spaceV) {
+            UUID uuid = view.getComponent().getUuid();
+            if (view instanceof SplitSpaceView<?, ?> spaceV) {
                 orientation = spaceV.getNode().getOrientation().name().toLowerCase();
             }
             builder.append("\n");
             builder.append("    ".repeat(iterator.getDepth()));
-            builder.append(getFullName(component));
+            builder.append(view.getComponent().getFullName());
             builder.append(" [");
             if (uuid != null) {
                 builder.append("uuid: ");
@@ -2041,35 +1935,35 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * Resolves the side of the tabDock or splitSpace. The resolved side will be one of four values, though
      * there is no top side bar. This method can't be used if the specified component is the main one.
      *
-     * @param component
+     * @param view
      * @return
      */
-    private Side resolveSide(AbstractAreaView<?> component) {
-        if (component == getMain()) {
+    private Side resolveSide(AreaView<?, ?> view) {
+        if (view == getComponent().getMain().getView()) {
             throw new IllegalArgumentException("Can't resolve the side of the main component");
         }
-        var componentPath = findPathFromRoot(component);
-        var mainPath = findPathFromRoot(getMain());
+        var componentPath = findPathFromRoot(view);
+        var mainPath = findPathFromRoot(getComponent().getMain().getView());
         // we must find Lowest Common Ancestor
-        SplitSpaceView<?> lca = getRoot();
+        SplitSpaceView<?, ?> lca = getRoot();
 
         var componentIterator = componentPath.iterator();
         var mainIterator = mainPath.iterator();
-        AbstractAreaView<?> componentAncestor = null;
-        AbstractAreaView<?> mainAncestor = null;
+        AreaView<?, ?> componentAncestor = null;
+        AreaView<?, ?> mainAncestor = null;
         while (componentIterator.hasNext() && mainIterator.hasNext()) {
             componentAncestor = componentIterator.next();
             mainAncestor = mainIterator.next();
             if (mainAncestor == componentAncestor) {
-                lca = (SplitSpaceView<?>) mainAncestor;
+                lca = (SplitSpaceView<?, ?>) mainAncestor;
             } else {
                 break;
             }
         }
 
         Side result = null;
-        var componentAncestorIndex = lca.getChildren().indexOf(componentAncestor);
-        var mainAncestorIndex = lca.getChildren().indexOf(mainAncestor);
+        var componentAncestorIndex = lca.getComponent().getChildren().indexOf(componentAncestor.getComponent());
+        var mainAncestorIndex = lca.getComponent().getChildren().indexOf(mainAncestor.getComponent());
         if (componentAncestorIndex < mainAncestorIndex) {
             if (lca.getNode().getOrientation() == Orientation.HORIZONTAL) {
                 result = LEFT;
@@ -2085,8 +1979,8 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("{} Resolved side for {} is {}; lowest common ancestor: {}", getDescriptor().getLogPrefix(),
-                    getFullName(component), result, getFullName(lca));
+            logger.debug("{} Resolved side for {} is {}; lowest common ancestor: {}", getComponent().getLogPrefix(),
+                    view.getComponent().getFullName(), result, lca.getComponent().getFullName());
         }
         return result;
     }
@@ -2097,16 +1991,17 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * @param startNode
      * @return
      */
-    private List<AbstractAreaView<?>> findPathFromRoot(AbstractAreaView<?> startNode) {
-        var result = new ArrayList<AbstractAreaView<?>>();
+    private List<AreaView<?, ?>> findPathFromRoot(AreaView<?, ?> startNode) {
+        var result = new ArrayList<AreaView<?, ?>>();
         var current = startNode;
         while (current != null && current != this) {
             result.add(0, current);
-            current = (AbstractAreaView<?>) current.getParent();
+            current = (AbstractAreaView<?, ?>) current.getComponent().getParent().getView();
         }
         if (logger.isTraceEnabled()) {
-            var nodes = result.stream().map(c -> getFullName(c)).collect(Collectors.joining(", "));
-            logger.trace("{} {} path to root: {}", getDescriptor().getLogPrefix(), getFullName(startNode), nodes);
+            var nodes = result.stream().map(v -> v.getComponent().getFullName()).collect(Collectors.joining(", "));
+            logger.trace("{} {} path to root: {}", getComponent().getLogPrefix(),
+                    startNode.getComponent().getFullName(), nodes);
         }
         return result;
     }
@@ -2118,119 +2013,16 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * @param splitSpace the SplitSpaceView to search in
      * @return the index of the component or -1.
      */
-    private int indexOfMain(SplitSpaceView<?> splitSpaceView) {
-        var deque = findPathFromRoot(getMain());
-        var set = new HashSet<AbstractAreaView<?>>(deque);
-        for (var i = 0; i < splitSpaceView.getChildren().size(); i++) {
-            var child = splitSpaceView.getChildren().get(i);
-            if (set.contains(child)) {
+    private int indexOfMain(SplitSpaceView<?, ?> splitSpaceView) {
+        var deque = findPathFromRoot(getComponent().getMain().getView());
+        var set = new HashSet<AreaView<?, ?>>(deque);
+        for (var i = 0; i < splitSpaceView.getComponent().getChildren().size(); i++) {
+            var child = splitSpaceView.getComponent().getChildren().get(i);
+            if (set.contains(child.getView())) {
                 return i;
             }
         }
         return -1;
-    }
-
-    private void setRightBar(SideBarView<?> value) {
-        rightBar.set(value);
-    }
-
-    private void setBottomBar(SideBarView<?> value) {
-        bottomBar.set(value);
-    }
-
-    private void setLeftBar(SideBarView<?> value) {
-        leftBar.set(value);
-    }
-
-    private SideBarView<?> addSideBar(Side side) {
-        SideBarView<?> sideBar;
-        switch (side) {
-            case RIGHT -> {
-                sideBar = getRightBar();
-                if (sideBar == null) {
-                    sideBar = createSideBar(side);
-                    setRightBar(sideBar);
-                    this.node.setRight(sideBar.getNode());
-                }
-            }
-            case LEFT -> {
-                sideBar = getLeftBar();
-                if (sideBar == null) {
-                    sideBar = createSideBar(side);
-                    setLeftBar(sideBar);
-                    this.node.setLeft(sideBar.getNode());
-                }
-            }
-            case TOP, BOTTOM -> {
-                sideBar = getBottomBar();
-                if (sideBar == null) {
-                    sideBar = createSideBar(side);
-                    setBottomBar(sideBar);
-                    this.node.setBottom(sideBar.getNode());
-                }
-            }
-            default -> throw new AssertionError();
-        }
-        return sideBar;
-    }
-
-    private void removeSideBarIfRequired(SideBarView<?> sideBar) {
-        if (!sideBar.getTabDocks().isEmpty()) {
-            return;
-        }
-        switch (sideBar.getViewModel().getSide()) {
-            case RIGHT:
-                if (getViewModel().getRightBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-                    setRightBar(null);
-                    this.node.setRight(null);
-                    sideBar.deinitialize();
-                }
-                break;
-            case BOTTOM:
-                if (getViewModel().getBottomBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-                    setBottomBar(null);
-                    this.node.setBottom(null);
-                    sideBar.deinitialize();
-                }
-                break;
-            case LEFT:
-                if (getViewModel().getLeftBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-                    setLeftBar(null);
-                    this.node.setLeft(null);
-                    sideBar.deinitialize();
-                }
-                break;
-            default:
-                throw new AssertionError();
-        }
-    }
-
-    private void addListenerForSideBar(ReadOnlyObjectWrapper<SideBarView<?>> view,
-            ReadOnlyObjectWrapper<SideBarViewModel> viewModel) {
-        view.addListener((ov, oldV, newV) -> {
-            if (newV != null) {
-                viewModel.set(newV.getViewModel());
-            } else {
-                viewModel.set(null);
-            }
-        });
-    }
-
-    private void addListenerForSideBar(ReadOnlyObjectWrapper<SideBarView<?>> view,
-            ObjectProperty<SideBarPolicy> policy, Side side) {
-        policy.addListener((ov, oldV, newV) -> {
-            if (newV == SideBarPolicy.EXISTS_ALWAYS) {
-                if (view.get() == null) {
-                    addSideBar(side);
-                }
-            } else if (newV == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-                if (view.get() != null) {
-                    removeSideBarIfRequired(view.get());
-                }
-            } else {
-                throw new AssertionError();
-            }
-        });
     }
 
     /**
@@ -2241,25 +2033,29 @@ public class DockLayoutView<T extends DockLayoutViewModel> extends AbstractAreaV
      * @param newUuid
      */
     private void updateUuidInPositions(UUID oldUuid, UUID newUuid) {
-        updateUuidInPositions(getRightBar(), oldUuid, newUuid);
-        updateUuidInPositions(getBottomBar(), oldUuid, newUuid);
-        updateUuidInPositions(getLeftBar(), oldUuid, newUuid);
+        updateUuidInPositions(getComponent().getRightSideBar(), oldUuid, newUuid);
+        updateUuidInPositions(getComponent().getLeftSideBar(), oldUuid, newUuid);
+        updateUuidInPositions(getComponent().getBottomSideBar(), oldUuid, newUuid);
         logger.debug("{} Replaced UUID {} with {} in position lists of all minimized TabDocks",
-                getDescriptor().getLogPrefix(), oldUuid, newUuid);
+                getComponent().getLogPrefix(), oldUuid, newUuid);
     }
 
-    private void updateUuidInPositions(SideBarView<?> sideBar, UUID oldUuid, UUID newUuid) {
+    private void updateUuidInPositions(SideBarComponent<?> sideBar, UUID oldUuid, UUID newUuid) {
         if (sideBar != null) {
             for (var tabDock : sideBar.getTabDocks()) {
-                var position = tabDock.getViewModel().getMinimizedPosition();
+                var position = tabDock.getView().getViewModel().getMinimizedPosition();
                 position.updateUuid(oldUuid, newUuid);
             }
         }
     }
 
-    private void updatePopupSize(SideBarView<?> sideBar, double width, double height) {
+    private void updatePopupSize(SideBarComponent<?> sideBar, double width, double height) {
         if (sideBar != null) {
-            sideBar.updatePopupSize(width, height);
+            sideBar.getView().updatePopupSize(width, height);
         }
+    }
+
+    private SplitSpaceView<?, ?> getRoot() {
+        return getComponent().getRoot().getView();
     }
 }

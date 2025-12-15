@@ -26,6 +26,15 @@ import org.junit.jupiter.api.Test;
  */
 public class DefaultFindViewModelTest {
 
+    private static final class TestFindPaneViewModel extends DefaultFindPaneViewModel {
+
+        private TestFindPaneViewModel(FindMatchesResetPolicy resetPolicy) {
+            super(resetPolicy);
+            setMediator(new DummyMediator());
+        }
+
+    }
+
     @Test
     public void find_noMatchCaseNoWholeWordNoRegExp_success() {
         var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);

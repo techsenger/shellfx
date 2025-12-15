@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.tabshell.core.CloseScope;
-import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
@@ -27,9 +27,9 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
 import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
+import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.tabshell.shared.menu.EditMenuNames;
 import com.techsenger.tabshell.shared.menu.FileMenuNames;
-import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabViewModel;
 import com.techsenger.tabshell.storage.FileStorages;
 import com.techsenger.tabshell.storage.FileTaskProvider;
 import com.techsenger.tabshell.storage.GenericFile;
@@ -38,6 +38,7 @@ import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -61,7 +62,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewModel
+public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> extends AbstractWorkerTabViewModel<T>
         implements FileOpenerViewModel, FileSaverViewModel {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractViewerTabViewModel.class);
@@ -114,8 +115,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
      * Constructor.
      *
      */
-    public AbstractViewerTabViewModel(ShellViewModel shell, GenericFile file) {
-        super(shell);
+    public AbstractViewerTabViewModel(GenericFile file) {
         this.file.set(file);
         this.undoManager.addListener((ov, oldV, newV) -> {
             if (newV != null) {
@@ -196,8 +196,8 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     }
 
     public void openGoToLineDialog() {
-        var viewModel = new GoToLineDialogViewModel(getShell().getHistoryManager());
-        getMediator().openGoToLineDialog(viewModel);
+        var viewModel = new GoToLineDialogViewModel();
+        getMediator().addGoToLineDialog(viewModel);
     }
 
     /**
@@ -207,7 +207,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
      */
     public void addFindPane(boolean replaceMode) {
         if (this.find == null) {
-            this.find = new DefaultFindPaneViewModel(getFindMatchesResetPolicy(), getShell().getHistoryManager());
+            this.find = new DefaultFindPaneViewModel(getFindMatchesResetPolicy());
             this.find.closeActionProperty().set(() -> {
                 this.removeFindPane();
             });
@@ -224,11 +224,6 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             getMediator().removeFindPane();
             this.find = null;
         }
-    }
-
-    @Override
-    public ViewerTabMediator getMediator() {
-        return (ViewerTabMediator) super.getMediator();
     }
 
     public ObjectProperty<GenericFile> fileProperty() {
@@ -259,9 +254,9 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 this.persisted.set(true);
             } else if (newV == Worker.State.FAILED) {
                 var message = "{} Error reading file " + file.getUri();
-                logger.warn(message, getDescriptor().getLogPrefix(), task.getException());
+                logger.warn(message, getMediator().getLogPrefix(), task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
-                getMediator().openAlertDialog(alertViewModel);
+                getMediator().addAlertDialog(alertViewModel);
             }
         });
         this.submitWorker(task);
@@ -281,24 +276,25 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
                 modified.set(false);
             } else if (newV == Worker.State.FAILED) {
                 var message = "{} Error writing file " + file.getUri();
-                logger.warn(message, getDescriptor().getLogPrefix(), task.getException());
+                logger.warn(message, getMediator().getLogPrefix(), task.getException());
                 var alertViewModel = new AlertDialogViewModel(DialogScope.TAB, AlertDialogType.ERROR, message);
-                getMediator().openAlertDialog(alertViewModel);
+                getMediator().addAlertDialog(alertViewModel);
             }
         });
         this.submitWorker(task);
     }
 
+
     @Override
-    public boolean isReadyToClose() {
-        if (!isModified()) {
-            return true;
+    public CloseCheckResult canClose() {
+        if (!isModified() && this.textStateId == this.closeTextSateId) {
+            return CloseCheckResult.READY;
         }
-        return this.textStateId == this.closeTextSateId;
+        return CloseCheckResult.PREPARATION_REQUIRED;
     }
 
     @Override
-    public void prepareForClose(CloseScope scope, Runnable retryCallback) {
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         var message = "Save changes to file '" + getFile().getName() + "' before closing?";
         var yesNoDialog = new YesNoDialogViewModel(DialogScope.TAB, message);
         yesNoDialog.setTitle("Save File?");
@@ -308,7 +304,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
         yesNoDialog.setButtonWidthEqual(true);
         Runnable readyToClose = () -> {
             this.closeTextSateId = this.textStateId;
-            retryCallback.run();
+            resultCallback.accept(ClosePreparationResult.SUCCESS);
         };
         yesNoDialog.setYesAction(() -> {
             yesNoDialog.requestClose();
@@ -323,7 +319,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
             yesNoDialog.requestClose();
             readyToClose.run();
         });
-        getMediator().openYesNoDialog(yesNoDialog);
+        getMediator().addYesNoDialog(yesNoDialog);
     }
 
     public FileTaskProvider<String> createFileTaskProvider() {
@@ -453,7 +449,7 @@ public abstract class AbstractViewerTabViewModel extends AbstractWorkerTabViewMo
     }
 
     public ViewerSettings getSettings() {
-        return getShell().getSettings().getViewer();
+        return getMediator().getShell().getMediator().getSettings().getViewer();
     }
 
     public ReadOnlyBooleanProperty persistedProperty() {

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.tabshell.core.ShellViewModel;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 
@@ -24,20 +23,13 @@ import javafx.beans.property.ReadOnlyIntegerWrapper;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractShellTabViewModel extends AbstractTabViewModel implements ShellTabViewModel {
-
-    private final ShellViewModel shell;
+public abstract class AbstractShellTabViewModel<T extends ShellTabMediator> extends AbstractTabViewModel<T>
+        implements ShellTabViewModel<T> {
 
     private ReadOnlyIntegerWrapper dialogCount = new ReadOnlyIntegerWrapper();
 
-    public AbstractShellTabViewModel(ShellViewModel shell) {
+    public AbstractShellTabViewModel() {
         super();
-        this.shell = shell;
-    }
-
-    @Override
-    public ShellViewModel getShell() {
-        return this.shell;
     }
 
     @Override
@@ -48,11 +40,6 @@ public abstract class AbstractShellTabViewModel extends AbstractTabViewModel imp
     @Override
     public int getDialogCount() {
         return this.dialogCount.get();
-    }
-
-    @Override
-    public ShellTabMediator getMediator() {
-        return (ShellTabMediator) super.getMediator();
     }
 
     ReadOnlyIntegerWrapper dialogCountWrapper() {

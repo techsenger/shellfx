@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.layout.splittab;
 
-import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -30,7 +29,7 @@ import javafx.geometry.Insets;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSplitTabViewModel extends AbstractShellTabViewModel {
+public abstract class AbstractSplitTabViewModel<T extends SplitTabMediator> extends AbstractShellTabViewModel<T> {
 
     class Divider {
 
@@ -124,8 +123,7 @@ public abstract class AbstractSplitTabViewModel extends AbstractShellTabViewMode
 
     private final Divider bottomDivider;
 
-    public AbstractSplitTabViewModel(ShellViewModel shell) {
-        super(shell);
+    public AbstractSplitTabViewModel() {
         this.leftDivider = new Divider(0);
         this.leftDivider.setHistoryPosition(0.25);
         this.rightDivider = new Divider(1.0);

@@ -16,47 +16,30 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
-import com.techsenger.tabshell.demos.full.DemoComponentNames;
-import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
-import com.techsenger.tabshell.layout.dock.SideBarPolicy;
+import com.techsenger.tabshell.core.tab.ShellTabMediator;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockLayoutTabViewModel extends AbstractShellTabViewModel {
+public class DockLayoutTabViewModel extends AbstractShellTabViewModel<ShellTabMediator> {
 
-    private final DockLayoutTabHistory history;
-
-    private final DockLayoutViewModel layout;
-
-    private final TextViewerViewModel textViewer = new TextViewerViewModel();
-
-    public DockLayoutTabViewModel(ShellViewModel shell) {
-        super(shell);
+    public DockLayoutTabViewModel() {
+        super();
         setTitle("Dock Layout Tab");
-        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> shell.getHistoryManager()
-                .getOrCreateHistory(DockLayoutTabHistory.class, DockLayoutTabHistory::new));
-        this.history = (DockLayoutTabHistory) getHistoryProvider().provide();
-        this.layout = new DockLayoutViewModel(this.history.getDockLayout());
-        this.layout.setBottomBarPolicy(SideBarPolicy.EXISTS_ALWAYS);
-    }
-
-    public DockLayoutViewModel getLayout() {
-        return layout;
-    }
-
-    public TextViewerViewModel getTextViewer() {
-        return textViewer;
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DEMO_DOCK_LAYOUT_TAB);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

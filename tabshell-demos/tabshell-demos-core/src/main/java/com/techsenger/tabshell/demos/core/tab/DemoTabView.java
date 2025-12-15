@@ -16,10 +16,9 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -30,7 +29,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
+public class DemoTabView<T extends DemoTabViewModel<?>, S extends DemoTabComponent<?>>
+        extends AbstractShellTabView<T, S> {
 
     private final CheckBox newValidCheckBox = new CheckBox("New Item Valid");
 
@@ -47,8 +47,8 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
 
     private final HBox hBox = new HBox(vBox);
 
-    public DemoTabView(ShellView<?> shell, DemoTabViewModel viewModel) {
-        super(shell, viewModel);
+    public DemoTabView(T viewModel) {
+        super(viewModel);
     }
 
     @Override
@@ -57,8 +57,8 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
     }
 
     @Override
-    protected void build(DemoTabViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         hBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(SizeConstants.INSET);
         getContentPane().setAlignment(Pos.CENTER);
@@ -67,8 +67,9 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
     }
 
     @Override
-    protected void bind(DemoTabViewModel viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         newValidCheckBox.selectedProperty().bindBidirectional(viewModel.newValidProperty());
         exitIncludedCheckBox.selectedProperty().bindBidirectional(viewModel.exitIncludedProperty());
         exitValidCheckBox.selectedProperty().bindBidirectional(viewModel.exitValidProperty());
@@ -77,14 +78,9 @@ public class DemoTabView extends AbstractShellTabView<DemoTabViewModel> {
     }
 
     @Override
-    protected void addHandlers(DemoTabViewModel viewModel) {
-        super.addHandlers(viewModel);
-        this.shellDialogButton.setOnAction(e -> viewModel.openDialog(DialogScope.SHELL));
-        this.tabDialogButton.setOnAction(e -> viewModel.openDialog(DialogScope.TAB));
-    }
-
-    @Override
-    protected DemoTabComposer createComposer() {
-        return new DemoTabComposer(this);
+    protected void addHandlers() {
+        super.addHandlers();
+        this.shellDialogButton.setOnAction(e -> getViewModel().openDialog(DialogScope.SHELL));
+        this.tabDialogButton.setOnAction(e -> getViewModel().openDialog(DialogScope.TAB));
     }
 }

@@ -16,10 +16,6 @@
 
 package com.techsenger.tabshell.demos.full.hex;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.ShellViewModel;
-import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.hex.editor.HexEditorTabViewModel;
 import com.techsenger.tabshell.storage.GenericFile;
 
@@ -27,22 +23,9 @@ import com.techsenger.tabshell.storage.GenericFile;
  *
  * @author Pavel Castornii
  */
-public class DemoHexEditorTabViewModel extends HexEditorTabViewModel {
+public class DemoHexEditorTabViewModel extends HexEditorTabViewModel<DemoHexEditorTabMediator> {
 
-    public DemoHexEditorTabViewModel(ShellViewModel shell, GenericFile file) {
-        super(shell, file);
-        getDescriptor().setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> shell.getHistoryManager().getOrCreateHistory(DemoHexEditorTabHistory.class,
-                DemoHexEditorTabHistory::new));
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DEMO_HEX_EDITOR_TAB);
-    }
-
-    @Override
-    public DemoHexEditorTabMediator getMediator() {
-        return (DemoHexEditorTabMediator) super.getMediator();
+    public DemoHexEditorTabViewModel(GenericFile file) {
+        super(file);
     }
 }

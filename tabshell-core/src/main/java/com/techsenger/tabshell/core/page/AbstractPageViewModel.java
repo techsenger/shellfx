@@ -29,7 +29,8 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageViewModel extends AbstractAreaViewModel implements PageViewModel {
+public abstract class AbstractPageViewModel<T extends PageMediator> extends AbstractAreaViewModel<T>
+        implements PageViewModel<T> {
 
     private final StringProperty title = new SimpleStringProperty();
 
@@ -75,11 +76,6 @@ public abstract class AbstractPageViewModel extends AbstractAreaViewModel implem
     @Override
     public boolean isSelected() {
         return this.selected.get();
-    }
-
-    @Override
-    public PageMediator getMediator() {
-        return (PageMediator) super.getMediator();
     }
 
     ReadOnlyBooleanWrapper selectedWrapper() {

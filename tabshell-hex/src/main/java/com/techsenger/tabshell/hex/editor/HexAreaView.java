@@ -17,12 +17,11 @@
 package com.techsenger.tabshell.hex.editor;
 
 import com.techsenger.tabshell.core.area.AbstractAreaView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.FIRST;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.SECOND;
 import static com.techsenger.tabshell.hex.editor.CaretByteLocation.THIRD;
-import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
 import com.techsenger.tabshell.hex.model.ByteRange;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import java.text.DecimalFormat;
@@ -92,7 +91,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T> {
+public class HexAreaView<T extends HexAreaViewModel<?>, S extends HexAreaComponent<?>> extends AbstractAreaView<T, S> {
 
     /**
      * This class represents the text for a single byte. We use {@link Text} instead of {@link Label} because the
@@ -190,7 +189,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
 
     private abstract static class AbstractRow {
 
-        private final HexAreaView<?> area;
+        private final HexAreaView<?, ?> area;
 
         /**
          * This flow has only one text node.
@@ -212,7 +211,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
          */
         private final HBox node = new HBox(infoLabel, hexPane, asciiPane);
 
-        AbstractRow(HexAreaView<?> area) {
+        AbstractRow(HexAreaView<?, ?> area) {
             this.area = area;
             this.infoLabel.setMinWidth(Region.USE_PREF_SIZE);
             this.infoLabel.getStyleClass().add("info-label");
@@ -239,7 +238,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
             return asciiPane;
         }
 
-        HexAreaView<?> getArea() {
+        HexAreaView<?, ?> getArea() {
             return area;
         }
     }
@@ -252,7 +251,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
 
         private boolean focused;
 
-        BodyRow(RowData data, HexAreaView<?> area) {
+        BodyRow(RowData data, HexAreaView<?, ?> area) {
             super(area);
             this.data = data;
             getNode().getStyleClass().addAll("body-row", StyleClasses.MONOSPACE);
@@ -273,7 +272,8 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
             removeCaret();
             if (offset != null) {
                 getNode().setVisible(true);
-                var offsetStr = NumberBaseUtils.convert(row.getOffset(), areaVM.getToolBar().getOffsetNumberBase(),
+                var offsetStr = NumberBaseUtils.convert(row.getOffset(),
+                        areaVM.getMediator().getToolBar().getOffsetNumberBase(),
                         areaVM.getOffsetLength());
                 getInfoLabel().setText(offsetStr);
                 var hexTexts = getHexPane().getTexts();
@@ -291,7 +291,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
                         asciiText.setText(" ");
                     }
                 }
-                var caretPos = getArea().getCaret().getViewModel().getPosition();
+                var caretPos = getArea().getComponent().getCaret().getView().getViewModel().getPosition();
                 if (caretPos != null && caretPos.getRowOffset() == offset) {
                     this.focused = true;
                     addCaret(caretPos);
@@ -326,10 +326,10 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
             var hexContentBox = getHexPane().getContentBox();
             hexContentBox.setPadding(new Insets(0, charWidth, 0, charWidth));
             hexContentBox.setSpacing(charWidth);
-
-            for (var i = 0; i < areaViewModel.getToolBar().getRowByteCount(); i++) {
-                if (areaViewModel.getToolBar().areColumnsEnabled() && i != 0
-                        && i % areaViewModel.getToolBar().getColumnByteCount() == 0) {
+            var toolBarVM = areaViewModel.getMediator().getToolBar();
+            for (var i = 0; i < toolBarVM.getRowByteCount(); i++) {
+                if (toolBarVM.areColumnsEnabled() && i != 0
+                        && i % toolBarVM.getColumnByteCount() == 0) {
                     if (areaViewModel.getColumnSeparator() == ColumnSeparator.SPACE) {
                         //we use regions as they stretch
                         var separator = new Region();
@@ -392,13 +392,13 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
 
         void addCaret(CaretPosition position) {
             calculateCaretX(position);
-            var caret = getArea().getCaret();
+            var caretV = getArea().getComponent().getCaret().getView();
             if (position.getPanel() == EditorPanel.HEX) {
-                getHexPane().getCaretPane().getChildren().add(caret.getNode());
-                getAsciiPane().getCaretPane().getChildren().add(caret.getIndicator());
+                getHexPane().getCaretPane().getChildren().add(caretV.getNode());
+                getAsciiPane().getCaretPane().getChildren().add(caretV.getIndicator());
             } else {
-                getHexPane().getCaretPane().getChildren().add(caret.getIndicator());
-                getAsciiPane().getCaretPane().getChildren().add(caret.getNode());
+                getHexPane().getCaretPane().getChildren().add(caretV.getIndicator());
+                getAsciiPane().getCaretPane().getChildren().add(caretV.getNode());
             }
         }
 
@@ -597,7 +597,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
             var text = createByteText();
             text.setOnMouseClicked(e -> {
                 var areaVM = getArea().getViewModel();
-                var caretV = getArea().getCaret();
+                var caretV = getArea().getComponent().getCaret().getView();
                 var location = resolveHexLocation(text, e.getX(), caretV.getViewModel().getShape());
                 var rowIndex = this.data.getIndex();
                 var newPos = CaretPosition.create(EditorPanel.HEX, rowIndex, text.getIndex(),
@@ -689,7 +689,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
             text.setOnMouseClicked(e -> {
                 var areaVM = getArea().getViewModel();
 
-                var caretV = getArea().getCaret();
+                var caretV = getArea().getComponent().getCaret().getView();
                 var caretVM = caretV.getViewModel();
                 var location = resolveAsciiLocation(text, e.getX(), caretVM.getShape(), caretVM.isAtRowEnd());
                 var rowIndex = this.data.getIndex();
@@ -725,7 +725,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
         }
 
         private void calculateCaretX(CaretPosition position) {
-            var caretVM = getArea().getViewModel().getCaret();
+            var caretVM = getArea().getComponent().getCaret().getView().getViewModel();
             //when file is opened the position of the caret is calculated by char width as there can be no bytes
             if (position.getByteIndex() == 0 && position.getByteLocation() == CaretByteLocation.FIRST
                     && position.getRowIndex() == 0) {
@@ -779,7 +779,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
 
         private final List<Label> contentLabels = new ArrayList<>();
 
-        HeaderRow(HexAreaView<?> area) {
+        HeaderRow(HexAreaView<?, ?> area) {
             super(area);
             this.scrollableBox.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(this.scrollableBox, Priority.ALWAYS);
@@ -818,10 +818,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
             var asciiContentBox = getAsciiPane().getContentBox();
             asciiContentBox.setPadding(boxPadding);
             asciiContentBox.getChildren().clear();
-
-            for (byte i = 0; i < areaVM.getToolBar().getRowByteCount(); i++) {
-                if (areaVM.getToolBar().areColumnsEnabled() && i != 0
-                        && i % areaVM.getToolBar().getColumnByteCount() == 0) {
+            var toolBarVM = areaVM.getMediator().getToolBar();
+            for (byte i = 0; i < toolBarVM.getRowByteCount(); i++) {
+                if (toolBarVM.areColumnsEnabled() && i != 0 && i % toolBarVM.getColumnByteCount() == 0) {
                     if (areaVM.getColumnSeparator() == ColumnSeparator.SPACE) {
                         //we use regions as they stretch
                         var separator = new Region();
@@ -833,7 +832,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
                         children.add(separator);
                     }
                 }
-                var contentLabel = new Label(NumberBaseUtils.convert(i, areaVM.getToolBar().getOffsetNumberBase(), 2));
+                var contentLabel = new Label(NumberBaseUtils.convert(i, toolBarVM.getOffsetNumberBase(), 2));
                 contentLabel.getStyleClass().add("content");
                 contentLabel.setLineSpacing(0);
                 children.add(contentLabel);
@@ -925,10 +924,6 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
 
     private final VBox mainPane = new VBox();
 
-    private final CaretView caret;
-
-    private DataInspectorTabView<?> dataInspector;
-
     private int pulseCounter;
 
     private int selectionStartOffset;
@@ -944,7 +939,6 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
                 return rowView;
         });
         this.virtualScrollPane = new VirtualizedScrollPane<>(virtualFlow);
-        this.caret = new CaretView(viewModel.getCaret());
         this.headerRow = new HeaderRow(this);
     }
 
@@ -958,13 +952,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
         NodeUtils.requestFocus(virtualFlow);
     }
 
-    public CaretView getCaret() {
-        return caret;
-    }
-
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         var css = HexAreaView.class.getResource("hex-area.css").toExternalForm();
         getNode().getStylesheets().add(css);
         this.virtualScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -975,14 +965,15 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
         this.headerRow.getNode().prefWidthProperty().bind(this.mainPane.widthProperty());
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         virtualFlow.setOnMousePressed(e -> virtualFlow.requestFocus());
         virtualFlow.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             e.consume();
@@ -1003,8 +994,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         viewModel.layoutUpdateSource().addListener((newPosition) -> updateLayout(newPosition));
         viewModel.caretPositionSource().addListener((position) -> updateCaretPosition(position));
         this.mainPane.widthProperty().addListener((ov, oldV, newV) ->
@@ -1013,19 +1005,6 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
             this.headerRow.getScrollableBox().setTranslateX(newV * -1);
             this.headerRow.updateAsciiPaneWidth(this.mainPane.getWidth());
         });
-    }
-
-    @Override
-    protected void postInitialize(T viewModel) {
-        super.postInitialize(viewModel);
-        this.caret.initialize();
-        viewModel.addListeners();
-    }
-
-    @Override
-    protected void preDeinitialize(T viewModel) {
-        super.preDeinitialize(viewModel);
-        this.caret.deinitialize();
     }
 
     protected VBox getMainPane() {
@@ -1070,7 +1049,7 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
     }
 
     private void updateCaretPosition(CaretPosition newPos) {
-        var curPos = this.caret.getViewModel().getPosition();
+        var curPos = getComponent().getCaret().getView().getViewModel().getPosition();
         if (newPos.getRowIndex() == curPos.getRowIndex()) {
             moveCaretTo(newPos, null);
         } else {
@@ -1186,7 +1165,8 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
      * @param newRow the target row, or {@code null} if the caret remains on the same row
      */
     private void moveCaretTo(CaretPosition position, BodyRow newRow) {
-        var caretVM = this.caret.getViewModel();
+        var caretV = getComponent().getCaret().getView();
+        var caretVM = caretV.getViewModel();
         //if the position is null, it indicates that the caret has not moved,
         //and only the view's caret needs to be updated.
         if (position == null) {
@@ -1212,11 +1192,11 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
         newRow.setFocused(true);
         //when cursor is moved it must always be visible
         if (!caretVM.isDisabled()) {
-            this.caret.getNode().setVisible(true);
+            caretV.getNode().setVisible(true);
         }
         //and only now we change position
         caretVM.setPosition(position);
-        caret.setRowHeight(this.caretRow.getNode().getHeight());
+        caretV.setRowHeight(this.caretRow.getNode().getHeight());
     }
 
     private PageScroll createPageScroll() {
@@ -1233,7 +1213,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
         boolean lastRowFullyVisible = ROW_VISIBILITY_TOLERANCE >= visibleRowTotalHeight - this.virtualFlow.getHeight();
 
         //calculating caret row index diff
-        var caretRowIndex = this.caret.getViewModel().getPosition().getRowIndex();
+        var caretV = getComponent().getCaret().getView();
+        var caretVM = caretV.getViewModel();
+        var caretRowIndex = caretVM.getPosition().getRowIndex();
         //the index of the visible row owning the caret
         var caretVisibleRowIndex = caretRowIndex - firstRowIndex;
 
@@ -1273,7 +1255,9 @@ public class HexAreaView<T extends HexAreaViewModel> extends AbstractAreaView<T>
             newCaretRow = this.virtualFlow.visibleCells().get(endCaretRowIndex);
         }
         int newCaretRowIndex = viewModel.calculateRowIndex(newCaretRow.getData());
-        var curPos = this.caret.getViewModel().getPosition();
+        var caretV = getComponent().getCaret().getView();
+        var caretVM = caretV.getViewModel();
+        var curPos = caretVM.getPosition();
         var newPos = CaretPosition.create(curPos.getPanel(),
                 newCaretRowIndex, curPos.getByteIndex(), curPos.getByteLocation(), viewModel);
         moveCaretTo(newPos, newCaretRow);

@@ -26,7 +26,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class DockableTabView extends AbstractTabView<DockableTabViewModel> {
+public class DockableTabView extends AbstractTabView<DockableTabViewModel, DockableTabComponent> {
 
     private final Label label = new Label();
 
@@ -42,15 +42,15 @@ public class DockableTabView extends AbstractTabView<DockableTabViewModel> {
     }
 
     @Override
-    protected void build(DockableTabViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         getContentPane().getChildren().add(stackPane);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
     }
 
     @Override
-    protected void bind(DockableTabViewModel viewModel) {
-        super.bind(viewModel);
-        label.textProperty().bind(viewModel.titleProperty());
+    protected void bind() {
+        super.bind();
+        label.textProperty().bind(getViewModel().titleProperty());
     }
 }

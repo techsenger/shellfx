@@ -16,10 +16,10 @@
 
 package com.techsenger.tabshell.jfx.eventlog;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
-import com.techsenger.tabshell.core.tab.ShellTabViewModel;
-import com.techsenger.tabshell.jfx.JfxComponentNames;
+import com.techsenger.tabshell.core.tab.TabMediator;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.material.icon.GenericFontIcon;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -75,7 +75,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class EventLogTabViewModel extends AbstractTabViewModel {
+public class EventLogTabViewModel extends AbstractTabViewModel<TabMediator> {
 
     protected record Filter(
             boolean active,
@@ -115,8 +115,6 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
         return new String(TIME_ARRAY);
     }
-
-    private final ShellTabViewModel shellTab;
 
     private final Connector connector;
 
@@ -177,8 +175,7 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
     private Filter previousFilter;
 
-    public EventLogTabViewModel(ShellTabViewModel shellTab, Connector connector) {
-        this.shellTab = shellTab;
+    public EventLogTabViewModel(Connector connector) {
         this.connector = connector;
         setTitle("Event Log");
         setClosable(false);
@@ -256,6 +253,16 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
     }
 
     @Override
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
     protected void initialize() {
         super.initialize();
         this.filterActive.addListener((ov, oldV, newV) -> updateFilter());
@@ -286,11 +293,6 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
 
     protected void setRecordIcon(GenericFontIcon<?> icon) {
         recordIcon.set(icon);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(JfxComponentNames.EVENT_LOG_TAB);
     }
 
     protected boolean matchesFilter(Filter filter, LogEntry entry) {
@@ -428,7 +430,7 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         };
         this.entryProcessor = new Thread(task);
         this.entryProcessor.start();
-        logger.debug("{} EntryProcessor started", getDescriptor().getLogPrefix());
+        logger.debug("{} EntryProcessor started", getMediator().getLogPrefix());
     }
 
     protected void sendText(List<LogEntry> entries) {
@@ -447,7 +449,7 @@ public class EventLogTabViewModel extends AbstractTabViewModel {
         }
         this.entryProcessor.interrupt();
         this.entryProcessor = null;
-        logger.debug("{} EntryProcessor stopped", getDescriptor().getLogPrefix());
+        logger.debug("{} EntryProcessor stopped", getMediator().getLogPrefix());
     }
 
     private void updateFilter() {

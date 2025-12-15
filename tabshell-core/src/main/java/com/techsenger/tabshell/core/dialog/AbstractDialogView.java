@@ -41,10 +41,10 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogView<T extends AbstractDialogViewModel> extends AbstractAreaView<T>
-        implements DialogView<T> {
+public abstract class AbstractDialogView<T extends AbstractDialogViewModel<?>, S extends AbstractDialogComponent<?>>
+        extends AbstractAreaView<T, S> implements DialogView<T, S> {
 
-    private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");
+    private static final PseudoClass INACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("inactive");
 
     private final IconViewBox iconViewBox = new IconViewBox();
 
@@ -89,13 +89,6 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
 
     private RegionResizer resizer;
 
-    /**
-     * Dialog manager that opens and closes this dialog.
-     */
-    private DialogManager dialogManager;
-
-    private Pane backgroundPane;
-
     private final LayoutPulseListener buttonWidthListener = () -> {
         makeEqualButtons();
         return false;
@@ -110,18 +103,6 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
         return this.dialogBox;
     }
 
-    @Override
-    public void close() {
-        if (this.dialogManager != null) {
-            this.dialogManager.closeDialog(this);
-        }
-    }
-
-    @Override
-    public DialogComposer<?> getComposer() {
-        return (DialogComposer<?>) super.getComposer();
-    }
-
     protected VBox getContentPane() {
         return contentPane;
     }
@@ -131,13 +112,8 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
-        viewModel.closeRequestedSource().addListener((v) -> {
-            if (Boolean.TRUE.equals(v)) {
-                close();
-            }
-        });
+    protected void build() {
+        var viewModel = getViewModel();
         titleLabel.getStyleClass().add("title-label");
         titleBar.setAlignment(Pos.CENTER_LEFT);
         titleBar.getStyleClass().addAll("title-bar", StyleClasses.CORNERS_TOP);
@@ -175,8 +151,9 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         iconViewBox.iconProperty().bind(viewModel.iconProperty());
         titleLabel.textProperty().bind(viewModel.titleProperty());
         viewModel.widthWrapper().bind(dialogBox.widthProperty());
@@ -187,8 +164,9 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         viewModel.waitingProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
                 var bgPane = new Pane();
@@ -207,53 +185,19 @@ public abstract class AbstractDialogView<T extends AbstractDialogViewModel> exte
                 getPulseListenerManager().addListener(LayoutPhase.POST, buttonWidthListener);
             }
         });
+        viewModel.activeProperty().addListener((ov, oldV, newV) -> {
+            dialogBox.pseudoClassStateChanged(INACTIVE_PSEUDO_CLASS, !newV);
+        });
     }
 
     @Override
-    protected void addHandlers(T viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
         titleBar.setOnMousePressed((event) -> this.doOnMousePressed(event));
         titleBar.setOnMouseDragged((event) -> this.doOnMouseDragged(event));
     }
 
-    @Override
-    protected DialogComposer<?> createComposer() {
-        // we suppose that all child dialogs will be with the same scope
-        return new AbstractDialogComposer<AbstractDialogView<?>>(this) {
-
-            @Override
-            public DialogMediator createMediator() {
-                return new AbstractDialogComposer.Mediator() { };
-            }
-
-            @Override
-            public void openDialog(DialogView<?> dialog) {
-                getView().getDialogManager().openDialog(dialog);
-            }
-        };
-    }
-
-    public DialogManager getDialogManager() {
-        return dialogManager;
-    }
-
     protected abstract void makeEqualButtons();
-
-    protected void setDialogManager(DialogManager dialogManager) {
-        this.dialogManager = dialogManager;
-    }
-
-    void setUnfocused(boolean unfocused) {
-        dialogBox.pseudoClassStateChanged(UNFOCUSED_PSEUDO_CLASS, unfocused);
-    }
-
-    Pane getBackgroundPane() {
-        return backgroundPane;
-    }
-
-    void setBackgroundPane(Pane backgroundPane) {
-        this.backgroundPane = backgroundPane;
-    }
 
     private void doOnMousePressed(MouseEvent event) {
         if (isMoving()) {

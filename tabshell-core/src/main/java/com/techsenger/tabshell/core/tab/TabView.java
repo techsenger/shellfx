@@ -16,10 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.mvvm4fx.core.ChildView;
-import com.techsenger.mvvm4fx.core.ParentView;
-import com.techsenger.tabshell.core.CloseScope;
-import com.techsenger.tabshell.core.CloseableView;
+import com.techsenger.patternfx.core.ChildView;
 import com.techsenger.tabshell.core.SelectableView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 
@@ -28,29 +25,9 @@ import com.techsenger.tabshell.core.menu.MenuAware;
  *
  * @author Pavel Castornii
  */
-public interface TabView<T extends TabViewModel> extends ChildView<T>, SelectableView, CloseableView, MenuAware {
-
-    /**
-     * Sets the parent component for this tab. At the same time, for optimization purposes, the parent component
-     * does not keep references to the Tab components, since all tabs can be retrieved from the TabPane.
-     *
-     * @param parent
-     */
-    void setParent(ParentView<?> parent);
-
-    /**
-     * Is called when there is a new attempt to close the tab or the shell.
-     *
-     * @return true if it can be closed. Otherwise returns false.
-     */
-    boolean doOnCloseAttempt(CloseScope scope, Runnable repeatCallback);
+public interface TabView<T extends TabViewModel<?>, S extends TabComponent<?>> extends ChildView<T, S>,
+        SelectableView, MenuAware {
 
     @Override
     ComponentTab getNode();
-
-    @Override
-    void close();
-
-    @Override
-    TabComposer<?> getComposer();
 }

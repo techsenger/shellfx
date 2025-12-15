@@ -16,8 +16,9 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
+import com.techsenger.tabshell.core.area.AreaMediator;
+import com.techsenger.tabshell.core.history.HistoryUtils;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,7 +32,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel {
+public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel<AreaMediator> {
 
     private final StringProperty text = new SimpleStringProperty();
 
@@ -227,6 +228,11 @@ public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel {
 
     public void setHistoryUpdated(boolean value) {
         this.historyUpdated.set(value);
+    }
+
+    @Override
+    public FindPaneMediator getMediator() {
+        return (FindPaneMediator) super.getMediator();
     }
 
     protected void addFindText() {

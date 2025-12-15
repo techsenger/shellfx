@@ -22,6 +22,6 @@ import com.techsenger.tabshell.shared.find.AbstractFindPaneHistory;
  *
  * @author Pavel Castornii
  */
-public class FindPaneHistory extends AbstractFindPaneHistory<FindPaneViewModel> {
+public class FindPaneHistory<T extends FindPaneViewModel> extends AbstractFindPaneHistory<T> {
 
 }

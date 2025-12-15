@@ -24,11 +24,12 @@ import javafx.scene.input.KeyCode;
  *
  * @author Pavel Castornii
  */
-public class FindPaneView extends AbstractFindPaneView<FindPaneViewModel> {
+public class FindPaneView<T extends FindPaneViewModel, S extends FindPaneComponent<?>>
+        extends AbstractFindPaneView<T, S> {
 
     private final KitJediTermFxWidget widget;
 
-    public FindPaneView(KitJediTermFxWidget widget, FindPaneViewModel viewModel) {
+    public FindPaneView(T viewModel, KitJediTermFxWidget widget) {
         super(viewModel);
         this.widget = widget;
         viewModel.setTextBuffer(this.widget.getTerminalTextBuffer());
@@ -40,21 +41,23 @@ public class FindPaneView extends AbstractFindPaneView<FindPaneViewModel> {
     }
 
     @Override
-    protected void bind(FindPaneViewModel viewModel) {
-        super.bind(viewModel);
-        widget.getTerminalPanel().findResultHighlightedProperty().bind(viewModel.highlightSelectedProperty());
+    protected void bind() {
+        super.bind();
+        widget.getTerminalPanel().findResultHighlightedProperty().bind(getViewModel().highlightSelectedProperty());
     }
 
     @Override
-    protected void addListeners(FindPaneViewModel viewModel) {
-        super.addListeners(viewModel);
-        viewModel.resultProperty().addListener((ov, oldV, newV) -> this.widget.getTerminalPanel().setFindResult(newV));
+    protected void addListeners() {
+        super.addListeners();
+        getViewModel().resultProperty()
+                .addListener((ov, oldV, newV) -> this.widget.getTerminalPanel().setFindResult(newV));
         getHighlightButton().selectedProperty().addListener((ov, oldV, newV) -> widget.getTerminalPanel().repaint());
     }
 
     @Override
-    protected void addHandlers(FindPaneViewModel viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         getFindComboBox().setOnKeyPressed((event) -> {
             if (event.getCode() == KeyCode.ENTER) {
                 if (viewModel.resultProperty().get() == null) {
@@ -76,14 +79,14 @@ public class FindPaneView extends AbstractFindPaneView<FindPaneViewModel> {
     }
 
     @Override
-    protected void preDeinitialize(FindPaneViewModel viewModel) {
-        super.preDeinitialize(viewModel);
+    protected void unbuild() {
+        super.unbuild();
         widget.getTerminalPanel().setFindResult(null);
     }
 
     @Override
-    protected void unbind(FindPaneViewModel viewModel) {
-        super.unbind(viewModel);
+    protected void unbind() {
+        super.unbind();
         widget.getTerminalPanel().findResultHighlightedProperty().unbind();
     }
 }

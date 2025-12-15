@@ -16,9 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.mvvm4fx.core.AbstractChildView;
-import com.techsenger.mvvm4fx.core.ParentView;
-import com.techsenger.tabshell.core.CloseScope;
+import com.techsenger.patternfx.core.AbstractChildView;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.material.icon.IconViewBox;
@@ -37,8 +35,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractTabView<T extends AbstractTabViewModel> extends AbstractChildView<T>
-        implements TabView<T> {
+public abstract class AbstractTabView<T extends AbstractTabViewModel<?>, S extends AbstractTabComponent<?>>
+        extends AbstractChildView<T, S> implements TabView<T, S> {
 
     private final ComponentTab root = new ComponentTab(this);
 
@@ -46,17 +44,10 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
 
     private final StackPane wrapperPane = new StackPane(contentPane);
 
-    private final PulseListenerManager pulseListenerManager;
+    private PulseListenerManager pulseListenerManager;
 
     public AbstractTabView(T viewModel) {
         super(viewModel);
-        this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
-                () -> getContentPane().sceneProperty());
-    }
-
-    @Override
-    public void setParent(ParentView<?> parent) {
-        super.setParent(parent);
     }
 
     @Override
@@ -94,45 +85,28 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
         return getViewModel().getMenuItemHelpersByName().get(menuItemName);
     }
 
-    @Override
-    public void close() {
-        ((TabContainerView<AbstractTabView<T>>) getParent()).closeTab(this);
-    }
-
-    @Override
-    public boolean doOnCloseAttempt(CloseScope scope, Runnable retryCallback) {
-        if (getViewModel().isReadyToClose()) {
-            return true;
-        } else {
-            getViewModel().prepareForClose(scope, retryCallback);
-            return false;
-        }
-    }
-
-    @Override
-    public TabComposer<?> getComposer() {
-        return (TabComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected TabComposer<?> createComposer() {
-        return (TabComposer<?>) super.createComposer();
-    }
-
     protected VBox getContentPane() {
         return contentPane;
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void initialize() {
+        this.pulseListenerManager = new PulseListenerManager(getComponent().getFullName(),
+                () -> getContentPane().sceneProperty());
+        super.initialize();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
         this.root.setGraphic(new Label());
         this.root.setContent(wrapperPane);
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         this.root.textProperty().bind(viewModel.titleProperty());
         var iconViewBox = new IconViewBox();
         iconViewBox.iconProperty().bind(viewModel.iconProperty());
@@ -149,9 +123,9 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
-        viewModel.waitingProperty().addListener((ov, oldV, newV) -> {
+    protected void addListeners() {
+        super.addListeners();
+        getViewModel().waitingProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
                 var bgPane = new Pane();
                 bgPane.setMouseTransparent(false);
@@ -161,11 +135,12 @@ public abstract class AbstractTabView<T extends AbstractTabViewModel> extends Ab
                 wrapperPane.getChildren().remove(wrapperPane.getChildren().size() - 1);
             }
         });
-        viewModel.closeSource().addListener((v) -> {
-            if (Boolean.TRUE.equals(v)) {
-                close();
-            }
-        });
+    }
+
+    @Override
+    protected void addHandlers() {
+        super.addHandlers();
+        getNode().setOnCloseRequest((e) -> getViewModel().close());
     }
 
     protected StackPane getWrapperPane() {

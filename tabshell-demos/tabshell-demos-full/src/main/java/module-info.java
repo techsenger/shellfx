@@ -19,7 +19,7 @@ module com.techsenger.tabshell.demos.full {
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
-    requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.patternfx.core;
     requires com.techsenger.tabshell.layout;
     requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabshell.text;

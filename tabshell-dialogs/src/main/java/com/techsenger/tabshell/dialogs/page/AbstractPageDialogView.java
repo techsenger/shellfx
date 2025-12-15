@@ -27,10 +27,10 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageDialogView<S extends PageView<?>, T extends AbstractPageDialogViewModel>
-        extends AbstractSimpleDialogView<T> {
+public abstract class AbstractPageDialogView<T extends AbstractPageDialogViewModel<?>,
+        S extends AbstractPageDialogComponent<?>> extends AbstractSimpleDialogView<T, S> {
 
-    private final ListView<S> pageListView = new ListView<>();
+    private final ListView<PageView<?, ?>> pageListView = new ListView<>();
 
     private final VBox pageContainer = new VBox();
 
@@ -38,7 +38,7 @@ public abstract class AbstractPageDialogView<S extends PageView<?>, T extends Ab
         super(viewModel);
     }
 
-    protected ListView<S> getPageListView() {
+    protected ListView<PageView<?, ?>> getPageListView() {
         return pageListView;
     }
 
@@ -47,12 +47,12 @@ public abstract class AbstractPageDialogView<S extends PageView<?>, T extends Ab
     }
 
     @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         pageListView.getStyleClass().add(Styles.DENSE);
         pageListView.setCellFactory(lv -> new ListCell<>() {
             @Override
-            protected void updateItem(S page, boolean empty) {
+            protected void updateItem(PageView<?, ?> page, boolean empty) {
                 super.updateItem(page, empty);
                 if (empty || page == null) {
                     setText(null);
@@ -64,8 +64,8 @@ public abstract class AbstractPageDialogView<S extends PageView<?>, T extends Ab
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
         pageListView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             getFocusTrap().deactivate();
             this.pageContainer.getChildren().clear();
@@ -78,23 +78,5 @@ public abstract class AbstractPageDialogView<S extends PageView<?>, T extends Ab
                 getFocusTrap().activate();
             }
         });
-    }
-
-    @Override
-    protected void preInitialize(T viewModel) {
-        super.preInitialize(viewModel);
-        this.pageListView.getItems().forEach(p -> p.initialize());
-    }
-
-    @Override
-    protected void postInitialize(T viewModel) {
-        super.postInitialize(viewModel);
-        this.pageListView.getSelectionModel().select(0);
-    }
-
-    @Override
-    protected void postDeinitialize(T viewModel) {
-        super.postDeinitialize(viewModel);
-        this.pageListView.getItems().forEach(p -> p.deinitialize());
     }
 }

@@ -15,7 +15,7 @@
  */
 
 module com.techsenger.tabshell.material {
-    requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.patternfx.core;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires org.slf4j;

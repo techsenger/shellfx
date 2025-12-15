@@ -16,20 +16,16 @@
 
 package com.techsenger.tabshell.core.element;
 
-import com.techsenger.mvvm4fx.core.AbstractChildViewModel;
+import com.techsenger.patternfx.core.AbstractChildViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractElementViewModel extends AbstractChildViewModel implements ElementViewModel {
+public abstract class AbstractElementViewModel<T extends ElementMediator> extends AbstractChildViewModel<T>
+        implements ElementViewModel<T> {
 
     public AbstractElementViewModel() {
         super();
-    }
-
-    @Override
-    public ElementMediator getMediator() {
-        return (ElementMediator) super.getMediator();
     }
 }

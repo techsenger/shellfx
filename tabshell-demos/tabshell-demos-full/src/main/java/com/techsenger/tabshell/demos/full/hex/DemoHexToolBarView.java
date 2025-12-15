@@ -29,7 +29,7 @@ import javafx.scene.control.Tooltip;
  *
  * @author Pavel Castornii
  */
-public class DemoHexToolBarView extends HexToolBarView<DemoHexToolBarViewModel> {
+public class DemoHexToolBarView extends HexToolBarView<DemoHexToolBarViewModel, DemoHexToolBarComponent> {
 
     private final ComboBox<CaretShape> caretShapeComboBox = new ComboBox<>();
 
@@ -48,9 +48,9 @@ public class DemoHexToolBarView extends HexToolBarView<DemoHexToolBarViewModel> 
     }
 
     @Override
-    protected void build(DemoHexToolBarViewModel viewModel) {
-        super.build(viewModel);
-
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         this.caretShapeComboBox.setItems(viewModel.getCaretShapes());
         this.caretShapeComboBox.getStyleClass().add(Styles.DENSE);
         this.caretShapeComboBox.setTooltip(new Tooltip("Caret Shape"));

@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.tabshell.dialogs.DialogShellTabMediator;
+import com.techsenger.tabshell.core.tab.ShellTabMediator;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WebBrowserTabMediator extends DialogShellTabMediator {
+public interface WebBrowserTabMediator extends ShellTabMediator {
 
     WebToolBarViewModel getToolBar();
 }

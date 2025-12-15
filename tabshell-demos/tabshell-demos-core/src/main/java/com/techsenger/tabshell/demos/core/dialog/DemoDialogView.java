@@ -33,7 +33,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel> {
+public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel, DemoDialogComponent> {
 
     private final Label fooLabel = new Label("Foo");
 
@@ -61,8 +61,8 @@ public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel> {
     }
 
     @Override
-    protected void build(DemoDialogViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         gridPane.setHgap(SizeConstants.INSET);
         gridPane.setVgap(SizeConstants.INSET);
         gridPane.add(fooLabel, 0, 0);
@@ -83,10 +83,10 @@ public class DemoDialogView extends AbstractDialogView<DemoDialogViewModel> {
     }
 
     @Override
-    protected void addHandlers(DemoDialogViewModel viewModel) {
-        super.addHandlers(viewModel);
-        okButton.setOnAction(e -> close());
-        cancelButton.setOnAction(e -> close());
+    protected void addHandlers() {
+        super.addHandlers();
+        okButton.setOnAction(e -> getViewModel().close());
+        cancelButton.setOnAction(e -> getViewModel().close());
     }
 
     @Override

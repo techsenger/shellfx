@@ -48,7 +48,8 @@ import org.reactfx.Subscription;
  *
  * @author Pavel Castornii
  */
-class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel> implements FindPaneView {
+public class DefaultFindPaneView<T extends DefaultFindPaneViewModel, S extends DefaultFindPaneComponent<?>>
+        extends AbstractFindPaneView<T, S> implements FindPaneView {
 
     private final Label replaceLabel = new Label("Replace With");
 
@@ -68,14 +69,9 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
 
     private Subscription changeObserver;
 
-    DefaultFindPaneView(ExtendedTextArea textArea, DefaultFindPaneViewModel viewModel) {
+    public DefaultFindPaneView(T viewModel, ExtendedTextArea textArea) {
         super(viewModel);
         this.textArea = textArea;
-    }
-
-    @Override
-    public DefaultFindPaneViewModel getViewModel() {
-        return (DefaultFindPaneViewModel) super.getViewModel();
     }
 
     @Override
@@ -121,8 +117,9 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     }
 
     @Override
-    protected void build(DefaultFindPaneViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         this.replaceLabel.setMinWidth(Label.USE_PREF_SIZE);
         // 3 = 2(padding) + 1(bg-insetts)
         this.replaceLabelWrapper.setPadding(new Insets(2, SizeConstants.INSET, 3, SizeConstants.INSET));
@@ -149,8 +146,9 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     }
 
     @Override
-    protected void bind(DefaultFindPaneViewModel viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         viewModel.textProperty().bind(this.textArea.textProperty());
         viewModel.textLengthProperty().bind(this.textArea.lengthProperty());
         viewModel.textAreaEditableProperty().bind(this.textArea.editableProperty());
@@ -161,8 +159,9 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     }
 
     @Override
-    protected void addListeners(DefaultFindPaneViewModel viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         viewModel.replaceModeProperty().addListener((ov, oldV, newV) -> this.manageReplaceControls(newV));
         viewModel.matchesResetProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
@@ -183,8 +182,9 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     }
 
     @Override
-    protected void addHandlers(DefaultFindPaneViewModel viewModel) {
-        super.addHandlers(viewModel);
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
         //in text field Ctrl+H is "remove backward". However, we this combination as a shortcut. This filter fixes it.
         getFindComboBox().getEditor().addEventFilter(KeyEvent.KEY_PRESSED, (t) -> {
             if (t.getCode() == KeyCode.H && t.isControlDown()) {
@@ -234,21 +234,17 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     }
 
     @Override
-    protected void preDeinitialize(DefaultFindPaneViewModel viewModel) {
-        super.preDeinitialize(viewModel);
-        if (viewModel.isHighlightActive()) {
+    protected void deinitialize() {
+        if (getViewModel().isHighlightActive()) {
             this.removeAllHighlighting();
         }
+        super.deinitialize();
     }
 
     @Override
-    protected void unbuild(DefaultFindPaneViewModel viewModel) {
-        super.unbuild(viewModel);
-    }
-
-    @Override
-    protected void unbind(DefaultFindPaneViewModel viewModel) {
-        super.unbind(viewModel);
+    protected void unbind() {
+        super.unbind();
+        var viewModel = getViewModel();
         viewModel.textProperty().unbind();
         viewModel.textLengthProperty().unbind();
         viewModel.textAreaEditableProperty().unbind();
@@ -257,8 +253,8 @@ class DefaultFindPaneView extends AbstractFindPaneView<DefaultFindPaneViewModel>
     }
 
     @Override
-    protected void removeListeners(DefaultFindPaneViewModel viewModel) {
-        super.removeListeners(viewModel);
+    protected void removeListeners() {
+        super.removeListeners();
         this.changeObserver.unsubscribe();
     }
 

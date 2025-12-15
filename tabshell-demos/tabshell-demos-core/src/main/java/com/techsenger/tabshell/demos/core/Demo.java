@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demos.core;
 
+import com.techsenger.tabshell.core.DefaultShellComponent;
 import com.techsenger.tabshell.core.DefaultShellView;
 import com.techsenger.tabshell.core.DefaultShellViewModel;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
@@ -24,7 +25,6 @@ import com.techsenger.tabshell.demos.core.menu.DemoMenuNames;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuRegistrar;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -36,15 +36,15 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
+        var viewModel = new DefaultShellViewModel();
         viewModel.setTitle("TabShell Core Demo");
-        viewModel.setOnClosed(() -> {
-            Platform.exit();
-        });
+
         //this helper will be used when there are no tabs
         viewModel.addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuNames.NEW, null, Boolean.TRUE));
-        var view = new DefaultShellView(this, stage, null, viewModel);
-        view.initialize();
+        var view = new DefaultShellView<>(viewModel, this, stage, null);
+        var component = new DefaultShellComponent<>(view, DemoSettings.createSettings(),
+                new DemoHistoryManager());
+        component.initialize();
 
         //adding menu
         var controlRegistry = view.getControlRegistry();

@@ -133,7 +133,7 @@
     -fx-background-color: -color-button-fg-pressed;
 }
 
-.dialog-box:unfocused > .title-bar {
+.dialog-box:inactive > .title-bar {
     -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
 }
 

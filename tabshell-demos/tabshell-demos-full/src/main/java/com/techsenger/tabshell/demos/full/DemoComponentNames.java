@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.patternfx.core.ComponentName;
 
 /**
  * Keys are used to identify components at they are always accessible and are kept in API. Classes cannot
@@ -36,7 +36,7 @@ public interface DemoComponentNames {
 
     ComponentName DEMO_DOCKABLE_TAB = new ComponentName("DemoDockableTab");
 
-    ComponentName DEMO_TEXT_VIEWER_TAB = new ComponentName("DemoTextViewerTab");
+    ComponentName DEMO_TEXT_VIEWER = new ComponentName("DemoTextViewer");
 
     ComponentName DEMO_DIALOGS_DIALOG = new ComponentName("DemoDialogsDialog");
 

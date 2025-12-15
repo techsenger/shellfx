@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.mvvm4fx.core.ComponentView;
+import com.techsenger.patternfx.core.ComponentView;
 import com.techsenger.tabshell.material.menu.MenuGroupName;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
@@ -88,8 +88,8 @@ public class ControlBuilder {
         this.registry = registry;
     }
 
-    public List<Menu> buildMenuBarElements(ComponentView<?> view) {
-        var componentName = view.getViewModel().getDescriptor().getName();
+    public List<Menu> buildMenuBarElements(ComponentView<?, ?> view) {
+        var componentName = view.getComponent().getName();
         //we clone collections because there can not be changes during building
         var registrations = new ArrayList<>(registry.getBarMenuRegistrations(componentName));
         buildBarElements(view, registrations);
@@ -162,7 +162,7 @@ public class ControlBuilder {
      * @param view
      * @param regs
      */
-    private void buildBarElements(ComponentView<?> view, List<AbstractMenuRegistration<?>> regs) {
+    private void buildBarElements(ComponentView<?, ?> view, List<AbstractMenuRegistration<?>> regs) {
         for (var r : regs) {
             switch (r.getType()) {
                 case MENU:

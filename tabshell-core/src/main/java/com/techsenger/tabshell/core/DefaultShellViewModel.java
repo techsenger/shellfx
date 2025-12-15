@@ -16,21 +16,16 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.mvvm4fx.core.AbstractParentViewModel;
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
-import com.techsenger.mvvm4fx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.patternfx.core.AbstractParentViewModel;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
-import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
-import com.techsenger.toolkit.fx.value.ObservableSource;
-import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -51,17 +46,16 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellViewModel extends AbstractParentViewModel implements ShellViewModel {
+public class DefaultShellViewModel<T extends ShellMediator> extends AbstractParentViewModel<T>
+        implements ShellViewModel<T> {
 
-    private ShellClosedCallback onClosed;
-
-    private final ReadOnlyObjectWrapper<ShellTabViewModel> selectedTab = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<ShellTabViewModel<?>> selectedTab = new ReadOnlyObjectWrapper<>();
 
     private final ReadOnlyIntegerWrapper selectedTabIndex = new ReadOnlyIntegerWrapper();
 
-    private ObservableList<ShellTabViewModel> modifiableTabs = FXCollections.observableArrayList();
+    private ObservableList<ShellTabViewModel<?>> modifiableTabs = FXCollections.observableArrayList();
 
-    private ObservableList<? extends ShellTabViewModel> tabs =
+    private ObservableList<? extends ShellTabViewModel<?>> tabs =
             FXCollections.unmodifiableObservableList(modifiableTabs);
 
     private ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper();
@@ -80,12 +74,6 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
 
     private final Map<MenuItemName, MenuItemHelper> menuItemHelpersByName = new HashMap<>();
 
-    private final ObservableSource<Boolean> closeRequested = new SimpleObservableSource<>();
-
-    private final Settings settings;
-
-    private final HistoryManager historyManager;
-
     /**
      * The width of the stage if the stage is not maximized.
      */
@@ -96,27 +84,12 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
      */
     private double defaultHeight = 800;
 
-    public DefaultShellViewModel(Settings settings, HistoryManager historyManager) {
+    public DefaultShellViewModel() {
         super();
-        this.settings = settings;
-        this.historyManager = historyManager;
-        getDescriptor().setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> historyManager
-                .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
     }
 
     @Override
-    public ShellClosedCallback getOnClosed() {
-        return onClosed;
-    }
-
-    @Override
-    public void setOnClosed(ShellClosedCallback onClose) {
-        this.onClosed = onClose;
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<ShellTabViewModel> selectedTabProperty() {
+    public ReadOnlyObjectProperty<ShellTabViewModel<?>> selectedTabProperty() {
         return this.selectedTab.getReadOnlyProperty();
     }
 
@@ -151,7 +124,7 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
     }
 
     @Override
-    public ObservableList<? extends ShellTabViewModel> getTabs() {
+    public ObservableList<? extends ShellTabViewModel<?>> getTabs() {
         return this.tabs;
     }
 
@@ -206,21 +179,6 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
     }
 
     @Override
-    public Settings getSettings() {
-        return settings;
-    }
-
-    @Override
-    public <T extends Settings> T getSettings(Class<T> settingsClass) {
-        return (T) this.settings;
-    }
-
-    @Override
-    public HistoryManager getHistoryManager() {
-        return historyManager;
-    }
-
-    @Override
     public ReadOnlyBooleanProperty maximizedProperty() {
         return this.maximized.getReadOnlyProperty();
     }
@@ -269,13 +227,18 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
     }
 
     @Override
-    public void requestClose() {
-        this.closeRequested.next(Boolean.TRUE);
+    public void close() {
+        getMediator().deinitialize();
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(CoreComponentNames.SHELL);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     protected Map<MenuName, MenuHelper> getMenuHelpersByName() {
@@ -286,7 +249,7 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
         return menuItemHelpersByName;
     }
 
-    ReadOnlyObjectWrapper<ShellTabViewModel> selectedTabWrapper() {
+    ReadOnlyObjectWrapper<ShellTabViewModel<?>> selectedTabWrapper() {
         return this.selectedTab;
     }
 
@@ -310,7 +273,7 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
         return dialogCount;
     }
 
-    ObservableList<ShellTabViewModel> getModifiableTabs() {
+    ObservableList<ShellTabViewModel<?>> getModifiableTabs() {
         return modifiableTabs;
     }
 
@@ -328,9 +291,5 @@ public class DefaultShellViewModel extends AbstractParentViewModel implements Sh
 
     void setDefaultHeight(double defaultHeight) {
         this.defaultHeight = defaultHeight;
-    }
-
-    ObservableSource<Boolean> closeRequestedSource() {
-        return closeRequested;
     }
 }

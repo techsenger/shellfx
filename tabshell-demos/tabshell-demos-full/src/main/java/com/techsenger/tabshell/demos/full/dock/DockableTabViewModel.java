@@ -16,22 +16,29 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
-import com.techsenger.tabshell.demos.full.DemoComponentNames;
+import com.techsenger.tabshell.core.tab.TabMediator;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockableTabViewModel extends AbstractTabViewModel {
+public class DockableTabViewModel extends AbstractTabViewModel<TabMediator> {
 
     public DockableTabViewModel(int index) {
         setTitle("Tab " + index);
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponentNames.DEMO_DOCKABLE_TAB);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
     }
+
+    @Override
+    public void prepareToClose(Consumer resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

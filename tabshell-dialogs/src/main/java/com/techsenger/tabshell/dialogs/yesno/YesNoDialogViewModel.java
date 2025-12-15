@@ -16,11 +16,11 @@
 
 package com.techsenger.tabshell.dialogs.yesno;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.dialogs.DialogComponentNames;
-import com.techsenger.tabshell.dialogs.base.BaseDialogMediator;
+import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -32,7 +32,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public class YesNoDialogViewModel extends AbstractDialogViewModel {
+public class YesNoDialogViewModel<T extends YesNoDialogMediator> extends AbstractDialogViewModel<T> {
 
     private StringProperty message = new SimpleStringProperty();
 
@@ -246,12 +246,12 @@ public class YesNoDialogViewModel extends AbstractDialogViewModel {
     }
 
     @Override
-    public BaseDialogMediator getMediator() {
-        return (BaseDialogMediator) super.getMediator();
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DialogComponentNames.YES_NO_DIALOG);
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.mvvm4fx.core.ComponentName;
+import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.material.menu.MenuGroupName;
 import com.techsenger.tabshell.material.menu.MenuName;
 import com.techsenger.tabshell.material.menu.NamedMenu;

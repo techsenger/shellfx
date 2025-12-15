@@ -23,7 +23,8 @@ import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageDialogViewModel extends AbstractSimpleDialogViewModel {
+public abstract class AbstractPageDialogViewModel<T extends PageDialogMediator>
+        extends AbstractSimpleDialogViewModel<T> {
 
     public AbstractPageDialogViewModel(DialogScope scope, boolean resizable) {
         super(scope, resizable);

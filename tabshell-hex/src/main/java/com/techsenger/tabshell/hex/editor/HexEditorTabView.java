@@ -16,17 +16,20 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
+import com.techsenger.tabshell.layout.dock.DockLayoutView;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractShellTabView<T> {
+public class HexEditorTabView<T extends HexEditorTabViewModel<?>, S extends HexEditorTabComponent<?>>
+        extends AbstractShellTabView<T, S> {
 
-    public HexEditorTabView(ShellView<?> shell, T viewModel) {
-        super(shell, viewModel);
+    public HexEditorTabView(T viewModel) {
+        super(viewModel);
     }
 
     @Override
@@ -37,29 +40,12 @@ public class HexEditorTabView<T extends HexEditorTabViewModel> extends AbstractS
     @Override
     public void doOnSelected() {
         super.doOnSelected();
-        getComposer().getArea().requestFocus();
+        getComponent().getArea().getView().requestFocus();
     }
 
-    @Override
-    protected HexEditorTabComposer<?> createComposer() {
-        return new HexEditorTabComposer<>(this);
+    void addContent(HexToolBarView<?, ?> toolBar, DockLayoutView<?, ?> layout) {
+        VBox.setVgrow(layout.getNode(), Priority.ALWAYS);
+        getContentPane().getChildren().addAll(toolBar.getNode(), layout.getNode());
     }
 
-    @Override
-    public HexEditorTabComposer<?> getComposer() {
-        return (HexEditorTabComposer<?>) super.getComposer();
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
-        getComposer().addToolBar(getContentPane());
-        getComposer().addLayout(getContentPane());
-    }
-
-    @Override
-    protected void postInitialize(T viewModel) {
-        super.postInitialize(viewModel);
-        viewModel.readFile();
-    }
 }

@@ -17,9 +17,9 @@
 package com.techsenger.tabshell.text.viewer;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.material.FxUtils;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.toolkit.fx.input.IntegerTextFormatter;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import javafx.geometry.Insets;
@@ -35,7 +35,8 @@ import javafx.util.converter.IntegerStringConverter;
  *
  * @author Pavel Castornii
  */
-class GoToLineDialogView extends AbstractSimpleDialogView<GoToLineDialogViewModel> {
+public class GoToLineDialogView<T extends GoToLineDialogViewModel, S extends GoToLineDialogComponent<?>>
+        extends AbstractSimpleDialogView<T, S> {
 
     private final Label lineLabel = new Label("Line");
 
@@ -45,13 +46,8 @@ class GoToLineDialogView extends AbstractSimpleDialogView<GoToLineDialogViewMode
 
     private final ComboBox<Integer> columnComboBox = new ComboBox<>();
 
-    GoToLineDialogView(GoToLineDialogViewModel viewModel) {
+    public GoToLineDialogView(T viewModel) {
         super(viewModel);
-    }
-
-    @Override
-    public GoToLineDialogViewModel getViewModel() {
-        return (GoToLineDialogViewModel) super.getViewModel();
     }
 
     @Override
@@ -60,8 +56,9 @@ class GoToLineDialogView extends AbstractSimpleDialogView<GoToLineDialogViewMode
     }
 
     @Override
-    protected void build(GoToLineDialogViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
+        var viewModel = getViewModel();
         this.getButtonBox().getChildren().addAll(getCancelButton(), getOkButton());
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(SizeConstants.INSET, SizeConstants.INSET, 0, SizeConstants.INSET));
@@ -102,15 +99,17 @@ class GoToLineDialogView extends AbstractSimpleDialogView<GoToLineDialogViewMode
     }
 
     @Override
-    protected void bind(GoToLineDialogViewModel viewModel) {
-        super.bind(viewModel);
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
         viewModel.lineProperty().bind(lineComboBox.valueProperty());
         viewModel.columnProperty().bind(columnComboBox.valueProperty());
     }
 
     @Override
-    protected void addListeners(GoToLineDialogViewModel viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         lineComboBox.getEditor().textProperty().addListener((ov, oldV, newV) -> viewModel.checkOkButtonState(newV));
     }
 

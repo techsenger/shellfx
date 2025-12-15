@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.tab.AbstractShellTabView;
-import com.techsenger.toolkit.fx.collections.ListSynchronizer;
+import com.techsenger.toolkit.fx.binding.ListBinder;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebHistory;
@@ -28,14 +28,15 @@ import javafx.scene.web.WebView;
  *
  * @author Pavel Castornii
  */
-public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends AbstractShellTabView<T> {
+public class WebBrowserTabView<T extends WebBrowserTabViewModel<?>, S extends WebBrowserTabComponent<?>>
+        extends AbstractShellTabView<T, S> {
 
     private final WebView webView = new WebView();
 
-    private ListSynchronizer<WebHistory.Entry, String> synchronizer;
+    private ListBinder<String, WebHistory.Entry> entryBinder;
 
-    public WebBrowserTabView(ShellView<?> shell, T viewModel) {
-        super(shell, viewModel);
+    public WebBrowserTabView(T viewModel) {
+        super(viewModel);
     }
 
     @Override
@@ -44,29 +45,19 @@ public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends Abstrac
     }
 
     @Override
-    public WebBrowserTabComposer getComposer() {
-        return (WebBrowserTabComposer) super.getComposer();
-    }
-
-    @Override
-    protected WebBrowserTabComposer<?> createComposer() {
-        return new WebBrowserTabComposer<>(this);
-    }
-
-    @Override
-    protected void build(T viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         VBox.setVgrow(webView, Priority.ALWAYS);
-        getComposer().addToolBar(getContentPane());
         getContentPane().getChildren().add(webView);
     }
 
     @Override
-    protected void addListeners(T viewModel) {
-        super.addListeners(viewModel);
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
         viewModel.getUrlSource().addListener((ulr) -> this.webView.getEngine().load(ulr));
         var webViewHistory = this.webView.getEngine().getHistory();
-        this.synchronizer = new ListSynchronizer<>(webViewHistory.getEntries(), viewModel.getModifiableHistoryEntries(),
+        this.entryBinder = ListBinder.bindContent(viewModel.getModifiableHistoryEntries(), webViewHistory.getEntries(),
                 (e) -> e.getUrl());
         viewModel.historyIndexProperty().addListener((ov, oldV, newV) -> {
             if (newV.intValue() != webViewHistory.getCurrentIndex()) {
@@ -81,18 +72,22 @@ public class WebBrowserTabView<T extends WebBrowserTabViewModel> extends Abstrac
     }
 
     @Override
-    protected void bind(T viewModel) {
-        super.bind(viewModel);
-        viewModel.pageTitleProperty().bind(this.webView.getEngine().titleProperty());
+    protected void bind() {
+        super.bind();
+        getViewModel().pageTitleProperty().bind(this.webView.getEngine().titleProperty());
     }
 
     @Override
-    protected void preDeinitialize(T viewModel) {
-        super.preDeinitialize(viewModel);
+    protected void deinitialize() {
         webView.getEngine().load(null);
+        super.deinitialize();
     }
 
     protected void reload() {
         this.webView.getEngine().reload();
+    }
+
+    void addToolBar(ToolBar bar) {
+        getContentPane().getChildren().add(0, bar);
     }
 }

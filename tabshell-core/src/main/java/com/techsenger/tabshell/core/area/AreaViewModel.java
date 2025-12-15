@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.core.area;
 
-import com.techsenger.mvvm4fx.core.ChildViewModel;
+import com.techsenger.patternfx.core.ChildViewModel;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface AreaViewModel extends ChildViewModel {
+public interface AreaViewModel<T extends AreaMediator> extends ChildViewModel<T> {
 
     ReadOnlyDoubleProperty widthProperty();
 
@@ -32,7 +32,4 @@ public interface AreaViewModel extends ChildViewModel {
     ReadOnlyDoubleProperty heightProperty();
 
     double getHeight();
-
-    @Override
-    AreaMediator getMediator();
 }

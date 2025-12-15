@@ -23,14 +23,14 @@ package com.techsenger.tabshell.hex.editor;
 public final class CaretPosition {
 
     static CaretPosition create(EditorPanel panel, int rowIndex, int byteIndex,
-            CaretByteLocation byteLocation, HexAreaViewModel area) {
+            CaretByteLocation byteLocation, HexAreaViewModel<?> area) {
         int rowOffset = 0;
         if (!area.getOffsets().isEmpty()) {
             rowOffset = area.getOffsets().get(rowIndex);
             if (rowIndex == area.getOffsets().size() - 1) {
                 if (byteIndex >= area.getLastRowByteCount()) {
                     byteIndex = area.getLastRowByteCount() - 1;
-                    if (byteLocation != null && area.getCaret().getShape() == CaretShape.BAR) {
+                    if (byteLocation != null && area.getMediator().getCaret().getShape() == CaretShape.BAR) {
                         byteLocation = CaretByteLocation.THIRD;
                     } else {
                         byteLocation = CaretByteLocation.SECOND;

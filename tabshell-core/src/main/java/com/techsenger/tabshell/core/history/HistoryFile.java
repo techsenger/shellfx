@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.history;
 
-import com.techsenger.mvvm4fx.core.ComponentHistory;
+import com.techsenger.patternfx.core.ComponentHistory;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;

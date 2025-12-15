@@ -26,7 +26,7 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public class TextViewerView extends AbstractAreaView<TextViewerViewModel> {
+public class TextViewerView extends AbstractAreaView<TextViewerViewModel, TextViewerComponent> {
 
     private final TextArea textArea = new TextArea(Text.INSTANCE);
 
@@ -47,8 +47,8 @@ public class TextViewerView extends AbstractAreaView<TextViewerViewModel> {
     }
 
     @Override
-    protected void build(TextViewerViewModel viewModel) {
-        super.build(viewModel);
+    protected void build() {
+        super.build();
         textArea.setWrapText(true);
         textArea.setStyle("-fx-background-color: -color-bg-default");
     }

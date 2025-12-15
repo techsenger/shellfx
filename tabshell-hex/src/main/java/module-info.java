@@ -22,7 +22,7 @@ module com.techsenger.tabshell.hex {
     requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabshell.storage;
     requires com.techsenger.tabshell.dialogs;
-    requires com.techsenger.mvvm4fx.core;
+    requires com.techsenger.patternfx.core;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabpanepro.core;

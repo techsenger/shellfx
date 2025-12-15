@@ -16,22 +16,21 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.mvvm4fx.core.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.jfx.JfxComponentNames;
+import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
 import com.techsenger.tabshell.jfx.UrlUtils;
 import com.techsenger.tabshell.web.WebBrowserTabViewModel;
 import devtoolsfx.scenegraph.Element;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel {
-
-    private final ShellTabViewModel shellTab;
+public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel<SimpleDialogMediator> {
 
     private final Element element;
 
@@ -39,10 +38,8 @@ public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel {
 
     private final String declaringClassName;
 
-    public PropertyDialogViewModel(ShellTabViewModel shellTab, Element element, PropertyInfo info,
-            String declaringClassName) {
+    public PropertyDialogViewModel(Element element, PropertyInfo info, String declaringClassName) {
         super(DialogScope.TAB, true);
-        this.shellTab = shellTab;
         this.element = element;
         this.info = info;
         this.declaringClassName = declaringClassName;
@@ -80,13 +77,18 @@ public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel {
     }
 
     @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(JfxComponentNames.PROPERTY_DIALOG);
+    public CloseCheckResult canClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     void openUrl(String ulr) {
-        var vm = new WebBrowserTabViewModel(shellTab.getShell());
-        getMediator().openBrowser(vm);
+        var vm = new WebBrowserTabViewModel();
+        getMediator().addBrowser(vm);
         vm.load(ulr);
     }
 }

@@ -20,6 +20,7 @@ import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.demos.full.theme.ThemeDialogComponent;
 import com.techsenger.tabshell.demos.full.theme.ThemeDialogView;
 import com.techsenger.tabshell.demos.full.theme.ThemeDialogViewModel;
 import com.techsenger.tabshell.material.menu.NamedMenuItem;
@@ -45,16 +46,17 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(DemoFileMenuNames.THEME, "_Theme", 1000);
             item.setOnAction((e) -> {
-                var shell = (ShellView<?>) v;
-                var appearance = shell.getViewModel().getSettings().getAppearance();
+                var shell = (ShellView<?, ?>) v;
+                var appearance = shell.getComponent().getSettings().getAppearance();
                 var dialogViewModel = new ThemeDialogViewModel(appearance.getTheme());
                 dialogViewModel.okActionProperty().set(() -> {
                     appearance.themeProperty().set(dialogViewModel.themeProperty().get());
                     dialogViewModel.requestClose();
                 });
                 var dialogView = new ThemeDialogView(dialogViewModel);
-                dialogView.initialize();
-                shell.getDialogManager().openDialog(dialogView);
+                var dialogComponent = new ThemeDialogComponent(dialogView);
+                dialogComponent.initialize();
+                shell.getComponent().addDialog(dialogComponent);
             });
             return item;
         };

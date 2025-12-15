@@ -16,6 +16,11 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.patternfx.core.ComponentState;
+import com.techsenger.tabshell.core.CloseRequestResult;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
@@ -24,28 +29,28 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerViewModel<T extends TabViewModel> {
+public interface TabContainerViewModel<S extends TabViewModel<?>> {
 
     /**
      * Selected tab property.
      *
      * @return
      */
-    ReadOnlyObjectProperty<T> selectedTabProperty();
+    ReadOnlyObjectProperty<S> selectedTabProperty();
 
     /**
      * Returns selected tab view model.
      *
      * @return
      */
-    T getSelectedTab();
+    S getSelectedTab();
 
     /**
      * Makes tab with specified view model selected.
      *
      * @param tabViewModel
      */
-    void selectTab(T tabViewModel);
+    void selectTab(S tabViewModel);
 
     /**
      * Makes tab with specified index selected.
@@ -73,5 +78,70 @@ public interface TabContainerViewModel<T extends TabViewModel> {
      *
      * @return
      */
-    ObservableList<? extends T> getTabs();
+    ObservableList<? extends S> getTabs();
+
+    default void closeOtherTabs(S tab) {
+        var otherTabs = getTabs().stream().filter((t) -> t != tab).collect(Collectors.toList());
+        closeTabs(otherTabs);
+    }
+
+    default void closeTabs(List<? extends S> tabs) {
+        class Closer {
+
+            private int index = 0;
+
+            private void run() {
+                S tab = null;
+                for (var i = index; i < tabs.size(); i++) {
+                    index++;
+                    tab = tabs.get(i);
+                    if (tab.getMediator().getState() == ComponentState.INITIALIZED) {
+                        break;
+                    }
+                }
+                if (tab != null) {
+                    tab.requestClose(this::handleCloseResult);
+                }
+            }
+
+            private void handleCloseResult(CloseRequestResult result) {
+                if (result == CloseRequestResult.SUCCESS) {
+                    run();
+                }
+            }
+        }
+        new Closer().run();
+    }
+
+    default void closeAllTabs() {
+        this.closeTabs(new ArrayList<>(getTabs()));
+    }
+
+    default void closeRightTabs(S tab) {
+        var index = getTabs().indexOf(tab);
+        if (index == -1 || index + 1 == getTabs().size()) {
+            return;
+        }
+        List<S> tabsToClose = new ArrayList<>();
+        for (var i = index + 1; i < getTabs().size(); i++) {
+            tabsToClose.add(getTabs().get(i));
+            this.closeTabs(tabsToClose);
+        }
+    }
+
+    default void closeLeftTabs(S tab) {
+        var index = getTabs().indexOf(tab);
+        if (index == -1 || index == 0) {
+            return;
+        }
+        List<S> tabsToClose = new ArrayList<>();
+        for (var i = index - 1; i >= 0; i--) {
+            tabsToClose.add(getTabs().get(i));
+            this.closeTabs(tabsToClose);
+        }
+    }
+
+    default void closeTab(S tab) {
+        tab.requestClose();
+    }
 }

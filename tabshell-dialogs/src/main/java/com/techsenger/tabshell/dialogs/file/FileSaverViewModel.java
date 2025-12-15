@@ -48,9 +48,9 @@ public interface FileSaverViewModel extends DialogClientViewModel {
      */
     default void saveFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
-        var viewModel = new FileChooserDialogViewModel(scope, FileChooserType.SAVE_AS,
-                getShell().getSettings().getAppearance(), storages,
-                getShell().getHistoryManager());
+        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.SAVE_AS,
+                getShell().getMediator().getSettings().getAppearance(), storages,
+                getShell().getMediator().getHistoryManager());
         var filters = createSaveExtensionFilters();
         if (filters != null) {
             viewModel.getExtensionFilters().addAll(filters);
@@ -81,7 +81,8 @@ public interface FileSaverViewModel extends DialogClientViewModel {
         };
         viewModel.cancelActionProperty().set(cancelAndCloseAction);
         viewModel.closeActionProperty().set(cancelAndCloseAction);
-        getMediator().openFileChooserDialog(viewModel);
+        // todo:
+        // getMediator().openFileChooserDialog(viewModel);
     }
 
     /**
