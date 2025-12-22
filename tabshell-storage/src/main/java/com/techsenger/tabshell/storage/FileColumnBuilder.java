@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.storage;
 
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.icon.GenericFontIcon;
 import com.techsenger.tabshell.material.table.NamedTableColumn;
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.time.Instant;
@@ -27,7 +28,6 @@ import java.util.Comparator;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TableCell;
 import javafx.scene.text.Font;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 
 /**
  *
@@ -46,7 +46,8 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public NamedTableColumn<GenericFile, GenericFile> buildTypeColumn() {
+    public NamedTableColumn<GenericFile, GenericFile> buildTypeColumn(GenericFontIcon<?> dirIcon,
+            GenericFontIcon fileIcon) {
         var typeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.TYPE, ".");
         typeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         typeColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
@@ -60,9 +61,9 @@ public class FileColumnBuilder {
                     } else {
                         if (file.getType() != null) {
                             if (file.isDirectory()) {
-                                this.setGraphic(new FontIconView(SharedIcons.DIRECTORY));
+                                this.setGraphic(new FontIconView(dirIcon));
                             } else {
-                                this.setGraphic(new FontIconView(SharedIcons.FILE));
+                                this.setGraphic(new FontIconView(fileIcon));
                             }
                         } else {
                             setGraphic(null);

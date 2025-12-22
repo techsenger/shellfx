@@ -16,12 +16,10 @@
 
 module com.techsenger.tabshell.shared {
     requires org.slf4j;
-    requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
-    requires com.techsenger.tabpanepro.core;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;

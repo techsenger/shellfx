@@ -19,7 +19,6 @@ module com.techsenger.tabshell.storage {
     requires com.techsenger.toolkit.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
-    requires com.techsenger.tabshell.shared;
     requires javafx.controls;
     requires javafx.swing;
     requires com.sun.jna;

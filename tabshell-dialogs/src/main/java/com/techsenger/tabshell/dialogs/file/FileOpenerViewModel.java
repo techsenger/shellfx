@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface FileOpenerViewModel extends DialogClientViewModel {
+public interface FileOpenerViewModel extends FileOperatorViewModel {
 
     /**
      * Opens a file by displaying a file chooser dialog and reading the selected file.
@@ -47,9 +47,7 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
      */
     default void openFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
-        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.OPEN,
-                getShell().getMediator().getSettings().getAppearance(), storages,
-                getShell().getMediator().getHistoryManager());
+        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.OPEN);
         var filters = createOpenExtensionFilters();
         if (filters != null) {
             viewModel.getExtensionFilters().addAll(filters);
@@ -80,8 +78,7 @@ public interface FileOpenerViewModel extends DialogClientViewModel {
         };
         viewModel.cancelActionProperty().set(cancelAndCloseAction);
         viewModel.closeActionProperty().set(cancelAndCloseAction);
-        // todo:
-        // getMediator().openFileChooserDialog(viewModel);
+        getMediator().addFileChooserDialog(viewModel);
     }
 
     /**

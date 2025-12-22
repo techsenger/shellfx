@@ -19,8 +19,6 @@ package com.techsenger.tabshell.dialogs.file;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
@@ -110,20 +108,15 @@ public class FileChooserDialogViewModel<T extends FileChooserDialogMediator> ext
 
     private final List<FileStorage> storages;
 
-    private final AppearanceSettings appearanceSettings;
-
     private TableHistory tableHistory;
 
-    public FileChooserDialogViewModel(DialogScope scope, FileChooserType type, AppearanceSettings settings,
-            HistoryManager historyManager) {
-        this(scope, type, settings, FileStorages.getAll(true), historyManager);
+    public FileChooserDialogViewModel(DialogScope scope, FileChooserType type) {
+        this(scope, type, FileStorages.getAll(true));
     }
 
-    public FileChooserDialogViewModel(DialogScope scope, FileChooserType type, AppearanceSettings settings,
-            List<FileStorage> storages, HistoryManager historyManager) {
+    public FileChooserDialogViewModel(DialogScope scope, FileChooserType type, List<FileStorage> storages) {
         super(scope, true);
         this.type = type;
-        this.appearanceSettings = settings;
         this.storages = storages;
         this.initialDirectory.addListener((ov, oldV, newV) -> {
             this.directory.set(newV);
@@ -417,10 +410,6 @@ public class FileChooserDialogViewModel<T extends FileChooserDialogMediator> ext
 
     protected ObservableList<GenericFile> getFiles() {
         return files;
-    }
-
-    protected AppearanceSettings getAppearanceSettings() {
-        return appearanceSettings;
     }
 
     void navigateUp() {

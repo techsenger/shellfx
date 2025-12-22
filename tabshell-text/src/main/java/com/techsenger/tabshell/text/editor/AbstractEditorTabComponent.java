@@ -26,6 +26,10 @@ import com.techsenger.tabshell.text.viewer.AbstractViewerTabComponent;
 public abstract class AbstractEditorTabComponent<T extends AbstractEditorTabView<?, ?>>
         extends AbstractViewerTabComponent<T> {
 
+    protected class Mediator extends AbstractViewerTabComponent.Mediator implements EditorTabMediator {
+
+    }
+
     public AbstractEditorTabComponent(T view, ShellComponent<?> shell) {
         super(view, shell);
     }

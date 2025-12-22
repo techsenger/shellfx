@@ -21,6 +21,9 @@ import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogComponent;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogComponent;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogView;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogComponent;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogView;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
@@ -41,10 +44,12 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
 
     protected class Mediator extends AbstractWorkerTabComponent.Mediator implements ViewerTabMediator {
 
+        private final AbstractViewerTabComponent component = AbstractViewerTabComponent.this;
+
         @Override
         public void addGoToLineDialog(GoToLineDialogViewModel viewModel) {
             var tabView = getView();
-            var shell = AbstractViewerTabComponent.this.getShell();
+            var shell = component.getShell();
             var view = new GoToLineDialogView<>(viewModel);
             var c = new GoToLineDialogComponent<>(view, shell.getHistoryManager());
             c.initialize();
@@ -80,13 +85,13 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
 
         @Override
         public void removeFindPane() {
-            AbstractViewerTabComponent.this.removeFindPane();
+            component.removeFindPane();
             getModifiableChildren().remove(findPane);
         }
 
         @Override
         public void addFindPane(DefaultFindPaneViewModel viewModel) {
-            var shell = AbstractViewerTabComponent.this.getShell();
+            var shell = component.getShell();
             var v = new DefaultFindPaneView<>(viewModel, getView().getTextArea());
             findPane = new DefaultFindPaneComponent<>(v, shell.getHistoryManager());
             findPane.initialize();
@@ -117,6 +122,16 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
             c.initialize();
             addDialog(c);
         }
+
+        @Override
+        public void addFileChooserDialog(FileChooserDialogViewModel<?> viewModel) {
+            var v = new FileChooserDialogView<>(viewModel);
+            var shell = component.getShell();
+            var c = new FileChooserDialogComponent<>(v, shell.getSettings().getAppearance(),
+                    shell.getHistoryManager(), component);
+            c.initialize();
+            shell.addDialog(c);
+        }
     }
 
     private DefaultFindPaneComponent<?> findPane;
@@ -126,9 +141,7 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
     }
 
     @Override
-    public Mediator createMediator() {
-        return new Mediator();
-    }
+    protected abstract Mediator createMediator();
 
     private void removeFindPane() {
         getView().removeFindPane();

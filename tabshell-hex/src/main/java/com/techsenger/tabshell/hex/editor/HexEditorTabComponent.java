@@ -19,6 +19,9 @@ package com.techsenger.tabshell.hex.editor;
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogComponent;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogView;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
 import com.techsenger.tabshell.hex.HexComponentNames;
 import com.techsenger.tabshell.hex.inspector.DataInspectorTabComponent;
 import com.techsenger.tabshell.hex.inspector.DataInspectorTabView;
@@ -57,6 +60,16 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
         @Override
         public DataInspectorTabViewModel getDataInspector() {
             return component.getDataInspector().getView().getViewModel();
+        }
+
+        @Override
+        public void addFileChooserDialog(FileChooserDialogViewModel<?> viewModel) {
+            var v = new FileChooserDialogView<>(viewModel);
+            var shell = component.getShell();
+            var c = new FileChooserDialogComponent<>(v, shell.getSettings().getAppearance(),
+                    shell.getHistoryManager(), component);
+            c.initialize();
+            shell.addDialog(c);
         }
     }
 

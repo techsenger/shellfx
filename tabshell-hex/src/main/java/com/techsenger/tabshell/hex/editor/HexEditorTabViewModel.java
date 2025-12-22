@@ -19,7 +19,6 @@ package com.techsenger.tabshell.hex.editor;
 import com.techsenger.patternfx.core.ComponentState;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
@@ -95,11 +94,6 @@ public class HexEditorTabViewModel<T extends HexEditorTabMediator> extends Abstr
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ShellViewModel<?> getShell() {
-        return (ShellViewModel<?>) this;
     }
 
     @Override

@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.hex.editor;
-
-import com.techsenger.tabshell.core.tab.ShellTabMediator;
-import com.techsenger.tabshell.hex.inspector.DataInspectorTabViewModel;
-import com.techsenger.tabshell.layout.dock.DockLayoutViewModel;
-import com.techsenger.tabshell.dialogs.file.FileOperatorMediator;
+package com.techsenger.tabshell.dialogs.file;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface HexEditorTabMediator extends ShellTabMediator, FileOperatorMediator {
+public interface FileOperatorMediator {
 
-    HexToolBarViewModel getToolBar();
-
-    DockLayoutViewModel<?> getLayout();
-
-    HexAreaViewModel<?> getArea();
-
-    DataInspectorTabViewModel getDataInspector();
+    void addFileChooserDialog(FileChooserDialogViewModel<?> viewModel);
 }

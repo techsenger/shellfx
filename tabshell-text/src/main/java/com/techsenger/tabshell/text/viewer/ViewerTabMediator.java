@@ -19,12 +19,13 @@ package com.techsenger.tabshell.text.viewer;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 import com.techsenger.tabshell.layout.workertab.WorkerTabMediator;
+import com.techsenger.tabshell.dialogs.file.FileOperatorMediator;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ViewerTabMediator extends WorkerTabMediator {
+public interface ViewerTabMediator extends WorkerTabMediator, FileOperatorMediator {
 
     void addAlertDialog(AlertDialogViewModel dialog);
 

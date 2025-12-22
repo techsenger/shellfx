@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface FileSaverViewModel extends DialogClientViewModel {
+public interface FileSaverViewModel extends FileOperatorViewModel {
 
     /**
      * Saves a file by displaying a file chooser dialog and writing the selected file.
@@ -48,9 +48,7 @@ public interface FileSaverViewModel extends DialogClientViewModel {
      */
     default void saveFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
-        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.SAVE_AS,
-                getShell().getMediator().getSettings().getAppearance(), storages,
-                getShell().getMediator().getHistoryManager());
+        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.SAVE_AS);
         var filters = createSaveExtensionFilters();
         if (filters != null) {
             viewModel.getExtensionFilters().addAll(filters);
@@ -81,8 +79,7 @@ public interface FileSaverViewModel extends DialogClientViewModel {
         };
         viewModel.cancelActionProperty().set(cancelAndCloseAction);
         viewModel.closeActionProperty().set(cancelAndCloseAction);
-        // todo:
-        // getMediator().openFileChooserDialog(viewModel);
+        getMediator().addFileChooserDialog(viewModel);
     }
 
     /**

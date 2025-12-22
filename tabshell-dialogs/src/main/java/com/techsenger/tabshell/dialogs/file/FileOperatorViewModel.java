@@ -16,18 +16,17 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.storage.GenericFile;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogClientViewModel {
-
-    ShellViewModel<?> getShell();
+public interface FileOperatorViewModel<T extends FileOperatorMediator> {
 
     GenericFile getFile();
 
     void setFile(GenericFile file);
+
+    T getMediator();
 }

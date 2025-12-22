@@ -16,9 +16,11 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.table.NamedTableColumn;
 import com.techsenger.tabshell.material.table.TableHistoryUtils;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.storage.FileColumnBuilder;
 import com.techsenger.tabshell.storage.FileColumnNames;
 import com.techsenger.tabshell.storage.GenericFile;
@@ -38,9 +40,9 @@ class FileTableView extends TableView<GenericFile> {
 
     private final FileStringConverter stringConverter = new FileStringConverter();
 
-    FileTableView(FileChooserDialogViewModel viewModel) {
+    FileTableView(FileChooserDialogViewModel viewModel, AppearanceSettings settings) {
         super(viewModel.getFiles());
-        this.columnBuilder = new FileColumnBuilder(viewModel.getAppearanceSettings().getRegularFont());
+        this.columnBuilder = new FileColumnBuilder(settings.getRegularFont());
         getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.SAME_SPACING_TABLE);
         setEditable(true);
         setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
@@ -48,7 +50,7 @@ class FileTableView extends TableView<GenericFile> {
 
         Function<String, TableColumn<?, ?>> columnProvider = (name) -> {
             if (name.equals(FileColumnNames.TYPE.toString())) {
-                var typeColumn = columnBuilder.buildTypeColumn();
+                var typeColumn = columnBuilder.buildTypeColumn(SharedIcons.DIRECTORY, SharedIcons.FILE);
                 typeColumn.setEditable(false);
                 typeColumn.getStyleClass().add(StyleClasses.SAME_SPACING_TABLE_FIRST_COLUMN);
                 return typeColumn;

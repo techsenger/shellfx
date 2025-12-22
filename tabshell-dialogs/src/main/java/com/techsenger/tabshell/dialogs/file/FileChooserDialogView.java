@@ -152,11 +152,11 @@ public class FileChooserDialogView<T extends FileChooserDialogViewModel<?>, S ex
 
     private final VBox fileBox = new VBox();
 
-    private final FileTableView fileTableView;
+    private FileTableView fileTableView;
 
-    private final TableColumn<GenericFile, ?> nameColumn;
+    private TableColumn<GenericFile, ?> nameColumn;
 
-    private final FileListView fileListView;
+    private FileListView fileListView;
 
     private final VBox main = new VBox(locationBox, fileBox, gridPane);
 
@@ -166,9 +166,6 @@ public class FileChooserDialogView<T extends FileChooserDialogViewModel<?>, S ex
 
     public FileChooserDialogView(T viewModel) {
         super(viewModel);
-        this.fileTableView = new FileTableView(viewModel);
-        this.nameColumn = this.fileTableView.findNameColumn();
-        this.fileListView = new FileListView(viewModel, new ContextMenu(createRefreshMenuItem()));
     }
 
     @Override
@@ -192,6 +189,10 @@ public class FileChooserDialogView<T extends FileChooserDialogViewModel<?>, S ex
     protected void build() {
         super.build();
         var viewModel = getViewModel();
+        this.fileTableView = new FileTableView(viewModel, getComponent().getSettings());
+        this.nameColumn = this.fileTableView.findNameColumn();
+        this.fileListView = new FileListView(viewModel, new ContextMenu(createRefreshMenuItem()));
+
         locationLabel.setMinWidth(Region.USE_PREF_SIZE);
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.getStyleClass().add(Styles.DENSE);

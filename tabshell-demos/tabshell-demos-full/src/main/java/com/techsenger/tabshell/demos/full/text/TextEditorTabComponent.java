@@ -41,4 +41,9 @@ public class TextEditorTabComponent extends AbstractEditorTabComponent<TextEdito
     public ComponentName getName() {
         return DemoComponentNames.DEMO_EDITOR_TAB;
     }
+
+    @Override
+    protected Mediator createMediator() {
+        return new AbstractEditorTabComponent.Mediator() { };
+    }
 }

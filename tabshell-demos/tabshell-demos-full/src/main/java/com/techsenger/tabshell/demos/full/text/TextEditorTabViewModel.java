@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demos.full.text;
 
-import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.shared.menu.EditMenuNames;
@@ -54,10 +53,5 @@ public class TextEditorTabViewModel extends AbstractEditorTabViewModel<EditorTab
                 new ExtensionFilter("All Files", true, "*.*"),
                 new ExtensionFilter("Text Files", true, "*.txt")
         );
-    }
-
-    @Override
-    public ShellViewModel<?> getShell() {
-        return getMediator().getShell();
     }
 }
