@@ -62,6 +62,15 @@ public abstract class AbstractEditorTabViewModel<T extends EditorTabMediator> ex
 
     public AbstractEditorTabViewModel(GenericFile file) {
         super(file);
+    }
+
+    public Clipboard getClipboard() {
+        return clipboard;
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
         this.updateTextTabValues();
         this.currentParagraph.addListener((ov, oldV, newV)
                 -> this.updatePosition(newV.intValue(), this.currentColumn.get()));
@@ -103,10 +112,6 @@ public abstract class AbstractEditorTabViewModel<T extends EditorTabMediator> ex
             updateTitle();
             updateTooltip();
         });
-    }
-
-    public Clipboard getClipboard() {
-        return clipboard;
     }
 
     protected boolean isCutItemValid() {
