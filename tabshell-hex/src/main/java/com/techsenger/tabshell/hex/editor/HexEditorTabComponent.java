@@ -104,6 +104,11 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
     }
 
     @Override
+    public HexEditorTabHistory<?> getHistory() {
+        return (HexEditorTabHistory<?>) super.getHistory();
+    }
+
+    @Override
     protected void preDeinitialize() {
         super.preDeinitialize();
         this.toolBar.initialize();
@@ -132,10 +137,9 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
     }
 
     protected DockLayoutComponent<?> createLayout() {
-        HexEditorTabHistory<?> history = (HexEditorTabHistory<?>) getHistory();
         var vm = new DockLayoutViewModel();
         var v = new DockLayoutView<>(vm);
-        var c = new DockLayoutComponent<>(v, history.getDockLayout());
+        var c = new DockLayoutComponent<>(v, () -> getHistory().getDockLayout());
         return c;
     }
 

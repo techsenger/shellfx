@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.core.MediatorBindings;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.core.area.AreaComponent;
@@ -123,11 +124,9 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
 
     private final ReadOnlyObjectWrapper<SideBarComponent<?>> leftSideBar = new ReadOnlyObjectWrapper<>();
 
-    private final DockLayoutHistory<?> history;
-
-    public DockLayoutComponent(T view, DockLayoutHistory<?> history) {
+    public DockLayoutComponent(T view, HistoryProvider<DockLayoutHistory<?>> historyProvider) {
         super(view);
-        this.history = history;
+        setHistoryProvider(historyProvider);
         root.addListener((ov, oldV, newV) -> {
             if (oldV != null) {
                 getModifiableChildren().remove(oldV);
@@ -218,6 +217,11 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
     }
 
     @Override
+    public DockLayoutHistory<?> getHistory() {
+        return (DockLayoutHistory<?>) super.getHistory();
+    }
+
+    @Override
     protected Mediator createMediator() {
         return new Mediator();
     }
@@ -233,16 +237,16 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         SideBarHistory<?> history = null;
         switch (side) {
             case RIGHT -> {
-                history = this.history.getOrCreateRightSideBar();
+                history = getHistory().getOrCreateRightSideBar();
                 return addSideBar(side, history, rightSideBar, v -> getView().getNode().setRight(v.getNode()));
             }
             case LEFT -> {
-                history = this.history.getOrCreateLeftSideBar();
+                history = getHistory().getOrCreateLeftSideBar();
                 return addSideBar(side, history, leftSideBar, v -> getView().getNode().setLeft(v.getNode()));
             }
             case TOP, BOTTOM -> {
                 side = Side.BOTTOM;
-                history = this.history.getOrCreateBottomSideBar();
+                history = getHistory().getOrCreateBottomSideBar();
                 return addSideBar(side, history, bottomSideBar, v -> getView().getNode().setBottom(v.getNode()));
             }
             default -> throw new AssertionError();
