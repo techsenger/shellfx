@@ -78,19 +78,10 @@ public class TerminalTabView<T extends TerminalTabViewModel<?>, S extends Termin
             copyButton, pasteButton, selectAllButton, new Separator(Orientation.VERTICAL), openUrlButton, findButton,
             new Separator(Orientation.VERTICAL), pageUpButton, pageDownButton, lineUpButton, lineDownButton);
 
-    private final KitJediTermFxWidget widget;
+    private KitJediTermFxWidget widget;
 
     public TerminalTabView(T viewModel) {
         super(viewModel);
-        this.widget = new KitJediTermFxWidget(80, 24, viewModel.createSettingsProvider(), () -> {
-            if (getComponent().getFindPane() == null) {
-                viewModel.showFind();
-            } else {
-                getComponent().getFindPane().getView().getFindComboBox().getEditor().requestFocus();
-            }
-        });
-        widget.setTtyConnector(viewModel.getTtyConnector());
-        widget.addHyperlinkFilter(new DefaultHyperlinkFilter());
     }
 
     @Override
@@ -117,6 +108,16 @@ public class TerminalTabView<T extends TerminalTabViewModel<?>, S extends Termin
     @Override
     protected void build() {
         super.build();
+        var viewModel = getViewModel();
+        this.widget = new KitJediTermFxWidget(80, 24, viewModel.createSettingsProvider(), () -> {
+            if (getComponent().getFindPane() == null) {
+                viewModel.showFind();
+            } else {
+                getComponent().getFindPane().getView().getFindComboBox().getEditor().requestFocus();
+            }
+        });
+        widget.setTtyConnector(viewModel.getTtyConnector());
+        widget.addHyperlinkFilter(new DefaultHyperlinkFilter());
         VBox.setVgrow(widget.getPane(), Priority.ALWAYS);
         getContentPane().getChildren().addAll(toolBar, widget.getPane());
 
