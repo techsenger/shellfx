@@ -29,7 +29,7 @@ import java.util.List;
 public abstract class AbstractShellTabComponent<T extends AbstractShellTabView<?, ?>> extends AbstractTabComponent<T>
         implements ShellTabComponent<T> {
 
-    protected abstract class Mediator extends AbstractTabComponent.Mediator implements ShellTabMediator {
+    protected class Mediator extends AbstractTabComponent.Mediator implements ShellTabMediator {
 
         @Override
         public ShellViewModel<?> getShell() {

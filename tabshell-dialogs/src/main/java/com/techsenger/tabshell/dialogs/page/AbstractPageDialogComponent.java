@@ -25,7 +25,7 @@ import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
 public abstract class AbstractPageDialogComponent<T extends AbstractPageDialogView<?, ?>>
         extends AbstractSimpleDialogComponent<T> {
 
-    protected abstract class Mediator extends AbstractSimpleDialogComponent.Mediator implements PageDialogMediator {
+    protected class Mediator extends AbstractSimpleDialogComponent.Mediator implements PageDialogMediator {
 
     }
 

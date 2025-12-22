@@ -25,7 +25,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 public abstract class AbstractDialogComponent<T extends AbstractDialogView<?, ?>> extends AbstractAreaComponent<T>
         implements DialogComponent<T> {
 
-    protected abstract class Mediator extends AbstractAreaComponent.Mediator implements DialogMediator {
+    protected class Mediator extends AbstractAreaComponent.Mediator implements DialogMediator {
 
         @Override
         public void remove() {

@@ -25,7 +25,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 public abstract class AbstractPageComponent<T extends AbstractPageView<?, ?>> extends AbstractAreaComponent<T>
         implements PageComponent<T> {
 
-    protected abstract class Mediator extends AbstractAreaComponent.Mediator implements PageMediator {
+    protected class Mediator extends AbstractAreaComponent.Mediator implements PageMediator {
 
     }
 

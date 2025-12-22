@@ -25,7 +25,7 @@ import com.techsenger.patternfx.core.AbstractChildComponent;
 public abstract class AbstractAreaComponent<T extends AbstractAreaView<?, ?>>
         extends AbstractChildComponent<T> implements AreaComponent<T> {
 
-    protected abstract class Mediator extends AbstractChildComponent.Mediator implements AreaMediator {
+    protected class Mediator extends AbstractChildComponent.Mediator implements AreaMediator {
 
     }
 

@@ -26,7 +26,7 @@ import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
 public abstract class AbstractSplitTabComponent<T extends AbstractSplitTabView<?, ?>>
         extends AbstractShellTabComponent<T> {
 
-    protected abstract class Mediator extends AbstractShellTabComponent.Mediator implements SplitTabMediator {
+    protected class Mediator extends AbstractShellTabComponent.Mediator implements SplitTabMediator {
 
     }
 

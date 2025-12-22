@@ -25,7 +25,7 @@ import com.techsenger.patternfx.core.AbstractChildComponent;
 public abstract class AbstractTabComponent<T extends AbstractTabView<?, ?>> extends
         AbstractChildComponent<T> implements TabComponent<T> {
 
-    protected abstract class Mediator extends AbstractChildComponent.Mediator implements TabMediator {
+    protected class Mediator extends AbstractChildComponent.Mediator implements TabMediator {
 
         @Override
         public void remove() {
