@@ -65,7 +65,7 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
 
     @Override
     public void preInitialize() {
-        super.initialize();
+        super.preInitialize();
         this.connector.start();
     }
 
