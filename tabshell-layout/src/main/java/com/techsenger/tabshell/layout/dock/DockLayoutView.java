@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import com.techsenger.patternfx.core.ChildComponent;
+import com.techsenger.patternfx.core.ChildView;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
@@ -950,7 +952,7 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         var side = resolveSide(dock);
         SplitSpaceComponent<?> parent = (SplitSpaceComponent<?>) dock.getComponent().getParent();
         var parentPos = parent.getView().getNode().getDividerPositions();
-        var index = parent.getChildren().indexOf(dock);
+        var index = parent.getChildren().indexOf(dock.getComponent());
         var siblings = parent.getChildren().stream().filter(c -> c != dock.getComponent())
                 .map(c -> c.getUuid()).collect(Collectors.toList());
         var pathFromRoot = findPathFromRoot(dock)
@@ -976,11 +978,7 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         printTreeDebugInfo();
     }
 
-    void restoreTabDock(SideBarView<?, ?> sideBar, TabDockView<?, ?> dock) {
-        if (!sideBar.getComponent().getTabDocks().isEmpty()) {
-            return;
-        }
-        getViewModel().removeSideBarIfRequired(sideBar.getViewModel());
+    void restoreTabDock(TabDockView<?, ?> dock) {
         dock.attachTabs();
 
         // attempt 0 - find the parent by UUID
@@ -990,7 +988,7 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         var splitSpacesByUuid = new HashMap<UUID, SplitSpaceView<?, ?>>();
         var iterator = getComponent().getRoot().breadthFirstIterator();
         while (iterator.hasNext()) {
-            AreaComponent<?> component = (AreaComponent<?>) iterator.next();
+            ChildComponent<?> component = (ChildComponent<?>) iterator.next();
             if (component instanceof SplitSpaceComponent<?> c) {
                 splitSpacesByUuid.put(c.getUuid(), c.getView());
             }
@@ -1882,9 +1880,11 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         this.dragInProgress = value;
         var iterator = getComponent().getRoot().depthFirstIterator();
         while (iterator.hasNext()) {
-            AreaComponent<?> child = (AreaComponent<?>) iterator.next();
-            AbstractContainer container = getContainer(child.getView());
-            container.updateDragInProgress(value, type);
+            ChildComponent<?> child = (ChildComponent<?>) iterator.next();
+            if (child instanceof AreaComponent<?> area) {
+                AbstractContainer container = getContainer(area.getView());
+                container.updateDragInProgress(value, type);
+            }
         }
     }
 
@@ -1908,7 +1908,7 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         StringBuilder builder = new StringBuilder();
         var iterator = getComponent().depthFirstIterator();
         while (iterator.hasNext()) {
-            AreaView<?, ?> view = (AreaView<?, ?>) iterator.next().getView();
+            ChildView<?, ?> view = (ChildView<?, ?>) iterator.next().getView();
             String orientation = "";
             UUID uuid = view.getComponent().getUuid();
             if (view instanceof SplitSpaceView<?, ?> spaceV) {

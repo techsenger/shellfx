@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
+import javafx.geometry.Side;
 
 /**
  *
@@ -30,7 +31,10 @@ public class TabPopupViewModel<T extends TabDockMediator> extends AbstractAreaVi
 
     private boolean closing;
 
-    public TabPopupViewModel() {
+    private final Side side;
+
+    public TabPopupViewModel(Side side) {
+        this.side = side;
     }
 
     public double getOldWidth() {
@@ -39,6 +43,10 @@ public class TabPopupViewModel<T extends TabDockMediator> extends AbstractAreaVi
 
     public double getOldHeight() {
         return oldHeight;
+    }
+
+    public Side getSide() {
+        return side;
     }
 
     protected void setOldHeight(double oldHeight) {

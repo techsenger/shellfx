@@ -19,6 +19,7 @@ package com.techsenger.tabshell.layout.dock;
 import com.techsenger.tabshell.core.area.AreaMediator;
 import com.techsenger.tabshell.core.area.AreaViewModel;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.geometry.Side;
 
 /**
  *
@@ -36,14 +37,17 @@ public interface DockLayoutMediator extends AreaMediator {
 
     ReadOnlyObjectProperty<SideBarViewModel<?>> rightSideBarProperty();
 
-    SideBarViewModel<?> getRightBar();
+    SideBarViewModel<?> getRightSideBar();
 
     ReadOnlyObjectProperty<SideBarViewModel<?>> bottomSideBarProperty();
 
-    SideBarViewModel<?> getBottomBar();
+    SideBarViewModel<?> getBottomSideBar();
 
     ReadOnlyObjectProperty<SideBarViewModel<?>> leftSideBarProperty();
 
-    SideBarViewModel<?> getLeftBar();
+    SideBarViewModel<?> getLeftSideBar();
 
+    void addSideBar(Side side);
+
+    void removeSideBar(Side side);
 }

@@ -59,7 +59,6 @@ public class DockLayoutTabView extends AbstractShellTabView<DockLayoutTabViewMod
         var layout = getComponent().getLayout();
         getContentPane().getChildren().addAll(toolbar, layout.getView().getNode());
 
-
         var lastArea = layout.getBottomSideBar().getView().getLastArea();
         var hBox = new HBox(new Label("Label 1"), new Separator(Orientation.VERTICAL),
                 new Label("Label 2"));

@@ -16,9 +16,15 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import com.techsenger.patternfx.core.ComponentState;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Side;
+import static javafx.geometry.Side.BOTTOM;
+import static javafx.geometry.Side.LEFT;
+import static javafx.geometry.Side.RIGHT;
 
 /**
  *
@@ -79,64 +85,60 @@ public class DockLayoutViewModel<T extends DockLayoutMediator> extends AbstractA
     @Override
     protected void initialize() {
         super.initialize();
-//        if (getRightBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
-//            getComponent().addSideBar(RIGHT);
-//        }
-//        if (viewModel.getBottomBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
-//            getComponent().addSideBar(BOTTOM);
-//        }
-//        if (viewModel.getLeftBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
-//            getComponent().addSideBar(LEFT);
-//        }
-//
-//        addListenerForSideBar(rightBar, viewModel.rightBarPolicyProperty(), RIGHT);
-//        addListenerForSideBar(bottomBar, viewModel.bottomBarPolicyProperty(), BOTTOM);
-//        addListenerForSideBar(leftBar, viewModel.leftBarPolicyProperty(), LEFT);
+        addListenerForSideBar(getMediator().rightSideBarProperty(), rightBarPolicyProperty(), RIGHT);
+        addListenerForSideBar(getMediator().bottomSideBarProperty(), bottomBarPolicyProperty(), BOTTOM);
+        addListenerForSideBar(getMediator().leftSideBarProperty(), leftBarPolicyProperty(), LEFT);
+
+        getMediator().stateProperty().addListener((ov, oldV, newV) -> {
+            if (newV == ComponentState.INITIALIZED) {
+                if (getRightBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+                    getMediator().addSideBar(Side.RIGHT);
+                }
+                if (getBottomBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+                    getMediator().addSideBar(Side.BOTTOM);
+                }
+                if (getLeftBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
+                    getMediator().addSideBar(Side.LEFT);
+                }
+            }
+        });
     }
 
-//    private void addListenerForSideBar(ReadOnlyObjectWrapper<SideBarView<?, ?>> view,
-//            ObjectProperty<SideBarPolicy> policy, Side side) {
-//        policy.addListener((ov, oldV, newV) -> {
-//            if (newV == SideBarPolicy.EXISTS_ALWAYS) {
-//                if (view.get() == null) {
-//                    addSideBar(side);
-//                }
-//            } else if (newV == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-//                if (view.get() != null) {
-//                    removeSideBarIfRequired(view.get());
-//                }
-//            } else {
-//                throw new AssertionError();
-//            }
-//        });
-//    }
-
-
     void removeSideBarIfRequired(SideBarViewModel<?> sideBar) {
-//        switch (sideBar.getSide()) {
-//            case RIGHT:
-//                if (getViewModel().getRightBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-//                    setRightBar(null);
-//                    this.node.setRight(null);
-//                    sideBar.deinitialize();
-//                }
-//                break;
-//            case BOTTOM:
-//                if (getViewModel().getBottomBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-//                    setBottomBar(null);
-//                    this.node.setBottom(null);
-//                    sideBar.deinitialize();
-//                }
-//                break;
-//            case LEFT:
-//                if (getViewModel().getLeftBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-//                    setLeftBar(null);
-//                    this.node.setLeft(null);
-//                    sideBar.deinitialize();
-//                }
-//                break;
-//            default:
-//                throw new AssertionError();
-//        }
+        switch (sideBar.getSide()) {
+            case RIGHT -> {
+                if (getRightBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+                    getMediator().removeSideBar(RIGHT);
+                }
+            }
+            case BOTTOM -> {
+                if (getBottomBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+                    getMediator().removeSideBar(BOTTOM);
+                }
+            }
+            case LEFT -> {
+                if (getLeftBarPolicy() == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+                    getMediator().removeSideBar(LEFT);
+                }
+            }
+            default -> throw new AssertionError();
+        }
+    }
+
+    private void addListenerForSideBar(ReadOnlyObjectProperty<SideBarViewModel<?>> viewModel,
+            ObjectProperty<SideBarPolicy> policy, Side side) {
+        policy.addListener((ov, oldV, newV) -> {
+            if (newV == SideBarPolicy.EXISTS_ALWAYS) {
+                if (viewModel.get() == null) {
+                    getMediator().addSideBar(side);
+                }
+            } else if (newV == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
+                if (viewModel.get() != null) {
+                    removeSideBarIfRequired(viewModel.get());
+                }
+            } else {
+                throw new AssertionError();
+            }
+        });
     }
 }

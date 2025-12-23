@@ -89,7 +89,7 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         }
 
         @Override
-        public SideBarViewModel<?> getRightBar() {
+        public SideBarViewModel<?> getRightSideBar() {
             return this.rightSideBar.get();
         }
 
@@ -99,7 +99,7 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         }
 
         @Override
-        public SideBarViewModel<?> getBottomBar() {
+        public SideBarViewModel<?> getBottomSideBar() {
             return this.bottomSideBar.get();
         }
 
@@ -109,8 +109,18 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         }
 
         @Override
-        public SideBarViewModel<?> getLeftBar() {
+        public SideBarViewModel<?> getLeftSideBar() {
             return this.leftSideBar.get();
+        }
+
+        @Override
+        public void addSideBar(Side side) {
+            component.addSideBar(side);
+        }
+
+        @Override
+        public void removeSideBar(Side side) {
+            component.removeSideBar(side);
         }
     }
 
@@ -127,15 +137,8 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
     public DockLayoutComponent(T view, HistoryProvider<DockLayoutHistory<?>> historyProvider) {
         super(view);
         setHistoryProvider(historyProvider);
+        // the root is a child, the main one is not
         root.addListener((ov, oldV, newV) -> {
-            if (oldV != null) {
-                getModifiableChildren().remove(oldV);
-            }
-            if (newV != null) {
-                getModifiableChildren().add(newV);
-            }
-        });
-        main.addListener((ov, oldV, newV) -> {
             if (oldV != null) {
                 getModifiableChildren().remove(oldV);
             }
@@ -253,6 +256,33 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         }
     }
 
+    void removeSideBar(Side side) {
+        switch (side) {
+            case RIGHT -> {
+                getView().getNode().setRight(null);
+                var sideBar = getRightSideBar();
+                rightSideBar.set(null);
+                sideBar.deinitialize();
+                getModifiableChildren().remove(sideBar);
+            }
+            case BOTTOM -> {
+                getView().getNode().setBottom(null);
+                var sideBar = getBottomSideBar();
+                bottomSideBar.set(null);
+                sideBar.deinitialize();
+                getModifiableChildren().remove(sideBar);
+            }
+            case LEFT -> {
+                getView().getNode().setLeft(null);
+                var sideBar = getLeftSideBar();
+                leftSideBar.set(null);
+                sideBar.deinitialize();
+                getModifiableChildren().remove(sideBar);
+            }
+            default -> throw new AssertionError();
+        }
+    }
+
     void addTabPopup(TabPopupComponent<?> popup) {
         getModifiableChildren().add(popup);
         getView().addTabPopup(popup.getView());
@@ -267,7 +297,7 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
     private SideBarComponent<?> addSideBar(Side side, SideBarHistory<?> sideBarHistory,
         ReadOnlyObjectWrapper<SideBarComponent<?>> wrapper, Consumer<SideBarView<?, ?>> viewAdder) {
         if (wrapper.get() != null) {
-            return null;
+            return wrapper.get();
         }
         var sideBar = createSideBar(side, sideBarHistory);
         sideBar.initialize();

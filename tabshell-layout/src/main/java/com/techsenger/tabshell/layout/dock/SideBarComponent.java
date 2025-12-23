@@ -23,6 +23,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Side;
 
 /**
  *
@@ -79,9 +80,33 @@ public class SideBarComponent<T extends SideBarView<?, ?>> extends AbstractAreaC
         return popup.get();
     }
 
+    public DockLayoutComponent<?> getLayout() {
+        return layout;
+    }
+
     @Override
     protected Mediator createMediator() {
         return new Mediator();
+    }
+
+    protected void addPopupToLayout(Side side) {
+        var vm = new TabPopupViewModel<>(side);
+        var v = new TabPopupView<>(vm);
+        var c = new TabPopupComponent<>(v, this.history.getOrCreatePopup(), this);
+        c.initialize();
+        setPopup(c);
+        this.layout.addTabPopup(c);
+    }
+
+    protected void removePopupFromLayout() {
+        if (getPopup() != null) {
+            this.layout.removeTabPopup(getPopup());
+            setPopup(null);
+        }
+    }
+
+    protected void setPopup(TabPopupComponent<?> value) {
+        popup.set(value);
     }
 
     void addTabDock(TabDockComponent<?> tabDock) {
@@ -93,23 +118,10 @@ public class SideBarComponent<T extends SideBarView<?, ?>> extends AbstractAreaC
         modifiableTabDocks.remove(tabDock);
         getModifiableChildren().remove(tabDock);
     }
-//
-//    protected void addPopup() {
-//        var vm = new TabPopupViewModel<>();
-//        var v = new TabPopupView<>(vm);
-//        this.popup = new TabPopupComponent<>(v, this.history.getOrCreatePopup(), this);
-//        this.popup.initialize();
-//        this.layout.addTabPopup(popup);
-//    }
-//
-//    protected void removePopup() {
-//        if (this.popup != null) {
-//            this.layout.removeTabPopup(this.popup);
-//            this.popup = null;
-//        }
-//    }
 
-    protected void setPopup(TabPopupComponent<?> value) {
-        popup.set(value);
+    TabDockComponent<?> removeTabDock(int index) {
+        TabDockComponent<?> tabDock = modifiableTabDocks.remove(index);
+        getModifiableChildren().remove(tabDock);
+        return tabDock;
     }
 }

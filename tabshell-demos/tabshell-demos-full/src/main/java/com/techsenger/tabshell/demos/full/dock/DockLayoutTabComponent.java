@@ -77,12 +77,15 @@ public class DockLayoutTabComponent extends AbstractShellTabComponent<DockLayout
         this.layout.setMain(this.textViewer);
 
         var splitSpace = layout.createSplitSpace(Orientation.HORIZONTAL);
+        splitSpace.initialize();
+        getModifiableChildren().add(splitSpace);
         layout.setRoot(splitSpace);
         splitSpace.addChild(textViewer);
 
-        var tabDockView = layout.createTabDock();
-        fillTabs(tabDockView);
-        splitSpace.addChild(tabDockView);
+        var tabDock = layout.createTabDock();
+        tabDock.initialize();
+        fillTabs(tabDock);
+        splitSpace.addChild(tabDock);
     }
 
     @Override
