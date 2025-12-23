@@ -1087,7 +1087,7 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         var component = (AreaComponent<?>) parent.getComponent().getChildren().get(tempIndex);
 
         Side resolvedSide;
-        if (component == getComponent().getMain().getView()) {
+        if (component == getComponent().getMain()) {
             SplitSpaceView<?, ?> parentSplitSpace = (SplitSpaceView<?, ?>) component.getParent().getView();
             if (parentSplitSpace.getViewModel().getOrientation() == Orientation.HORIZONTAL) {
                 resolvedSide = LEFT;

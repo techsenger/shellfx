@@ -122,8 +122,8 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
     }
 
     @Override
-    protected void preDeinitialize() {
-        super.preDeinitialize();
+    protected void preInitialize() {
+        super.preInitialize();
         this.toolBar.initialize();
         this.layout.initialize();
         this.area.initialize();
@@ -134,11 +134,15 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
     protected void postInitialize() {
         super.postInitialize();
         getView().addContent(toolBar.getView(), layout.getView());
-        this.layout.setMain(this.area);
+        
         var splitSpace = layout.createSplitSpace(Orientation.HORIZONTAL);
+        splitSpace.initialize();
         layout.setRoot(splitSpace);
         splitSpace.addChild(this.area);
+        this.layout.setMain(this.area);
+
         var tabDock = layout.createTabDock();
+        tabDock.initialize();
         tabDock.addTab(dataInspector);
         this.layout.addTabDock(tabDock, Side.RIGHT, 350);
     }
