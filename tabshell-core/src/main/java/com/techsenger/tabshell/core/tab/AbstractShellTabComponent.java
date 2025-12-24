@@ -67,7 +67,7 @@ public abstract class AbstractShellTabComponent<T extends AbstractShellTabView<?
         if (scope == getSupportedDialogScope()) {
             getView().getDialogManager().hideDialog(dialog.getView());
             getModifiableChildren().remove(dialog);
-            dialog.deinitialize();
+            dialog.deinitializeTree();
         } else {
             shell.removeDialog(dialog);
         }

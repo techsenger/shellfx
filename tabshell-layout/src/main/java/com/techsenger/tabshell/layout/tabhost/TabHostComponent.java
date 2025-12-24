@@ -61,7 +61,7 @@ public class TabHostComponent<T extends TabHostView<?, ?>> extends AbstractAreaC
     public void removeTab(TabComponent<?> tab) {
         getView().getNode().getTabs().remove(tab.getView().getNode());
         getModifiableChildren().remove(tab);
-        tab.deinitialize();
+        tab.deinitializeTree();
     }
 
     @Override

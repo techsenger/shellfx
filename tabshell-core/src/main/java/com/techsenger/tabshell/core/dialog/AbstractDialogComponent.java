@@ -27,10 +27,11 @@ public abstract class AbstractDialogComponent<T extends AbstractDialogView<?, ?>
 
     protected class Mediator extends AbstractAreaComponent.Mediator implements DialogMediator {
 
+        private final AbstractDialogComponent<?> component = AbstractDialogComponent.this;
+
         @Override
         public void remove() {
-            var c = AbstractDialogComponent.this;
-            c.getParent(DialogContainerComponent.class).removeDialog(c);
+            component.getParent(DialogContainerComponent.class).removeDialog(component);
         }
 
     }

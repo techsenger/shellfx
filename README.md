@@ -197,30 +197,6 @@ parent components).
 A `ShellTab` component can be opened through the `Shell`, so `ShellTab` components are second-level components
 under the `Shell`. `ShellTab` manages tab-scoped dialogs.
 
-The `ShellTab` component is closed in the following way. When the `View#close()` method is called, control
-is transferred to their parent component (`Shell`), which is responsible for their actual closure. Thus, these tabs
-can also be closed directly through their parent if a reference to the tab is available.
-
-The tab closing procedure is largely determined by the asynchronous nature of dialogs in the TabShell project and
-consists of the following steps:
-
-1. The parent component calls the tab's `boolean View#doOnCloseAttempt(CloseScope, Runnable)` method.
-2. By default, this method calls two ViewModel methods: `ViewModel#isReadyToClose()` and
-`ViewModel#prepareForClose(CloseScope, Runnable)`:
-
-```
-boolean onCloseAttempt(CloseScope scope, Runnable retryCallback) {
-    if (getViewModel().isReadyToClose()) {
-        return true;
-    } else {
-        getViewModel().prepareForClose(scope, retryCallback);
-        return false;
-    }
-}
-```
-3. If `ViewModel#prepareForClose(CloseScope, Runnable)` successfully prepares the component for closure, it invokes
-the provided callback to restart the closing process. If preparation fails, the closing process is silently aborted.
-
 ### Tab <a name="core-tab"></a>
 
 A `Tab` component cannot be opened directly through the `Shell`, so it always resides inside a `ShellTab` in
@@ -252,12 +228,6 @@ There are two types of scope: `Shell` and `Tab`. If a dialog has a `Shell` scope
 anything in `Shell` while this dialog is displayed until it is closed. If a dialog has a `Tab` scope, only the
 tab that triggered the dialog will be blocked when it is displayed. All other tabs, the main menu, etc., will be
 available to the user.
-
-Dialogs are invoked from the `ViewModel` using `ComponentHelper`.
-
-The `Dialog` component is closed in the following way. When the `View#close()` method is called on a `Dialog`, control
-is delegated to the `DialogManager`, which handles its actual closure. Therefore, a `Dialog` can also be closed
-directly through the `DialogManager` when holding a reference to the dialog instance.
 
 ## JFX Components <a name="jfx"></a>
 

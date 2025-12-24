@@ -90,9 +90,7 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
         this.layout = createLayout();
         getModifiableChildren().add(this.layout);
         this.area = createArea();
-        getModifiableChildren().add(this.area);
         this.dataInspector = createDataInspector();
-        getModifiableChildren().add(this.dataInspector);
     }
 
     public HexToolBarComponent<?> getToolBar() {
@@ -134,7 +132,7 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
     protected void postInitialize() {
         super.postInitialize();
         getView().addContent(toolBar.getView(), layout.getView());
-        
+
         var splitSpace = layout.createSplitSpace(Orientation.HORIZONTAL);
         splitSpace.initialize();
         layout.setRoot(splitSpace);

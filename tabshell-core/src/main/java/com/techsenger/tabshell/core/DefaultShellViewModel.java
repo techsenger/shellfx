@@ -228,6 +228,14 @@ public class DefaultShellViewModel<T extends ShellMediator> extends AbstractPare
 
     @Override
     public void close() {
+        var iterator = getMediator().breadthFirstIterator();
+        while (iterator.hasNext()) {
+            var c = iterator.next();
+            if (iterator.getDepth() > 0) {
+                c.getMediator().deinitialize();
+            }
+        }
+        // the shell is deinitilized at the end
         getMediator().deinitialize();
     }
 

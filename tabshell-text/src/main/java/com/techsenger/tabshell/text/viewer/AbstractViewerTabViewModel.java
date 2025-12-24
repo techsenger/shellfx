@@ -109,8 +109,6 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
 
     private long textStateId = 0;
 
-    private long closeTextSateId = -1;
-
     /**
      * Constructor.
      *
@@ -287,10 +285,11 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
 
     @Override
     public CloseCheckResult canClose() {
-        if (!isModified() && this.textStateId == this.closeTextSateId) {
+        if (!isModified()) {
             return CloseCheckResult.READY;
+        } else {
+            return CloseCheckResult.PREPARATION_REQUIRED;
         }
-        return CloseCheckResult.PREPARATION_REQUIRED;
     }
 
     @Override
@@ -302,22 +301,19 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
         yesNoDialog.setNoText("Discard");
         yesNoDialog.setCancelVisible(true);
         yesNoDialog.setButtonWidthEqual(true);
-        Runnable readyToClose = () -> {
-            this.closeTextSateId = this.textStateId;
-            resultCallback.accept(ClosePreparationResult.SUCCESS);
-        };
         yesNoDialog.setYesAction(() -> {
             yesNoDialog.requestClose();
             if (isPersisted()) {
                 writeFile();
-                readyToClose.run();
+                resultCallback.accept(ClosePreparationResult.SUCCESS);
             } else {
-                saveFile(DialogScope.TAB, FileStorages.getAll(true), readyToClose, null);
+                saveFile(DialogScope.TAB, FileStorages.getAll(true),
+                        () -> resultCallback.accept(ClosePreparationResult.SUCCESS), null);
             }
         });
         yesNoDialog.setNoAction(() -> {
             yesNoDialog.requestClose();
-            readyToClose.run();
+            resultCallback.accept(ClosePreparationResult.CANCELLED);
         });
         getMediator().addYesNoDialog(yesNoDialog);
     }

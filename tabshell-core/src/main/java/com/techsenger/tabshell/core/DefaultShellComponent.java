@@ -114,7 +114,7 @@ public class DefaultShellComponent<T extends DefaultShellView<?, ?>> extends Abs
     public void removeTab(ShellTabComponent<?> tab) {
         getView().getTabPane().getTabs().remove(tab.getView().getNode());
         getModifiableChildren().remove(tab);
-        tab.deinitialize();
+        tab.deinitializeTree();
     }
 
     @Override
@@ -152,7 +152,7 @@ public class DefaultShellComponent<T extends DefaultShellView<?, ?>> extends Abs
         if (scope == getSupportedDialogScope()) {
             getView().getDialogManager().hideDialog(dialog.getView());
             getModifiableChildren().remove(dialog);
-            dialog.deinitialize();
+            dialog.deinitializeTree();
         } else {
             var selectedTab = getView().getSelectedTab();
             if (selectedTab != null) {

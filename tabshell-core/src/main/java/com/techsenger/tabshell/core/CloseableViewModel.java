@@ -20,6 +20,8 @@ import com.techsenger.patternfx.core.ParentMediator;
 import com.techsenger.patternfx.core.ParentViewModel;
 import java.util.Objects;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -83,29 +85,48 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
     default void requestClose(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {
         class Requester {
 
-            private int attemptCount = 0;
+            private int attemptCount = -1;
 
             private void run() {
                 attemptCount++;
+                logger().debug("{} Close requested; attempt: {}", getMediator().getLogPrefix(), attemptCount);
                 CloseCheckResult canClose = null;
-                CloseableViewModel<?> closeable = null;
-                CloseableViewModel<?> preparationCloseable = null;
+                CloseableViewModel<?> savedCloseable = null;
                 var iterator = getMediator().depthFirstIterator();
                 while (iterator.hasNext()) {
-                    closeable = (CloseableViewModel<?>) iterator.next();
-                    canClose = closeable.canClose();
-                    Objects.requireNonNull(canClose, "Preparation result can't be null");
-                    if (canClose == CloseCheckResult.NOT_READY) {
-                        break;
-                    } else if (canClose == CloseCheckResult.PREPARATION_REQUIRED && preparationCloseable == null) {
-                        preparationCloseable = closeable;
+                    var parent = iterator.next();
+                    if (parent instanceof CloseableViewModel<?> closeable) {
+                        canClose = closeable.canClose();
+                        Objects.requireNonNull(canClose, "Preparation result can't be null");
+                        if (canClose == CloseCheckResult.NOT_READY) {
+                            savedCloseable = closeable;
+                            break;
+                        } else if (canClose == CloseCheckResult.PREPARATION_REQUIRED && savedCloseable == null) {
+                            savedCloseable = closeable;
+                            break;
+                        }
                     }
+                }
+                if (canClose != CloseCheckResult.READY && logger().isDebugEnabled()) {
+                    final var finalCanClose = canClose;
+                    final var finalSavedCloseable = savedCloseable;
+                    var tree = getMediator().toTreeString((c, b) -> {
+                        b.append(c.getMediator().getFullName());
+                        if (c == finalSavedCloseable) {
+                            b.append(" <-- ");
+                            b.append(finalCanClose.name());
+                        }
+                    });
+                    logger().debug("{} Not all components are ready to be closed:\n{}",
+                            getMediator().getLogPrefix(), tree);
                 }
                 if (canClose == CloseCheckResult.NOT_READY) {
                     acceptResult(CloseRequestResult.NOT_READY_TO_CLOSE);
-                } else if (preparationCloseable != null) {
-                    preparationCloseable.prepareToClose(this::handlePreparationResult);
+                } else if (canClose == CloseCheckResult.PREPARATION_REQUIRED) {
+                    savedCloseable.prepareToClose(this::handlePreparationResult);
                 } else {
+                    logger().debug("{} All components are ready to be closed; performing close",
+                            getMediator().getLogPrefix());
                     close();
                     acceptResult(CloseRequestResult.SUCCESS);
                 }
@@ -115,9 +136,12 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
                 Objects.requireNonNull(prepResult, "Preparation result can't be null");
                 if (prepResult == ClosePreparationResult.CANCELLED) {
                     acceptResult(CloseRequestResult.PREPARATION_CANCELLED);
+                    logger().debug("{} Close request canceled", getMediator().getLogPrefix());
                 } else {
-                    if (attemptCount == maxAttempts) {
+                    if (attemptCount == maxAttempts - 1) {
                         acceptResult(CloseRequestResult.MAX_ATTEMPTS_REACHED);
+                        logger().debug("{} Close request aborted; maximum attempts reached",
+                                getMediator().getLogPrefix());
                     } else {
                         run();
                     }
@@ -178,4 +202,11 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
      *                       {@link ClosePreparationResult} that describes the result
      */
     void prepareToClose(Consumer<ClosePreparationResult> resultCallback);
+
+    private static Logger logger() {
+        final class LogHolder {
+            private static final Logger logger = LoggerFactory.getLogger(LogHolder.class);
+        }
+        return LogHolder.logger;
+    }
 }

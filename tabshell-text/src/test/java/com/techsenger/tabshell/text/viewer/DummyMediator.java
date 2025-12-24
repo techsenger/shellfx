@@ -23,9 +23,10 @@ import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.core.ComponentState;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.ParentViewModel;
-import com.techsenger.patternfx.core.SubtreeIterator;
+import com.techsenger.patternfx.core.TreeIterator;
 import com.techsenger.tabshell.shared.find.FindPaneMediator;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
@@ -107,7 +108,7 @@ public class DummyMediator implements FindPaneMediator {
     }
 
     @Override
-    public ReadOnlyObjectProperty<ParentViewModel> parentProperty() {
+    public ReadOnlyObjectProperty<ParentViewModel<?>> parentProperty() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -117,17 +118,32 @@ public class DummyMediator implements FindPaneMediator {
     }
 
     @Override
-    public ObservableList<ChildViewModel> getChildren() {
+    public ObservableList<ChildViewModel<?>> getChildren() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public SubtreeIterator<ParentViewModel> depthFirstIterator() {
+    public TreeIterator<ParentViewModel<?>> depthFirstIterator() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public SubtreeIterator<ParentViewModel> breadthFirstIterator() {
+    public TreeIterator<ParentViewModel<?>> breadthFirstIterator() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String toTreeString() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String toTreeString(BiConsumer<ParentViewModel<?>, StringBuilder> componentAppender) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deinitializeTree() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }
