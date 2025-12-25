@@ -50,20 +50,20 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
      *
      * <p>The algorithm works as follows:
      * <ol>
-     *     <li>Traverse this component and all its descendants.</li>
-     *     <li>For each component, call {@link #canClose()} to obtain its current readiness state. Note that this is
-     *         a momentary snapshot; a component may return a different value in a subsequent iteration if its state
-     *         changes.
-     *     </li>
-     *     <li>If any component returns {@link CloseCheckResult#NOT_READY}, the close request is aborted.</li>
-     *     <li>If one or more components return {@link CloseCheckResult#PREPARATION_REQUIRED},
-     *         {@link #prepareToClose(Callback)} is invoked for the first such component only, and the close request
-     *         is suspended until the preparation callback completes. This avoids partially preparing multiple
-     *         components if the user cancels the operation.</li>
-     *     <li>Once a component completes preparation and calls the callback, the algorithm restarts
-     *         from the beginning with a fresh traversal of {@link #canClose()} over the entire component subtree.</li>
-     *     <li>When all components report {@link CloseCheckResult#READY} in a full traversal, {@link #close()}
-     *         is invoked to perform the actual close operation.</li>
+     *     <li>Traverse this component and all its descendants in breadth-first order.</li>
+     *     <li>During the traversal, {@link #canClose()} is called for each component to obtain a snapshot of its
+     *         current close state.</li>
+     *     <li>If any component returns {@link CloseCheckResult#NOT_READY}, the traversal stops immediately and the
+     *         close request is aborted.</li>
+     *     <li>If no {@code NOT_READY} components are found, the algorithm remembers the first component (if any)
+     *         that returned {@link CloseCheckResult#PREPARATION_REQUIRED} while still completing the traversal
+     *         to ensure that no {@code NOT_READY} components exist in the subtree.</li>
+     *     <li>If a component requiring preparation was found, {@link #prepareToClose(Callback)} is invoked for that
+     *         single component, and the close request is suspended until the preparation callback completes.</li>
+     *     <li>After a successful preparation, the algorithm restarts from the beginning with a fresh traversal of
+     *         {@link #canClose()} over the entire component subtree.</li>
+     *     <li>When a full traversal completes with all components reporting
+     *         {@link CloseCheckResult#READY}, {@link #close()} is invoked to perform the actual close operation.</li>
      * </ol>
      *
      * <p>Important: During a close request, the system may be live: new components can appear, existing components
@@ -91,25 +91,25 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
                 attemptCount++;
                 logger().debug("{} Close requested; attempt: {}", getMediator().getLogPrefix(), attemptCount);
                 CloseCheckResult canClose = null;
-                CloseableViewModel<?> savedCloseable = null;
-                var iterator = getMediator().depthFirstIterator();
+                CloseableViewModel<?> notReadyComponent = null;
+                CloseableViewModel<?> prepRequiredComponent = null;
+                var iterator = getMediator().breadthFirstIterator();
                 while (iterator.hasNext()) {
                     var parent = iterator.next();
                     if (parent instanceof CloseableViewModel<?> closeable) {
                         canClose = closeable.canClose();
                         Objects.requireNonNull(canClose, "Preparation result can't be null");
                         if (canClose == CloseCheckResult.NOT_READY) {
-                            savedCloseable = closeable;
+                            notReadyComponent = closeable;
                             break;
-                        } else if (canClose == CloseCheckResult.PREPARATION_REQUIRED && savedCloseable == null) {
-                            savedCloseable = closeable;
-                            break;
+                        } else if (canClose == CloseCheckResult.PREPARATION_REQUIRED && prepRequiredComponent == null) {
+                            prepRequiredComponent = closeable;
                         }
                     }
                 }
                 if (canClose != CloseCheckResult.READY && logger().isDebugEnabled()) {
                     final var finalCanClose = canClose;
-                    final var finalSavedCloseable = savedCloseable;
+                    final var finalSavedCloseable = notReadyComponent;
                     var tree = getMediator().toTreeString((c, b) -> {
                         b.append(c.getMediator().getFullName());
                         if (c == finalSavedCloseable) {
@@ -122,8 +122,8 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
                 }
                 if (canClose == CloseCheckResult.NOT_READY) {
                     acceptResult(CloseRequestResult.NOT_READY_TO_CLOSE);
-                } else if (canClose == CloseCheckResult.PREPARATION_REQUIRED) {
-                    savedCloseable.prepareToClose(this::handlePreparationResult);
+                } else if (prepRequiredComponent != null) {
+                    prepRequiredComponent.prepareToClose(this::handlePreparationResult);
                 } else {
                     logger().debug("{} All components are ready to be closed; performing close",
                             getMediator().getLogPrefix());
