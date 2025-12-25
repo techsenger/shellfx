@@ -17,8 +17,19 @@
 package com.techsenger.tabshell.demos.full.dialogs;
 
 import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.tabshell.core.ShellComponent;
+import com.techsenger.tabshell.core.ShellViewModel;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogComponent;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogComponent;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogView;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogComponent;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogView;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 
 /**
  *
@@ -26,13 +37,50 @@ import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
  */
 public class DialogsDialogComponent extends AbstractSimpleDialogComponent<DialogsDialogView> {
 
-    public DialogsDialogComponent(DialogsDialogView view) {
+    protected class Mediator extends AbstractSimpleDialogComponent.Mediator implements DialogsDialogMediator {
+
+        private final DialogsDialogComponent component = DialogsDialogComponent.this;
+
+        @Override
+        public void addAlertDialog(AlertDialogViewModel vm) {
+            var v = new AlertDialogView<>(vm);
+            var c = new AlertDialogComponent<>(v);
+            c.initialize();
+            component.shell.addDialog(c);
+        }
+
+        @Override
+        public void addYesNoDialog(YesNoDialogViewModel vm) {
+            var v = new YesNoDialogView<>(vm);
+            var c = new YesNoDialogComponent<>(v);
+            c.initialize();
+            component.shell.addDialog(c);
+        }
+
+        @Override
+        public void addFileChooserDialog(FileChooserDialogViewModel vm) {
+            var v = new FileChooserDialogView<>(vm);
+            var c = new FileChooserDialogComponent<>(v, component.shell);
+            c.initialize();
+            component.shell.addDialog(c);
+        }
+
+        @Override
+        public ShellViewModel<?> getShell() {
+            return component.shell.getView().getViewModel();
+        }
+    }
+
+    private final ShellComponent<?> shell;
+
+    public DialogsDialogComponent(DialogsDialogView view, ShellComponent<?> shell) {
         super(view);
+        this.shell = shell;
     }
 
     @Override
     protected Mediator createMediator() {
-        return new AbstractSimpleDialogComponent.Mediator() { };
+        return new Mediator();
     }
 
     @Override

@@ -183,7 +183,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
                 var shell = (ShellView<?, ?>) v;
                 var dialogViewModel = new DialogsDialogViewModel();
                 var dialogView = new DialogsDialogView(dialogViewModel);
-                var dialogComponent = new DialogsDialogComponent(dialogView);
+                var dialogComponent = new DialogsDialogComponent(dialogView, shell.getComponent());
                 dialogComponent.initialize();
                 shell.getComponent().addDialog(dialogComponent);
             });

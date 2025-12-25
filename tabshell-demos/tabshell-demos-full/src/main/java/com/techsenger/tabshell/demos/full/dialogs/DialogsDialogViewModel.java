@@ -19,8 +19,12 @@ package com.techsenger.tabshell.demos.full.dialogs;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
+import com.techsenger.tabshell.dialogs.file.FileChooserType;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
+import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 import java.util.function.Consumer;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -31,17 +35,15 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel<SimpleDialogMediator> {
+public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel<DialogsDialogMediator> {
 
-    // todo:
     private final ObservableList<DialogItem> items = FXCollections.observableArrayList(
-//            new DialogItem(Dialog.INFO, () -> showInfoDialog()),
-//            new DialogItem(Dialog.WARNING, () -> showWarningDialog()),
-//            new DialogItem(Dialog.ERROR, () -> showErrorDialog()),
-//            new DialogItem(Dialog.YES_NO, () -> showYesNoDialog()),
-//            new DialogItem(Dialog.OPEN_FILE, () -> showOpenFileDialog()),
-//            new DialogItem(Dialog.SAVE_FILE, () -> showSaveFileDialog()
-            );
+            new DialogItem(Dialog.INFO, () -> showInfoDialog()),
+            new DialogItem(Dialog.WARNING, () -> showWarningDialog()),
+            new DialogItem(Dialog.ERROR, () -> showErrorDialog()),
+            new DialogItem(Dialog.YES_NO, () -> showYesNoDialog()),
+            new DialogItem(Dialog.OPEN_FILE, () -> showOpenFileDialog()),
+            new DialogItem(Dialog.SAVE_FILE, () -> showSaveFileDialog()));
 
 
     private final ReadOnlyObjectWrapper<DialogItem> item = new ReadOnlyObjectWrapper<>();
@@ -92,49 +94,51 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel<Simple
         item.set(newItem);
     }
 
-//    private void showInfoDialog() {
-//        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
-//                "All done! Time for coffee.");
-//        viewModel.setPrefWidth(400);
-//        getMediator().addAlertDialog(viewModel);
-//    }
-//
-//    private void showWarningDialog() {
-//        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
-//                "Attention! You shouldn't do it!");
-//        viewModel.setPrefWidth(400);
-//        getMediator().openAlertDialog(viewModel);
-//    }
-//
-//    private void showErrorDialog() {
-//        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
-//                "Oops! That didn’t work.");
-//        viewModel.setPrefWidth(400);
-//        getMediator().openAlertDialog(viewModel);
-//    }
-//
-//    private void showYesNoDialog() {
-//        var viewModel = new YesNoDialogViewModel(DialogScope.SHELL,
-//                "Are you really sure?");
-//        viewModel.setTitle("Confirm");
-//        viewModel.setYesText("Yes");
-//        viewModel.setNoText("No");
-//        viewModel.setPrefWidth(400);
-//        getMediator().openYesNoDialog(viewModel);
-//    }
-//
-//    private void showOpenFileDialog() {
-//        var viewModel = new FileChooserDialogViewModel(DialogScope.SHELL, FileChooserType.OPEN,
-//                shell.getSettings().getAppearance(), shell.getHistoryManager());
-//        viewModel.setPrefWidth(700);
-//        getMediator().openFileChooserDialog(viewModel);
-//    }
-//
-//    private void showSaveFileDialog() {
-//        var viewModel = new FileChooserDialogViewModel(DialogScope.SHELL, FileChooserType.SAVE_AS,
-//                shell.getSettings().getAppearance(), shell.getHistoryManager());
-//        viewModel.setPrefWidth(700);
-//        getMediator().openFileChooserDialog(viewModel);
-//    }
+    private void showInfoDialog() {
+        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.INFO,
+                "All done! Time for coffee.");
+        viewModel.setPrefWidth(400);
+        getMediator().addAlertDialog(viewModel);
+    }
+
+    private void showWarningDialog() {
+        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.WARNING,
+                "Attention! You shouldn't do it!");
+        viewModel.setPrefWidth(400);
+        getMediator().addAlertDialog(viewModel);
+    }
+
+    private void showErrorDialog() {
+        var viewModel = new AlertDialogViewModel(DialogScope.SHELL, AlertDialogType.ERROR,
+                "Oops! That didn’t work.");
+        viewModel.setPrefWidth(400);
+        getMediator().addAlertDialog(viewModel);
+    }
+
+    private void showYesNoDialog() {
+        var viewModel = new YesNoDialogViewModel(DialogScope.SHELL,
+                "Are you really sure?");
+        viewModel.setTitle("Confirm");
+        viewModel.setYesText("Yes");
+        viewModel.setNoText("No");
+        viewModel.setPrefWidth(400);
+        getMediator().addYesNoDialog(viewModel);
+    }
+
+    private void showOpenFileDialog() {
+        var shell = getMediator().getShell();
+        var viewModel = new FileChooserDialogViewModel(DialogScope.SHELL, FileChooserType.OPEN,
+                shell.getSettings().getAppearance(), shell.getHistoryManager());
+        viewModel.setPrefWidth(700);
+        getMediator().addFileChooserDialog(viewModel);
+    }
+
+    private void showSaveFileDialog() {
+        var shell = getMediator().getShell();
+        var viewModel = new FileChooserDialogViewModel(DialogScope.SHELL, FileChooserType.SAVE_AS,
+                shell.getSettings().getAppearance(), shell.getHistoryManager());
+        viewModel.setPrefWidth(700);
+        getMediator().addFileChooserDialog(viewModel);
+    }
 
 }
