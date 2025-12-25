@@ -44,7 +44,6 @@ public class DockLayoutTabComponent extends AbstractShellTabComponent<DockLayout
         this.layout = createLayout(() -> view.getViewModel().getHistory().getDockLayout());
         this.getModifiableChildren().add(this.layout);
         this.textViewer = createTextViewer();
-        this.getModifiableChildren().add(this.textViewer);
     }
 
     @Override
@@ -69,7 +68,6 @@ public class DockLayoutTabComponent extends AbstractShellTabComponent<DockLayout
 
         var splitSpace = layout.createSplitSpace(Orientation.HORIZONTAL);
         splitSpace.initialize();
-        getModifiableChildren().add(splitSpace);
         layout.setRoot(splitSpace);
         splitSpace.addChild(textViewer);
 
