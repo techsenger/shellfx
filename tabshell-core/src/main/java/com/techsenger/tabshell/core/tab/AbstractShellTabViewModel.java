@@ -42,6 +42,11 @@ public abstract class AbstractShellTabViewModel<T extends ShellTabMediator> exte
         return this.dialogCount.get();
     }
 
+    @Override
+    protected AbstractShellTabHistory getHistory() {
+        return (AbstractShellTabHistory) super.getHistory();
+    }
+
     ReadOnlyIntegerWrapper dialogCountWrapper() {
         return dialogCount;
     }

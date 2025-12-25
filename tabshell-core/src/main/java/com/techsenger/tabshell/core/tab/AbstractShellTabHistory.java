@@ -20,6 +20,6 @@ package com.techsenger.tabshell.core.tab;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractShellTabHistory<T extends AbstractShellTabViewModel<?>> extends AbstractTabHistory<T> {
+public abstract class AbstractShellTabHistory extends AbstractTabHistory {
 
 }

@@ -16,9 +16,12 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
+import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
@@ -108,16 +111,24 @@ public class FileChooserDialogViewModel<T extends FileChooserDialogMediator> ext
 
     private final List<FileStorage> storages;
 
+    private final AppearanceSettings settings;
+
     private TableHistory tableHistory;
 
-    public FileChooserDialogViewModel(DialogScope scope, FileChooserType type) {
-        this(scope, type, FileStorages.getAll(true));
+    public FileChooserDialogViewModel(DialogScope scope, FileChooserType type, AppearanceSettings settings,
+            HistoryManager historyManager) {
+        this(scope, type, FileStorages.getAll(true), settings, historyManager);
     }
 
-    public FileChooserDialogViewModel(DialogScope scope, FileChooserType type, List<FileStorage> storages) {
+    public FileChooserDialogViewModel(DialogScope scope, FileChooserType type, List<FileStorage> storages,
+                    AppearanceSettings settings, HistoryManager historyManager) {
         super(scope, true);
         this.type = type;
         this.storages = storages;
+        this.settings = settings;
+        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        setHistoryProvider(() -> historyManager.getOrCreateHistory(FileChooserDialogHistory.class,
+                FileChooserDialogHistory::new));
         this.initialDirectory.addListener((ov, oldV, newV) -> {
             this.directory.set(newV);
             if (this.directory.get() != null) {
@@ -348,6 +359,29 @@ public class FileChooserDialogViewModel<T extends FileChooserDialogMediator> ext
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    protected FileChooserDialogHistory getHistory() {
+        return (FileChooserDialogHistory) super.getHistory();
+    }
+
+    @Override
+    protected void saveAppearance() {
+        super.saveAppearance();
+        var h = getHistory();
+        h.getListButton().setSelected(listSelectedProperty().get());
+        h.getDetailsButton().setSelected(detailsSelectedProperty().get());
+        h.setTable(getTableHistory());
+    }
+
+    @Override
+    protected void restoreAppearance() {
+        super.restoreAppearance();
+        var h = getHistory();
+        listSelectedProperty().set(h.getListButton().isSelected());
+        detailsSelectedProperty().set(h.getDetailsButton().isSelected());
+        setTableHistory(h.getTable());
+    }
+
     protected void updateFiles(GenericFile selectedFile) {
         if (selectedFile != null) {
             selectedFileIndex.set(-1); //there must be change event
@@ -410,6 +444,10 @@ public class FileChooserDialogViewModel<T extends FileChooserDialogMediator> ext
 
     protected ObservableList<GenericFile> getFiles() {
         return files;
+    }
+
+    AppearanceSettings getSettings() {
+        return settings;
     }
 
     void navigateUp() {

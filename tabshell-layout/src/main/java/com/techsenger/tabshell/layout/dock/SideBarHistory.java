@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaHistory;
  *
  * @author Pavel Castornii
  */
-public class SideBarHistory<T extends SideBarViewModel<?>> extends AbstractAreaHistory<T> {
+public class SideBarHistory extends AbstractAreaHistory {
 
     private TabPopupHistory popup;
 

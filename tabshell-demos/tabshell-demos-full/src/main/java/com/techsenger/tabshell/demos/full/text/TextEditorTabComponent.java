@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demos.full.text;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabComponent;
@@ -30,11 +29,6 @@ public class TextEditorTabComponent extends AbstractEditorTabComponent<TextEdito
 
     public TextEditorTabComponent(TextEditorTabView view, ShellComponent<?> shell) {
         super(view, shell);
-        //the initial history is created using a factory instead of reflection in the history manager to avoid
-        //access issues with hidden packages
-        setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> (shell.getHistoryManager().getOrCreateHistory(TextEditorTabHistory.class,
-                TextEditorTabHistory::new)));
     }
 
     @Override

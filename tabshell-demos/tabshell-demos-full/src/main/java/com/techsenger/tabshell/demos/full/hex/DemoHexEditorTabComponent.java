@@ -17,11 +17,9 @@
 package com.techsenger.tabshell.demos.full.hex;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.hex.editor.HexEditorTabComponent;
-import com.techsenger.tabshell.hex.editor.HexEditorTabHistory;
 
 /**
  *
@@ -39,9 +37,6 @@ public class DemoHexEditorTabComponent extends HexEditorTabComponent<DemoHexEdit
 
     public DemoHexEditorTabComponent(DemoHexEditorTabView view, ShellComponent<?> shell) {
         super(view, shell);
-        setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> shell.getHistoryManager().getOrCreateHistory(HexEditorTabHistory.class,
-                HexEditorTabHistory::new));
     }
 
     @Override

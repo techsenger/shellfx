@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
+import com.techsenger.tabshell.core.history.HistoryManager;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,8 @@ public class DefaultFindViewModelTest {
 
     private static final class TestFindPaneViewModel extends DefaultFindPaneViewModel {
 
-        private TestFindPaneViewModel(FindMatchesResetPolicy resetPolicy) {
-            super(resetPolicy);
+        private TestFindPaneViewModel(FindMatchesResetPolicy resetPolicy, HistoryManager historyManager) {
+            super(resetPolicy, historyManager);
             setMediator(new DummyMediator());
         }
 
@@ -37,7 +38,7 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_noMatchCaseNoWholeWordNoRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.textProperty().set(Texts.TEXT);
         viewModel.findTextProperty().set("ansi4j");
@@ -58,7 +59,7 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_yesMatchCaseNoWholeWordNoRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.caseSelectedProperty().set(true);
         viewModel.textProperty().set(Texts.TEXT);
@@ -79,7 +80,7 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_noMatchCaseYesWholeWordNoRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.wholeWordSelectedProperty().set(true);
         viewModel.textProperty().set(Texts.TEXT);
@@ -96,7 +97,7 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_yesMatchCaseYesWholeWordNoRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.wholeWordSelectedProperty().set(true);
         viewModel.caseSelectedProperty().set(true);
@@ -113,7 +114,7 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_noMatchCaseNoWholeWordYesRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.regExpSelectedProperty().set(true);
         viewModel.textProperty().set(Texts.TEXT);
@@ -136,7 +137,7 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_yesMatchCaseNoWholeWordYesRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.regExpSelectedProperty().set(true);
         viewModel.caseSelectedProperty().set(true);
@@ -202,7 +203,7 @@ public class DefaultFindViewModelTest {
     }
 
     private DefaultFindPaneViewModel createViewModelForMoveTests() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.textAreaEditableProperty().set(true);
         viewModel.replaceModeProperty().set(true);
         viewModel.regExpSelectedProperty().set(true);

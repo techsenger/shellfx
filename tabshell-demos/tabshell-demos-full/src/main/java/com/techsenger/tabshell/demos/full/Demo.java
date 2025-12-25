@@ -39,10 +39,10 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultShellViewModel<>();
+        var viewModel = new DefaultShellViewModel<>(DemoSettings.createSettings(), new DemoHistoryManager());
         viewModel.setTitle("TabShell Full Demo");
         var view = new DefaultShellView<>(viewModel, this, stage, IconStylesheetFactory.forAll());
-        var component = new DefaultShellComponent<>(view, DemoSettings.createSettings(), new DemoHistoryManager());
+        var component = new DefaultShellComponent<>(view);
         component.stateProperty().addListener((ov, oldV, newV) -> {
             if (newV == ComponentState.DEINITIALIZED) {
                 Platform.exit();

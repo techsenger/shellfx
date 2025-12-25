@@ -40,8 +40,6 @@ public class SideBarComponent<T extends SideBarView<?, ?>> extends AbstractAreaC
 
     }
 
-    private final SideBarHistory<?> history;
-
     private final DockLayoutComponent<?> layout;
 
     // todo: do we need this collection?
@@ -52,9 +50,8 @@ public class SideBarComponent<T extends SideBarView<?, ?>> extends AbstractAreaC
 
     private final ReadOnlyObjectWrapper<TabPopupComponent<?>> popup = new ReadOnlyObjectWrapper<>();
 
-    public SideBarComponent(T view, SideBarHistory<?> history, DockLayoutComponent<?> layout) {
+    public SideBarComponent(T view, DockLayoutComponent<?> layout) {
         super(view);
-        this.history = history;
         this.layout = layout;
     }
 
@@ -90,9 +87,10 @@ public class SideBarComponent<T extends SideBarView<?, ?>> extends AbstractAreaC
     }
 
     protected void addPopupToLayout(Side side) {
-        var vm = new TabPopupViewModel<>(side);
+        var history = getView().getViewModel().getHistory();
+        var vm = new TabPopupViewModel<>(side, () -> history.getOrCreatePopup());
         var v = new TabPopupView<>(vm);
-        var c = new TabPopupComponent<>(v, this.history.getOrCreatePopup(), this);
+        var c = new TabPopupComponent<>(v, this);
         c.initialize();
         setPopup(c);
         this.layout.addTabPopup(c);

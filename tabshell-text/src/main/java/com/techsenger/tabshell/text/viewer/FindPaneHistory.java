@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class FindPaneHistory extends AbstractFindPaneHistory<DefaultFindPaneViewModel> {
+public class FindPaneHistory extends AbstractFindPaneHistory {
 
     private List<String> replaceTexts = new ArrayList<>();
 
@@ -41,17 +41,5 @@ public class FindPaneHistory extends AbstractFindPaneHistory<DefaultFindPaneView
     public void preSerialize() {
         super.preSerialize();
         HistoryUtils.limit(replaceTexts);
-    }
-
-    @Override
-    public void restoreData(DefaultFindPaneViewModel viewModel) {
-        super.restoreData(viewModel);
-        viewModel.getReplaceTexts().addAll(this.replaceTexts);
-    }
-
-    @Override
-    public void saveData(DefaultFindPaneViewModel viewModel) {
-        super.saveData(viewModel);
-        this.replaceTexts = new ArrayList<>(viewModel.getReplaceTexts());
     }
 }

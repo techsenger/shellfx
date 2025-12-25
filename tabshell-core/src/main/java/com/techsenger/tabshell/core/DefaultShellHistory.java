@@ -22,7 +22,7 @@ import com.techsenger.patternfx.core.AbstractHistory;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellHistory extends AbstractHistory<DefaultShellViewModel<?>> {
+public class DefaultShellHistory extends AbstractHistory {
 
     private double width;
 
@@ -34,19 +34,27 @@ public class DefaultShellHistory extends AbstractHistory<DefaultShellViewModel<?
 
     }
 
-    @Override
-    public void restoreAppearance(DefaultShellViewModel viewModel) {
-        super.restoreAppearance(viewModel);
-        viewModel.setDefaultWidth(width);
-        viewModel.setDefaultHeight(height);
-        viewModel.maximizedWrapper().set(maximized);
+    public double getWidth() {
+        return width;
     }
 
-    @Override
-    public void saveAppearance(DefaultShellViewModel viewModel) {
-        super.saveAppearance(viewModel);
-        this.width = viewModel.getDefaultWidth();
-        this.height = viewModel.getDefaultHeight();
-        this.maximized = viewModel.isMaximized();
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public boolean isMaximized() {
+        return maximized;
+    }
+
+    public void setMaximized(boolean maximized) {
+        this.maximized = maximized;
     }
 }

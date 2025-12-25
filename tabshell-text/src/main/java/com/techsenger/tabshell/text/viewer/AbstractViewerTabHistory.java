@@ -22,7 +22,6 @@ import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractViewerTabHistory<T extends AbstractViewerTabViewModel<?>>
-        extends AbstractWorkerTabHistory<T> {
+public abstract class AbstractViewerTabHistory extends AbstractWorkerTabHistory {
 
 }

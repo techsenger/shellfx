@@ -17,8 +17,10 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.ParentViewModel;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
+import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.core.tab.TabContainerViewModel;
 import com.techsenger.tabshell.material.menu.MenuItemName;
@@ -34,6 +36,27 @@ import javafx.beans.property.StringProperty;
  */
 public interface ShellViewModel<T extends ShellMediator> extends ParentViewModel<T>,
         TabContainerViewModel<ShellTabViewModel<?>>, IconedViewModel, CloseableViewModel<T> {
+
+    /**
+     * Returns the history manager.
+     *
+     * @return
+     */
+    HistoryManager getHistoryManager();
+
+    /**
+     * Returns the settings of the shell.
+     *
+     * @return
+     */
+    Settings getSettings();
+
+    /**
+     * Returns the settings of the shell as an instance of the specified class using type casting.
+     *
+     * @return
+     */
+    <T extends Settings> T getSettings(Class<T> settingsClass);
 
     /**
      * Returns shell current width property.

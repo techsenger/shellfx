@@ -22,7 +22,6 @@ import com.techsenger.tabshell.layout.splittab.AbstractSplitTabHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractWorkerTabHistory<T extends AbstractWorkerTabViewModel<?>>
-        extends AbstractSplitTabHistory<T> {
+public abstract class AbstractWorkerTabHistory extends AbstractSplitTabHistory {
 
 }

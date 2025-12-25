@@ -19,6 +19,8 @@ package com.techsenger.tabshell.hex.editor;
 import com.techsenger.patternfx.core.ComponentState;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
@@ -38,10 +40,12 @@ public class HexEditorTabViewModel<T extends HexEditorTabMediator> extends Abstr
 
     private final HexDocument document;
 
-    public HexEditorTabViewModel(GenericFile file) {
+    public HexEditorTabViewModel(GenericFile file, HistoryManager historyManager) {
         setIcon(HexIcons.EDITOR);
         setTitle("Hex Editor");
         this.document = new HexDocument(file);
+        setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(HexEditorTabHistory.class, HexEditorTabHistory:: new));
     }
 
     @Override
@@ -104,5 +108,20 @@ public class HexEditorTabViewModel<T extends HexEditorTabMediator> extends Abstr
                 readFile();
             }
         });
+    }
+
+    @Override
+    public AppearanceSettings getAppearanceSettings() {
+        return getMediator().getShell().getSettings().getAppearance();
+    }
+
+    @Override
+    public HistoryManager getHistoryManager() {
+        return getMediator().getShell().getHistoryManager();
+    }
+
+    @Override
+    protected HexEditorTabHistory getHistory() {
+        return (HexEditorTabHistory) super.getHistory();
     }
 }

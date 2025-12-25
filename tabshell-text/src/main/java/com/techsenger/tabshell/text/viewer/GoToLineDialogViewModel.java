@@ -20,6 +20,8 @@ import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
 import java.util.function.Consumer;
@@ -42,8 +44,11 @@ public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<Simpl
 
     private final ObservableList<Integer> columns = FXCollections.observableArrayList();
 
-    GoToLineDialogViewModel() {
+    GoToLineDialogViewModel(HistoryManager historyManager) {
         super(DialogScope.TAB, false);
+        setHistoryPolicy(HistoryPolicy.DATA);
+        setHistoryProvider(() -> historyManager.getOrCreateHistory(GoToLineDialogHistory.class,
+                GoToLineDialogHistory::new));
         prefWidthProperty().set(400);
         titleProperty().set("Go To Line");
         okDisableProperty().set(true);
@@ -94,10 +99,37 @@ public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<Simpl
     }
 
     @Override
-    protected void postHistoryRestore() {
-        super.postHistoryRestore();
+    protected void initialize() {
+        super.initialize();
         //history is always loaded but not always saved
-        getMediator().setHistoryPolicy(HistoryPolicy.NONE);
+        setHistoryPolicy(HistoryPolicy.NONE);
+    }
+
+    @Override
+    protected GoToLineDialogHistory getHistory() {
+        return (GoToLineDialogHistory) super.getHistory();
+    }
+
+    @Override
+    protected void restoreData() {
+        super.restoreData();
+        var h = getHistory();
+        getLines().addAll(h.getLines());
+        getColumns().addAll(h.getColumns());
+    }
+
+    @Override
+    protected void saveData() {
+        super.saveData();
+        var h = getHistory();
+        var l = lineProperty().get();
+        if (l != null) {
+            HistoryUtils.addFirst(h.getLines(), l);
+        }
+        var c = columnProperty().get();
+        if (c != null) {
+            HistoryUtils.addFirst(h.getColumns(), l);
+        }
     }
 
     /**

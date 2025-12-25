@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
@@ -42,18 +41,10 @@ public class DockLayoutTabComponent extends AbstractShellTabComponent<DockLayout
 
     public DockLayoutTabComponent(DockLayoutTabView view, ShellComponent<?> shell) {
         super(view, shell);
-        setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> shell.getHistoryManager()
-                .getOrCreateHistory(DockLayoutTabHistory.class, DockLayoutTabHistory::new));
-        this.layout = createLayout(() -> getHistory().getDockLayout());
+        this.layout = createLayout(() -> view.getViewModel().getHistory().getDockLayout());
         this.getModifiableChildren().add(this.layout);
         this.textViewer = createTextViewer();
         this.getModifiableChildren().add(this.textViewer);
-    }
-
-    @Override
-    public DockLayoutTabHistory getHistory() {
-        return (DockLayoutTabHistory) super.getHistory();
     }
 
     @Override
@@ -100,11 +91,11 @@ public class DockLayoutTabComponent extends AbstractShellTabComponent<DockLayout
         return c;
     }
 
-    protected DockLayoutComponent<?> createLayout(HistoryProvider<DockLayoutHistory<?>> history) {
-        var vm = new DockLayoutViewModel<>();
+    protected DockLayoutComponent<?> createLayout(HistoryProvider<DockLayoutHistory> provider) {
+        var vm = new DockLayoutViewModel<>(provider);
         vm.setBottomBarPolicy(SideBarPolicy.EXISTS_ALWAYS);
         var v = new DockLayoutView<>(vm);
-        var c = new DockLayoutComponent<>(v, history);
+        var c = new DockLayoutComponent<>(v);
         return c;
     }
 

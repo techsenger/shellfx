@@ -18,11 +18,8 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.AbstractParentComponent;
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.dialog.DialogComponent;
 import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.ShellTabComponent;
 import com.techsenger.tabshell.core.tab.ShellTabView;
@@ -38,37 +35,13 @@ public class DefaultShellComponent<T extends DefaultShellView<?, ?>> extends Abs
     protected class Mediator extends AbstractParentComponent.Mediator implements ShellMediator {
 
         @Override
-        public HistoryManager getHistoryManager() {
-            return DefaultShellComponent.this.historyManager;
-        }
-
-        @Override
-        public Settings getSettings() {
-            return DefaultShellComponent.this.settings;
-        }
-
-        @Override
-        public <T extends Settings> T getSettings(Class<T> settingsClass) {
-            return (T) getSettings();
-        }
-
-        @Override
         public void deinitialize() {
             DefaultShellComponent.this.deinitialize();
         }
     }
 
-    private final Settings settings;
-
-    private final HistoryManager historyManager;
-
-    public DefaultShellComponent(T view, Settings settings, HistoryManager historyManager) {
+    public DefaultShellComponent(T view) {
         super(view);
-        this.settings = settings;
-        this.historyManager = historyManager;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> historyManager
-                .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
     }
 
     @Override
@@ -79,21 +52,6 @@ public class DefaultShellComponent<T extends DefaultShellView<?, ?>> extends Abs
     @Override
     public ComponentName getName() {
         return CoreComponentNames.SHELL;
-    }
-
-    @Override
-    public HistoryManager getHistoryManager() {
-        return historyManager;
-    }
-
-    @Override
-    public Settings getSettings() {
-        return settings;
-    }
-
-    @Override
-    public <T extends Settings> T getSettings(Class<T> settingsClass) {
-        return (T) settings;
     }
 
     @Override

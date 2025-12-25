@@ -16,15 +16,11 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.patternfx.core.ComponentHistory;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
 import com.techsenger.tabshell.material.textarea.TextAreaStyleNames;
-import com.techsenger.toolkit.core.function.Factory;
 import com.techsenger.toolkit.fx.FxPlatform;
 import java.util.List;
-import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -267,50 +263,9 @@ public class DefaultFindViewTest {
     }
 
     private DefaultFindPaneComponent<?> createComponent(ExtendedTextArea codeArea) {
-        var viewModel = new DefaultFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC);
+        var viewModel = new DefaultFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         var view = new DefaultFindPaneView<>(viewModel, codeArea);
-        var historyManger = new HistoryManager() {
-            @Override
-            public <T extends ComponentHistory<?>> T getHistory(Class<T> historyClass) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public <T extends ComponentHistory<?>> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
-                return (T) new FindPaneHistory();
-            }
-
-            @Override
-            public <T extends ComponentHistory<?>> void putHistory(Class<T> historyClass, T history) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public <T extends ComponentHistory<?>> T removeHistory(Class<T> historyClass) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public ComponentHistory<?> getHistory(UUID uuid) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public ComponentHistory<?> getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory<?>> factory) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public void putHistory(UUID uuid, ComponentHistory<?> history) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public ComponentHistory<?> removeHistory(UUID uuid) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
-        var component = new DefaultFindPaneComponent<>(view, historyManger);
+        var component = new DefaultFindPaneComponent<>(view);
         component.initialize();
         viewModel.replaceModeProperty().set(true);
         return component;

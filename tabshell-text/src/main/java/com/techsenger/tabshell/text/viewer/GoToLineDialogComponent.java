@@ -17,8 +17,6 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
 import com.techsenger.tabshell.text.TextComponentNames;
 
@@ -28,11 +26,8 @@ import com.techsenger.tabshell.text.TextComponentNames;
  */
 public class GoToLineDialogComponent<T extends GoToLineDialogView<?, ?>> extends AbstractSimpleDialogComponent<T> {
 
-    public GoToLineDialogComponent(T view, HistoryManager historyManager) {
+    public GoToLineDialogComponent(T view) {
         super(view);
-        setHistoryPolicy(HistoryPolicy.DATA);
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(GoToLineDialogHistory.class,
-                GoToLineDialogHistory::new));
     }
 
     @Override

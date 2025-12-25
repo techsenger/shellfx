@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.core.tab.TabComponent;
 import com.techsenger.tabshell.core.tab.TabViewModel;
@@ -47,10 +46,8 @@ public class TabPopupComponent<T extends TabPopupView<?, ?>> extends AbstractAre
 
     private final SideBarComponent<?> sideBar;
 
-    public TabPopupComponent(T view, TabPopupHistory<?> history, SideBarComponent<?> sideBar) {
+    public TabPopupComponent(T view, SideBarComponent<?> sideBar) {
         super(view);
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> history);
         this.sideBar = sideBar;
     }
 

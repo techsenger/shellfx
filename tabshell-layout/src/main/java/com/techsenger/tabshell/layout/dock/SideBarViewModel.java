@@ -25,13 +25,20 @@ import javafx.geometry.Side;
  */
 public class SideBarViewModel<T extends SideBarMediator> extends AbstractAreaViewModel<T> {
 
+    private final SideBarHistory history;
+
     private final Side side;
 
-    public SideBarViewModel(Side side) {
+    public SideBarViewModel(SideBarHistory history, Side side) {
+        this.history = history;
         this.side = side;
     }
 
     public Side getSide() {
         return side;
+    }
+
+    public SideBarHistory getHistory() {
+        return history;
     }
 }

@@ -16,8 +16,10 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
+import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.core.tab.ShellTabMediator;
 import java.util.function.Consumer;
@@ -28,9 +30,12 @@ import java.util.function.Consumer;
  */
 public class DockLayoutTabViewModel extends AbstractShellTabViewModel<ShellTabMediator> {
 
-    public DockLayoutTabViewModel() {
+    public DockLayoutTabViewModel(HistoryManager historyManager) {
         super();
         setTitle("Dock Layout Tab");
+        setHistoryPolicy(HistoryPolicy.ALL);
+        setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(DockLayoutTabHistory.class, DockLayoutTabHistory::new));
     }
 
     @Override
@@ -41,5 +46,10 @@ public class DockLayoutTabViewModel extends AbstractShellTabViewModel<ShellTabMe
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    protected DockLayoutTabHistory getHistory() {
+        return (DockLayoutTabHistory) super.getHistory();
     }
 }

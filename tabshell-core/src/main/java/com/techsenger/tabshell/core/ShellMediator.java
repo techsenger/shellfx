@@ -17,8 +17,6 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.ParentMediator;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.Settings;
 
 /**
  *
@@ -26,24 +24,4 @@ import com.techsenger.tabshell.core.settings.Settings;
  */
 public interface ShellMediator extends ParentMediator {
 
-    /**
-     * Returns the history manager.
-     *
-     * @return
-     */
-    HistoryManager getHistoryManager();
-
-    /**
-     * Returns the settings of the shell.
-     *
-     * @return
-     */
-    Settings getSettings();
-
-    /**
-     * Returns the settings of the shell as an instance of the specified class using type casting.
-     *
-     * @return
-     */
-    <T extends Settings> T getSettings(Class<T> settingsClass);
 }

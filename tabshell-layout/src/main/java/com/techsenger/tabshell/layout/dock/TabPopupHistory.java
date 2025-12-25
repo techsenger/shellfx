@@ -22,27 +22,25 @@ import com.techsenger.tabshell.core.area.AbstractAreaHistory;
  *
  * @author Pavel Castornii
  */
-public class TabPopupHistory<T extends TabPopupViewModel<?>> extends AbstractAreaHistory<T> {
+public class TabPopupHistory extends AbstractAreaHistory {
 
     private double width;
 
     private double height;
 
-    @Override
-    public void restoreAppearance(T viewModel) {
-        super.restoreAppearance(viewModel);
-        viewModel.setOldWidth(this.width);
-        viewModel.setOldHeight(this.height);
+    public double getWidth() {
+        return width;
     }
 
-    @Override
-    public void saveAppearance(T viewModel) {
-        super.saveAppearance(viewModel);
-        // If the user moves the mouse quickly, components may be created
-        // and removed even before they have been rendered
-        if (viewModel.getWidth() > 0.1 && viewModel.getHeight() > 0.1) {
-            this.width = viewModel.getWidth();
-            this.height = viewModel.getHeight();
-        }
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 }

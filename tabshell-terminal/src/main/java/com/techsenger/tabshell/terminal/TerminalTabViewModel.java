@@ -20,8 +20,10 @@ import com.pty4j.PtyProcess;
 import com.pty4j.PtyProcessBuilder;
 import com.techsenger.jeditermfx.core.util.Platform;
 import com.techsenger.jeditermfx.ui.settings.SettingsProvider;
+import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.tab.AbstractShellTabViewModel;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
@@ -76,10 +78,13 @@ public class TerminalTabViewModel<T extends TerminalTabMediator> extends Abstrac
 
     private final String directory;
 
-    public TerminalTabViewModel(String directory) {
+    public TerminalTabViewModel(String directory, HistoryManager historyManager) {
         this.setIcon(TerminalIcons.TERMINAL);
         this.setTitle("Terminal");
         this.directory = directory;
+        setHistoryPolicy(HistoryPolicy.ALL);
+        setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(TerminalTabHistory.class, TerminalTabHistory::new));
     }
 
     public ObjectProperty<TerminalPaletteType> paletteTypeProperty() {
@@ -137,11 +142,30 @@ public class TerminalTabViewModel<T extends TerminalTabMediator> extends Abstrac
     }
 
     @Override
+    protected TerminalTabHistory getHistory() {
+        return (TerminalTabHistory) super.getHistory();
+    }
+
+    @Override
+    protected void saveAppearance() {
+        super.saveAppearance();
+        var h = getHistory();
+        h.setPaletteType(paletteTypeProperty().get());
+    }
+
+    @Override
+    protected void restoreAppearance() {
+        super.restoreAppearance();
+        var h = getHistory();
+        paletteTypeProperty().set(h.getPaletteType());
+    }
+
+    @Override
     protected void initialize() {
         super.initialize();
         this.ttyConnector = createTtyConnector(directory);
         var shell = getMediator().getShell();
-        shell.getMediator().getSettings().getAppearance().themeProperty().addListener(themeListener);
+        shell.getSettings().getAppearance().themeProperty().addListener(themeListener);
         this.paletteType.addListener((ov, oldV, newV) -> {
             this.terminalPalette.setPaletteType(newV);
             this.focusRequired.next(true);
@@ -156,12 +180,12 @@ public class TerminalTabViewModel<T extends TerminalTabMediator> extends Abstrac
     protected void deinitialize() {
         super.deinitialize();
         var shell = getMediator().getShell();
-        shell.getMediator().getSettings().getAppearance().themeProperty().removeListener(themeListener);
+        shell.getSettings().getAppearance().themeProperty().removeListener(themeListener);
     }
 
     protected SettingsProvider createSettingsProvider() {
         var shell = getMediator().getShell();
-        var settings = shell.getMediator().getSettings();
+        var settings = shell.getSettings();
         this.terminalPalette = new TerminalPalette(settings.getAppearance().getTheme(),
                 paletteType.get());
         return new TerminalSettingsProvider(settings.getAppearance().getMonospaceFont(), terminalPalette);
@@ -195,7 +219,7 @@ public class TerminalTabViewModel<T extends TerminalTabMediator> extends Abstrac
         if (this.find != null) {
             return;
         }
-        this.find = new FindPaneViewModel(selectedText.get());
+        this.find = new FindPaneViewModel(selectedText.get(), getMediator().getShell().getHistoryManager());
         this.find.closeActionProperty().set(() -> hideFind());
         getMediator().addFindPane(this.find);
     }

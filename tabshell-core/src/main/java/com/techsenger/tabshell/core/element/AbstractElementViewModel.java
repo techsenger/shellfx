@@ -28,4 +28,9 @@ public abstract class AbstractElementViewModel<T extends ElementMediator> extend
     public AbstractElementViewModel() {
         super();
     }
+
+    @Override
+    protected AbstractElementHistory getHistory() {
+        return (AbstractElementHistory) super.getHistory();
+    }
 }

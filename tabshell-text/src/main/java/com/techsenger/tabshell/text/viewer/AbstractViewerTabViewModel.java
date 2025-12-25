@@ -19,8 +19,10 @@ package com.techsenger.tabshell.text.viewer;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.settings.ViewerSettings;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
@@ -194,7 +196,7 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
     }
 
     public void openGoToLineDialog() {
-        var viewModel = new GoToLineDialogViewModel();
+        var viewModel = new GoToLineDialogViewModel(getHistoryManager());
         getMediator().addGoToLineDialog(viewModel);
     }
 
@@ -205,7 +207,7 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
      */
     public void addFindPane(boolean replaceMode) {
         if (this.find == null) {
-            this.find = new DefaultFindPaneViewModel(getFindMatchesResetPolicy());
+            this.find = new DefaultFindPaneViewModel(getFindMatchesResetPolicy(), getHistoryManager());
             this.find.closeActionProperty().set(() -> {
                 this.removeFindPane();
             });
@@ -445,7 +447,7 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
     }
 
     public ViewerSettings getSettings() {
-        return getMediator().getShell().getMediator().getSettings().getViewer();
+        return getMediator().getShell().getSettings().getViewer();
     }
 
     public ReadOnlyBooleanProperty persistedProperty() {
@@ -454,6 +456,16 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
 
     public boolean isPersisted() {
         return persisted.get();
+    }
+
+    @Override
+    public AppearanceSettings getAppearanceSettings() {
+        return getMediator().getShell().getSettings().getAppearance();
+    }
+
+    @Override
+    public HistoryManager getHistoryManager() {
+        return getMediator().getShell().getHistoryManager();
     }
 
     protected void doOnCloseRequest() {

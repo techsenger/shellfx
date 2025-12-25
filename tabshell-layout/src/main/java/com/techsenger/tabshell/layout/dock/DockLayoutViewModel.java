@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.patternfx.core.ComponentState;
+import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -41,8 +42,8 @@ public class DockLayoutViewModel<T extends DockLayoutMediator> extends AbstractA
     private final ObjectProperty<SideBarPolicy> leftBarPolicy =
             new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
 
-    public DockLayoutViewModel() {
-
+    public DockLayoutViewModel(HistoryProvider<? extends DockLayoutHistory> history) {
+        setHistoryProvider(history);
     }
 
     public ObjectProperty<SideBarPolicy> rightBarPolicyProperty() {
@@ -81,6 +82,10 @@ public class DockLayoutViewModel<T extends DockLayoutMediator> extends AbstractA
         leftBarPolicy.set(policy);
     }
 
+    @Override
+    protected DockLayoutHistory getHistory() {
+        return (DockLayoutHistory) super.getHistory();
+    }
 
     @Override
     protected void initialize() {

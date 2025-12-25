@@ -18,8 +18,6 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.ParentComponent;
 import com.techsenger.tabshell.core.dialog.DialogContainerComponent;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabComponent;
 import com.techsenger.tabshell.core.tab.TabContainerComponent;
 
@@ -30,24 +28,4 @@ import com.techsenger.tabshell.core.tab.TabContainerComponent;
 public interface ShellComponent<T extends ShellView<?, ?>> extends ParentComponent<T>,
         TabContainerComponent<T, ShellTabComponent<?>>, DialogContainerComponent<T> {
 
-    /**
-     * Returns the history manager.
-     *
-     * @return
-     */
-    HistoryManager getHistoryManager();
-
-    /**
-     * Returns the settings of the shell.
-     *
-     * @return
-     */
-    Settings getSettings();
-
-    /**
-     * Returns the settings of the shell as an instance of the specified class using type casting.
-     *
-     * @return
-     */
-    <T extends Settings> T getSettings(Class<T> settingsClass);
 }

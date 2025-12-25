@@ -24,8 +24,7 @@ import com.techsenger.tabshell.material.table.TableHistory;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogHistory<T extends FileChooserDialogViewModel<?>>
-        extends AbstractSimpleDialogHistory<T> {
+public class FileChooserDialogHistory extends AbstractSimpleDialogHistory {
 
     private ToggleButtonHistory listButton = new ToggleButtonHistory();
 
@@ -37,19 +36,19 @@ public class FileChooserDialogHistory<T extends FileChooserDialogViewModel<?>>
 
     }
 
-    @Override
-    public void saveAppearance(T viewModel) {
-        super.saveAppearance(viewModel);
-        this.listButton.setSelected(viewModel.listSelectedProperty().get());
-        this.detailsButton.setSelected(viewModel.detailsSelectedProperty().get());
-        this.table = viewModel.getTableHistory();
+    public ToggleButtonHistory getListButton() {
+        return listButton;
     }
 
-    @Override
-    public void restoreAppearance(T viewModel) {
-        super.restoreAppearance(viewModel);
-        viewModel.listSelectedProperty().set(this.listButton.isSelected());
-        viewModel.detailsSelectedProperty().set(this.detailsButton.isSelected());
-        viewModel.setTableHistory(table);
+    public ToggleButtonHistory getDetailsButton() {
+        return detailsButton;
+    }
+
+    public TableHistory getTable() {
+        return table;
+    }
+
+    public void setTable(TableHistory table) {
+        this.table = table;
     }
 }

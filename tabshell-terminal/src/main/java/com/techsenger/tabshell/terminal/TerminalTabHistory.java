@@ -22,19 +22,15 @@ import com.techsenger.tabshell.core.tab.AbstractShellTabHistory;
  *
  * @author Pavel Castornii
  */
-public class TerminalHistory<T extends TerminalTabViewModel<?>> extends AbstractShellTabHistory<T> {
+public class TerminalTabHistory extends AbstractShellTabHistory {
 
     private TerminalPaletteType paletteType;
 
-    @Override
-    public void saveAppearance(T viewModel) {
-        super.saveAppearance(viewModel);
-        this.paletteType = viewModel.paletteTypeProperty().get();
+    public TerminalPaletteType getPaletteType() {
+        return paletteType;
     }
 
-    @Override
-    public void restoreAppearance(T viewModel) {
-        super.restoreAppearance(viewModel);
-        viewModel.paletteTypeProperty().set(paletteType);
+    public void setPaletteType(TerminalPaletteType paletteType) {
+        this.paletteType = paletteType;
     }
 }

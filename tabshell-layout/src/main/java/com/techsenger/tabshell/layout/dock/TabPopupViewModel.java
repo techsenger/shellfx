@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.layout.dock;
 
+import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import javafx.geometry.Side;
 
@@ -33,8 +35,10 @@ public class TabPopupViewModel<T extends TabDockMediator> extends AbstractAreaVi
 
     private final Side side;
 
-    public TabPopupViewModel(Side side) {
+    public TabPopupViewModel(Side side, HistoryProvider<? extends TabPopupHistory> historyProvider) {
         this.side = side;
+        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        setHistoryProvider(historyProvider);
     }
 
     public double getOldWidth() {
@@ -47,6 +51,31 @@ public class TabPopupViewModel<T extends TabDockMediator> extends AbstractAreaVi
 
     public Side getSide() {
         return side;
+    }
+
+    @Override
+    protected TabPopupHistory getHistory() {
+        return (TabPopupHistory) super.getHistory();
+    }
+
+    @Override
+    protected void restoreAppearance() {
+        super.restoreAppearance();
+        var h = getHistory();
+        setOldWidth(h.getWidth());
+        setOldHeight(h.getHeight());
+    }
+
+    @Override
+    protected void saveAppearance() {
+        super.saveAppearance();
+        // If the user moves the mouse quickly, components may be created
+        // and removed even before they have been rendered
+        if (getWidth() > 0.1 && getHeight() > 0.1) {
+            var h = getHistory();
+            h.setWidth(getWidth());
+            h.setHeight(getHeight());
+        }
     }
 
     protected void setOldHeight(double oldHeight) {

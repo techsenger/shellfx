@@ -18,10 +18,8 @@ package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.patternfx.core.ChildViewModel;
 import com.techsenger.patternfx.core.ComponentGroup;
-import com.techsenger.patternfx.core.ComponentHistory;
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.core.ComponentState;
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.ParentViewModel;
 import com.techsenger.patternfx.core.TreeIterator;
 import com.techsenger.tabshell.shared.find.FindPaneMediator;
@@ -69,26 +67,6 @@ public class DummyMediator implements FindPaneMediator {
 
     @Override
     public ReadOnlyObjectProperty<ComponentState> stateProperty() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ObjectProperty<HistoryPolicy> historyPolicyProperty() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public HistoryPolicy getHistoryPolicy() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setHistoryPolicy(HistoryPolicy policy) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public ComponentHistory<?> getHistory() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

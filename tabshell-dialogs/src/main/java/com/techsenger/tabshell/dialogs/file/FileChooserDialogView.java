@@ -189,7 +189,7 @@ public class FileChooserDialogView<T extends FileChooserDialogViewModel<?>, S ex
     protected void build() {
         super.build();
         var viewModel = getViewModel();
-        this.fileTableView = new FileTableView(viewModel, getComponent().getSettings());
+        this.fileTableView = new FileTableView(viewModel, viewModel.getSettings());
         this.nameColumn = this.fileTableView.findNameColumn();
         this.fileListView = new FileListView(viewModel, new ContextMenu(createRefreshMenuItem()));
 

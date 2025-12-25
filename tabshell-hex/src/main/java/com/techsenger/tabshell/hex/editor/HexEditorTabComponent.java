@@ -66,8 +66,7 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
         public void addFileChooserDialog(FileChooserDialogViewModel<?> viewModel) {
             var v = new FileChooserDialogView<>(viewModel);
             var shell = component.getShell();
-            var c = new FileChooserDialogComponent<>(v, shell.getSettings().getAppearance(),
-                    shell.getHistoryManager(), component);
+            var c = new FileChooserDialogComponent<>(v, component);
             c.initialize();
             shell.addDialog(c);
         }
@@ -83,8 +82,6 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
 
     public HexEditorTabComponent(T view, ShellComponent<?> shell) {
         super(view, shell);
-        setHistoryProvider(() -> shell.getHistoryManager()
-                .getOrCreateHistory(HexEditorTabHistory.class, HexEditorTabHistory:: new));
         this.toolBar = createToolBar();
         getModifiableChildren().add(this.toolBar);
         this.layout = createLayout();
@@ -112,11 +109,6 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
     @Override
     public ComponentName getName() {
         return HexComponentNames.HEX_EDITOR_TAB;
-    }
-
-    @Override
-    public HexEditorTabHistory<?> getHistory() {
-        return (HexEditorTabHistory<?>) super.getHistory();
     }
 
     @Override
@@ -152,14 +144,14 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
     }
 
     protected DockLayoutComponent<?> createLayout() {
-        var vm = new DockLayoutViewModel();
+        var vm = new DockLayoutViewModel(() -> getView().getViewModel().getHistory().getDockLayout());
         var v = new DockLayoutView<>(vm);
-        var c = new DockLayoutComponent<>(v, () -> getHistory().getDockLayout());
+        var c = new DockLayoutComponent<>(v);
         return c;
     }
 
     protected HexAreaComponent<?> createArea() {
-        var appearance = getShell().getSettings().getAppearance();
+        var appearance = getShell().getView().getViewModel().getSettings().getAppearance();
         var vm = new HexAreaViewModel<>(appearance, getView().getViewModel().getDocument());
         var v = new HexAreaView<>(vm);
         var c = new HexAreaComponent<>(v, toolBar);

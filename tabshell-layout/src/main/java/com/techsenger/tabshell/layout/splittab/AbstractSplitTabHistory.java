@@ -22,8 +22,7 @@ import com.techsenger.tabshell.core.tab.AbstractShellTabHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewModel<?>>
-        extends AbstractShellTabHistory<T> {
+public abstract class AbstractSplitTabHistory extends AbstractShellTabHistory {
 
     private double leftDivider;
 
@@ -37,25 +36,51 @@ public abstract class AbstractSplitTabHistory<T extends AbstractSplitTabViewMode
 
     private boolean bottomPaneVisible;
 
-    @Override
-    public void restoreAppearance(T viewModel) {
-        super.restoreAppearance(viewModel);
-        viewModel.getLeftDivider().setHistoryPosition(this.leftDivider);
-        viewModel.getRightDivider().setHistoryPosition(this.rightDivider);
-        viewModel.getBottomDivider().setHistoryPosition(this.bottomDivider);
-        viewModel.setLeftPaneVisible(leftPaneVisible);
-        viewModel.setRightPaneVisible(rightPaneVisible);
-        viewModel.setBottomPaneVisible(bottomPaneVisible);
+    public double getLeftDivider() {
+        return leftDivider;
     }
 
-    @Override
-    public void saveAppearance(T viewModel) {
-        super.saveAppearance(viewModel);
-        this.leftDivider = viewModel.getLeftDivider().getHistoryPosition();
-        this.rightDivider = viewModel.getRightDivider().getHistoryPosition();
-        this.bottomDivider = viewModel.getBottomDivider().getHistoryPosition();
-        this.leftPaneVisible = viewModel.isLeftPaneVisible();
-        this.rightPaneVisible = viewModel.isRightPaneVisible();
-        this.bottomPaneVisible = viewModel.isBottomPaneVisible();
+    public void setLeftDivider(double leftDivider) {
+        this.leftDivider = leftDivider;
+    }
+
+    public boolean isLeftPaneVisible() {
+        return leftPaneVisible;
+    }
+
+    public void setLeftPaneVisible(boolean leftPaneVisible) {
+        this.leftPaneVisible = leftPaneVisible;
+    }
+
+    public double getRightDivider() {
+        return rightDivider;
+    }
+
+    public void setRightDivider(double rightDivider) {
+        this.rightDivider = rightDivider;
+    }
+
+    public boolean isRightPaneVisible() {
+        return rightPaneVisible;
+    }
+
+    public void setRightPaneVisible(boolean rightPaneVisible) {
+        this.rightPaneVisible = rightPaneVisible;
+    }
+
+    public double getBottomDivider() {
+        return bottomDivider;
+    }
+
+    public void setBottomDivider(double bottomDivider) {
+        this.bottomDivider = bottomDivider;
+    }
+
+    public boolean isBottomPaneVisible() {
+        return bottomPaneVisible;
+    }
+
+    public void setBottomPaneVisible(boolean bottomPaneVisible) {
+        this.bottomPaneVisible = bottomPaneVisible;
     }
 }

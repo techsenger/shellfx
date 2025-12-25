@@ -304,9 +304,9 @@ public class DefaultShellView<T extends DefaultShellViewModel<?>, S extends Defa
         super.build();
         var viewModel = getViewModel();
         themeApplier = new ThemeApplier(stageController, this.stylesheets,
-                getComponent().getSettings().getAppearance());
+                viewModel.getSettings().getAppearance());
         this.fontApplier = new FontApplier(stackPane,
-                getComponent().getSettings().getAppearance());
+                viewModel.getSettings().getAppearance());
 
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
         tabPane.getStyleClass().addAll("shell-tab-pane", Styles.DENSE);
@@ -361,7 +361,7 @@ public class DefaultShellView<T extends DefaultShellViewModel<?>, S extends Defa
                 this.tabPane.getSelectionModel().select(newV.intValue()));
         this.tabPane.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
                 viewModel.selectedTabIndexWrapper().set(newV.intValue()));
-        ValueUtils.callAndAddListener(getComponent().getSettings().getAppearance().regularFontProperty(),
+        ValueUtils.callAndAddListener(viewModel.getSettings().getAppearance().regularFontProperty(),
                 (ov, oldV, newV) -> tabPane.setTabMaxWidth(newV.getSize() * 15));
     }
 

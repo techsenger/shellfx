@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class GoToLineDialogHistory extends AbstractSimpleDialogHistory<GoToLineDialogViewModel> {
+public class GoToLineDialogHistory extends AbstractSimpleDialogHistory {
 
     private List<Integer> lines = new ArrayList<>();
 
@@ -52,25 +52,5 @@ public class GoToLineDialogHistory extends AbstractSimpleDialogHistory<GoToLineD
         super.preSerialize();
         HistoryUtils.limit(lines);
         HistoryUtils.limit(columns);
-    }
-
-    @Override
-    public void restoreData(GoToLineDialogViewModel viewModel) {
-        super.restoreData(viewModel);
-        viewModel.getLines().addAll(this.lines);
-        viewModel.getColumns().addAll(this.columns);
-    }
-
-    @Override
-    public void saveData(GoToLineDialogViewModel viewModel) {
-        super.saveData(viewModel);
-        var l = viewModel.lineProperty().get();
-        if (l != null) {
-            HistoryUtils.addFirst(this.lines, l);
-        }
-        var c = viewModel.columnProperty().get();
-        if (c != null) {
-            HistoryUtils.addFirst(this.columns, l);
-        }
     }
 }

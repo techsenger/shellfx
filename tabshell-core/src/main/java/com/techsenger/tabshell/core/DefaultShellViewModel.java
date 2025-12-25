@@ -17,8 +17,11 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.AbstractParentViewModel;
+import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
+import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemName;
@@ -84,8 +87,32 @@ public class DefaultShellViewModel<T extends ShellMediator> extends AbstractPare
      */
     private double defaultHeight = 800;
 
-    public DefaultShellViewModel() {
+    private final Settings settings;
+
+    private final HistoryManager historyManager;
+
+    public DefaultShellViewModel(Settings settings, HistoryManager historyManager) {
         super();
+        this.settings = settings;
+        this.historyManager = historyManager;
+        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
+    }
+
+    @Override
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
+
+    @Override
+    public Settings getSettings() {
+        return settings;
+    }
+
+    @Override
+    public <T extends Settings> T getSettings(Class<T> settingsClass) {
+        return (T) settings;
     }
 
     @Override
@@ -255,6 +282,29 @@ public class DefaultShellViewModel<T extends ShellMediator> extends AbstractPare
 
     protected Map<MenuItemName, MenuItemHelper> getMenuItemHelpersByName() {
         return menuItemHelpersByName;
+    }
+
+    @Override
+    protected DefaultShellHistory getHistory() {
+        return (DefaultShellHistory) super.getHistory();
+    }
+
+    @Override
+    protected void restoreAppearance() {
+        super.restoreAppearance();
+        var h = getHistory();
+        setDefaultHeight(h.getHeight());
+        setDefaultWidth(h.getWidth());
+        maximizedWrapper().set(h.isMaximized());
+    }
+
+    @Override
+    protected void saveAppearance() {
+        super.saveAppearance();
+        var h = getHistory();
+        h.setWidth(getDefaultWidth());
+        h.setHeight(getDefaultHeight());
+        h.setMaximized(isMaximized());
     }
 
     ReadOnlyObjectWrapper<ShellTabViewModel<?>> selectedTabWrapper() {

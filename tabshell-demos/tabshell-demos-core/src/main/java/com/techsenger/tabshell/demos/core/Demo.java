@@ -36,14 +36,13 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultShellViewModel();
+        var viewModel = new DefaultShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
         viewModel.setTitle("TabShell Core Demo");
 
         //this helper will be used when there are no tabs
         viewModel.addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuNames.NEW, null, Boolean.TRUE));
         var view = new DefaultShellView<>(viewModel, this, stage, null);
-        var component = new DefaultShellComponent<>(view, DemoSettings.createSettings(),
-                new DemoHistoryManager());
+        var component = new DefaultShellComponent<>(view);
         component.initialize();
 
         //adding menu

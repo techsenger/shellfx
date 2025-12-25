@@ -78,6 +78,11 @@ public abstract class AbstractPageViewModel<T extends PageMediator> extends Abst
         return this.selected.get();
     }
 
+    @Override
+    protected AbstractPageHistory getHistory() {
+        return (AbstractPageHistory) super.getHistory();
+    }
+
     ReadOnlyBooleanWrapper selectedWrapper() {
         return selected;
     }

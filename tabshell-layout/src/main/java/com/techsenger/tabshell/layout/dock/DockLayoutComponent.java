@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.core.MediatorBindings;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.core.area.AreaComponent;
@@ -134,9 +133,8 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
 
     private final ReadOnlyObjectWrapper<SideBarComponent<?>> leftSideBar = new ReadOnlyObjectWrapper<>();
 
-    public DockLayoutComponent(T view, HistoryProvider<DockLayoutHistory<?>> historyProvider) {
+    public DockLayoutComponent(T view) {
         super(view);
-        setHistoryProvider(historyProvider);
         // the root is a child, the main one is not
         root.addListener((ov, oldV, newV) -> {
             if (oldV != null) {
@@ -220,37 +218,33 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
     }
 
     @Override
-    public DockLayoutHistory<?> getHistory() {
-        return (DockLayoutHistory<?>) super.getHistory();
-    }
-
-    @Override
     protected Mediator createMediator() {
         return new Mediator();
     }
 
-    protected SideBarComponent<?> createSideBar(Side side, SideBarHistory<?> history) {
-        var vm = new SideBarViewModel<>(side);
+    protected SideBarComponent<?> createSideBar(Side side, SideBarHistory history) {
+        var vm = new SideBarViewModel<>(history, side);
         var v = new SideBarView<>(vm);
-        var c = new SideBarComponent<>(v, history, this);
+        var c = new SideBarComponent<>(v, this);
         return c;
     }
 
     SideBarComponent<?> addSideBar(Side side) {
-        SideBarHistory<?> history = null;
+        var layoutHistory = getView().getViewModel().getHistory();
+        SideBarHistory barHistory = null;
         switch (side) {
             case RIGHT -> {
-                history = getHistory().getOrCreateRightSideBar();
-                return addSideBar(side, history, rightSideBar, v -> getView().getNode().setRight(v.getNode()));
+                barHistory = layoutHistory.getOrCreateRightSideBar();
+                return addSideBar(side, barHistory, rightSideBar, v -> getView().getNode().setRight(v.getNode()));
             }
             case LEFT -> {
-                history = getHistory().getOrCreateLeftSideBar();
-                return addSideBar(side, history, leftSideBar, v -> getView().getNode().setLeft(v.getNode()));
+                barHistory = layoutHistory.getOrCreateLeftSideBar();
+                return addSideBar(side, barHistory, leftSideBar, v -> getView().getNode().setLeft(v.getNode()));
             }
             case TOP, BOTTOM -> {
                 side = Side.BOTTOM;
-                history = getHistory().getOrCreateBottomSideBar();
-                return addSideBar(side, history, bottomSideBar, v -> getView().getNode().setBottom(v.getNode()));
+                barHistory = layoutHistory.getOrCreateBottomSideBar();
+                return addSideBar(side, barHistory, bottomSideBar, v -> getView().getNode().setBottom(v.getNode()));
             }
             default -> throw new AssertionError();
         }
@@ -294,7 +288,7 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         popup.deinitialize();
     }
 
-    private SideBarComponent<?> addSideBar(Side side, SideBarHistory<?> sideBarHistory,
+    private SideBarComponent<?> addSideBar(Side side, SideBarHistory sideBarHistory,
         ReadOnlyObjectWrapper<SideBarComponent<?>> wrapper, Consumer<SideBarView<?, ?>> viewAdder) {
         if (wrapper.get() != null) {
             return wrapper.get();

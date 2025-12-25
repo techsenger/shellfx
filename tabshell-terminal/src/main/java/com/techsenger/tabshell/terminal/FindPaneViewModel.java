@@ -23,6 +23,8 @@ import com.techsenger.jeditermfx.core.model.SubCharBuffer;
 import com.techsenger.jeditermfx.core.model.TerminalTextBuffer;
 import com.techsenger.jeditermfx.ui.FindResult;
 import com.techsenger.jeditermfx.ui.SubstringFinder;
+import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -37,7 +39,9 @@ public class FindPaneViewModel extends AbstractFindPaneViewModel {
 
     private final ObjectProperty<FindResult> result = new SimpleObjectProperty<>();
 
-    public FindPaneViewModel(String selectedText) {
+    public FindPaneViewModel(String selectedText, HistoryManager historyManager) {
+        setHistoryPolicy(HistoryPolicy.ALL);
+        setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPaneHistory.class, FindPaneHistory::new));
         findTextProperty().set(selectedText);
         wholeWordDisableProperty().set(true);
         regExpDisableProperty().set(true);

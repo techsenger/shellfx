@@ -168,6 +168,35 @@ public abstract class AbstractSplitTabViewModel<T extends SplitTabMediator> exte
         bottomDivider.paneVisible.set(visible);
     }
 
+    @Override
+    protected AbstractSplitTabHistory getHistory() {
+        return (AbstractSplitTabHistory) super.getHistory();
+    }
+
+    @Override
+    protected void restoreAppearance() {
+        super.restoreAppearance();
+        var h = getHistory();
+        getLeftDivider().setHistoryPosition(h.getLeftDivider());
+        getRightDivider().setHistoryPosition(h.getRightDivider());
+        getBottomDivider().setHistoryPosition(h.getBottomDivider());
+        setLeftPaneVisible(h.isLeftPaneVisible());
+        setRightPaneVisible(h.isRightPaneVisible());
+        setBottomPaneVisible(h.isBottomPaneVisible());
+    }
+
+    @Override
+    protected void saveAppearance() {
+        super.saveAppearance();
+        var h = getHistory();
+        h.setLeftDivider(getLeftDivider().getHistoryPosition());
+        h.setRightDivider(getRightDivider().getHistoryPosition());
+        h.setBottomDivider(getBottomDivider().getHistoryPosition());
+        h.setLeftPaneVisible(isLeftPaneVisible());
+        h.setRightPaneVisible(isRightPaneVisible());
+        h.setBottomPaneVisible(isBottomPaneVisible());
+    }
+
     Divider getLeftDivider() {
         return leftDivider;
     }

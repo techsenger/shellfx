@@ -51,12 +51,12 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
             var tabView = getView();
             var shell = component.getShell();
             var view = new GoToLineDialogView<>(viewModel);
-            var c = new GoToLineDialogComponent<>(view, shell.getHistoryManager());
+            var c = new GoToLineDialogComponent<>(view);
             c.initialize();
             // todo: refactor after fixing JDK-8333275
             viewModel.okActionProperty().set(() -> {
                 try {
-                    setHistoryPolicy(HistoryPolicy.DATA); //before closing
+                    viewModel.setHistoryPolicy(HistoryPolicy.DATA); //before closing
                     viewModel.requestClose();
                     var line = viewModel.getLine();
                     if (line == null) {
@@ -93,7 +93,7 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
         public void addFindPane(DefaultFindPaneViewModel viewModel) {
             var shell = component.getShell();
             var v = new DefaultFindPaneView<>(viewModel, getView().getTextArea());
-            findPane = new DefaultFindPaneComponent<>(v, shell.getHistoryManager());
+            findPane = new DefaultFindPaneComponent<>(v);
             findPane.initialize();
             getModifiableChildren().add(findPane);
             v.getNode().addEventHandler(KeyEvent.KEY_PRESSED, (e) -> {
@@ -127,8 +127,7 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
         public void addFileChooserDialog(FileChooserDialogViewModel<?> viewModel) {
             var v = new FileChooserDialogView<>(viewModel);
             var shell = component.getShell();
-            var c = new FileChooserDialogComponent<>(v, shell.getSettings().getAppearance(),
-                    shell.getHistoryManager(), component);
+            var c = new FileChooserDialogComponent<>(v, component);
             c.initialize();
             shell.addDialog(c);
         }

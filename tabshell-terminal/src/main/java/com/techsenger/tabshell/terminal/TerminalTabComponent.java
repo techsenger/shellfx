@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.terminal;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
 
@@ -32,7 +31,7 @@ public class TerminalTabComponent<T extends TerminalTabView<?, ?>> extends Abstr
         @Override
         public void addFindPane(FindPaneViewModel vm) {
             var v = new FindPaneView(vm, getView().getWidget());
-            findPane = new FindPaneComponent<>(v, TerminalTabComponent.this.getShell().getHistoryManager());
+            findPane = new FindPaneComponent<>(v);
             findPane.initialize();
             getModifiableChildren().add(findPane);
             getView().showFind(v);
@@ -52,9 +51,6 @@ public class TerminalTabComponent<T extends TerminalTabView<?, ?>> extends Abstr
 
     public TerminalTabComponent(T view, ShellComponent<?> shell) {
         super(view, shell);
-        setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> shell.getHistoryManager().getOrCreateHistory(TerminalHistory.class,
-                TerminalHistory::new));
     }
 
     @Override

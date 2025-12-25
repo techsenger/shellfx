@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.demos.full.text;
 
+import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.dialogs.file.ExtensionFilter;
 import com.techsenger.tabshell.shared.menu.EditMenuNames;
@@ -31,9 +33,14 @@ import java.util.List;
  */
 public class TextEditorTabViewModel extends AbstractEditorTabViewModel<EditorTabMediator> {
 
-    public TextEditorTabViewModel(GenericFile file) {
+    public TextEditorTabViewModel(GenericFile file, HistoryManager historyManager) {
         super(file);
         setIcon(TextIcons.EDITOR);
+        setHistoryPolicy(HistoryPolicy.ALL);
+        //the initial history is created using a factory instead of reflection in the history manager to avoid
+        //access issues with hidden packages
+        setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(TextEditorTabHistory.class, TextEditorTabHistory::new));
         //these validators will be used when menu is shown
         addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuNames.REPLACE, null, true));
         addMenuItemHelpers(new SimpleMenuItemHelper(EditMenuNames.GO_TO_LINE, null, true));

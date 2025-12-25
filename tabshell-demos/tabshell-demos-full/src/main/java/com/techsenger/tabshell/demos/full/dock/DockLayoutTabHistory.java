@@ -16,18 +16,18 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.tabshell.core.tab.AbstractTabHistory;
+import com.techsenger.tabshell.core.tab.AbstractShellTabHistory;
 import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DockLayoutTabHistory extends AbstractTabHistory<DockLayoutTabViewModel> {
+public class DockLayoutTabHistory extends AbstractShellTabHistory {
 
-    private DockLayoutHistory<?> dockLayout = new DockLayoutHistory<>();
+    private DockLayoutHistory dockLayout = new DockLayoutHistory();
 
-    public DockLayoutHistory<?> getDockLayout() {
+    public DockLayoutHistory getDockLayout() {
         return dockLayout;
     }
 }

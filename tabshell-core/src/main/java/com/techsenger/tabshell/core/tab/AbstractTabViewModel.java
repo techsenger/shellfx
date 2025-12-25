@@ -152,6 +152,11 @@ public abstract class AbstractTabViewModel<T extends TabMediator> extends Abstra
         this.closable.set(closable);
     }
 
+    @Override
+    protected AbstractTabHistory getHistory() {
+        return (AbstractTabHistory) super.getHistory();
+    }
+
     protected Map<MenuName, MenuHelper> getMenuHelpersByName() {
         return menuHelpersByName;
     }

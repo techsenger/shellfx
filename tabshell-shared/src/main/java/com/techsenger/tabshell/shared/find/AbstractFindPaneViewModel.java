@@ -19,6 +19,7 @@ package com.techsenger.tabshell.shared.find;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.core.area.AreaMediator;
 import com.techsenger.tabshell.core.history.HistoryUtils;
+import java.util.ArrayList;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -233,6 +234,45 @@ public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel<Ar
     @Override
     public FindPaneMediator getMediator() {
         return (FindPaneMediator) super.getMediator();
+    }
+
+    @Override
+    protected AbstractFindPaneHistory getHistory() {
+        return (AbstractFindPaneHistory) super.getHistory();
+    }
+
+    @Override
+    protected void restoreAppearance() {
+        super.restoreAppearance();
+        var h = getHistory();
+        caseSelectedProperty().set(h.getCaseButton().isSelected());
+        wholeWordSelectedProperty().set(h.getWholeWordButton().isSelected());
+        regExpSelectedProperty().set(h.getRegExpButton().isSelected());
+        highlightSelectedProperty().set(h.getHighlightButton().isSelected());
+    }
+
+    @Override
+    protected void saveAppearance() {
+        super.saveAppearance();
+        var h = getHistory();
+        h.getCaseButton().setSelected(caseSelectedProperty().get());
+        h.getWholeWordButton().setSelected(wholeWordSelectedProperty().get());
+        h.getRegExpButton().setSelected(regExpSelectedProperty().get());
+        h.getHighlightButton().setSelected(highlightSelectedProperty().get());
+    }
+
+    @Override
+    protected void restoreData() {
+        super.restoreData();
+        var h = getHistory();
+        getFindTexts().addAll(h.getFindTexts());
+    }
+
+    @Override
+    protected void saveData() {
+        super.saveData();
+        var h = getHistory();
+        h.setFindTexts(new ArrayList<>(getFindTexts()));
     }
 
     protected void addFindText() {

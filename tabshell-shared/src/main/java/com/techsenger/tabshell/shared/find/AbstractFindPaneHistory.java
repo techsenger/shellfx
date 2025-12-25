@@ -16,17 +16,16 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.core.area.AbstractAreaHistory;
+import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.material.button.ToggleButtonHistory;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneHistory<T extends AbstractFindPaneViewModel> extends AbstractAreaHistory<T> {
+public abstract class AbstractFindPaneHistory extends AbstractAreaHistory {
 
     private List<String> findTexts;
 
@@ -40,6 +39,10 @@ public abstract class AbstractFindPaneHistory<T extends AbstractFindPaneViewMode
 
     public List<String> getFindTexts() {
         return findTexts;
+    }
+
+    public void setFindTexts(List<String> findTexts) {
+        this.findTexts = findTexts;
     }
 
     public ToggleButtonHistory getCaseButton() {
@@ -56,36 +59,6 @@ public abstract class AbstractFindPaneHistory<T extends AbstractFindPaneViewMode
 
     public ToggleButtonHistory getHighlightButton() {
         return highlightButton;
-    }
-
-    @Override
-    public void restoreAppearance(T viewModel) {
-        super.restoreAppearance(viewModel);
-        viewModel.caseSelectedProperty().set(caseButton.isSelected());
-        viewModel.wholeWordSelectedProperty().set(wholeWordButton.isSelected());
-        viewModel.regExpSelectedProperty().set(regExpButton.isSelected());
-        viewModel.highlightSelectedProperty().set(highlightButton.isSelected());
-    }
-
-    @Override
-    public void saveAppearance(T viewModel) {
-        super.saveAppearance(viewModel);
-        caseButton.setSelected(viewModel.caseSelectedProperty().get());
-        wholeWordButton.setSelected(viewModel.wholeWordSelectedProperty().get());
-        regExpButton.setSelected(viewModel.regExpSelectedProperty().get());
-        highlightButton.setSelected(viewModel.highlightSelectedProperty().get());
-    }
-
-    @Override
-    public void restoreData(T viewModel) {
-        super.restoreData(viewModel);
-        viewModel.getFindTexts().addAll(this.findTexts);
-    }
-
-    @Override
-    public void saveData(T viewModel) {
-        super.saveData(viewModel);
-        this.findTexts = new ArrayList<>(viewModel.getFindTexts());
     }
 
     @Override

@@ -16,6 +16,9 @@
 
 package com.techsenger.tabshell.demos.full.hex;
 
+import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.hex.editor.HexEditorTabHistory;
 import com.techsenger.tabshell.hex.editor.HexEditorTabViewModel;
 import com.techsenger.tabshell.storage.GenericFile;
 
@@ -25,7 +28,10 @@ import com.techsenger.tabshell.storage.GenericFile;
  */
 public class DemoHexEditorTabViewModel extends HexEditorTabViewModel<DemoHexEditorTabMediator> {
 
-    public DemoHexEditorTabViewModel(GenericFile file) {
-        super(file);
+    public DemoHexEditorTabViewModel(GenericFile file, HistoryManager historyManager) {
+        super(file, historyManager);
+        setHistoryPolicy(HistoryPolicy.ALL);
+        setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(HexEditorTabHistory.class, HexEditorTabHistory::new));
     }
 }

@@ -55,6 +55,11 @@ public abstract class AbstractAreaViewModel<T extends AreaMediator> extends Abst
         return this.height.get();
     }
 
+    @Override
+    protected AbstractAreaHistory getHistory() {
+        return (AbstractAreaHistory) super.getHistory();
+    }
+
     ReadOnlyDoubleWrapper getWidthWrapper() {
         return width;
     }

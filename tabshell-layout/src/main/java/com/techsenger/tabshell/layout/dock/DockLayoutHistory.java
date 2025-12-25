@@ -22,31 +22,31 @@ import com.techsenger.tabshell.core.area.AbstractAreaHistory;
  *
  * @author Pavel Castornii
  */
-public class DockLayoutHistory<T extends DockLayoutViewModel<?>> extends AbstractAreaHistory<T> {
+public class DockLayoutHistory extends AbstractAreaHistory {
 
-    private SideBarHistory<?> rightSideBar;
+    private SideBarHistory rightSideBar;
 
-    private SideBarHistory<?> bottomSideBar;
+    private SideBarHistory bottomSideBar;
 
-    private SideBarHistory<?> leftSideBar;
+    private SideBarHistory leftSideBar;
 
-    public SideBarHistory<?> getOrCreateRightSideBar() {
+    public SideBarHistory getOrCreateRightSideBar() {
         if (rightSideBar == null) {
-            rightSideBar = new SideBarHistory<>();
+            rightSideBar = new SideBarHistory();
         }
         return rightSideBar;
     }
 
-    public SideBarHistory<?> getOrCreateBottomSideBar() {
+    public SideBarHistory getOrCreateBottomSideBar() {
         if (bottomSideBar == null) {
-            bottomSideBar = new SideBarHistory<>();
+            bottomSideBar = new SideBarHistory();
         }
         return bottomSideBar;
     }
 
-    public SideBarHistory<?> getOrCreateLeftSideBar() {
+    public SideBarHistory getOrCreateLeftSideBar() {
         if (leftSideBar == null) {
-            leftSideBar = new SideBarHistory<>();
+            leftSideBar = new SideBarHistory();
         }
         return leftSideBar;
     }

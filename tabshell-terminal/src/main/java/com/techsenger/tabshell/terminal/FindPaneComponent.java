@@ -17,8 +17,6 @@
 package com.techsenger.tabshell.terminal;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.shared.find.AbstractFindPaneComponent;
 
 /**
@@ -27,11 +25,8 @@ import com.techsenger.tabshell.shared.find.AbstractFindPaneComponent;
  */
 public class FindPaneComponent<T extends FindPaneView<?, ?>> extends AbstractFindPaneComponent<T> {
 
-    public FindPaneComponent(T view, HistoryManager historyManager) {
+    public FindPaneComponent(T view) {
         super(view);
-        setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPaneHistory.class,
-                FindPaneHistory::new));
     }
 
     @Override

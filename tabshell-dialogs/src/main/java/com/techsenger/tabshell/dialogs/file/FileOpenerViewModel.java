@@ -17,6 +17,8 @@
 package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.storage.FileStorage;
 import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
@@ -47,7 +49,8 @@ public interface FileOpenerViewModel extends FileOperatorViewModel {
      */
     default void openFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
-        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.OPEN);
+        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.OPEN, getAppearanceSettings(),
+                getHistoryManager());
         var filters = createOpenExtensionFilters();
         if (filters != null) {
             viewModel.getExtensionFilters().addAll(filters);
@@ -89,4 +92,10 @@ public interface FileOpenerViewModel extends FileOperatorViewModel {
     List<ExtensionFilter> createOpenExtensionFilters();
 
     void readFile();
+
+    // todo: remove
+    AppearanceSettings getAppearanceSettings();
+
+    // todo: remove
+    HistoryManager getHistoryManager();
 }

@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogHistory<T extends AbstractDialogViewModel<?>> extends AbstractAreaHistory<T> {
+public abstract class AbstractDialogHistory extends AbstractAreaHistory {
 
     private double width;
 
@@ -43,19 +43,4 @@ public abstract class AbstractDialogHistory<T extends AbstractDialogViewModel<?>
     public void setHeight(double height) {
         this.height = height;
     }
-
-    @Override
-    public void restoreAppearance(T viewModel) {
-        super.restoreAppearance(viewModel);
-        viewModel.prefWidthProperty().set(this.width);
-        viewModel.prefHeightProperty().set(this.height);
-    }
-
-    @Override
-    public void saveAppearance(T viewModel) {
-        super.saveAppearance(viewModel);
-        this.width = viewModel.getWidth();
-        this.height = viewModel.getHeight();
-    }
-
 }

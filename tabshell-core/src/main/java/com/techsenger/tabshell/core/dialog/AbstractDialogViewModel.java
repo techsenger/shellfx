@@ -292,6 +292,27 @@ public abstract class AbstractDialogViewModel<T extends DialogMediator> extends 
         this.active.set(active);
     }
 
+    @Override
+    protected AbstractDialogHistory getHistory() {
+        return (AbstractDialogHistory) super.getHistory();
+    }
+
+    @Override
+    protected void restoreAppearance() {
+        super.restoreAppearance();
+        var h = getHistory();
+        prefWidthProperty().set(h.getWidth());
+        prefHeightProperty().set(h.getHeight());
+    }
+
+    @Override
+    protected void saveAppearance() {
+        super.saveAppearance();
+        var h = getHistory();
+        h.setWidth(getWidth());
+        h.setHeight(getHeight());
+    }
+
     ReadOnlyDoubleWrapper widthWrapper() {
         return width;
     }

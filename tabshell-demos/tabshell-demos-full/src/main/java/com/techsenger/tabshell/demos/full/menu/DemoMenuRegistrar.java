@@ -115,7 +115,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
                 var stogages = FileStorages.getDefault(true);
                 var homeDir = GenericFile.getHome(stogages);
                 var file = GenericFile.getChild(homeDir, "Lorem Ipsum.txt", FileType.FILE);
-                var editorViewModel = new TextEditorTabViewModel(file);
+                var editorViewModel = new TextEditorTabViewModel(file, shell.getViewModel().getHistoryManager());
                 var editorView = new TextEditorTabView(editorViewModel);
                 var editorComponent = new TextEditorTabComponent(editorView, shell.getComponent());
                 editorComponent.initialize();
@@ -146,7 +146,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
                         .build();
 
                 //editor
-                var editorViewModel = new DemoHexEditorTabViewModel(file);
+                var editorViewModel = new DemoHexEditorTabViewModel(file, shell.getViewModel().getHistoryManager());
                 var editorView = new DemoHexEditorTabView(editorViewModel);
                 var editorComponent = new DemoHexEditorTabComponent(editorView, shell.getComponent());
                 editorComponent.initialize();
@@ -165,7 +165,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             item.setOnAction((e) -> {
                 var shell = (ShellView<?, ?>) v;
                 //terminal
-                var terminalVm = new TerminalTabViewModel(null);
+                var terminalVm = new TerminalTabViewModel(null, shell.getViewModel().getHistoryManager());
                 var terminalV = new TerminalTabView<>(terminalVm);
                 var terminalC = new TerminalTabComponent<>(terminalV, shell.getComponent());
                 terminalC.initialize();
@@ -197,7 +197,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             var item = new NamedMenuItem(DemoMenuNames.DOCK_LAYOUT, "Dock Layout", 600);
             item.setOnAction((e) -> {
                 var shell = (ShellView<?, ?>) v;
-                var dockTabViewModel = new DockLayoutTabViewModel();
+                var dockTabViewModel = new DockLayoutTabViewModel(shell.getViewModel().getHistoryManager());
                 var dockTabView = new DockLayoutTabView(dockTabViewModel);
                 var dockTabComponent = new DockLayoutTabComponent(dockTabView, shell.getComponent());
                 dockTabComponent.initialize();

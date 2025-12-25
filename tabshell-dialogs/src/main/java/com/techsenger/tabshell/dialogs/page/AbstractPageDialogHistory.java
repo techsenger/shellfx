@@ -22,7 +22,6 @@ import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageDialogHistory<T extends AbstractPageDialogViewModel<?>>
-        extends AbstractSimpleDialogHistory<T> {
+public abstract class AbstractPageDialogHistory extends AbstractSimpleDialogHistory {
 
 }

@@ -36,7 +36,7 @@ public interface HistoryManager {
      * @param historyClass the class of the history to retrieve
      * @return the history object for the given class, or null if no history exists
      */
-    <T extends ComponentHistory<?>> T getHistory(Class<T> historyClass);
+    <T extends ComponentHistory> T getHistory(Class<T> historyClass);
 
     /**
      * Retrieves the global history object associated with the specified class, creating and storing a new one
@@ -48,7 +48,7 @@ public interface HistoryManager {
      * @param factory the factory used to create a new instance if no history exists
      * @return the existing or newly created history object
      */
-    <T extends ComponentHistory<?>> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory);
+    <T extends ComponentHistory> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory);
 
     /**
      * Stores a global history object for the specified class. This is used for components that share a single
@@ -58,7 +58,7 @@ public interface HistoryManager {
      * @param historyClass the class to associate with the history
      * @param history the history object to store
      */
-    <T extends ComponentHistory<?>> void putHistory(Class<T> historyClass, T history);
+    <T extends ComponentHistory> void putHistory(Class<T> historyClass, T history);
 
     /**
      * Removes and returns the global history object associated with the specified class. This is used for components
@@ -68,7 +68,7 @@ public interface HistoryManager {
      * @param historyClass the class of the history to remove
      * @return the removed history object for the given class, or {@code null} if no history was associated
      */
-    <T extends ComponentHistory<?>> T removeHistory(Class<T> historyClass);
+    <T extends ComponentHistory> T removeHistory(Class<T> historyClass);
 
     /**
      * Retrieves the history for a specific component instance by its UUID. This is used for components that require
@@ -77,7 +77,7 @@ public interface HistoryManager {
      * @param uuid the unique identifier of the component instance
      * @return the history object for the specified instance, or null if not found
      */
-    ComponentHistory<?> getHistory(UUID uuid);
+    ComponentHistory getHistory(UUID uuid);
 
     /**
      * Retrieves the history associated with a specific component instance identified by its UUID, creating and storing
@@ -88,7 +88,7 @@ public interface HistoryManager {
      * @param factory the factory used to create a new {@code ComponentHistory} instance if none exists
      * @return the existing or newly created history object associated with the given UUID
      */
-    ComponentHistory<?> getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory<?>> factory);
+    ComponentHistory getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory> factory);
 
     /**
      * Stores history for a specific component instance identified by its UUID. This is used for components that
@@ -97,7 +97,7 @@ public interface HistoryManager {
      * @param uuid the unique identifier of the component instance
      * @param history the history object to store for this instance
      */
-    void putHistory(UUID uuid, ComponentHistory<?> history);
+    void putHistory(UUID uuid, ComponentHistory history);
 
     /**
      * Removes and returns the history associated with a specific component instance identified by its UUID.
@@ -106,5 +106,5 @@ public interface HistoryManager {
      * @param uuid the unique identifier of the component instance
      * @return the removed history object for the specified instance, or {@code null} if no history was associated
      */
-    ComponentHistory<?> removeHistory(UUID uuid);
+    ComponentHistory removeHistory(UUID uuid);
 }

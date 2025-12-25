@@ -17,6 +17,8 @@
 package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.storage.FileStorage;
 import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
@@ -48,7 +50,8 @@ public interface FileSaverViewModel extends FileOperatorViewModel {
      */
     default void saveFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
         var file = getFile();
-        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.SAVE_AS);
+        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.SAVE_AS, getAppearanceSettings(),
+                getHistoryManager());
         var filters = createSaveExtensionFilters();
         if (filters != null) {
             viewModel.getExtensionFilters().addAll(filters);
@@ -90,4 +93,10 @@ public interface FileSaverViewModel extends FileOperatorViewModel {
     List<ExtensionFilter> createSaveExtensionFilters();
 
     void writeFile();
+
+    // todo: remove
+    AppearanceSettings getAppearanceSettings();
+
+    // todo: remove
+    HistoryManager getHistoryManager();
 }

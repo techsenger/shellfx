@@ -22,6 +22,6 @@ import com.techsenger.patternfx.core.AbstractHistory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractAreaHistory<T extends AbstractAreaViewModel<?>> extends AbstractHistory<T> {
+public abstract class AbstractAreaHistory extends AbstractHistory {
 
 }
