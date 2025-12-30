@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.patternfx.core.AbstractParentView;
+import com.techsenger.patternfx.mvvmx.AbstractParentView;
 import com.techsenger.stagepro.core.StageResizeEvent;
 import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabpanepro.core.TabPanePro;

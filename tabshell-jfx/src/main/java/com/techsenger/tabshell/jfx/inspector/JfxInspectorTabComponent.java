@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.tab.AbstractTabComponent;
 import com.techsenger.tabshell.core.tab.ShellTabComponent;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
@@ -53,7 +53,7 @@ public class JfxInspectorTabComponent<T extends JfxInspectorTabView<?, ?>> exten
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return JfxComponentNames.JFX_INSPECTOR_TAB;
     }
 

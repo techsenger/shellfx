@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.patternfx.core.ChildView;
+import com.techsenger.patternfx.mvvmx.ChildView;
 import com.techsenger.tabshell.core.SelectableView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 

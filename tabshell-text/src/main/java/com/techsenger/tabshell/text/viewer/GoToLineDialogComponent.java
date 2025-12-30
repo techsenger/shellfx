@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
 import com.techsenger.tabshell.text.TextComponentNames;
 
@@ -36,7 +36,7 @@ public class GoToLineDialogComponent<T extends GoToLineDialogView<?, ?>> extends
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return TextComponentNames.GO_TO_LINE_DIALOG;
     }
 

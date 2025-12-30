@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.patternfx.core.ComponentState;
+import com.techsenger.patternfx.core.State;
 import com.techsenger.tabshell.core.CloseRequestResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +95,7 @@ public interface TabContainerViewModel<S extends TabViewModel<?>> {
                 for (var i = index; i < tabs.size(); i++) {
                     index++;
                     tab = tabs.get(i);
-                    if (tab.getMediator().getState() == ComponentState.INITIALIZED) {
+                    if (tab.getMediator().getState() == State.INITIALIZED) {
                         break;
                     }
                 }

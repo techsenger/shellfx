@@ -17,6 +17,7 @@
 module com.techsenger.tabshell.jfx {
     requires org.slf4j;
     requires com.techsenger.patternfx.core;
+    requires com.techsenger.patternfx.mvvmx;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.tabshell.core;

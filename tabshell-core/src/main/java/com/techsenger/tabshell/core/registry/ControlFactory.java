@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.patternfx.core.ComponentView;
+import com.techsenger.patternfx.mvvmx.ComponentView;
 
 /**
  *

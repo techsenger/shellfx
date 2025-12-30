@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 
 /**
@@ -35,7 +35,7 @@ public class WebToolBarComponent<T extends WebToolBarView<?, ?>> extends Abstrac
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return WebComponentNames.WEB_TOOL_BAR;
     }
 

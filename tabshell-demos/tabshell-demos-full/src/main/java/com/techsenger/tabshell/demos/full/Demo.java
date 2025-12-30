@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.patternfx.core.ComponentState;
+import com.techsenger.patternfx.core.State;
 import com.techsenger.tabshell.core.DefaultShellComponent;
 import com.techsenger.tabshell.core.DefaultShellView;
 import com.techsenger.tabshell.core.DefaultShellViewModel;
@@ -44,7 +44,7 @@ public class Demo extends Application {
         var view = new DefaultShellView<>(viewModel, this, stage, IconStylesheetFactory.forAll());
         var component = new DefaultShellComponent<>(view);
         component.stateProperty().addListener((ov, oldV, newV) -> {
-            if (newV == ComponentState.DEINITIALIZED) {
+            if (newV == State.DEINITIALIZED) {
                 Platform.exit();
             }
         });

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.hex.HexComponentNames;
 
@@ -36,7 +36,7 @@ public class HexToolBarComponent<T extends HexToolBarView<?, ?>> extends Abstrac
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return HexComponentNames.HEX_TOOL_BAR;
     }
 

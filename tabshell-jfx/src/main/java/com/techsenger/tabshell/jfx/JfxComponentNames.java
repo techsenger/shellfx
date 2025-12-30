@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.jfx;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 
 /**
  *
@@ -24,11 +24,11 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public interface JfxComponentNames {
 
-    ComponentName JFX_TAB_DOCK = new ComponentName("JFXTabDock");
+    Name JFX_TAB_DOCK = new Name("JFXTabDock");
 
-    ComponentName JFX_INSPECTOR_TAB = new ComponentName("JFXInspectorTab");
+    Name JFX_INSPECTOR_TAB = new Name("JFXInspectorTab");
 
-    ComponentName EVENT_LOG_TAB = new ComponentName("EventLogTab");
+    Name EVENT_LOG_TAB = new Name("EventLogTab");
 
-    ComponentName PROPERTY_DIALOG = new ComponentName("PropertyDialog");
+    Name PROPERTY_DIALOG = new Name("PropertyDialog");
 }

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.hex;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.hex.editor.HexToolBarComponent;
 
@@ -31,7 +31,7 @@ public class DemoHexToolBarComponent extends HexToolBarComponent<DemoHexToolBarV
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_HEX_TOOL_BAR;
     }
 }

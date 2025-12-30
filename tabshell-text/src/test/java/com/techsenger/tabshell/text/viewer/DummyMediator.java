@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.patternfx.core.ChildViewModel;
-import com.techsenger.patternfx.core.ComponentGroup;
-import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.ComponentState;
-import com.techsenger.patternfx.core.ParentViewModel;
+import com.techsenger.patternfx.core.Group;
+import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.core.State;
 import com.techsenger.patternfx.core.TreeIterator;
+import com.techsenger.patternfx.mvvmx.ChildViewModel;
+import com.techsenger.patternfx.mvvmx.ParentViewModel;
 import com.techsenger.tabshell.shared.find.FindPaneMediator;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -41,7 +41,7 @@ public class DummyMediator implements FindPaneMediator {
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -61,27 +61,27 @@ public class DummyMediator implements FindPaneMediator {
     }
 
     @Override
-    public ComponentState getState() {
+    public State getState() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public ReadOnlyObjectProperty<ComponentState> stateProperty() {
+    public ReadOnlyObjectProperty<State> stateProperty() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public ComponentGroup getGroup() {
+    public Group getGroup() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void setGroup(ComponentGroup value) {
+    public void setGroup(Group value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public ObjectProperty<ComponentGroup> groupProperty() {
+    public ObjectProperty<Group> groupProperty() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

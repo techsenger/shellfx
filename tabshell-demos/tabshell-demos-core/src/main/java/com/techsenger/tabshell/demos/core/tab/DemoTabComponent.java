@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
 import com.techsenger.tabshell.demos.core.DemoComponentNames;
@@ -50,7 +50,7 @@ public class DemoTabComponent<T extends DemoTabView<?, ?>> extends AbstractShell
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_TAB;
     }
 

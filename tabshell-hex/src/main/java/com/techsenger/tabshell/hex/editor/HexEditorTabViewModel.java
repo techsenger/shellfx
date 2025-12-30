@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.patternfx.core.ComponentState;
+import com.techsenger.patternfx.core.State;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.history.HistoryManager;
@@ -104,7 +104,7 @@ public class HexEditorTabViewModel<T extends HexEditorTabMediator> extends Abstr
     protected void initialize() {
         super.initialize();
         getMediator().stateProperty().addListener((ov, oldV, newV) -> {
-            if (newV == ComponentState.INITIALIZED) {
+            if (newV == State.INITIALIZED) {
                 readFile();
             }
         });

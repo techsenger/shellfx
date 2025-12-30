@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.core.HistoryProvider;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
@@ -47,7 +47,7 @@ public class DockLayoutTabComponent extends AbstractShellTabComponent<DockLayout
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_DOCK_LAYOUT_TAB;
     }
 

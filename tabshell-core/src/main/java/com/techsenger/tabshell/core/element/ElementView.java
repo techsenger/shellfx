@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.element;
 
-import com.techsenger.patternfx.core.ChildView;
+import com.techsenger.patternfx.mvvmx.ChildView;
 import javafx.scene.Node;
 
 /**

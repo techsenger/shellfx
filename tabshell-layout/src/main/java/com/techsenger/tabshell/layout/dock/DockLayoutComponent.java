@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.MediatorBindings;
+import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.mvvmx.BindingUtils;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.core.area.AreaComponent;
 import com.techsenger.tabshell.core.area.AreaViewModel;
@@ -55,11 +55,11 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         private final DockLayoutComponent<?> component = DockLayoutComponent.this;
 
         public Mediator() {
-            MediatorBindings.bind(root, component.root, c -> c.getView().getViewModel());
-            MediatorBindings.bind(main, component.main, c -> c.getView().getViewModel());
-            MediatorBindings.bind(rightSideBar, component.rightSideBar, c -> c.getView().getViewModel());
-            MediatorBindings.bind(bottomSideBar, component.bottomSideBar, c -> c.getView().getViewModel());
-            MediatorBindings.bind(leftSideBar, component.leftSideBar, c -> c.getView().getViewModel());
+            BindingUtils.bind(root, component.root, c -> c.getView().getViewModel());
+            BindingUtils.bind(main, component.main, c -> c.getView().getViewModel());
+            BindingUtils.bind(rightSideBar, component.rightSideBar, c -> c.getView().getViewModel());
+            BindingUtils.bind(bottomSideBar, component.bottomSideBar, c -> c.getView().getViewModel());
+            BindingUtils.bind(leftSideBar, component.leftSideBar, c -> c.getView().getViewModel());
         }
 
         @Override
@@ -147,7 +147,7 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return LayoutComponentNames.DOCK_LAYOUT;
     }
 

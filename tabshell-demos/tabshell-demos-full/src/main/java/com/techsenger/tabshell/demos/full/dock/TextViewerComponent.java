@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 
@@ -36,7 +36,7 @@ public class TextViewerComponent extends AbstractAreaComponent<TextViewerView> {
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_TEXT_VIEWER;
     }
 

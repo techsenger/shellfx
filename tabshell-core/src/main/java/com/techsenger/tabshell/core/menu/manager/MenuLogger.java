@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.patternfx.core.ComponentView;
+import com.techsenger.patternfx.mvvmx.ComponentView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuGroup;

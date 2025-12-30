@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.dialog.DialogContainerComponent;
 import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogComponent;
@@ -50,7 +50,7 @@ public class FileChooserDialogComponent<T extends FileChooserDialogView<?, ?>>
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DialogComponentNames.FILE_CHOOSER_DIALOG;
     }
 

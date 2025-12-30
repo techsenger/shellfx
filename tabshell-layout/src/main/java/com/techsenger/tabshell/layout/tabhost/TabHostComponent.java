@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.layout.tabhost;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabComponent;
@@ -40,7 +40,7 @@ public class TabHostComponent<T extends TabHostView<?, ?>> extends AbstractAreaC
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return LayoutComponentNames.TAB_HOST;
     }
 

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.dock;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.tab.AbstractTabComponent;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 
@@ -36,7 +36,7 @@ public class DockableTabComponent extends AbstractTabComponent<DockableTabView> 
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_DOCKABLE_TAB;
     }
 

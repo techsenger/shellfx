@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.jfx.eventlog;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.tab.AbstractTabComponent;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
 
@@ -36,7 +36,7 @@ public class EventLogTabComponent<T extends EventLogTabView<?, ?>> extends Abstr
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return JfxComponentNames.EVENT_LOG_TAB;
     }
 

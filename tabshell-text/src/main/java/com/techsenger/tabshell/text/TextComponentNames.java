@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 
 /**
  *
@@ -24,7 +24,7 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public interface TextComponentNames {
 
-    ComponentName FIND_PANE = new ComponentName("FindPane");
+    Name FIND_PANE = new Name("FindPane");
 
-    ComponentName GO_TO_LINE_DIALOG = new ComponentName("GoToLineDialog");
+    Name GO_TO_LINE_DIALOG = new Name("GoToLineDialog");
 }

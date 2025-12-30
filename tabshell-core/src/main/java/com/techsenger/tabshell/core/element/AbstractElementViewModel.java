@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.element;
 
-import com.techsenger.patternfx.core.AbstractChildViewModel;
+import com.techsenger.patternfx.mvvmx.AbstractChildViewModel;
 
 /**
  *

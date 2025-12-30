@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.area;
 
-import com.techsenger.patternfx.core.AbstractChildViewModel;
+import com.techsenger.patternfx.mvvmx.AbstractChildViewModel;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 

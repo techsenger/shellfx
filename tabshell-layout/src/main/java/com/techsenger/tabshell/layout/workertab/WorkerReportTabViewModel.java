@@ -16,7 +16,7 @@
 //
 //package com.techsenger.tabshell.layout.workertab;
 //
-//import com.techsenger.patternfx.core.ComponentDescriptor;
+//import com.techsenger.patternfx.mvvmx.ComponentDescriptor;
 //import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 //import com.techsenger.tabshell.core.tab.TabWorker;
 //import com.techsenger.tabshell.shared.SharedComponentNames;

@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.core.AbstractParentViewModel;
 import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.patternfx.mvvmx.AbstractParentViewModel;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;

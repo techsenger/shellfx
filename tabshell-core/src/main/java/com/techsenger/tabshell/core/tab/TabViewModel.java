@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.patternfx.core.ChildViewModel;
+import com.techsenger.patternfx.mvvmx.ChildViewModel;
 import com.techsenger.tabshell.core.CloseableViewModel;
 import com.techsenger.tabshell.core.IconedViewModel;
 import com.techsenger.tabshell.core.SelectableViewModel;

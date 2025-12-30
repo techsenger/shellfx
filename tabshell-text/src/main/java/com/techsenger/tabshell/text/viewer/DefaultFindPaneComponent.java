@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.shared.find.AbstractFindPaneComponent;
 import com.techsenger.tabshell.text.TextComponentNames;
 
@@ -36,7 +36,7 @@ public class DefaultFindPaneComponent<T extends DefaultFindPaneView<?, ?>> exten
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return TextComponentNames.FIND_PANE;
     }
 

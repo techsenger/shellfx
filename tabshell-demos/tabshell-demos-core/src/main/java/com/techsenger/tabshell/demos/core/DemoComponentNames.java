@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 
 /**
  *
@@ -24,7 +24,7 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public interface DemoComponentNames {
 
-    ComponentName DEMO_DIALOG = new ComponentName("DemoDialog");
+    Name DEMO_DIALOG = new Name("DemoDialog");
 
-    ComponentName DEMO_TAB = new ComponentName("DemoTab");
+    Name DEMO_TAB = new Name("DemoTab");
 }

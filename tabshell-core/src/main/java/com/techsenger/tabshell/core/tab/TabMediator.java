@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.patternfx.core.ChildMediator;
+import com.techsenger.patternfx.mvvmx.ChildMediator;
 
 /**
  *

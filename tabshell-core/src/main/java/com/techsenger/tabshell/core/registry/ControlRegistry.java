@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.material.menu.MenuGroupName;
 import com.techsenger.tabshell.material.menu.MenuName;
 import com.techsenger.tabshell.material.menu.NamedMenu;
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ControlRegistry {
 
-    private final Map<ComponentName, Set<AbstractMenuRegistration<?>>> barMenuRegistrationsByComponentName =
+    private final Map<Name, Set<AbstractMenuRegistration<?>>> barMenuRegistrationsByComponentName =
             new ConcurrentHashMap<>();
 
     public interface Registration {
@@ -53,7 +53,7 @@ public class ControlRegistry {
      * @param factory
      * @return
      */
-    public Registration registerMenu(ComponentName componentName, MenuGroupName groupName,
+    public Registration registerMenu(Name componentName, MenuGroupName groupName,
             ControlFactory<NamedMenu> factory) {
         var menus = getMenusFor(componentName);
         var reg = new MenuRegistration(groupName, factory);
@@ -72,7 +72,7 @@ public class ControlRegistry {
      * @param factory
      * @return
      */
-    public Registration registerMenuGroup(ComponentName componentName, MenuName menuName,
+    public Registration registerMenuGroup(Name componentName, MenuName menuName,
             ControlFactory<NamedMenuGroup> factory) {
         var menus = getMenusFor(componentName);
         var reg = new MenuGroupRegistration(menuName, factory);
@@ -89,7 +89,7 @@ public class ControlRegistry {
      * @param factory
      * @return
      */
-    public Registration registerMenuItem(ComponentName componentName, MenuGroupName groupName,
+    public Registration registerMenuItem(Name componentName, MenuGroupName groupName,
             ControlFactory<NamedMenuItem> factory) {
         var menus = getMenusFor(componentName);
         var reg = new MenuItemRegistration(groupName, factory);
@@ -103,15 +103,15 @@ public class ControlRegistry {
      *
      * @param componentKey
      */
-    public void removeRegistrations(ComponentName componentKey) {
+    public void removeRegistrations(Name componentKey) {
         this.barMenuRegistrationsByComponentName.remove(componentKey);
     }
 
-    Set<AbstractMenuRegistration<?>> getBarMenuRegistrations(ComponentName name) {
+    Set<AbstractMenuRegistration<?>> getBarMenuRegistrations(Name name) {
         return barMenuRegistrationsByComponentName.get(name);
     }
 
-    private Set<AbstractMenuRegistration<?>> getMenusFor(ComponentName componentName) {
+    private Set<AbstractMenuRegistration<?>> getMenusFor(Name componentName) {
         var regs = this.barMenuRegistrationsByComponentName.get(componentName);
         if (regs == null) {
             synchronized (this.barMenuRegistrationsByComponentName) {

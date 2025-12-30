@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.text;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.text.editor.AbstractEditorTabComponent;
@@ -32,7 +32,7 @@ public class TextEditorTabComponent extends AbstractEditorTabComponent<TextEdito
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_EDITOR_TAB;
     }
 

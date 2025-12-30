@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.techsenger.maven.root</groupId>
         <artifactId>maven-root</artifactId>
-        <version>1.6.0-SNAPSHOT</version>
+        <version>1.6.0</version>
     </parent>
 
     <groupId>com.techsenger.tabshell</groupId>
@@ -65,7 +65,7 @@
             <dependency>
                 <groupId>com.techsenger.osp.bom</groupId>
                 <artifactId>osp-bom</artifactId>
-                <version>1.7.0-SNAPSHOT</version>
+                <version>1.8.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

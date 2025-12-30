@@ -16,9 +16,10 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
+
 
 /**
  *
@@ -41,7 +42,7 @@ public class WebBrowserTabComponent<T extends WebBrowserTabView<?, ?>> extends A
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return WebComponentNames.WEB_BROWSER_TAB;
     }
 

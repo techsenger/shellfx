@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.patternfx.core.ComponentState;
 import com.techsenger.patternfx.core.HistoryProvider;
+import com.techsenger.patternfx.core.State;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -95,7 +95,7 @@ public class DockLayoutViewModel<T extends DockLayoutMediator> extends AbstractA
         addListenerForSideBar(getMediator().leftSideBarProperty(), leftBarPolicyProperty(), LEFT);
 
         getMediator().stateProperty().addListener((ov, oldV, newV) -> {
-            if (newV == ComponentState.INITIALIZED) {
+            if (newV == State.INITIALIZED) {
                 if (getRightBarPolicy() == SideBarPolicy.EXISTS_ALWAYS) {
                     getMediator().addSideBar(Side.RIGHT);
                 }

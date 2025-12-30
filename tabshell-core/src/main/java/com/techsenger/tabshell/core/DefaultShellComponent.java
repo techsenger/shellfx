@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.core.AbstractParentComponent;
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.mvvmx.AbstractParentComponent;
 import com.techsenger.tabshell.core.dialog.DialogComponent;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.tab.ComponentTab;
@@ -50,7 +50,7 @@ public class DefaultShellComponent<T extends DefaultShellView<?, ?>> extends Abs
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return CoreComponentNames.SHELL;
     }
 

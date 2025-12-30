@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.layout.LayoutComponentNames;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -56,7 +56,7 @@ public class SideBarComponent<T extends SideBarView<?, ?>> extends AbstractAreaC
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return LayoutComponentNames.SIDE_BAR;
     }
 

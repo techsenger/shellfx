@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.patternfx.core.ChildComponent;
-import com.techsenger.patternfx.core.ChildView;
+import com.techsenger.patternfx.mvvmx.ChildComponent;
+import com.techsenger.patternfx.mvvmx.ChildView;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;

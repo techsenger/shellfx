@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 import com.techsenger.tabshell.core.tab.TabComponent;
 import com.techsenger.tabshell.core.tab.TabViewModel;
@@ -52,7 +52,7 @@ public class TabPopupComponent<T extends TabPopupView<?, ?>> extends AbstractAre
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return LayoutComponentNames.TAB_POPUP;
     }
 

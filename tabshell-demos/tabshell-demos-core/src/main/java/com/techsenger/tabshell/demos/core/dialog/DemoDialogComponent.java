@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.dialog;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.dialog.AbstractDialogComponent;
 import com.techsenger.tabshell.demos.core.DemoComponentNames;
 
@@ -31,7 +31,7 @@ public class DemoDialogComponent extends AbstractDialogComponent<DemoDialogView>
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_DIALOG;
     }
 

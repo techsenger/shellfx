@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.history;
 
-import com.techsenger.patternfx.core.ComponentHistory;
+import com.techsenger.patternfx.core.History;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.toolkit.core.function.Factory;
 import java.util.HashMap;
@@ -30,17 +30,17 @@ import java.util.UUID;
  */
 public class DemoHistoryManager implements HistoryManager {
 
-    private final Map<Class<? extends ComponentHistory>, ComponentHistory> historiesByClass = new HashMap<>();
+    private final Map<Class<? extends History>, History> historiesByClass = new HashMap<>();
 
-    private final Map<UUID, ComponentHistory> historiesByUuid = new HashMap<>();
+    private final Map<UUID, History> historiesByUuid = new HashMap<>();
 
     @Override
-    public <T extends ComponentHistory> T getHistory(Class<T> historyClass) {
+    public <T extends History> T getHistory(Class<T> historyClass) {
         return (T) this.historiesByClass.get(historyClass);
     }
 
     @Override
-    public <T extends ComponentHistory> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
+    public <T extends History> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
         var history = getHistory(historyClass);
         if (history == null) {
             history = factory.create();
@@ -50,17 +50,17 @@ public class DemoHistoryManager implements HistoryManager {
     }
 
     @Override
-    public <T extends ComponentHistory> void putHistory(Class<T> historyClass, T history) {
+    public <T extends History> void putHistory(Class<T> historyClass, T history) {
         this.historiesByClass.put(historyClass, history);
     }
 
     @Override
-    public ComponentHistory getHistory(UUID uuid) {
+    public History getHistory(UUID uuid) {
         return this.historiesByUuid.get(uuid);
     }
 
     @Override
-    public ComponentHistory getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory> factory) {
+    public History getOrCreateHistory(UUID uuid, Factory<? extends History> factory) {
         var history = getHistory(uuid);
         if (history == null) {
             history = factory.create();
@@ -70,17 +70,17 @@ public class DemoHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void putHistory(UUID uuid, ComponentHistory history) {
+    public void putHistory(UUID uuid, History history) {
         this.historiesByUuid.put(uuid, history);
     }
 
     @Override
-    public <T extends ComponentHistory> T removeHistory(Class<T> historyClass) {
+    public <T extends History> T removeHistory(Class<T> historyClass) {
         return (T) this.historiesByClass.remove(historyClass);
     }
 
     @Override
-    public ComponentHistory removeHistory(UUID uuid) {
+    public History removeHistory(UUID uuid) {
         return this.historiesByUuid.remove(uuid);
     }
 }

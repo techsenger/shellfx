@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.patternfx.core.ComponentHistory;
+import com.techsenger.patternfx.core.History;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.toolkit.core.function.Factory;
 import java.util.UUID;
@@ -28,42 +28,42 @@ import java.util.UUID;
 public class DummyHistoryManager implements HistoryManager {
 
     @Override
-    public <T extends ComponentHistory> T getHistory(Class<T> historyClass) {
+    public <T extends History> T getHistory(Class<T> historyClass) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public <T extends ComponentHistory> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
+    public <T extends History> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
         return (T) new FindPaneHistory();
     }
 
     @Override
-    public <T extends ComponentHistory> void putHistory(Class<T> historyClass, T history) {
+    public <T extends History> void putHistory(Class<T> historyClass, T history) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public <T extends ComponentHistory> T removeHistory(Class<T> historyClass) {
+    public <T extends History> T removeHistory(Class<T> historyClass) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public ComponentHistory getHistory(UUID uuid) {
+    public History getHistory(UUID uuid) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public ComponentHistory getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory> factory) {
+    public History getOrCreateHistory(UUID uuid, Factory<? extends History> factory) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void putHistory(UUID uuid, ComponentHistory history) {
+    public void putHistory(UUID uuid, History history) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public ComponentHistory removeHistory(UUID uuid) {
+    public History removeHistory(UUID uuid) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

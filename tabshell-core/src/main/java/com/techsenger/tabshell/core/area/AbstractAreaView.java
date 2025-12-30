@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.area;
 
-import com.techsenger.patternfx.core.AbstractChildView;
+import com.techsenger.patternfx.mvvmx.AbstractChildView;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 
 /**

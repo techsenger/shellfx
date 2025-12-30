@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.shared.find.AbstractFindPaneComponent;
 
 /**
@@ -35,7 +35,7 @@ public class FindPaneComponent<T extends FindPaneView<?, ?>> extends AbstractFin
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return TerminalComponentNames.FIND_PANE;
     }
 

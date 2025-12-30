@@ -27,6 +27,7 @@ module com.techsenger.tabshell.core {
     requires com.techsenger.stagepro.core;
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.patternfx.core;
+    requires com.techsenger.patternfx.mvvmx;
     requires com.techsenger.tabshell.material;
 
     exports com.techsenger.tabshell.core;

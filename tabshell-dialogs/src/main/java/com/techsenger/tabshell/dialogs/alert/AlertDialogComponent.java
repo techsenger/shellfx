@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.alert;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.dialogs.DialogComponentNames;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
 
@@ -40,7 +40,7 @@ public class AlertDialogComponent<T extends AlertDialogView<?, ?>> extends Abstr
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DialogComponentNames.ALERT_DIALOG;
     }
 

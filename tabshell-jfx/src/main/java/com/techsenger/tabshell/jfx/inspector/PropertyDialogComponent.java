@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.tab.ShellTabComponent;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
@@ -49,7 +49,7 @@ public class PropertyDialogComponent<T extends PropertyDialogView<?, ?>> extends
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return JfxComponentNames.PROPERTY_DIALOG;
     }
 

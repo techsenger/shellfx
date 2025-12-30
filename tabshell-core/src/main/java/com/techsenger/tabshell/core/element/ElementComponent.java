@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.element;
 
-import com.techsenger.patternfx.core.ChildComponent;
+import com.techsenger.patternfx.mvvmx.ChildComponent;
 
 /**
  *

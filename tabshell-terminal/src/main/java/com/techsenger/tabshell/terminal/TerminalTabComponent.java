@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
 
@@ -54,7 +54,7 @@ public class TerminalTabComponent<T extends TerminalTabView<?, ?>> extends Abstr
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return TerminalComponentNames.TERMINAL_TAB;
     }
 

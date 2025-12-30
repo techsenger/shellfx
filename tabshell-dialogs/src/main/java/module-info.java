@@ -18,6 +18,7 @@ module com.techsenger.tabshell.dialogs {
     requires org.slf4j;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.patternfx.core;
+    requires com.techsenger.patternfx.mvvmx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.shared;

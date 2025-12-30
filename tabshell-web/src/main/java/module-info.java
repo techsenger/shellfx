@@ -17,6 +17,7 @@
 module com.techsenger.tabshell.web {
     requires org.slf4j;
     requires com.techsenger.patternfx.core;
+    requires com.techsenger.patternfx.mvvmx;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;

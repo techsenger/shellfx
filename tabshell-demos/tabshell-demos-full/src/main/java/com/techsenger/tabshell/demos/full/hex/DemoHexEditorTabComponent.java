@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.hex;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.hex.editor.HexEditorTabComponent;
@@ -57,7 +57,7 @@ public class DemoHexEditorTabComponent extends HexEditorTabComponent<DemoHexEdit
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_HEX_EDITOR_TAB;
     }
 

@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.core.ParentMediator;
-import com.techsenger.patternfx.core.ParentViewModel;
+import com.techsenger.patternfx.mvvmx.ParentMediator;
+import com.techsenger.patternfx.mvvmx.ParentViewModel;
 import java.util.Objects;
 import java.util.function.Consumer;
 import org.slf4j.Logger;

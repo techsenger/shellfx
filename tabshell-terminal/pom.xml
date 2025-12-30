@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.patternfx</groupId>
-            <artifactId>patternfx-core</artifactId>
+            <artifactId>patternfx-mvvmx</artifactId>
         </dependency>
         <dependency>
             <groupId>com.techsenger.jeditermfx</groupId>

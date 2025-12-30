@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex.inspector;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.tab.AbstractTabComponent;
 import com.techsenger.tabshell.hex.HexComponentNames;
 
@@ -36,7 +36,7 @@ public class DataInspectorTabComponent<T extends DataInspectorTabView<?, ?>> ext
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return HexComponentNames.DATA_INSPECTOR_TAB;
     }
 

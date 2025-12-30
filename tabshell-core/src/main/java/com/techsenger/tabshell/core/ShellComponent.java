@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.core.ParentComponent;
+import com.techsenger.patternfx.mvvmx.ParentComponent;
 import com.techsenger.tabshell.core.dialog.DialogContainerComponent;
 import com.techsenger.tabshell.core.tab.ShellTabComponent;
 import com.techsenger.tabshell.core.tab.TabContainerComponent;

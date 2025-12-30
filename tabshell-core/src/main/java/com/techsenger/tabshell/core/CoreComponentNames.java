@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 
 /**
  *
@@ -24,6 +24,6 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public interface CoreComponentNames {
 
-    ComponentName SHELL = new ComponentName("Shell");
+    Name SHELL = new Name("Shell");
 
 }

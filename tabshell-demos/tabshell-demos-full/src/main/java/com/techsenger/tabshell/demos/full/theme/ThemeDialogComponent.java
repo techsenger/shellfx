@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.theme;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
 
@@ -36,7 +36,7 @@ public class ThemeDialogComponent extends AbstractSimpleDialogComponent<ThemeDia
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DemoComponentNames.DEMO_THEME_DIALOG;
     }
 

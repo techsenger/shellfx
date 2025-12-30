@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.yesno;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.dialog.AbstractDialogComponent;
 import com.techsenger.tabshell.dialogs.DialogComponentNames;
 
@@ -35,7 +35,7 @@ public class YesNoDialogComponent<T extends YesNoDialogView<?, ?>> extends Abstr
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return DialogComponentNames.YES_NO_DIALOG;
     }
 

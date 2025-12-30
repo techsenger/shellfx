@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 
 /**
  *
@@ -24,9 +24,9 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public interface DialogComponentNames {
 
-    ComponentName ALERT_DIALOG = new ComponentName("AlertDialog");
+    Name ALERT_DIALOG = new Name("AlertDialog");
 
-    ComponentName YES_NO_DIALOG = new ComponentName("YesNoDialog");
+    Name YES_NO_DIALOG = new Name("YesNoDialog");
 
-    ComponentName FILE_CHOOSER_DIALOG = new ComponentName("FileChooserDialog");
+    Name FILE_CHOOSER_DIALOG = new Name("FileChooserDialog");
 }

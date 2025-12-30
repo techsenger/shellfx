@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.patternfx.core.ParentComponent;
-import com.techsenger.patternfx.core.ParentView;
+import com.techsenger.patternfx.mvvmx.ParentComponent;
+import com.techsenger.patternfx.mvvmx.ParentView;
 import java.util.List;
 
 /**

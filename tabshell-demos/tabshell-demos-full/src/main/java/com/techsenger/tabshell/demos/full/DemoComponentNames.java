@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 
 /**
  * Keys are used to identify components at they are always accessible and are kept in API. Classes cannot
@@ -26,19 +26,19 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public interface DemoComponentNames {
 
-    ComponentName DEMO_EDITOR_TAB = new ComponentName("DemoEditorTab");
+    Name DEMO_EDITOR_TAB = new Name("DemoEditorTab");
 
-    ComponentName DEMO_HEX_EDITOR_TAB = new ComponentName("DemoHexEditorTab");
+    Name DEMO_HEX_EDITOR_TAB = new Name("DemoHexEditorTab");
 
-    ComponentName DEMO_HEX_TOOL_BAR = new ComponentName("DemoHexToolBar");
+    Name DEMO_HEX_TOOL_BAR = new Name("DemoHexToolBar");
 
-    ComponentName DEMO_DOCK_LAYOUT_TAB = new ComponentName("DemoDockLayoutTab");
+    Name DEMO_DOCK_LAYOUT_TAB = new Name("DemoDockLayoutTab");
 
-    ComponentName DEMO_DOCKABLE_TAB = new ComponentName("DemoDockableTab");
+    Name DEMO_DOCKABLE_TAB = new Name("DemoDockableTab");
 
-    ComponentName DEMO_TEXT_VIEWER = new ComponentName("DemoTextViewer");
+    Name DEMO_TEXT_VIEWER = new Name("DemoTextViewer");
 
-    ComponentName DEMO_DIALOGS_DIALOG = new ComponentName("DemoDialogsDialog");
+    Name DEMO_DIALOGS_DIALOG = new Name("DemoDialogsDialog");
 
-    ComponentName DEMO_THEME_DIALOG = new ComponentName("DemoThemeDialog");
+    Name DEMO_THEME_DIALOG = new Name("DemoThemeDialog");
 }

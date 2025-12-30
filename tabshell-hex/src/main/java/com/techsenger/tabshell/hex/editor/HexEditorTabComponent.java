@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.core.tab.AbstractShellTabComponent;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogComponent;
@@ -107,7 +107,7 @@ public class HexEditorTabComponent<T extends HexEditorTabView<?, ?>> extends Abs
     }
 
     @Override
-    public ComponentName getName() {
+    public Name getName() {
         return HexComponentNames.HEX_EDITOR_TAB;
     }
 

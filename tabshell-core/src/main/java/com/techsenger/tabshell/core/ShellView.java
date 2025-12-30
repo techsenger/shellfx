@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.core.ParentView;
+import com.techsenger.patternfx.mvvmx.ParentView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.tab.ShellTabView;

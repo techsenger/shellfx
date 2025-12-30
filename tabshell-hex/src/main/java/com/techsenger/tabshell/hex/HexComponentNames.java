@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.hex;
 
-import com.techsenger.patternfx.core.ComponentGroupName;
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.GroupName;
+import com.techsenger.patternfx.core.Name;
 
 /**
  *
@@ -25,15 +25,15 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public interface HexComponentNames {
 
-    ComponentName HEX_TOOL_BAR = new ComponentName("HexToolBar");
+    Name HEX_TOOL_BAR = new Name("HexToolBar");
 
-    ComponentName HEX_AREA = new ComponentName("HexArea");
+    Name HEX_AREA = new Name("HexArea");
 
-    ComponentName HEX_EDITOR_TAB = new ComponentName("HexEditorTab");
+    Name HEX_EDITOR_TAB = new Name("HexEditorTab");
 
-    ComponentName HEX_EDITOR_CARET = new ComponentName("HexEditorCaret");
+    Name HEX_EDITOR_CARET = new Name("HexEditorCaret");
 
-    ComponentName DATA_INSPECTOR_TAB = new ComponentName("DataInspectorTab");
+    Name DATA_INSPECTOR_TAB = new Name("DataInspectorTab");
 
-    ComponentGroupName TOOLS = new ComponentGroupName("Tools");
+    GroupName TOOLS = new GroupName("Tools");
 }
