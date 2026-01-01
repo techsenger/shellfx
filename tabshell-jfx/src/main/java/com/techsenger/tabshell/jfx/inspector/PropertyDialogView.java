@@ -90,6 +90,7 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
         valueTextArea.setEditable(false);
         valueTextArea.setWrapText(true);
         gridPane.add(valueTextArea, 1, 0);
+        GridPane.setVgrow(valueTextArea, Priority.ALWAYS);
 
         cssHyperlink.setMinWidth(Hyperlink.USE_PREF_SIZE);
         gridPane.add(cssHyperlink, 0, 1);
