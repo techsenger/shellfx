@@ -34,13 +34,6 @@ public interface TabContainerComponent<T extends ParentView<?, ?>, S extends Tab
      */
     List<? extends S> getTabs();
 
-    /**
-     * Returns the selected tab or null.
-     *
-     * @return
-     */
-    S getSelectedTab();
-
     void addTab(S tab);
 
     void removeTab(S tab);

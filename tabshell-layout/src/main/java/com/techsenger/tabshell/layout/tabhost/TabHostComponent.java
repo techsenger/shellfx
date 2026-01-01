@@ -65,15 +65,6 @@ public class TabHostComponent<T extends TabHostView<?, ?>> extends AbstractAreaC
     }
 
     @Override
-    public TabComponent<?> getSelectedTab() {
-        var tab = getView().getSelectedTab();
-        if (tab != null) {
-            return tab.getComponent();
-        }
-        return null;
-    }
-
-    @Override
     protected Mediator createMediator() {
         return new Mediator();
     }

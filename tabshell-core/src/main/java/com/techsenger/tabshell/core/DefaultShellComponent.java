@@ -76,16 +76,6 @@ public class DefaultShellComponent<T extends DefaultShellView<?, ?>> extends Abs
     }
 
     @Override
-    public ShellTabComponent<?> getSelectedTab() {
-        var tab = getView().getSelectedTab();
-        if (tab != null) {
-            return (tab.getComponent());
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public DialogScope getSupportedDialogScope() {
         return DialogScope.SHELL;
     }
