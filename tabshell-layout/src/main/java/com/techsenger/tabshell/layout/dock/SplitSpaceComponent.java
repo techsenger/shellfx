@@ -62,4 +62,10 @@ public class SplitSpaceComponent<T extends SplitSpaceView<?, ?>> extends Abstrac
     public DockLayoutComponent<?> getLayout() {
         return layout;
     }
+
+    void replacePlaceholder(int index, TabDockComponent<?> tabDock) {
+        getModifiableChildren().set(index, tabDock);
+        getView().removeChild(index);
+        getView().addChild(index, tabDock.getView());
+    }
 }

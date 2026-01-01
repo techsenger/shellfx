@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -421,9 +421,9 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         private Bounds indicatorBounds;
 
         /**
-         * Creates and returns a new TabDock.
+         * Adds area to split space.
          */
-        private Function<DockInfo, TabDockView<?, ?>> factory;
+        private BiConsumer<DockInfo, TabDockView<?, ?>> composer;
 
         private boolean valid;
 
@@ -447,12 +447,12 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
             this.indicatorBounds = indicatorBounds;
         }
 
-        public Function<DockInfo, TabDockView<?, ?>> getFactory() {
-            return factory;
+        public BiConsumer<DockInfo, TabDockView<?, ?>> getComposer() {
+            return composer;
         }
 
-        public void setFactory(Function<DockInfo, TabDockView<?, ?>> factory) {
-            this.factory = factory;
+        public void setComposer(BiConsumer<DockInfo, TabDockView<?, ?>> composer) {
+            this.composer = composer;
         }
 
         public ContainerInfo getEventInfo() {
@@ -517,7 +517,7 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
                     + ", parentInfo:" + parentInfo + ", grandparentInfo:" + grandparentInfo
                     + ", greatGrandparentInfo:" + greatGrandparentInfo + ", newInfo:" + newInfo
                     + ", indicatorInfo:" + indicatorInfo + ", indicatorBounds:" + indicatorBounds
-                    + ", factory:" + factory + ", valid:" + valid + ']';
+                    + ", composer:" + composer + ", valid:" + valid + ']';
         }
     }
 
@@ -1146,32 +1146,37 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
 
     private void processDropOutsideTabHeaderArea() {
         hideIndicator();
-        if (dockInfo != null && dockInfo.getFactory() != null && dockInfo.isValid()) {
+        if (dockInfo != null && dockInfo.getComposer() != null && dockInfo.isValid()) {
             hideDragDockPopup();
             if (this.dragDock == null) {
-                var tabDock = dockInfo.getFactory().apply(dockInfo);
-                moveTab(tabDock);
+                var tabDock = getComponent().createTabDock();
+                tabDock.initialize();
+                dockInfo.getComposer().accept(dockInfo, tabDock.getView());
+                moveTab(tabDock.getView());
             } else {
-                // Here we use a small hack: first we add the TabDock to the new location, and only then remove it
-                // from the old one. The reason is that if we remove the TabDock first, the created DockInfo will no
-                // longer be actual, and it will therefore be very difficult to understand what the user intended.
+                // Here we use a placeholder to reserve the target drop position while the TabDock
+                // is still attached to its original parent. This allows us to safely remove the
+                // TabDock from the old location without invalidating the previously calculated DockInfo,
+                // and then replace the placeholder with the actual TabDock.
 
-                // saving TabDock old parent and old container
+                // adding placeholder to a new location
+                var placeholder = getComponent().getPlaceholder();
+                dockInfo.getComposer().accept(dockInfo, placeholder.getView());
+
+                // removing tabDock
                 SplitSpaceView<?, ?> oldParent =
                         (SplitSpaceView<?, ?>) this.dragDock.getComponent().getParent().getView();
                 var oldContainer = getContainer(dragDock);
-                // adding TabDock to a new location
-                dockInfo.getFactory().apply(dockInfo);
-                // saving the new parent, because it will be null after removal
-                SplitSpaceView<?, ?> newParent =
-                        (SplitSpaceView<?, ?>) this.dragDock.getComponent().getParent().getView();
                 // it is necessary to create a new info with a new index for example,
                 // if there are new children, besides the old parent should be used
                 var oldInfo = oldContainer.createInfo(oldParent);
-                // removing
                 removeTabDock(oldParent, oldInfo);
-                // finally setting the new parent
-                // todo: this.dragDock.setParent(newParent);
+
+                // finally replacing the placeholder
+                SplitSpaceComponent<?> newParent = (SplitSpaceComponent<?>) placeholder.getParent();
+                newParent.replacePlaceholder(dockInfo.getNewInfo().getIndex(), dragDock.getComponent());
+                logger.debug("{} Replaced {} with {}", getComponent().getLogPrefix(), placeholder.getFullName(),
+                        dragDock.getComponent().getFullName());
             }
             printTreeDebugInfo();
         }
@@ -1353,17 +1358,15 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         boolean isFirst = side == Side.TOP || side == Side.LEFT;
 
         var eventInfo = info.getEventInfo();
-        Function<DockInfo, TabDockView<?, ?>> factory = null;
+        BiConsumer<DockInfo, TabDockView<?, ?>> composer = null;
         boolean isBoundary = isFirst ? eventInfo.isFirst() : eventInfo.isLast();
         int indexDelta = isFirst ? 0 : 1;
         int siblingDelta = isFirst ? -1 : 1;
         int caseIndex;
         if (isBoundary) {
             if (info.getGrandparentInfo() == null) {
-                factory = dockInfo -> {
-                    var newTabDock = provideTabDockOnDrop();
+                composer = (dockInfo, newTabDock) -> {
                     addTabDock(side, eventInfo, null, info.getNewInfo(), newTabDock);
-                    return newTabDock;
                 };
                 info.setNewInfo(new ContainerInfo(eventInfo.getIndex() + indexDelta, ONE_THIRD));
                 info.setIndicatorInfo(info.getParentInfo());
@@ -1372,10 +1375,8 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
             } else {
                 if (info.getGreatGrandparentInfo() == null) {
                     Orientation orientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-                    factory = dockInfo -> {
-                        var tabDock = provideTabDockOnDrop();
+                    composer = (dockInfo, tabDock) -> {
                         wrapAndAddTabDock(orientation, info.getGrandparentInfo(), info.getNewInfo(), tabDock);
-                        return tabDock;
                     };
                     info.setNewInfo(new ContainerInfo(isFirst ? 0 : 1, ONE_THIRD));
                     info.setIndicatorInfo(info.getGrandparentInfo());
@@ -1383,10 +1384,8 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
                             info.getGrandparentInfo()));
                     caseIndex = 1;
                 } else {
-                    factory = dockInfo -> {
-                        var tabDock = provideTabDockOnDrop();
+                    composer = (dockInfo, tabDock) -> {
                         addTabDock(side, info.getGrandparentInfo(), null, info.getNewInfo(), tabDock);
-                        return tabDock;
                     };
                     info.setNewInfo(new ContainerInfo(info.getGrandparentInfo().getIndex() + indexDelta, ONE_THIRD));
                     info.setIndicatorInfo(info.getGreatGrandparentInfo());
@@ -1403,14 +1402,12 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
             info.setIndicatorBounds(createIntermediateIndicatorBounds(side, info.getParentInfo(),
                     eventInfo, siblingInfo));
             info.setNewInfo(new ContainerInfo(eventInfo.getIndex() + indexDelta, ONE_THIRD));
-            factory = dockInfo -> {
-                var newTabDock = provideTabDockOnDrop();
+            composer = (dockInfo, newTabDock) -> {
                 addTabDock(side, eventInfo, siblingInfo, info.getNewInfo(), newTabDock);
-                return newTabDock;
             };
             caseIndex = 3;
         }
-        info.setFactory(factory);
+        info.setComposer(composer);
         logger.trace("{} Prepared dock info for same orientation on edge; side: {}, case: {}, info: {}",
                 getComponent().getLogPrefix(), side, caseIndex, info);
     }
@@ -1418,7 +1415,7 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
     private void prepareDockInfoForOppositeOrientationOnEdge(DockInfo info, Side side) {
         boolean isFirst = side == Side.TOP || side == Side.LEFT;
         var eventInfo = info.getEventInfo();
-        Function<DockInfo, TabDockView<?, ?>> factory = null;
+        BiConsumer<DockInfo, TabDockView<?, ?>> composer = null;
 
         info.setIndicatorInfo(info.getParentInfo());
         info.setIndicatorBounds(createThirdIndicatorBounds(side, eventInfo, info.getParentInfo()));
@@ -1426,23 +1423,19 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
         if (info.getGrandparentInfo() == null) {
             caseIndex = 0;
             Orientation orientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-            factory = dockInfo -> {
-                var tabDock = provideTabDockOnDrop();
+            composer = (dockInfo, tabDock) -> {
                 wrapAndAddTabDock(orientation, info.getParentInfo(), info.getNewInfo(), tabDock);
-                return tabDock;
             };
             info.setNewInfo(new ContainerInfo(isFirst ? 0 : 1, ONE_THIRD));
         } else {
             caseIndex = 1;
             int index = info.getParentInfo().getIndex() + (isFirst ? 0 : 1);
-            factory = dockInfo -> {
-                var newTabDock = provideTabDockOnDrop();
+            composer = (dockInfo, newTabDock) -> {
                 addTabDock(side, info.getParentInfo(), null, info.getNewInfo(), newTabDock);
-                return newTabDock;
             };
             info.setNewInfo(new ContainerInfo(index, ONE_THIRD));
         }
-        info.setFactory(factory);
+        info.setComposer(composer);
         logger.trace("{} Prepared dock info for opposite orientation on edge; side: {}, case: {}, info: {}",
                 getComponent().getLogPrefix(), side, caseIndex, info);
     }
@@ -1450,12 +1443,10 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
     private void prepareDockInfoForSameOrientationOffEdge(DockInfo info, Side side) {
         boolean isFirst = side == Side.TOP || side == Side.LEFT;
 
-        Function<DockInfo, TabDockView<?, ?>> addFactory = dockInfo -> {
-            var newTabDock = provideTabDockOnDrop();
+        BiConsumer<DockInfo, TabDockView<?, ?>> consumer = (dockInfo, newTabDock) -> {
             addTabDock(info.getMousePosition().getSide(), info.getEventInfo(), null, info.getNewInfo(), newTabDock);
-            return newTabDock;
         };
-        info.setFactory(addFactory);
+        info.setComposer(consumer);
 
         int index = info.getEventInfo().getIndex() + (isFirst ? 0 : 1);
         info.setNewInfo(new ContainerInfo(index, ONE_HALF));
@@ -1466,12 +1457,10 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
     private void prepareDockInfoForOppositeOrientationOffEdge(DockInfo info, Side side) {
         boolean isFirst = side == Side.TOP || side == Side.LEFT;
         Orientation orientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
-        Function<DockInfo, TabDockView<?, ?>> wrapFactory = dockInfo -> {
-            var tabDock = provideTabDockOnDrop();
+        BiConsumer<DockInfo, TabDockView<?, ?>> wrapFactory = (dockInfo, tabDock) -> {
             wrapAndAddTabDock(orientation, info.getEventInfo(), info.getNewInfo(), tabDock);
-            return tabDock;
         };
-        info.setFactory(wrapFactory);
+        info.setComposer(wrapFactory);
 
         int index = isFirst ? 0 : 1;
         info.setNewInfo(new ContainerInfo(index, ONE_HALF));
@@ -1506,16 +1495,6 @@ public class DockLayoutView<T extends DockLayoutViewModel<?>, S extends DockLayo
                     info.setValid(false);
                 }
             }
-        }
-    }
-
-    private TabDockView<?, ?> provideTabDockOnDrop() {
-        if (this.dragDock == null) {
-            var dock = getComponent().createTabDock();
-            dock.initialize();
-            return dock.getView();
-        } else {
-            return this.dragDock;
         }
     }
 

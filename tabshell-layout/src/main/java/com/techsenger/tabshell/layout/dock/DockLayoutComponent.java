@@ -123,6 +123,8 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         }
     }
 
+    private final PlaceholderComponent placeholder = createPlaceholder();
+
     private final ObjectProperty<SplitSpaceComponent<?>> root = new SimpleObjectProperty<>();
 
     private final ObjectProperty<AreaComponent<?>> main = new SimpleObjectProperty<>();
@@ -222,6 +224,19 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         return new Mediator();
     }
 
+    @Override
+    protected void preInitialize() {
+        super.preInitialize();
+        this.placeholder.initialize();
+        // placeholder is not added to children
+    }
+
+    @Override
+    protected void preDeinitialize() {
+        super.preDeinitialize();
+        this.placeholder.deinitialize();
+    }
+
     protected SideBarComponent<?> createSideBar(Side side, SideBarHistory history) {
         var vm = new SideBarViewModel<>(history, side);
         var v = new SideBarView<>(vm);
@@ -288,6 +303,10 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         popup.deinitialize();
     }
 
+    PlaceholderComponent getPlaceholder() {
+        return placeholder;
+    }
+
     private SideBarComponent<?> addSideBar(Side side, SideBarHistory sideBarHistory,
         ReadOnlyObjectWrapper<SideBarComponent<?>> wrapper, Consumer<SideBarView<?, ?>> viewAdder) {
         if (wrapper.get() != null) {
@@ -299,6 +318,13 @@ public class DockLayoutComponent<T extends DockLayoutView<?, ?>> extends Abstrac
         wrapper.set(sideBar);
         viewAdder.accept(sideBar.getView());
         return sideBar;
+    }
+
+    private PlaceholderComponent createPlaceholder() {
+        var vm = new PlaceholderViewModel();
+        var v = new PlaceholderView(vm);
+        var c = new PlaceholderComponent(v, this);
+        return c;
     }
 
 }

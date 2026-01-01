@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout;
-
-import com.techsenger.patternfx.core.Name;
+package com.techsenger.tabshell.layout.dock;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface LayoutComponentNames {
+class PlaceholderViewModel extends TabDockViewModel<TabDockMediator> {
 
-    Name DOCK_LAYOUT = new Name("DockLayout");
-
-    Name SPLIT_SPACE = new Name("SplitSpace");
-
-    Name TAB_DOCK = new Name("TabDock");
-
-    Name SIDE_BAR = new Name("SideBar");
-
-    Name TAB_POPUP = new Name("TabPopup");
-
-    Name TAB_HOST = new Name("TabHost");
-
-    Name PLACEHOLDER = new Name("Placeholder");
 }

@@ -17,9 +17,9 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.tabshell.core.area.AbstractAreaView;
+import com.techsenger.tabshell.core.area.AreaView;
 import static com.techsenger.tabshell.layout.dock.DockConstants.ONE_THIRD;
 import com.techsenger.tabshell.material.pane.SplitPaneDividerBinder;
-import com.techsenger.tabshell.core.area.AreaView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
