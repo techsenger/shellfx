@@ -46,7 +46,7 @@ import org.fxmisc.richtext.InlineCssTextArea;
  *
  * @author Pavel Castornii
  */
-public class EventLogTabView<T extends EventLogTabViewModel, S extends EventLogTabComponent<?>>
+public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventLogTabComponent<?>>
         extends AbstractTabView<T, S> {
 
     private final FontIconView recordIconView = new FontIconView();

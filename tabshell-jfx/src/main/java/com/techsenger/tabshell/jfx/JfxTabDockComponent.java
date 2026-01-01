@@ -98,14 +98,14 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
     }
 
     protected JfxInspectorTabComponent<?> createInspectorTab() {
-        var vm = new JfxInspectorTabViewModel(connector);
+        var vm = new JfxInspectorTabViewModel<>(connector);
         var v = new JfxInspectorTabView<>(vm);
         var c = new JfxInspectorTabComponent<>(v, shellTab);
         return c;
     }
 
     protected EventLogTabComponent<?> createEventLogTab() {
-        var vm = new EventLogTabViewModel(connector);
+        var vm = new EventLogTabViewModel<>(connector);
         var v = new EventLogTabView<>(vm);
         var c = new EventLogTabComponent<>(v);
         return c;
