@@ -270,13 +270,17 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
 
     private final SearchField nodeSearchField = new SearchField(SearchMode.AUTO);
 
-    private final VBox nodeBox = new VBox(nodeTreeView, nodeSearchField);
+    private final HBox nodeSearchWrapper = new HBox(nodeSearchField);
+
+    private final VBox nodeBox = new VBox(nodeTreeView, nodeSearchWrapper);
 
     private final TreeTableView<PropertyInfo> infoTableView = new TreeTableView<>();
 
     private final SearchField infoSearchField = new SearchField(SearchMode.AUTO);
 
-    private final VBox infoBox = new VBox(infoTableView, infoSearchField);
+    private final HBox infoSearchWrapper = new HBox(infoSearchField);
+
+    private final VBox infoBox = new VBox(infoTableView, infoSearchWrapper);
 
     private final SplitPane splitPane = new SplitPane(nodeBox, infoBox);
 
@@ -304,6 +308,8 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         nodeTreeView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
         nodeSearchField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        HBox.setHgrow(nodeSearchField, Priority.ALWAYS);
+        nodeSearchWrapper.getStyleClass().add("search-wrapper");
 
         TreeTableColumn<PropertyInfo, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
@@ -338,6 +344,8 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         infoTableView.setPlaceholder(new Label(""));
         VBox.setVgrow(infoTableView, Priority.ALWAYS);
         infoSearchField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        HBox.setHgrow(infoSearchField, Priority.ALWAYS);
+        infoSearchWrapper.getStyleClass().add("search-wrapper");
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         getContentPane().getChildren().add(splitPane);
