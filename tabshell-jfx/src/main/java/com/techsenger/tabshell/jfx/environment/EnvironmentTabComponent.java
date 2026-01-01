@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx;
+package com.techsenger.tabshell.jfx.environment;
 
 import com.techsenger.patternfx.core.Name;
+import com.techsenger.tabshell.core.tab.AbstractTabComponent;
+import com.techsenger.tabshell.jfx.JfxComponentNames;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface JfxComponentNames {
+public class EnvironmentTabComponent<T extends EnvironmentTabView<?, ?>> extends AbstractTabComponent<T> {
 
-    Name JFX_TAB_DOCK = new Name("JFXTabDock");
+    public EnvironmentTabComponent(T view) {
+        super(view);
+    }
 
-    Name JFX_INSPECTOR_TAB = new Name("JFXInspectorTab");
+    @Override
+    protected Mediator createMediator() {
+        return new AbstractTabComponent.Mediator() { };
+    }
 
-    Name EVENT_LOG_TAB = new Name("EventLogTab");
+    @Override
+    public Name getName() {
+        return JfxComponentNames.ENVIRONMENT_TAB;
+    }
 
-    Name PROPERTY_DIALOG = new Name("PropertyDialog");
-
-    Name ENVIRONMENT_TAB = new Name("EnvironmentTab");
 }

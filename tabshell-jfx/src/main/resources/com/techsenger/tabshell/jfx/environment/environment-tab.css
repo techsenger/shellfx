@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx;
+/*
+    Author     : Pavel Castornii
+*/
 
-import com.techsenger.patternfx.core.Name;
+.tree-table-view {
+    -fx-border-width: 0;
+}
 
-/**
- *
- * @author Pavel Castornii
- */
-public interface JfxComponentNames {
+.tree-table-view .tree-table-row-cell {
+    -fx-background-insets: 0, 0;
+}
 
-    Name JFX_TAB_DOCK = new Name("JFXTabDock");
-
-    Name JFX_INSPECTOR_TAB = new Name("JFXInspectorTab");
-
-    Name EVENT_LOG_TAB = new Name("EventLogTab");
-
-    Name PROPERTY_DIALOG = new Name("PropertyDialog");
-
-    Name ENVIRONMENT_TAB = new Name("EnvironmentTab");
+.search-wrapper {
+    -fx-background-color: -color-bg-subtle;
+    -fx-padding: 2px 1px 2px 1px;
 }

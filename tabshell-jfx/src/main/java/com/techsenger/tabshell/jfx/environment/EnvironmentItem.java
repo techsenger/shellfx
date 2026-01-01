@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx;
-
-import com.techsenger.patternfx.core.Name;
+package com.techsenger.tabshell.jfx.environment;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface JfxComponentNames {
+public interface EnvironmentItem {
 
-    Name JFX_TAB_DOCK = new Name("JFXTabDock");
-
-    Name JFX_INSPECTOR_TAB = new Name("JFXInspectorTab");
-
-    Name EVENT_LOG_TAB = new Name("EventLogTab");
-
-    Name PROPERTY_DIALOG = new Name("PropertyDialog");
-
-    Name ENVIRONMENT_TAB = new Name("EnvironmentTab");
+    String name();
 }

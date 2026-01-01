@@ -17,6 +17,9 @@
 package com.techsenger.tabshell.jfx;
 
 import com.techsenger.tabshell.core.tab.ShellTabComponent;
+import com.techsenger.tabshell.jfx.environment.EnvironmentTabComponent;
+import com.techsenger.tabshell.jfx.environment.EnvironmentTabView;
+import com.techsenger.tabshell.jfx.environment.EnvironmentTabViewModel;
 import com.techsenger.tabshell.jfx.eventlog.EventLogTabComponent;
 import com.techsenger.tabshell.jfx.eventlog.EventLogTabView;
 import com.techsenger.tabshell.jfx.eventlog.EventLogTabViewModel;
@@ -51,22 +54,27 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
 
     private final EventLogTabComponent<?> eventLogTab;
 
+    private final EnvironmentTabComponent<?> environmentTab;
+
     public JfxTabDockComponent(T view, DockLayoutComponent<?> layout, ShellTabComponent<?> shellTab) {
         super(view, layout);
         this.shellTab = shellTab;
         this.connector = new LocalConnector(shellTab.getShell().getView().getStage(), null);
         this.inpectorTab = createInspectorTab();
-        this.inpectorTab.initialize();
         getModifiableChildren().add(this.inpectorTab);
         this.eventLogTab = createEventLogTab();
-        this.eventLogTab.initialize();
         getModifiableChildren().add(this.eventLogTab);
+        this.environmentTab = createEnvironmentTab();
+        getModifiableChildren().add(this.environmentTab);
     }
 
     @Override
     public void preInitialize() {
         super.preInitialize();
         this.connector.start();
+        this.inpectorTab.initialize();
+        this.eventLogTab.initialize();
+        this.environmentTab.initialize();
     }
 
     @Override
@@ -75,6 +83,7 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
         var tabPane = getView().getNode();
         tabPane.getTabs().add(this.inpectorTab.getView().getNode());
         tabPane.getTabs().add(this.eventLogTab.getView().getNode());
+        tabPane.getTabs().add(this.environmentTab.getView().getNode());
         tabPane.getSelectionModel().select(0);
     }
 
@@ -108,6 +117,13 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
         var vm = new EventLogTabViewModel<>(connector);
         var v = new EventLogTabView<>(vm);
         var c = new EventLogTabComponent<>(v);
+        return c;
+    }
+
+    protected EnvironmentTabComponent<?> createEnvironmentTab() {
+        var vm = new EnvironmentTabViewModel<>(connector);
+        var v = new EnvironmentTabView<>(vm);
+        var c = new EnvironmentTabComponent<>(v);
         return c;
     }
 }
