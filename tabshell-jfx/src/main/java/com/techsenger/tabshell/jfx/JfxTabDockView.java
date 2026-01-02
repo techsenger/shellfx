@@ -42,6 +42,8 @@ public class JfxTabDockView<T extends JfxTabDockViewModel<?>, S extends JfxTabDo
         getTabHeaderFirstBox().getChildren().add(selectButton);
         var styles = JfxTabDockView.class.getResource("jfx-tab-dock.css").toExternalForm();
         getNode().getStylesheets().add(styles);
+        getNode().setTabDragEnabled(false);
+        getNode().setTabDropEnabled(false);
     }
 
     @Override
