@@ -270,7 +270,7 @@ WebToolBar is a component that represents the browser’s ToolBar.
 To get started with TabShell, it is recommended to follow these steps:
 
 1. Familiarize yourself with the [PatternFX](https://github.com/techsenger/patternfx) framework,
-[MVVMX](https://github.com/techsenger/patternfx#mvvmx-template) template and its demo.
+the [MVVMX](https://github.com/techsenger/patternfx#mvvmx-template) template, and its demo.
 2. Explore and run core demo. See [Core Demo](#running-core-demo) for details.
 3. Explore and run full demo. See [Full Demo](#running-full-demo) for details.
 
