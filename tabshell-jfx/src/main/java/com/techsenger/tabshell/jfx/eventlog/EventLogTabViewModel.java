@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabViewModel<T> {
 
-    protected record Filter(
+    private record Filter(
             boolean active,
             boolean selectedOnly,
             String text,
@@ -118,7 +118,7 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
 
     private final Connector connector;
 
-    private final List<LogEntry> oldEntries = new CopyOnWriteArrayList<>();
+    private final List<LogEntry> retainedEntries = new CopyOnWriteArrayList<>();
 
     private final ConcurrentLinkedQueue<LogEntry> newEntries = new ConcurrentLinkedQueue();
 
@@ -140,9 +140,15 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
 
     private final ReadOnlyBooleanWrapper subscribed = new ReadOnlyBooleanWrapper();
 
-    private final ReadOnlyIntegerWrapper entriesCount = new ReadOnlyIntegerWrapper();
+    private final ReadOnlyIntegerWrapper displayedEntriesCount = new ReadOnlyIntegerWrapper();
+
+    private final ReadOnlyIntegerWrapper totalEntriesCount = new ReadOnlyIntegerWrapper();
 
     private final ReadOnlyStringWrapper searchText = new ReadOnlyStringWrapper();
+
+    private final ReadOnlyStringWrapper statistics = new ReadOnlyStringWrapper();
+
+    private final ReadOnlyBooleanWrapper filteredOutRetained = new ReadOnlyBooleanWrapper();
 
     private final Map<Class<? extends ConnectorEvent>, EventType> eventTypesByClass =
             Collections.unmodifiableMap(
@@ -236,12 +242,20 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         return subscribed.getReadOnlyProperty();
     }
 
-    public int getEntriesCount() {
-        return entriesCount.get();
+    public int getDisplayedEntriesCount() {
+        return displayedEntriesCount.get();
     }
 
-    public ReadOnlyIntegerProperty entriesCountProperty() {
-        return entriesCount.getReadOnlyProperty();
+    public ReadOnlyIntegerProperty displayedEntriesCountProperty() {
+        return displayedEntriesCount.getReadOnlyProperty();
+    }
+
+    public int getTotalEntriesCount() {
+        return totalEntriesCount.get();
+    }
+
+    public ReadOnlyIntegerProperty totalEntriesCountProperty() {
+        return totalEntriesCount.getReadOnlyProperty();
     }
 
     public String getSearchText() {
@@ -250,6 +264,22 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
 
     public ReadOnlyStringProperty searchTextProperty() {
         return searchText.getReadOnlyProperty();
+    }
+
+    public String getStatistics() {
+        return statistics.get();
+    }
+
+    public ReadOnlyStringProperty statisticsProperty() {
+        return statistics.getReadOnlyProperty();
+    }
+
+    public boolean isFilteredOutRetained() {
+        return filteredOutRetained.get();
+    }
+
+    public ReadOnlyBooleanProperty filteredOutRetainedProperty() {
+        return filteredOutRetained.getReadOnlyProperty();
     }
 
     @Override
@@ -268,6 +298,7 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         this.filterActive.addListener((ov, oldV, newV) -> updateFilter());
         this.selectedOnly.addListener((ov, oldV, newV) -> updateFilter());
         updateFilter();
+        updateStatistics();
         selectedProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
                 createAndStartProcessor();
@@ -324,11 +355,13 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
     }
 
     protected void clear() {
-        oldEntries.clear();
+        retainedEntries.clear();
         newEntries.clear();
         textSource.next(null);
         // after all
-        setEntriesCount(0);
+        setDisplayedEntriesCount(0);
+        setTotalEntriesCount(0);
+        updateStatistics();
     }
 
     protected void handleEvent(ConnectorEvent event) {
@@ -360,57 +393,42 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         return textSource;
     }
 
-    ReadOnlyStringWrapper getSearchTextWrappper() {
-        return this.searchText;
-    }
-
-    private <T extends ConnectorEvent> EventType<T> createEventType(Class<T> clazz, boolean enabled) {
-        var type = new EventType(clazz);
-        type.setEnabled(enabled);
-        type.enabledProperty().addListener((ov, oldV, newV) -> updateFilter());
-        return type;
-    }
-
-    private void setSelectedElement(Element element) {
-        selectedElement.set(element);
-    }
-
-    private void setSubscribed(boolean value) {
-        subscribed.set(value);
-    }
-
-    protected void setEntriesCount(int value) {
-        entriesCount.set(value);
-    }
-
     protected void createAndStartProcessor() {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
                 while (!Thread.currentThread().isInterrupted()) {
                     List<LogEntry> processedEntries = new ArrayList<>(1000);
+
                     final var f = filter;
                     if (f != previousFilter) {
                         previousFilter = f;
                         textSource.next(null);
+                        setDisplayedEntriesCount(0);
                         if (f.active()) {
-                            oldEntries.stream().filter(e -> matchesFilter(f, e)).forEach(processedEntries::add);
+                            retainedEntries.stream().filter(e -> matchesFilter(f, e)).forEach(processedEntries::add);
                         } else {
-                            processedEntries.addAll(oldEntries);
+                            processedEntries.addAll(retainedEntries);
                         }
                     }
+
                     var now = System.currentTimeMillis();
+                    int newEntriesCount = 0;
                     while (true) {
                         LogEntry entry = newEntries.poll();
                         if (entry == null) {
                             break;
                         }
-                        oldEntries.add(entry);
+                        newEntriesCount++;
                         if (f.active()) {
                             if (matchesFilter(f, entry)) {
+                                retainedEntries.add(entry);
                                 processedEntries.add(entry);
+                            } else if (isFilteredOutRetained()) {
+                                retainedEntries.add(entry);
                             }
                         } else {
+                            retainedEntries.add(entry);
                             processedEntries.add(entry);
                         }
                         if (entry.timestamp() > now) {
@@ -418,7 +436,10 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
                         }
                     }
                     sendText(processedEntries);
-                    setEntriesCount(oldEntries.size());
+                    setTotalEntriesCount(getTotalEntriesCount() + newEntriesCount);
+                    setDisplayedEntriesCount(getDisplayedEntriesCount() + processedEntries.size());
+                    updateStatistics();
+
                     try {
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
@@ -452,11 +473,54 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         logger.debug("{} EntryProcessor stopped", getMediator().getLogPrefix());
     }
 
+    ReadOnlyStringWrapper getSearchTextWrappper() {
+        return this.searchText;
+    }
+
+    ReadOnlyBooleanWrapper getFilteredOutRetainedWrapper() {
+        return this.filteredOutRetained;
+    }
+
     private void updateFilter() {
         // JFX properties are not thread safe
         Set<Class<? extends ConnectorEvent>> events = this.eventTypesByClass.entrySet().stream()
                 .filter(e -> e.getValue().isEnabled())
                 .map(e -> e.getKey()).collect(Collectors.toSet());
         this.filter = new Filter(isFilterActive(), isSelectedOnly(), getSearchText(), events);
+    }
+
+    private <T extends ConnectorEvent> EventType<T> createEventType(Class<T> clazz, boolean enabled) {
+        var type = new EventType(clazz);
+        type.setEnabled(enabled);
+        type.enabledProperty().addListener((ov, oldV, newV) -> updateFilter());
+        return type;
+    }
+
+    private void setSelectedElement(Element element) {
+        selectedElement.set(element);
+    }
+
+    private void setSubscribed(boolean value) {
+        subscribed.set(value);
+    }
+
+    private void setDisplayedEntriesCount(int value) {
+        displayedEntriesCount.set(value);
+    }
+
+    private void setTotalEntriesCount(int value) {
+        totalEntriesCount.set(value);
+    }
+
+    private void setStatistics(String value) {
+        statistics.set(value);
+    }
+
+    private void setFilteredOutRetained(boolean value) {
+        filteredOutRetained.set(value);
+    }
+
+    private void updateStatistics() {
+        setStatistics(getDisplayedEntriesCount() + " / " + retainedEntries.size() + " / " + getTotalEntriesCount());
     }
 }

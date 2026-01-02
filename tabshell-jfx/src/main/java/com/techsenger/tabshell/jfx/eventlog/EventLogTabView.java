@@ -24,9 +24,11 @@ import com.techsenger.tabshell.material.SearchField.SearchMode;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
+import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -63,12 +65,15 @@ public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventL
 
     private final MenuButton eventTypesButton = new MenuButton("Event Types");
 
-    private final Label entriesInfoLabel = new Label("Events: ");
+    private final CheckBox retainFilteredOutCheckBox = new CheckBox("Retain Filtered Out");
 
-    private final Label entriesCountLabel = new Label();
+    private final Label statisticsLabel = new Label("Statistics: ");
+
+    private final Label statisticsDataLabel = new Label();
 
     private final ToolBar toolBar = new ToolBar(recordButton, clearButton, new Separator(Orientation.VERTICAL),
-            filterButton, selectedOnlyButton, searchField, eventTypesButton, entriesInfoLabel, entriesCountLabel);
+            filterButton, selectedOnlyButton, searchField, eventTypesButton, retainFilteredOutCheckBox,
+            new Separator(Orientation.VERTICAL), statisticsLabel, statisticsDataLabel);
 
     /**
      * JFX RichTextArea and JFX ListView generates too many events (NodeAdd, NodeRemove), so we use RTFX text area.
@@ -100,21 +105,21 @@ public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventL
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
         //selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
         HBox.setHgrow(searchField, Priority.ALWAYS);
+        this.retainFilteredOutCheckBox.setTooltip(new Tooltip("Retain Filtered Out Entries"));
         eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
         viewModel.getEventTypesByClass().values().forEach(t -> {
             var menuItem = new CheckMenuItem(t.getType().getSimpleName());
             menuItem.selectedProperty().bindBidirectional(t.enabledProperty());
             this.eventTypesButton.getItems().add(menuItem);
         });
-        var selectAllEvents = new MenuItem("Select All Events");
-        selectAllEvents.setOnAction(e -> viewModel.selectAllEvents());
-        var deselectAllEvents = new MenuItem("Deselect All Events");
-        deselectAllEvents.setOnAction(e -> viewModel.deselectAllEvents());
-        eventTypesButton.getItems().addAll(new SeparatorMenuItem(), selectAllEvents, deselectAllEvents);
-        entriesInfoLabel.setMinWidth(Label.USE_PREF_SIZE);
-        entriesCountLabel.setStyle("-fx-min-width: 8em");
-        entriesCountLabel.setTooltip(new Tooltip("Displayed Events / Total Events"));
-        updateCountLabel();
+        var selectAllTypesItem = new MenuItem("Select All Types");
+        selectAllTypesItem.setOnAction(e -> viewModel.selectAllEvents());
+        var deselectAllTypesItem = new MenuItem("Deselect All Types");
+        deselectAllTypesItem.setOnAction(e -> viewModel.deselectAllEvents());
+        eventTypesButton.getItems().addAll(new SeparatorMenuItem(), selectAllTypesItem, deselectAllTypesItem);
+        statisticsLabel.setMinWidth(Label.USE_PREF_SIZE);
+        statisticsDataLabel.setStyle("-fx-min-width: 10em");
+        statisticsDataLabel.setTooltip(new Tooltip("Displayed / Retained / Total events"));
         this.toolBar.getStyleClass().add(Styles.DENSE);
 
         textArea.setEditable(false);
@@ -132,18 +137,16 @@ public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventL
             if (text != null) {
                 Platform.runLater(() -> {
                     this.textArea.appendText(text);
-                    updateCountLabel();
                 });
             } else {
                 Platform.runLater(() -> {
                     this.textArea.clear();
-                    updateCountLabel();
                 });
             }
         });
-        viewModel.entriesCountProperty().addListener((ov, oldV, newV) -> {
+        ValueUtils.callAndAddListener(viewModel.statisticsProperty(), (ov, oldV, newV) -> {
             // can be called from non-JavaFX thread
-            Platform.runLater(() -> updateCountLabel());
+            Platform.runLater(() -> statisticsDataLabel.textProperty().set(newV));
         });
     }
 
@@ -156,6 +159,7 @@ public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventL
         this.recordIconView.iconProperty().bindBidirectional(viewModel.recordIconProperty());
         this.searchField.getTextComboBox().getEditor().textProperty()
                 .bindBidirectional(viewModel.getSearchTextWrappper());
+        this.retainFilteredOutCheckBox.selectedProperty().bindBidirectional(viewModel.getFilteredOutRetainedWrapper());
     }
 
     @Override
@@ -172,11 +176,5 @@ public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventL
         this.clearButton.setOnAction(e -> viewModel.clear());
         this.searchField.setSearchHandler(t -> viewModel.applyTextFilter());
         this.searchField.setClearHandler(() -> viewModel.cancelTextFilter());
-    }
-
-    private void updateCountLabel() {
-        var entryCount = this.textArea.getParagraphs().size();
-        entryCount--; // always empty last line
-        this.entriesCountLabel.textProperty().set(entryCount + " / " + getViewModel().getEntriesCount());
     }
 }
