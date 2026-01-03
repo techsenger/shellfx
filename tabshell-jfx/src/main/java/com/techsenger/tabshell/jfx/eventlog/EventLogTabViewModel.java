@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabViewModel<T> {
 
-    private record Filter(
+    protected record Filter(
             boolean active,
             boolean selectedOnly,
             String text,
