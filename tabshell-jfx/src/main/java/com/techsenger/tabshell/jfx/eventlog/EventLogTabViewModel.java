@@ -86,11 +86,9 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
     private static final long ZONE_OFFSET_MILLIS = ZoneId.systemDefault().getRules().getOffset(Instant.now())
             .getTotalSeconds() * 1000L;
 
-    private static final char[] TIME_ARRAY = new char[12]; // HH:mm:ss.SSS
-
     private static final Logger logger = LoggerFactory.getLogger(EventLogTabViewModel.class);
 
-    private static String getZonedTime(long timestamp) {
+    private static String getZonedTime(long timestamp, char[] timeArray) {
         long millis = timestamp + ZONE_OFFSET_MILLIS;
         long seconds = millis / 1000;
         long ms = millis % 1000;
@@ -100,23 +98,25 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         int minute = (totalSeconds % 3600) / 60;
         int second = totalSeconds % 60;
 
-        TIME_ARRAY[0] = (char) ('0' + hour / 10);
-        TIME_ARRAY[1] = (char) ('0' + hour % 10);
-        TIME_ARRAY[2] = ':';
-        TIME_ARRAY[3] = (char) ('0' + minute / 10);
-        TIME_ARRAY[4] = (char) ('0' + minute % 10);
-        TIME_ARRAY[5] = ':';
-        TIME_ARRAY[6] = (char) ('0' + second / 10);
-        TIME_ARRAY[7] = (char) ('0' + second % 10);
-        TIME_ARRAY[8] = '.';
-        TIME_ARRAY[9] = (char) ('0' + ms / 100);
-        TIME_ARRAY[10] = (char) ('0' + (ms / 10) % 10);
-        TIME_ARRAY[11] = (char) ('0' + ms % 10);
+        timeArray[0] = (char) ('0' + hour / 10);
+        timeArray[1] = (char) ('0' + hour % 10);
+        timeArray[2] = ':';
+        timeArray[3] = (char) ('0' + minute / 10);
+        timeArray[4] = (char) ('0' + minute % 10);
+        timeArray[5] = ':';
+        timeArray[6] = (char) ('0' + second / 10);
+        timeArray[7] = (char) ('0' + second % 10);
+        timeArray[8] = '.';
+        timeArray[9] = (char) ('0' + ms / 100);
+        timeArray[10] = (char) ('0' + (ms / 10) % 10);
+        timeArray[11] = (char) ('0' + ms % 10);
 
-        return new String(TIME_ARRAY);
+        return new String(timeArray);
     }
 
     private final Connector connector;
+
+    private final char[] timeArray = new char[12]; // HH:mm:ss.SSS
 
     private final List<LogEntry> retainedEntries = new CopyOnWriteArrayList<>();
 
@@ -369,7 +369,7 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         messageBuilder.append(String.format("%-22s", event.getClass().getSimpleName()));
         messageBuilder.append(event.toLogString());
         var timestamp = System.currentTimeMillis();
-        var entry = new LogEntry(timestamp, getZonedTime(timestamp), messageBuilder.toString(), event);
+        var entry = new LogEntry(timestamp, getZonedTime(timestamp, timeArray), messageBuilder.toString(), event);
         this.newEntries.offer(entry);
     }
 
