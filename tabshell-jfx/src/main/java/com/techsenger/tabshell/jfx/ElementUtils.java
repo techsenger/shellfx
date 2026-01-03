@@ -16,23 +16,30 @@
 
 package com.techsenger.tabshell.jfx;
 
-import com.techsenger.patternfx.core.Name;
+import devtoolsfx.scenegraph.Element;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface JfxComponentNames {
+public final class ElementUtils {
 
-    Name JFX_TAB_DOCK = new Name("JFXTabDock");
+    public static String getTitle(Element element) {
+        var text = element.getClassInfo().simpleClassName();
+        if (element.getNodeProperties() != null) {
+            var styleClasses = element.getNodeProperties().styleClass();
+            if (styleClasses != null && !styleClasses.isEmpty()) {
+                text += " class=\"" + styleClasses + "\"";
+            }
+            var id = element.getNodeProperties().id();
+            if (id != null) {
+                text += " id=\"" + id + "\"";
+            }
+        }
+        return text;
+    }
 
-    Name JFX_INSPECTOR_TAB = new Name("JFXInspectorTab");
+    private ElementUtils() {
 
-    Name EVENT_LOG_TAB = new Name("EventLogTab");
-
-    Name PROPERTY_DIALOG = new Name("PropertyDialog");
-
-    Name ENVIRONMENT_TAB = new Name("EnvironmentTab");
-
-    Name STYLESHEET_TAB = new Name("StylesheetTab");
+    }
 }

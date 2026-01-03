@@ -52,17 +52,6 @@ public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends
         return Collections.unmodifiableMap(map);
     }
 
-    protected static String getNodeText(Element element) {
-        var text = element.getClassInfo().simpleClassName();
-        if (element.getNodeProperties() != null) {
-            var styleClasses = element.getNodeProperties().styleClass();
-            if (styleClasses != null && !styleClasses.isEmpty()) {
-                text += " class=\"" + styleClasses + "\"";
-            }
-        }
-        return text;
-    }
-
     protected static String getCategoryText(AttributeCategory category) {
         return Utils.toPascalCase(category.name()) + " Properties";
     }

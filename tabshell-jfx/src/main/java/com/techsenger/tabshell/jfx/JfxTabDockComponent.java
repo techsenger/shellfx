@@ -26,6 +26,9 @@ import com.techsenger.tabshell.jfx.eventlog.EventLogTabViewModel;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabComponent;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabView;
 import com.techsenger.tabshell.jfx.inspector.JfxInspectorTabViewModel;
+import com.techsenger.tabshell.jfx.stylesheet.StylesheetTabComponent;
+import com.techsenger.tabshell.jfx.stylesheet.StylesheetTabView;
+import com.techsenger.tabshell.jfx.stylesheet.StylesheetTabViewModel;
 import com.techsenger.tabshell.layout.dock.DockLayoutComponent;
 import com.techsenger.tabshell.layout.dock.TabDockComponent;
 import devtoolsfx.connector.Connector;
@@ -54,6 +57,8 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
 
     private final EventLogTabComponent<?> eventLogTab;
 
+    private final StylesheetTabComponent<?> stylesheetTab;
+
     private final EnvironmentTabComponent<?> environmentTab;
 
     public JfxTabDockComponent(T view, DockLayoutComponent<?> layout, ShellTabComponent<?> shellTab) {
@@ -64,6 +69,8 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
         getModifiableChildren().add(this.inpectorTab);
         this.eventLogTab = createEventLogTab();
         getModifiableChildren().add(this.eventLogTab);
+        this.stylesheetTab = createStylesheetTab();
+        getModifiableChildren().add(this.stylesheetTab);
         this.environmentTab = createEnvironmentTab();
         getModifiableChildren().add(this.environmentTab);
     }
@@ -74,6 +81,7 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
         this.connector.start();
         this.inpectorTab.initialize();
         this.eventLogTab.initialize();
+        this.stylesheetTab.initialize();
         this.environmentTab.initialize();
     }
 
@@ -81,9 +89,11 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
     protected void postInitialize() {
         super.postInitialize();
         var tabPane = getView().getNode();
-        tabPane.getTabs().add(this.inpectorTab.getView().getNode());
-        tabPane.getTabs().add(this.eventLogTab.getView().getNode());
-        tabPane.getTabs().add(this.environmentTab.getView().getNode());
+        var tabs = tabPane.getTabs();
+        tabs.add(this.inpectorTab.getView().getNode());
+        tabs.add(this.eventLogTab.getView().getNode());
+        tabs.add(this.stylesheetTab.getView().getNode());
+        tabs.add(this.environmentTab.getView().getNode());
         tabPane.getSelectionModel().select(0);
     }
 
@@ -117,6 +127,14 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
         var vm = new EventLogTabViewModel<>(connector);
         var v = new EventLogTabView<>(vm);
         var c = new EventLogTabComponent<>(v);
+        return c;
+    }
+
+    protected StylesheetTabComponent<?> createStylesheetTab() {
+        var windowUid = shellTab.getShell().getView().getStage().hashCode();
+        var vm = new StylesheetTabViewModel<>(connector, windowUid);
+        var v = new StylesheetTabView<>(vm);
+        var c = new StylesheetTabComponent<>(v);
         return c;
     }
 

@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.jfx.inspector;
 
 import com.techsenger.tabshell.core.tab.AbstractTabView;
+import com.techsenger.tabshell.jfx.ElementUtils;
 import com.techsenger.tabshell.jfx.inspector.PropertyInfo.ValueInfo;
 import com.techsenger.tabshell.material.SearchField;
 import com.techsenger.tabshell.material.SearchField.SearchMode;
@@ -123,7 +124,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
             if (empty || item == null) {
                 setText(null);
             } else {
-                setText(JfxInspectorTabViewModel.getNodeText(item));
+                setText(ElementUtils.getTitle(item));
             }
         }
     }

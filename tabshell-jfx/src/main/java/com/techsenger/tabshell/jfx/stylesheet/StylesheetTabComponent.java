@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx;
+package com.techsenger.tabshell.jfx.stylesheet;
 
 import com.techsenger.patternfx.core.Name;
+import com.techsenger.tabshell.core.tab.AbstractTabComponent;
+import com.techsenger.tabshell.jfx.JfxComponentNames;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface JfxComponentNames {
+public class StylesheetTabComponent<T extends StylesheetTabView<?, ?>> extends AbstractTabComponent<T> {
 
-    Name JFX_TAB_DOCK = new Name("JFXTabDock");
+    public StylesheetTabComponent(T view) {
+        super(view);
+    }
 
-    Name JFX_INSPECTOR_TAB = new Name("JFXInspectorTab");
+    @Override
+    protected Mediator createMediator() {
+        return new AbstractTabComponent.Mediator() { };
+    }
 
-    Name EVENT_LOG_TAB = new Name("EventLogTab");
-
-    Name PROPERTY_DIALOG = new Name("PropertyDialog");
-
-    Name ENVIRONMENT_TAB = new Name("EnvironmentTab");
-
-    Name STYLESHEET_TAB = new Name("StylesheetTab");
+    @Override
+    public Name getName() {
+        return JfxComponentNames.STYLESHEET_TAB;
+    }
 }
