@@ -17,16 +17,16 @@
 package com.techsenger.tabshell.demos.full.dialogs;
 
 import com.techsenger.tabshell.core.ShellViewModel;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogViewModel;
-import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogsDialogMediator extends SimpleDialogMediator {
+public interface DialogsDialogMediator extends DialogMediator {
 
     ShellViewModel<?> getShell();
 

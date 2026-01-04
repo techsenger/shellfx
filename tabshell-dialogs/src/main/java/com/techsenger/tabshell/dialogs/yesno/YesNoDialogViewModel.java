@@ -19,6 +19,7 @@ package com.techsenger.tabshell.dialogs.yesno;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
@@ -32,7 +33,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public class YesNoDialogViewModel<T extends YesNoDialogMediator> extends AbstractDialogViewModel<T> {
+public class YesNoDialogViewModel<T extends DialogMediator> extends AbstractDialogViewModel<T> {
 
     private StringProperty message = new SimpleStringProperty();
 

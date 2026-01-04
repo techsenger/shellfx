@@ -18,6 +18,7 @@ package com.techsenger.tabshell.dialogs.alert;
 
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
@@ -30,7 +31,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public class AlertDialogViewModel<T extends AlertDialogMediator> extends AbstractSimpleDialogViewModel<T> {
+public class AlertDialogViewModel<T extends DialogMediator> extends AbstractSimpleDialogViewModel<T> {
 
     private final AlertDialogType dialogType;
 

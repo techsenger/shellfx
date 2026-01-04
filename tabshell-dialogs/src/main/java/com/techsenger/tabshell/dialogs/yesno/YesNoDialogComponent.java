@@ -26,10 +26,6 @@ import com.techsenger.tabshell.dialogs.DialogComponentNames;
  */
 public class YesNoDialogComponent<T extends YesNoDialogView<?, ?>> extends AbstractDialogComponent<T> {
 
-    protected class Mediator extends AbstractDialogComponent.Mediator implements YesNoDialogMediator {
-
-    }
-
     public YesNoDialogComponent(T view) {
         super(view);
     }
@@ -41,6 +37,6 @@ public class YesNoDialogComponent<T extends YesNoDialogView<?, ?>> extends Abstr
 
     @Override
     protected Mediator createMediator() {
-        return new Mediator();
+        return new AbstractDialogComponent.Mediator() { };
     }
 }

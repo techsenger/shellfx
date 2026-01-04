@@ -18,9 +18,9 @@ package com.techsenger.tabshell.jfx.inspector;
 
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
 import com.techsenger.tabshell.jfx.UrlUtils;
 import com.techsenger.tabshell.web.WebBrowserTabViewModel;
 import devtoolsfx.scenegraph.Element;
@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel<SimpleDialogMediator> {
+public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel<DialogMediator> {
 
     private final Element element;
 

@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.dialogs.simple;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -29,7 +30,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSimpleDialogViewModel<T extends SimpleDialogMediator> extends AbstractDialogViewModel<T> {
+public abstract class AbstractSimpleDialogViewModel<T extends DialogMediator> extends AbstractDialogViewModel<T> {
 
     private final ObjectProperty<Runnable> okAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
 

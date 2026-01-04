@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.dialogs.file;
 
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
-import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogMediator extends SimpleDialogMediator {
+public interface FileChooserDialogMediator extends DialogMediator {
 
     void addAlertDialog(AlertDialogViewModel vm);
 }

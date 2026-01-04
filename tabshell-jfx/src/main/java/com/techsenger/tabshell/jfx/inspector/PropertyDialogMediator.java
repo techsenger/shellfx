@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.web.WebBrowserTabViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PropertyDialogMediator extends SimpleDialogMediator {
+public interface PropertyDialogMediator extends DialogMediator {
 
     void addBrowser(WebBrowserTabViewModel vm);
 }

@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.page;
 
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
 
@@ -23,7 +24,7 @@ import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageDialogViewModel<T extends PageDialogMediator>
+public abstract class AbstractPageDialogViewModel<T extends DialogMediator>
         extends AbstractSimpleDialogViewModel<T> {
 
     public AbstractPageDialogViewModel(DialogScope scope, boolean resizable) {

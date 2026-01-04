@@ -26,17 +26,13 @@ import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
  */
 public class AlertDialogComponent<T extends AlertDialogView<?, ?>> extends AbstractSimpleDialogComponent<T> {
 
-    protected class Mediator extends AbstractSimpleDialogComponent.Mediator implements AlertDialogMediator {
-
-    }
-
     public AlertDialogComponent(T view) {
         super(view);
     }
 
     @Override
     protected Mediator createMediator() {
-        return new Mediator();
+        return new AbstractSimpleDialogComponent.Mediator() { };
     }
 
     @Override

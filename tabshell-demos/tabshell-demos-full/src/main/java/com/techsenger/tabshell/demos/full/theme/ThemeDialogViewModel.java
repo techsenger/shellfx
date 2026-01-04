@@ -18,9 +18,9 @@ package com.techsenger.tabshell.demos.full.theme;
 
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import com.techsenger.tabshell.material.theme.Theme;
@@ -36,7 +36,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel<SimpleDialogMediator> {
+public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel<DialogMediator> {
 
     private final ObservableList<Theme> themes = FXCollections.observableArrayList(Arrays
             .stream(AtlantaFxTheme.values()).collect(Collectors.toList()));

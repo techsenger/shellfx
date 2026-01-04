@@ -19,11 +19,11 @@ package com.techsenger.tabshell.text.viewer;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogViewModel;
-import com.techsenger.tabshell.dialogs.simple.SimpleDialogMediator;
 import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -34,7 +34,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<SimpleDialogMediator> {
+public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<DialogMediator> {
 
     private final ObjectProperty<Integer> line = new SimpleObjectProperty<>();
 
