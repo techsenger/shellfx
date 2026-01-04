@@ -118,8 +118,6 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel<Dialog
         var viewModel = new YesNoDialogViewModel(DialogScope.SHELL,
                 "Are you really sure?");
         viewModel.setTitle("Confirm");
-        viewModel.setYesText("Yes");
-        viewModel.setNoText("No");
         viewModel.setPrefWidth(400);
         getMediator().addYesNoDialog(viewModel);
     }

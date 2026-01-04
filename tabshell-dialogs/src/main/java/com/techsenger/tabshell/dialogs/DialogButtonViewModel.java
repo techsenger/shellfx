@@ -40,7 +40,7 @@ public class DialogButtonViewModel {
     private final StringProperty text = new SimpleStringProperty();
 
     public DialogButtonViewModel() {
-        this(null, null);
+        this(null);
     }
 
     public DialogButtonViewModel(String text) {
@@ -48,8 +48,13 @@ public class DialogButtonViewModel {
     }
 
     public DialogButtonViewModel(String text, Runnable action) {
+        this(text, action, false);
+    }
+
+    public DialogButtonViewModel(String text, Runnable action, boolean isDefault) {
         setText(text);
         setAction(action);
+        setDefault(isDefault);
     }
 
     public BooleanProperty disableProperty() {

@@ -111,6 +111,8 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
 
     private long textStateId = 0;
 
+    private long discardStateId = -1;
+
     /**
      * Constructor.
      *
@@ -287,10 +289,10 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
 
     @Override
     public CloseCheckResult canClose() {
-        if (!isModified()) {
-            return CloseCheckResult.READY;
-        } else {
+        if (isModified() && this.textStateId != discardStateId) {
             return CloseCheckResult.PREPARATION_REQUIRED;
+        } else {
+            return CloseCheckResult.READY;
         }
     }
 
@@ -299,11 +301,10 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
         var message = "Save changes to file '" + getFile().getName() + "' before closing?";
         var yesNoDialog = new YesNoDialogViewModel(DialogScope.TAB, message);
         yesNoDialog.setTitle("Save File?");
-        yesNoDialog.setYesText("Save");
-        yesNoDialog.setNoText("Discard");
-        yesNoDialog.setCancelVisible(true);
+        yesNoDialog.getYes().setText("Save");
+        yesNoDialog.getNo().setText("Discard");
         yesNoDialog.setButtonWidthEqual(true);
-        yesNoDialog.setYesAction(() -> {
+        yesNoDialog.getYes().setAction(() -> {
             yesNoDialog.requestClose();
             if (isPersisted()) {
                 writeFile();
@@ -313,9 +314,10 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
                         () -> resultCallback.accept(ClosePreparationResult.SUCCESS), null);
             }
         });
-        yesNoDialog.setNoAction(() -> {
+        yesNoDialog.getNo().setAction(() -> {
             yesNoDialog.requestClose();
-            resultCallback.accept(ClosePreparationResult.CANCELLED);
+            this.discardStateId = textStateId;
+            resultCallback.accept(ClosePreparationResult.SUCCESS);
         });
         getMediator().addYesNoDialog(yesNoDialog);
     }

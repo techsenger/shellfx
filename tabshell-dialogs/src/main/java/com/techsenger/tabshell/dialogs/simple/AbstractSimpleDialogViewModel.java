@@ -29,7 +29,7 @@ public abstract class AbstractSimpleDialogViewModel<T extends DialogMediator> ex
 
     private final DialogButtonViewModel cancel = new DialogButtonViewModel("Cancel", this.closeActionProperty().get());
 
-    private final DialogButtonViewModel ok = new DialogButtonViewModel("OK", this.closeActionProperty().get());
+    private final DialogButtonViewModel ok = new DialogButtonViewModel("OK", this.closeActionProperty().get(), true);
 
     public AbstractSimpleDialogViewModel(DialogScope scope, boolean resizable) {
         super(scope, resizable);
@@ -41,11 +41,5 @@ public abstract class AbstractSimpleDialogViewModel<T extends DialogMediator> ex
 
     public DialogButtonViewModel getOk() {
         return ok;
-    }
-
-    @Override
-    protected void initialize() {
-        super.initialize();
-        ok.setDefault(true);
     }
 }

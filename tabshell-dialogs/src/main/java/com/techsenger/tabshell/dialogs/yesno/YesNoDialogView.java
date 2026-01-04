@@ -88,38 +88,29 @@ public class YesNoDialogView<T extends YesNoDialogViewModel<?>, S extends YesNoD
     protected void bind() {
         super.bind();
         var viewModel = getViewModel();
-        yesButton.disableProperty().bind(viewModel.yesDisableProperty());
-        yesButton.defaultButtonProperty().bind(viewModel.yesDefaultProperty());
-        yesButton.textProperty().bind(viewModel.yesTextProperty());
-
-        noButton.disableProperty().bind(viewModel.noDisableProperty());
-        noButton.defaultButtonProperty().bind(viewModel.noDefaultProperty());
-        noButton.textProperty().bind(viewModel.noTextProperty());
-
-        cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
-        cancelButton.defaultButtonProperty().bind(viewModel.cancelDefaultProperty());
-        cancelButton.textProperty().bind(viewModel.cancelTextProperty());
-        cancelButton.visibleProperty().bind(viewModel.cancelVisibleProperty());
+        ViewUtils.bindButton(noButton, viewModel.getNo());
+        ViewUtils.bindButton(yesButton, viewModel.getYes());
+        ViewUtils.bindButton(cancelButton, viewModel.getCancel());
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
         var viewModel = getViewModel();
-        yesButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.yesActionProperty()));
-        noButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.noActionProperty()));
-        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.cancelActionProperty()));
+        yesButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.getYes().actionProperty()));
+        noButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.getNo().actionProperty()));
+        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.getCancel().actionProperty()));
     }
 
-    protected Button getConfirmButton() {
+    protected Button getYesButton() {
         return yesButton;
     }
 
-    protected Button getDenyButton() {
+    protected Button getNoButton() {
         return noButton;
     }
 
-    protected Button getCancelButton() {
+    public Button getCancelButton() {
         return cancelButton;
     }
 
@@ -129,10 +120,10 @@ public class YesNoDialogView<T extends YesNoDialogViewModel<?>, S extends YesNoD
 
     @Override
     protected void makeEqualButtons() {
-        if (getViewModel().isCancelVisible()) {
-            ButtonUtils.makeEqualWidthBySize(getCancelButton(), getDenyButton(), getConfirmButton());
+        if (getViewModel().getCancel().isVisible()) {
+            ButtonUtils.makeEqualWidthBySize(getCancelButton(), getNoButton(), getYesButton());
         } else {
-            ButtonUtils.makeEqualWidthBySize(getDenyButton(), getConfirmButton());
+            ButtonUtils.makeEqualWidthBySize(getNoButton(), getYesButton());
         }
     }
 }

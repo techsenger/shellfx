@@ -21,11 +21,8 @@ import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogViewModel;
 import com.techsenger.tabshell.core.dialog.DialogMediator;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.dialogs.DialogButtonViewModel;
 import java.util.function.Consumer;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -37,202 +34,16 @@ public class YesNoDialogViewModel<T extends DialogMediator> extends AbstractDial
 
     private StringProperty message = new SimpleStringProperty();
 
-    private final ObjectProperty<Runnable> yesAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
+    private final DialogButtonViewModel yes = new DialogButtonViewModel("Yes", this.closeActionProperty().get(), true);
 
-    private final BooleanProperty yesDisable = new SimpleBooleanProperty();
+    private final DialogButtonViewModel no = new DialogButtonViewModel("No", this.closeActionProperty().get());
 
-    private final BooleanProperty yesDefault = new SimpleBooleanProperty(true);
-
-    private final StringProperty yesText = new SimpleStringProperty("Yes");
-
-    private final ObjectProperty<Runnable> noAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
-
-    private final BooleanProperty noDisable = new SimpleBooleanProperty();
-
-    private final BooleanProperty noDefault = new SimpleBooleanProperty();
-
-    private final StringProperty noText = new SimpleStringProperty("No");
-
-    private final ObjectProperty<Runnable> cancelAction = new SimpleObjectProperty<>(this.closeActionProperty().get());
-
-    private final BooleanProperty cancelDisable = new SimpleBooleanProperty();
-
-    private final BooleanProperty cancelDefault = new SimpleBooleanProperty();
-
-    private final StringProperty cancelText = new SimpleStringProperty("Cancel");
-
-    private final BooleanProperty cancelVisible = new SimpleBooleanProperty(false);
+    private final DialogButtonViewModel cancel = new DialogButtonViewModel("Cancel", this.closeActionProperty().get());
 
     public YesNoDialogViewModel(DialogScope scope, String message) {
         super(scope, false);
         this.message.set(message);
-        prefWidthProperty().set(600);
-        setButtonWidthEqual(true);
     }
-
-    /* ************************************************* yes button ************************************************* */
-
-    public ObjectProperty<Runnable> yesActionProperty() {
-        return yesAction;
-    }
-
-    public Runnable getYesAction() {
-        return yesAction.get();
-    }
-
-    public void setYesAction(Runnable action) {
-        this.yesAction.set(action);
-    }
-
-    public BooleanProperty yesDisableProperty() {
-        return yesDisable;
-    }
-
-    public boolean isYesDisable() {
-        return yesDisable.get();
-    }
-
-    public void setYesDisable(boolean disable) {
-        this.yesDisable.set(disable);
-    }
-
-    public BooleanProperty yesDefaultProperty() {
-        return yesDefault;
-    }
-
-    public boolean isYesDefault() {
-        return yesDefault.get();
-    }
-
-    public void setYesDefault(boolean yesDefault) {
-        this.yesDefault.set(yesDefault);
-    }
-
-    public StringProperty yesTextProperty() {
-        return yesText;
-    }
-
-    public String getYesText() {
-        return yesText.get();
-    }
-
-    public void setYesText(String text) {
-        this.yesText.set(text);
-    }
-
-    /* ************************************************** no button ************************************************* */
-
-    public ObjectProperty<Runnable> noActionProperty() {
-        return noAction;
-    }
-
-    public Runnable getNoAction() {
-        return noAction.get();
-    }
-
-    public void setNoAction(Runnable action) {
-        this.noAction.set(action);
-    }
-
-    public BooleanProperty noDisableProperty() {
-        return noDisable;
-    }
-
-    public boolean isNoDisable() {
-        return noDisable.get();
-    }
-
-    public void setNoDisable(boolean disable) {
-        this.noDisable.set(disable);
-    }
-
-    public BooleanProperty noDefaultProperty() {
-        return noDefault;
-    }
-
-    public boolean isNoDefault() {
-        return noDefault.get();
-    }
-
-    public void setNoDefault(boolean noDefault) {
-        this.noDefault.set(noDefault);
-    }
-
-    public StringProperty noTextProperty() {
-        return noText;
-    }
-
-    public String getNoText() {
-        return noText.get();
-    }
-
-    public void setNoText(String text) {
-        this.noText.set(text);
-    }
-
-    /* *********************************************** cancel button ************************************************ */
-
-    public ObjectProperty<Runnable> cancelActionProperty() {
-        return cancelAction;
-    }
-
-    public Runnable getCancelAction() {
-        return cancelAction.get();
-    }
-
-    public void setCancelAction(Runnable action) {
-        this.cancelAction.set(action);
-    }
-
-    public BooleanProperty cancelDisableProperty() {
-        return cancelDisable;
-    }
-
-    public boolean isCancelDisable() {
-        return cancelDisable.get();
-    }
-
-    public void setCancelDisable(boolean disable) {
-        this.cancelDisable.set(disable);
-    }
-
-    public BooleanProperty cancelDefaultProperty() {
-        return cancelDefault;
-    }
-
-    public boolean isCancelDefault() {
-        return cancelDefault.get();
-    }
-
-    public void setCancelDefault(boolean cancelDefault) {
-        this.cancelDefault.set(cancelDefault);
-    }
-
-    public StringProperty cancelTextProperty() {
-        return cancelText;
-    }
-
-    public String getCancelText() {
-        return cancelText.get();
-    }
-
-    public void setCancelText(String text) {
-        this.cancelText.set(text);
-    }
-
-    public BooleanProperty cancelVisibleProperty() {
-        return cancelVisible;
-    }
-
-    public boolean isCancelVisible() {
-        return cancelVisible.get();
-    }
-
-    public void setCancelVisible(boolean value) {
-        cancelVisible.set(value);
-    }
-
-    /* *************************************************** other **************************************************** */
 
     public StringProperty messageProperty() {
         return this.message;
@@ -246,6 +57,18 @@ public class YesNoDialogViewModel<T extends DialogMediator> extends AbstractDial
         this.message.set(message);
     }
 
+    public DialogButtonViewModel getYes() {
+        return yes;
+    }
+
+    public DialogButtonViewModel getNo() {
+        return no;
+    }
+
+    public DialogButtonViewModel getCancel() {
+        return cancel;
+    }
+
     @Override
     public CloseCheckResult canClose() {
         return CloseCheckResult.READY;
@@ -254,5 +77,12 @@ public class YesNoDialogViewModel<T extends DialogMediator> extends AbstractDial
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        prefWidthProperty().set(600);
+        setButtonWidthEqual(true);
     }
 }
