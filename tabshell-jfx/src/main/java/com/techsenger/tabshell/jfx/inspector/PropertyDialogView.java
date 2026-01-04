@@ -91,6 +91,7 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
         valueTextArea.setWrapText(true);
         gridPane.add(valueTextArea, 1, 0);
         GridPane.setVgrow(valueTextArea, Priority.ALWAYS);
+        GridPane.setHgrow(valueTextArea, Priority.ALWAYS);
 
         cssHyperlink.setMinWidth(Hyperlink.USE_PREF_SIZE);
         gridPane.add(cssHyperlink, 0, 1);
@@ -110,12 +111,14 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
             cssHyperlink.getStyleClass().add(StyleClasses.NO_URL);
         }
         cssTextField.setEditable(false);
+        GridPane.setHgrow(cssTextField, Priority.ALWAYS);
         gridPane.add(cssTextField, 1, 1);
 
         stateLabel.setMinWidth(Hyperlink.USE_PREF_SIZE);
         gridPane.add(stateLabel, 0, 2);
         stateTextField.setText(info.getAttribute().valueState().name());
         stateTextField.setEditable(false);
+        GridPane.setHgrow(stateTextField, Priority.ALWAYS);
         gridPane.add(stateTextField, 1, 2);
 
         gridPane.setVgap(SizeConstants.INSET);
