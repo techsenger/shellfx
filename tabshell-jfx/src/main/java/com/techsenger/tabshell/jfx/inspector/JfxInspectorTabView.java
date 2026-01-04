@@ -338,7 +338,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         });
         valueColumn.setCellFactory(col -> new ValueTableCell());
         infoTableView.getColumns().addAll(propertyColumn, valueColumn);
-        infoTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
+        infoTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, "no-header");
         infoTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         infoTableView.setShowRoot(false);
         infoTableView.setRoot(new RootTreeItem(getViewModel().getRootInfo()));

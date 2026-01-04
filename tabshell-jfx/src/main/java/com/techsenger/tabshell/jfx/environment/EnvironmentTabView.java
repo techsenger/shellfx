@@ -49,7 +49,7 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
     @Override
     protected void build() {
         super.build();
-        // getSearchField().getTextComboBox().setPromptText("Property");
+        getSearchField().getTextComboBox().setPromptText("Property");
         getToolBar().getItems().addAll(getSearchField(), getMatchCaseButton(), getRefreshButton());
 
         TreeTableColumn<EnvironmentItem, String> propertyColumn = new TreeTableColumn<>("Property");
@@ -69,7 +69,7 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
         });
 
         tableView.getColumns().addAll(propertyColumn, valueColumn);
-        tableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
+        tableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, "no-header");
         tableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         tableView.setShowRoot(false);
         tableView.setPlaceholder(new Label(""));
