@@ -16,9 +16,11 @@
 
 package com.techsenger.tabshell.dialogs.utils;
 
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.dialogs.DialogButtonViewModel;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -44,6 +46,13 @@ public final class ViewUtils {
         messageBox.getStyleClass().add("message-box");
         messageBox.setSpacing(SizeConstants.HALF_INSET);
         messageBox.setPadding(new Insets(0, SizeConstants.INSET, 0, SizeConstants.HALF_INSET));
+    }
+
+    public static void bindButton(Button button, DialogButtonViewModel buttonViewModel) {
+        button.defaultButtonProperty().bind(buttonViewModel.defaultProperty());
+        button.disableProperty().bind(buttonViewModel.disableProperty());
+        button.textProperty().bind(buttonViewModel.textProperty());
+        button.visibleProperty().bind(buttonViewModel.visibleProperty());
     }
 
     private ViewUtils() {

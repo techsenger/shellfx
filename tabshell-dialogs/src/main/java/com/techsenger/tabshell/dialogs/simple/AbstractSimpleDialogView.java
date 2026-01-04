@@ -18,6 +18,7 @@ package com.techsenger.tabshell.dialogs.simple;
 
 import com.techsenger.tabshell.core.ActionUtils;
 import com.techsenger.tabshell.core.dialog.AbstractDialogView;
+import com.techsenger.tabshell.dialogs.utils.ViewUtils;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.geometry.Insets;
@@ -33,9 +34,9 @@ import javafx.scene.layout.HBox;
 public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogViewModel<?>,
         S extends AbstractSimpleDialogComponent<?>> extends AbstractDialogView<T, S> {
 
-    private final Button okButton = new Button();
-
     private final Button cancelButton = new Button();
+
+    private final Button okButton = new Button();
 
     private final HBox buttonBox = new HBox();
 
@@ -56,21 +57,16 @@ public abstract class AbstractSimpleDialogView<T extends AbstractSimpleDialogVie
     protected void bind() {
         super.bind();
         var viewModel = getViewModel();
-        okButton.disableProperty().bind(viewModel.okDisableProperty());
-        okButton.defaultButtonProperty().bind(viewModel.okDefault());
-        okButton.textProperty().bind(viewModel.okTextProperty());
-        cancelButton.disableProperty().bind(viewModel.cancelDisableProperty());
-        cancelButton.defaultButtonProperty().bind(viewModel.cancelDefaultProperty());
-        cancelButton.visibleProperty().bind(viewModel.cancelVisibleProperty());
-        cancelButton.textProperty().bind(viewModel.cancelTextProperty());
+        ViewUtils.bindButton(cancelButton, viewModel.getCancel());
+        ViewUtils.bindButton(okButton, viewModel.getOk());
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
         var viewModel = getViewModel();
-        okButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.okActionProperty()));
-        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.cancelActionProperty()));
+        cancelButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.getCancel().actionProperty()));
+        okButton.setOnAction(e -> ActionUtils.runIfExists(viewModel.getOk().actionProperty()));
     }
 
     protected Button getOkButton() {

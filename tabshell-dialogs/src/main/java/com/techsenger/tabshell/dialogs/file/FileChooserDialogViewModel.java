@@ -162,7 +162,6 @@ public class FileChooserDialogViewModel<T extends FileChooserDialogMediator> ext
                 throw new AssertionError();
         }
         setButtonWidthEqual(true);
-        setCancelVisible(true);
 
         var columns = new ArrayList<TableColumnHistory>();
         var typeColumn = new TableColumnHistory(FileColumnNames.TYPE.toString());

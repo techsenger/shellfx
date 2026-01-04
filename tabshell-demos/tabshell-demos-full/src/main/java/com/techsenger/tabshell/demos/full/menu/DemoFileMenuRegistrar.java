@@ -49,7 +49,7 @@ public class DemoFileMenuRegistrar extends FileMenuRegistrar {
                 var shell = (ShellView<?, ?>) v;
                 var appearance = shell.getViewModel().getSettings().getAppearance();
                 var dialogViewModel = new ThemeDialogViewModel(appearance.getTheme());
-                dialogViewModel.okActionProperty().set(() -> {
+                dialogViewModel.getOk().setAction(() -> {
                     appearance.themeProperty().set(dialogViewModel.themeProperty().get());
                     dialogViewModel.requestClose();
                 });

@@ -115,7 +115,7 @@ public class GoToLineDialogView<T extends GoToLineDialogViewModel, S extends GoT
 
     @Override
     protected void makeEqualButtons() {
-        if (getViewModel().isCancelVisible()) {
+        if (getViewModel().getCancel().isVisible()) {
             ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
         }
     }

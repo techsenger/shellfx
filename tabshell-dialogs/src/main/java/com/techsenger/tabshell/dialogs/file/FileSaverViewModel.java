@@ -63,7 +63,7 @@ public interface FileSaverViewModel extends FileOperatorViewModel {
                 viewModel.setInitialDirectory(parent.getUri());
             }
         }
-        viewModel.okActionProperty().set(() -> {
+        viewModel.getOk().setAction(() -> {
             var resultFile = viewModel.getResultFile();
             if (resultFile != null) {
                 viewModel.requestClose();
@@ -80,7 +80,7 @@ public interface FileSaverViewModel extends FileOperatorViewModel {
                 cancelCallback.run();
             }
         };
-        viewModel.cancelActionProperty().set(cancelAndCloseAction);
+        viewModel.getCancel().setAction(cancelAndCloseAction);
         viewModel.closeActionProperty().set(cancelAndCloseAction);
         getMediator().addFileChooserDialog(viewModel);
     }

@@ -54,7 +54,7 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
             var c = new GoToLineDialogComponent<>(view);
             c.initialize();
             // todo: refactor after fixing JDK-8333275
-            viewModel.okActionProperty().set(() -> {
+            viewModel.getOk().setAction(() -> {
                 try {
                     viewModel.setHistoryPolicy(HistoryPolicy.DATA); //before closing
                     viewModel.requestClose();

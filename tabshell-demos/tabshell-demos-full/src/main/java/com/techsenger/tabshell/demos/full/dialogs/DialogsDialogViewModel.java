@@ -53,10 +53,9 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel<Dialog
         setPrefWidth(600);
         setPrefHeight(300);
         setTitle("Dialogs");
-        setCancelVisible(true);
         setButtonWidthEqual(true);
-        setOkText("Show");
-        setOkAction(() -> {
+        getOk().setText("Show");
+        getOk().setAction(() -> {
             var item = getItem();
             if (item != null) {
                 item.getRunnable().run();

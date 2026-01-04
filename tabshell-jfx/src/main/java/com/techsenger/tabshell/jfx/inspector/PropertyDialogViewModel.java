@@ -45,8 +45,9 @@ public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel<Dialo
         this.declaringClassName = declaringClassName;
         setPrefWidth(650);
         setPrefHeight(400);
-        setOkText("Ok");
+        getOk().setText("Ok");
         setTitle("Property Dialog");
+        getCancel().setVisible(false);
     }
 
     public Element getElement() {

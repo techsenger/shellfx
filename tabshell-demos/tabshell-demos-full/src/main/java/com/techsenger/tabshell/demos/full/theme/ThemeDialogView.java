@@ -86,7 +86,7 @@ public class ThemeDialogView extends AbstractSimpleDialogView<ThemeDialogViewMod
 
     @Override
     protected void makeEqualButtons() {
-        if (getViewModel().isCancelVisible()) {
+        if (getViewModel().getCancel().isVisible()) {
             ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
         }
     }

@@ -51,8 +51,7 @@ public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<Dialo
                 GoToLineDialogHistory::new));
         prefWidthProperty().set(400);
         titleProperty().set("Go To Line");
-        okDisableProperty().set(true);
-        setCancelVisible(true);
+        getOk().setDisable(true);
         setButtonWidthEqual(true);
     }
 
@@ -137,10 +136,6 @@ public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<Dialo
      * @param text
      */
     void checkOkButtonState(String text) {
-        if (text.isEmpty()) {
-            this.okDisableProperty().set(true);
-        } else {
-            this.okDisableProperty().set(false);
-        }
+        getOk().setDisable(text.isEmpty());
     }
 }

@@ -467,7 +467,7 @@ public class FileChooserDialogView<T extends FileChooserDialogViewModel<?>, S ex
 
     @Override
     protected void makeEqualButtons() {
-        if (getViewModel().isCancelVisible()) {
+        if (getViewModel().getCancel().isVisible()) {
             ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
         }
     }

@@ -60,7 +60,7 @@ public class AlertDialogViewModel<T extends DialogMediator> extends AbstractSimp
         }
         prefWidthProperty().set(600);
         this.message.set(message);
-        setCancelVisible(false);
+        getCancel().setVisible(false);
         setButtonWidthEqual(true);
     }
 

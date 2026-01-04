@@ -89,7 +89,7 @@ public class AlertDialogView<T extends AlertDialogViewModel<?>, S extends AlertD
 
     @Override
     protected void makeEqualButtons() {
-        if (getViewModel().isCancelVisible()) {
+        if (getViewModel().getCancel().isVisible()) {
             ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
         }
     }

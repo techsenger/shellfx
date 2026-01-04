@@ -49,7 +49,6 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel<DialogMe
         setTitle("Select Theme");
         setIcon(new FontIcon(984334)); //theme-light-dark
         theme.set(currentTheme);
-        setCancelVisible(true);
         setButtonWidthEqual(true);
     }
 
