@@ -95,7 +95,7 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
         } else {
             nameLabel.getStyleClass().add(StyleClasses.NO_URL);
         }
-        nameLabel.setMinWidth(Hyperlink.USE_PREF_SIZE);
+        nameLabel.setMinWidth(Label.USE_PREF_SIZE);
         gridPane.add(nameBox, 0, 0);
         GridPane.setValignment(nameBox, VPos.TOP);
         valueTextArea.setText(info.getValue().text());
@@ -105,7 +105,7 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
         GridPane.setVgrow(valueTextArea, Priority.ALWAYS);
         GridPane.setHgrow(valueTextArea, Priority.ALWAYS);
 
-        cssLabel.setMinWidth(Hyperlink.USE_PREF_SIZE);
+        cssLabel.setMinWidth(Label.USE_PREF_SIZE);
         gridPane.add(cssBox, 0, 1);
         if (info.getAttribute().cssProperty() != null) {
             cssTextField.setText(info.getAttribute().cssProperty());
