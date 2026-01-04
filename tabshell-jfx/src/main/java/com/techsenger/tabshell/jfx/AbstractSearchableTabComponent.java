@@ -14,31 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx.environment;
+package com.techsenger.tabshell.jfx;
 
-import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.tab.AbstractTabComponent;
-import com.techsenger.tabshell.jfx.AbstractSearchableTabComponent;
-import com.techsenger.tabshell.jfx.JfxComponentNames;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class EnvironmentTabComponent<T extends EnvironmentTabView<?, ?>> extends AbstractSearchableTabComponent<T> {
+public abstract class AbstractSearchableTabComponent<T extends AbstractSearchableTabView<?, ?>>
+        extends AbstractTabComponent<T> {
 
-    public EnvironmentTabComponent(T view) {
+    public AbstractSearchableTabComponent(T view) {
         super(view);
     }
-
-    @Override
-    protected Mediator createMediator() {
-        return new AbstractTabComponent.Mediator() { };
-    }
-
-    @Override
-    public Name getName() {
-        return JfxComponentNames.ENVIRONMENT_TAB;
-    }
-
 }

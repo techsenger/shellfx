@@ -23,15 +23,15 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class StylesheetNode implements StylesheetItem {
+public class StylesheetDataItem implements StylesheetItem {
 
     private final String name;
 
-    private List<StylesheetNode> children = Collections.EMPTY_LIST;
+    private List<StylesheetDataItem> children = Collections.EMPTY_LIST;
 
     private List<String> stylesheets = Collections.EMPTY_LIST;
 
-    public StylesheetNode(String name) {
+    public StylesheetDataItem(String name) {
         this.name = name;
     }
 
@@ -40,11 +40,11 @@ public class StylesheetNode implements StylesheetItem {
         return name;
     }
 
-    public List<StylesheetNode> getChildren() {
+    public List<StylesheetDataItem> getChildren() {
         return children;
     }
 
-    public void setChildren(List<StylesheetNode> children) {
+    public void setChildren(List<StylesheetDataItem> children) {
         this.children = children;
     }
 

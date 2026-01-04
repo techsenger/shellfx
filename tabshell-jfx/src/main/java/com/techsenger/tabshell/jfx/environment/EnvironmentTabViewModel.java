@@ -19,8 +19,8 @@ package com.techsenger.tabshell.jfx.environment;
 import com.techsenger.patternfx.core.State;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.TabMediator;
+import com.techsenger.tabshell.jfx.AbstractSearchableTabViewModel;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.connector.KeyValue;
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -39,7 +40,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class EnvironmentTabViewModel<T extends TabMediator> extends AbstractTabViewModel<T> {
+public class EnvironmentTabViewModel<T extends TabMediator> extends AbstractSearchableTabViewModel<T> {
 
     private final Connector connector;
 
@@ -71,9 +72,10 @@ public class EnvironmentTabViewModel<T extends TabMediator> extends AbstractTabV
 
         getMediator().stateProperty().addListener((ov, oldV, newV) -> {
             if (newV == State.INITIALIZED) {
-                update(null);
+                refresh();
             }
         });
+        caseSensitiveProperty().addListener((ov, oldV, newV) -> refresh());
     }
 
     ObservableList<EnvironmentDataItem> getItems() {
@@ -84,27 +86,24 @@ public class EnvironmentTabViewModel<T extends TabMediator> extends AbstractTabV
         return expandedByCategory;
     }
 
-    void find(String text) {
-
-    }
-
-    void update(String text) {
+    void refresh() {
         items.clear();
         var e = this.connector.getEnv();
         var allItems = new ArrayList<EnvironmentDataItem>();
-        addItems(allItems, text, EnvironmentCategory.PLATFORM,
+        var matcher = createMatcher();
+        addItems(allItems, matcher, EnvironmentCategory.PLATFORM,
                 e.getPlatformPreferences(), e.getOtherPlatformProperties(), e.getConditionalFeatures());
-        addItems(allItems, text, EnvironmentCategory.SYSTEM_PROPERTY, e.getSystemProperties());
-        addItems(allItems, text, EnvironmentCategory.ENVIRONMENT_VARIABLE, e.getEnvVariables());
+        addItems(allItems, matcher, EnvironmentCategory.SYSTEM_PROPERTY, e.getSystemProperties());
+        addItems(allItems, matcher, EnvironmentCategory.ENVIRONMENT_VARIABLE, e.getEnvVariables());
         items.addAll(allItems);
     }
 
-    private void addItems(List<EnvironmentDataItem> allItems, String text, EnvironmentCategory cat,
+    private void addItems(List<EnvironmentDataItem> allItems, Matcher matcher, EnvironmentCategory cat,
             List<KeyValue>... lists) {
         var tempList = new ArrayList<EnvironmentDataItem>();
         for (var l : lists) {
             for (var kv : l) {
-                if (text != null && !text.isEmpty() && !kv.key().contains(text)) {
+                if (matcher != null && !matcher.reset(kv.key()).find()) {
                     continue;
                 }
                 tempList.add(new EnvironmentDataItem(cat, kv.key(), kv.value()));

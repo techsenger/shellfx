@@ -18,8 +18,8 @@ package com.techsenger.tabshell.jfx.stylesheet;
 
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.TabMediator;
+import com.techsenger.tabshell.jfx.AbstractSearchableTabViewModel;
 import com.techsenger.tabshell.jfx.ElementUtils;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.scenegraph.Element;
@@ -32,19 +32,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class StylesheetTabViewModel<T extends TabMediator> extends AbstractTabViewModel<T> {
+public class StylesheetTabViewModel<T extends TabMediator> extends AbstractSearchableTabViewModel<T> {
 
     private static String formatWindowType(int uid, WindowProperties props) {
         String text;
@@ -77,47 +72,19 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractTabVi
 
     private final int windowUid;
 
-    private final ReadOnlyObjectWrapper<StylesheetNode> root = new ReadOnlyObjectWrapper<>();
-
-    private final StringProperty searchText = new SimpleStringProperty();
-
-    private final BooleanProperty caseSensitive = new SimpleBooleanProperty(false);
+    private final ReadOnlyObjectWrapper<StylesheetDataItem> root = new ReadOnlyObjectWrapper<>();
 
     public StylesheetTabViewModel(Connector connector, int stageUid) {
         this.connector = connector;
         this.windowUid = stageUid;
     }
 
-    public StylesheetNode getRoot() {
+    public StylesheetDataItem getRoot() {
         return root.get();
     }
 
-    public ReadOnlyObjectProperty<StylesheetNode> rootProperty() {
+    public ReadOnlyObjectProperty<StylesheetDataItem> rootProperty() {
         return root.getReadOnlyProperty();
-    }
-
-    public String getSearchText() {
-        return searchText.get();
-    }
-
-    public void setSearchText(String value) {
-        searchText.set(value);
-    }
-
-    public StringProperty searchTextProperty() {
-        return searchText;
-    }
-
-    public boolean isCaseSensitive() {
-        return caseSensitive.get();
-    }
-
-    public void setCaseSensitive(boolean value) {
-        caseSensitive.set(value);
-    }
-
-    public BooleanProperty caseSensitiveProperty() {
-        return caseSensitive;
     }
 
     public void refresh() {
@@ -147,7 +114,7 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractTabVi
         super.initialize();
         setTitle("Stylesheets");
         setClosable(false);
-        caseSensitive.addListener((ov, oldV, newV) -> {
+        caseSensitiveProperty().addListener((ov, oldV, newV) -> {
             if (getSearchText() != null && !getSearchText().isBlank()) {
                 rebuildTree();
             }
@@ -157,54 +124,48 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractTabVi
 
     protected void rebuildTree() {
         var entry = connector.getStyledElements(windowUid);
-        var root = new StylesheetNode("Application [" + connector.getUserAgentStylesheet() + "]");
-        var window = new StylesheetNode(formatWindowType(windowUid, entry.getKey()));
+        var root = new StylesheetDataItem("Application [" + connector.getUserAgentStylesheet() + "]");
+        var window = new StylesheetDataItem(formatWindowType(windowUid, entry.getKey()));
         root.setChildren(List.of(window));
-        List<StylesheetNode> nodes = new ArrayList<>();
-        window.setChildren(nodes);
+        List<StylesheetDataItem> items = new ArrayList<>();
+        window.setChildren(items);
 
-        Matcher matcher = null;
-        if (getSearchText() != null && !getSearchText().isBlank()) {
-             int flags = isCaseSensitive() ? Pattern.LITERAL
-                                  : Pattern.CASE_INSENSITIVE | Pattern.LITERAL;
-            var pattern = Pattern.compile(getSearchText().trim(), flags);
-            matcher = pattern.matcher("");
-        }
+        Matcher matcher = createMatcher();
 
         var sceneStylesheets = entry.getKey().sceneStylesheets();
         if (sceneStylesheets != null && !sceneStylesheets.isEmpty()) {
-            var node = filterAndCreateNode(null, entry.getKey().sceneStylesheets(), matcher);
-            if (node != null) {
-                nodes.add(node);
+            var item = filterAndCreateItem(null, entry.getKey().sceneStylesheets(), matcher);
+            if (item != null) {
+                items.add(item);
             }
         }
 
         for (var e : entry.getValue()) {
-            var element = filterAndCreateNode(e, e.getNodeProperties().stylesheets(), matcher);
+            var element = filterAndCreateItem(e, e.getNodeProperties().stylesheets(), matcher);
             if (element != null) {
-                nodes.add(element);
+                items.add(element);
             }
         }
         setRoot(root);
     }
 
-    protected void setRoot(StylesheetNode item) {
+    protected void setRoot(StylesheetDataItem item) {
         root.set(item);
     }
 
-    protected StylesheetNode filterAndCreateNode(Element el, List<String> stylesheets, Matcher matcher) {
-        StylesheetNode node = null;
+    protected StylesheetDataItem filterAndCreateItem(Element el, List<String> stylesheets, Matcher matcher) {
+        StylesheetDataItem item = null;
         if (el == null) {
             if (matcher == null) {
-                node = new StylesheetNode("Scene");
+                item = new StylesheetDataItem("Scene");
             } else {
                 if (matcher.reset("Scene").find()) {
-                    node = new StylesheetNode("Scene");
+                    item = new StylesheetDataItem("Scene");
                 }
             }
         } else {
             if (matcher == null) {
-                node = new StylesheetNode(ElementUtils.getTitle(el));
+                item = new StylesheetDataItem(ElementUtils.getTitle(el));
             } else {
                 var id = el.getNodeProperties().id();
                 var styleClasses = el.getNodeProperties().styleClass();
@@ -212,14 +173,14 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractTabVi
                         || (id != null && matcher.reset(id).find())
                         || (styleClasses != null && styleClasses.stream()
                                 .filter(s -> matcher.reset(s).find()).anyMatch(e -> true))) {
-                    node = new StylesheetNode(ElementUtils.getTitle(el));
+                    item = new StylesheetDataItem(ElementUtils.getTitle(el));
                 }
             }
         }
 
-        if (node != null && stylesheets != null) {
-            node.setStylesheets(stylesheets);
+        if (item != null && stylesheets != null) {
+            item.setStylesheets(stylesheets);
         }
-        return node;
+        return item;
     }
 }

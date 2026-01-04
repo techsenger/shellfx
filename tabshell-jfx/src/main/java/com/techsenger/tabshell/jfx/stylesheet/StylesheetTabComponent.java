@@ -18,13 +18,14 @@ package com.techsenger.tabshell.jfx.stylesheet;
 
 import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.tab.AbstractTabComponent;
+import com.techsenger.tabshell.jfx.AbstractSearchableTabComponent;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class StylesheetTabComponent<T extends StylesheetTabView<?, ?>> extends AbstractTabComponent<T> {
+public class StylesheetTabComponent<T extends StylesheetTabView<?, ?>> extends AbstractSearchableTabComponent<T> {
 
     public StylesheetTabComponent(T view) {
         super(view);

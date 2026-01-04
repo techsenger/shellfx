@@ -16,8 +16,7 @@
 
 package com.techsenger.tabshell.jfx.environment;
 
-import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.material.SearchField;
+import com.techsenger.tabshell.jfx.AbstractSearchableTabView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,7 +25,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -35,11 +33,7 @@ import javafx.scene.layout.VBox;
  * @author Pavel Castornii
  */
 public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends EnvironmentTabComponent<?>>
-        extends AbstractTabView<T, S> {
-
-    private final SearchField searchField = new SearchField(SearchField.SearchMode.AUTO);
-
-    private final HBox searchWrapper = new HBox(searchField);
+        extends AbstractSearchableTabView<T, S> {
 
     private final TreeTableView<EnvironmentItem> tableView = new TreeTableView<>();
 
@@ -55,8 +49,8 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
     @Override
     protected void build() {
         super.build();
-        HBox.setHgrow(searchField, Priority.ALWAYS);
-        searchWrapper.getStyleClass().add("search-wrapper");
+        // getSearchField().getTextComboBox().setPromptText("Property");
+        getToolBar().getItems().addAll(getSearchField(), getMatchCaseButton(), getRefreshButton());
 
         TreeTableColumn<EnvironmentItem, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
@@ -81,7 +75,7 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
         tableView.setPlaceholder(new Label(""));
         VBox.setVgrow(tableView, Priority.ALWAYS);
 
-        getContentPane().getChildren().addAll(tableView, searchWrapper);
+        getContentPane().getChildren().addAll(getToolBar(), tableView);
         var styles = EnvironmentTabView.class.getResource("environment-tab.css").toExternalForm();
         getContentPane().getStylesheets().add(styles);
     }
@@ -105,8 +99,9 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
     protected void addHandlers() {
         super.addHandlers();
         var vm = getViewModel();
-        searchField.setSearchHandler((t) -> vm.update(t));
-        searchField.setClearHandler(() -> vm.update(null));
+        getSearchField().setSearchHandler((t) -> vm.refresh());
+        getSearchField().setClearHandler(() -> vm.refresh());
+        getRefreshButton().setOnAction(e -> vm.refresh());
     }
 
     protected TreeTableView<EnvironmentItem> getTableView() {
