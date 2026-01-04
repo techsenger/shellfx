@@ -109,15 +109,19 @@
 }
 
 .table-view.dense .column-header-background .column-header,
-.table-view.extra-dense .column-header-background .column-header,
-.tree-table-view.dense .column-header-background .column-header,
-.tree-table-view.extra-dense .column-header-background .column-header {
+.tree-table-view.dense .column-header-background .column-header {
     -fx-fixed-cell-size: 2em; /* decimal values (e.g., 2.Xem) may remove the header border */
     -fx-size: 2em;
 }
 
 .table-view.dense, .tree-table-view.dense {
     -fx-fixed-cell-size: 2em;
+}
+
+.table-view.extra-dense .column-header-background .column-header,
+.tree-table-view.extra-dense .column-header-background .column-header {
+    -fx-fixed-cell-size: 2em; /* decimal values (e.g., 2.Xem) may remove the header border */
+    -fx-size: 2em;
 }
 
 .table-view.extra-dense .table-row-cell,
