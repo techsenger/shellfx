@@ -267,7 +267,7 @@ public class DefaultShellViewModel<T extends ShellMediator> extends AbstractPare
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

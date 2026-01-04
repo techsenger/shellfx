@@ -132,7 +132,7 @@ public class TerminalTabViewModel<T extends TerminalTabMediator> extends Abstrac
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

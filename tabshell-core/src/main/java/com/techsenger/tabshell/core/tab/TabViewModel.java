@@ -52,13 +52,6 @@ public interface TabViewModel<T extends TabMediator> extends ChildViewModel<T>, 
     void setTooltip(String tooltip);
 
     /**
-     * Returns true if the tab can be closed and false otherwise.
-     *
-     * @return
-     */
-    boolean isReadyToClose();
-
-    /**
      * Returns the closable property of the component.
      *
      * @return

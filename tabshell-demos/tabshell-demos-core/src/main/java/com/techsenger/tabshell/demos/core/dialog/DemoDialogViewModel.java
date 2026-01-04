@@ -37,7 +37,7 @@ public class DemoDialogViewModel extends AbstractDialogViewModel<DialogMediator>
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

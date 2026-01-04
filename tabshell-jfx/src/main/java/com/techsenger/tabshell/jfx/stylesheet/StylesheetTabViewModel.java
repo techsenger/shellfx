@@ -92,7 +92,7 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractSearc
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

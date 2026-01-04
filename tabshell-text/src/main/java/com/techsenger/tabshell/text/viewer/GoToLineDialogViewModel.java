@@ -88,7 +88,7 @@ public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<Dialo
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

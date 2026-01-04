@@ -99,7 +99,7 @@ public class DemoTabViewModel<T extends DemoTabMediator> extends AbstractShellTa
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

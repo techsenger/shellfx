@@ -85,7 +85,7 @@ public class AlertDialogViewModel<T extends DialogMediator> extends AbstractSimp
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

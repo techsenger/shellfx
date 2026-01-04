@@ -132,7 +132,7 @@ public class WebBrowserTabViewModel<T extends WebBrowserTabMediator> extends Abs
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

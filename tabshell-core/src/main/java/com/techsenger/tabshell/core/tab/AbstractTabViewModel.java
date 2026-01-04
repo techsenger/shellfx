@@ -115,11 +115,6 @@ public abstract class AbstractTabViewModel<T extends TabMediator> extends Abstra
         return selectedProperty().get();
     }
 
-    @Override
-    public boolean isReadyToClose() {
-        return true;
-    }
-
     public BooleanProperty waitingProperty() {
         return waiting;
     }

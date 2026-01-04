@@ -118,7 +118,7 @@ public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

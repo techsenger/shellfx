@@ -60,7 +60,7 @@ public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends A
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

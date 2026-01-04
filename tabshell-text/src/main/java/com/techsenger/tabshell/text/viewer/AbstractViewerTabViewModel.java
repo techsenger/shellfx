@@ -288,7 +288,7 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
 
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         if (isModified() && this.textStateId != discardStateId) {
             return CloseCheckResult.PREPARATION_REQUIRED;
         } else {

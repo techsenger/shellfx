@@ -39,7 +39,7 @@ public class DockLayoutTabViewModel extends AbstractShellTabViewModel<ShellTabMe
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

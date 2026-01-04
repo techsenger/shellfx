@@ -51,7 +51,7 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
      * <p>The algorithm works as follows:
      * <ol>
      *     <li>Traverse this component and all its descendants in breadth-first order.</li>
-     *     <li>During the traversal, {@link #canClose()} is called for each component to obtain a snapshot of its
+     *     <li>During the traversal, {@link #isReadyToClose()} is called for each component to obtain a snapshot of its
      *         current close state.</li>
      *     <li>If any component returns {@link CloseCheckResult#NOT_READY}, the traversal stops immediately and the
      *         close request is aborted.</li>
@@ -61,7 +61,7 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
      *     <li>If a component requiring preparation was found, {@link #prepareToClose(Callback)} is invoked for that
      *         single component, and the close request is suspended until the preparation callback completes.</li>
      *     <li>After a successful preparation, the algorithm restarts from the beginning with a fresh traversal of
-     *         {@link #canClose()} over the entire component subtree.</li>
+     *         {@link #isReadyToClose()} over the entire component subtree.</li>
      *     <li>When a full traversal completes with all components reporting
      *         {@link CloseCheckResult#READY}, {@link #close()} is invoked to perform the actual close operation.</li>
      * </ol>
@@ -90,25 +90,26 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
             private void run() {
                 attemptCount++;
                 logger().debug("{} Close requested; attempt: {}", getMediator().getLogPrefix(), attemptCount);
-                CloseCheckResult canClose = null;
+                CloseCheckResult checkResult = null;
                 CloseableViewModel<?> notReadyComponent = null;
                 CloseableViewModel<?> prepRequiredComponent = null;
                 var iterator = getMediator().breadthFirstIterator();
                 while (iterator.hasNext()) {
                     var parent = iterator.next();
                     if (parent instanceof CloseableViewModel<?> closeable) {
-                        canClose = closeable.canClose();
-                        Objects.requireNonNull(canClose, "Preparation result can't be null");
-                        if (canClose == CloseCheckResult.NOT_READY) {
+                        checkResult = closeable.isReadyToClose();
+                        Objects.requireNonNull(checkResult, "Preparation result can't be null");
+                        if (checkResult == CloseCheckResult.NOT_READY) {
                             notReadyComponent = closeable;
                             break;
-                        } else if (canClose == CloseCheckResult.PREPARATION_REQUIRED && prepRequiredComponent == null) {
+                        } else if (checkResult == CloseCheckResult.PREPARATION_REQUIRED
+                                && prepRequiredComponent == null) {
                             prepRequiredComponent = closeable;
                         }
                     }
                 }
-                if (canClose != CloseCheckResult.READY && logger().isDebugEnabled()) {
-                    final var finalCanClose = canClose;
+                if (checkResult != CloseCheckResult.READY && logger().isDebugEnabled()) {
+                    final var finalCanClose = checkResult;
                     final var finalSavedCloseable = notReadyComponent;
                     var tree = getMediator().toTreeString((c, b) -> {
                         b.append(c.getMediator().getFullName());
@@ -120,7 +121,7 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
                     logger().debug("{} Not all components are ready to be closed:\n{}",
                             getMediator().getLogPrefix(), tree);
                 }
-                if (canClose == CloseCheckResult.NOT_READY) {
+                if (checkResult == CloseCheckResult.NOT_READY) {
                     acceptResult(CloseRequestResult.NOT_READY_TO_CLOSE);
                 } else if (prepRequiredComponent != null) {
                     prepRequiredComponent.prepareToClose(this::handlePreparationResult);
@@ -188,12 +189,12 @@ public interface CloseableViewModel<T extends ParentMediator> extends ParentView
      *         {@link CloseCheckResult#PREPARATION_REQUIRED} if preparation is required,
      *         or {@link CloseCheckResult#NOT_READY} if closing is disallowed
      */
-    CloseCheckResult canClose();
+    CloseCheckResult isReadyToClose();
 
     /**
      * Prepares the component for closing.
-     *
-     * <p>This method is invoked only if {@link #canClose()} returned {@link CloseCheckResult#PREPARATION_REQUIRED}.
+     * <p>
+     * This method is invoked only if {@link #isReadyToClose()} returned {@link CloseCheckResult#PREPARATION_REQUIRED}.
      * Implementations may perform actions such as saving data, stopping background tasks, or waiting for
      * asynchronous operations to complete. Once the component is fully prepared and guaranteed to be closable,
      * the provided callback must be invoked.

@@ -70,7 +70,7 @@ public class YesNoDialogViewModel<T extends DialogMediator> extends AbstractDial
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

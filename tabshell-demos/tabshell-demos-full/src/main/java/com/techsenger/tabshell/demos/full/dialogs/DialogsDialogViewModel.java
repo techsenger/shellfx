@@ -64,7 +64,7 @@ public class DialogsDialogViewModel extends AbstractSimpleDialogViewModel<Dialog
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

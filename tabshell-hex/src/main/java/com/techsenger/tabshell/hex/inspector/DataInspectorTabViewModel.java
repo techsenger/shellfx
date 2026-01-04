@@ -161,7 +161,7 @@ public class DataInspectorTabViewModel extends AbstractTabViewModel<TabMediator>
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

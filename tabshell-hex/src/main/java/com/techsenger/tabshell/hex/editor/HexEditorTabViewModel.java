@@ -91,7 +91,7 @@ public class HexEditorTabViewModel<T extends HexEditorTabMediator> extends Abstr
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

@@ -40,7 +40,7 @@ public class NameValueDialogViewModel<T extends DialogMediator> extends Abstract
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

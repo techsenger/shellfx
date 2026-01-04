@@ -69,7 +69,7 @@ public class ThemeDialogViewModel extends AbstractSimpleDialogViewModel<DialogMe
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 

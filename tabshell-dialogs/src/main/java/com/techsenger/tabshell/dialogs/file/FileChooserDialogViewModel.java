@@ -349,7 +349,7 @@ public class FileChooserDialogViewModel<T extends FileChooserDialogMediator> ext
     }
 
     @Override
-    public CloseCheckResult canClose() {
+    public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
 
