@@ -258,7 +258,7 @@
 .tool-bar.dense {
     -fx-min-height: -1;
     -fx-max-height: -1;
-    -fx-padding: 2 2 3 2; /* 3 = 2(padding) + 1(bg-insetts) */
+    -fx-padding: 2 4 3 4; /* 3 = 2(padding) + 1(bg-insetts) */
 }
 
 .tool-bar.dense .button.iconed,
