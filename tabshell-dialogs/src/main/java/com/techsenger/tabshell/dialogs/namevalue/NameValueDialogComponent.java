@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs;
+package com.techsenger.tabshell.dialogs.namevalue;
 
 import com.techsenger.patternfx.core.Name;
+import com.techsenger.tabshell.dialogs.DialogComponentNames;
+import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogComponentNames {
+public class NameValueDialogComponent<T extends NameValueDialogView<?, ?>>
+        extends AbstractSimpleDialogComponent<T> {
 
-    Name ALERT_DIALOG = new Name("AlertDialog");
+    public NameValueDialogComponent(T view) {
+        super(view);
+    }
 
-    Name YES_NO_DIALOG = new Name("YesNoDialog");
+    @Override
+    protected Mediator createMediator() {
+        return new AbstractSimpleDialogComponent.Mediator() { };
+    }
 
-    Name FILE_CHOOSER_DIALOG = new Name("FileChooserDialog");
+    @Override
+    public Name getName() {
+        return DialogComponentNames.NAME_VALUE_DIALOG;
+    }
 
-    Name NAME_VALUE_DIALOG = new Name("NameValueDialog");
 }

@@ -24,6 +24,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -93,6 +94,14 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
                 }
             }
         });
+        tableView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+            var wrapper = getViewModel().getSelectedItemWrapper();
+            if (newV == null) {
+                wrapper.set(null);
+            } else {
+                wrapper.set(newV.getValue());
+            }
+        });
     }
 
     @Override
@@ -102,6 +111,15 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
         getSearchField().setSearchHandler((t) -> vm.refresh());
         getSearchField().setClearHandler(() -> vm.refresh());
         getRefreshButton().setOnAction(e -> vm.refresh());
+        tableView.setRowFactory(ttv -> {
+            TreeTableRow<EnvironmentItem> row = new TreeTableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    getViewModel().handleItemClick();
+                }
+            });
+            return row;
+        });
     }
 
     protected TreeTableView<EnvironmentItem> getTableView() {

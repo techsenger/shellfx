@@ -141,7 +141,7 @@ public class JfxTabDockComponent<T extends JfxTabDockView<?, ?>> extends TabDock
     protected EnvironmentTabComponent<?> createEnvironmentTab() {
         var vm = new EnvironmentTabViewModel<>(connector);
         var v = new EnvironmentTabView<>(vm);
-        var c = new EnvironmentTabComponent<>(v);
+        var c = new EnvironmentTabComponent<>(v, shellTab);
         return c;
     }
 }

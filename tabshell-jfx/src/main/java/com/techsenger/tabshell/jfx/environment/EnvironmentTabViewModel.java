@@ -19,7 +19,8 @@ package com.techsenger.tabshell.jfx.environment;
 import com.techsenger.patternfx.core.State;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.tab.TabMediator;
+import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogViewModel;
 import com.techsenger.tabshell.jfx.AbstractSearchableTabViewModel;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.connector.KeyValue;
@@ -32,6 +33,8 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,13 +43,15 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class EnvironmentTabViewModel<T extends TabMediator> extends AbstractSearchableTabViewModel<T> {
+public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends AbstractSearchableTabViewModel<T> {
 
     private final Connector connector;
 
     private final ObservableList<EnvironmentDataItem> items = FXCollections.observableArrayList();
 
     private final Map<EnvironmentCategory, BooleanProperty> expandedByCategory;
+
+    private final ReadOnlyObjectWrapper<EnvironmentItem> selectedItem = new ReadOnlyObjectWrapper<>();
 
     public EnvironmentTabViewModel(Connector connector) {
         this.connector = connector;
@@ -62,6 +67,14 @@ public class EnvironmentTabViewModel<T extends TabMediator> extends AbstractSear
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public final ReadOnlyObjectProperty<EnvironmentItem> selectedItemProperty() {
+        return selectedItem.getReadOnlyProperty();
+    }
+
+    public final EnvironmentItem getSelectedItem() {
+        return selectedItem.get();
     }
 
     @Override
@@ -86,6 +99,10 @@ public class EnvironmentTabViewModel<T extends TabMediator> extends AbstractSear
         return expandedByCategory;
     }
 
+    ReadOnlyObjectWrapper<EnvironmentItem> getSelectedItemWrapper() {
+        return selectedItem;
+    }
+
     void refresh() {
         items.clear();
         var e = this.connector.getEnv();
@@ -96,6 +113,16 @@ public class EnvironmentTabViewModel<T extends TabMediator> extends AbstractSear
         addItems(allItems, matcher, EnvironmentCategory.SYSTEM_PROPERTY, e.getSystemProperties());
         addItems(allItems, matcher, EnvironmentCategory.ENVIRONMENT_VARIABLE, e.getEnvVariables());
         items.addAll(allItems);
+    }
+
+    void handleItemClick() {
+        if (getSelectedItem() instanceof EnvironmentDataItem i) {
+            var vm = new NameValueDialogViewModel<>(DialogScope.TAB, true);
+            vm.setTitle("Property Dialog");
+            vm.setName(i.name());
+            vm.setValue(i.value());
+            getMediator().addNameValueDialog(vm);
+        }
     }
 
     private void addItems(List<EnvironmentDataItem> allItems, Matcher matcher, EnvironmentCategory cat,

@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs;
+package com.techsenger.tabshell.jfx.environment;
 
-import com.techsenger.patternfx.core.Name;
+import com.techsenger.tabshell.core.tab.TabMediator;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogComponentNames {
+public interface EnvironmentTabMediator extends TabMediator {
 
-    Name ALERT_DIALOG = new Name("AlertDialog");
-
-    Name YES_NO_DIALOG = new Name("YesNoDialog");
-
-    Name FILE_CHOOSER_DIALOG = new Name("FileChooserDialog");
-
-    Name NAME_VALUE_DIALOG = new Name("NameValueDialog");
+    void addNameValueDialog(NameValueDialogViewModel<?> vm);
 }

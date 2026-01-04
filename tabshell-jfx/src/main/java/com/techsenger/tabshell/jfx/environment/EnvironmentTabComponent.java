@@ -17,7 +17,10 @@
 package com.techsenger.tabshell.jfx.environment;
 
 import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.core.tab.AbstractTabComponent;
+import com.techsenger.tabshell.core.tab.ShellTabComponent;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogComponent;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogView;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogViewModel;
 import com.techsenger.tabshell.jfx.AbstractSearchableTabComponent;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
 
@@ -27,13 +30,30 @@ import com.techsenger.tabshell.jfx.JfxComponentNames;
  */
 public class EnvironmentTabComponent<T extends EnvironmentTabView<?, ?>> extends AbstractSearchableTabComponent<T> {
 
-    public EnvironmentTabComponent(T view) {
+    protected class Mediator extends AbstractSearchableTabComponent.Mediator implements EnvironmentTabMediator {
+
+        private final EnvironmentTabComponent component = EnvironmentTabComponent.this;
+
+        @Override
+        public void addNameValueDialog(NameValueDialogViewModel<?> vm) {
+            var v = new NameValueDialogView<>(vm);
+            var c = new NameValueDialogComponent<>(v);
+            c.initialize();
+            component.shellTab.addDialog(c);
+        }
+
+    }
+
+    private final ShellTabComponent<?> shellTab;
+
+    public EnvironmentTabComponent(T view, ShellTabComponent<?> shellTab) {
         super(view);
+        this.shellTab = shellTab;
     }
 
     @Override
     protected Mediator createMediator() {
-        return new AbstractTabComponent.Mediator() { };
+        return new Mediator();
     }
 
     @Override
