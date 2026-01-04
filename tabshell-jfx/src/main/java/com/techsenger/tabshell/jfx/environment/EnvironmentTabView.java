@@ -117,7 +117,7 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
         for (var i : items) {
             if (cat != i.category()) {
                 cat = i.category();
-                catTreeItem = new TreeItem<EnvironmentItem>(new EnvironmentCategoryItem(cat.name()));
+                catTreeItem = new TreeItem<EnvironmentItem>(new EnvironmentCategoryItem(getText(cat)));
                 var vmExpanded = getViewModel().getExpandedByCategory().get(cat);
                 catTreeItem.setExpanded(vmExpanded.get());
                 catTreeItem.expandedProperty().addListener((ov, oldV, newV) -> vmExpanded.set(newV));
@@ -130,5 +130,14 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
 
     private void clearTree() {
         this.tableView.setRoot(null);
+    }
+
+    private String getText(EnvironmentCategory cat) {
+        return switch (cat) {
+            case ENVIRONMENT_VARIABLE -> "Environment Variables";
+            case PLATFORM -> "Platform";
+            case SYSTEM_PROPERTY -> "System Properties";
+            default -> throw new AssertionError();
+        };
     }
 }
