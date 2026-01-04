@@ -22,5 +22,10 @@ package com.techsenger.tabshell.jfx.environment;
  */
 public interface EnvironmentItem {
 
+    /**
+     * Returns item name.
+     *
+     * @return
+     */
     String name();
 }
