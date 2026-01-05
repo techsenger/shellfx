@@ -22,6 +22,9 @@ import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogViewModel;
 import com.techsenger.tabshell.jfx.AbstractSearchableTabViewModel;
+import static com.techsenger.tabshell.jfx.environment.EnvironmentCategory.ENVIRONMENT_VARIABLE;
+import static com.techsenger.tabshell.jfx.environment.EnvironmentCategory.PLATFORM;
+import static com.techsenger.tabshell.jfx.environment.EnvironmentCategory.SYSTEM_PROPERTY;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.connector.KeyValue;
 import java.util.ArrayList;
@@ -45,9 +48,22 @@ import javafx.collections.ObservableList;
  */
 public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends AbstractSearchableTabViewModel<T> {
 
+    protected static String getText(EnvironmentCategory cat) {
+        return switch (cat) {
+            case ENVIRONMENT_VARIABLE -> "Environment Variables";
+            case PLATFORM -> "Platform";
+            case SYSTEM_PROPERTY -> "System Properties";
+            default -> throw new AssertionError();
+        };
+    }
+
     private final Connector connector;
 
-    private final ObservableList<EnvironmentDataItem> items = FXCollections.observableArrayList();
+    /**
+    * Flat list of items representing a tree structure. The hierarchy is encoded via {@link EnvironmentItem#getDepth()}
+    * and the actual TreeItems are rebuilt in the View on each refresh.
+    */
+    private final ObservableList<EnvironmentItem> items = FXCollections.observableArrayList();
 
     private final Map<EnvironmentCategory, BooleanProperty> expandedByCategory;
 
@@ -91,12 +107,8 @@ public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends A
         caseSensitiveProperty().addListener((ov, oldV, newV) -> refresh());
     }
 
-    ObservableList<EnvironmentDataItem> getItems() {
+    ObservableList<EnvironmentItem> getItems() {
         return items;
-    }
-
-    Map<EnvironmentCategory, BooleanProperty> getExpandedByCategory() {
-        return expandedByCategory;
     }
 
     ReadOnlyObjectWrapper<EnvironmentItem> getSelectedItemWrapper() {
@@ -106,7 +118,8 @@ public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends A
     void refresh() {
         items.clear();
         var e = this.connector.getEnv();
-        var allItems = new ArrayList<EnvironmentDataItem>();
+        var allItems = new ArrayList<EnvironmentItem>();
+        allItems.add(new DefaultEnvironmentItem(EnvironmentItem.ROOT_DEPTH, "", null, true));
         var matcher = createMatcher();
         addItems(allItems, matcher, EnvironmentCategory.PLATFORM,
                 e.getPlatformPreferences(), e.getOtherPlatformProperties(), e.getConditionalFeatures());
@@ -116,27 +129,39 @@ public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends A
     }
 
     void handleItemClick() {
-        if (getSelectedItem() instanceof EnvironmentDataItem i) {
+        var i = getSelectedItem();
+        if (i.getDepth() == EnvironmentItem.PROPERTY_DEPTH) {
             var vm = new NameValueDialogViewModel<>(DialogScope.TAB, true);
             vm.setTitle("Property Dialog");
-            vm.setName(i.name());
-            vm.setValue(i.value());
+            vm.setName(i.getName());
+            vm.setValue(i.getValue());
             getMediator().addNameValueDialog(vm);
         }
     }
 
-    private void addItems(List<EnvironmentDataItem> allItems, Matcher matcher, EnvironmentCategory cat,
+    private void addItems(List<EnvironmentItem> allItems, Matcher matcher, EnvironmentCategory cat,
             List<KeyValue>... lists) {
-        var tempList = new ArrayList<EnvironmentDataItem>();
+        var tempList = new ArrayList<EnvironmentItem>();
         for (var l : lists) {
             for (var kv : l) {
                 if (matcher != null && !matcher.reset(kv.key()).find()) {
                     continue;
                 }
-                tempList.add(new EnvironmentDataItem(cat, kv.key(), kv.value()));
+                tempList.add(new DefaultEnvironmentItem(EnvironmentItem.PROPERTY_DEPTH, kv.key(), kv.value(), false));
             }
         }
-        tempList.sort(Comparator.comparing(EnvironmentDataItem::name));
-        allItems.addAll(tempList);
+        if (!tempList.isEmpty()) {
+            tempList.sort(Comparator.comparing(EnvironmentItem::getName));
+            var expandedProperty = expandedByCategory.get(cat);
+            allItems.add(new DefaultEnvironmentItem(EnvironmentItem.CATEGORY_DEPTH, getText(cat), null,
+                    expandedProperty.get()) {
+
+                @Override
+                public void setExpanded(boolean expanded) {
+                    expandedProperty.set(expanded);
+                }
+            });
+            allItems.addAll(tempList);
+        }
     }
 }

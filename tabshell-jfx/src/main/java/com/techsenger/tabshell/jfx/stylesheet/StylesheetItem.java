@@ -20,7 +20,13 @@ package com.techsenger.tabshell.jfx.stylesheet;
  *
  * @author Pavel Castornii
  */
-public interface StylesheetItem {
+public record StylesheetItem(int depth, String name, boolean expanded) {
 
-    String getName();
+    public static final int APPLICATION_DEPTH = 0;
+
+    public static final int WINDOW_DEPTH = 1;
+
+    public static final int NODE_DEPTH = 2;
+
+    public static final int STYLESHEET_DEPTH = 3;
 }

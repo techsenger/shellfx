@@ -18,7 +18,10 @@ package com.techsenger.tabshell.jfx.stylesheet;
 
 import com.techsenger.tabshell.jfx.AbstractSearchableTabView;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.toolkit.fx.value.ValueUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -40,7 +43,7 @@ public class StylesheetTabView<T extends StylesheetTabViewModel<?>, S extends St
             if (empty || info == null) {
                 setText(null);
             } else {
-                setText(info.getName());
+                setText(info.name());
             }
         }
     }
@@ -68,12 +71,22 @@ public class StylesheetTabView<T extends StylesheetTabViewModel<?>, S extends St
 
         VBox.setVgrow(treeView, Priority.ALWAYS);
         getContentPane().getChildren().addAll(getToolBar(), treeView);
+        rebuiltTree();
     }
 
     @Override
     protected void addListeners() {
         super.addListeners();
-        ValueUtils.callAndAddListener(getViewModel().rootProperty(), (ov, oldV, newV) -> rebuiltTree(newV));
+        getViewModel().getItems().addListener((ListChangeListener<StylesheetItem>) e -> {
+            while (e.next()) {
+                if (e.wasRemoved()) {
+                    clearTree();
+                }
+                if (e.wasAdded()) {
+                    rebuiltTree();
+                }
+            }
+        });
     }
 
     @Override
@@ -89,28 +102,25 @@ public class StylesheetTabView<T extends StylesheetTabViewModel<?>, S extends St
         return treeView;
     }
 
-    private void rebuiltTree(StylesheetDataItem root) {
-        // do not use the same root multiple times, as it causes a bug with node expansion
-        var rootItem = new TreeItem<StylesheetItem>(root);
-        rootItem.setExpanded(true);
-        var windowVMItem = root.getChildren().get(0);
-        var windowItem = new TreeItem<StylesheetItem>(windowVMItem);
-        windowItem .setExpanded(true);
-        rootItem.getChildren().add(windowItem);
-
-        for (var vmItem : windowVMItem.getChildren()) {
-            var nodeItem = new TreeItem<StylesheetItem>(vmItem);
-            for (var s : vmItem.getStylesheets()) {
-                StylesheetItem stylesheetItem = new StylesheetItem() {
-                    @Override
-                    public String getName() {
-                        return s;
-                    }
-                };
-                nodeItem.getChildren().add(new TreeItem<>(stylesheetItem));
+    private void rebuiltTree() {
+        var items = getViewModel().getItems();
+        List<TreeItem<StylesheetItem>> lastTreeItems = new ArrayList<>(Collections.nCopies(4, null));
+        for (var item : items) {
+            var treeItem = new TreeItem<StylesheetItem>(item);
+            lastTreeItems.set(item.depth(), treeItem);
+            treeItem.setExpanded(item.expanded());
+            if (item.depth() != StylesheetItem.APPLICATION_DEPTH) {
+                var parent = lastTreeItems.get(item.depth() - 1);
+                if (parent != null) {
+                    parent.getChildren().add(treeItem);
+                }
             }
-            windowItem.getChildren().add(nodeItem);
         }
-        treeView.setRoot(rootItem);
+        // do not use the same root multiple times, as it causes a bug with node expansion
+        treeView.setRoot(lastTreeItems.get(0));
+    }
+
+    private void clearTree() {
+        this.treeView.setRoot(null);
     }
 }

@@ -14,25 +14,32 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx.stylesheet;
-
-import java.util.Collections;
-import java.util.List;
+package com.techsenger.tabshell.jfx.environment;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class StylesheetDataItem implements StylesheetItem {
+public class DefaultEnvironmentItem implements EnvironmentItem {
+
+    private final int depth;
 
     private final String name;
 
-    private List<StylesheetDataItem> children = Collections.EMPTY_LIST;
+    private final String value;
 
-    private List<String> stylesheets = Collections.EMPTY_LIST;
+    private final boolean expanded;
 
-    public StylesheetDataItem(String name) {
+    public DefaultEnvironmentItem(int depth, String name, String value, boolean expanded) {
+        this.depth = depth;
         this.name = name;
+        this.value = value;
+        this.expanded = expanded;
+    }
+
+    @Override
+    public int getDepth() {
+        return depth;
     }
 
     @Override
@@ -40,19 +47,18 @@ public class StylesheetDataItem implements StylesheetItem {
         return name;
     }
 
-    public List<StylesheetDataItem> getChildren() {
-        return children;
+    @Override
+    public String getValue() {
+        return value;
     }
 
-    public void setChildren(List<StylesheetDataItem> children) {
-        this.children = children;
+    @Override
+    public boolean isExpanded() {
+        return this.expanded;
     }
 
-    public List<String> getStylesheets() {
-        return stylesheets;
-    }
+    @Override
+    public void setExpanded(boolean expanded) {
 
-    public void setStylesheets(List<String> stylesheets) {
-        this.stylesheets = stylesheets;
     }
 }

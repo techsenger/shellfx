@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -72,19 +72,15 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractSearc
 
     private final int windowUid;
 
-    private final ReadOnlyObjectWrapper<StylesheetDataItem> root = new ReadOnlyObjectWrapper<>();
+    /**
+    * Flat list of items representing a tree structure. The hierarchy is encoded via {@link StylesheetItem#depth()}
+    * and the actual TreeItems are rebuilt in the View on each refresh.
+    */
+    private final ObservableList<StylesheetItem> items = FXCollections.observableArrayList();
 
     public StylesheetTabViewModel(Connector connector, int stageUid) {
         this.connector = connector;
         this.windowUid = stageUid;
-    }
-
-    public StylesheetDataItem getRoot() {
-        return root.get();
-    }
-
-    public ReadOnlyObjectProperty<StylesheetDataItem> rootProperty() {
-        return root.getReadOnlyProperty();
     }
 
     public void refresh() {
@@ -124,48 +120,52 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractSearc
 
     protected void rebuildTree() {
         var entry = connector.getStyledElements(windowUid);
-        var root = new StylesheetDataItem("Application [" + connector.getUserAgentStylesheet() + "]");
-        var window = new StylesheetDataItem(formatWindowType(windowUid, entry.getKey()));
-        root.setChildren(List.of(window));
-        List<StylesheetDataItem> items = new ArrayList<>();
-        window.setChildren(items);
-
         Matcher matcher = createMatcher();
+
+        List<StylesheetItem> tempItems = new ArrayList<>();
+        var item = new StylesheetItem(StylesheetItem.APPLICATION_DEPTH,
+                "Application [" + connector.getUserAgentStylesheet() + "]", true);
+        tempItems.add(item);
+        item = new StylesheetItem(StylesheetItem.WINDOW_DEPTH, formatWindowType(windowUid, entry.getKey()), true);
+        tempItems.add(item);
 
         var sceneStylesheets = entry.getKey().sceneStylesheets();
         if (sceneStylesheets != null && !sceneStylesheets.isEmpty()) {
-            var item = filterAndCreateItem(null, entry.getKey().sceneStylesheets(), matcher);
+            item = filterAndCreateItem(null, matcher);
             if (item != null) {
-                items.add(item);
+                tempItems.add(item);
+                for (var s : sceneStylesheets) {
+                    tempItems.add(new StylesheetItem(3, s, false));
+                }
             }
         }
 
         for (var e : entry.getValue()) {
-            var element = filterAndCreateItem(e, e.getNodeProperties().stylesheets(), matcher);
-            if (element != null) {
-                items.add(element);
+            item = filterAndCreateItem(e, matcher);
+            if (item != null) {
+                tempItems.add(item);
+                for (var s : e.getNodeProperties().stylesheets()) {
+                    tempItems.add(new StylesheetItem(3, s, false));
+                }
             }
         }
-        setRoot(root);
+        this.items.clear();
+        this.items.addAll(tempItems);
     }
 
-    protected void setRoot(StylesheetDataItem item) {
-        root.set(item);
-    }
-
-    protected StylesheetDataItem filterAndCreateItem(Element el, List<String> stylesheets, Matcher matcher) {
-        StylesheetDataItem item = null;
+    protected StylesheetItem filterAndCreateItem(Element el, Matcher matcher) {
+        StylesheetItem item = null;
         if (el == null) {
             if (matcher == null) {
-                item = new StylesheetDataItem("Scene");
+                item = new StylesheetItem(StylesheetItem.NODE_DEPTH, "Scene", false);
             } else {
                 if (matcher.reset("Scene").find()) {
-                    item = new StylesheetDataItem("Scene");
+                    item = new StylesheetItem(StylesheetItem.NODE_DEPTH, "Scene", false);
                 }
             }
         } else {
             if (matcher == null) {
-                item = new StylesheetDataItem(ElementUtils.getTitle(el));
+                item = new StylesheetItem(StylesheetItem.NODE_DEPTH, ElementUtils.getTitle(el), false);
             } else {
                 var id = el.getNodeProperties().id();
                 var styleClasses = el.getNodeProperties().styleClass();
@@ -173,14 +173,14 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractSearc
                         || (id != null && matcher.reset(id).find())
                         || (styleClasses != null && styleClasses.stream()
                                 .filter(s -> matcher.reset(s).find()).anyMatch(e -> true))) {
-                    item = new StylesheetDataItem(ElementUtils.getTitle(el));
+                    item = new StylesheetItem(StylesheetItem.NODE_DEPTH, ElementUtils.getTitle(el), false);
                 }
             }
         }
-
-        if (item != null && stylesheets != null) {
-            item.setStylesheets(stylesheets);
-        }
         return item;
+    }
+
+    protected ObservableList<StylesheetItem> getItems() {
+        return items;
     }
 }

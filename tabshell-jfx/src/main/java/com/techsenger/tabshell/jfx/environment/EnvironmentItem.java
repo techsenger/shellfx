@@ -22,10 +22,19 @@ package com.techsenger.tabshell.jfx.environment;
  */
 public interface EnvironmentItem {
 
-    /**
-     * Returns item name.
-     *
-     * @return
-     */
-    String name();
+    int ROOT_DEPTH = 0;
+
+    int CATEGORY_DEPTH = 1;
+
+    int PROPERTY_DEPTH = 2;
+
+    int getDepth();
+
+    String getName();
+
+    String getValue();
+
+    boolean isExpanded();
+
+    void setExpanded(boolean expanded);
 }

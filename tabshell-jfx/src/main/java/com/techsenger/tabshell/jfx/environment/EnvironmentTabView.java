@@ -18,6 +18,8 @@ package com.techsenger.tabshell.jfx.environment;
 
 import com.techsenger.tabshell.jfx.AbstractSearchableTabView;
 import com.techsenger.tabshell.material.style.StyleClasses;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
@@ -56,15 +58,15 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
         TreeTableColumn<EnvironmentItem, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
             var item = param.getValue().getValue();
-            var p = new SimpleStringProperty(item.name());
+            var p = new SimpleStringProperty(item.getName());
             return p;
         });
         TreeTableColumn<EnvironmentItem, String> valueColumn = new TreeTableColumn<>("Value");
         valueColumn.setCellValueFactory(param -> {
             var item = param.getValue().getValue();
             var p = new SimpleStringProperty();
-            if (item instanceof EnvironmentDataItem di) {
-                p.set(di.value());
+            if (item.getDepth() == EnvironmentItem.PROPERTY_DEPTH) {
+                p.set(item.getValue());
             }
             return p;
         });
@@ -84,13 +86,13 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
     @Override
     protected void addListeners() {
         super.addListeners();
-        getViewModel().getItems().addListener((ListChangeListener<EnvironmentDataItem>) e -> {
+        getViewModel().getItems().addListener((ListChangeListener<EnvironmentItem>) e -> {
             while (e.next()) {
                 if (e.wasRemoved()) {
                     clearTree();
                 }
                 if (e.wasAdded()) {
-                    createTree(e.getAddedSubList());
+                    rebuildTree();
                 }
             }
         });
@@ -126,36 +128,29 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
         return tableView;
     }
 
-    private void createTree(List<? extends EnvironmentDataItem> items) {
-        var root = new TreeItem<EnvironmentItem>();
-        // do not use the same root multiple times, as it causes a bug with node expansion
-        tableView.setRoot(root);
-        TreeItem<EnvironmentItem> catTreeItem = null;
-        EnvironmentCategory cat = null;
-        for (var i : items) {
-            if (cat != i.category()) {
-                cat = i.category();
-                catTreeItem = new TreeItem<EnvironmentItem>(new EnvironmentCategoryItem(getText(cat)));
-                var vmExpanded = getViewModel().getExpandedByCategory().get(cat);
-                catTreeItem.setExpanded(vmExpanded.get());
-                catTreeItem.expandedProperty().addListener((ov, oldV, newV) -> vmExpanded.set(newV));
-                root.getChildren().add(catTreeItem);
+    private void rebuildTree() {
+        List<TreeItem<EnvironmentItem>> lastTreeItems = new ArrayList<>(Collections.nCopies(3, null));
+        for (var item : getViewModel().getItems()) {
+            var treeItem = new TreeItem<EnvironmentItem>(item);
+            lastTreeItems.set(item.getDepth(), treeItem);
+            treeItem.setExpanded(item.isExpanded());
+            if (item.getDepth() != EnvironmentItem.ROOT_DEPTH) {
+                var parent = lastTreeItems.get(item.getDepth() - 1);
+                if (parent != null) {
+                    parent.getChildren().add(treeItem);
+                }
+                if (item.getDepth() == EnvironmentItem.CATEGORY_DEPTH) {
+                    treeItem.setExpanded(item.isExpanded());
+                    treeItem.expandedProperty().addListener((ov, oldV, newV) -> item.setExpanded(newV));
+                }
             }
-            var dataTreeItem = new TreeItem<EnvironmentItem>(i);
-            catTreeItem.getChildren().add(dataTreeItem);
         }
+        // do not use the same root multiple times, as it causes a bug with node expansion
+        tableView.setRoot(lastTreeItems.get(0));
+
     }
 
     private void clearTree() {
         this.tableView.setRoot(null);
-    }
-
-    private String getText(EnvironmentCategory cat) {
-        return switch (cat) {
-            case ENVIRONMENT_VARIABLE -> "Environment Variables";
-            case PLATFORM -> "Platform";
-            case SYSTEM_PROPERTY -> "System Properties";
-            default -> throw new AssertionError();
-        };
     }
 }
