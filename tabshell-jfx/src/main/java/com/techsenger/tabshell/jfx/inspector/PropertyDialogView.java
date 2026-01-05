@@ -19,7 +19,6 @@ package com.techsenger.tabshell.jfx.inspector;
 import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -83,19 +82,17 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
 
         var propUrl = viewModel.getPropertyUrl();
         nameLabel.setText(info.getAttribute().name());
+        nameLabel.setMinWidth(Label.USE_PREF_SIZE);
+        nameBox.setAlignment(Pos.TOP_LEFT);
         if (propUrl != null) {
             var link = new Hyperlink(null, new FontIconView(SharedIcons.OPEN_IN_NEW));
             link.setTooltip(new Tooltip(propUrl));
             nameBox.getChildren().add(link);
-            nameBox.setAlignment(Pos.TOP_LEFT);
             nameBox.setSpacing(SizeConstants.THIRD_INSET);
             link.setOnAction(e -> {
                 viewModel.openUrl(propUrl);
             });
-        } else {
-            nameLabel.getStyleClass().add(StyleClasses.NO_URL);
         }
-        nameLabel.setMinWidth(Label.USE_PREF_SIZE);
         gridPane.add(nameBox, 0, 0);
         GridPane.setValignment(nameBox, VPos.TOP);
         valueTextArea.setText(info.getValue().text());
@@ -106,6 +103,7 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
         GridPane.setHgrow(valueTextArea, Priority.ALWAYS);
 
         cssLabel.setMinWidth(Label.USE_PREF_SIZE);
+        cssBox.setAlignment(Pos.CENTER_LEFT);
         gridPane.add(cssBox, 0, 1);
         if (info.getAttribute().cssProperty() != null) {
             cssTextField.setText(info.getAttribute().cssProperty());
@@ -114,7 +112,6 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
                 var link = new Hyperlink(null, new FontIconView(SharedIcons.OPEN_IN_NEW));
                 link.setTooltip(new Tooltip(cssPropUrl));
                 cssBox.getChildren().add(link);
-                cssBox.setAlignment(Pos.CENTER_LEFT);
                 cssBox.setSpacing(SizeConstants.THIRD_INSET);
                 link.setOnAction(e -> {
                     viewModel.openUrl(cssPropUrl);
