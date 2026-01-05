@@ -18,13 +18,14 @@ package com.techsenger.tabshell.jfx.eventlog;
 
 import com.techsenger.patternfx.core.Name;
 import com.techsenger.tabshell.core.tab.AbstractTabComponent;
+import com.techsenger.tabshell.jfx.AbstractSearchableTabComponent;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class EventLogTabComponent<T extends EventLogTabView<?, ?>> extends AbstractTabComponent<T> {
+public class EventLogTabComponent<T extends EventLogTabView<?, ?>> extends AbstractSearchableTabComponent<T> {
 
     public EventLogTabComponent(T view) {
         super(view);

@@ -18,8 +18,8 @@ package com.techsenger.tabshell.jfx.eventlog;
 
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.core.tab.TabMediator;
+import com.techsenger.tabshell.jfx.AbstractSearchableTabViewModel;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.material.icon.GenericFontIcon;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -53,6 +53,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.property.BooleanProperty;
@@ -75,12 +76,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabViewModel<T> {
+public class EventLogTabViewModel<T extends TabMediator> extends AbstractSearchableTabViewModel<T> {
 
     protected record Filter(
             boolean active,
             boolean selectedOnly,
-            String text,
+            Matcher matcher,
             Set<Class<? extends ConnectorEvent>> enabledEvents) { }
 
     private static final long ZONE_OFFSET_MILLIS = ZoneId.systemDefault().getRules().getOffset(Instant.now())
@@ -143,8 +144,6 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
     private final ReadOnlyIntegerWrapper displayedEntriesCount = new ReadOnlyIntegerWrapper();
 
     private final ReadOnlyIntegerWrapper totalEntriesCount = new ReadOnlyIntegerWrapper();
-
-    private final ReadOnlyStringWrapper searchText = new ReadOnlyStringWrapper();
 
     private final ReadOnlyStringWrapper statistics = new ReadOnlyStringWrapper();
 
@@ -258,14 +257,6 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         return totalEntriesCount.getReadOnlyProperty();
     }
 
-    public String getSearchText() {
-        return searchText.get();
-    }
-
-    public ReadOnlyStringProperty searchTextProperty() {
-        return searchText.getReadOnlyProperty();
-    }
-
     public String getStatistics() {
         return statistics.get();
     }
@@ -314,10 +305,6 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         stopAndDestroyProcessor();
     }
 
-    protected void setSearchText(String value) {
-        searchText.set(value);
-    }
-
     protected ObjectProperty<GenericFontIcon<?>> recordIconProperty() {
         return recordIcon;
     }
@@ -336,7 +323,7 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         if (!filter.enabledEvents.contains(entry.event().getClass())) {
             return false;
         }
-        if (filter.text() != null && !filter.text().isEmpty() && !entry.message().contains(filter.text())) {
+        if (filter.matcher != null && !filter.matcher.reset(entry.message()).find()) {
             return false;
         }
         return true;
@@ -381,12 +368,12 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         this.eventTypesByClass.values().forEach(e -> e.setEnabled(false));
     }
 
-    protected void applyTextFilter() {
-        updateFilter();
-    }
-
-    protected void cancelTextFilter() {
-        updateFilter();
+    protected void updateFilter() {
+        // JFX properties are not thread safe
+        Set<Class<? extends ConnectorEvent>> events = this.eventTypesByClass.entrySet().stream()
+                .filter(e -> e.getValue().isEnabled())
+                .map(e -> e.getKey()).collect(Collectors.toSet());
+        this.filter = new Filter(isFilterActive(), isSelectedOnly(), createMatcher(), events);
     }
 
     protected ObservableSource<String> getTextSource() {
@@ -473,20 +460,8 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractTabView
         logger.debug("{} EntryProcessor stopped", getMediator().getLogPrefix());
     }
 
-    ReadOnlyStringWrapper getSearchTextWrappper() {
-        return this.searchText;
-    }
-
     ReadOnlyBooleanWrapper getFilteredOutRetainedWrapper() {
         return this.filteredOutRetained;
-    }
-
-    private void updateFilter() {
-        // JFX properties are not thread safe
-        Set<Class<? extends ConnectorEvent>> events = this.eventTypesByClass.entrySet().stream()
-                .filter(e -> e.getValue().isEnabled())
-                .map(e -> e.getKey()).collect(Collectors.toSet());
-        this.filter = new Filter(isFilterActive(), isSelectedOnly(), getSearchText(), events);
     }
 
     private <T extends ConnectorEvent> EventType<T> createEventType(Class<T> clazz, boolean enabled) {
