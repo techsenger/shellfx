@@ -41,8 +41,3 @@
 .tree-table-view .tree-table-row-cell .css-container > .css-hint {
     -fx-font-size: 0.65em;
 }
-
-.search-wrapper {
-    -fx-background-color: -color-bg-subtle;
-    -fx-padding: 2px 1px 2px 1px;
-}

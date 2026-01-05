@@ -17,24 +17,25 @@
 package com.techsenger.tabshell.jfx;
 
 import com.techsenger.patternfx.core.Name;
+import com.techsenger.tabshell.core.area.AbstractAreaComponent;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface JfxComponentNames {
+public class SearchPanelComponent<T extends SearchPanelView<?, ?>> extends AbstractAreaComponent<T> {
 
-    Name JFX_TAB_DOCK = new Name("JFXTabDock");
+    public SearchPanelComponent(T view) {
+        super(view);
+    }
 
-    Name SEARCH_PANEL = new Name("SearchPanel");
+    @Override
+    protected Mediator createMediator() {
+        return new AbstractAreaComponent.Mediator() { };
+    }
 
-    Name JFX_INSPECTOR_TAB = new Name("JFXInspectorTab");
-
-    Name EVENT_LOG_TAB = new Name("EventLogTab");
-
-    Name PROPERTY_DIALOG = new Name("PropertyDialog");
-
-    Name ENVIRONMENT_TAB = new Name("EnvironmentTab");
-
-    Name STYLESHEET_TAB = new Name("StylesheetTab");
+    @Override
+    public Name getName() {
+        return JfxComponentNames.SEARCH_PANEL;
+    }
 }

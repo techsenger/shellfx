@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.jfx;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.tab.AbstractTabView;
+import com.techsenger.tabshell.core.area.AbstractAreaView;
 import com.techsenger.tabshell.material.SearchField;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
@@ -33,8 +33,8 @@ import javafx.scene.layout.Priority;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSearchableTabView<T extends AbstractSearchableTabViewModel<?>,
-        S extends AbstractSearchableTabComponent<?>> extends AbstractTabView<T, S> {
+public class SearchPanelView<T extends SearchPanelViewModel<?>, S extends SearchPanelComponent<?>>
+        extends AbstractAreaView<T, S> {
 
     private final SearchField searchField = new SearchField(SearchField.SearchMode.AUTO);
 
@@ -44,8 +44,30 @@ public abstract class AbstractSearchableTabView<T extends AbstractSearchableTabV
 
     private final ToolBar toolBar = new ToolBar();
 
-    public AbstractSearchableTabView(T viewModel) {
+    public SearchPanelView(T viewModel) {
         super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+        this.searchField.getTextComboBox().requestFocus();
+    }
+
+    @Override
+    public ToolBar getNode() {
+        return this.toolBar;
+    }
+
+    public SearchField getSearchField() {
+        return searchField;
+    }
+
+    public ToggleButton getMatchCaseButton() {
+        return matchCaseButton;
+    }
+
+    public Button getRefreshButton() {
+        return refreshButton;
     }
 
     @Override
@@ -65,21 +87,5 @@ public abstract class AbstractSearchableTabView<T extends AbstractSearchableTabV
         var vm = getViewModel();
         this.matchCaseButton.selectedProperty().bindBidirectional(vm.caseSensitiveProperty());
         this.searchField.getTextComboBox().getEditor().textProperty().bindBidirectional(vm.searchTextProperty());
-    }
-
-    protected SearchField getSearchField() {
-        return searchField;
-    }
-
-    protected ToggleButton getMatchCaseButton() {
-        return matchCaseButton;
-    }
-
-    protected Button getRefreshButton() {
-        return refreshButton;
-    }
-
-    protected ToolBar getToolBar() {
-        return toolBar;
     }
 }

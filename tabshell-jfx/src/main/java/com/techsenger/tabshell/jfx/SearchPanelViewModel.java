@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.jfx;
 
-import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
-import com.techsenger.tabshell.core.tab.TabMediator;
+import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
+import com.techsenger.tabshell.core.area.AreaMediator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.beans.property.BooleanProperty;
@@ -29,7 +29,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSearchableTabViewModel<T extends TabMediator> extends AbstractTabViewModel<T> {
+public class SearchPanelViewModel<T extends AreaMediator> extends AbstractAreaViewModel<T> {
 
     private final StringProperty searchText = new SimpleStringProperty();
 
@@ -59,7 +59,7 @@ public abstract class AbstractSearchableTabViewModel<T extends TabMediator> exte
         return caseSensitive;
     }
 
-    protected Matcher createMatcher() {
+    public Matcher createMatcher() {
         if (getSearchText() != null && !getSearchText().isBlank()) {
              int flags = isCaseSensitive() ? Pattern.LITERAL
                                   : Pattern.CASE_INSENSITIVE | Pattern.LITERAL;

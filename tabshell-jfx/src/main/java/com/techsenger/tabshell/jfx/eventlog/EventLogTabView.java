@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.jfx.eventlog;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.jfx.AbstractSearchableTabView;
+import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
@@ -45,7 +45,7 @@ import org.fxmisc.richtext.InlineCssTextArea;
  * @author Pavel Castornii
  */
 public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventLogTabComponent<?>>
-        extends AbstractSearchableTabView<T, S> {
+        extends AbstractTabView<T, S> {
 
     private final FontIconView recordIconView = new FontIconView();
 
@@ -109,17 +109,18 @@ public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventL
         statisticsLabel.setMinWidth(Label.USE_PREF_SIZE);
         statisticsDataLabel.setStyle("-fx-min-width: 10em");
         statisticsDataLabel.setTooltip(new Tooltip("Displayed / Retained / Total events"));
-        getSearchField().getTextComboBox().setPromptText("Message");
+        var searchPanel = getComponent().getSearchPanel().getView();
+        searchPanel.getSearchField().getTextComboBox().setPromptText("Message");
 
-        getToolBar().getItems().addAll(recordButton, clearButton, new Separator(Orientation.VERTICAL),
-            filterButton, selectedOnlyButton, getSearchField(), getMatchCaseButton(), eventTypesButton,
-            retainFilteredOutCheckBox, new Separator(Orientation.VERTICAL), statisticsLabel,
+        searchPanel.getNode().getItems().addAll(recordButton, clearButton, new Separator(Orientation.VERTICAL),
+            filterButton, selectedOnlyButton, searchPanel.getSearchField(), searchPanel.getMatchCaseButton(),
+            eventTypesButton, retainFilteredOutCheckBox, new Separator(Orientation.VERTICAL), statisticsLabel,
             statisticsDataLabel);
 
         textArea.setEditable(false);
         textArea.getStyleClass().add(StyleClasses.MONOSPACE);
         VBox.setVgrow(textScrollPane, Priority.ALWAYS);
-        getContentPane().getChildren().addAll(getToolBar(), textScrollPane);
+        getContentPane().getChildren().addAll(searchPanel.getNode(), textScrollPane);
     }
 
     @Override
@@ -166,8 +167,9 @@ public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventL
             }
         });
         this.clearButton.setOnAction(e -> viewModel.clear());
-        getSearchField().setSearchHandler(t -> viewModel.updateFilter());
-        getSearchField().setClearHandler(() -> viewModel.updateFilter());
-        getMatchCaseButton().setOnAction(e -> viewModel.updateFilter());
+        var searchPanel = getComponent().getSearchPanel().getView();
+        searchPanel.getSearchField().setSearchHandler(t -> viewModel.updateFilter());
+        searchPanel.getSearchField().setClearHandler(() -> viewModel.updateFilter());
+        searchPanel.getMatchCaseButton().setOnAction(e -> viewModel.updateFilter());
     }
 }

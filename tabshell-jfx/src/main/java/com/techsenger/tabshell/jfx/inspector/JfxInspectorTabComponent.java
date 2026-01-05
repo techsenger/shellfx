@@ -21,6 +21,9 @@ import com.techsenger.tabshell.core.tab.AbstractTabComponent;
 import com.techsenger.tabshell.core.tab.ShellTabComponent;
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.jfx.JfxComponentNames;
+import com.techsenger.tabshell.jfx.SearchPanelComponent;
+import com.techsenger.tabshell.jfx.SearchPanelView;
+import com.techsenger.tabshell.jfx.SearchPanelViewModel;
 
 /**
  *
@@ -30,26 +33,45 @@ public class JfxInspectorTabComponent<T extends JfxInspectorTabView<?, ?>> exten
 
     protected class Mediator extends AbstractTabComponent.Mediator implements JfxInspectorTabMediator {
 
+        private final JfxInspectorTabComponent<?> component = JfxInspectorTabComponent.this;
+
+        @Override
+        public SearchPanelViewModel<?> getNodeSearchPanel() {
+            return component.nodeSearchPanel.getView().getViewModel();
+        }
+
+        @Override
+        public SearchPanelViewModel<?> getPropertySearchPanel() {
+            return component.propertySearchPanel.getView().getViewModel();
+        }
+
         @Override
         public void addPropertyDialog(PropertyDialogViewModel vm) {
             var v = new PropertyDialogView<>(vm);
             var c = new PropertyDialogComponent<>(v, shellTab);
             c.initialize();
-            shellTab.getShell().addDialog(c);
+            component.shellTab.getShell().addDialog(c);
         }
 
         @Override
         public ShellTabViewModel getShellTab() {
-            return shellTab.getView().getViewModel();
+            return component.shellTab.getView().getViewModel();
         }
-
     }
 
     private final ShellTabComponent<?> shellTab;
 
+    private final SearchPanelComponent<?> nodeSearchPanel;
+
+    private final SearchPanelComponent<?> propertySearchPanel;
+
     public JfxInspectorTabComponent(T view, ShellTabComponent<?> shellTab) {
         super(view);
         this.shellTab = shellTab;
+        this.nodeSearchPanel = createSearchPanel();
+        getModifiableChildren().add(this.nodeSearchPanel);
+        this.propertySearchPanel = createSearchPanel();
+        getModifiableChildren().add(this.propertySearchPanel);
     }
 
     @Override
@@ -62,7 +84,29 @@ public class JfxInspectorTabComponent<T extends JfxInspectorTabView<?, ?>> exten
     }
 
     @Override
+    protected void preInitialize() {
+        super.preInitialize();
+        this.nodeSearchPanel.initialize();
+        this.propertySearchPanel.initialize();
+    }
+
+    @Override
     protected Mediator createMediator() {
         return new Mediator();
+    }
+
+    protected SearchPanelComponent<?> createSearchPanel() {
+        var vm = new SearchPanelViewModel<>();
+        var v = new SearchPanelView<>(vm);
+        var c = new SearchPanelComponent<>(v);
+        return c;
+    }
+
+    protected SearchPanelComponent<?> getNodeSearchPanel() {
+        return nodeSearchPanel;
+    }
+
+    protected SearchPanelComponent<?> getPropertySearchPanel() {
+        return propertySearchPanel;
     }
 }

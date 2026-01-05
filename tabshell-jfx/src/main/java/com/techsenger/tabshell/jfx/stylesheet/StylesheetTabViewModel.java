@@ -18,8 +18,7 @@ package com.techsenger.tabshell.jfx.stylesheet;
 
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.tab.TabMediator;
-import com.techsenger.tabshell.jfx.AbstractSearchableTabViewModel;
+import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.jfx.ElementUtils;
 import devtoolsfx.connector.Connector;
 import devtoolsfx.scenegraph.Element;
@@ -39,7 +38,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class StylesheetTabViewModel<T extends TabMediator> extends AbstractSearchableTabViewModel<T> {
+public class StylesheetTabViewModel<T extends StylesheetTabMediator> extends AbstractTabViewModel<T> {
 
     private static String formatWindowType(int uid, WindowProperties props) {
         String text;
@@ -110,8 +109,9 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractSearc
         super.initialize();
         setTitle("Stylesheets");
         setClosable(false);
-        caseSensitiveProperty().addListener((ov, oldV, newV) -> {
-            if (getSearchText() != null && !getSearchText().isBlank()) {
+        var searchPanel = getMediator().getSearchPanel();
+        searchPanel.caseSensitiveProperty().addListener((ov, oldV, newV) -> {
+            if (searchPanel.getSearchText() != null && !searchPanel.getSearchText().isBlank()) {
                 rebuildTree();
             }
         });
@@ -120,7 +120,7 @@ public class StylesheetTabViewModel<T extends TabMediator> extends AbstractSearc
 
     protected void rebuildTree() {
         var entry = connector.getStyledElements(windowUid);
-        Matcher matcher = createMatcher();
+        Matcher matcher = getMediator().getSearchPanel().createMatcher();
 
         List<StylesheetItem> tempItems = new ArrayList<>();
         var item = new StylesheetItem(StylesheetItem.APPLICATION_DEPTH,

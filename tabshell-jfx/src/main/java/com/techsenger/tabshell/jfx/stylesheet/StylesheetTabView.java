@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.jfx.stylesheet;
 
-import com.techsenger.tabshell.jfx.AbstractSearchableTabView;
+import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import javafx.scene.layout.VBox;
  * @author Pavel Castornii
  */
 public class StylesheetTabView<T extends StylesheetTabViewModel<?>, S extends StylesheetTabComponent<?>>
-        extends AbstractSearchableTabView<T, S> {
+        extends AbstractTabView<T, S> {
 
     private static final class StylesheetTreeCell extends TreeCell<StylesheetItem> {
 
@@ -62,15 +62,17 @@ public class StylesheetTabView<T extends StylesheetTabViewModel<?>, S extends St
     @Override
     protected void build() {
         super.build();
-        getSearchField().getTextComboBox().setPromptText("NodeClass / StyleClass / Id");
-        getToolBar().getItems().addAll(getSearchField(), getMatchCaseButton(), getRefreshButton());
+        var searchPanel = getComponent().getSearchPanel().getView();
+        searchPanel.getSearchField().getTextComboBox().setPromptText("NodeClass / StyleClass / Id");
+        searchPanel.getNode().getItems().addAll(searchPanel.getSearchField(), searchPanel.getMatchCaseButton(),
+                searchPanel.getRefreshButton());
 
         treeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE);
         treeView.setShowRoot(true);
         treeView.setCellFactory(e -> new StylesheetTreeCell());
 
         VBox.setVgrow(treeView, Priority.ALWAYS);
-        getContentPane().getChildren().addAll(getToolBar(), treeView);
+        getContentPane().getChildren().addAll(searchPanel.getNode(), treeView);
         rebuiltTree();
     }
 
@@ -92,10 +94,11 @@ public class StylesheetTabView<T extends StylesheetTabViewModel<?>, S extends St
     @Override
     protected void addHandlers() {
         super.addHandlers();
+        var searchPanel = getComponent().getSearchPanel().getView();
         var vm = getViewModel();
-        getSearchField().setSearchHandler((t) -> vm.refresh());
-        getSearchField().setClearHandler(() -> vm.refresh());
-        getRefreshButton().setOnAction(e -> vm.refresh());
+        searchPanel.getSearchField().setSearchHandler((t) -> vm.refresh());
+        searchPanel.getSearchField().setClearHandler(() -> vm.refresh());
+        searchPanel.getRefreshButton().setOnAction(e -> vm.refresh());
     }
 
     protected TreeView<StylesheetItem> getTreeView() {

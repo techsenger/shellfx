@@ -20,8 +20,8 @@ import com.techsenger.patternfx.core.State;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogViewModel;
-import com.techsenger.tabshell.jfx.AbstractSearchableTabViewModel;
 import static com.techsenger.tabshell.jfx.environment.EnvironmentCategory.ENVIRONMENT_VARIABLE;
 import static com.techsenger.tabshell.jfx.environment.EnvironmentCategory.PLATFORM;
 import static com.techsenger.tabshell.jfx.environment.EnvironmentCategory.SYSTEM_PROPERTY;
@@ -46,7 +46,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends AbstractSearchableTabViewModel<T> {
+public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends AbstractTabViewModel<T> {
 
     protected static String getText(EnvironmentCategory cat) {
         return switch (cat) {
@@ -104,7 +104,7 @@ public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends A
                 refresh();
             }
         });
-        caseSensitiveProperty().addListener((ov, oldV, newV) -> refresh());
+        getMediator().getSearchPanel().caseSensitiveProperty().addListener((ov, oldV, newV) -> refresh());
     }
 
     ObservableList<EnvironmentItem> getItems() {
@@ -120,7 +120,7 @@ public class EnvironmentTabViewModel<T extends EnvironmentTabMediator> extends A
         var e = this.connector.getEnv();
         var allItems = new ArrayList<EnvironmentItem>();
         allItems.add(new DefaultEnvironmentItem(EnvironmentItem.ROOT_DEPTH, "", null, true));
-        var matcher = createMatcher();
+        var matcher = getMediator().getSearchPanel().createMatcher();
         addItems(allItems, matcher, EnvironmentCategory.PLATFORM,
                 e.getPlatformPreferences(), e.getOtherPlatformProperties(), e.getConditionalFeatures());
         addItems(allItems, matcher, EnvironmentCategory.SYSTEM_PROPERTY, e.getSystemProperties());

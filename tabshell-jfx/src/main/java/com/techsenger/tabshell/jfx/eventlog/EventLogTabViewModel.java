@@ -18,8 +18,7 @@ package com.techsenger.tabshell.jfx.eventlog;
 
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.tab.TabMediator;
-import com.techsenger.tabshell.jfx.AbstractSearchableTabViewModel;
+import com.techsenger.tabshell.core.tab.AbstractTabViewModel;
 import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.material.icon.GenericFontIcon;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -76,7 +75,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class EventLogTabViewModel<T extends TabMediator> extends AbstractSearchableTabViewModel<T> {
+public class EventLogTabViewModel<T extends EventLogTabMediator> extends AbstractTabViewModel<T> {
 
     protected record Filter(
             boolean active,
@@ -373,7 +372,8 @@ public class EventLogTabViewModel<T extends TabMediator> extends AbstractSearcha
         Set<Class<? extends ConnectorEvent>> events = this.eventTypesByClass.entrySet().stream()
                 .filter(e -> e.getValue().isEnabled())
                 .map(e -> e.getKey()).collect(Collectors.toSet());
-        this.filter = new Filter(isFilterActive(), isSelectedOnly(), createMatcher(), events);
+        this.filter = new Filter(isFilterActive(), isSelectedOnly(),
+                getMediator().getSearchPanel().createMatcher(), events);
     }
 
     protected ObservableSource<String> getTextSource() {

@@ -18,12 +18,15 @@ package com.techsenger.tabshell.jfx.environment;
 
 import com.techsenger.tabshell.core.tab.TabMediator;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogViewModel;
+import com.techsenger.tabshell.jfx.SearchPanelViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface EnvironmentTabMediator extends TabMediator {
+
+    SearchPanelViewModel<?> getSearchPanel();
 
     void addNameValueDialog(NameValueDialogViewModel<?> vm);
 }

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.jfx;
+package com.techsenger.tabshell.jfx.stylesheet;
 
-import com.techsenger.tabshell.core.tab.AbstractTabComponent;
+import com.techsenger.tabshell.core.tab.TabMediator;
+import com.techsenger.tabshell.jfx.SearchPanelViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSearchableTabComponent<T extends AbstractSearchableTabView<?, ?>>
-        extends AbstractTabComponent<T> {
+public interface StylesheetTabMediator extends TabMediator {
 
-    public AbstractSearchableTabComponent(T view) {
-        super(view);
-    }
+    SearchPanelViewModel<?> getSearchPanel();
 }

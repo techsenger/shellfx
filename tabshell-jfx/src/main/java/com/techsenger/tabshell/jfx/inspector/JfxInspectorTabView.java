@@ -19,8 +19,6 @@ package com.techsenger.tabshell.jfx.inspector;
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.jfx.ElementUtils;
 import com.techsenger.tabshell.jfx.inspector.PropertyInfo.ValueInfo;
-import com.techsenger.tabshell.material.SearchField;
-import com.techsenger.tabshell.material.SearchField.SearchMode;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import devtoolsfx.connector.LocalElement;
@@ -269,21 +267,13 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
 
     private final TreeView<Element> nodeTreeView = new TreeView<>();
 
-    private final SearchField nodeSearchField = new SearchField(SearchMode.AUTO);
+    private final VBox nodeBox = new VBox();
 
-    private final HBox nodeSearchWrapper = new HBox(nodeSearchField);
+    private final TreeTableView<PropertyInfo> propertyTableView = new TreeTableView<>();
 
-    private final VBox nodeBox = new VBox(nodeTreeView, nodeSearchWrapper);
+    private final VBox propertyBox = new VBox();
 
-    private final TreeTableView<PropertyInfo> infoTableView = new TreeTableView<>();
-
-    private final SearchField infoSearchField = new SearchField(SearchMode.AUTO);
-
-    private final HBox infoSearchWrapper = new HBox(infoSearchField);
-
-    private final VBox infoBox = new VBox(infoTableView, infoSearchWrapper);
-
-    private final SplitPane splitPane = new SplitPane(nodeBox, infoBox);
+    private final SplitPane splitPane = new SplitPane(nodeBox, propertyBox);
 
     public JfxInspectorTabView(T viewModel) {
         super(viewModel);
@@ -308,9 +298,10 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         nodeTreeView.setCellFactory(tv -> new NodeCell());
         nodeTreeView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
         VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
-        nodeSearchField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
-        HBox.setHgrow(nodeSearchField, Priority.ALWAYS);
-        nodeSearchWrapper.getStyleClass().add("search-wrapper");
+        var nodeSearchPanel = getComponent().getNodeSearchPanel().getView();
+        nodeSearchPanel.getNode().getItems().addAll(nodeSearchPanel.getSearchField(),
+                nodeSearchPanel.getMatchCaseButton(), nodeSearchPanel.getRefreshButton());
+        nodeBox.getChildren().addAll(nodeSearchPanel.getNode(), nodeTreeView);
 
         TreeTableColumn<PropertyInfo, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
@@ -337,16 +328,18 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
             }
         });
         valueColumn.setCellFactory(col -> new ValueTableCell());
-        infoTableView.getColumns().addAll(propertyColumn, valueColumn);
-        infoTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, "no-header");
-        infoTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        infoTableView.setShowRoot(false);
-        infoTableView.setRoot(new RootTreeItem(getViewModel().getRootInfo()));
-        infoTableView.setPlaceholder(new Label(""));
-        VBox.setVgrow(infoTableView, Priority.ALWAYS);
-        infoSearchField.getStyleClass().add(StyleClasses.EXTRA_DENSE);
-        HBox.setHgrow(infoSearchField, Priority.ALWAYS);
-        infoSearchWrapper.getStyleClass().add("search-wrapper");
+        propertyTableView.getColumns().addAll(propertyColumn, valueColumn);
+        propertyTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, "no-header");
+        propertyTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        propertyTableView.setShowRoot(false);
+        propertyTableView.setRoot(new RootTreeItem(getViewModel().getRootInfo()));
+        propertyTableView.setPlaceholder(new Label(""));
+        VBox.setVgrow(propertyTableView, Priority.ALWAYS);
+        var propertySearchPanel = getComponent().getPropertySearchPanel().getView();
+        propertySearchPanel.getNode().getItems().addAll(propertySearchPanel.getSearchField(),
+                propertySearchPanel.getMatchCaseButton(), propertySearchPanel.getRefreshButton());
+        propertyBox.getChildren().addAll(propertySearchPanel.getNode(),
+                propertyTableView);
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         getContentPane().getChildren().add(splitPane);
@@ -363,20 +356,20 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
                 viewModel.setSelectedElement(newV.getValue());
             }
         });
-        infoTableView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+        propertyTableView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV == null) {
                 viewModel.setSelectedInfo(null);
             } else {
                 viewModel.setSelectedInfo(newV.getValue());
             }
         });
-        viewModel.getAttributesUpdated().addListener((v) -> this.infoTableView.refresh());
+        viewModel.getAttributesUpdated().addListener((v) -> this.propertyTableView.refresh());
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        infoTableView.setRowFactory(ttv -> {
+        propertyTableView.setRowFactory(ttv -> {
             TreeTableRow<PropertyInfo> row = new TreeTableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
@@ -391,24 +384,16 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         return nodeTreeView;
     }
 
-    protected SearchField getNodeSearchField() {
-        return nodeSearchField;
-    }
-
     protected VBox getNodeBox() {
         return nodeBox;
     }
 
     protected TreeTableView<PropertyInfo> getInfoTableView() {
-        return infoTableView;
-    }
-
-    protected SearchField getInfoSearchField() {
-        return infoSearchField;
+        return propertyTableView;
     }
 
     protected VBox getInfoBox() {
-        return infoBox;
+        return propertyBox;
     }
 
     protected SplitPane getSplitPane() {

@@ -18,12 +18,17 @@ package com.techsenger.tabshell.jfx.inspector;
 
 import com.techsenger.tabshell.core.tab.ShellTabViewModel;
 import com.techsenger.tabshell.core.tab.TabMediator;
+import com.techsenger.tabshell.jfx.SearchPanelViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface JfxInspectorTabMediator extends TabMediator {
+
+    SearchPanelViewModel<?> getNodeSearchPanel();
+
+    SearchPanelViewModel<?> getPropertySearchPanel();
 
     void addPropertyDialog(PropertyDialogViewModel vm);
 
