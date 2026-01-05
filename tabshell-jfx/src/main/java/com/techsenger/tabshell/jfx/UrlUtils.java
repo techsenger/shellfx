@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.jfx;
 
-import com.techsenger.tabshell.jfx.inspector.PropertyInfo;
+import com.techsenger.tabshell.jfx.inspector.PropertyItem;
 
 /**
  *
@@ -28,8 +28,8 @@ public final class UrlUtils {
 
     public static final String CSS_REFERENCE_URL = BASE_URL + "javafx.graphics/javafx/scene/doc-files/cssref.html";
 
-    public static String getPropertyJavadocUrl(String nodeClass, PropertyInfo info) {
-        return BASE_URL + "search.html?q=" + nodeClass + "." + info.getAttribute().name() + "Property";
+    public static String getPropertyJavadocUrl(String nodeClass, PropertyItem item) {
+        return BASE_URL + "search.html?q=" + nodeClass + "." + item.getAttribute().name() + "Property";
     }
 
     public static String getCssPropertyJavadocUrl(String nodeSimpleClass) {

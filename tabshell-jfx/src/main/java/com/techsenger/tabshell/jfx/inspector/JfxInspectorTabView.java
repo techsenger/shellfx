@@ -18,7 +18,7 @@ package com.techsenger.tabshell.jfx.inspector;
 
 import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.jfx.ElementUtils;
-import com.techsenger.tabshell.jfx.inspector.PropertyInfo.ValueInfo;
+import com.techsenger.tabshell.jfx.inspector.PropertyItem.PropertyValue;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import devtoolsfx.connector.LocalElement;
@@ -56,8 +56,8 @@ import javafx.scene.layout.VBox;
 public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extends JfxInspectorTabComponent<?>>
         extends AbstractTabView<T, S> {
 
-    private static ValueInfo createValue(PropertyInfo info) {
-        Attribute<?> attr = info.getAttribute();
+    private static PropertyValue createValue(PropertyItem item) {
+        Attribute<?> attr = item.getAttribute();
         switch (attr.displayHint()) {
             case NUMERIC -> {
                 boolean isDefault = false;
@@ -68,38 +68,38 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
                 }
                 if (attr.value() instanceof Double num) {
                     if (num == Region.USE_PREF_SIZE) {
-                        return new ValueInfo("USE_PREF_SIZE", true);
+                        return new PropertyValue("USE_PREF_SIZE", true);
                     }
                     if (num == Region.USE_COMPUTED_SIZE) {
-                        return new ValueInfo("USE_COMPUTED_SIZE", true);
+                        return new PropertyValue("USE_COMPUTED_SIZE", true);
                     }
                     if (num == Double.MIN_VALUE) {
-                        return new ValueInfo("MIN_VALUE", true);
+                        return new PropertyValue("MIN_VALUE", true);
                     }
                     if (num == Double.MAX_VALUE) {
-                        return new ValueInfo("MAX_VALUE", true);
+                        return new PropertyValue("MAX_VALUE", true);
                     }
-                    return new ValueInfo(FORMAT.format(num), isDefault);
+                    return new PropertyValue(FORMAT.format(num), isDefault);
                 }
-                return new ValueInfo(String.valueOf(attr.value()), isDefault);
+                return new PropertyValue(String.valueOf(attr.value()), isDefault);
             }
             case INSETS -> {
                 if (attr.value() instanceof Insets insets) {
                     if (isZero(insets.getTop()) && isZero(insets.getRight())
                             && isZero(insets.getBottom()) && isZero(insets.getLeft())) {
-                        return new ValueInfo("Insets.EMPTY", true);
+                        return new PropertyValue("Insets.EMPTY", true);
                     }
                 }
-                return new ValueInfo(String.valueOf(attr.value()), attr.valueState() == ValueState.DEFAULT);
+                return new PropertyValue(String.valueOf(attr.value()), attr.valueState() == ValueState.DEFAULT);
             }
             default -> {
                 if (attr.value() instanceof List<?> list && list.isEmpty()) {
-                    return new ValueInfo("[]", true);
+                    return new PropertyValue("[]", true);
                 }
                 boolean isDefault = false;
                 var strValue = String.valueOf(attr.value());
-                if (info.getAttribute().displayHint() == Attribute.DisplayHint.TRANSFORMS
-                        || (info.getCategory() == AttributeCategory.REFLECTIVE
+                if (item.getAttribute().displayHint() == Attribute.DisplayHint.TRANSFORMS
+                        || (item.getCategory() == AttributeCategory.REFLECTIVE
                         && (attr.name().equals("localToSceneTransform")
                         || attr.name().equals("localToParentTransform")))) {
                     strValue = strValue.replaceAll("\\R", "")
@@ -109,7 +109,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
                 if (attr.valueState() == ValueState.DEFAULT || strValue.equals("null") || strValue.isEmpty())  {
                     isDefault = true;
                 }
-                return new ValueInfo(strValue, isDefault);
+                return new PropertyValue(strValue, isDefault);
             }
         }
     }
@@ -146,11 +146,11 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         return item;
     }
 
-    private static final class RootTreeItem extends TreeItem<PropertyInfo> {
+    private static final class RootTreeItem extends TreeItem<PropertyItem> {
 
-        private RootTreeItem(PropertyInfo rootAttribute) {
+        private RootTreeItem(PropertyItem rootAttribute) {
             setValue(rootAttribute);
-            rootAttribute.getChildren().addListener((ListChangeListener<PropertyInfo>) (e) -> {
+            rootAttribute.getChildren().addListener((ListChangeListener<PropertyItem>) (e) -> {
                 while (e.next()) {
                     if (e.wasAdded()) {
                         for (var added : e.getAddedSubList()) {
@@ -169,14 +169,14 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         }
     }
 
-    private static final class CategoryTreeItem extends TreeItem<PropertyInfo> {
+    private static final class CategoryTreeItem extends TreeItem<PropertyItem> {
 
-        private ListChangeListener<PropertyInfo> listener =  (e) -> {
+        private ListChangeListener<PropertyItem> listener =  (e) -> {
             while (e.next()) {
                 if (e.wasAdded()) {
                     for (var added : e.getAddedSubList()) {
                         added.setValue(createValue(added));
-                        var c = new TreeItem<PropertyInfo>(added);
+                        var c = new TreeItem<PropertyItem>(added);
                         getChildren().add(c);
                     }
                 }
@@ -186,7 +186,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
             }
         };
 
-        private CategoryTreeItem(PropertyInfo categoryAttribute) {
+        private CategoryTreeItem(PropertyItem categoryAttribute) {
             setValue(categoryAttribute);
             this.expandedProperty().bindBidirectional(categoryAttribute.expandedProperty());
             categoryAttribute.getChildren().addListener(listener);
@@ -198,7 +198,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         }
     }
 
-    private static final class PropertyTableCell extends TreeTableCell<PropertyInfo, String> {
+    private static final class PropertyTableCell extends TreeTableCell<PropertyItem, String> {
 
         @Override
         protected void updateItem(String item, boolean empty) {
@@ -207,19 +207,19 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
                 setGraphic(null);
                 setText(null);
             } else {
-                var info = getTableRow().getItem();
-                if (!info.isCategory()) {
+                var propertyItem = getTableRow().getItem();
+                if (!propertyItem.isCategory()) {
                     Label mainLabel = new Label(item);
                     HBox box = new HBox(SizeConstants.THIRD_INSET, mainLabel);
-                    var attr = info.getAttribute();
+                    var attr = propertyItem.getAttribute();
                     if (attr != null) {
-                        if (info.getValue().isDefault()) {
+                        if (propertyItem.getValue().isDefault()) {
                             mainLabel.getStyleClass().add("default-value");
                         }
-                        if (info.getAttribute().cssProperty() != null) {
+                        if (propertyItem.getAttribute().cssProperty() != null) {
                             Label cssHint = new Label("CSS");
                             cssHint.getStyleClass().add("css-hint");
-                            if (info.getValue().isDefault()) {
+                            if (propertyItem.getValue().isDefault()) {
                                 cssHint.getStyleClass().add("default-value");
                             }
                             var cssContainer = new HBox(cssHint);
@@ -238,7 +238,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         }
     }
 
-    private static final class ValueTableCell extends TreeTableCell<PropertyInfo, String> {
+    private static final class ValueTableCell extends TreeTableCell<PropertyItem, String> {
 
         @Override
         protected void updateItem(String item, boolean empty) {
@@ -247,10 +247,10 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
                 setGraphic(null);
                 setText(null);
             } else {
-                var info = getTableRow().getItem();
-                var attr = info.getAttribute();
+                var propertyItem = getTableRow().getItem();
+                var attr = propertyItem.getAttribute();
                 Label mainLabel = new Label(item);
-                if (attr != null && info.getValue().isDefault()) {
+                if (attr != null && propertyItem.getValue().isDefault()) {
                     mainLabel.getStyleClass().add("default-value");
                 }
                 setGraphic(mainLabel);
@@ -269,7 +269,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
 
     private final VBox nodeBox = new VBox();
 
-    private final TreeTableView<PropertyInfo> propertyTableView = new TreeTableView<>();
+    private final TreeTableView<PropertyItem> propertyTableView = new TreeTableView<>();
 
     private final VBox propertyBox = new VBox();
 
@@ -303,28 +303,28 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
                 nodeSearchPanel.getMatchCaseButton(), nodeSearchPanel.getRefreshButton());
         nodeBox.getChildren().addAll(nodeSearchPanel.getNode(), nodeTreeView);
 
-        TreeTableColumn<PropertyInfo, String> propertyColumn = new TreeTableColumn<>("Property");
+        TreeTableColumn<PropertyItem, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {
             // root is not shown
-            var info = param.getValue().getValue();
+            var item = param.getValue().getValue();
             String text;
-            if (info.isCategory()) {
-                text = JfxInspectorTabViewModel.getCategoryText(info.getCategory());
+            if (item.isCategory()) {
+                text = JfxInspectorTabViewModel.getCategoryText(item.getCategory());
             } else {
-                text = info.getAttribute().name();
+                text = item.getAttribute().name();
             }
             return new SimpleStringProperty(text);
         });
         propertyColumn.setCellFactory(col -> new PropertyTableCell());
 
-        TreeTableColumn<PropertyInfo, String> valueColumn = new TreeTableColumn<>("Value");
+        TreeTableColumn<PropertyItem, String> valueColumn = new TreeTableColumn<>("Value");
         valueColumn.setCellValueFactory(param -> {
             // root is not shown
-            var info = param.getValue().getValue();
-            if (info.isCategory()) {
+            var item = param.getValue().getValue();
+            if (item.isCategory()) {
                 return new SimpleStringProperty();
             } else {
-                return new SimpleStringProperty(info.getValue().text());
+                return new SimpleStringProperty(item.getValue().text());
             }
         });
         valueColumn.setCellFactory(col -> new ValueTableCell());
@@ -370,10 +370,10 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
     protected void addHandlers() {
         super.addHandlers();
         propertyTableView.setRowFactory(ttv -> {
-            TreeTableRow<PropertyInfo> row = new TreeTableRow<>();
+            TreeTableRow<PropertyItem> row = new TreeTableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    getViewModel().handleInfoClick();
+                    getViewModel().handlePropertyClick();
                 }
             });
             return row;
@@ -388,7 +388,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         return nodeBox;
     }
 
-    protected TreeTableView<PropertyInfo> getInfoTableView() {
+    protected TreeTableView<PropertyItem> getInfoTableView() {
         return propertyTableView;
     }
 

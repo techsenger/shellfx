@@ -34,14 +34,14 @@ public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel<Dialo
 
     private final Element element;
 
-    private final PropertyInfo info;
+    private final PropertyItem item;
 
     private final String declaringClassName;
 
-    public PropertyDialogViewModel(Element element, PropertyInfo info, String declaringClassName) {
+    public PropertyDialogViewModel(Element element, PropertyItem item, String declaringClassName) {
         super(DialogScope.TAB, true);
         this.element = element;
-        this.info = info;
+        this.item = item;
         this.declaringClassName = declaringClassName;
         setPrefWidth(650);
         setPrefHeight(400);
@@ -54,15 +54,15 @@ public class PropertyDialogViewModel extends AbstractSimpleDialogViewModel<Dialo
         return element;
     }
 
-    public PropertyInfo getInfo() {
-        return info;
+    public PropertyItem getItem() {
+        return item;
     }
 
     public String getPropertyUrl() {
         if (!declaringClassName.startsWith("javafx.")) {
             return null;
         }
-        return UrlUtils.getPropertyJavadocUrl(declaringClassName, info);
+        return UrlUtils.getPropertyJavadocUrl(declaringClassName, item);
     }
 
     public String getCssPropertyUrl() {

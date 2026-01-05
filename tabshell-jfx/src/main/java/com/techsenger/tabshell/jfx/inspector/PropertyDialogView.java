@@ -78,10 +78,10 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
     protected void build() {
         super.build();
         var viewModel = getViewModel();
-        var info = viewModel.getInfo();
+        var item = viewModel.getItem();
 
         var propUrl = viewModel.getPropertyUrl();
-        nameLabel.setText(info.getAttribute().name());
+        nameLabel.setText(item.getAttribute().name());
         nameLabel.setMinWidth(Label.USE_PREF_SIZE);
         nameBox.setAlignment(Pos.TOP_LEFT);
         if (propUrl != null) {
@@ -95,7 +95,7 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
         }
         gridPane.add(nameBox, 0, 0);
         GridPane.setValignment(nameBox, VPos.TOP);
-        valueTextArea.setText(info.getValue().text());
+        valueTextArea.setText(item.getValue().text());
         valueTextArea.setEditable(false);
         valueTextArea.setWrapText(true);
         gridPane.add(valueTextArea, 1, 0);
@@ -105,8 +105,8 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
         cssLabel.setMinWidth(Label.USE_PREF_SIZE);
         cssBox.setAlignment(Pos.CENTER_LEFT);
         gridPane.add(cssBox, 0, 1);
-        if (info.getAttribute().cssProperty() != null) {
-            cssTextField.setText(info.getAttribute().cssProperty());
+        if (item.getAttribute().cssProperty() != null) {
+            cssTextField.setText(item.getAttribute().cssProperty());
             var cssPropUrl = viewModel.getCssPropertyUrl();
             if (cssPropUrl != null) {
                 var link = new Hyperlink(null, new FontIconView(SharedIcons.OPEN_IN_NEW));
@@ -126,7 +126,7 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
 
         stateLabel.setMinWidth(Hyperlink.USE_PREF_SIZE);
         gridPane.add(stateLabel, 0, 2);
-        stateTextField.setText(info.getAttribute().valueState().name());
+        stateTextField.setText(item.getAttribute().valueState().name());
         stateTextField.setEditable(false);
         GridPane.setHgrow(stateTextField, Priority.ALWAYS);
         gridPane.add(stateTextField, 1, 2);

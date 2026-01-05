@@ -44,10 +44,10 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  */
 public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends AbstractTabViewModel<T> {
 
-    private static Map<AttributeCategory, PropertyInfo> createAttributeInfosByCategory() {
-        var map = new HashMap<AttributeCategory, PropertyInfo>();
+    private static Map<AttributeCategory, PropertyItem> createAttributeInfosByCategory() {
+        var map = new HashMap<AttributeCategory, PropertyItem>();
         for (var c : AttributeCategory.values()) {
-            map.put(c, new PropertyInfo(c));
+            map.put(c, new PropertyItem(c));
         }
         return Collections.unmodifiableMap(map);
     }
@@ -62,11 +62,11 @@ public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends
 
     private final ReadOnlyObjectWrapper<Element> selectedElement = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectWrapper<PropertyInfo> rootInfo = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<PropertyItem> rootItem = new ReadOnlyObjectWrapper<>();
 
-    private final ReadOnlyObjectWrapper<PropertyInfo> selectedInfo = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<PropertyItem> selectedItem = new ReadOnlyObjectWrapper<>();
 
-    private final Map<AttributeCategory, PropertyInfo> infosByCategory = createAttributeInfosByCategory();
+    private final Map<AttributeCategory, PropertyItem> itemsByCategory = createAttributeInfosByCategory();
 
     private final ObservableSource<Void> attributesUpdated = new SimpleObservableSource<>();
 
@@ -78,7 +78,7 @@ public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends
         this.connector = connector;
         setTitle("Inspector");
         setClosable(false);
-        setRootInfo(new PropertyInfo((AttributeCategory) null));
+        setRootInfo(new PropertyItem((AttributeCategory) null));
     }
 
     public Connector getConnector() {
@@ -101,20 +101,20 @@ public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends
         return selectedElement.get();
     }
 
-    public ReadOnlyObjectProperty<PropertyInfo> rootInfoProperty() {
-        return rootInfo.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<PropertyItem> rootInfoProperty() {
+        return rootItem.getReadOnlyProperty();
     }
 
-    public PropertyInfo getRootInfo() {
-        return rootInfo.get();
+    public PropertyItem getRootInfo() {
+        return rootItem.get();
     }
 
-    public ReadOnlyObjectProperty<PropertyInfo> selectedInfoProperty() {
-        return selectedInfo.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<PropertyItem> selectedItemProperty() {
+        return selectedItem.getReadOnlyProperty();
     }
 
-    public PropertyInfo getSelectedInfo() {
-        return selectedInfo.get();
+    public PropertyItem getSelectedItem() {
+        return selectedItem.get();
     }
 
     @Override
@@ -151,18 +151,18 @@ public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends
         });
     }
 
-    protected void handleInfoClick() {
+    protected void handlePropertyClick() {
         Element element = getSelectedElement();
         if (element == null) {
             return;
         }
-        var info = getSelectedInfo();
-        if (info == null) {
+        var item = getSelectedItem();
+        if (item == null) {
             return;
         }
-        var field = info.getAttribute().field();
+        var field = item.getAttribute().field();
         String declaringClassName = this.connector.getDeclaringClass(element.getClassInfo().className(), field);
-        var vm = new PropertyDialogViewModel(element, info, declaringClassName);
+        var vm = new PropertyDialogViewModel(element, item, declaringClassName);
         getMediator().addPropertyDialog(vm);
     }
 
@@ -174,12 +174,12 @@ public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends
         selectedElement.set(element);
     }
 
-    void setSelectedInfo(PropertyInfo value) {
-        selectedInfo.set(value);
+    void setSelectedInfo(PropertyItem value) {
+        selectedItem.set(value);
     }
 
-    private void setRootInfo(PropertyInfo value) {
-        rootInfo.set(value);
+    private void setRootInfo(PropertyItem value) {
+        rootItem.set(value);
     }
 
     ObservableSource<Void> getAttributesUpdated() {
@@ -188,13 +188,13 @@ public class JfxInspectorTabViewModel<T extends JfxInspectorTabMediator> extends
 
     private void addAttributes(AttributeListEvent event) {
         var root = getRootInfo();
-        var cat = infosByCategory.get(event.category());
+        var cat = itemsByCategory.get(event.category());
         cat.getChildren().clear();
         root.getChildren().add(cat);
         var sortedList = new ArrayList<>(event.attributes());
         sortedList.sort(Comparator.comparing(Attribute::name));
         for (var a : sortedList) {
-            cat.getChildren().add(new PropertyInfo(event.category(), a));
+            cat.getChildren().add(new PropertyItem(event.category(), a));
         }
     }
 }
