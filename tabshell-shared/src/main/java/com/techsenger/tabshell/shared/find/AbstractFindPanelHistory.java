@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneHistory extends AbstractAreaHistory {
+public abstract class AbstractFindPanelHistory extends AbstractAreaHistory {
 
     private List<String> findTexts;
 

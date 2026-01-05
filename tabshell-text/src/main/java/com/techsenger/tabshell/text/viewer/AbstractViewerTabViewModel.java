@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.text.viewer;
 
+import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.DialogScope;
@@ -36,6 +37,7 @@ import com.techsenger.tabshell.storage.FileStorages;
 import com.techsenger.tabshell.storage.FileTaskProvider;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.storage.TextFileTaskProvider;
+import com.techsenger.toolkit.core.Pair;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.nio.charset.Charset;
@@ -107,7 +109,9 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
 
     private FindMatchesResetPolicy findMatchesResetPolicy = FindMatchesResetPolicy.AUTOMATIC;
 
-    private DefaultFindPaneViewModel find;
+    private DefaultFindPanelViewModel<?> find;
+
+    private ObservableSource<Pair<Integer, Integer>> moveTo = new SimpleObservableSource<>();
 
     private long textStateId = 0;
 
@@ -199,6 +203,30 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
 
     public void openGoToLineDialog() {
         var viewModel = new GoToLineDialogViewModel(getHistoryManager());
+        viewModel.getOk().setAction(() -> {
+            try {
+                viewModel.setHistoryPolicy(HistoryPolicy.DATA); //before closing
+                viewModel.requestClose();
+                var line = viewModel.getLine();
+                if (line == null) {
+                    line = 0;
+                }
+                if (line > 0) {
+                    line--;
+                }
+                var column = viewModel.getColumn();
+                if (column == null) {
+                    column = 0;
+                }
+                if (column > 0) {
+                    column--;
+                }
+                moveTo.next(new Pair<>(line, column));
+                logger.debug("Moved caret to line: {}, column: {}", line, column);
+            } catch (Exception ex) {
+                logger.error("e", ex);
+            }
+        });
         getMediator().addGoToLineDialog(viewModel);
     }
 
@@ -207,23 +235,23 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
      *
      * @param replaceMode
      */
-    public void addFindPane(boolean replaceMode) {
+    public void addFindPanel(boolean replaceMode) {
         if (this.find == null) {
-            this.find = new DefaultFindPaneViewModel(getFindMatchesResetPolicy(), getHistoryManager());
+            this.find = new DefaultFindPanelViewModel(getFindMatchesResetPolicy(), getHistoryManager());
             this.find.closeActionProperty().set(() -> {
-                this.removeFindPane();
+                this.removeFindPanel();
             });
             this.find.replaceModeProperty().set(replaceMode);
-            getMediator().addFindPane(this.find);
+            getMediator().addFindPanel(this.find);
         }
     }
 
     /**
      * Removes and destroys find pane.
      */
-    public void removeFindPane() {
+    public void removeFindPanel() {
         if (this.find != null) {
-            getMediator().removeFindPane();
+            getMediator().removeFindPanel();
             this.find = null;
         }
     }
@@ -440,7 +468,7 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
         return caretPositionProperty().get();
     }
 
-    public FindPaneViewModel getFind() {
+    public FindPanelViewModel getFind() {
         return find;
     }
 
@@ -494,35 +522,39 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
         this.findMatchesResetPolicy = findMatchesResetPolicy;
     }
 
-    ObservableSource<String> contentSource() {
+    ObservableSource<String> getContentSource() {
         return content;
     }
 
-    ReadOnlyBooleanWrapper textFocusedWrapper() {
+    ReadOnlyBooleanWrapper getTextFocusedWrapper() {
         return textFocused;
     }
 
-    ReadOnlyStringWrapper selectedTextWrapper() {
+    ReadOnlyStringWrapper getSelectedTextWrapper() {
         return selectedText;
     }
 
-    ReadOnlyStringWrapper textWrapper() {
+    ReadOnlyStringWrapper getTextWrapper() {
         return text;
     }
 
-    ReadOnlyIntegerWrapper textLengthWrapper() {
+    ReadOnlyIntegerWrapper getTextLengthWrapper() {
         return textLength;
     }
 
-    ReadOnlyObjectWrapper<IndexRange> selectionWrapper() {
+    ReadOnlyObjectWrapper<IndexRange> getSelectionWrapper() {
         return selection;
     }
 
-    ReadOnlyIntegerWrapper caretPositionWrapper() {
+    ReadOnlyIntegerWrapper getCaretPositionWrapper() {
         return caretPosition;
     }
 
-    ReadOnlyObjectWrapper<UndoManager<?>> undoManagerWrapper() {
+    ReadOnlyObjectWrapper<UndoManager<?>> getUndoManagerWrapper() {
         return this.undoManager;
+    }
+
+    ObservableSource<Pair<Integer, Integer>> getMoveToSource() {
+        return moveTo;
     }
 }

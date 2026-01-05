@@ -262,10 +262,10 @@ public class DefaultFindViewTest {
         );
     }
 
-    private DefaultFindPaneComponent<?> createComponent(ExtendedTextArea codeArea) {
-        var viewModel = new DefaultFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
-        var view = new DefaultFindPaneView<>(viewModel, codeArea);
-        var component = new DefaultFindPaneComponent<>(view);
+    private DefaultFindPanelComponent<?> createComponent(ExtendedTextArea codeArea) {
+        var viewModel = new DefaultFindPanelViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
+        var view = new DefaultFindPanelView<>(viewModel, codeArea);
+        var component = new DefaultFindPanelComponent<>(view);
         component.initialize();
         viewModel.replaceModeProperty().set(true);
         return component;

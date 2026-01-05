@@ -74,7 +74,7 @@ public class TerminalTabViewModel<T extends TerminalTabMediator> extends Abstrac
 
     private PtyProcessTtyConnector ttyConnector;
 
-    private FindPaneViewModel find;
+    private FindPanelViewModel<?> find;
 
     private final String directory;
 
@@ -219,9 +219,9 @@ public class TerminalTabViewModel<T extends TerminalTabMediator> extends Abstrac
         if (this.find != null) {
             return;
         }
-        this.find = new FindPaneViewModel(selectedText.get(), getMediator().getShell().getHistoryManager());
+        this.find = new FindPanelViewModel(selectedText.get(), getMediator().getShell().getHistoryManager());
         this.find.closeActionProperty().set(() -> hideFind());
-        getMediator().addFindPane(this.find);
+        getMediator().addFindPanel(this.find);
     }
 
     protected void hideFind() {
@@ -229,7 +229,7 @@ public class TerminalTabViewModel<T extends TerminalTabMediator> extends Abstrac
             return;
         }
         this.find = null;
-        getMediator().removeFindPane();
+        getMediator().removeFindPanel();
     }
 
     protected void createNewTerminal() {

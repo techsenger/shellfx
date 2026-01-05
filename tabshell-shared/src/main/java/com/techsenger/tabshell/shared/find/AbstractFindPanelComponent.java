@@ -22,16 +22,10 @@ import com.techsenger.tabshell.core.area.AbstractAreaComponent;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneComponent<T extends AbstractFindPaneView<?, ?>> extends AbstractAreaComponent<T> {
+public abstract class AbstractFindPanelComponent<T extends AbstractFindPanelView<?, ?>>
+        extends AbstractAreaComponent<T> {
 
-    protected class Mediator extends AbstractAreaComponent.Mediator implements FindPaneMediator {
-
-    }
-
-    public AbstractFindPaneComponent(T view) {
+    public AbstractFindPanelComponent(T view) {
         super(view);
     }
-
-    @Override
-    protected abstract AbstractFindPaneComponent.Mediator createMediator();
 }

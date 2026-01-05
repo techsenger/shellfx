@@ -22,7 +22,7 @@ import com.techsenger.patternfx.core.State;
 import com.techsenger.patternfx.core.TreeIterator;
 import com.techsenger.patternfx.mvvmx.ChildViewModel;
 import com.techsenger.patternfx.mvvmx.ParentViewModel;
-import com.techsenger.tabshell.shared.find.FindPaneMediator;
+import com.techsenger.tabshell.core.area.AreaMediator;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import javafx.beans.property.ObjectProperty;
@@ -33,7 +33,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class DummyMediator implements FindPaneMediator {
+public class DummyMediator implements AreaMediator {
 
     @Override
     public void deinitialize() {

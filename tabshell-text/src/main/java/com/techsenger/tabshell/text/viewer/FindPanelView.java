@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.terminal;
-
-import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.shared.find.AbstractFindPaneComponent;
+package com.techsenger.tabshell.text.viewer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPaneComponent<T extends FindPaneView<?, ?>> extends AbstractFindPaneComponent<T> {
+public interface FindPanelView {
 
-    public FindPaneComponent(T view) {
-        super(view);
-    }
+    FindPanelViewModel getViewModel();
 
-    @Override
-    protected Mediator createMediator() {
-        return new AbstractFindPaneComponent.Mediator() { };
-    }
+    void setSelectionToFindText();
 
-    @Override
-    public Name getName() {
-        return TerminalComponentNames.FIND_PANE;
-    }
+    void selectNextRange(boolean focusToTextArea);
 
+    void selectPreviousRange(boolean focusToTextArea);
 }

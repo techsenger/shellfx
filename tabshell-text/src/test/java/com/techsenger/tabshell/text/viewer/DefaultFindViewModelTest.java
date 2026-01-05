@@ -27,20 +27,24 @@ import org.junit.jupiter.api.Test;
  */
 public class DefaultFindViewModelTest {
 
-    private static final class TestFindPaneViewModel extends DefaultFindPaneViewModel {
+    private static final class TestFindPanelViewModel extends DefaultFindPanelViewModel {
 
-        private TestFindPaneViewModel(FindMatchesResetPolicy resetPolicy, HistoryManager historyManager) {
+        private TestFindPanelViewModel(FindMatchesResetPolicy resetPolicy, HistoryManager historyManager) {
             super(resetPolicy, historyManager);
             setMediator(new DummyMediator());
+        }
+
+        public void setText(String text) {
+            getTextWrapper().set(text);
         }
 
     }
 
     @Test
     public void find_noMatchCaseNoWholeWordNoRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
+        var viewModel = new TestFindPanelViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
-        viewModel.textProperty().set(Texts.TEXT);
+        viewModel.setText(Texts.TEXT);
         viewModel.findTextProperty().set("ansi4j");
         viewModel.find();
         assertThat(viewModel.getMatchRanges()).hasSize(8);
@@ -59,10 +63,10 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_yesMatchCaseNoWholeWordNoRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
+        var viewModel = new TestFindPanelViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.caseSelectedProperty().set(true);
-        viewModel.textProperty().set(Texts.TEXT);
+        viewModel.setText(Texts.TEXT);
         viewModel.findTextProperty().set("ansi4j");
         viewModel.find();
         assertThat(viewModel.getMatchRanges()).hasSize(7);
@@ -80,10 +84,10 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_noMatchCaseYesWholeWordNoRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
+        var viewModel = new TestFindPanelViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.wholeWordSelectedProperty().set(true);
-        viewModel.textProperty().set(Texts.TEXT);
+        viewModel.setText(Texts.TEXT);
         viewModel.findTextProperty().set("version");
         viewModel.find();
         assertThat(viewModel.getMatchRanges()).hasSize(3);
@@ -97,11 +101,11 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_yesMatchCaseYesWholeWordNoRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
+        var viewModel = new TestFindPanelViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.wholeWordSelectedProperty().set(true);
         viewModel.caseSelectedProperty().set(true);
-        viewModel.textProperty().set(Texts.TEXT);
+        viewModel.setText(Texts.TEXT);
         viewModel.findTextProperty().set("version");
         viewModel.find();
         assertThat(viewModel.getMatchRanges()).hasSize(2);
@@ -114,10 +118,10 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_noMatchCaseNoWholeWordYesRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
+        var viewModel = new TestFindPanelViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.regExpSelectedProperty().set(true);
-        viewModel.textProperty().set(Texts.TEXT);
+        viewModel.setText(Texts.TEXT);
         viewModel.findTextProperty().set("an.*(?=<)");
         viewModel.find();
         assertThat(viewModel.getMatchRanges()).hasSize(9);
@@ -137,11 +141,11 @@ public class DefaultFindViewModelTest {
 
     @Test
     public void find_yesMatchCaseNoWholeWordYesRegExp_success() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
+        var viewModel = new TestFindPanelViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.replaceModeProperty().set(true);
         viewModel.regExpSelectedProperty().set(true);
         viewModel.caseSelectedProperty().set(true);
-        viewModel.textProperty().set(Texts.TEXT);
+        viewModel.setText(Texts.TEXT);
         viewModel.findTextProperty().set("an.*(?=<)");
         viewModel.find();
         assertThat(viewModel.getMatchRanges()).hasSize(8);
@@ -202,13 +206,13 @@ public class DefaultFindViewModelTest {
         assertThat(viewModel.getMatchRange().getIndex()).isEqualTo(0);
     }
 
-    private DefaultFindPaneViewModel createViewModelForMoveTests() {
-        var viewModel = new TestFindPaneViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
+    private DefaultFindPanelViewModel<?> createViewModelForMoveTests() {
+        var viewModel = new TestFindPanelViewModel(FindMatchesResetPolicy.AUTOMATIC, new DummyHistoryManager());
         viewModel.textAreaEditableProperty().set(true);
         viewModel.replaceModeProperty().set(true);
         viewModel.regExpSelectedProperty().set(true);
         viewModel.caseSelectedProperty().set(true);
-        viewModel.textProperty().set(Texts.TEXT);
+        viewModel.setText(Texts.TEXT);
         viewModel.findTextProperty().set("an.*(?=<)");
         viewModel.find();
         return viewModel;

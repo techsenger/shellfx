@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.shared.find;
+package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.core.area.AreaMediator;
+import com.techsenger.tabshell.shared.find.AbstractFindPanelHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FindPaneMediator extends AreaMediator {
+public class FindPanelHistory extends AbstractFindPanelHistory {
 
 }

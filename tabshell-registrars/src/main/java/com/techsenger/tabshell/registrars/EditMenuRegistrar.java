@@ -187,7 +187,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             item.setOnAction(e -> {
                 var tab = ((ShellView<?, ?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView<?, ?> t) {
-                    t.getViewModel().addFindPane(false);
+                    t.getViewModel().addFindPanel(false);
                 }
             });
             return item;
@@ -203,7 +203,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
             item.setOnAction(e -> {
                 var tab = ((ShellView<?, ?>) v).getSelectedTab();
                 if (tab != null && tab instanceof AbstractViewerTabView<?, ?> t) {
-                    t.getViewModel().addFindPane(true);
+                    t.getViewModel().addFindPanel(true);
                 }
             });
             return item;
@@ -225,7 +225,7 @@ public class EditMenuRegistrar extends AbstractControlRegistrar {
                     if (find != null) {
                         shouldReset = true;
                     }
-                    ((AbstractViewerTabViewModel) textView.getViewModel()).addFindPane(false);
+                    ((AbstractViewerTabViewModel) textView.getViewModel()).addFindPanel(false);
                     //on reset selection is removed;
                     //that's why it's after setting selection to find text
                     textView.getFind().setSelectionToFindText();

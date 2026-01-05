@@ -187,7 +187,7 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
         this.pasteButton.setOnAction(e -> paste());
         this.undoButton.setOnAction(e -> undo());
         this.redoButton.setOnAction(e -> redo());
-        this.replaceButton.setOnAction(e -> viewModel.addFindPane(true));
+        this.replaceButton.setOnAction(e -> viewModel.addFindPanel(true));
         this.getTextAreaMenu().setOnShowing((t) -> {
             if (this.getTextArea().getShowCaret() != Caret.CaretVisibility.OFF && this.getTextArea().isEditable()) {
                 this.getCutItem().setDisable(false);

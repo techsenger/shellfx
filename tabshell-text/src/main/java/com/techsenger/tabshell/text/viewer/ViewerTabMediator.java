@@ -17,9 +17,9 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
+import com.techsenger.tabshell.dialogs.file.FileOperatorMediator;
 import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
 import com.techsenger.tabshell.layout.workertab.WorkerTabMediator;
-import com.techsenger.tabshell.dialogs.file.FileOperatorMediator;
 
 /**
  *
@@ -33,7 +33,7 @@ public interface ViewerTabMediator extends WorkerTabMediator, FileOperatorMediat
 
     void addGoToLineDialog(GoToLineDialogViewModel dialog);
 
-    void removeFindPane();
+    void removeFindPanel();
 
-    void addFindPane(DefaultFindPaneViewModel viewModel);
+    void addFindPanel(DefaultFindPanelViewModel viewModel);
 }

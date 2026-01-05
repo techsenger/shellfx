@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.terminal;
-
-import com.techsenger.tabshell.shared.find.AbstractFindPaneHistory;
+package com.techsenger.tabshell.text.viewer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPaneHistory extends AbstractFindPaneHistory {
+public interface FindPanelViewModel {
 
+    void findNext();
+
+    void findPrevious();
+
+    boolean hasNextMatch();
+
+    boolean hasPreviousMatch();
+
+    void resetMatches();
 }

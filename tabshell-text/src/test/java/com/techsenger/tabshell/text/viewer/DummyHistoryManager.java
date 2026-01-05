@@ -34,7 +34,7 @@ public class DummyHistoryManager implements HistoryManager {
 
     @Override
     public <T extends History> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
-        return (T) new FindPaneHistory();
+        return (T) new FindPanelHistory();
     }
 
     @Override

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.ShellComponent;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogComponent;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogView;
@@ -51,60 +50,34 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
             var tabView = getView();
             var shell = component.getShell();
             var view = new GoToLineDialogView<>(viewModel);
-            var c = new GoToLineDialogComponent<>(view);
+            var c = new GoToLineDialogComponent<>(view, component);
             c.initialize();
-            // todo: refactor after fixing JDK-8333275
-            viewModel.getOk().setAction(() -> {
-                try {
-                    viewModel.setHistoryPolicy(HistoryPolicy.DATA); //before closing
-                    viewModel.requestClose();
-                    var line = viewModel.getLine();
-                    if (line == null) {
-                        line = 0;
-                    }
-                    if (line > 0) {
-                        line--;
-                    }
-                    var column = viewModel.getColumn();
-                    if (column == null) {
-                        column = 0;
-                    }
-                    if (column > 0) {
-                        column--;
-                    }
-                    tabView.getTextArea().moveTo(line, column);
-                    tabView.getTextArea().requestFollowCaret();
-                    tabView.getTextArea().requestFocus();
-                    logger.debug("Moved caret to line: {}, column: {}", line, column);
-                } catch (Exception ex) {
-                    logger.error("e", ex);
-                }
-            });
             addDialog(c);
         }
 
         @Override
-        public void removeFindPane() {
-            component.removeFindPane();
-            getModifiableChildren().remove(findPane);
-        }
-
-        @Override
-        public void addFindPane(DefaultFindPaneViewModel viewModel) {
+        public void addFindPanel(DefaultFindPanelViewModel viewModel) {
             var shell = component.getShell();
-            var v = new DefaultFindPaneView<>(viewModel, getView().getTextArea());
-            findPane = new DefaultFindPaneComponent<>(v);
-            findPane.initialize();
-            getModifiableChildren().add(findPane);
+            var v = new DefaultFindPanelView<>(viewModel, getView().getTextArea());
+            findPanel = new DefaultFindPanelComponent<>(v);
+            findPanel.initialize();
+            getModifiableChildren().add(findPanel);
             v.getNode().addEventHandler(KeyEvent.KEY_PRESSED, (e) -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
-                    getView().getViewModel().removeFindPane();
+                    getView().getViewModel().removeFindPanel();
                 }
             });
             if (!viewModel.replaceModeProperty().get()) {
                 v.setSelectionToFindText();
             }
-            getView().addFindPane(v);
+            getView().addFindPanel(v);
+        }
+
+        @Override
+        public void removeFindPanel() {
+            getView().removeFindPanel();
+            getModifiableChildren().remove(findPanel);
+            findPanel.deinitialize();
         }
 
         @Override
@@ -133,7 +106,7 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
         }
     }
 
-    private DefaultFindPaneComponent<?> findPane;
+    private DefaultFindPanelComponent<?> findPanel;
 
     public AbstractViewerTabComponent(T view, ShellComponent<?> shell) {
         super(view, shell);
@@ -141,8 +114,4 @@ public abstract class AbstractViewerTabComponent<T extends AbstractViewerTabView
 
     @Override
     protected abstract Mediator createMediator();
-
-    private void removeFindPane() {
-        getView().removeFindPane();
-    }
 }

@@ -24,7 +24,7 @@ import com.techsenger.patternfx.core.Name;
  */
 public interface TextComponentNames {
 
-    Name FIND_PANE = new Name("FindPane");
+    Name FIND_PANEL = new Name("FindPanel");
 
     Name GO_TO_LINE_DIALOG = new Name("GoToLineDialog");
 }

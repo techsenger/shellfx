@@ -26,8 +26,11 @@ import com.techsenger.tabshell.text.TextComponentNames;
  */
 public class GoToLineDialogComponent<T extends GoToLineDialogView<?, ?>> extends AbstractSimpleDialogComponent<T> {
 
-    public GoToLineDialogComponent(T view) {
+    private final AbstractViewerTabComponent<?> viewer;
+
+    public GoToLineDialogComponent(T view, AbstractViewerTabComponent<?> viewer) {
         super(view);
+        this.viewer = viewer;
     }
 
     @Override
@@ -40,4 +43,7 @@ public class GoToLineDialogComponent<T extends GoToLineDialogView<?, ?>> extends
         return TextComponentNames.GO_TO_LINE_DIALOG;
     }
 
+    protected AbstractViewerTabComponent<?> getViewer() {
+        return viewer;
+    }
 }

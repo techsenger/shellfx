@@ -33,9 +33,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel<AreaMediator> {
-
-    private final StringProperty text = new SimpleStringProperty();
+public abstract class AbstractFindPanelViewModel<T extends AreaMediator> extends AbstractAreaViewModel<T> {
 
     private final StringProperty findText = new SimpleStringProperty();
 
@@ -61,26 +59,8 @@ public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel<Ar
 
     private final BooleanProperty resultTextVisible = new SimpleBooleanProperty(false);
 
-    /**
-     * This variable indicates if the history is being update. It exists because of bug in ComboBox when item is
-     * added to items editor text is changed. see JDK-8333275
-     */
-    private final BooleanProperty historyUpdated = new SimpleBooleanProperty();
+    public AbstractFindPanelViewModel() {
 
-    public AbstractFindPaneViewModel() {
-
-    }
-
-    public StringProperty textProperty() {
-        return this.text;
-    }
-
-    public String getText() {
-        return this.text.get();
-    }
-
-    public void setText(String text) {
-        this.text.set(text);
     }
 
     public StringProperty findTextProperty() {
@@ -219,26 +199,9 @@ public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel<Ar
         return findTexts;
     }
 
-    public BooleanProperty historyUpdatedProperty() {
-        return historyUpdated;
-    }
-
-    public boolean isHistoryUpdated() {
-        return historyUpdated.get();
-    }
-
-    public void setHistoryUpdated(boolean value) {
-        this.historyUpdated.set(value);
-    }
-
     @Override
-    public FindPaneMediator getMediator() {
-        return (FindPaneMediator) super.getMediator();
-    }
-
-    @Override
-    protected AbstractFindPaneHistory getHistory() {
-        return (AbstractFindPaneHistory) super.getHistory();
+    protected AbstractFindPanelHistory getHistory() {
+        return (AbstractFindPanelHistory) super.getHistory();
     }
 
     @Override
@@ -276,11 +239,9 @@ public abstract class AbstractFindPaneViewModel extends AbstractAreaViewModel<Ar
     }
 
     protected void addFindText() {
-        historyUpdatedProperty().set(true);
         var findText = findTextProperty().get();
         HistoryUtils.addFirst(getFindTexts(), findText);
         findTextProperty().set(findText);
-        historyUpdatedProperty().set(false);
     }
 
     protected abstract void resetMatches();

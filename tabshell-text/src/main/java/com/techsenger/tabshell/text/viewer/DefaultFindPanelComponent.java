@@ -16,19 +16,28 @@
 
 package com.techsenger.tabshell.text.viewer;
 
+import com.techsenger.patternfx.core.Name;
+import com.techsenger.tabshell.shared.find.AbstractFindPanelComponent;
+import com.techsenger.tabshell.text.TextComponentNames;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface FindPaneViewModel {
+public class DefaultFindPanelComponent<T extends DefaultFindPanelView<?, ?>> extends AbstractFindPanelComponent<T> {
 
-    void findNext();
+    public DefaultFindPanelComponent(T view) {
+        super(view);
+    }
 
-    void findPrevious();
+    @Override
+    protected Mediator createMediator() {
+        return new AbstractFindPanelComponent.Mediator() { };
+    }
 
-    boolean hasNextMatch();
+    @Override
+    public Name getName() {
+        return TextComponentNames.FIND_PANEL;
+    }
 
-    boolean hasPreviousMatch();
-
-    void resetMatches();
 }

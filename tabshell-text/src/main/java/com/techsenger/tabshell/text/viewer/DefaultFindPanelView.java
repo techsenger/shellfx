@@ -22,7 +22,7 @@ import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
 import com.techsenger.tabshell.material.textarea.TextAreaStyleNames;
-import com.techsenger.tabshell.shared.find.AbstractFindPaneView;
+import com.techsenger.tabshell.shared.find.AbstractFindPanelView;
 import com.techsenger.toolkit.core.collection.ListUtils;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import java.util.ArrayList;
@@ -48,8 +48,8 @@ import org.reactfx.Subscription;
  *
  * @author Pavel Castornii
  */
-public class DefaultFindPaneView<T extends DefaultFindPaneViewModel, S extends DefaultFindPaneComponent<?>>
-        extends AbstractFindPaneView<T, S> implements FindPaneView {
+public class DefaultFindPanelView<T extends DefaultFindPanelViewModel<?>, S extends DefaultFindPanelComponent<?>>
+        extends AbstractFindPanelView<T, S> implements FindPanelView {
 
     private final Label replaceLabel = new Label("Replace With");
 
@@ -69,7 +69,7 @@ public class DefaultFindPaneView<T extends DefaultFindPaneViewModel, S extends D
 
     private Subscription changeObserver;
 
-    public DefaultFindPaneView(T viewModel, ExtendedTextArea textArea) {
+    public DefaultFindPanelView(T viewModel, ExtendedTextArea textArea) {
         super(viewModel);
         this.textArea = textArea;
     }
@@ -149,7 +149,7 @@ public class DefaultFindPaneView<T extends DefaultFindPaneViewModel, S extends D
     protected void bind() {
         super.bind();
         var viewModel = getViewModel();
-        viewModel.textProperty().bind(this.textArea.textProperty());
+        viewModel.getTextWrapper().bind(this.textArea.textProperty());
         viewModel.textLengthProperty().bind(this.textArea.lengthProperty());
         viewModel.textAreaEditableProperty().bind(this.textArea.editableProperty());
         viewModel.caretPositionProperty().bind(this.textArea.caretPositionProperty());
@@ -245,7 +245,7 @@ public class DefaultFindPaneView<T extends DefaultFindPaneViewModel, S extends D
     protected void unbind() {
         super.unbind();
         var viewModel = getViewModel();
-        viewModel.textProperty().unbind();
+        viewModel.getTextWrapper().unbind();
         viewModel.textLengthProperty().unbind();
         viewModel.textAreaEditableProperty().unbind();
         viewModel.caretPositionProperty().unbind();

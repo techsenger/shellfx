@@ -121,13 +121,13 @@ public class GoToLineDialogViewModel extends AbstractSimpleDialogViewModel<Dialo
     protected void saveData() {
         super.saveData();
         var h = getHistory();
-        var l = lineProperty().get();
+        var l = getLine();
         if (l != null) {
             HistoryUtils.addFirst(h.getLines(), l);
         }
         var c = columnProperty().get();
         if (c != null) {
-            HistoryUtils.addFirst(h.getColumns(), l);
+            HistoryUtils.addFirst(h.getColumns(), c);
         }
     }
 

@@ -102,7 +102,7 @@ public abstract class AbstractEditorTabViewModel<T extends EditorTabMediator> ex
                     return isPasteItemValid();
                 }
             },
-            new SimpleMenuItemHelper(EditMenuNames.GO_TO_LINE, Boolean.TRUE)
+            new SimpleMenuItemHelper(EditMenuNames.GO_TO_LINE, true, true)
         );
         modifiedProperty().addListener((ov, oldV, newV) -> {
             updateTitle();

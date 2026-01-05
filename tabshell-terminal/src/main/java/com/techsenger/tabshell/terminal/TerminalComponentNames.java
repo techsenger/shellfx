@@ -26,5 +26,5 @@ public interface TerminalComponentNames {
 
     Name TERMINAL_TAB = new Name("TerminalTab");
 
-    Name FIND_PANE = new Name("TerminalFindPane");
+    Name FIND_PANEL = new Name("TerminalFindPanel");
 }

@@ -43,8 +43,8 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel, S extends AbstractFindPaneComponent<?>>
-        extends AbstractAreaView<T, S> {
+public abstract class AbstractFindPanelView<T extends AbstractFindPanelViewModel<?>,
+        S extends AbstractFindPanelComponent<?>> extends AbstractAreaView<T, S> {
 
     protected static final String FOUND_STYLE_CLASS = "found";
 
@@ -80,7 +80,7 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel, 
 
     private final FocusTrap focusTrap = new FocusTrap(gridPane);
 
-    public AbstractFindPaneView(T viewModel) {
+    public AbstractFindPanelView(T viewModel) {
         super(viewModel);
     }
 
@@ -106,7 +106,7 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel, 
     @Override
     protected void build() {
         super.build();
-        var css = AbstractFindPaneView.class.getResource("find.css").toExternalForm();
+        var css = AbstractFindPanelView.class.getResource("find.css").toExternalForm();
         this.gridPane.getStylesheets().add(css);
         this.gridPane.getStyleClass().add("find");
 
@@ -209,11 +209,7 @@ public abstract class AbstractFindPaneView<T extends AbstractFindPaneViewModel, 
             }
 
         });
-        this.findComboBox.getEditor().textProperty().addListener((ov, t, t1) -> {
-            if (!viewModel.historyUpdatedProperty().get()) {
-                viewModel.resetMatches();
-            }
-        });
+        this.findComboBox.getEditor().textProperty().addListener((ov, t, t1) -> viewModel.resetMatches());
     }
 
     protected GridPane getGridPane() {

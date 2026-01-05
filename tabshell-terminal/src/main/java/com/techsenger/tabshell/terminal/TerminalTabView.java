@@ -95,12 +95,12 @@ public class TerminalTabView<T extends TerminalTabViewModel<?>, S extends Termin
         NodeUtils.requestFocus(widget.getTerminalPanel().getCanvas());
     }
 
-    protected void showFind(FindPaneView find) {
+    protected void showFind(FindPanelView find) {
         getContentPane().getChildren().add(find.getNode());
         find.requestFocus();
     }
 
-    protected void hideFind(FindPaneView find) {
+    protected void hideFind(FindPanelView find) {
         getContentPane().getChildren().remove(find.getNode());
         widget.getTerminalPanel().getCanvas().requestFocus();
     }
@@ -110,10 +110,10 @@ public class TerminalTabView<T extends TerminalTabViewModel<?>, S extends Termin
         super.build();
         var viewModel = getViewModel();
         this.widget = new KitJediTermFxWidget(80, 24, viewModel.createSettingsProvider(), () -> {
-            if (getComponent().getFindPane() == null) {
+            if (getComponent().getFindPanel() == null) {
                 viewModel.showFind();
             } else {
-                getComponent().getFindPane().getView().getFindComboBox().getEditor().requestFocus();
+                getComponent().getFindPanel().getView().getFindComboBox().getEditor().requestFocus();
             }
         });
         widget.setTtyConnector(viewModel.getTtyConnector());
@@ -235,7 +235,7 @@ public class TerminalTabView<T extends TerminalTabViewModel<?>, S extends Termin
             requestFocusSimply();
         });
         getContentPane().addEventFilter(KeyEvent.KEY_PRESSED, (e) -> {
-            if (getComponent().getFindPane() != null && e.getCode() == KeyCode.ESCAPE) {
+            if (getComponent().getFindPanel() != null && e.getCode() == KeyCode.ESCAPE) {
                 viewModel.hideFind();
                 e.consume();
             }

@@ -24,7 +24,7 @@ import com.techsenger.tabshell.core.tab.ShellTabMediator;
  */
 public interface TerminalTabMediator extends ShellTabMediator {
 
-    void addFindPane(FindPaneViewModel findViewModel);
+    void addFindPanel(FindPanelViewModel findViewModel);
 
-    void removeFindPane();
+    void removeFindPanel();
 }

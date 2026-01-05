@@ -81,7 +81,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
 
     private InputMap<KeyEvent> inputMap;
 
-    private DefaultFindPaneView find;
+    private DefaultFindPanelView find;
 
     private String fontStylesheet;
 
@@ -120,7 +120,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         getTextArea().copy();
     }
 
-    public FindPaneView getFind() {
+    public FindPanelView getFind() {
         return find;
     }
 
@@ -133,7 +133,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
     protected void build() {
         super.build();
         var viewModel = getViewModel();
-        viewModel.undoManagerWrapper().set(this.textArea.getUndoManager());
+        viewModel.getUndoManagerWrapper().set(this.textArea.getUndoManager());
         VBox.setVgrow(textScrollPane, Priority.ALWAYS);
         //in richtextfx padding via css doesn't work, so, we do this way
         textArea.setPadding(new Insets(0, 0, 0, 0));
@@ -161,13 +161,13 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         var viewModel = getViewModel();
         wrapTextButton.selectedProperty().bindBidirectional(viewModel.wrapTextProperty());
         textArea.wrapTextProperty().bind(viewModel.wrapTextProperty());
-        viewModel.textFocusedWrapper().bind(textArea.focusedProperty());
-        viewModel.textWrapper().bind(textArea.textProperty());
-        viewModel.selectedTextWrapper().bind(textArea.selectedTextProperty());
+        viewModel.getTextFocusedWrapper().bind(textArea.focusedProperty());
+        viewModel.getTextWrapper().bind(textArea.textProperty());
+        viewModel.getSelectedTextWrapper().bind(textArea.selectedTextProperty());
         viewModel.editableProperty().bind(textArea.editableProperty());
-        viewModel.textLengthWrapper().bind(textArea.lengthProperty());
-        viewModel.selectionWrapper().bind(textArea.selectionProperty());
-        viewModel.caretPositionWrapper().bind(textArea.caretPositionProperty());
+        viewModel.getTextLengthWrapper().bind(textArea.lengthProperty());
+        viewModel.getSelectionWrapper().bind(textArea.selectionProperty());
+        viewModel.getCaretPositionWrapper().bind(textArea.caretPositionProperty());
         copyButton.disableProperty().bind(
                 Bindings.createBooleanBinding(() -> viewModel.selectedTextProperty().get() == null
                         || viewModel.selectedTextProperty().get().isEmpty(),
@@ -191,7 +191,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
             viewModel.caretVisibleProperty().setValue(caretVisible);
         });
 
-        viewModel.contentSource().addListener((t) -> {
+        viewModel.getContentSource().addListener((t) -> {
             textArea.clear();
             //when text area appends a text it scrolls to bottom; to disable scrolling to bottom we use this hack
             textArea.appendText("\n"); //this \n will be deleted in change
@@ -205,6 +205,11 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
             //we mark position in undo manager. All positions after it are changes
             textArea.getUndoManager().mark();
         });
+        viewModel.getMoveToSource().addListener(p -> {
+            textArea.moveTo(p.getFirst(), p.getSecond());
+            textArea.requestFollowCaret();
+            textArea.requestFocus();
+        });
     }
 
     @Override
@@ -213,12 +218,12 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         var viewModel = getViewModel();
         this.getTextArea().addEventHandler(KeyEvent.KEY_PRESSED, (event) -> {
             if (event.getCode() == KeyCode.ESCAPE) {
-                viewModel.removeFindPane();
+                viewModel.removeFindPanel();
                 event.consume();
             }
         });
         this.copyButton.setOnAction(e -> copy());
-        this.findButton.setOnAction(e -> viewModel.addFindPane(false));
+        this.findButton.setOnAction(e -> viewModel.addFindPanel(false));
         copyItem.setOnAction((t) -> textArea.copy());
         textArea.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
             copyItem.setDisable(!viewModel.isCopyItemValid());
@@ -267,7 +272,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         return copyItem;
     }
 
-    void addFindPane(DefaultFindPaneView view) {
+    void addFindPanel(DefaultFindPanelView view) {
         this.find = view;
         var scrolledToBottom = RichTextFxUtils.isScrolledToBottom(textScrollPane);
         getTopPane().getChildren().add(this.find.getNode());
@@ -277,7 +282,7 @@ public abstract class AbstractViewerTabView<T extends AbstractViewerTabViewModel
         this.find.requestFocus();
     }
 
-    void removeFindPane() {
+    void removeFindPanel() {
         this.find.deinitialize();
         this.getTopPane().getChildren().remove(this.find.getNode());
         this.find = null;

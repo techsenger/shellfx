@@ -17,15 +17,18 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.area.AreaMediator;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
-import com.techsenger.tabshell.shared.find.AbstractFindPaneViewModel;
+import com.techsenger.tabshell.shared.find.AbstractFindPanelViewModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -49,9 +52,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implements FindPaneViewModel {
+public class DefaultFindPanelViewModel<T extends AreaMediator> extends AbstractFindPanelViewModel<T>
+        implements FindPanelViewModel {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultFindPaneViewModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultFindPanelViewModel.class);
+
+    private final ReadOnlyStringWrapper text = new ReadOnlyStringWrapper();
 
     private final ObjectProperty<Integer> textLength = new SimpleObjectProperty<>();
 
@@ -73,11 +79,11 @@ public class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implemen
 
     private final BooleanProperty highlightActive = new SimpleBooleanProperty(false);
 
-    DefaultFindPaneViewModel(FindMatchesResetPolicy resetPolicy, HistoryManager historyManager) {
+    DefaultFindPanelViewModel(FindMatchesResetPolicy resetPolicy, HistoryManager historyManager) {
         super();
         setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPaneHistory.class,
-                FindPaneHistory::new));
+        setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPanelHistory.class,
+                FindPanelHistory::new));
         this.finder = new MatchFinder(resetPolicy);
         regExpSelectedProperty().addListener((ov, oldV, newV) -> wholeWordDisableProperty().set(newV));
         highlightSelectedProperty().addListener((ov, oldV, newV) -> {
@@ -136,6 +142,14 @@ public class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implemen
         }
     }
 
+    public ReadOnlyStringProperty textProperty() {
+        return this.text.getReadOnlyProperty();
+    }
+
+    public String getText() {
+        return this.text.get();
+    }
+
     public BooleanProperty highlightActiveProperty() {
         return highlightActive;
     }
@@ -149,8 +163,8 @@ public class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implemen
     }
 
     @Override
-    protected FindPaneHistory getHistory() {
-        return (FindPaneHistory) super.getHistory();
+    protected FindPanelHistory getHistory() {
+        return (FindPanelHistory) super.getHistory();
     }
 
     @Override
@@ -165,6 +179,10 @@ public class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implemen
         super.saveData();
         var h = getHistory();
         h.setReplaceTexts(new ArrayList<>(getReplaceTexts()));
+    }
+
+    ReadOnlyStringWrapper getTextWrapper() {
+        return this.text;
     }
 
     StringProperty replaceTextProperty() {
@@ -345,10 +363,8 @@ public class DefaultFindPaneViewModel extends AbstractFindPaneViewModel implemen
     private void addReplaceText() {
         var replaceText = this.replaceText.get();
         if (!replaceText.isBlank()) {
-            historyUpdatedProperty().set(true);
             HistoryUtils.addFirst(replaceTexts, replaceText);
             this.replaceText.set(replaceText);
-            historyUpdatedProperty().set(false);
         }
     }
 }

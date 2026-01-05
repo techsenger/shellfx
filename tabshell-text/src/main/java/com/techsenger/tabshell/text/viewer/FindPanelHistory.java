@@ -16,28 +16,30 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.shared.find.AbstractFindPaneComponent;
-import com.techsenger.tabshell.text.TextComponentNames;
+import com.techsenger.tabshell.core.history.HistoryUtils;
+import com.techsenger.tabshell.shared.find.AbstractFindPanelHistory;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultFindPaneComponent<T extends DefaultFindPaneView<?, ?>> extends AbstractFindPaneComponent<T> {
+public class FindPanelHistory extends AbstractFindPanelHistory {
 
-    public DefaultFindPaneComponent(T view) {
-        super(view);
+    private List<String> replaceTexts = new ArrayList<>();
+
+    public List<String> getReplaceTexts() {
+        return replaceTexts;
+    }
+
+    public void setReplaceTexts(List<String> replaceTexts) {
+        this.replaceTexts = replaceTexts;
     }
 
     @Override
-    protected Mediator createMediator() {
-        return new AbstractFindPaneComponent.Mediator() { };
+    public void preSerialize() {
+        super.preSerialize();
+        HistoryUtils.limit(replaceTexts);
     }
-
-    @Override
-    public Name getName() {
-        return TextComponentNames.FIND_PANE;
-    }
-
 }

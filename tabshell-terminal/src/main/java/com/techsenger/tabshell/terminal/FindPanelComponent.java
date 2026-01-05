@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.text.viewer;
+package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.core.history.HistoryUtils;
-import com.techsenger.tabshell.shared.find.AbstractFindPaneHistory;
-import java.util.ArrayList;
-import java.util.List;
+import com.techsenger.patternfx.core.Name;
+import com.techsenger.tabshell.shared.find.AbstractFindPanelComponent;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPaneHistory extends AbstractFindPaneHistory {
+public class FindPanelComponent<T extends FindPanelView<?, ?>> extends AbstractFindPanelComponent<T> {
 
-    private List<String> replaceTexts = new ArrayList<>();
-
-    public List<String> getReplaceTexts() {
-        return replaceTexts;
-    }
-
-    public void setReplaceTexts(List<String> replaceTexts) {
-        this.replaceTexts = replaceTexts;
+    public FindPanelComponent(T view) {
+        super(view);
     }
 
     @Override
-    public void preSerialize() {
-        super.preSerialize();
-        HistoryUtils.limit(replaceTexts);
+    protected Mediator createMediator() {
+        return new AbstractFindPanelComponent.Mediator() { };
     }
+
+    @Override
+    public Name getName() {
+        return TerminalComponentNames.FIND_PANEL;
+    }
+
 }

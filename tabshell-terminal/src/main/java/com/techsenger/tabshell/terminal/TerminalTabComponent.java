@@ -29,25 +29,25 @@ public class TerminalTabComponent<T extends TerminalTabView<?, ?>> extends Abstr
     protected class Mediator extends AbstractShellTabComponent.Mediator implements TerminalTabMediator {
 
         @Override
-        public void addFindPane(FindPaneViewModel vm) {
-            var v = new FindPaneView(vm, getView().getWidget());
-            findPane = new FindPaneComponent<>(v);
-            findPane.initialize();
-            getModifiableChildren().add(findPane);
+        public void addFindPanel(FindPanelViewModel vm) {
+            var v = new FindPanelView(vm, getView().getWidget());
+            findPanel = new FindPanelComponent<>(v);
+            findPanel.initialize();
+            getModifiableChildren().add(findPanel);
             getView().showFind(v);
         }
 
         @Override
-        public void removeFindPane() {
-            getView().hideFind(findPane.getView());
-            getModifiableChildren().remove(findPane);
-            findPane.deinitialize();
-            findPane = null;
+        public void removeFindPanel() {
+            getView().hideFind(findPanel.getView());
+            getModifiableChildren().remove(findPanel);
+            findPanel.deinitialize();
+            findPanel = null;
         }
 
     }
 
-    private FindPaneComponent<?> findPane;
+    private FindPanelComponent<?> findPanel;
 
     public TerminalTabComponent(T view, ShellComponent<?> shell) {
         super(view, shell);
@@ -58,8 +58,8 @@ public class TerminalTabComponent<T extends TerminalTabView<?, ?>> extends Abstr
         return TerminalComponentNames.TERMINAL_TAB;
     }
 
-    protected FindPaneComponent<?> getFindPane() {
-        return findPane;
+    protected FindPanelComponent<?> getFindPanel() {
+        return findPanel;
     }
 
     @Override
