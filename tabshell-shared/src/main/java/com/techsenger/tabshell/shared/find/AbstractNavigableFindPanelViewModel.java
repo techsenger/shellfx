@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.terminal;
+package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.shared.find.AbstractFullFindPanelComponent;
+import com.techsenger.tabshell.core.area.AreaMediator;
+import com.techsenger.tabshell.material.button.ButtonViewModel;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPanelComponent<T extends FindPanelView<?, ?>> extends AbstractFullFindPanelComponent<T> {
+public abstract class AbstractNavigableFindPanelViewModel<T extends AreaMediator>
+        extends AbstractFindPanelViewModel<T> {
 
-    public FindPanelComponent(T view) {
-        super(view);
+    private final ButtonViewModel findPrevious = new ButtonViewModel();
+
+    private final ButtonViewModel findNext = new ButtonViewModel();
+
+    public ButtonViewModel getFindPrevious() {
+        return findPrevious;
     }
 
-    @Override
-    protected Mediator createMediator() {
-        return new AbstractFullFindPanelComponent.Mediator() { };
+    public ButtonViewModel getFindNext() {
+        return findNext;
     }
-
-    @Override
-    public Name getName() {
-        return TerminalComponentNames.FIND_PANEL;
-    }
-
 }

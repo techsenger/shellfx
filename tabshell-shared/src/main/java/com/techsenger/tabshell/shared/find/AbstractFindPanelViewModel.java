@@ -16,14 +16,15 @@
 
 package com.techsenger.tabshell.shared.find;
 
+import com.techsenger.tabshell.material.button.ToggleButtonViewModel;
 import com.techsenger.tabshell.core.area.AbstractAreaViewModel;
 import com.techsenger.tabshell.core.area.AreaMediator;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import java.util.ArrayList;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -39,29 +40,13 @@ public abstract class AbstractFindPanelViewModel<T extends AreaMediator> extends
 
     private final ObservableList<String> findTexts = FXCollections.observableArrayList();
 
-    private final BooleanProperty notFound = new SimpleBooleanProperty();
+    private final ReadOnlyBooleanWrapper notFound = new ReadOnlyBooleanWrapper();
 
-    private final BooleanProperty caseSelected = new SimpleBooleanProperty(false);
+    private final ToggleButtonViewModel matchCase = new ToggleButtonViewModel();
 
-    private final BooleanProperty wholeWordSelected = new SimpleBooleanProperty(false);
+    private final ReadOnlyStringWrapper matchesText = new ReadOnlyStringWrapper();
 
-    private final BooleanProperty wholeWordDisable = new SimpleBooleanProperty(false);
-
-    private final BooleanProperty regExpSelected = new SimpleBooleanProperty(false);
-
-    private final BooleanProperty regExpDisable = new SimpleBooleanProperty(false);
-
-    private final BooleanProperty highlightSelected = new SimpleBooleanProperty(false);
-
-    private final ObjectProperty<Runnable> closeAction = new SimpleObjectProperty<>();
-
-    private final StringProperty resultText = new SimpleStringProperty();
-
-    private final BooleanProperty resultTextVisible = new SimpleBooleanProperty(false);
-
-    public AbstractFindPanelViewModel() {
-
-    }
+    private final ReadOnlyBooleanWrapper matchesVisible = new ReadOnlyBooleanWrapper(false);
 
     public StringProperty findTextProperty() {
         return this.findText;
@@ -75,153 +60,62 @@ public abstract class AbstractFindPanelViewModel<T extends AreaMediator> extends
         this.findText.set(text);
     }
 
-    public BooleanProperty notFoundProperty() {
-        return this.notFound;
-    }
-
-    public boolean isNotFound() {
-        return this.notFound.get();
-    }
-
-    public void setNotFound(boolean value) {
-        this.notFound.set(value);
-    }
-
-    public BooleanProperty caseSelectedProperty() {
-        return caseSelected;
-    }
-
-    public boolean isCaseSelected() {
-        return caseSelected.get();
-    }
-
-    public void setCaseSelected(boolean value) {
-        this.caseSelected.set(value);
-    }
-
-    public BooleanProperty wholeWordSelectedProperty() {
-        return wholeWordSelected;
-    }
-
-    public boolean isWholeWordSelected() {
-        return wholeWordSelected.get();
-    }
-
-    public void setWholeWordSelected(boolean value) {
-        this.wholeWordSelected.set(value);
-    }
-
-    public BooleanProperty wholeWordDisableProperty() {
-        return wholeWordDisable;
-    }
-
-    public boolean isWholeWordDisable() {
-        return wholeWordDisable.get();
-    }
-
-    public void setWholeWordDisable(boolean value) {
-        this.wholeWordDisable.set(value);
-    }
-
-    public BooleanProperty regExpSelectedProperty() {
-        return regExpSelected;
-    }
-
-    public boolean isRegExpSelected() {
-        return regExpSelected.get();
-    }
-
-    public void setRegExpSelected(boolean value) {
-        this.regExpSelected.set(value);
-    }
-
-    public BooleanProperty regExpDisableProperty() {
-        return regExpDisable;
-    }
-
-    public boolean isRegExpDisable() {
-        return regExpDisable.get();
-    }
-
-    public void setRegExpDisable(boolean value) {
-        this.regExpDisable.set(value);
-    }
-
-    public BooleanProperty highlightSelectedProperty() {
-        return highlightSelected;
-    }
-
-    public boolean isHighlightSelected() {
-        return highlightSelected.get();
-    }
-
-    public void setHighlightSelected(boolean value) {
-        this.highlightSelected.set(value);
-    }
-
-    public StringProperty resultTextProperty() {
-        return resultText;
-    }
-
-    public String getResultText() {
-        return resultText.get();
-    }
-
-    public void setResultText(String text) {
-        this.resultText.set(text);
-    }
-
-    public BooleanProperty resultTextVisibleProperty() {
-        return resultTextVisible;
-    }
-
-    public boolean isResultTextVisible() {
-        return resultTextVisible.get();
-    }
-
-    public void setResultTextVisible(boolean value) {
-        this.resultTextVisible.set(value);
-    }
-
-    public ObjectProperty<Runnable> closeActionProperty() {
-        return closeAction;
-    }
-
-    public Runnable getCloseAction() {
-        return closeAction.get();
-    }
-
-    public void setCloseAction(Runnable value) {
-        this.closeAction.set(value);
-    }
-
     public ObservableList<String> getFindTexts() {
         return findTexts;
     }
 
-    @Override
-    protected AbstractFindPanelHistory getHistory() {
-        return (AbstractFindPanelHistory) super.getHistory();
+    public ReadOnlyBooleanProperty notFoundProperty() {
+        return notFound.getReadOnlyProperty();
+    }
+
+    public boolean isNotFound() {
+        return notFound.get();
+    }
+
+    public ToggleButtonViewModel getMatchCase() {
+        return matchCase;
+    }
+
+    public ReadOnlyStringProperty matchesTextProperty() {
+        return matchesText.getReadOnlyProperty();
+    }
+
+    public String getMatchesText() {
+        return matchesText.get();
+    }
+
+    public ReadOnlyBooleanProperty matchesVisibleProperty() {
+        return matchesVisible.getReadOnlyProperty();
+    }
+
+    public boolean isMatchesVisible() {
+        return matchesVisible.get();
+    }
+
+    protected void setNotFound(boolean value) {
+        notFound.set(value);
+    }
+
+    protected void setMatchesText(String value) {
+        matchesText.set(value);
+    }
+
+    protected void setMatchesVisible(boolean value) {
+        matchesVisible.set(value);
     }
 
     @Override
     protected void restoreAppearance() {
         super.restoreAppearance();
         var h = getHistory();
-        caseSelectedProperty().set(h.getCaseButton().isSelected());
-        wholeWordSelectedProperty().set(h.getWholeWordButton().isSelected());
-        regExpSelectedProperty().set(h.getRegExpButton().isSelected());
-        highlightSelectedProperty().set(h.getHighlightButton().isSelected());
+        matchCase.setSelected(h.getMatchCaseButton().isSelected());
     }
 
     @Override
     protected void saveAppearance() {
         super.saveAppearance();
         var h = getHistory();
-        h.getCaseButton().setSelected(caseSelectedProperty().get());
-        h.getWholeWordButton().setSelected(wholeWordSelectedProperty().get());
-        h.getRegExpButton().setSelected(regExpSelectedProperty().get());
-        h.getHighlightButton().setSelected(highlightSelectedProperty().get());
+        h.getMatchCaseButton().setSelected(matchCase.isSelected());
     }
 
     @Override
@@ -238,10 +132,13 @@ public abstract class AbstractFindPanelViewModel<T extends AreaMediator> extends
         h.setFindTexts(new ArrayList<>(getFindTexts()));
     }
 
-    protected void addFindText() {
-        var findText = findTextProperty().get();
-        HistoryUtils.addFirst(getFindTexts(), findText);
-        findTextProperty().set(findText);
+    protected void saveFindTextToHistory() {
+        HistoryUtils.addFirst(getFindTexts(), getFindText());
+    }
+
+    @Override
+    protected AbstractFindPanelHistory getHistory() {
+        return (AbstractFindPanelHistory) super.getHistory();
     }
 
     protected abstract void resetMatches();

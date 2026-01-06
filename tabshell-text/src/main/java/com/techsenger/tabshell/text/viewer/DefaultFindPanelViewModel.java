@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.area.AreaMediator;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
-import com.techsenger.tabshell.shared.find.AbstractFindPanelViewModel;
+import com.techsenger.tabshell.shared.find.AbstractFullFindPanelViewModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultFindPanelViewModel<T extends AreaMediator> extends AbstractFindPanelViewModel<T>
+public class DefaultFindPanelViewModel<T extends AreaMediator> extends AbstractFullFindPanelViewModel<T>
         implements FindPanelViewModel {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFindPanelViewModel.class);
@@ -85,8 +85,8 @@ public class DefaultFindPanelViewModel<T extends AreaMediator> extends AbstractF
         setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPanelHistory.class,
                 FindPanelHistory::new));
         this.finder = new MatchFinder(resetPolicy);
-        regExpSelectedProperty().addListener((ov, oldV, newV) -> wholeWordDisableProperty().set(newV));
-        highlightSelectedProperty().addListener((ov, oldV, newV) -> {
+        getRegExp().selectedProperty().addListener((ov, oldV, newV) -> getWholeWord().disableProperty().set(newV));
+        getHighlight().selectedProperty().addListener((ov, oldV, newV) -> {
             if (newV && !this.finder.getMatchRanges().isEmpty()) {
                 highlightActive.set(true);
             } else {
@@ -136,9 +136,9 @@ public class DefaultFindPanelViewModel<T extends AreaMediator> extends AbstractF
     @Override
     public void resetMatches() {
         if (this.finder.resetMatches()) {
-            notFoundProperty().set(false);
+            setNotFound(false);
             highlightActive.set(false);
-            resultTextVisibleProperty().set(false);
+            setMatchesVisible(false);
         }
     }
 
@@ -251,7 +251,7 @@ public class DefaultFindPanelViewModel<T extends AreaMediator> extends AbstractF
      * @param wholeText
      */
     void find() {
-        if (highlightSelectedProperty().get()) {
+        if (getHighlight().isSelected()) {
             setHighlightActive(false);
         }
         var wholeText = textProperty().get();
@@ -259,17 +259,17 @@ public class DefaultFindPanelViewModel<T extends AreaMediator> extends AbstractF
         if (findText.isBlank()) {
             return;
         }
-        this.addFindText();
-        this.finder.find(wholeText, findText, regExpSelectedProperty().get(),
-                wholeWordSelectedProperty().get(), caseSelectedProperty().get());
+        this.saveFindTextToHistory();
+        this.finder.find(wholeText, findText, getRegExp().isSelected(),
+                getWholeWord().isSelected(), getMatchCase().isSelected());
         //we find all ranges, but we start not from the beginning of the file, but from caret position
         if (!this.finder.getMatchRanges().isEmpty()) {
-            notFoundProperty().set(false);
-            if (isHighlightSelected()) {
+            setNotFound(false);
+            if (getHighlight().isSelected()) {
                 setHighlightActive(true);
             }
         } else {
-            notFoundProperty().set(true);
+            setNotFound(true);
         }
     }
 
@@ -352,11 +352,11 @@ public class DefaultFindPanelViewModel<T extends AreaMediator> extends AbstractF
 
     private void updateInfoLabel(MatchRange range) {
         if (range != null) {
-            resultTextProperty().set((range.getIndex() + 1) + " / " + this.finder.getMatchRanges().size());
-            resultTextVisibleProperty().set(true);
+            setMatchesText((range.getIndex() + 1) + " / " + this.finder.getMatchRanges().size());
+            setMatchesVisible(true);
         } else {
-            resultTextProperty().set(null);
-            resultTextVisibleProperty().set(false);
+            setMatchesText(null);
+            setMatchesVisible(false);
         }
     }
 

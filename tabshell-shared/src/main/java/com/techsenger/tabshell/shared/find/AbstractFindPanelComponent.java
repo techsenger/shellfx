@@ -28,4 +28,5 @@ public abstract class AbstractFindPanelComponent<T extends AbstractFindPanelView
     public AbstractFindPanelComponent(T view) {
         super(view);
     }
+
 }

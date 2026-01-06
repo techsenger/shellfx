@@ -17,14 +17,15 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.shared.find.AbstractFindPanelComponent;
+import com.techsenger.tabshell.shared.find.AbstractFullFindPanelComponent;
 import com.techsenger.tabshell.text.TextComponentNames;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultFindPanelComponent<T extends DefaultFindPanelView<?, ?>> extends AbstractFindPanelComponent<T> {
+public class DefaultFindPanelComponent<T extends DefaultFindPanelView<?, ?>>
+        extends AbstractFullFindPanelComponent<T> {
 
     public DefaultFindPanelComponent(T view) {
         super(view);
@@ -32,7 +33,7 @@ public class DefaultFindPanelComponent<T extends DefaultFindPanelView<?, ?>> ext
 
     @Override
     protected Mediator createMediator() {
-        return new AbstractFindPanelComponent.Mediator() { };
+        return new AbstractFullFindPanelComponent.Mediator() { };
     }
 
     @Override

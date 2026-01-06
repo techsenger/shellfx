@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.terminal;
+package com.techsenger.tabshell.material.button;
 
-import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.shared.find.AbstractFullFindPanelComponent;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPanelComponent<T extends FindPanelView<?, ?>> extends AbstractFullFindPanelComponent<T> {
+public class ToggleButtonViewModel extends ButtonViewModel {
 
-    public FindPanelComponent(T view) {
-        super(view);
+    private final BooleanProperty selected = new SimpleBooleanProperty(false);
+
+    public final BooleanProperty selectedProperty() {
+        return selected;
     }
 
-    @Override
-    protected Mediator createMediator() {
-        return new AbstractFullFindPanelComponent.Mediator() { };
+    public final boolean isSelected() {
+        return selected.get();
     }
 
-    @Override
-    public Name getName() {
-        return TerminalComponentNames.FIND_PANEL;
+    public final void setSelected(boolean value) {
+        selected.set(value);
     }
-
 }

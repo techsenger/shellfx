@@ -26,7 +26,7 @@ import com.techsenger.jeditermfx.ui.SubstringFinder;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.area.AreaMediator;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.shared.find.AbstractFindPanelViewModel;
+import com.techsenger.tabshell.shared.find.AbstractFullFindPanelViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -34,7 +34,7 @@ import javafx.beans.property.SimpleObjectProperty;
  *
  * @author Pavel Castornii
  */
-public class FindPanelViewModel<T extends AreaMediator> extends AbstractFindPanelViewModel<T> {
+public class FindPanelViewModel<T extends AreaMediator> extends AbstractFullFindPanelViewModel<T> {
 
     private TerminalTextBuffer textBuffer;
 
@@ -44,23 +44,22 @@ public class FindPanelViewModel<T extends AreaMediator> extends AbstractFindPane
         setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> historyManager.getOrCreateHistory(FindPanelHistory.class, FindPanelHistory::new));
         findTextProperty().set(selectedText);
-        wholeWordDisableProperty().set(true);
-        regExpDisableProperty().set(true);
+        getWholeWord().setDisable(true);
+        getRegExp().setDisable(true);
         result.addListener((ov, oldV, newV) -> {
             updateResultText();
             if (newV != null && !newV.getItems().isEmpty()) {
-                addFindText();
+                saveFindTextToHistory();
             }
         });
     }
 
     public void find() {
         var pattern = findTextProperty().get();
-        var ignoreCase = caseSelectedProperty().get();
         if (pattern.isEmpty()) {
             result.set(null);
         }
-        final SubstringFinder finder = new SubstringFinder(pattern, !caseSelectedProperty().get());
+        final SubstringFinder finder = new SubstringFinder(pattern, !getMatchCase().isSelected());
         textBuffer.processHistoryAndScreenLines(-textBuffer.getHistoryLinesCount(), -1, new StyledTextConsumer() {
 
             @Override
@@ -101,17 +100,17 @@ public class FindPanelViewModel<T extends AreaMediator> extends AbstractFindPane
     @Override
     protected void resetMatches() {
         result.set(null);
-        notFoundProperty().set(false);
+        setNotFound(false);
     }
 
     protected void updateResultText() {
         var r = result.get();
         if (r == null || r.getItems().isEmpty()) {
-            resultTextVisibleProperty().set(false);
-            notFoundProperty().set(true);
+            setMatchesVisible(false);
+            setNotFound(true);
         } else {
-            resultTextVisibleProperty().set(true);
-            resultTextProperty().set(r.selectedItem().getIndex() + " / " + r.getItems().size());
+            setMatchesVisible(true);
+            setMatchesText(r.selectedItem().getIndex() + " / " + r.getItems().size());
         }
     }
 

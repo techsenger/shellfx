@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.shared.find.AbstractFindPanelView;
+import com.techsenger.tabshell.shared.find.AbstractFullFindPanelView;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 
@@ -25,7 +25,7 @@ import javafx.scene.input.KeyCode;
  * @author Pavel Castornii
  */
 public class FindPanelView<T extends FindPanelViewModel<?>, S extends FindPanelComponent<?>>
-        extends AbstractFindPanelView<T, S> {
+        extends AbstractFullFindPanelView<T, S> {
 
     private final KitJediTermFxWidget widget;
 
@@ -43,7 +43,8 @@ public class FindPanelView<T extends FindPanelViewModel<?>, S extends FindPanelC
     @Override
     protected void bind() {
         super.bind();
-        widget.getTerminalPanel().findResultHighlightedProperty().bind(getViewModel().highlightSelectedProperty());
+        widget.getTerminalPanel().findResultHighlightedProperty()
+                .bind(getViewModel().getHighlight().selectedProperty());
     }
 
     @Override

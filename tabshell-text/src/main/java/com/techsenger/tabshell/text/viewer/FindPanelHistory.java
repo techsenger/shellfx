@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.text.viewer;
 
 import com.techsenger.tabshell.core.history.HistoryUtils;
-import com.techsenger.tabshell.shared.find.AbstractFindPanelHistory;
+import com.techsenger.tabshell.shared.find.AbstractFullFindPanelHistory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class FindPanelHistory extends AbstractFindPanelHistory {
+public class FindPanelHistory extends AbstractFullFindPanelHistory {
 
     private List<String> replaceTexts = new ArrayList<>();
 

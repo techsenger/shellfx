@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.terminal;
+package com.techsenger.tabshell.material.button;
 
-import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.shared.find.AbstractFullFindPanelComponent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPanelComponent<T extends FindPanelView<?, ?>> extends AbstractFullFindPanelComponent<T> {
+public final class ButtonUtils {
 
-    public FindPanelComponent(T view) {
-        super(view);
+    public static void bind(Button button,  ButtonViewModel vm) {
+        button.disableProperty().bindBidirectional(vm.disableProperty());
     }
 
-    @Override
-    protected Mediator createMediator() {
-        return new AbstractFullFindPanelComponent.Mediator() { };
+    public static void bind(ToggleButton button, ToggleButtonViewModel vm) {
+        button.selectedProperty().bindBidirectional(vm.selectedProperty());
+        button.disableProperty().bindBidirectional(vm.disableProperty());
     }
 
-    @Override
-    public Name getName() {
-        return TerminalComponentNames.FIND_PANEL;
+    private ButtonUtils() {
+        // empty
     }
-
 }

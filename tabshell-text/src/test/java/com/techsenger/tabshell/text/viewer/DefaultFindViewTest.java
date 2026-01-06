@@ -43,7 +43,7 @@ public class DefaultFindViewTest {
         var component = createComponent(textArea);
         var view = component.getView();
         var viewModel = view.getViewModel();
-        viewModel.regExpSelectedProperty().set(true);
+        viewModel.getRegExp().setSelected(true);
         view.getFindComboBox().getEditor().setText("an.*(?=<)");
         view.getReplaceComboBox().getEditor().setText("test");
         viewModel.findNext();
@@ -60,7 +60,7 @@ public class DefaultFindViewTest {
         var component = createComponent(textArea);
         var view = component.getView();
         var viewModel = view.getViewModel();
-        viewModel.regExpSelectedProperty().set(true);
+        viewModel.getRegExp().setSelected(true);
         view.getFindComboBox().getEditor().setText("an.*(?=<)");
         view.getReplaceComboBox().getEditor().setText("test");
         view.replaceAll();

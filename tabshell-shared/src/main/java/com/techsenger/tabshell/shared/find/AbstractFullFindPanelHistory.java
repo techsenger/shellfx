@@ -16,36 +16,29 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.tabshell.core.area.AbstractAreaHistory;
-import com.techsenger.tabshell.core.history.HistoryUtils;
 import com.techsenger.tabshell.material.button.ToggleButtonHistory;
-import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPanelHistory extends AbstractAreaHistory {
+public abstract class AbstractFullFindPanelHistory extends AbstractFindPanelHistory {
 
-    private List<String> findTexts;
+    private ToggleButtonHistory wholeWordButton = new ToggleButtonHistory();
 
-    private ToggleButtonHistory matchCaseButton = new ToggleButtonHistory();
+    private ToggleButtonHistory regExpButton = new ToggleButtonHistory();
 
-    public List<String> getFindTexts() {
-        return findTexts;
+    private ToggleButtonHistory highlightButton = new ToggleButtonHistory();
+
+    public ToggleButtonHistory getWholeWordButton() {
+        return wholeWordButton;
     }
 
-    public void setFindTexts(List<String> findTexts) {
-        this.findTexts = findTexts;
+    public ToggleButtonHistory getRegExpButton() {
+        return regExpButton;
     }
 
-    public ToggleButtonHistory getMatchCaseButton() {
-        return matchCaseButton;
-    }
-
-    @Override
-    public void preSerialize() {
-        super.preSerialize();
-        HistoryUtils.limit(findTexts);
+    public ToggleButtonHistory getHighlightButton() {
+        return highlightButton;
     }
 }

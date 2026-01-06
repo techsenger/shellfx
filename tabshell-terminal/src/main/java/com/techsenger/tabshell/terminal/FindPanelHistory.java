@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.shared.find.AbstractFindPanelHistory;
+import com.techsenger.tabshell.shared.find.AbstractFullFindPanelHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPanelHistory extends AbstractFindPanelHistory {
+public class FindPanelHistory extends AbstractFullFindPanelHistory {
 
 }

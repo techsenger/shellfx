@@ -22,7 +22,7 @@ import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
 import com.techsenger.tabshell.material.textarea.TextAreaStyleNames;
-import com.techsenger.tabshell.shared.find.AbstractFindPanelView;
+import com.techsenger.tabshell.shared.find.AbstractFullFindPanelView;
 import com.techsenger.toolkit.core.collection.ListUtils;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import org.reactfx.Subscription;
  * @author Pavel Castornii
  */
 public class DefaultFindPanelView<T extends DefaultFindPanelViewModel<?>, S extends DefaultFindPanelComponent<?>>
-        extends AbstractFindPanelView<T, S> implements FindPanelView {
+        extends AbstractFullFindPanelView<T, S> implements FindPanelView {
 
     private final Label replaceLabel = new Label("Replace With");
 
