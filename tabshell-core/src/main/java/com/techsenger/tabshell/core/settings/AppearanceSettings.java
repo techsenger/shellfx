@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.core.settings;
 
 import com.techsenger.tabshell.material.theme.Theme;
-import javafx.beans.property.ObjectProperty;
 import javafx.scene.text.Font;
 
 /**
@@ -26,31 +25,31 @@ import javafx.scene.text.Font;
  */
 public interface AppearanceSettings {
 
-    ObjectProperty<Theme> themeProperty();
-
     Theme getTheme();
 
     void setTheme(Theme theme);
 
-    /**
-     * Regular font that used for UI etc.
-     *
-     * @return
-     */
-    ObjectProperty<Font> regularFontProperty();
+    SettingsSubscription observeTheme(SettingsObserver<Theme> observer);
 
     Font getRegularFont();
 
     void setRegularFont(Font font);
 
     /**
-     * Monospace font for displaying code or terminal-style text.
+     * Regular font that used for UI etc.
      *
      * @return
      */
-    ObjectProperty<Font> monospaceFontProperty();
+    SettingsSubscription observeRegularFont(SettingsObserver<Font> observer);
 
     Font getMonospaceFont();
 
     void setMonospaceFont(Font font);
+
+    /**
+     * Monospace font for displaying code or terminal-style text.
+     *
+     * @return
+     */
+    SettingsSubscription observeMonospaceFont(SettingsObserver<Font> observer);
 }

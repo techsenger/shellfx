@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.web.model;
 
 import java.net.URI;
+import java.net.URL;
 import org.apache.commons.validator.routines.UrlValidator;
 
 /**
@@ -31,18 +32,18 @@ public final class UrlUtils {
     );
 
     /**
-     * Normalizes URL string.
+     * Returns normalized URL.
      *
      * @param url
      * @return a normalized URL or empty string
      */
-    public static String normalize(String input) {
+    public static URL normalize(String input) {
          if (input == null) {
-            return "";
+            return null;
         }
         var url = input.trim();
         if (url.isEmpty()) {
-            return "";
+            return null;
         }
 
         String lowerUrl = url.toLowerCase();
@@ -51,16 +52,15 @@ public final class UrlUtils {
             url = "https://" + url;
         }
         try {
-            return new URI(url).toURL().toString();
+            return new URI(url).toURL();
         } catch (Exception e) {
-            return "";
+            return null;
         }
     }
 
-    public static boolean isValid(String url) {
+    public static boolean isValid(URL url) {
         try {
-            URI uri = new URI(url);
-            String host = uri.getHost();
+            String host = url.getHost();
             if (host == null) {
                 return false;
             }
@@ -68,14 +68,18 @@ public final class UrlUtils {
                     && !host.contains(".")) {
                 return false;
             }
-            return URL_VALIDATOR.isValid(url);
+            return URL_VALIDATOR.isValid(url.toString());
         } catch (Exception ex) {
             return false;
         }
     }
 
-    public static String getSearch(String input) {
-        return "https://www.google.com/search?q=" + input.replace(" ", "+");
+    public static URL getSearch(String input) {
+        try {
+            return new URI("https://www.google.com/search?q=" + input.replace(" ", "+")).toURL();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private UrlUtils() {

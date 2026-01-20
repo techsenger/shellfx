@@ -20,7 +20,19 @@ package com.techsenger.tabshell.core.tab;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerView<T extends TabView<?, ?>> {
+public interface TabContainerView<T extends TabView> {
 
-    T getSelectedTab();
+    /**
+     * Makes tab with specified index selected.
+     *
+     * @param tabIndex
+     */
+    void selectTab(int tabIndex);
+
+    /**
+     * Returns the index of the selected tab.
+     *
+     * @return
+     */
+    int getSelectedTabIndex();
 }

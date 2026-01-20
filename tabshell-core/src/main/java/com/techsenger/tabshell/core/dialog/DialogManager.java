@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import java.util.List;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -24,14 +24,14 @@ import java.util.List;
  */
 public interface DialogManager {
 
-    void showDialog(DialogView<?, ?> dialogView);
+    void showDialog(DialogFxView<?> dialogView);
 
-    void hideDialog(DialogView<?, ?> dialogView);
+    void hideDialog(DialogFxView<?> dialogView);
 
     /**
      * Returns an unmodifiable list of dialogs.
      *
      * @return the list of dialogs. If no dialogs are present, an empty list is returned.
      */
-    List<DialogView<?, ?>> getDialogs();
+    ObservableList<DialogFxView<?>> getDialogs();
 }

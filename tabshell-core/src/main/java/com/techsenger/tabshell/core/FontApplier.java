@@ -18,8 +18,8 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.material.style.StyleUtils;
-import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -30,15 +30,21 @@ public class FontApplier {
     private String monoStylesheet;
 
     public FontApplier(Pane root, AppearanceSettings settings) {
-        ValueUtils.callAndAddListener(settings.regularFontProperty(), (ov, t, t1) -> {
-            root.setStyle(StyleUtils.toStyle(t1));
-        });
-        ValueUtils.callAndAddListener(settings.monospaceFontProperty(), (ov, t, t1) -> {
-            if (monoStylesheet != null) {
-                root.getStylesheets().remove(monoStylesheet);
-            }
-            monoStylesheet = "data:text/css, .monospace {" + StyleUtils.toStyle(t1) + "}";
-            root.getStylesheets().add(monoStylesheet);
-        });
+        updateRegularFont(root, settings.getRegularFont());
+        settings.observeRegularFont((oldV, newV) -> updateRegularFont(root, newV));
+        updateMonospaceFont(root, settings.getMonospaceFont());
+        settings.observeMonospaceFont((oldV, newV) -> updateMonospaceFont(root, newV));
+    }
+
+    private void updateRegularFont(Pane root, Font font) {
+        root.setStyle(StyleUtils.toStyle(font));
+    }
+
+    private void updateMonospaceFont(Pane root, Font font) {
+        if (monoStylesheet != null) {
+            root.getStylesheets().remove(monoStylesheet);
+        }
+        monoStylesheet = "data:text/css, .monospace {" + StyleUtils.toStyle(font) + "}";
+        root.getStylesheets().add(monoStylesheet);
     }
 }

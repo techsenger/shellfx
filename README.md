@@ -1,6 +1,6 @@
 # Techsenger TabShell
 
-Techsenger TabShell is a platform for building tab-based applications in JavaFX using the MVVM pattern.
+Techsenger TabShell is a platform for building tab-based applications in JavaFX using the MVP pattern.
 
 The platform consists of two parts: the core and ready-made components. The core includes the core shell and classes
 for creating components. Ready-made components are used as needed and significantly reduce the development time of the
@@ -270,7 +270,7 @@ WebToolBar is a component that represents the browser’s ToolBar.
 To get started with TabShell, it is recommended to follow these steps:
 
 1. Familiarize yourself with the [PatternFX](https://github.com/techsenger/patternfx) framework,
-the [MVVMX](https://github.com/techsenger/patternfx#mvvmx-template) template, and its demo.
+the [MVP](https://github.com/techsenger/patternfx#templates-mvp) template, and its demo.
 2. Explore and run core demo. See [Core Demo](#running-core-demo) for details.
 3. Explore and run full demo. See [Full Demo](#running-full-demo) for details.
 

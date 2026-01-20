@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.mvvmx.AbstractHistory;
+import com.techsenger.patternfx.mvp.AbstractHistory;
 
 /**
  *

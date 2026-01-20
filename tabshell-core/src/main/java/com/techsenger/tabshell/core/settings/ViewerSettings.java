@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.core.settings;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.scene.text.Font;
 
 /**
@@ -25,11 +24,11 @@ import javafx.scene.text.Font;
  */
 public interface ViewerSettings {
 
-    ObjectProperty<Font> fontProperty();
-
     Font getFont();
 
     void setFont(Font font);
+
+    SettingsSubscription observeFont(SettingsObserver<Font> observer);
 
     TabSymbolSettings getTabSymbol();
 }

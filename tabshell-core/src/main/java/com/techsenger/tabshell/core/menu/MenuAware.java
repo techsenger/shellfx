@@ -16,23 +16,18 @@
 
 package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.patternfx.mvvmx.ComponentViewModel;
+import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
 
 /**
- * Interface for components that interact with menu.
+ * Interface for the port the menu interacts with.
  *
  * @author Pavel Castornii
  */
 public interface MenuAware {
 
-    /**
-     * Returns the view model.
-     *
-     * @return
-     */
-    ComponentViewModel getViewModel();
+    Descriptor getDescriptor();
 
     /**
      * Returns the helper for a specific menu.
@@ -55,7 +50,7 @@ public interface MenuAware {
      *
      * @param menuName
      */
-    void doOnMenuShowing(MenuName menuName);
+    void handleMenuShowing(MenuName menuName);
 
     /**
      * This method is called on hiding menu popup.
@@ -64,5 +59,5 @@ public interface MenuAware {
      *
      * @param menuName
      */
-    void doOnMenuHiding(MenuName menuName);
+    void handleMenuHiding(MenuName menuName);
 }

@@ -25,4 +25,6 @@ public interface Settings {
     AppearanceSettings getAppearance();
 
     ViewerSettings getViewer();
+
+    WebBrowserSettings getWebBrowser();
 }

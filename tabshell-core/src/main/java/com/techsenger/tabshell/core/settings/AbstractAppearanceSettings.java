@@ -43,11 +43,6 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
     }
 
     @Override
-    public ObjectProperty<Theme> themeProperty() {
-        return theme;
-    }
-
-    @Override
     public Theme getTheme() {
         return theme.get();
     }
@@ -58,8 +53,8 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
     }
 
     @Override
-    public ObjectProperty<Font> regularFontProperty() {
-        return regularFont;
+    public SettingsSubscription observeTheme(SettingsObserver<Theme> observer) {
+        return SubscriptionUtils.observe(theme, observer);
     }
 
     @Override
@@ -73,8 +68,8 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
     }
 
     @Override
-    public ObjectProperty<Font> monospaceFontProperty() {
-        return monospaceFont;
+    public SettingsSubscription observeRegularFont(SettingsObserver<Font> observer) {
+        return SubscriptionUtils.observe(regularFont, observer);
     }
 
     @Override
@@ -85,5 +80,10 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
     @Override
     public void setMonospaceFont(Font font) {
         this.monospaceFont.set(font);
+    }
+
+    @Override
+    public SettingsSubscription observeMonospaceFont(SettingsObserver<Font> observer) {
+        return SubscriptionUtils.observe(monospaceFont, observer);
     }
 }

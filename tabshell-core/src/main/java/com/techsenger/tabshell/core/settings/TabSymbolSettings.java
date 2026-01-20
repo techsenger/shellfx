@@ -16,24 +16,21 @@
 
 package com.techsenger.tabshell.core.settings;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-
 /**
  *
  * @author Pavel Castornii
  */
 public interface TabSymbolSettings {
 
-    IntegerProperty sizeProperty();
-
     int getSize();
 
     void setSize(int size);
 
-    BooleanProperty useSpacesProperty();
+    SettingsSubscription observeSize(SettingsObserver<Integer> observer);
 
     boolean isUseSpaces();
 
     void setUseSpaces(boolean useSpaces);
+
+    SettingsSubscription observeUseSpaces(SettingsObserver<Boolean> observer);
 }

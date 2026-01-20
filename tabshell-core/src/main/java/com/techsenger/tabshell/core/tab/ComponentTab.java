@@ -25,23 +25,23 @@ import javafx.scene.control.Tab;
  */
 public class ComponentTab extends Tab  {
 
-    private final TabView<?, ?> view;
+    private final TabFxView<?> view;
 
-    public ComponentTab(TabView<?, ?> view) {
+    public ComponentTab(TabFxView<?> view) {
         this.view = view;
     }
 
-    public ComponentTab(TabView<?, ?> view, String string) {
+    public ComponentTab(TabFxView<?> view, String string) {
         super(string);
         this.view = view;
     }
 
-    public ComponentTab(TabView<?, ?> view, String string, Node node) {
+    public ComponentTab(TabFxView<?> view, String string, Node node) {
         super(string, node);
         this.view = view;
     }
 
-    public TabView<?, ?> getView() {
+    public TabFxView<?> getView() {
         return view;
     }
 }

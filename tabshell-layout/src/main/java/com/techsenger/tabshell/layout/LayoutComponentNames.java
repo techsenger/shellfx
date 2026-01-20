@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.layout;
 
-import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.core.ComponentName;
 
 /**
  *
@@ -24,17 +24,17 @@ import com.techsenger.patternfx.core.Name;
  */
 public interface LayoutComponentNames {
 
-    Name DOCK_LAYOUT = new Name("DockLayout");
+    ComponentName TAB_HOST = new ComponentName("TabHost");
 
-    Name SPLIT_SPACE = new Name("SplitSpace");
+    ComponentName DOCK_LAYOUT = new ComponentName("DockLayout");
 
-    Name TAB_DOCK = new Name("TabDock");
+    ComponentName SPLIT_SPACE = new ComponentName("SplitSpace");
 
-    Name SIDE_BAR = new Name("SideBar");
+    ComponentName TAB_DOCK = new ComponentName("TabDock");
 
-    Name TAB_POPUP = new Name("TabPopup");
+    ComponentName SIDE_BAR = new ComponentName("SideBar");
 
-    Name TAB_HOST = new Name("TabHost");
+    ComponentName TAB_POPUP = new ComponentName("TabPopup");
 
-    Name PLACEHOLDER = new Name("Placeholder");
+    ComponentName PLACEHOLDER = new ComponentName("Placeholder");
 }

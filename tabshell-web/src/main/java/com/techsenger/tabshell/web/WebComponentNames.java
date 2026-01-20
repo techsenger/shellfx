@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.core.ComponentName;
 
 /**
  *
@@ -24,7 +24,9 @@ import com.techsenger.patternfx.core.Name;
  */
 public interface WebComponentNames {
 
-    Name WEB_BROWSER_TAB = new Name("WebBrowserTab");
+    ComponentName WEB_BROWSER_TAB = new ComponentName("WebBrowserTab");
 
-    Name WEB_TOOL_BAR = new Name("WebToolBar");
+    ComponentName WEB_TOOL_BAR = new ComponentName("WebToolBar");
+
+    ComponentName WEB_AREA = new ComponentName("WebArea");
 }

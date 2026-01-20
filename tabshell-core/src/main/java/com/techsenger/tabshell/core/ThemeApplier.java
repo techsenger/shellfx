@@ -57,12 +57,11 @@ class ThemeApplier {
      */
     ThemeApplier(StandardStageController controller, ObservableList<Stylesheet> stylesheets,
             AppearanceSettings settings) {
-        var theme = settings.themeProperty();
         this.stylesheets = stylesheets;
         this.scene = controller.getStage().getScene();
-        addTheme(theme.get(), false);
+        addTheme(settings.getTheme(), false);
         logSceneStylesheets();
-        theme.addListener((ov, oldV, newV) -> {
+        settings.observeTheme((oldV, newV) -> {
             removeTheme(oldV);
             addTheme(newV, true);
             //without applying css and layout title bar spacers are not updated
@@ -73,10 +72,10 @@ class ThemeApplier {
         this.stylesheets.addListener((ListChangeListener<Stylesheet>) change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    addStylesheets(theme.get(), change.getAddedSubList());
+                    addStylesheets(settings.getTheme(), change.getAddedSubList());
                 }
                 if (change.wasRemoved()) {
-                    removeStylesheets(theme.get(), change.getRemoved());
+                    removeStylesheets(settings.getTheme(), change.getRemoved());
                 }
             }
             logSceneStylesheets();

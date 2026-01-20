@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.core.ComponentName;
 
 /**
  *
@@ -24,7 +24,11 @@ import com.techsenger.patternfx.core.Name;
  */
 public interface TerminalComponentNames {
 
-    Name TERMINAL_TAB = new Name("TerminalTab");
+    ComponentName TERMINAL_TAB = new ComponentName("TerminalTab");
 
-    Name FIND_PANEL = new Name("TerminalFindPanel");
+    ComponentName TERMINAL_TOOL_BAR = new ComponentName("TerminalToolBar");
+
+    ComponentName TERMINAL_AREA = new ComponentName("TerminalArea");
+
+    ComponentName FIND_PANEL = new ComponentName("TerminalFindPanel");
 }

@@ -16,118 +16,26 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import atlantafx.base.theme.Styles;
-import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.layout.tabhost.TabHostView;
-import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.style.SharedIcons;
-import com.techsenger.toolkit.fx.value.ValueUtils;
-import javafx.collections.ListChangeListener;
-import javafx.scene.Cursor;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
-import javafx.scene.input.MouseDragEvent;
-import javafx.scene.layout.HBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabDockView<T extends TabDockViewModel<?>, S extends TabDockComponent<?>> extends TabHostView<T, S> {
+public interface TabDockView extends TabHostView {
 
-    static final double MIN_SIZE = 100; // temp
+    /**
+     * Returns the value that defines whether this component can be dragged by the user.
+     *
+     * @return the current draggable state of this component
+     */
+    boolean isDraggable();
 
-    private final FontIconView dragIconView = new FontIconView(SharedIcons.DRAG_VERTICAL);
+    /**
+     * Sets the value that defines whether this component can be dragged by the user.
+     *
+     * @param value the new draggable state for this component
+     */
+    void setDraggable(boolean value);
 
-    private final HBox tabHeaderFirstBox = new HBox();
-
-    private final Button minimizeButton = new Button(null, new FontIconView(SharedIcons.REMOVE));
-
-    private final HBox tabHeaderLastBox = new HBox(minimizeButton);
-
-    protected TabDockView(T viewModel) {
-        super(viewModel);
-    }
-
-    @Override
-    protected void build() {
-        super.build();
-        var layoutView = getComponent().getLayout().getView();
-        var tabPane = getNode();
-        tabPane.setTabDragEnabled(true);
-        tabPane.setTabDropEnabled(true);
-        tabPane.setDragAndDropContext(layoutView.getDragAndDropContext());
-
-        tabHeaderFirstBox.getStyleClass().add("tab-header-first-box");
-        minimizeButton.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
-        tabHeaderLastBox.getStyleClass().add("tab-header-last-box");
-
-        var css = TabDockView.class.getResource("tab-dock.css").toExternalForm();
-        this.getNode().getStylesheets().add(css);
-        this.getNode().getStyleClass().add("tab-dock");
-
-        var tabHeaderArea = getTabHeaderArea();
-        tabHeaderArea.getFirstArea().getChildren().add(tabHeaderFirstBox);
-        tabHeaderArea.getLastArea().getChildren().add(tabHeaderLastBox);
-        tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
-        tabHeaderArea.setTabDragContentFactory(layoutView::createTabDragContent);
-        tabHeaderArea.setTabDragScrollStep(10.0);
-
-    }
-
-    @Override
-    protected void addListeners() {
-        super.addListeners();
-        var viewModel = getViewModel();
-        var layoutView = getComponent().getLayout().getView();
-        ValueUtils.callAndAddListener(viewModel.draggableProperty(), (ov, oldV, newV) -> {
-            if (newV) {
-                dragIconView.setOnDragDetected(e -> layoutView.handleDockDragDetected(this, dragIconView, e));
-                dragIconView.setOnMouseDragged(e -> layoutView.handleDockMouseDragged(this, dragIconView, e));
-                dragIconView.setOnMouseReleased(e -> layoutView.handleDockMouseReleased(this, dragIconView, e));
-                tabHeaderFirstBox.getChildren().add(0, dragIconView);
-            } else {
-                tabHeaderFirstBox.getChildren().remove(dragIconView);
-            }
-        });
-        var tabPane = getNode();
-        tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
-            if (tabPane.getTabs().isEmpty() && viewModel.getMinimizedPosition() == null) {
-                layoutView.processEmptyTabPane(tabPane);
-            }
-        });
-    }
-
-    @Override
-    protected void addHandlers() {
-        super.addHandlers();
-        var viewModel = getViewModel();
-        var layoutView = getComponent().getLayout().getView();
-        minimizeButton.setOnAction(e -> layoutView.minimizeTabDock(this));
-        var tabPane = getNode();
-        tabPane.addTabDragHandler(tab -> layoutView.handleTabDrag((ComponentTab) tab));
-        // this handler is called when mouse is over TabHeaderArea
-        tabPane.addTabDropHandler((tab, s) -> layoutView.handleTabDrop((ComponentTab) tab));
-        TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
-        tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
-                e -> layoutView.handleTabHeaderAreaMouseDragOver(tabPane, e));
-    }
-
-    protected Button getMinimizeButton() {
-        return minimizeButton;
-    }
-
-    protected FontIconView getDragIconView() {
-        return dragIconView;
-    }
-
-    protected HBox getTabHeaderFirstBox() {
-        return tabHeaderFirstBox;
-    }
-
-    protected HBox getTabHeaderLastBox() {
-        return tabHeaderLastBox;
-    }
 }

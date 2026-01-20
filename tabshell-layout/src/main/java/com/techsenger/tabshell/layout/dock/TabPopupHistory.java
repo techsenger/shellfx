@@ -16,31 +16,12 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.tabshell.core.area.AbstractAreaHistory;
+import com.techsenger.tabshell.core.area.AreaHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabPopupHistory extends AbstractAreaHistory {
+public class TabPopupHistory extends AreaHistory {
 
-    private double width;
-
-    private double height;
-
-    public double getWidth() {
-        return width;
-    }
-
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
-    public double getHeight() {
-        return height;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
 }

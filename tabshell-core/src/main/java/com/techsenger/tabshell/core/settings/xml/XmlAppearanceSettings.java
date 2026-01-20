@@ -38,6 +38,7 @@ public class XmlAppearanceSettings extends AbstractAppearanceSettings {
         super(regularFont, monospaceFont);
     }
 
+    @Override
     @XmlAttribute(name = "theme")
     @XmlJavaTypeAdapter(ThemeAdapter.class)
     public void setTheme(Theme theme) {

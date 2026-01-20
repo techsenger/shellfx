@@ -16,6 +16,9 @@
 
 package com.techsenger.tabshell.core.settings.xml;
 
+import com.techsenger.tabshell.core.settings.SettingsObserver;
+import com.techsenger.tabshell.core.settings.SettingsSubscription;
+import com.techsenger.tabshell.core.settings.SubscriptionUtils;
 import com.techsenger.tabshell.core.settings.ViewerSettings;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -44,8 +47,8 @@ public class XmlViewerSettings implements ViewerSettings {
     }
 
     @Override
-    public ObjectProperty<Font> fontProperty() {
-        return font;
+    public SettingsSubscription observeFont(SettingsObserver<Font> observer) {
+        return SubscriptionUtils.observe(font, observer);
     }
 
     @Override

@@ -16,14 +16,15 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.SelectableView;
+import com.techsenger.tabshell.core.Iconed;
+import com.techsenger.tabshell.core.Titled;
 import com.techsenger.tabshell.core.area.AreaView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageView<T extends PageViewModel<?>, S extends PageComponent<?>> extends AreaView<T, S>,
-        SelectableView {
+public interface PageView extends AreaView, Titled, Iconed {
 
+    boolean isSelected();
 }

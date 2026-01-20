@@ -22,7 +22,7 @@ module com.techsenger.tabshell.terminal {
     requires atlantafx.base;
     requires pty4j;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvvmx;
+    requires com.techsenger.patternfx.mvp;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.jeditermfx.ui;
@@ -30,10 +30,12 @@ module com.techsenger.tabshell.terminal {
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.shared;
-    requires com.techsenger.tabshell.dialogs;
+    requires com.techsenger.tabshell.layout;
+    requires com.techsenger.tabshell.web;
 
     exports com.techsenger.tabshell.terminal;
     exports com.techsenger.tabshell.terminal.style;
+    exports com.techsenger.tabshell.terminal.toolbar;
 
     opens com.techsenger.tabshell.terminal.style;
 }

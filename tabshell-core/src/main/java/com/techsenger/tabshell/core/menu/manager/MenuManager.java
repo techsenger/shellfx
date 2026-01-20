@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.core.DefaultShellView;
+import com.techsenger.tabshell.core.DefaultShellFxView;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.material.menu.MenuName;
 import com.techsenger.tabshell.material.menu.NamedMenu;
@@ -50,7 +50,7 @@ public class MenuManager {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuManager.class);
 
-    private final DefaultShellView shellView;
+    private final DefaultShellFxView<?> shellView;
 
     private final MenuBar menuBar;
 
@@ -59,7 +59,7 @@ public class MenuManager {
     private final ListChangeListener<MenuItem> menuItemsListener =
             (ListChangeListener.Change<? extends MenuItem> c) -> processMenuListChange(c);
 
-    public MenuManager(DefaultShellView shellView, MenuBar menuBar) {
+    public MenuManager(DefaultShellFxView<?> shellView, MenuBar menuBar) {
         this.shellView = shellView;
         this.menuBar = menuBar;
         //listener if menus are added/removed dinamically to/from menu bar(!)
@@ -159,7 +159,7 @@ public class MenuManager {
 
     private void doOnMenuShowing(NamedMenu menu, MenuUpdateHelper updateHelper) {
         var menuAware = this.shellView.getCurrentMenuAware();
-        menuAware.doOnMenuShowing(menu.getName());
+        menuAware.handleMenuShowing(menu.getName());
         StringBuilder logMessageBuilder = null;
         if (logger.isEnabledForLevel(MenuLogger.CONFIGURED_MENU_LOG_LEVEL)) {
             logMessageBuilder = new StringBuilder();
@@ -212,7 +212,7 @@ public class MenuManager {
     private void doOnMenuHiding(NamedMenu menu, MenuUpdateHelper updateHelper) {
         var selectedTab = this.shellView.getSelectedTab();
         if (selectedTab != null) {
-            selectedTab.doOnMenuHiding(menu.getName());
+            selectedTab.getPresenter().getPort().handleMenuHiding(menu.getName());
         }
         for (var item : menu.getItems()) {
             if (item instanceof NamedMenu) {

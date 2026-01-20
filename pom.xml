@@ -181,13 +181,13 @@
         <module>tabshell-storage</module>
         <module>tabshell-icons</module>
         <module>tabshell-shared</module>
-        <module>tabshell-text</module>
+<!--        <module>tabshell-text</module>-->
         <module>tabshell-terminal</module>
-        <module>tabshell-dialogs</module>
-        <module>tabshell-hex</module>
-        <module>tabshell-registrars</module>
+<!--        <module>tabshell-dialogs</module>
+        <module>tabshell-hex</module>-->
+<!--        <module>tabshell-registrars</module>-->
         <module>tabshell-demos</module>
-        <module>tabshell-jfx</module>
+<!--        <module>tabshell-jfx</module>-->
         <module>tabshell-web</module>
     </modules>
 

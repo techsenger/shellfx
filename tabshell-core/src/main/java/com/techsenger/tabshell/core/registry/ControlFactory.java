@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.patternfx.mvvmx.ComponentView;
+import com.techsenger.patternfx.mvp.FxView;
 
 /**
  *
@@ -25,5 +25,5 @@ import com.techsenger.patternfx.mvvmx.ComponentView;
 @FunctionalInterface
 public interface ControlFactory<T> {
 
-    T create(ComponentView<?, ?> view);
+    T create(FxView view);
 }

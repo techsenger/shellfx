@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>com.techsenger.patternfx</groupId>
-            <artifactId>patternfx-mvvmx</artifactId>
+            <artifactId>patternfx-mvp</artifactId>
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-dialogs</artifactId>
+            <artifactId>tabshell-layout</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>

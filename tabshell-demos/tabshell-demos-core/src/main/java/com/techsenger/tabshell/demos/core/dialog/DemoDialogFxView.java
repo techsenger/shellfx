@@ -1,0 +1,96 @@
+/*
+ * Copyright 2024-2026 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.demos.core.dialog;
+
+import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
+import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.toolkit.fx.utils.ButtonUtils;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> implements DemoDialogView {
+
+    private final Label fooLabel = new Label("Foo");
+
+    private final TextField fooTextField = new TextField();
+
+    private final Label barLabel = new Label("Bar");
+
+    private final TextField barTextField = new TextField();
+
+    private final GridPane gridPane = new GridPane();
+
+    private final Button okButton = new Button("OK");
+
+    private final Button cancelButton = new Button("Cancel");
+
+    private final HBox hBox = new HBox(cancelButton, okButton);
+
+    public DemoDialogFxView(boolean resizable) {
+        super(resizable);
+    }
+
+    @Override
+    public void requestFocus() {
+        fooTextField.requestFocus();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        gridPane.setHgap(SizeConstants.INSET);
+        gridPane.setVgap(SizeConstants.INSET);
+        gridPane.add(fooLabel, 0, 0);
+        gridPane.add(fooTextField, 1, 0);
+        GridPane.setHgrow(fooTextField, Priority.ALWAYS);
+        gridPane.add(barLabel, 0, 1);
+        gridPane.add(barTextField, 1, 1);
+        GridPane.setHgrow(barTextField, Priority.ALWAYS);
+        VBox.setVgrow(gridPane, Priority.ALWAYS);
+
+        okButton.setDefaultButton(true);
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        hBox.setSpacing(SizeConstants.INSET);
+
+        getContentPane().getChildren().addAll(gridPane, hBox);
+        getContentPane().setPadding(new Insets(SizeConstants.INSET));
+        getContentPane().setSpacing(SizeConstants.INSET);
+    }
+
+    @Override
+    protected void addHandlers() {
+        super.addHandlers();
+        okButton.setOnAction(e -> getPresenter().close());
+        cancelButton.setOnAction(e -> getPresenter().close());
+    }
+
+    @Override
+    protected void makeEqualButtons() {
+        ButtonUtils.makeEqualWidthBySize(cancelButton, okButton);
+    }
+}

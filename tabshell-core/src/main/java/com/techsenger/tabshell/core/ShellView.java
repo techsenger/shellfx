@@ -16,23 +16,40 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.mvvmx.ParentView;
-import com.techsenger.tabshell.core.menu.MenuAware;
+import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.tab.ShellTabView;
 import com.techsenger.tabshell.core.tab.TabContainerView;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
-import javafx.application.HostServices;
-import javafx.stage.Stage;
+import javafx.scene.text.Font;
 
 /**
- * There can be only one instance of Shell in VirtualMachine.
  *
  * @author Pavel Castornii
  */
-public interface ShellView<T extends ShellViewModel<?>, S extends ShellComponent<?>>
-        extends ParentView<T, S>, MenuAware, TabContainerView<ShellTabView<?, ?>> {
+public interface ShellView extends ParentView, TabContainerView, Iconed, Titled {
+
+    /**
+     * The width of the stage if the stage is not maximized.
+     */
+    double DEFAULT_WIDTH = 1200;
+
+    /**
+     * The height of the stage if the stage is not maximized.
+     */
+    double DEFAULT_HEIGHT = 800;
+
+    boolean isMaximized();
+
+    void setMaximized(boolean value);
+
+    double getWidth();
+
+    void setWidth(double value);
+
+    double getHeight();
+
+    void setHeight(double value);
 
     /**
      * Returns the control registry. There can be only one registry in the application.
@@ -67,17 +84,5 @@ public interface ShellView<T extends ShellViewModel<?>, S extends ShellComponent
      */
     void removeStylesheets(List<Stylesheet> sheets);
 
-    /**
-     * Returns application host services.
-     *
-     * @return
-     */
-    HostServices getHostServices();
-
-    /**
-     * Returns primary stage.
-     *
-     * @return
-     */
-    Stage getStage();
+    void setRegularFont(Font font);
 }

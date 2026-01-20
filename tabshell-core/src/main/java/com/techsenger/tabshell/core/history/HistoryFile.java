@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.history;
 
-import com.techsenger.patternfx.core.History;
+import com.techsenger.patternfx.core.ComponentHistory;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -37,15 +37,15 @@ public class HistoryFile {
 
     static class HistoryData implements Serializable {
 
-        private Map<Class<? extends History>, History> historiesByClass;
+        private Map<Class<? extends ComponentHistory>, ComponentHistory> historiesByClass;
 
-        private Map<UUID, History> historiesByUuid;
+        private Map<UUID, ComponentHistory> historiesByUuid;
 
-        public Map<Class<? extends History>, History> getHistoriesByClass() {
+        public Map<Class<? extends ComponentHistory>, ComponentHistory> getHistoriesByClass() {
             return historiesByClass;
         }
 
-        public Map<UUID, History> getHistoriesByUuid() {
+        public Map<UUID, ComponentHistory> getHistoriesByUuid() {
             return historiesByUuid;
         }
 
@@ -55,11 +55,11 @@ public class HistoryFile {
                     + ']';
         }
 
-        void setHistoriesByClass(Map<Class<? extends History>, History> historiesByClass) {
+        void setHistoriesByClass(Map<Class<? extends ComponentHistory>, ComponentHistory> historiesByClass) {
             this.historiesByClass = historiesByClass;
         }
 
-        void setHistoriesByUuid(Map<UUID, History> historiesByUuid) {
+        void setHistoriesByUuid(Map<UUID, ComponentHistory> historiesByUuid) {
             this.historiesByUuid = historiesByUuid;
         }
     }

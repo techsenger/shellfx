@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.settings.xml.XmlAppearanceSettings;
 import com.techsenger.tabshell.core.settings.xml.XmlSettings;
 import com.techsenger.tabshell.core.settings.xml.XmlTabSymbolSettings;
 import com.techsenger.tabshell.core.settings.xml.XmlViewerSettings;
+import com.techsenger.tabshell.core.settings.xml.XmlWebBrowserSettings;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import javafx.scene.text.Font;
 
@@ -39,7 +40,9 @@ public final class DemoSettings {
         var appearance = new XmlAppearanceSettings(regularFont, monospaceFont);
         appearance.setTheme(AtlantaFxTheme.CUPERTINO_DARK);
         var viewer = new XmlViewerSettings(monospaceFont, tabSymbol);
-        var settings = new XmlSettings(appearance, viewer);
+        var browser = new XmlWebBrowserSettings();
+        browser.setUsedByDefault(true);
+        var settings = new XmlSettings(appearance, viewer, browser);
         return settings;
     }
 

@@ -16,16 +16,12 @@
 
 package com.techsenger.tabshell.demos.full;
 
-import com.techsenger.patternfx.core.State;
-import com.techsenger.tabshell.core.DefaultShellComponent;
-import com.techsenger.tabshell.core.DefaultShellView;
-import com.techsenger.tabshell.core.DefaultShellViewModel;
+import com.techsenger.tabshell.core.DefaultShellFxView;
+import com.techsenger.tabshell.core.DefaultShellPresenter;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
-import com.techsenger.tabshell.demos.full.menu.DemoFileMenuRegistrar;
 import com.techsenger.tabshell.demos.full.menu.DemoMenuRegistrar;
 import com.techsenger.tabshell.icons.IconStylesheetFactory;
-import com.techsenger.tabshell.registrars.EditMenuRegistrar;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -39,23 +35,18 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultShellViewModel<>(DemoSettings.createSettings(), new DemoHistoryManager());
-        viewModel.setTitle("TabShell Full Demo");
-        var view = new DefaultShellView<>(viewModel, this, stage, IconStylesheetFactory.forAll());
-        var component = new DefaultShellComponent<>(view);
-        component.stateProperty().addListener((ov, oldV, newV) -> {
-            if (newV == State.DEINITIALIZED) {
-                Platform.exit();
-            }
-        });
-        component.initialize();
+        var view = new DefaultShellFxView<>(this, stage, IconStylesheetFactory.forAll());
+        var presenter = new DefaultShellPresenter<>(view, DemoSettings.createSettings(), new DemoHistoryManager());
+        presenter.initialize();
+        presenter.setOnClose(() -> Platform.exit());
+        view.setTitle("TabShell Full Demo");
 
         //adding menu
         var controlRegistry = view.getControlRegistry();
-        var fmr = new DemoFileMenuRegistrar(controlRegistry);
-        fmr.register();
-        var emr = new EditMenuRegistrar(controlRegistry);
-        emr.register();
+//        var fmr = new DemoFileMenuRegistrar(controlRegistry);
+//        fmr.register();
+//        var emr = new EditMenuRegistrar(controlRegistry);
+//        emr.register();
         var dmr = new DemoMenuRegistrar(controlRegistry);
         dmr.register();
         view.upgradeMenuBar();

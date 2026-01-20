@@ -18,9 +18,10 @@ module com.techsenger.tabshell.shared {
     requires org.slf4j;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvvmx;
+    requires com.techsenger.patternfx.mvp;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
+    requires java.desktop;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
@@ -31,4 +32,5 @@ module com.techsenger.tabshell.shared {
     exports com.techsenger.tabshell.shared.find;
     exports com.techsenger.tabshell.shared.menu;
     exports com.techsenger.tabshell.shared.style;
+    exports com.techsenger.tabshell.shared.web;
 }

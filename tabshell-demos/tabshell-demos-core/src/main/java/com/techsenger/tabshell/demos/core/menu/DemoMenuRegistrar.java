@@ -17,13 +17,12 @@
 package com.techsenger.tabshell.demos.core.menu;
 
 import com.techsenger.tabshell.core.CoreComponentNames;
-import com.techsenger.tabshell.core.ShellView;
+import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.demos.core.tab.DemoTabComponent;
-import com.techsenger.tabshell.demos.core.tab.DemoTabView;
-import com.techsenger.tabshell.demos.core.tab.DemoTabViewModel;
+import com.techsenger.tabshell.demos.core.tab.DemoTabFxView;
+import com.techsenger.tabshell.demos.core.tab.DemoTabPresenter;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuGroup;
 import com.techsenger.tabshell.material.menu.NamedMenuItem;
@@ -80,13 +79,11 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
             var item = new NamedMenuItem(DemoMenuNames.NEW, false, true, false, "_New", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
-                var shellView  = (ShellView<?, ?>) v;
-                var shellComponent = shellView.getComponent();
-                var tabViewModel = new DemoTabViewModel();
-                var tabView = new DemoTabView(tabViewModel);
-                var tabComponent = new DemoTabComponent(tabView, shellComponent);
-                tabComponent.initialize();
-                shellComponent.addTab(tabComponent);
+                var shellView  = (ShellFxView<?>) v;
+                var tabView = new DemoTabFxView<>(shellView);
+                var tabPresenter = new DemoTabPresenter<>(tabView);
+                tabPresenter.initialize();
+                shellView.getComposer().addTab(tabView);
             });
             return item;
 
@@ -101,7 +98,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(DemoMenuNames.EXIT, true, true, false, "E_xit", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> ((ShellView<?, ?>) v).getViewModel().close());
+            item.setOnAction((e) -> ((ShellFxView<?>) v).getPresenter().close());
             return item;
 
         };

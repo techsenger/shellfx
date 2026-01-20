@@ -20,9 +20,6 @@ package com.techsenger.tabshell.layout.dock;
  *
  * @author Pavel Castornii
  */
-class PlaceholderView extends TabDockView<PlaceholderViewModel, PlaceholderComponent> {
+interface PlaceholderView extends TabDockView {
 
-    PlaceholderView(PlaceholderViewModel viewModel) {
-        super(viewModel);
-    }
 }

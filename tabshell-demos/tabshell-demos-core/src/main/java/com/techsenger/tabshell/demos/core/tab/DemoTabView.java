@@ -16,71 +16,23 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.tab.AbstractShellTabView;
-import com.techsenger.tabshell.material.style.SizeConstants;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import com.techsenger.tabshell.core.shelltab.ShellTabView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DemoTabView<T extends DemoTabViewModel<?>, S extends DemoTabComponent<?>>
-        extends AbstractShellTabView<T, S> {
+public interface DemoTabView extends ShellTabView {
 
-    private final CheckBox newValidCheckBox = new CheckBox("New Item Valid");
+    boolean isNewValid();
 
-    private final CheckBox exitIncludedCheckBox = new CheckBox("Exit Item Included");
+    void setNewValid(boolean value);
 
-    private final CheckBox exitValidCheckBox = new CheckBox("Exit Item Valid");
+    boolean isExitIncluded();
 
-    private final Button shellDialogButton = new Button("Shell Dialog");
+    void setExitIncluded(boolean value);
 
-    private final Button tabDialogButton = new Button("Tab Dialog");
+    boolean isExitValid();
 
-    private final VBox vBox = new VBox(newValidCheckBox, exitIncludedCheckBox, exitValidCheckBox, shellDialogButton,
-            tabDialogButton);
-
-    private final HBox hBox = new HBox(vBox);
-
-    public DemoTabView(T viewModel) {
-        super(viewModel);
-    }
-
-    @Override
-    public void requestFocus() {
-
-    }
-
-    @Override
-    protected void build() {
-        super.build();
-        hBox.setAlignment(Pos.CENTER);
-        vBox.setSpacing(SizeConstants.INSET);
-        getContentPane().setAlignment(Pos.CENTER);
-        getContentPane().getChildren().add(hBox);
-
-    }
-
-    @Override
-    protected void bind() {
-        super.bind();
-        var viewModel = getViewModel();
-        newValidCheckBox.selectedProperty().bindBidirectional(viewModel.newValidProperty());
-        exitIncludedCheckBox.selectedProperty().bindBidirectional(viewModel.exitIncludedProperty());
-        exitValidCheckBox.selectedProperty().bindBidirectional(viewModel.exitValidProperty());
-        shellDialogButton.prefWidthProperty().bind(vBox.widthProperty());
-        tabDialogButton.prefWidthProperty().bind(vBox.widthProperty());
-    }
-
-    @Override
-    protected void addHandlers() {
-        super.addHandlers();
-        this.shellDialogButton.setOnAction(e -> getViewModel().openDialog(DialogScope.SHELL));
-        this.tabDialogButton.setOnAction(e -> getViewModel().openDialog(DialogScope.TAB));
-    }
+    void setExitValid(boolean value);
 }

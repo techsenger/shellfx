@@ -16,15 +16,15 @@
 
 package com.techsenger.tabshell.demos.core;
 
-import com.techsenger.tabshell.core.DefaultShellComponent;
-import com.techsenger.tabshell.core.DefaultShellView;
-import com.techsenger.tabshell.core.DefaultShellViewModel;
+import com.techsenger.tabshell.core.DefaultShellFxView;
+import com.techsenger.tabshell.core.DefaultShellPresenter;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuNames;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuRegistrar;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 /**
@@ -36,14 +36,13 @@ public class Demo extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         //creating shell
-        var viewModel = new DefaultShellViewModel(DemoSettings.createSettings(), new DemoHistoryManager());
-        viewModel.setTitle("TabShell Core Demo");
-
-        //this helper will be used when there are no tabs
-        viewModel.addMenuItemHelpers(new SimpleMenuItemHelper(DemoMenuNames.NEW, null, Boolean.TRUE));
-        var view = new DefaultShellView<>(viewModel, this, stage, null);
-        var component = new DefaultShellComponent<>(view);
-        component.initialize();
+        var view = new DefaultShellFxView<>(this, stage, null);
+        var presenter = new DefaultShellPresenter<>(view, DemoSettings.createSettings(), new DemoHistoryManager());
+        //this handlers will be used when there are no tabs
+        presenter.getMenuHelpers().addAll(new SimpleMenuItemHelper(DemoMenuNames.NEW, null, Boolean.TRUE));
+        presenter.setOnClose(() -> Platform.exit());
+        presenter.initialize();
+        view.setTitle("TabShell Core Demo");
 
         //adding menu
         var controlRegistry = view.getControlRegistry();

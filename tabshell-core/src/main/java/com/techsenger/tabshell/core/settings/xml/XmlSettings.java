@@ -31,13 +31,17 @@ public class XmlSettings implements Settings {
     @XmlElement(name = "Viewer")
     private XmlViewerSettings viewer;
 
+    @XmlElement(name = "WebBrowser")
+    private XmlWebBrowserSettings webBrowser;
+
     public XmlSettings() {
 
     }
 
-    public XmlSettings(XmlAppearanceSettings appearance, XmlViewerSettings viewer) {
+    public XmlSettings(XmlAppearanceSettings appearance, XmlViewerSettings viewer, XmlWebBrowserSettings webBrowser) {
         this.appearance = appearance;
         this.viewer = viewer;
+        this.webBrowser = webBrowser;
     }
 
     @Override
@@ -48,5 +52,10 @@ public class XmlSettings implements Settings {
     @Override
     public XmlViewerSettings getViewer() {
         return viewer;
+    }
+
+    @Override
+    public XmlWebBrowserSettings getWebBrowser() {
+        return webBrowser;
     }
 }

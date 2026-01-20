@@ -16,18 +16,34 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.patternfx.mvvmx.ChildView;
-import com.techsenger.tabshell.core.SelectableView;
-import com.techsenger.tabshell.core.menu.MenuAware;
+import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.tabshell.core.Iconed;
+import com.techsenger.tabshell.core.Titled;
+import com.techsenger.tabshell.core.Tooltiped;
 
 /**
- * A view for components that has a root with JavaFX Tab class.
  *
  * @author Pavel Castornii
  */
-public interface TabView<T extends TabViewModel<?>, S extends TabComponent<?>> extends ChildView<T, S>,
-        SelectableView, MenuAware {
+public interface TabView extends ChildView, Iconed, Titled, Tooltiped {
 
-    @Override
-    ComponentTab getNode();
+    /**
+     * Returns whether the tab can be closed.
+     *
+     * @return true if the tab can be closed, false otherwise
+     */
+    boolean isClosable();
+
+    /**
+     * Sets whether the tab can be closed.
+     *
+     * @param closable true to allow closing the tab, false to prevent it
+     */
+    void setClosable(boolean closable);
+
+    void setWaiting(boolean waiting);
+
+    boolean isWaiting();
+
+    boolean isSelected();
 }

@@ -19,7 +19,7 @@ module com.techsenger.tabshell.layout {
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvvmx;
+    requires com.techsenger.patternfx.mvp;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.shared;
@@ -34,7 +34,5 @@ module com.techsenger.tabshell.layout {
 
     exports com.techsenger.tabshell.layout;
     exports com.techsenger.tabshell.layout.dock;
-    exports com.techsenger.tabshell.layout.splittab;
     exports com.techsenger.tabshell.layout.tabhost;
-    exports com.techsenger.tabshell.layout.workertab;
 }

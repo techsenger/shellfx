@@ -17,19 +17,22 @@
 module com.techsenger.tabshell.web {
     requires org.slf4j;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvvmx;
+    requires com.techsenger.patternfx.mvp;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.shared;
-    requires com.techsenger.tabshell.dialogs;
+    requires com.techsenger.tabshell.layout;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
     requires javafx.web;
+    requires java.desktop;
     requires org.apache.commons.validator;
 
     exports com.techsenger.tabshell.web;
+    exports com.techsenger.tabshell.web.area;
     exports com.techsenger.tabshell.web.model;
     exports com.techsenger.tabshell.web.style;
+    exports com.techsenger.tabshell.web.toolbar;
 }

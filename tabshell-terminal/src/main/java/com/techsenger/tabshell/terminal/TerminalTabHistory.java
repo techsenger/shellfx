@@ -16,21 +16,25 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.core.tab.AbstractShellTabHistory;
+import com.techsenger.tabshell.core.shelltab.ShellTabHistory;
+import com.techsenger.tabshell.shared.find.FullFindPanelHistory;
+import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TerminalTabHistory extends AbstractShellTabHistory {
+public class TerminalTabHistory extends ShellTabHistory {
 
-    private TerminalPaletteType paletteType;
+    private final TerminalToolBarHistory toolBar = new TerminalToolBarHistory();
 
-    public TerminalPaletteType getPaletteType() {
-        return paletteType;
+    private final FullFindPanelHistory findPanel = new FullFindPanelHistory();
+
+    public TerminalToolBarHistory getToolBar() {
+        return toolBar;
     }
 
-    public void setPaletteType(TerminalPaletteType paletteType) {
-        this.paletteType = paletteType;
+    public FullFindPanelHistory getFindPanel() {
+        return findPanel;
     }
 }

@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.layout.dock;
 
-import com.techsenger.tabshell.core.area.AbstractAreaHistory;
+import com.techsenger.tabshell.core.area.AreaHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class SideBarHistory extends AbstractAreaHistory {
+public class SideBarHistory extends AreaHistory {
 
     private TabPopupHistory popup;
 

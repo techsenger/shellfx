@@ -20,15 +20,15 @@ module com.techsenger.tabshell.demos.full {
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvvmx;
+    requires com.techsenger.patternfx.mvp;
     requires com.techsenger.tabshell.layout;
     requires com.techsenger.tabshell.shared;
-    requires com.techsenger.tabshell.text;
-    requires com.techsenger.tabshell.hex;
-    requires com.techsenger.tabshell.jfx;
+//    requires com.techsenger.tabshell.text;
+//    requires com.techsenger.tabshell.hex;
+//    requires com.techsenger.tabshell.jfx;
     requires com.techsenger.tabshell.web;
     requires com.techsenger.tabshell.storage;
-    requires com.techsenger.tabshell.dialogs;
+//    requires com.techsenger.tabshell.dialogs;
     requires com.techsenger.tabshell.terminal;
     requires com.techsenger.tabshell.registrars;
     requires com.techsenger.tabshell.icons;
@@ -36,6 +36,9 @@ module com.techsenger.tabshell.demos.full {
     requires com.techsenger.tabpanepro.core;
 
     requires org.slf4j;
+    requires org.apache.logging.log4j;
+    requires org.apache.logging.log4j.core;
+    requires org.apache.logging.log4j.slf4j2.impl;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;

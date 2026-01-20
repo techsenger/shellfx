@@ -16,6 +16,9 @@
 
 package com.techsenger.tabshell.core.settings.xml;
 
+import com.techsenger.tabshell.core.settings.SettingsObserver;
+import com.techsenger.tabshell.core.settings.SettingsSubscription;
+import com.techsenger.tabshell.core.settings.SubscriptionUtils;
 import com.techsenger.tabshell.core.settings.TabSymbolSettings;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import javafx.beans.property.BooleanProperty;
@@ -34,8 +37,8 @@ public class XmlTabSymbolSettings implements TabSymbolSettings {
     private final BooleanProperty useSpaces = new SimpleBooleanProperty();
 
     @Override
-    public IntegerProperty sizeProperty() {
-        return size;
+    public SettingsSubscription observeSize(SettingsObserver<Integer> observer) {
+        return SubscriptionUtils.observe(size, observer);
     }
 
     @Override
@@ -50,8 +53,8 @@ public class XmlTabSymbolSettings implements TabSymbolSettings {
     }
 
     @Override
-    public BooleanProperty useSpacesProperty() {
-        return useSpaces;
+    public SettingsSubscription observeUseSpaces(SettingsObserver<Boolean> observer) {
+        return SubscriptionUtils.observe(useSpaces, observer);
     }
 
     @Override

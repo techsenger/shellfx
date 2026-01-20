@@ -16,15 +16,15 @@
 
 package com.techsenger.tabshell.core.area;
 
-import com.techsenger.patternfx.mvvmx.ChildView;
-import javafx.scene.layout.Region;
+import com.techsenger.patternfx.mvp.ChildView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface AreaView<T extends AreaViewModel<?>, S extends AreaComponent<?>> extends ChildView<T, S> {
+public interface AreaView extends ChildView {
 
-    @Override
-    Region getNode();
+    double getWidth();
+
+    double getHeight();
 }

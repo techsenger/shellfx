@@ -16,10 +16,9 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
@@ -41,9 +40,9 @@ public class DefaultDialogManager implements DialogManager {
 
         private final StackPane stackPane;
 
-        private final AbstractDialogView<?, ?> dialogView;
+        private final DialogFxView<?> dialogView;
 
-        WindowAligner(StackPane stackPane, AbstractDialogView<?, ?> dialogView) {
+        WindowAligner(StackPane stackPane, DialogFxView<?> dialogView) {
             this.stackPane = stackPane;
             this.dialogView = dialogView;
         }
@@ -75,45 +74,41 @@ public class DefaultDialogManager implements DialogManager {
 
     private final VBox mainPane;
 
-    private final LinkedList<DialogView<?, ?>> modifiableDialogs = new LinkedList<>();
+    private final ObservableList<DialogFxView<?>> modifiableDialogs = FXCollections.observableArrayList();
 
-    private final List<DialogView<?, ?>> dialogs = Collections.unmodifiableList(modifiableDialogs);
+    private final ObservableList<DialogFxView<?>> dialogs =
+            FXCollections.unmodifiableObservableList(modifiableDialogs);
 
     private final LinkedList<Pane> bgPanes = new LinkedList<>();
 
-    private final ReadOnlyIntegerWrapper dialogCount;
-
-    public DefaultDialogManager(StackPane stackPane, VBox mainPane, ReadOnlyIntegerWrapper dialogCount) {
+    public DefaultDialogManager(StackPane stackPane, VBox mainPane) {
         this.stackPane = stackPane;
         this.mainPane = mainPane;
-        this.dialogCount = dialogCount;
     }
 
     @Override
-    public void showDialog(DialogView<?, ?> dialogView) {
+    public void showDialog(DialogFxView<?> dialogView) {
         if (modifiableDialogs.isEmpty()) {
             //event consumer added only once for all dialogs
             mainPane.addEventFilter(KeyEvent.ANY, eventConsumer);
         } else {
-            var last = modifiableDialogs.peekLast();
-            last.getViewModel().setActive(true);
+            var last = modifiableDialogs.getLast();
+            last.setActive(true);
         }
-        var d = (AbstractDialogView) dialogView;
-        var window = d.getNode();
+        var window = dialogView.getNode();
         //for every dialog window a bg pane is created
         var bgPane = new Pane(window);
         bgPane.setMouseTransparent(false);
         stackPane.getChildren().add(bgPane);
-        modifiableDialogs.addLast(d);
+        modifiableDialogs.addLast(dialogView);
         bgPanes.addLast(bgPane);
-        var aligner = new WindowAligner(stackPane, d);
+        var aligner = new WindowAligner(stackPane, dialogView);
         stackPane.getScene().addPostLayoutPulseListener(aligner);
-        this.dialogCount.set(this.modifiableDialogs.size());
     }
 
     @Override
-    public void hideDialog(DialogView<?, ?> dialogView) {
-        var dialog = modifiableDialogs.pollLast();
+    public void hideDialog(DialogFxView<?> dialogView) {
+        var dialog = modifiableDialogs.getLast();
         if (dialog == null) {
             return;
         }
@@ -122,14 +117,13 @@ public class DefaultDialogManager implements DialogManager {
         if (modifiableDialogs.isEmpty()) {
             mainPane.removeEventFilter(KeyEvent.ANY, eventConsumer);
         } else {
-            var last = modifiableDialogs.peekLast();
-            last.getViewModel().setActive(false);
+            var last = modifiableDialogs.getLast();
+            last.setActive(false);
         }
-        this.dialogCount.set(this.modifiableDialogs.size());
     }
 
     @Override
-    public List<DialogView<?, ?>> getDialogs() {
+    public ObservableList<DialogFxView<?>> getDialogs() {
         return dialogs;
     }
 
