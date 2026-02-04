@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.dialogs.simple;
 
-import com.techsenger.tabshell.core.popup.PopupManager;
-import javafx.collections.ObservableList;
+import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
+import com.techsenger.tabshell.core.dialog.DialogComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogManager extends PopupManager {
+public class AbstractSimpleDialogPresenter<V extends SimpleDialogView, C extends DialogComposer>
+        extends AbstractDialogPresenter<V, C> {
 
-    void showDialog(DialogFxView<?> dialogView);
-
-    void hideDialog(DialogFxView<?> dialogView);
-
-    /**
-     * Returns an unmodifiable list of dialogs.
-     *
-     * @return the list of dialogs. If no dialogs are present, an empty list is returned.
-     */
-    ObservableList<DialogFxView<?>> getDialogs();
 }

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.area.AbstractAreaFxView;
+import com.techsenger.tabshell.core.popup.AbstractPopupFxView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.style.StyleClasses;
@@ -46,12 +46,10 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
-        extends AbstractAreaFxView<P> implements DialogFxView<P> {
+public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, ?>>
+        extends AbstractPopupFxView<P> implements DialogFxView<P> {
 
-    private static final PseudoClass INACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("inactive");
-
-    public class Composer extends AbstractAreaFxView.Composer implements DialogFxView.Composer {
+    public class Composer extends AbstractPopupFxView.Composer implements DialogFxView.Composer {
 
         private final AbstractDialogFxView<?> view = AbstractDialogFxView.this;
 
@@ -63,6 +61,8 @@ public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
             }
         }
     }
+
+    private static final PseudoClass INACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("inactive");
 
     private final IconViewBox iconViewBox = new IconViewBox();
 
@@ -78,22 +78,13 @@ public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
 
     private final HBox titleBar = new HBox(iconViewBox, titleLabel, spacePane, buttonBox);
 
-    private final VBox contentPane = new VBox();
-
     /**
      * Trap for focus dialog. This trap should always be activated after adding all controls to dialog. Otherwise
      * it is necessary to update it.
      */
-    private final FocusTrap focusTrap = new FocusTrap(contentPane);
+    private final FocusTrap focusTrap = new FocusTrap(super.getContentPane());
 
-    /**
-     * This is internal pane that is required for waiting mode.
-     */
-    private final StackPane stackPane = new StackPane(contentPane);
-
-    private final Pane backgroundPane = new Pane();
-
-    private final VBox dialogBox = new VBox(titleBar, stackPane);
+    private final VBox dialogBox = new VBox(titleBar, super.getNode());
 
     /**
      * While dragging we need the difference. So, we keep in this variable previous value.
@@ -116,8 +107,6 @@ public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
     private final BooleanProperty outOfBoundsAllowed = new SimpleBooleanProperty(true);
 
     private final BooleanProperty active = new SimpleBooleanProperty(true);
-
-    private final BooleanProperty waiting = new SimpleBooleanProperty(false);
 
     private final BooleanProperty resizable = new SimpleBooleanProperty();
 
@@ -237,16 +226,6 @@ public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
     }
 
     @Override
-    public void setWaiting(boolean waiting) {
-        this.waiting.set(waiting);
-    }
-
-    @Override
-    public boolean isWaiting() {
-        return this.waiting.get();
-    }
-
-    @Override
     public boolean isResizable() {
         return this.resizable.get();
     }
@@ -286,10 +265,6 @@ public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
         return new AbstractDialogFxView.Composer();
     }
 
-    protected BooleanProperty waitingProperty() {
-        return waiting;
-    }
-
     protected BooleanProperty resizableProperty() {
         return resizable;
     }
@@ -300,10 +275,6 @@ public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
 
     protected BooleanProperty outOfBoundsAllowedProperty() {
         return outOfBoundsAllowed;
-    }
-
-    protected VBox getContentPane() {
-        return contentPane;
     }
 
     protected FocusTrap getFocusTrap() {
@@ -323,13 +294,8 @@ public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
         closeButton.setGraphic(closeIcon);
         closeButton.getStyleClass().addAll("close-button");
 
-        backgroundPane.setMouseTransparent(false);
-        backgroundPane.setCursor(Cursor.WAIT);
-
-        this.contentPane.getStyleClass().addAll("content-pane", StyleClasses.CORNERS_BOTTOM);
-        VBox.setVgrow(contentPane, Priority.ALWAYS);
-        VBox.setVgrow(stackPane, Priority.ALWAYS);
-        this.stackPane.getStyleClass().addAll("wrapper", StyleClasses.CORNERS_BOTTOM);
+        getContentPane().getStyleClass().addAll("content-pane", StyleClasses.CORNERS_BOTTOM);
+        super.getNode().getStyleClass().addAll("wrapper", StyleClasses.CORNERS_BOTTOM);
         this.dialogBox.getStyleClass().addAll("dialog-box", StyleClasses.CORNERS_ALL, StyleClasses.SHADOW);
         this.resizer = new RegionResizer(minWidth, minHeight, maxWidth, maxHeight,
                 (e) -> {
@@ -352,13 +318,6 @@ public abstract class AbstractDialogFxView<P extends DialogPresenter<?, ?>>
     @Override
     protected void addListeners() {
         super.addListeners();
-        ValueUtils.callAndAddListener(this.waiting, (ov, oldV, newV) -> {
-            if (newV) {
-                stackPane.getChildren().add(backgroundPane);
-            } else {
-                stackPane.getChildren().remove(backgroundPane);
-            }
-        });
         ValueUtils.callAndAddListener(this.buttonWidthEqual, (ov, oldV, newV) -> {
             if (Boolean.FALSE.equals(oldV)) {
                 getPulseListenerManager().removeListener(LayoutPhase.POST, buttonWidthListener);

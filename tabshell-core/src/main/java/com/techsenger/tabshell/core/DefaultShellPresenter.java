@@ -24,6 +24,7 @@ import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuHelpers;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
+import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.shelltab.ShellTabPort;
 import com.techsenger.tabshell.material.icon.Icon;
@@ -101,6 +102,11 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         @Override
         public Icon<?> getIcon() {
             return getView().getIcon();
+        }
+
+        @Override
+        public List<? extends PopupPort> getPopups() {
+            return getComposer().getPopups();
         }
 
         @Override

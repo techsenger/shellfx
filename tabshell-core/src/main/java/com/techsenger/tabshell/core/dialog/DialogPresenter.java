@@ -16,19 +16,13 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.CloseablePresenter;
-import com.techsenger.tabshell.core.area.AreaPresenter;
+import com.techsenger.tabshell.core.popup.PopupPresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogPresenter<V extends DialogView, C extends DialogComposer>
-        extends AreaPresenter<V, C>, CloseablePresenter<V, C> {
-
-    DialogScope getScope();
-
-    Runnable getCloseAction();
+public interface DialogPresenter<V extends DialogView, C extends DialogComposer> extends PopupPresenter<V, C> {
 
     @Override
     DialogPort getPort();

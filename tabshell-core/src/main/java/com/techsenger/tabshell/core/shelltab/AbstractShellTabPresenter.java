@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core.shelltab;
 
 import com.techsenger.tabshell.core.ShellPort;
 import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import java.util.List;
 
@@ -39,6 +40,11 @@ public abstract class AbstractShellTabPresenter<V extends ShellTabView, C extend
         @Override
         public List<? extends DialogPort> getDialogs() {
             return getComposer().getDialogs();
+        }
+
+        @Override
+        public List<? extends PopupPort> getPopups() {
+            return getComposer().getPopups();
         }
 
         @Override

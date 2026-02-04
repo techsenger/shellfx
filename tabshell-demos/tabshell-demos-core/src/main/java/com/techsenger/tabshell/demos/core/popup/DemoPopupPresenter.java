@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.core.dialog;
+package com.techsenger.tabshell.demos.core.popup;
 
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.dialog.DialogComposer;
+import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupComposer;
 import com.techsenger.tabshell.demos.core.DemoComponentNames;
 import java.util.function.Consumer;
 
@@ -29,10 +29,15 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView, DialogComposer> {
+public class DemoPopupPresenter extends AbstractPopupPresenter<DemoPopupView, PopupComposer> {
 
-    public DemoDialogPresenter(DemoDialogView view, OverlayScope scope) {
-        super(view, scope);
+    public DemoPopupPresenter(DemoPopupView view, OverlayScope scope, boolean modal) {
+        super(view, scope, modal);
+    }
+
+    @Override
+    protected Descriptor createDescriptor() {
+        return new Descriptor(DemoComponentNames.DEMO_POPUP);
     }
 
     @Override
@@ -45,22 +50,4 @@ public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView,
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponentNames.DEMO_DIALOG);
-    }
-
-    @Override
-    protected void postInitialize() {
-        super.postInitialize();
-        var v = getView();
-        v.setPrefWidth(500);
-        v.setTitle("Demo Dialog");
-        v.setButtonWidthEqual(true); //cancel button width will be equal to ok button width
-    }
-
-    @Override
-    protected Port createPort() {
-        return new AbstractDialogPresenter.Port();
-    }
 }

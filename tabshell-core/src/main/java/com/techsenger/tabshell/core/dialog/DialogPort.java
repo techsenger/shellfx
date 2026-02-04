@@ -16,21 +16,13 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.CloseablePort;
-import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.popup.PopupPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogPort extends AreaPort, CloseablePort {
-
-    /**
-     * Returns the scope of the dialog.
-     *
-     * @return
-     */
-    DialogScope getScope();
+public interface DialogPort extends PopupPort {
 
     /**
      * Returns whether this dialog is active.

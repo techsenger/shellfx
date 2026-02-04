@@ -18,13 +18,13 @@ package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.Iconed;
 import com.techsenger.tabshell.core.Titled;
-import com.techsenger.tabshell.core.area.AreaView;
+import com.techsenger.tabshell.core.popup.PopupView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogView extends AreaView, Titled, Iconed {
+public interface DialogView extends PopupView, Titled, Iconed {
 
     /**
      * Returns whether this dialog is active.
@@ -42,14 +42,6 @@ public interface DialogView extends AreaView, Titled, Iconed {
      * @param active {@code true} to mark the dialog as active, {@code false} otherwise
      */
     void setActive(boolean active);
-
-    double getPrefWidth();
-
-    void setPrefWidth(double value);
-
-    double getPrefHeight();
-
-    void setPrefHeight(double value);
 
     double getMinWidth();
 
@@ -85,24 +77,6 @@ public interface DialogView extends AreaView, Titled, Iconed {
      *                           {@code false} to restrict movement to the parent area
      */
     void setOutOfBoundsAllowed(boolean outOfBoundsAllowed);
-
-    /**
-     * Enables or disables the waiting state of the dialog.
-     * <p>
-     * When the waiting state is enabled, user interaction is temporarily disabled
-     * and the dialog indicates that a background operation is in progress.
-     *
-     * @param waiting {@code true} to enable the waiting state, {@code false} to restore normal interaction
-     */
-    void setWaiting(boolean waiting);
-
-    /**
-     * Returns whether the dialog is currently in the waiting state.
-     *
-     * @return {@code true} if the dialog is waiting and user interaction is disabled,
-     *         {@code false} otherwise
-     */
-    boolean isWaiting();
 
     boolean isResizable();
 

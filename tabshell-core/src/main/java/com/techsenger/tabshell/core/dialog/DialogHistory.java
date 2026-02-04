@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.area.AreaHistory;
+import com.techsenger.tabshell.core.popup.PopupHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DialogHistory extends AreaHistory {
+public class DialogHistory extends PopupHistory {
 
 }

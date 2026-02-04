@@ -1,0 +1,52 @@
+/*
+ * Copyright 2024-2026 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.core.popup;
+
+import com.techsenger.tabshell.material.Anchors;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface PopupContainerFxView {
+
+    interface Composer extends PopupContainerComposer {
+
+        /**
+         * Adds the specified popup component to the component tree.
+         *
+         * <p>If the popup scope of the component does not match this container's scope, the popup is forwarded to
+         * the appropriate container: {@link ShellTab} forwards {@link Scope.SHELL} popups to
+         * {@link Shell}, and {@link Shell} forwards {@link Scope.TAB} popups to the selected {@link ShellTab}.
+         *
+         * @param popup the popup component to add
+         */
+        void addPopup(PopupFxView<?> popup, Anchors anchors);
+
+        /**
+         * Removes the specified popup component from the component tree.
+         *
+         * <p>If the popup scope of the component does not match this container's scope, the popup is forwarded to
+         * the appropriate container: {@link ShellTab} forwards {@link Scope.SHELL} popups to
+         * {@link Shell}, and {@link Shell} forwards {@link Scope.TAB} popups to the selected {@link ShellTab}.
+         *
+         * @param popup the popup component to remove
+         */
+        void removePopup(PopupFxView<?> popup);
+
+    }
+}

@@ -21,6 +21,7 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
     * [Shell](#core-shell)
     * [ShellTab](#core-shelltab)
     * [Tab](#core-tab)
+    * [Popup](#core-popup)
     * [Dialog](#core-dialog)
 * [JFX Components](#jfx)
     * [JfxTabDock](#jfx-tab-dock)
@@ -134,10 +135,10 @@ Core components include:
 * [Shell](#core-shell) component.
 * [ShellTab](#core-shelltab) component.
 * [Tab](#core-tab) component.
+* [Popup](#core-popup) component.
 * [Dialog](#core-dialog) component.
 * Page component, which represents a titled component that can be selected.
 * Area component, which represents a rectangular area.
-* Element component, which is used for the simplest and smallest elements.
 
 `Shell` is the only fully ready-to-use component. All other components are templates for creating custom components.
 It is important to note that all platform components are built on the components listed above.
@@ -206,16 +207,23 @@ A `Tab` component cannot be opened directly through the `Shell`, so it always re
 
 Closing a `Tab` is performed the same way as closing a `ShellTab`.
 
+### Popup <a name="core-popup"></a>
+
+All popups in TabShell are `inline` and have a `scope` that affects what will be blocked when the popup is open.
+
+Inline popups are components that appear embedded within the current application window, typically overlaid on top
+of the existing content. They are contextually tied to a specific section (e.g., a Shell or ShellTab) and do not
+create a separate OS-level window. In contrast, [modal] window popups (or native popups) open as standalone
+OS-managed windows with their own frames and system controls, completely independent of the parent UI.
+
+There are two types of scope: Shell and Tab. Popups in the Tab scope are bound to a specific tab and are visible
+only while that tab is open. Popups in the Shell scope are global to the shell and remain visible even when all
+tabs are closed.
+
 ### Dialog <a name="core-dialog"></a>
 
 All dialogs in TabShell are `inline`, `asynchronous` and have a `scope` that affects what will be blocked when the
-dialog is open.
-
-Inline dialogs are UI elements that appear embedded within the current application window, typically overlaid on top
-of the existing content with a semi-transparent backdrop to focus attention. They are contextually tied to a specific
-section (e.g., a tab or component) and do not create a separate OS-level window. In contrast, [modal] window dialogs
-(or native dialogs) open as standalone OS-managed windows with their own frames and system controls, completely
-independent of the parent UI.
+dialog is open. Dialogs extend popups and represent a specialized type of popup with dialog-specific behavior.
 
 Asynchronous dialogs allow the program to continue running while the dialog is open, relying on callbacks, promises,
 or event listeners. These avoid UI freezes and enable background tasks but require handling user responses indirectly,

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.simple;
+package com.techsenger.tabshell.demos.core.popup;
 
-import com.techsenger.tabshell.core.dialog.AbstractDialogHistory;
+import com.techsenger.tabshell.core.popup.PopupView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSimpleDialogHistory extends AbstractDialogHistory {
+public interface DemoPopupView extends PopupView {
 
 }

@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.simple;
+package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.dialog.AbstractDialogComponent;
+import com.techsenger.tabshell.core.area.AreaComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSimpleDialogComponent<T extends AbstractSimpleDialogView<?, ?>>
-        extends AbstractDialogComponent<T> {
+public interface PopupComposer extends AreaComposer {
 
-    public AbstractSimpleDialogComponent(T view) {
-        super(view);
-    }
-
-    @Override
-    protected abstract Mediator createMediator();
+    void remove();
 }

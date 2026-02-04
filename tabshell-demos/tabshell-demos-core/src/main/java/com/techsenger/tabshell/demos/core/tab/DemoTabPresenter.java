@@ -19,8 +19,8 @@ package com.techsenger.tabshell.demos.core.tab;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
+import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabPresenter;
 import com.techsenger.tabshell.demos.core.DemoComponentNames;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuNames;
@@ -77,8 +77,12 @@ public class DemoTabPresenter<V extends DemoTabView, C extends DemoTabComposer>
         return new Descriptor(DemoComponentNames.DEMO_TAB);
     }
 
-    protected void handleDialogOpen(DialogScope scope) {
+    protected void handleDialogOpen(OverlayScope scope) {
         getComposer().addDemoDialog(scope, true);
+    }
+
+    protected void handlePopupOpen(OverlayScope scope) {
+        getComposer().addDemoPopup(scope);
     }
 
     @Override

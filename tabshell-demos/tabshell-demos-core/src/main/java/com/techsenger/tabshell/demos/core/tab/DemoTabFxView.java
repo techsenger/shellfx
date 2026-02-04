@@ -17,10 +17,13 @@
 package com.techsenger.tabshell.demos.core.tab;
 
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogFxView;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogPresenter;
+import com.techsenger.tabshell.demos.core.popup.DemoPopupFxView;
+import com.techsenger.tabshell.demos.core.popup.DemoPopupPresenter;
+import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -39,11 +42,23 @@ public class DemoTabFxView<P extends DemoTabPresenter<?, ?>> extends AbstractShe
         private final DemoTabFxView<?> view = DemoTabFxView.this;
 
         @Override
-        public void addDemoDialog(DialogScope scope, boolean resizable) {
+        public void addDemoDialog(OverlayScope scope, boolean resizable) {
             var v = new DemoDialogFxView(resizable);
             var p = new DemoDialogPresenter(v, scope);
             p.initialize();
             view.getShell().getComposer().addDialog(v);
+        }
+
+        @Override
+        public void addDemoPopup(OverlayScope scope) {
+            var v = new DemoPopupFxView();
+            var p = new DemoPopupPresenter(v, scope, false);
+            p.initialize();
+            if (scope == OverlayScope.SHELL) {
+                view.getShell().getComposer().addPopup(v, Anchors.topRight(40, 20));
+            } else {
+                view.getShell().getComposer().addPopup(v, Anchors.bottomRight(20, 20));
+            }
         }
     }
 
@@ -57,8 +72,12 @@ public class DemoTabFxView<P extends DemoTabPresenter<?, ?>> extends AbstractShe
 
     private final Button tabDialogButton = new Button("Tab Dialog");
 
+    private final Button shellPopupButton = new Button("Shell Popup");
+
+    private final Button tabPopupButton = new Button("Tab Popup");
+
     private final VBox vBox = new VBox(newValidCheckBox, exitIncludedCheckBox, exitValidCheckBox, shellDialogButton,
-            tabDialogButton);
+            tabDialogButton, shellPopupButton, tabPopupButton);
 
     private final HBox hBox = new HBox(vBox);
 
@@ -116,13 +135,17 @@ public class DemoTabFxView<P extends DemoTabPresenter<?, ?>> extends AbstractShe
         super.bind();
         shellDialogButton.prefWidthProperty().bind(vBox.widthProperty());
         tabDialogButton.prefWidthProperty().bind(vBox.widthProperty());
+        shellPopupButton.prefWidthProperty().bind(vBox.widthProperty());
+        tabPopupButton.prefWidthProperty().bind(vBox.widthProperty());
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        this.shellDialogButton.setOnAction(e -> getPresenter().handleDialogOpen(DialogScope.SHELL));
-        this.tabDialogButton.setOnAction(e -> getPresenter().handleDialogOpen(DialogScope.TAB));
+        this.shellDialogButton.setOnAction(e -> getPresenter().handleDialogOpen(OverlayScope.SHELL));
+        this.tabDialogButton.setOnAction(e -> getPresenter().handleDialogOpen(OverlayScope.TAB));
+        this.shellPopupButton.setOnAction(e -> getPresenter().handlePopupOpen(OverlayScope.SHELL));
+        this.tabPopupButton.setOnAction(e -> getPresenter().handlePopupOpen(OverlayScope.TAB));
     }
 
     @Override

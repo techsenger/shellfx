@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.dialogs;
+
+import com.techsenger.tabshell.material.button.ButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum DialogScope {
+public interface DialogButtonNames {
 
-    SHELL, TAB
+    ButtonName OK = new ButtonName();
+
+    ButtonName CANCEL = new ButtonName();
+
+    ButtonName APPLY = new ButtonName();
+
+    ButtonName YES = new ButtonName();
+
+    ButtonName NO = new ButtonName();
 }

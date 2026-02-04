@@ -16,18 +16,17 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.area.AreaFxView;
+import com.techsenger.tabshell.core.popup.PopupFxView;
 import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogFxView<P extends DialogPresenter<?, ?>> extends AreaFxView<P>, DialogView {
+public interface DialogFxView<P extends DialogPresenter<?, ?>> extends PopupFxView<P>, DialogView {
 
-    interface Composer extends AreaFxView.Composer, DialogComposer {
+    interface Composer extends PopupFxView.Composer, DialogComposer {
 
-        void remove();
     }
 
     @Override

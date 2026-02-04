@@ -16,13 +16,12 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.area.AreaComposer;
+import com.techsenger.tabshell.core.popup.PopupComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogComposer extends AreaComposer {
+public interface DialogComposer extends PopupComposer {
 
-    void remove();
 }

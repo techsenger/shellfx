@@ -22,8 +22,11 @@ import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupFxView;
+import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.material.Anchors;
 import java.util.List;
 
 /**
@@ -43,8 +46,8 @@ public abstract class AbstractShellTabFxView<P extends ShellTabPresenter<?, ?>>
         }
 
         @Override
-        public DialogScope getSupportedDialogScope() {
-            return DialogScope.TAB;
+        public OverlayScope getOverlayScope() {
+            return OverlayScope.TAB;
         }
 
         @Override
@@ -54,8 +57,8 @@ public abstract class AbstractShellTabFxView<P extends ShellTabPresenter<?, ?>>
 
         @Override
         public void addDialog(DialogFxView<?> dialog) {
-            var scope = dialog.getPresenter().getScope();
-            if (scope == getSupportedDialogScope()) {
+            var scope = dialog.getPresenter().getOverlayScope();
+            if (scope == getOverlayScope()) {
                 view.dialogManager.showDialog(dialog);
                 view.getModifiableChildren().add(dialog);
             } else {
@@ -65,14 +68,42 @@ public abstract class AbstractShellTabFxView<P extends ShellTabPresenter<?, ?>>
 
         @Override
         public void removeDialog(DialogFxView<?> dialog) {
-            var scope = dialog.getPresenter().getScope();
-            if (scope == getSupportedDialogScope()) {
+            var scope = dialog.getPresenter().getOverlayScope();
+            if (scope == getOverlayScope()) {
                 view.dialogManager.hideDialog(dialog);
                 view.getModifiableChildren().remove(dialog);
                 dialog.getPresenter().deinitializeTree();
             } else {
                 view.getShell().getComposer().removeDialog(dialog);
             }
+        }
+
+        @Override
+        public void addPopup(PopupFxView<?> popup, Anchors anchors) {
+            var scope = popup.getPresenter().getOverlayScope();
+            if (scope == getOverlayScope()) {
+                view.dialogManager.showPopup(popup, anchors);
+                view.getModifiableChildren().add(popup);
+            } else {
+                view.getShell().getComposer().addPopup(popup, anchors);
+            }
+        }
+
+        @Override
+        public void removePopup(PopupFxView<?> popup) {
+            var scope = popup.getPresenter().getOverlayScope();
+            if (scope == getOverlayScope()) {
+                view.dialogManager.hidePopup(popup);
+                view.getModifiableChildren().remove(popup);
+                popup.getPresenter().deinitializeTree();
+            } else {
+                view.getShell().getComposer().removePopup(popup);
+            }
+        }
+
+        @Override
+        public List<? extends PopupPort> getPopups() {
+            return view.dialogManager.getPopups().stream().map(v -> v.getPresenter().getPort()).toList();
         }
     }
 

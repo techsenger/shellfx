@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.popup.PopupManager;
-import javafx.collections.ObservableList;
+import com.techsenger.tabshell.core.area.AreaFxView;
+import javafx.scene.layout.Pane;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogManager extends PopupManager {
+public interface PopupFxView<P extends PopupPresenter<?, ?>> extends AreaFxView<P>, PopupView {
 
-    void showDialog(DialogFxView<?> dialogView);
+    interface Composer extends AreaFxView.Composer, PopupComposer {
 
-    void hideDialog(DialogFxView<?> dialogView);
+        void remove();
+    }
 
-    /**
-     * Returns an unmodifiable list of dialogs.
-     *
-     * @return the list of dialogs. If no dialogs are present, an empty list is returned.
-     */
-    ObservableList<DialogFxView<?>> getDialogs();
+    @Override
+    Pane getNode();
+
+    @Override
+    Composer getComposer();
 }

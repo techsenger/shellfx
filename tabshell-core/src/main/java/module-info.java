@@ -36,6 +36,7 @@ module com.techsenger.tabshell.core {
     exports com.techsenger.tabshell.core.history;
     exports com.techsenger.tabshell.core.menu;
     exports com.techsenger.tabshell.core.page;
+    exports com.techsenger.tabshell.core.popup;
     exports com.techsenger.tabshell.core.registry;
     exports com.techsenger.tabshell.core.settings;
     exports com.techsenger.tabshell.core.settings.xml;

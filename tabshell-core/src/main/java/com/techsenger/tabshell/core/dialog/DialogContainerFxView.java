@@ -16,21 +16,22 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.tabshell.core.popup.PopupContainerFxView;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogContainerFxView {
+public interface DialogContainerFxView extends PopupContainerFxView {
 
-    interface Composer extends DialogContainerComposer {
+    interface Composer extends PopupContainerFxView.Composer, DialogContainerComposer {
 
         /**
          * Adds the specified dialog component to the component tree.
          *
          * <p>If the dialog scope of the component does not match this container's scope, the dialog is forwarded to
-         * the appropriate container: {@link ShellTabComponent} forwards {@link DialogScope.SHELL} dialogs to
-         * {@link ShellComponent}, and {@link ShellComponent} forwards {@link DialogScope.TAB} dialogs to the selected
-         * {@link ShellTabComponent}.
+         * the appropriate container: {@link ShellTab} forwards {@link Scope.SHELL} dialogs to {@link Shell},
+         * and {@link Shell} forwards {@link Scope.TAB} dialogs to the selected {@link ShellTab}.
          *
          * @param dialog the dialog component to add
          */
@@ -40,9 +41,9 @@ public interface DialogContainerFxView {
          * Removes the specified dialog component from the component tree.
          *
          * <p>If the dialog scope of the component does not match this container's scope, the dialog is removed from
-         * the appropriate container: {@link ShellTabComponent} removes {@link DialogScope.SHELL} dialogs from the
-         * enclosing {@link ShellComponent}, and {@link ShellComponent} removes {@link DialogScope.TAB} dialogs from the
-         * currently selected {@link ShellTabComponent}.
+         * the appropriate container: {@link ShellTab} removes {@link Scope.SHELL} dialogs from the enclosing
+         * {@link Shell}, and {@link Shell} removes {@link Scope.TAB} dialogs from the currently selected
+         * {@link ShellTab}.
          *
          * @param dialog the dialog component to remove
          */

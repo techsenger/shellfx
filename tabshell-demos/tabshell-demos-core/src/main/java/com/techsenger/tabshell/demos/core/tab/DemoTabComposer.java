@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.tab;
 
-import com.techsenger.tabshell.core.dialog.DialogScope;
+import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.shelltab.ShellTabComposer;
 
 /**
@@ -25,5 +25,7 @@ import com.techsenger.tabshell.core.shelltab.ShellTabComposer;
  */
 public interface DemoTabComposer extends ShellTabComposer {
 
-    void addDemoDialog(DialogScope scope, boolean resizable);
+    void addDemoDialog(OverlayScope scope, boolean resizable);
+
+    void addDemoPopup(OverlayScope scope);
 }

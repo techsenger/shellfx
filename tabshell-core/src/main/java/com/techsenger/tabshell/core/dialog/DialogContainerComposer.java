@@ -16,23 +16,17 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.tabshell.core.popup.PopupContainerComposer;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogContainerComposer {
+public interface DialogContainerComposer extends PopupContainerComposer {
 
     /**
-     * Returns the dialog scope supported by this container.
-     *
-     * @return the supported dialog scope
-     */
-    DialogScope getSupportedDialogScope();
-
-    /**
-     * Returns an unmodifiable list of tabs. A new list instance is created on each call.
+     * Returns an unmodifiable list of dialogs. A new list instance is created on each call.
      *
      * @return
      */

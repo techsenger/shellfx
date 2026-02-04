@@ -25,9 +25,11 @@ import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.dialog.DialogScope;
 import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
+import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupFxView;
+import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.shelltab.ShellTabFxView;
@@ -35,6 +37,7 @@ import com.techsenger.tabshell.core.shelltab.ShellTabPort;
 import com.techsenger.tabshell.core.style.CssAnchor;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerFxViewUtils;
+import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.style.SizeConstants;
@@ -120,14 +123,14 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         }
 
         @Override
-        public DialogScope getSupportedDialogScope() {
-            return DialogScope.SHELL;
+        public OverlayScope getOverlayScope() {
+            return OverlayScope.SHELL;
         }
 
         @Override
         public void addDialog(DialogFxView<?> dialog) {
-            var scope = dialog.getPresenter().getScope();
-            if (scope == getSupportedDialogScope()) {
+            var scope = dialog.getPresenter().getOverlayScope();
+            if (scope == getOverlayScope()) {
                 view.dialogManager.showDialog(dialog);
                 view.getModifiableChildren().add(dialog);
             } else {
@@ -140,8 +143,8 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
         @Override
         public void removeDialog(DialogFxView<?> dialog) {
-            var scope = dialog.getPresenter().getScope();
-            if (scope == getSupportedDialogScope()) {
+            var scope = dialog.getPresenter().getOverlayScope();
+            if (scope == getOverlayScope()) {
                 view.dialogManager.hideDialog(dialog);
                 view.getModifiableChildren().remove(dialog);
                 dialog.getPresenter().deinitializeTree();
@@ -156,6 +159,40 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         @Override
         public List<? extends DialogPort> getDialogs() {
             return view.getDialogManager().getDialogs().stream().map(d -> d.getPresenter().getPort()).toList();
+        }
+
+        @Override
+        public void addPopup(PopupFxView<?> popup, Anchors anchors) {
+            var scope = popup.getPresenter().getOverlayScope();
+            if (scope == getOverlayScope()) {
+                view.dialogManager.showPopup(popup, anchors);
+                view.getModifiableChildren().add(popup);
+            } else {
+                var selectedTab = view.getSelectedTab();
+                if (selectedTab != null) {
+                    selectedTab.getComposer().addPopup(popup, anchors);
+                }
+            }
+        }
+
+        @Override
+        public void removePopup(PopupFxView<?> popup) {
+            var scope = popup.getPresenter().getOverlayScope();
+            if (scope == getOverlayScope()) {
+                view.dialogManager.hidePopup(popup);
+                view.getModifiableChildren().remove(popup);
+                popup.getPresenter().deinitializeTree();
+            } else {
+                var selectedTab = view.getSelectedTab();
+                if (selectedTab != null) {
+                    selectedTab.getComposer().removePopup(popup);
+                }
+            }
+        }
+
+        @Override
+        public List<? extends PopupPort> getPopups() {
+            return view.getDialogManager().getPopups().stream().map(d -> d.getPresenter().getPort()).toList();
         }
     }
 

@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.popup.PopupManager;
-import javafx.collections.ObservableList;
+import com.techsenger.tabshell.core.CloseablePort;
+import com.techsenger.tabshell.core.area.AreaPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogManager extends PopupManager {
-
-    void showDialog(DialogFxView<?> dialogView);
-
-    void hideDialog(DialogFxView<?> dialogView);
+public interface PopupPort extends AreaPort, CloseablePort {
 
     /**
-     * Returns an unmodifiable list of dialogs.
+     * Returns the scope of the popup.
      *
-     * @return the list of dialogs. If no dialogs are present, an empty list is returned.
+     * @return
      */
-    ObservableList<DialogFxView<?>> getDialogs();
+    OverlayScope getOverlayScope();
+
+    /**
+     * Returns {@code true} if the popup blocks interaction with underlying content (modal) and {@code false} otherwise.
+     *
+     * @return
+     */
+    boolean isModal();
 }

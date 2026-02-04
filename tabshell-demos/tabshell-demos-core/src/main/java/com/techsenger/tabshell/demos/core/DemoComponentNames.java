@@ -24,6 +24,8 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public interface DemoComponentNames {
 
+    ComponentName DEMO_POPUP = new ComponentName("DemoPopup");
+
     ComponentName DEMO_DIALOG = new ComponentName("DemoDialog");
 
     ComponentName DEMO_TAB = new ComponentName("DemoTab");

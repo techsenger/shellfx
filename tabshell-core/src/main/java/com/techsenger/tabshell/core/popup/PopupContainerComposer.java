@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
+package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.popup.PopupManager;
-import javafx.collections.ObservableList;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogManager extends PopupManager {
-
-    void showDialog(DialogFxView<?> dialogView);
-
-    void hideDialog(DialogFxView<?> dialogView);
+public interface PopupContainerComposer {
 
     /**
-     * Returns an unmodifiable list of dialogs.
+     * Returns the scope supported by this container.
      *
-     * @return the list of dialogs. If no dialogs are present, an empty list is returned.
+     * @return the supported scope
      */
-    ObservableList<DialogFxView<?>> getDialogs();
+    OverlayScope getOverlayScope();
+
+    /**
+     * Returns an unmodifiable list of ports. A new list instance is created on each call.
+     *
+     * @return
+     */
+    List<? extends PopupPort> getPopups();
 }

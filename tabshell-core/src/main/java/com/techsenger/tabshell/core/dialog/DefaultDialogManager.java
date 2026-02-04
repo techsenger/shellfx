@@ -16,12 +16,16 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import java.util.LinkedList;
+import com.techsenger.tabshell.core.popup.PopupFxView;
+import com.techsenger.tabshell.material.Anchors;
+import java.util.HashSet;
+import java.util.Set;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -36,13 +40,13 @@ public class DefaultDialogManager implements DialogManager {
      * To align window to the center of the StackPane its necessary to know window sizes. However, these sizes
      * will be available only after layout pulse. So, window aligner class that is used as a pulse listener.
      */
-    private static final class WindowAligner implements Runnable {
+    private static final class DialogAligner implements Runnable {
 
         private final StackPane stackPane;
 
         private final DialogFxView<?> dialogView;
 
-        WindowAligner(StackPane stackPane, DialogFxView<?> dialogView) {
+        DialogAligner(StackPane stackPane, DialogFxView<?> dialogView) {
             this.stackPane = stackPane;
             this.dialogView = dialogView;
         }
@@ -70,6 +74,8 @@ public class DefaultDialogManager implements DialogManager {
      */
     private final EventHandler<? super Event> eventConsumer = event -> event.consume();
 
+    private boolean eventConsumerAdded = false;
+
     private final StackPane stackPane;
 
     private final VBox mainPane;
@@ -79,7 +85,12 @@ public class DefaultDialogManager implements DialogManager {
     private final ObservableList<DialogFxView<?>> dialogs =
             FXCollections.unmodifiableObservableList(modifiableDialogs);
 
-    private final LinkedList<Pane> bgPanes = new LinkedList<>();
+    private final ObservableList<PopupFxView<?>> modifiablePopups = FXCollections.observableArrayList();
+
+    private final ObservableList<PopupFxView<?>> popups =
+            FXCollections.unmodifiableObservableList(modifiablePopups);
+
+    private final Set<PopupFxView<?>> allModalComponents = new HashSet<>();
 
     public DefaultDialogManager(StackPane stackPane, VBox mainPane) {
         this.stackPane = stackPane;
@@ -88,37 +99,25 @@ public class DefaultDialogManager implements DialogManager {
 
     @Override
     public void showDialog(DialogFxView<?> dialogView) {
-        if (modifiableDialogs.isEmpty()) {
-            //event consumer added only once for all dialogs
-            mainPane.addEventFilter(KeyEvent.ANY, eventConsumer);
-        } else {
+        if (!modifiableDialogs.isEmpty()) {
             var last = modifiableDialogs.getLast();
-            last.setActive(true);
+            last.setActive(false);
         }
-        var window = dialogView.getNode();
-        //for every dialog window a bg pane is created
-        var bgPane = new Pane(window);
-        bgPane.setMouseTransparent(false);
-        stackPane.getChildren().add(bgPane);
-        modifiableDialogs.addLast(dialogView);
-        bgPanes.addLast(bgPane);
-        var aligner = new WindowAligner(stackPane, dialogView);
+        modifiableDialogs.add(dialogView);
+        doShow(dialogView, null);
+        dialogView.setActive(true);
+        var aligner = new DialogAligner(stackPane, dialogView);
         stackPane.getScene().addPostLayoutPulseListener(aligner);
     }
 
     @Override
     public void hideDialog(DialogFxView<?> dialogView) {
-        var dialog = modifiableDialogs.getLast();
-        if (dialog == null) {
-            return;
-        }
-        var bgPane = bgPanes.pollLast();
-        stackPane.getChildren().remove(bgPane);
-        if (modifiableDialogs.isEmpty()) {
-            mainPane.removeEventFilter(KeyEvent.ANY, eventConsumer);
-        } else {
-            var last = modifiableDialogs.getLast();
-            last.setActive(false);
+        if (modifiableDialogs.remove(dialogView)) {
+            doHide(dialogView);
+            if (!modifiableDialogs.isEmpty()) {
+                var last = modifiableDialogs.getLast();
+                last.setActive(true);
+            }
         }
     }
 
@@ -127,7 +126,65 @@ public class DefaultDialogManager implements DialogManager {
         return dialogs;
     }
 
+    @Override
+    public void showPopup(PopupFxView<?> view, Anchors anchors) {
+        modifiablePopups.add(view);
+        doShow(view, anchors);
+    }
+
+    @Override
+    public void hidePopup(PopupFxView<?> view) {
+        if (modifiablePopups.remove(view)) {
+            doHide(view);
+        }
+    }
+
+    @Override
+    public ObservableList<PopupFxView<?>> getPopups() {
+        return popups;
+    }
+
     protected int getDialogCount() {
         return modifiableDialogs.size();
+    }
+
+    private void doShow(PopupFxView<?> view, Anchors anchors) {
+        var node = view.getNode();
+        // node.setMouseTransparent(false);
+        //for every node a bg pane is created
+        Pane bgPane;
+        if (anchors != null) {
+            bgPane = new AnchorPane(node);
+            AnchorPane.setTopAnchor(node, anchors.getTop());
+            AnchorPane.setRightAnchor(node, anchors.getRight());
+            AnchorPane.setBottomAnchor(node, anchors.getBottom());
+            AnchorPane.setLeftAnchor(node, anchors.getLeft());
+            // Allow clicks through empty areas; false = clicks pass through empty
+            // areas to underlying controls, true = entire container blocks clicks
+            bgPane.setPickOnBounds(view.getPresenter().isModal());
+        } else {
+            bgPane = new Pane(node);
+        }
+        bgPane.setMouseTransparent(false);
+        if (view.getPresenter().isModal()) {
+            allModalComponents.add(view);
+            if (!eventConsumerAdded) {
+                //event consumer added only once
+                // mainPane.addEventFilter(KeyEvent.ANY, eventConsumer);
+                eventConsumerAdded = true;
+            }
+        }
+        stackPane.getChildren().add(bgPane);
+    }
+
+    private void doHide(PopupFxView<?> view) {
+        stackPane.getChildren().remove(view.getNode().getParent());
+        if (view.getPresenter().isModal()) {
+            allModalComponents.remove(view);
+        }
+        if (allModalComponents.isEmpty()) {
+            mainPane.removeEventFilter(KeyEvent.ANY, eventConsumer);
+            eventConsumerAdded = false;
+        }
     }
 }

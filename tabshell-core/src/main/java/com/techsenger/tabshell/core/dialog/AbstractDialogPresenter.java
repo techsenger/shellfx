@@ -16,20 +16,17 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.CloseCheckResult;
-import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.CloseRequestResult;
-import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import java.util.function.Consumer;
+import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
+import com.techsenger.tabshell.core.popup.OverlayScope;
 
 /**
  *
  * @author Pavel Castornii
  */
 public abstract class AbstractDialogPresenter<V extends DialogView, C extends DialogComposer>
-        extends AbstractAreaPresenter<V, C> implements DialogPresenter<V, C> {
+        extends AbstractPopupPresenter<V, C> implements DialogPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements DialogPort {
+    protected class Port extends AbstractPopupPresenter.Port implements DialogPort {
 
         private final AbstractDialogPresenter<?, ?> presenter = AbstractDialogPresenter.this;
 
@@ -38,33 +35,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
         }
 
         @Override
-        public DialogScope getScope() {
-            return presenter.getScope();
-        }
-
-        @Override
         public boolean isActive() {
             return presenter.getView().isActive();
-        }
-
-        @Override
-        public void close() {
-            presenter.close();
-        }
-
-        @Override
-        public void requestClose(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {
-            presenter.requestClose(maxAttempts, resultConsumer);
-        }
-
-        @Override
-        public CloseCheckResult isReadyToClose() {
-            return presenter.isReadyToClose();
-        }
-
-        @Override
-        public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
-            presenter.prepareToClose(resultCallback);
         }
 
         @Override
@@ -78,27 +50,14 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
         }
     }
 
-    private final DialogScope scope;
-
     /**
      * If it is necessary to close a dialog then dialog helper should be used. Default implementation uses window
      * closer set from view.
      */
     private Runnable closeAction = () -> requestClose();
 
-    public AbstractDialogPresenter(V view, DialogScope scope) {
-        super(view);
-        this.scope = scope;
-    }
-
-    @Override
-    public DialogScope getScope() {
-        return scope;
-    }
-
-    @Override
-    public Runnable getCloseAction() {
-        return closeAction;
+    public AbstractDialogPresenter(V view, OverlayScope scope) {
+        super(view, scope, true);
     }
 
     @Override
@@ -106,9 +65,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
         return (DialogPort) super.getPort();
     }
 
-    @Override
-    public void close() {
-        getComposer().remove();
+    protected Runnable getCloseAction() {
+        return closeAction;
     }
 
     protected void setCloseAction(Runnable closeAction) {
