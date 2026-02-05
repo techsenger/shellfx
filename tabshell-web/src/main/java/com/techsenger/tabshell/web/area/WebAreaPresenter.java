@@ -54,7 +54,6 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
                 toolBar.setUrl(url);
                 toolBar.setBackDisable(newIndex == 0);
                 toolBar.setForwardDisable(false);
-                loadFavicon(url);
             }
         }
 
@@ -68,7 +67,6 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
                 toolBar.setUrl(url);
                 toolBar.setBackDisable(false);
                 toolBar.setForwardDisable(newIndex + 1 == getView().getHistorySize());
-                loadFavicon(url);
             }
         }
 
@@ -96,7 +94,6 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
                         toolBar.setBackDisable(false);
                     }
                     getView().load(urlStr);
-                    loadFavicon(url);
                 } else {
                     setDefaultTitleAndIcon();
                 }
@@ -106,27 +103,6 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         @Override
         public String getLocation() {
             return presenter.location;
-        }
-
-        private void loadFavicon(String url) {
-            try {
-                loadFavicon(new URI(url).toURL());
-            } catch (Exception ex) {
-                logger.error("Error loading favicon", ex);
-            }
-        }
-
-        private void loadFavicon(URL url) {
-            Thread.ofVirtual().start(() -> {
-                var image = FaviconLoader.loadFavicon(url, 32);
-                Icon<?> icon = null;
-                if (image != null) {
-                    icon = new ImageIcon(image);
-                } else {
-                    icon = WebIcons.WEB_BROWSER;
-                }
-                presenter.browser.get().setIcon(icon);
-            });
         }
     }
 
@@ -178,6 +154,33 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
             browser.setTitle(title);
             browser.setTooltip(title);
         }
+    }
+
+    protected void handleLocationChanged(String location) {
+        if (location != null && !location.isBlank()) {
+            loadFavicon(location);
+        }
+    }
+
+    private void loadFavicon(String url) {
+        try {
+            loadFavicon(new URI(url).toURL());
+        } catch (Exception ex) {
+            logger.error("Error loading favicon", ex);
+        }
+    }
+
+    private void loadFavicon(URL url) {
+        Thread.ofVirtual().start(() -> {
+            var image = FaviconLoader.loadFavicon(url, 32);
+            Icon<?> icon = null;
+            if (image != null) {
+                icon = new ImageIcon(image);
+            } else {
+                icon = WebIcons.WEB_BROWSER;
+            }
+            browser.get().setIcon(icon);
+        });
     }
 
     private void setDefaultTitleAndIcon() {

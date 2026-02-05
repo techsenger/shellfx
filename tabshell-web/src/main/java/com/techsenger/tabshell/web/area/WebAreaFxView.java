@@ -100,5 +100,8 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
         super.addListeners();
         this.webView.getEngine().titleProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().handlePageTitleChanged(newV));
+        this.webView.getEngine().locationProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().handleLocationChanged(newV));
+
     }
 }
