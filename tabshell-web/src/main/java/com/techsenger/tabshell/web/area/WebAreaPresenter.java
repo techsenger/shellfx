@@ -27,7 +27,8 @@ import com.techsenger.tabshell.web.model.UrlUtils;
 import com.techsenger.tabshell.web.style.WebIcons;
 import com.techsenger.tabshell.web.toolbar.WebToolBarPort;
 import java.net.URI;
-import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,27 +47,17 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
 
         @Override
         public void navigateBack() {
-            var newIndex = getView().getHistoryIndex();
-            if (newIndex > 0) {
-                newIndex--;
-                var toolBar = presenter.toolBar.get();
-                var url = getView().loadHistory(newIndex);
-                toolBar.setUrl(url);
-                toolBar.setBackDisable(newIndex == 0);
-                toolBar.setForwardDisable(false);
+            var newIndex = getView().getHistoryIndex() - 1;
+            if (newIndex >= 0) {
+                getView().loadHistory(newIndex);
             }
         }
 
         @Override
         public void navigateForward() {
-            var newIndex = getView().getHistoryIndex();
-            if (newIndex + 1 < getView().getHistorySize()) {
-                newIndex++;
-                var url = getView().loadHistory(newIndex);
-                var toolBar = presenter.toolBar.get();
-                toolBar.setUrl(url);
-                toolBar.setBackDisable(false);
-                toolBar.setForwardDisable(newIndex + 1 == getView().getHistorySize());
+            var newIndex = getView().getHistoryIndex() + 1;
+            if (newIndex < getView().getHistorySize()) {
+                getView().loadHistory(newIndex);
             }
         }
 
@@ -79,21 +70,11 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         public void load(String urlStr) {
             if (urlStr != null) {
                 var url = UrlUtils.normalize(urlStr);
-                if (url != null && UrlUtils.isValid(url)) {
-                    urlStr = url.toString();
-                } else {
+                if (url == null || !UrlUtils.isValid(url)) {
                     url = UrlUtils.getSearch(urlStr);
                 }
-                var toolBar = presenter.toolBar.get();
                 if (url != null) {
-                    urlStr = url.toString();
-                    presenter.location = urlStr;
-                    toolBar.setUrl(urlStr);
-                    toolBar.setReloadDisable(false);
-                    if (getView().getHistorySize() != 0) {
-                        toolBar.setBackDisable(false);
-                    }
-                    getView().load(urlStr);
+                    getView().load(url.toString());
                 } else {
                     setDefaultTitleAndIcon();
                 }
@@ -102,11 +83,9 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
 
         @Override
         public String getLocation() {
-            return presenter.location;
+            return presenter.getView().getLocation();
         }
     }
-
-    private String location;
 
     private String pageTitle;
 
@@ -156,30 +135,40 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         }
     }
 
-    protected void handleLocationChanged(String location) {
-        if (location != null && !location.isBlank()) {
-            loadFavicon(location);
+    protected void handleLocationChanged(String url) {
+        var toolBar = this.toolBar.get();
+        String decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8);
+        toolBar.setUrl(decodedUrl);
+        if (url != null && !url.isBlank() && !url.equals("about:blank")) {
+            loadFavicon(url);
+            toolBar.setReloadDisable(false);
+        } else {
+            toolBar.setReloadDisable(true);
         }
+    }
+
+    protected void handleHistoryChanged() {
+        var toolBar = this.toolBar.get();
+        toolBar.setBackDisable(getView().getHistoryIndex() == 0);
+        toolBar.setForwardDisable(getView().getHistoryIndex() + 1 == getView().getHistorySize());
     }
 
     private void loadFavicon(String url) {
-        try {
-            loadFavicon(new URI(url).toURL());
-        } catch (Exception ex) {
-            logger.error("Error loading favicon", ex);
-        }
-    }
-
-    private void loadFavicon(URL url) {
         Thread.ofVirtual().start(() -> {
-            var image = FaviconLoader.loadFavicon(url, 32);
-            Icon<?> icon = null;
-            if (image != null) {
-                icon = new ImageIcon(image);
-            } else {
-                icon = WebIcons.WEB_BROWSER;
+            try {
+                var image = FaviconLoader.loadFavicon(new URI(url).toURL(), 32);
+                if (getView().getLocation().equals(url)) { // it hasn't changed
+                    Icon<?> icon = null;
+                    if (image != null) {
+                        icon = new ImageIcon(image);
+                    } else {
+                        icon = WebIcons.WEB_BROWSER;
+                    }
+                    browser.get().setIcon(icon);
+                }
+            } catch (Exception ex) {
+                logger.error("Error loading favicon", ex);
             }
-            browser.get().setIcon(icon);
         });
     }
 

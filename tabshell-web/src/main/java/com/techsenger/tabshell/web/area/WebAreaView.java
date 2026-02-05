@@ -26,6 +26,8 @@ public interface WebAreaView extends AreaView {
 
     String getPageTitle();
 
+    String getLocation();
+
     void load(String url);
 
     void reload();
@@ -36,5 +38,5 @@ public interface WebAreaView extends AreaView {
 
     int getHistorySize();
 
-    String loadHistory(int index);
+    void loadHistory(int index);
 }

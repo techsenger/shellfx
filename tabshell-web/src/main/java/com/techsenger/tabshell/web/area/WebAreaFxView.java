@@ -17,9 +17,11 @@
 package com.techsenger.tabshell.web.area;
 
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
+import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 
 /**
@@ -48,6 +50,11 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
     }
 
     @Override
+    public String getLocation() {
+        return this.webView.getEngine().getLocation();
+    }
+
+    @Override
     public void load(String url) {
         this.webView.getEngine().load(url);
     }
@@ -73,15 +80,13 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
     }
 
     @Override
-    public String loadHistory(int index) {
+    public void loadHistory(int index) {
         var webViewHistory = webView.getEngine().getHistory();
         if (index != webViewHistory.getCurrentIndex()) {
             int currentIndex = webViewHistory.getCurrentIndex();
             int offset = index - currentIndex;
             webViewHistory.go(offset);
-            return webViewHistory.getEntries().get(index).getUrl();
-        } else {
-            return null;
+            webViewHistory.getEntries().get(index).getUrl();
         }
     }
 
@@ -102,6 +107,14 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
                 .addListener((ov, oldV, newV) -> getPresenter().handlePageTitleChanged(newV));
         this.webView.getEngine().locationProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().handleLocationChanged(newV));
-
+        var history = this.webView.getEngine().getHistory();
+        history.currentIndexProperty().addListener((obs, oldValue, newValue) -> {
+            getPresenter().handleHistoryChanged();
+        });
+        history.getEntries().addListener((ListChangeListener<WebHistory.Entry>) c -> {
+            if (history.getEntries().size() == 1) { // index is still 0
+                getPresenter().handleHistoryChanged();
+            }
+        });
     }
 }

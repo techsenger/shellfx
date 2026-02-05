@@ -34,17 +34,17 @@ public class WebToolBarPresenter<V extends WebToolBarView, C extends AreaCompose
 
         @Override
         public void setBackDisable(boolean value) {
-            getView().setBackDisable(value);
+            getView().setBackDisabled(value);
         }
 
         @Override
         public void setForwardDisable(boolean value) {
-            getView().setForwardDisable(value);
+            getView().setForwardDisabled(value);
         }
 
         @Override
         public void setReloadDisable(boolean value) {
-            getView().setReloadDisable(value);
+            getView().setReloadDisabled(value);
         }
 
         @Override

@@ -24,17 +24,17 @@ import com.techsenger.tabshell.core.area.AreaView;
  */
 public interface WebToolBarView extends AreaView {
 
-    boolean isBackDisable();
+    boolean isBackDisabled();
 
-    void setBackDisable(boolean value);
+    void setBackDisabled(boolean value);
 
-    boolean isForwardDisable();
+    boolean isForwardDisabled();
 
-    void setForwardDisable(boolean value);
+    void setForwardDisabled(boolean value);
 
-    boolean isReloadDisable();
+    boolean isReloadDisabled();
 
-    void setReloadDisable(boolean value);
+    void setReloadDisabled(boolean value);
 
     String getUrl();
 

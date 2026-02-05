@@ -62,32 +62,32 @@ public class WebToolBarFxView<P extends WebToolBarPresenter<?, ?>> extends Abstr
     }
 
     @Override
-    public boolean isBackDisable() {
+    public boolean isBackDisabled() {
         return backButton.isDisable();
     }
 
     @Override
-    public void setBackDisable(boolean value) {
+    public void setBackDisabled(boolean value) {
         this.backButton.setDisable(value);
     }
 
     @Override
-    public boolean isForwardDisable() {
+    public boolean isForwardDisabled() {
         return forwardButton.isDisable();
     }
 
     @Override
-    public void setForwardDisable(boolean value) {
+    public void setForwardDisabled(boolean value) {
         this.forwardButton.setDisable(value);
     }
 
     @Override
-    public boolean isReloadDisable() {
+    public boolean isReloadDisabled() {
         return reloadButton.isDisable();
     }
 
     @Override
-    public void setReloadDisable(boolean value) {
+    public void setReloadDisabled(boolean value) {
         this.reloadButton.setDisable(value);
     }
 
@@ -113,7 +113,7 @@ public class WebToolBarFxView<P extends WebToolBarPresenter<?, ?>> extends Abstr
         reloadButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
         reloadButton.setTooltip(new Tooltip("Reload"));
         reloadButton.setDisable(true);
-
+        
         HBox.setHgrow(urlTextField, Priority.ALWAYS);
         toolBar.getStyleClass().add(StyleClasses.BLEND);
     }
