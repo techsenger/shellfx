@@ -316,6 +316,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(CoreComponentNames.SHELL);
+        return new Descriptor(CoreComponents.SHELL);
     }
 }

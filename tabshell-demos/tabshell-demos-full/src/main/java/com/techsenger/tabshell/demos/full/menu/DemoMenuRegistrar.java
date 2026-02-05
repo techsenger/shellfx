@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demos.full.menu;
 
-import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
@@ -35,6 +34,7 @@ import com.techsenger.tabshell.web.WebBrowserTabPresenter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import com.techsenger.tabshell.core.CoreComponents;
 
 /**
  *
@@ -63,14 +63,14 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
         ControlFactory<NamedMenu> f = (v) -> {
             return new NamedMenu(DemoMenuNames.DEMO, "_Demo", 1000);
         };
-        addRegistration(getRegistry().registerMenu(CoreComponentNames.SHELL, null, f));
+        addRegistration(getRegistry().registerMenu(CoreComponents.SHELL, null, f));
     }
 
     protected void registerDefaultGroup() {
         ControlFactory<NamedMenuGroup> f = (v) -> {
             return new NamedMenuGroup(DemoMenuNames.DEFAULT, 100);
         };
-        addRegistration(getRegistry().registerMenuGroup(CoreComponentNames.SHELL, DemoMenuNames.DEMO, f));
+        addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, DemoMenuNames.DEMO, f));
     }
 
 //    protected void registerTextEditorItem() {
@@ -141,7 +141,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoMenuNames.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
     }
 //
 //    protected void registerDialogsItem() {
@@ -173,7 +173,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoMenuNames.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
     }
 
 //    protected void registerJfxTabDockItem() {
@@ -215,6 +215,6 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoMenuNames.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
     }
 }

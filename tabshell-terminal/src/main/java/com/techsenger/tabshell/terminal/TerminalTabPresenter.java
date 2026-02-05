@@ -100,7 +100,7 @@ public class TerminalTabPresenter<V extends TerminalTabView, C extends TerminalT
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(TerminalComponentNames.TERMINAL_TAB);
+        return new Descriptor(TerminalComponents.TERMINAL_TAB);
     }
 
     @Override

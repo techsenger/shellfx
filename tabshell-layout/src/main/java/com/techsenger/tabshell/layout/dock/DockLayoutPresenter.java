@@ -19,7 +19,7 @@ package com.techsenger.tabshell.layout.dock;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
+import com.techsenger.tabshell.layout.LayoutComponents;
 
 /**
  *
@@ -54,6 +54,6 @@ public class DockLayoutPresenter<V extends DockLayoutView, C extends DockLayoutC
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponentNames.DOCK_LAYOUT);
+        return new Descriptor(LayoutComponents.DOCK_LAYOUT);
     }
 }

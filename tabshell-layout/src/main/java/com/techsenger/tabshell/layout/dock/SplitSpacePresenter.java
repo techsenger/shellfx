@@ -19,7 +19,7 @@ package com.techsenger.tabshell.layout.dock;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
+import com.techsenger.tabshell.layout.LayoutComponents;
 import java.util.List;
 import javafx.geometry.Orientation;
 
@@ -67,6 +67,6 @@ public class SplitSpacePresenter<V extends SplitSpaceView, C extends AreaCompose
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponentNames.SPLIT_SPACE);
+        return new Descriptor(LayoutComponents.SPLIT_SPACE);
     }
 }

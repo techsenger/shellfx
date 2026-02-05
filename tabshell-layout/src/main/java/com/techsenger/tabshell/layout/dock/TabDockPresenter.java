@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
+import com.techsenger.tabshell.layout.LayoutComponents;
 import com.techsenger.tabshell.layout.tabhost.TabHostComposer;
 import com.techsenger.tabshell.layout.tabhost.TabHostPresenter;
 
@@ -66,6 +66,6 @@ public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponentNames.TAB_DOCK);
+        return new Descriptor(LayoutComponents.TAB_DOCK);
     }
 }

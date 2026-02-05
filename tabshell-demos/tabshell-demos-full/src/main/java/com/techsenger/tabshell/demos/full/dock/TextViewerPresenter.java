@@ -20,7 +20,7 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.core.area.AreaView;
-import com.techsenger.tabshell.demos.full.DemoComponentNames;
+import com.techsenger.tabshell.demos.full.DemoComponents;
 
 /**
  *
@@ -34,7 +34,7 @@ public class TextViewerPresenter extends AbstractAreaPresenter<AreaView, AreaCom
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponentNames.DEMO_TEXT_VIEWER);
+        return new Descriptor(DemoComponents.DEMO_TEXT_VIEWER);
     }
 
 }

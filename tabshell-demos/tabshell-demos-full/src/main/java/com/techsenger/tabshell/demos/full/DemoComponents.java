@@ -24,7 +24,7 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface DemoComponentNames {
+public interface DemoComponents {
 
     ComponentName DEMO_EDITOR_TAB = new ComponentName("DemoEditorTab");
 

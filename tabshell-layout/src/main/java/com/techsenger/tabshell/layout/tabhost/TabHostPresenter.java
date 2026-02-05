@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.tab.TabContainerComposer;
 import com.techsenger.tabshell.core.tab.TabContainerPresenter;
 import com.techsenger.tabshell.core.tab.TabPort;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
+import com.techsenger.tabshell.layout.LayoutComponents;
 
 /**
  *
@@ -41,7 +41,7 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponentNames.TAB_HOST);
+        return new Descriptor(LayoutComponents.TAB_HOST);
     }
 
     @Override

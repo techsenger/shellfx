@@ -19,7 +19,7 @@ package com.techsenger.tabshell.web.toolbar;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.web.WebComponentNames;
+import com.techsenger.tabshell.web.WebComponents;
 import com.techsenger.tabshell.web.area.WebAreaPort;
 import java.util.function.Supplier;
 
@@ -67,7 +67,7 @@ public class WebToolBarPresenter<V extends WebToolBarView, C extends AreaCompose
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(WebComponentNames.WEB_TOOL_BAR);
+        return new Descriptor(WebComponents.WEB_TOOL_BAR);
     }
 
     protected void handleBackAction() {

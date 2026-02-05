@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout;
+package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.ComponentName;
 
@@ -22,19 +22,8 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface LayoutComponentNames {
+public interface CoreComponents {
 
-    ComponentName TAB_HOST = new ComponentName("TabHost");
+    ComponentName SHELL = new ComponentName("Shell");
 
-    ComponentName DOCK_LAYOUT = new ComponentName("DockLayout");
-
-    ComponentName SPLIT_SPACE = new ComponentName("SplitSpace");
-
-    ComponentName TAB_DOCK = new ComponentName("TabDock");
-
-    ComponentName SIDE_BAR = new ComponentName("SideBar");
-
-    ComponentName TAB_POPUP = new ComponentName("TabPopup");
-
-    ComponentName PLACEHOLDER = new ComponentName("Placeholder");
 }

@@ -23,7 +23,6 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.shared.web.WebBrowser;
-import com.techsenger.tabshell.terminal.TerminalComponentNames;
 import com.techsenger.tabshell.terminal.TerminalPaletteType;
 import com.techsenger.tabshell.terminal.TerminalTabPort;
 import java.net.URI;
@@ -33,6 +32,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.techsenger.tabshell.terminal.TerminalComponents;
 
 /**
  *
@@ -133,7 +133,7 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(TerminalComponentNames.TERMINAL_AREA);
+        return new Descriptor(TerminalComponents.TERMINAL_AREA);
     }
 
     @Override

@@ -21,8 +21,8 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.core.tab.TabComposer;
 import com.techsenger.tabshell.core.tab.TabView;
-import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import java.util.function.Consumer;
+import com.techsenger.tabshell.demos.full.DemoComponents;
 
 /**
  *
@@ -49,7 +49,7 @@ public class DockableTabPresenter extends AbstractTabPresenter<TabView, TabCompo
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponentNames.DEMO_DOCKABLE_TAB);
+        return new Descriptor(DemoComponents.DEMO_DOCKABLE_TAB);
     }
 
     @Override

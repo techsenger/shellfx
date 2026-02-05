@@ -22,8 +22,8 @@ import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.popup.PopupComposer;
-import com.techsenger.tabshell.demos.core.DemoComponentNames;
 import java.util.function.Consumer;
+import com.techsenger.tabshell.demos.core.DemoComponents;
 
 /**
  *
@@ -37,7 +37,7 @@ public class DemoPopupPresenter extends AbstractPopupPresenter<DemoPopupView, Po
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponentNames.DEMO_POPUP);
+        return new Descriptor(DemoComponents.DEMO_POPUP);
     }
 
     @Override

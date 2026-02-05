@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.core.shelltab.ShellTabPort;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.ImageIcon;
-import com.techsenger.tabshell.web.WebComponentNames;
+import com.techsenger.tabshell.web.WebComponents;
 import com.techsenger.tabshell.web.model.UrlUtils;
 import com.techsenger.tabshell.web.style.WebIcons;
 import com.techsenger.tabshell.web.toolbar.WebToolBarPort;
@@ -118,7 +118,7 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(WebComponentNames.WEB_AREA);
+        return new Descriptor(WebComponents.WEB_AREA);
     }
 
     @Override

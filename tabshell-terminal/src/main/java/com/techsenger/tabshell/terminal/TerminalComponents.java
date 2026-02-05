@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.web;
+package com.techsenger.tabshell.terminal;
 
 import com.techsenger.patternfx.core.ComponentName;
 
@@ -22,11 +22,13 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface WebComponentNames {
+public interface TerminalComponents {
 
-    ComponentName WEB_BROWSER_TAB = new ComponentName("WebBrowserTab");
+    ComponentName TERMINAL_TAB = new ComponentName("TerminalTab");
 
-    ComponentName WEB_TOOL_BAR = new ComponentName("WebToolBar");
+    ComponentName TERMINAL_TOOL_BAR = new ComponentName("TerminalToolBar");
 
-    ComponentName WEB_AREA = new ComponentName("WebArea");
+    ComponentName TERMINAL_AREA = new ComponentName("TerminalArea");
+
+    ComponentName FIND_PANEL = new ComponentName("TerminalFindPanel");
 }

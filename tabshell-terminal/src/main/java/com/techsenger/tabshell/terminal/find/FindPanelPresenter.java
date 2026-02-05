@@ -29,7 +29,7 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.shared.find.AbstractFullFindPanelPresenter;
 import com.techsenger.tabshell.shared.find.FullFindPanelHistory;
-import com.techsenger.tabshell.terminal.TerminalComponentNames;
+import com.techsenger.tabshell.terminal.TerminalComponents;
 
 /**
  *
@@ -71,7 +71,7 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(TerminalComponentNames.FIND_PANEL);
+        return new Descriptor(TerminalComponents.FIND_PANEL);
     }
 
     @Override

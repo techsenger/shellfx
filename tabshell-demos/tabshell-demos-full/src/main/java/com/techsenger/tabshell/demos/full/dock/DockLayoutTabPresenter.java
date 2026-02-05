@@ -24,8 +24,8 @@ import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabPresenter;
 import com.techsenger.tabshell.core.shelltab.ShellTabComposer;
 import com.techsenger.tabshell.core.shelltab.ShellTabView;
-import com.techsenger.tabshell.demos.full.DemoComponentNames;
 import java.util.function.Consumer;
+import com.techsenger.tabshell.demos.full.DemoComponents;
 
 /**
  *
@@ -63,6 +63,6 @@ public class DockLayoutTabPresenter extends AbstractShellTabPresenter<ShellTabVi
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponentNames.DEMO_DOCK_LAYOUT_TAB);
+        return new Descriptor(DemoComponents.DEMO_DOCK_LAYOUT_TAB);
     }
 }

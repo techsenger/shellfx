@@ -22,8 +22,8 @@ import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.core.popup.OverlayScope;
-import com.techsenger.tabshell.demos.core.DemoComponentNames;
 import java.util.function.Consumer;
+import com.techsenger.tabshell.demos.core.DemoComponents;
 
 /**
  *
@@ -47,7 +47,7 @@ public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView,
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponentNames.DEMO_DIALOG);
+        return new Descriptor(DemoComponents.DEMO_DIALOG);
     }
 
     @Override

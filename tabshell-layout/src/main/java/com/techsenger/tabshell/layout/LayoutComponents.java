@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.terminal;
+package com.techsenger.tabshell.layout;
 
 import com.techsenger.patternfx.core.ComponentName;
 
@@ -22,13 +22,19 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface TerminalComponentNames {
+public interface LayoutComponents {
 
-    ComponentName TERMINAL_TAB = new ComponentName("TerminalTab");
+    ComponentName TAB_HOST = new ComponentName("TabHost");
 
-    ComponentName TERMINAL_TOOL_BAR = new ComponentName("TerminalToolBar");
+    ComponentName DOCK_LAYOUT = new ComponentName("DockLayout");
 
-    ComponentName TERMINAL_AREA = new ComponentName("TerminalArea");
+    ComponentName SPLIT_SPACE = new ComponentName("SplitSpace");
 
-    ComponentName FIND_PANEL = new ComponentName("TerminalFindPanel");
+    ComponentName TAB_DOCK = new ComponentName("TabDock");
+
+    ComponentName SIDE_BAR = new ComponentName("SideBar");
+
+    ComponentName TAB_POPUP = new ComponentName("TabPopup");
+
+    ComponentName PLACEHOLDER = new ComponentName("Placeholder");
 }

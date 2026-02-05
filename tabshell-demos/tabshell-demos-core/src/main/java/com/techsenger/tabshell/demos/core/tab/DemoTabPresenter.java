@@ -22,10 +22,10 @@ import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabPresenter;
-import com.techsenger.tabshell.demos.core.DemoComponentNames;
 import com.techsenger.tabshell.demos.core.dialog.DemoResultButtons;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuNames;
 import java.util.function.Consumer;
+import com.techsenger.tabshell.demos.core.DemoComponents;
 
 /**
  *
@@ -75,7 +75,7 @@ public class DemoTabPresenter<V extends DemoTabView, C extends DemoTabComposer>
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponentNames.DEMO_TAB);
+        return new Descriptor(DemoComponents.DEMO_TAB);
     }
 
     protected void handleDialogOpen(OverlayScope scope) {

@@ -18,7 +18,7 @@ package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
+import com.techsenger.tabshell.layout.LayoutComponents;
 import java.util.List;
 import javafx.geometry.Side;
 
@@ -66,6 +66,6 @@ public class SideBarPresenter<V extends SideBarView, C extends SideBarComposer> 
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponentNames.SIDE_BAR);
+        return new Descriptor(LayoutComponents.SIDE_BAR);
     }
 }

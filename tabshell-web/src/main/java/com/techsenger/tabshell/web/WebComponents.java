@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.web;
 
 import com.techsenger.patternfx.core.ComponentName;
 
@@ -22,8 +22,11 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface CoreComponentNames {
+public interface WebComponents {
 
-    ComponentName SHELL = new ComponentName("Shell");
+    ComponentName WEB_BROWSER_TAB = new ComponentName("WebBrowserTab");
 
+    ComponentName WEB_TOOL_BAR = new ComponentName("WebToolBar");
+
+    ComponentName WEB_AREA = new ComponentName("WebArea");
 }

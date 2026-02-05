@@ -20,11 +20,11 @@ import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.terminal.TerminalComponentNames;
 import com.techsenger.tabshell.terminal.TerminalPaletteType;
 import com.techsenger.tabshell.terminal.area.TerminalAreaPort;
 import java.util.Arrays;
 import java.util.function.Supplier;
+import com.techsenger.tabshell.terminal.TerminalComponents;
 
 /**
  *
@@ -117,7 +117,7 @@ public class TerminalToolBarPresenter<V extends TerminalToolBarView, C extends A
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(TerminalComponentNames.TERMINAL_TOOL_BAR);
+        return new Descriptor(TerminalComponents.TERMINAL_TOOL_BAR);
     }
 
     @Override

@@ -21,7 +21,7 @@ import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.tab.TabPort;
-import com.techsenger.tabshell.layout.LayoutComponentNames;
+import com.techsenger.tabshell.layout.LayoutComponents;
 import java.util.List;
 import javafx.geometry.Side;
 
@@ -112,7 +112,7 @@ public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupCompose
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponentNames.TAB_POPUP);
+        return new Descriptor(LayoutComponents.TAB_POPUP);
     }
 
     boolean isClosing() {
