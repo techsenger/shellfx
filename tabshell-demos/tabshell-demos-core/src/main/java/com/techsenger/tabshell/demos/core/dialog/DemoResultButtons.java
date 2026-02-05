@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.simple;
+package com.techsenger.tabshell.demos.core.dialog;
 
-import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.dialog.DialogComposer;
+import com.techsenger.tabshell.core.dialog.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class AbstractSimpleDialogPresenter<V extends SimpleDialogView, C extends DialogComposer>
-        extends AbstractDialogPresenter<V, C> {
+public interface DemoResultButtons {
 
+    ResultButtonName OK = new ResultButtonName();
+
+    ResultButtonName CANCEL = new ResultButtonName();
 }

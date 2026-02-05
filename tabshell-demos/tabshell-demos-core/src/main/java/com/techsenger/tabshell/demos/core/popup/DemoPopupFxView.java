@@ -38,9 +38,9 @@ public class DemoPopupFxView extends AbstractPopupFxView<DemoPopupPresenter> imp
     @Override
     protected void build() {
         super.build();
-        getContentPane().getChildren().addAll(label, closeButton);
-        getContentPane().setSpacing(20);
-        getContentPane().setStyle("-fx-border-width: 2px; -fx-border-color: -color-accent-7; "
+        getContentBox().getChildren().addAll(label, closeButton);
+        getContentBox().setSpacing(20);
+        getContentBox().setStyle("-fx-border-width: 2px; -fx-border-color: -color-accent-7; "
                 + "-fx-padding: 20; -fx-background-color: -color-bg-default");
     }
 

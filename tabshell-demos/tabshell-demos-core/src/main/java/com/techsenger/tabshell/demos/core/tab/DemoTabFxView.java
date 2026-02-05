@@ -17,7 +17,9 @@
 package com.techsenger.tabshell.demos.core.tab;
 
 import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogFxView;
 import com.techsenger.tabshell.demos.core.dialog.DemoDialogPresenter;
@@ -42,15 +44,16 @@ public class DemoTabFxView<P extends DemoTabPresenter<?, ?>> extends AbstractShe
         private final DemoTabFxView<?> view = DemoTabFxView.this;
 
         @Override
-        public void addDemoDialog(OverlayScope scope, boolean resizable) {
+        public DialogPort addDemoDialog(OverlayScope scope, boolean resizable) {
             var v = new DemoDialogFxView(resizable);
             var p = new DemoDialogPresenter(v, scope);
             p.initialize();
             view.getShell().getComposer().addDialog(v);
+            return p.getPort();
         }
 
         @Override
-        public void addDemoPopup(OverlayScope scope) {
+        public PopupPort addDemoPopup(OverlayScope scope) {
             var v = new DemoPopupFxView();
             var p = new DemoPopupPresenter(v, scope, false);
             p.initialize();
@@ -59,6 +62,7 @@ public class DemoTabFxView<P extends DemoTabPresenter<?, ?>> extends AbstractShe
             } else {
                 view.getShell().getComposer().addPopup(v, Anchors.bottomRight(20, 20));
             }
+            return p.getPort();
         }
     }
 

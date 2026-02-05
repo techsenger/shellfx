@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.popup.PopupPort;
+import java.util.function.Consumer;
 
 /**
  *
@@ -33,5 +34,9 @@ public interface DialogPort extends PopupPort {
 
     Runnable getCloseAction();
 
-    void setCloseAction(Runnable value);
+    void setCloseAction(Runnable action);
+
+    Consumer<ResultButtonName> getResultAction();
+
+    void setResultAction(Consumer<ResultButtonName> action);
 }

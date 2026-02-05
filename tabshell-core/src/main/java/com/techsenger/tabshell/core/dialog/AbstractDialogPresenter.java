@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import java.util.function.Consumer;
 
 /**
  *
@@ -48,6 +49,16 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
         public void setCloseAction(Runnable value) {
             presenter.setCloseAction(closeAction);
         }
+
+        @Override
+        public Consumer<ResultButtonName> getResultAction() {
+            return presenter.resultAction;
+        }
+
+        @Override
+        public void setResultAction(Consumer<ResultButtonName> action) {
+            presenter.resultAction = action;
+        }
     }
 
     /**
@@ -55,6 +66,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
      * closer set from view.
      */
     private Runnable closeAction = () -> requestClose();
+
+    private Consumer<ResultButtonName> resultAction;
 
     public AbstractDialogPresenter(V view, OverlayScope scope) {
         super(view, scope, true);
@@ -71,6 +84,14 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     protected void setCloseAction(Runnable closeAction) {
         this.closeAction = closeAction;
+    }
+
+    protected Consumer<ResultButtonName> getResultAction() {
+        return resultAction;
+    }
+
+    protected void setResultAction(Consumer<ResultButtonName> resultAction) {
+        this.resultAction = resultAction;
     }
 
     @Override
@@ -94,5 +115,19 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
         var v = getView();
         h.setWidth(v.getWidth());
         h.setHeight(v.getHeight());
+    }
+
+    @Override
+    public void handleClose() {
+        if (this.closeAction != null) {
+            this.closeAction.run();
+        }
+    }
+
+    @Override
+    public void handleResult(ResultButtonName name) {
+        if (this.resultAction != null) {
+            this.resultAction.accept(name);
+        }
     }
 }

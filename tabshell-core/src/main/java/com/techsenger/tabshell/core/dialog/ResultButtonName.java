@@ -14,34 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.simple;
+package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.material.button.ButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface SimpleDialogView extends DialogView {
+public class ResultButtonName extends ButtonName {
 
-    void addButtons(ButtonName... name);
-
-    void removeButtons(ButtonName... name);
-
-    void setButtonVisible(ButtonName name, boolean value);
-
-    boolean isButtonVisible(ButtonName name);
-
-    void setButtonDisabled(ButtonName name, boolean value);
-
-    boolean isButtonDisabled(ButtonName name);
-
-    void setButtonText(ButtonName name, String value);
-
-    String getButtonText(ButtonName name);
-
-    void setButtonDefault(ButtonName name, boolean value);
-
-    boolean isButtonDefault(ButtonName name);
 }

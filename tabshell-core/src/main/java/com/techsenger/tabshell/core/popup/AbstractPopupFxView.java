@@ -46,12 +46,12 @@ public abstract class AbstractPopupFxView<P extends PopupPresenter<?, ?>>
         }
     }
 
-    private final VBox contentPane = new VBox();
+    private final VBox contentBox = new VBox();
 
     /**
      * This is internal pane that is required for waiting mode.
      */
-    private final StackPane stackPane = new StackPane(contentPane);
+    private final StackPane stackPane = new StackPane(contentBox);
 
     private final BooleanProperty waiting = new SimpleBooleanProperty(false);
 
@@ -110,8 +110,8 @@ public abstract class AbstractPopupFxView<P extends PopupPresenter<?, ?>>
         return waiting;
     }
 
-    protected VBox getContentPane() {
-        return contentPane;
+    protected VBox getContentBox() {
+        return contentBox;
     }
 
     @Override
@@ -119,7 +119,7 @@ public abstract class AbstractPopupFxView<P extends PopupPresenter<?, ?>>
         waitingPane.setMouseTransparent(false);
         waitingPane.setCursor(Cursor.WAIT);
 
-        VBox.setVgrow(contentPane, Priority.ALWAYS);
+        VBox.setVgrow(contentBox, Priority.ALWAYS);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
     }
 

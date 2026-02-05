@@ -23,6 +23,7 @@ import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabPresenter;
 import com.techsenger.tabshell.demos.core.DemoComponentNames;
+import com.techsenger.tabshell.demos.core.dialog.DemoResultButtons;
 import com.techsenger.tabshell.demos.core.menu.DemoMenuNames;
 import java.util.function.Consumer;
 
@@ -78,7 +79,12 @@ public class DemoTabPresenter<V extends DemoTabView, C extends DemoTabComposer>
     }
 
     protected void handleDialogOpen(OverlayScope scope) {
-        getComposer().addDemoDialog(scope, true);
+        var dialog = getComposer().addDemoDialog(scope, true);
+        dialog.setResultAction((name) -> {
+            if (name == DemoResultButtons.OK) {
+                dialog.requestClose();
+            }
+        });
     }
 
     protected void handlePopupOpen(OverlayScope scope) {

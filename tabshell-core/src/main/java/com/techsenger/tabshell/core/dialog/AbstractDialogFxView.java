@@ -19,18 +19,25 @@ package com.techsenger.tabshell.core.dialog;
 import com.techsenger.tabshell.core.popup.AbstractPopupFxView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.RegionResizer;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import com.techsenger.toolkit.fx.pulse.LayoutPulseListener;
 import com.techsenger.toolkit.fx.value.ValueUtils;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -49,6 +56,10 @@ import javafx.scene.layout.VBox;
 public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, ?>>
         extends AbstractPopupFxView<P> implements DialogFxView<P> {
 
+    private static final Object NAME_KEY = new Object();
+
+    private static final PseudoClass INACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("inactive");
+
     public class Composer extends AbstractPopupFxView.Composer implements DialogFxView.Composer {
 
         private final AbstractDialogFxView<?> view = AbstractDialogFxView.this;
@@ -62,8 +73,6 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         }
     }
 
-    private static final PseudoClass INACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("inactive");
-
     private final IconViewBox iconViewBox = new IconViewBox();
 
     private final Label titleLabel = new Label();
@@ -74,31 +83,21 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
     private final Button closeButton = new Button();
 
-    private final HBox buttonBox = new HBox(closeButton);
+    private final HBox titleButtonBox = new HBox(closeButton);
 
-    private final HBox titleBar = new HBox(iconViewBox, titleLabel, spacePane, buttonBox);
+    private final HBox titleBar = new HBox(iconViewBox, titleLabel, spacePane, titleButtonBox);
+
+    private final VBox dialogBox = new VBox(titleBar, super.getNode());
+
+    private final HBox buttonBox = new HBox();
+
+    private final VBox mainBox = new VBox(super.getContentBox(), buttonBox);
 
     /**
      * Trap for focus dialog. This trap should always be activated after adding all controls to dialog. Otherwise
      * it is necessary to update it.
      */
-    private final FocusTrap focusTrap = new FocusTrap(super.getContentPane());
-
-    private final VBox dialogBox = new VBox(titleBar, super.getNode());
-
-    /**
-     * While dragging we need the difference. So, we keep in this variable previous value.
-     */
-    private double offsetX;
-
-    /**
-     * While dragging we need the difference. So, we keep in this variable previous value.
-     */
-    private double offsetY;
-
-    private Pane parent;
-
-    private RegionResizer resizer;
+    private final FocusTrap focusTrap = new FocusTrap(mainBox);
 
     /**
      * If it is true user can move dialog only with minimum top constrain. If this value is false user
@@ -120,10 +119,26 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
     private final DoubleProperty maxHeight = new SimpleDoubleProperty();
 
+    private final Map<ResultButtonName, Button> buttonsByName = new HashMap<>();
+
     private final LayoutPulseListener buttonWidthListener = () -> {
         makeEqualButtons();
         return false;
     };
+
+    /**
+     * While dragging we need the difference. So, we keep in this variable previous value.
+     */
+    private double offsetX;
+
+    /**
+     * While dragging we need the difference. So, we keep in this variable previous value.
+     */
+    private double offsetY;
+
+    private Pane parent;
+
+    private RegionResizer resizer;
 
     public AbstractDialogFxView(boolean resizable) {
         super();
@@ -261,6 +276,105 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
+    public void setCloseDisabled(boolean value) {
+        this.closeButton.setDisable(value);
+    }
+
+    @Override
+    public boolean isCloseDisabled() {
+        return this.closeButton.isDisable();
+    }
+
+    @Override
+    public void addButtons(ResultButtonName... names) {
+        for (var name : names) {
+            var button = this.buttonsByName.get(name);
+            if (button != null) {
+                this.buttonBox.getChildren().add(button);
+            }
+        }
+        if (this.focusTrap.isActivated()) {
+            this.focusTrap.update();
+        }
+    }
+
+    @Override
+    public void removeButtons(ResultButtonName... names) {
+        Set<ResultButtonName> set = Set.of(names);
+        buttonBox.getChildren().removeIf(node ->
+            node instanceof Button button && set.contains(getButtonName(button))
+        );
+        if (this.focusTrap.isActivated()) {
+            this.focusTrap.update();
+        }
+    }
+
+    @Override
+    public void removeAllButtons() {
+        this.buttonBox.getChildren().clear();
+        if (this.focusTrap.isActivated()) {
+            this.focusTrap.update();
+        }
+    }
+
+    @Override
+    public List<ResultButtonName> getButtons() {
+        return this.buttonBox.getChildren().stream().map(n -> getButtonName((Button) n)).toList();
+    }
+
+    @Override
+    public void setButtonVisible(ResultButtonName name, boolean value) {
+        var button = this.buttonsByName.get(name);
+        if (button != null) {
+            button.setVisible(value);
+        }
+    }
+
+    @Override
+    public Optional<Boolean> getButtonVisible(ResultButtonName name) {
+        return Optional.ofNullable(this.buttonsByName.get(name)).map(Button::isVisible);
+    }
+
+    @Override
+    public void setButtonDisabled(ResultButtonName name, boolean value) {
+        var button = this.buttonsByName.get(name);
+        if (button != null) {
+            button.setDisable(value);
+        }
+    }
+
+    @Override
+    public Optional<Boolean> getButtonDisabled(ResultButtonName name) {
+        return Optional.ofNullable(this.buttonsByName.get(name)).map(Button::isDisable);
+    }
+
+    @Override
+    public void setButtonText(ResultButtonName name, String value) {
+        var button = this.buttonsByName.get(name);
+        if (button != null) {
+            button.setText(value);
+        }
+    }
+
+    @Override
+    public Optional<String> getButtonText(ResultButtonName name) {
+        return Optional.ofNullable(this.buttonsByName.get(name)).map(Button::getText);
+    }
+
+    @Override
+    public void setButtonDefault(ResultButtonName name, boolean value) {
+        var button = this.buttonsByName.get(name);
+        if (button != null) {
+            button.setDefaultButton(value);
+        }
+    }
+
+    @Override
+    public Optional<Boolean> getButtonDefault(ResultButtonName name) {
+        return Optional.ofNullable(this.buttonsByName.get(name)).map(Button::isDefaultButton);
+    }
+
+    @Override
     protected Composer createComposer() {
         return new AbstractDialogFxView.Composer();
     }
@@ -288,14 +402,18 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         titleBar.getStyleClass().addAll("title-bar", StyleClasses.CORNERS_TOP);
         HBox.setHgrow(spacePane, Priority.ALWAYS);
 
-        this.buttonBox.getStyleClass().add("button-box");
-        this.buttonBox.setAlignment(Pos.CENTER);
+        this.titleButtonBox.getStyleClass().add("button-box");
+        this.titleButtonBox.setAlignment(Pos.CENTER);
         closeIcon.getStyleClass().add("icon");
         closeButton.setGraphic(closeIcon);
         closeButton.getStyleClass().addAll("close-button");
 
-        VBox.setVgrow(getContentPane(), Priority.ALWAYS);
-        getContentPane().getStyleClass().addAll("content-pane", StyleClasses.CORNERS_BOTTOM);
+        super.getNode().getChildren().clear();
+        super.getNode().getChildren().add(mainBox);
+        mainBox.getStyleClass().add("main-box");
+        VBox.setVgrow(getContentBox(), Priority.ALWAYS);
+        getContentBox().setPadding(new Insets(SizeConstants.INSET, SizeConstants.INSET, 0, SizeConstants.INSET));
+        getContentBox().getStyleClass().addAll("content-box", StyleClasses.CORNERS_BOTTOM);
         super.getNode().getStyleClass().addAll("wrapper", StyleClasses.CORNERS_BOTTOM);
         VBox.setVgrow(super.getNode(), Priority.ALWAYS);
         this.dialogBox.getStyleClass().addAll("dialog-box", StyleClasses.CORNERS_ALL, StyleClasses.SHADOW);
@@ -309,6 +427,11 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
                     this.dialogBox.fireEvent(event);
                 });
         this.resizer.initialize(dialogBox);
+
+        this.buttonBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
+        this.buttonBox.setPadding(new Insets(SizeConstants.INSET));
+        buttonBox.setAlignment(Pos.BOTTOM_RIGHT);
+        buttonBox.setSpacing(SizeConstants.INSET);
     }
 
     @Override
@@ -347,6 +470,42 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     protected abstract void makeEqualButtons();
+
+    protected void registerButton(ResultButtonName name, Button button) {
+        setButtonName(button, name);
+        this.buttonsByName.put(name, button);
+        button.setOnAction((e) -> {
+            getPresenter().handleResult(name);
+        });
+    }
+
+    protected void unregisterButton(ResultButtonName name) {
+        var button = this.buttonsByName.remove(name);
+        if (button != null) {
+            clearButtonName(button);
+            button.setOnAction(null);
+        }
+    }
+
+    protected HBox getButtonBox() {
+        return buttonBox;
+    }
+
+    protected VBox getMainBox() {
+        return mainBox;
+    }
+
+    private void setButtonName(Button button, ResultButtonName name) {
+        button.getProperties().put(NAME_KEY, name);
+    }
+
+    private ResultButtonName getButtonName(Button button) {
+        return (ResultButtonName) button.getProperties().get(NAME_KEY);
+    }
+
+    private void clearButtonName(Button button) {
+        button.getProperties().remove(NAME_KEY);
+    }
 
     private void doOnMousePressed(MouseEvent event) {
         if (isMoving()) {

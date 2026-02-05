@@ -19,6 +19,8 @@ package com.techsenger.tabshell.core.dialog;
 import com.techsenger.tabshell.core.Iconed;
 import com.techsenger.tabshell.core.Titled;
 import com.techsenger.tabshell.core.popup.PopupView;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -90,6 +92,20 @@ public interface DialogView extends PopupView, Titled, Iconed {
     boolean isButtonWidthEqual();
 
     /**
+     * Sets the disabled property for close button in the top right corner.
+     *
+     * @param value
+     */
+    void setCloseDisabled(boolean value);
+
+    /**
+     * Returns the disabled property for close button in the top right corner.
+     *
+     * @return
+     */
+    boolean isCloseDisabled();
+
+    /**
      * Enables or disables equal button width rendering.
      * <p>
      * When set to {@code true}, the view may re-evaluate button sizes and
@@ -98,4 +114,28 @@ public interface DialogView extends PopupView, Titled, Iconed {
      * @param value {@code true} to enable equal button widths, {@code false} to disable
      */
     void setButtonWidthEqual(boolean value);
+
+    void addButtons(ResultButtonName... names);
+
+    void removeButtons(ResultButtonName... names);
+
+    void removeAllButtons();
+
+    List<ResultButtonName> getButtons();
+
+    void setButtonVisible(ResultButtonName name, boolean value);
+
+    Optional<Boolean> getButtonVisible(ResultButtonName name);
+
+    void setButtonDisabled(ResultButtonName name, boolean value);
+
+    Optional<Boolean> getButtonDisabled(ResultButtonName name);
+
+    void setButtonText(ResultButtonName name, String value);
+
+    Optional<String> getButtonText(ResultButtonName name);
+
+    void setButtonDefault(ResultButtonName name, boolean value);
+
+    Optional<Boolean> getButtonDefault(ResultButtonName name);
 }

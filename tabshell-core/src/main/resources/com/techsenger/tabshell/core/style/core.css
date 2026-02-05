@@ -137,7 +137,7 @@
     -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
 }
 
-.dialog-box > .wrapper > .content-pane {
+.dialog-box > .wrapper > .main-box > .content-box {
     -fx-background-color: -color-bg-default;
 }
 
