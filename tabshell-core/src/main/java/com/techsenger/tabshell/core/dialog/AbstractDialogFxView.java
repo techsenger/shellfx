@@ -294,8 +294,10 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         closeButton.setGraphic(closeIcon);
         closeButton.getStyleClass().addAll("close-button");
 
+        VBox.setVgrow(getContentPane(), Priority.ALWAYS);
         getContentPane().getStyleClass().addAll("content-pane", StyleClasses.CORNERS_BOTTOM);
         super.getNode().getStyleClass().addAll("wrapper", StyleClasses.CORNERS_BOTTOM);
+        VBox.setVgrow(super.getNode(), Priority.ALWAYS);
         this.dialogBox.getStyleClass().addAll("dialog-box", StyleClasses.CORNERS_ALL, StyleClasses.SHADOW);
         this.resizer = new RegionResizer(minWidth, minHeight, maxWidth, maxHeight,
                 (e) -> {
