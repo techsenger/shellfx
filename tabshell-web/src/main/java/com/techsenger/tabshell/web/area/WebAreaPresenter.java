@@ -135,22 +135,23 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         }
     }
 
-    protected void handleLocationChanged(String url) {
+    /**
+     * We don't use location because it can contain redirects.
+     *
+     * @param url
+     */
+    protected void handleHistoryChanged(String url) {
+        loadFavicon(url);
         var toolBar = this.toolBar.get();
+        toolBar.setBackDisable(getView().getHistoryIndex() == 0);
+        toolBar.setForwardDisable(getView().getHistoryIndex() + 1 == getView().getHistorySize());
         String decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8);
         toolBar.setUrl(decodedUrl);
         if (url != null && !url.isBlank() && !url.equals("about:blank")) {
-            loadFavicon(url);
             toolBar.setReloadDisable(false);
         } else {
             toolBar.setReloadDisable(true);
         }
-    }
-
-    protected void handleHistoryChanged() {
-        var toolBar = this.toolBar.get();
-        toolBar.setBackDisable(getView().getHistoryIndex() == 0);
-        toolBar.setForwardDisable(getView().getHistoryIndex() + 1 == getView().getHistorySize());
     }
 
     private void loadFavicon(String url) {

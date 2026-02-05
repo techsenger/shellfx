@@ -105,16 +105,18 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
         super.addListeners();
         this.webView.getEngine().titleProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().handlePageTitleChanged(newV));
-        this.webView.getEngine().locationProperty()
-                .addListener((ov, oldV, newV) -> getPresenter().handleLocationChanged(newV));
         var history = this.webView.getEngine().getHistory();
         history.currentIndexProperty().addListener((obs, oldValue, newValue) -> {
-            getPresenter().handleHistoryChanged();
+            getPresenter().handleHistoryChanged(history.getEntries().get(history.getCurrentIndex()).getUrl());
         });
         history.getEntries().addListener((ListChangeListener<WebHistory.Entry>) c -> {
             if (history.getEntries().size() == 1) { // index is still 0
-                getPresenter().handleHistoryChanged();
+                getPresenter().handleHistoryChanged(history.getEntries().get(0).getUrl());
             }
         });
+    }
+
+    protected WebView getWebView() {
+        return webView;
     }
 }

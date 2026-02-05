@@ -113,7 +113,7 @@ public class WebToolBarFxView<P extends WebToolBarPresenter<?, ?>> extends Abstr
         reloadButton.getStyleClass().add(StyleClasses.ICONED_BUTTON);
         reloadButton.setTooltip(new Tooltip("Reload"));
         reloadButton.setDisable(true);
-        
+
         HBox.setHgrow(urlTextField, Priority.ALWAYS);
         toolBar.getStyleClass().add(StyleClasses.BLEND);
     }
