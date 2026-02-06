@@ -50,4 +50,6 @@ public interface DialogContainerFxView extends PopupContainerFxView {
         void removeDialog(DialogFxView<?> dialog);
 
     }
+
+    Composer getComposer();
 }

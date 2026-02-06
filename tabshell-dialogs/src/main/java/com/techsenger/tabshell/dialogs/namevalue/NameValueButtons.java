@@ -14,28 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dialogs;
+package com.techsenger.tabshell.dialogs.namevalue;
+
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-class DialogItem {
+public interface NameValueButtons {
 
-    private final Dialog dialog;
+    ResultButtonName OK = new ResultButtonName();
 
-    private final Runnable runnable;
-
-    DialogItem(Dialog dialog, Runnable runnable) {
-        this.dialog = dialog;
-        this.runnable = runnable;
-    }
-
-    public Dialog getDialog() {
-        return dialog;
-    }
-
-    public Runnable getRunnable() {
-        return runnable;
-    }
+    ResultButtonName CANCEL = new ResultButtonName();
 }

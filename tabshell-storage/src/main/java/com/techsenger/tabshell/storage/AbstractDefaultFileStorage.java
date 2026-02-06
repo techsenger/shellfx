@@ -51,7 +51,7 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
     public List<GenericFile> getFiles(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
         var result = new ArrayList<GenericFile>();
         var path = toPath(uri);
-        checkExists(path);
+        checkIfExists(path);
         GenericFile.Builder builder = new GenericFile.Builder();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
             for (Path entry : stream) {
@@ -73,7 +73,7 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
     public GenericFile getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException,
             IOException {
         var path = toPath(uri);
-        checkExists(path);
+        checkIfExists(path);
         var file = path.toFile();
         var builder = new GenericFile.Builder();
         var genFile = GenericFile.createFile(builder, file, uri, this);
@@ -85,7 +85,7 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
             AccessDeniedException, IOException {
         var path = toPath(uri);
         var parent = path.getParent();
-        checkExists(path);
+        checkIfExists(parent);
         Files.createDirectory(path);
     }
 
@@ -93,7 +93,7 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
     public void renameFile(URI uri, String newName) throws NoSuchFileException, FileAlreadyExistsException,
             AccessDeniedException, IOException {
         var path = toPath(uri);
-        checkExists(path);
+        checkIfExists(path);
         var newPath = path.resolveSibling(newName);
         if (Files.exists(newPath)) {
             throw new FileAlreadyExistsException("File already exists: " + newPath);
@@ -111,7 +111,7 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
     @Override
     public String readFile(URI uri, Charset charset) throws NoSuchFileException, AccessDeniedException, IOException {
         var path = toPath(uri);
-        checkExists(path);
+        checkIfExists(path);
         checkReadable(path);
         return FileUtils.readFile(path, charset);
     }
@@ -131,7 +131,7 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
     @Override
     public byte[] readFile(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
         var path = toPath(uri);
-        checkExists(path);
+        checkIfExists(path);
         checkReadable(path);
         try (InputStream in = Files.newInputStream(path)) {
             return in.readAllBytes();
@@ -150,7 +150,7 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
         }
     }
 
-    protected void checkExists(Path path) throws NoSuchFileException {
+    protected void checkIfExists(Path path) throws NoSuchFileException {
         if (!Files.exists(path)) {
             throw new NoSuchFileException("File not found: " + path);
         }

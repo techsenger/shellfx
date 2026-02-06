@@ -20,7 +20,22 @@ package com.techsenger.tabshell.demos.full.dialogs;
  *
  * @author Pavel Castornii
  */
-enum Dialog {
+class Dialog {
 
-    INFO, WARNING, ERROR, YES_NO, OPEN_FILE, SAVE_FILE
+    private final DialogType type;
+
+    private final Runnable runnable;
+
+    Dialog(DialogType dialog, Runnable runnable) {
+        this.type = dialog;
+        this.runnable = runnable;
+    }
+
+    public DialogType getType() {
+        return type;
+    }
+
+    public Runnable getRunnable() {
+        return runnable;
+    }
 }

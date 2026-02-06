@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dialogs;
+package com.techsenger.tabshell.dialogs.alert;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
-import java.util.List;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogsDialogView extends DialogView {
+public interface AlertDialogButtons {
 
-    void setDialogTypes(List<DialogType> types);
+    ResultButtonName OK = new ResultButtonName();
+
+    ResultButtonName YES = new ResultButtonName();
+
+    ResultButtonName NO = new ResultButtonName();
+
+    ResultButtonName CANCEL = new ResultButtonName();
 }

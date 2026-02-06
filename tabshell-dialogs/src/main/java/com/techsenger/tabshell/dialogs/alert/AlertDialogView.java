@@ -16,81 +16,20 @@
 
 package com.techsenger.tabshell.dialogs.alert;
 
-import atlantafx.base.theme.Styles;
-import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
-import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
-import com.techsenger.tabshell.dialogs.utils.ViewUtils;
-import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.toolkit.fx.utils.ButtonUtils;
-import com.techsenger.toolkit.fx.utils.NodeUtils;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import com.techsenger.tabshell.core.dialog.DialogView;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class AlertDialogView<T extends AlertDialogViewModel<?>, S extends AlertDialogComponent<?>>
-        extends AbstractSimpleDialogView<T, S> {
+public interface AlertDialogView extends DialogView {
 
-    private final FontIconView messageIconView = new FontIconView();
+    String getMessage();
 
-    private final Label messageLabel = new Label();
+    void setMessage(String message);
 
-    private final HBox messageBox = new HBox(messageIconView, messageLabel);
+    Icon<?> getMessageIcon();
 
-    public AlertDialogView(T viewModel) {
-        super(viewModel);
-    }
-
-    @Override
-    public void requestFocus() {
-        NodeUtils.requestFocus(getNode());
-    }
-
-    @Override
-    protected void build() {
-        super.build();
-        var viewModel = getViewModel();
-        getButtonBox().getChildren().addAll(getCancelButton(), getOkButton());
-        getContentPane().getStylesheets().add(AlertDialogView.class.getResource("alert.css").toExternalForm());
-        messageIconView.getStyleClass().add("message-icon-view");
-        messageIconView.setIcon(viewModel.getMessageIcon());
-        switch (viewModel.getDialogType()) {
-            case INFO:
-                this.messageIconView.getStyleClass().add(Styles.ACCENT);
-            break;
-            case ERROR:
-                this.messageIconView.getStyleClass().add(Styles.DANGER);
-            break;
-            case WARNING:
-                this.messageIconView.getStyleClass().add(Styles.WARNING);
-            break;
-            default:
-                throw new AssertionError();
-        }
-        messageLabel.textProperty().bind(viewModel.messageProperty());
-        messageLabel.getStyleClass().add("message-label");
-        ViewUtils.buildIconedMessageBox(messageIconView, messageLabel, messageBox);
-        getContentPane().getChildren().addAll(messageBox, getButtonBox());
-    }
-
-    protected FontIconView getMessageIconView() {
-        return messageIconView;
-    }
-
-    protected Label getMessageLabel() {
-        return messageLabel;
-    }
-
-    protected HBox getMessageBox() {
-        return messageBox;
-    }
-
-    @Override
-    protected void makeEqualButtons() {
-        if (getViewModel().getCancel().isVisible()) {
-            ButtonUtils.makeEqualWidthBySize(getCancelButton(), getOkButton());
-        }
-    }
+    void setMessageIcon(Icon<?> icon);
 }

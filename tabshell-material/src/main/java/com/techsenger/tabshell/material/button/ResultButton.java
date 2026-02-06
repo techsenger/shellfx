@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dialogs;
+package com.techsenger.tabshell.material.button;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
-import java.util.List;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogsDialogView extends DialogView {
+public class ResultButton extends Button {
 
-    void setDialogTypes(List<DialogType> types);
+    private final ResultButtonName name;
+
+    public ResultButton(ResultButtonName name) {
+        this(name, null);
+    }
+
+    public ResultButton(ResultButtonName name, String string) {
+        this(name, string, null);
+    }
+
+    public ResultButton(ResultButtonName name, String string, Node node) {
+        super(string, node);
+        this.name = name;
+    }
+
+    public ResultButtonName getName() {
+        return name;
+    }
 }

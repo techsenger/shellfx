@@ -17,9 +17,8 @@
 package com.techsenger.tabshell.demos.core.dialog;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
+import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.style.SizeConstants;
-import com.techsenger.toolkit.fx.utils.ButtonUtils;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -42,9 +41,9 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
 
     private final GridPane gridPane = new GridPane();
 
-    private final Button okButton = new Button("OK");
+    private final ResultButton okButton = new ResultButton(DemoResultButtons.OK, "OK");
 
-    private final Button cancelButton = new Button("Cancel");
+    private final ResultButton cancelButton = new ResultButton(DemoResultButtons.CANCEL, "Cancel");
 
     public DemoDialogFxView(boolean resizable) {
         super(resizable);
@@ -72,17 +71,11 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
         VBox.setVgrow(gridPane, Priority.ALWAYS);
 
         okButton.setDefaultButton(true);
-        registerButton(DemoResultButtons.OK, okButton);
-        registerButton(DemoResultButtons.CANCEL, cancelButton);
-        addButtons(DemoResultButtons.CANCEL, DemoResultButtons.OK);
+        registerButtons(okButton, cancelButton);
+        addRightButtons(DemoResultButtons.CANCEL, DemoResultButtons.OK);
 
         getContentBox().getChildren().add(gridPane);
         getContentBox().setSpacing(SizeConstants.INSET);
         getFocusTrap().activate();
-    }
-
-    @Override
-    protected void makeEqualButtons() {
-        ButtonUtils.makeEqualWidthBySize(cancelButton, okButton);
     }
 }

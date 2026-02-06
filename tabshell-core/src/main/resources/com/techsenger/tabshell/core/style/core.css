@@ -110,6 +110,10 @@
     -fx-padding: 0 4 0 0;
 }
 
+.dialog-box > .title-bar > .title-label {
+    -fx-padding: 0 0 0 6px;
+}
+
 .dialog-box > .title-bar > .button-box > .close-button {
     -fx-padding: 10px;
 }

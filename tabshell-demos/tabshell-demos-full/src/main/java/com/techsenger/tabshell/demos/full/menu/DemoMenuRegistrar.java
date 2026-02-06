@@ -16,10 +16,13 @@
 
 package com.techsenger.tabshell.demos.full.menu;
 
+import com.techsenger.tabshell.core.CoreComponents;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogFxView;
+import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogPresenter;
 import com.techsenger.tabshell.demos.full.dock.DockLayoutTabFxView;
 import com.techsenger.tabshell.demos.full.dock.DockLayoutTabPresenter;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -34,7 +37,6 @@ import com.techsenger.tabshell.web.WebBrowserTabPresenter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import com.techsenger.tabshell.core.CoreComponents;
 
 /**
  *
@@ -53,7 +55,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
 //        registerTextEditorItem();
 //        registerHexEditorItem();
         registerTerminalItem();
-//        registerDialogsItem();
+        registerDialogsItem();
         registerDockLayoutItem();
 //        registerJfxTabDockItem();
         registerWebBrowserItem();
@@ -143,22 +145,23 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
         };
         addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
     }
-//
-//    protected void registerDialogsItem() {
-//        ControlFactory<NamedMenuItem> f = (v) -> {
-//            var item = new NamedMenuItem(DemoMenuNames.DIALOGS, "Dialogs", 500);
-//            item.setOnAction((e) -> {
-//                var shell = (ShellView<?, ?>) v;
-//                var dialogViewModel = new DialogsDialogViewModel();
-//                var dialogView = new DialogsDialogView(dialogViewModel);
-//                var dialogComponent = new DialogsDialogComponent(dialogView, shell.getComponent());
-//                dialogComponent.initialize();
-//                shell.getComponent().addDialog(dialogComponent);
-//            });
-//            return item;
-//        };
-//        addRegistration(getRegistry().registerMenuItem(CoreComponentNames.SHELL, DemoMenuNames.DEFAULT, f));
-//    }
+
+    protected void registerDialogsItem() {
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoMenuNames.DIALOGS, "Dialogs", 500);
+            item.setOnAction((e) -> {
+                var shellV = (ShellFxView<?>) v;
+                var shellP = shellV.getPresenter();
+                var dialogView = new DialogsDialogFxView();
+                var dialogPresenter = new DialogsDialogPresenter(dialogView, shellP.getSettings().getAppearance(),
+                        shellP.getHistoryManager());
+                dialogPresenter.initialize();
+                shellV.getComposer().addDialog(dialogView);
+            });
+            return item;
+        };
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
+    }
 
     protected void registerDockLayoutItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {

@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.yesno;
+package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.core.dialog.AbstractDialogComponent;
-import com.techsenger.tabshell.dialogs.DialogComponentNames;
+import com.techsenger.tabshell.core.dialog.DialogComposer;
+import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class YesNoDialogComponent<T extends YesNoDialogView<?, ?>> extends AbstractDialogComponent<T> {
+public interface FileChooserDialogComposer extends DialogComposer {
 
-    public YesNoDialogComponent(T view) {
-        super(view);
-    }
-
-    @Override
-    public Name getName() {
-        return DialogComponentNames.YES_NO_DIALOG;
-    }
-
-    @Override
-    protected Mediator createMediator() {
-        return new AbstractDialogComponent.Mediator() { };
-    }
+    DialogPort addAlertDialog(OverlayScope scope, AlertDialogType type, String message);
 }

@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.material.list;
 
 import com.techsenger.toolkit.fx.utils.NodeUtils;
+import javafx.css.PseudoClass;
 import javafx.scene.control.IndexedCell;
 import javafx.scene.control.Skin;
 import javafx.scene.control.skin.CellSkinBase;
@@ -27,6 +28,8 @@ import javafx.scene.input.MouseEvent;
  * @author Pavel Castornii
  */
 public class ColumnListCell<T> extends IndexedCell<T> {
+
+    private static final PseudoClass EDITING = PseudoClass.getPseudoClass("editing");
 
     private ColumnListView<T> listView;
 
@@ -58,15 +61,23 @@ public class ColumnListCell<T> extends IndexedCell<T> {
     }
 
     @Override
+    public void startEdit() {
+        super.startEdit();
+        pseudoClassStateChanged(EDITING, true);
+    }
+
+    @Override
     public void commitEdit(T newValue) {
         super.commitEdit(newValue);
         listView.setEditingCellIndex(-1);
+        pseudoClassStateChanged(EDITING, false);
     }
 
     @Override
     public void cancelEdit() {
         super.cancelEdit();
         listView.setEditingCellIndex(-1);
+        pseudoClassStateChanged(EDITING, false);
     }
 
     @Override

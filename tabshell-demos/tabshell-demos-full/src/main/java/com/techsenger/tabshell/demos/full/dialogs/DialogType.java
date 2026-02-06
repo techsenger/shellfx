@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.dialog;
-
-import com.techsenger.tabshell.material.button.ButtonName;
+package com.techsenger.tabshell.demos.full.dialogs;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ResultButtonName extends ButtonName {
+enum DialogType {
 
+    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, OPEN_FILE, SAVE_FILE
 }

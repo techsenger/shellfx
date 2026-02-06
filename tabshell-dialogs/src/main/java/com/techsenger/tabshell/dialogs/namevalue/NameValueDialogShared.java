@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.alert;
-
-import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.dialogs.DialogComponentNames;
-import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
+package com.techsenger.tabshell.dialogs.namevalue;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class AlertDialogComponent<T extends AlertDialogView<?, ?>> extends AbstractSimpleDialogComponent<T> {
+public interface NameValueDialogShared {
 
-    public AlertDialogComponent(T view) {
-        super(view);
-    }
+    void setName(String name);
 
-    @Override
-    protected Mediator createMediator() {
-        return new AbstractSimpleDialogComponent.Mediator() { };
-    }
+    String getName();
 
-    @Override
-    public Name getName() {
-        return DialogComponentNames.ALERT_DIALOG;
-    }
+    void setNameEditable(boolean value);
 
+    boolean isNameEditable();
+
+    void setValue(String value);
+
+    String getValue();
+
+    void setValueEditable(boolean value);
+
+    boolean isValueEditable();
 }

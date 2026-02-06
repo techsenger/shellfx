@@ -16,29 +16,17 @@
 
 package com.techsenger.tabshell.dialogs.namevalue;
 
-import com.techsenger.patternfx.core.Name;
-import com.techsenger.tabshell.dialogs.DialogComponentNames;
-import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogComponent;
+import com.techsenger.tabshell.core.dialog.DialogPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class NameValueDialogComponent<T extends NameValueDialogView<?, ?>>
-        extends AbstractSimpleDialogComponent<T> {
+public interface NameValueDialogPort extends NameValueDialogShared, DialogPort {
 
-    public NameValueDialogComponent(T view) {
-        super(view);
-    }
+    void setTitle(String title);
 
-    @Override
-    protected Mediator createMediator() {
-        return new AbstractSimpleDialogComponent.Mediator() { };
-    }
+    void setCancelVisible(boolean visible);
 
-    @Override
-    public Name getName() {
-        return DialogComponentNames.NAME_VALUE_DIALOG;
-    }
-
+    boolean isCancelVisible();
 }

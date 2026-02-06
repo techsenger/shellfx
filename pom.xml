@@ -183,7 +183,7 @@
         <module>tabshell-shared</module>
 <!--        <module>tabshell-text</module>-->
         <module>tabshell-terminal</module>
-<!--        <module>tabshell-dialogs</module>-->
+        <module>tabshell-dialogs</module>
 <!--        <module>tabshell-hex</module>-->
 <!--        <module>tabshell-registrars</module>-->
         <module>tabshell-demos</module>

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-/*
-    Author     : Pavel Castornii
-*/
+package com.techsenger.tabshell.dialogs.file;
 
-.message-box {
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface FileChooserButtons {
 
-.message-box > .message-icon-view {
-    -fx-font-size: 3em;
-}
+    ResultButtonName OK = new ResultButtonName();
 
-.message-box > .message-label {
-    -fx-wrap-text: true;
+    ResultButtonName CANCEL = new ResultButtonName();
 }

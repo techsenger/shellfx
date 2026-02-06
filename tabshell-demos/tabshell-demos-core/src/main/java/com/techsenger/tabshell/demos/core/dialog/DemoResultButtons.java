@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demos.core.dialog;
 
-import com.techsenger.tabshell.core.dialog.ResultButtonName;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *

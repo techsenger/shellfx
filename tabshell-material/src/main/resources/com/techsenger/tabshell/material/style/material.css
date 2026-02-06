@@ -133,19 +133,19 @@
   -fx-padding: 0 0.5em 0 0.5em;
 }
 
-.table-view.same-spacing-table .column-header-background .column-header .label,
-.table-view.same-spacing-table .table-row-cell > .table-cell {
+.table-view.extra-dense.same-spacing-column .column-header-background .column-header .label,
+.table-view.extra-dense.same-spacing-column .table-row-cell > .table-cell {
     -fx-padding: 0 0.25em 0 0.25em;
 }
 
-.table-view.same-spacing-table .column-header-background .column-header.first .label,
-.table-view.same-spacing-table .table-row-cell > .table-cell.first {
+.table-view.extra-dense.same-spacing-column .column-header-background .column-header.first .label,
+.table-view.extra-dense.same-spacing-column .table-row-cell > .table-cell.first {
     -fx-padding: 0 0.25em 0 0.5em;
 }
 
-.table-view.same-spacing-table .column-header-background .column-header.last .label,
-.table-view.same-spacing-table .table-row-cell > .table-cell.last {
-    -fx-padding: 0 0.25em 0 0.5em;
+.table-view.extra-dense.same-spacing-column .column-header-background .column-header.last .label,
+.table-view.extra-dense.same-spacing-column .table-row-cell > .table-cell.last {
+    -fx-padding: 0 0.5em 0 0.25em;
 }
 
 /*
@@ -299,38 +299,45 @@
     -fx-fill: -color-fg-default;
 }
 
-.font-icon-view.accent {
+.font-icon-view.accent,
+.icon-view-box.accent > .font-icon-view {
     -fx-fill: -color-accent-fg;
 }
 
-.font-icon-view.success {
+.font-icon-view.success,
+.icon-view-box.success > .font-icon-view {
     -fx-fill: -color-success-fg;
 }
 
-.font-icon-view.warning {
+.font-icon-view.warning,
+.icon-view-box.warning > .font-icon-view {
     -fx-fill: -color-warning-fg;
 }
 
-.font-icon-view.danger {
+.font-icon-view.danger,
+.icon-view-box.danger > .font-icon-view {
     -fx-fill: -color-danger-fg;
 }
 
-.font-icon-view:accent {
+.font-icon-view:accent,
+.icon-view-box:accent > .font-icon-view {
     -fx-fill: -color-accent-fg;
 }
 
-.font-icon-view:success {
+.font-icon-view:success,
+.icon-view-box:success > .font-icon-view {
     -fx-fill: -color-success-fg;
 }
 
-.font-icon-view:warning {
+.font-icon-view:warning,
+.icon-view-box:warning > .font-icon-view {
     -fx-fill: -color-warning-fg;
 }
 
-.font-icon-view:danger {
+.font-icon-view:danger,
+.icon-view-box:danger > .font-icon-view {
     -fx-fill: -color-danger-fg;
 }
-
 
 /*
     Hyperlink

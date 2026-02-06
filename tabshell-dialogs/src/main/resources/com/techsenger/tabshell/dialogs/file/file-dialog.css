@@ -18,12 +18,11 @@
     -fx-background-insets: 0, 0 0 0 0;
 }
 
-.combo-box.location .list-cell HBox{
+.combo-box.location .list-cell HBox {
     -fx-spacing: 0.25em;
 }
 
-.column-list-view .label {
-    -fx-padding: 0 0 0 0.25em;
+.column-list-view .column > .cell {
     -fx-graphic-text-gap: 0.5em;
 }
 

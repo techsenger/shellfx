@@ -18,6 +18,8 @@ package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.material.button.ResultButtonName;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -59,6 +61,56 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
         public void setResultAction(Consumer<ResultButtonName> action) {
             presenter.resultAction = action;
         }
+
+        @Override
+        public double getMinWidth() {
+            return getView().getMinWidth();
+        }
+
+        @Override
+        public double getMinHeight() {
+            return getView().getMinHeight();
+        }
+
+        @Override
+        public double getMaxWidth() {
+            return getView().getMaxWidth();
+        }
+
+        @Override
+        public double getMaxHeight() {
+            return getView().getMaxHeight();
+        }
+
+        @Override
+        public boolean isOutOfBoundsAllowed() {
+            return getView().isOutOfBoundsAllowed();
+        }
+
+        @Override
+        public boolean isResizable() {
+            return getView().isResizable();
+        }
+
+        @Override
+        public boolean isButtonWidthEqual() {
+            return getView().isButtonWidthEqual();
+        }
+
+        @Override
+        public boolean isCloseDisabled() {
+            return getView().isCloseDisabled();
+        }
+
+        @Override
+        public List<ResultButtonName> getLeftButtons() {
+            return getView().getLeftButtons();
+        }
+
+        @Override
+        public List<ResultButtonName> getRightButtons() {
+            return getView().getRightButtons();
+        }
     }
 
     /**
@@ -67,7 +119,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
      */
     private Runnable closeAction = () -> requestClose();
 
-    private Consumer<ResultButtonName> resultAction;
+    private Consumer<ResultButtonName> resultAction = (name) -> requestClose();
 
     public AbstractDialogPresenter(V view, OverlayScope scope) {
         super(view, scope, true);
@@ -76,6 +128,25 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
     @Override
     public DialogPort getPort() {
         return (DialogPort) super.getPort();
+    }
+
+    @Override
+    public void handleClose() {
+        if (this.closeAction != null) {
+            this.closeAction.run();
+        }
+    }
+
+    @Override
+    public void handleResult(ResultButtonName name) {
+        if (this.resultAction != null) {
+            this.resultAction.accept(name);
+        }
+    }
+
+    @Override
+    protected Port createPort() {
+        return new AbstractDialogPresenter.Port();
     }
 
     protected Runnable getCloseAction() {
@@ -115,19 +186,5 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
         var v = getView();
         h.setWidth(v.getWidth());
         h.setHeight(v.getHeight());
-    }
-
-    @Override
-    public void handleClose() {
-        if (this.closeAction != null) {
-            this.closeAction.run();
-        }
-    }
-
-    @Override
-    public void handleResult(ResultButtonName name) {
-        if (this.resultAction != null) {
-            this.resultAction.accept(name);
-        }
     }
 }

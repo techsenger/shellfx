@@ -48,7 +48,8 @@
 //     * @param okCallback the callback that will be called if the user clicks the OK button.
 //     * @param cancelCallback the callback that will be called if the user clicks the cancel or close button.
 //     */
-//    default void saveFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback, Runnable cancelCallback) {
+//    default void saveFile(DialogScope scope, List<FileStorage> storages, Runnable okCallback,
+// Runnable cancelCallback) {
 //        var file = getFile();
 //        var viewModel = new FileChooserDialogViewModel<>(scope, FileChooserType.SAVE_AS, getAppearanceSettings(),
 //                getHistoryManager());

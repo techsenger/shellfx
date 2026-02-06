@@ -28,9 +28,9 @@ module com.techsenger.tabshell.demos.full {
 //    requires com.techsenger.tabshell.jfx;
     requires com.techsenger.tabshell.web;
     requires com.techsenger.tabshell.storage;
-//    requires com.techsenger.tabshell.dialogs;
+    requires com.techsenger.tabshell.dialogs;
     requires com.techsenger.tabshell.terminal;
-    requires com.techsenger.tabshell.registrars;
+//    requires com.techsenger.tabshell.registrars;
     requires com.techsenger.tabshell.icons;
     requires com.techsenger.tabshell.demos.core;
     requires com.techsenger.tabpanepro.core;

@@ -102,12 +102,14 @@ public interface StyleClasses {
      * By default all table cells in all themes have {@code -fx-padding: 0 0.5em 0 0.5em;}. The table with the same
      * spacing sets 0.25em instead of 0.5em, but leaves 0.5em for left padding of the first column and right padding
      * for the last column. So, the `spacing` between columns will be the same.
+     *
+     * This style class can used for table view and column list view.
      */
-    String SAME_SPACING_TABLE = "same-spacing-table";
+    String SAME_SPACING_COLUMN = "same-spacing-column";
 
-    String SAME_SPACING_TABLE_FIRST_COLUMN = "first";
+    String SAME_SPACING_COLUMN_FIRST = "first";
 
-    String SAME_SPACING_TABLE_LAST_COLUMN = "last";
+    String SAME_SPACING_COLUMN_LAST = "last";
 
     /**
      * CSS style class for UI elements that should visually blend with the default background. Applied to elements

@@ -147,6 +147,14 @@ public class ColumnListView<T> extends Region {
 
         private void updateCells() {
             var item = getItem();
+            if (node.getStyleClass().size() > 1) {
+                node.getStyleClass().remove(1);
+            }
+            if (item == 0) {
+                node.getStyleClass().add("first");
+            } else if (item == (this.listView.getColumnCount() - 1) * this.listView.getRowCount()) {
+                node.getStyleClass().add("last");
+            }
             int endIndex = Math.min(item + this.listView.getRowCount(), this.listView.getItems().size());
             var cellItems = this.listView.getItems().subList(item, endIndex);
             var absentCells = cellItems.size() - this.cachedCells.size();

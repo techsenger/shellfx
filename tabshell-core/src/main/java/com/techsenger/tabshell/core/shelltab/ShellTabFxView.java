@@ -23,7 +23,8 @@ import com.techsenger.tabshell.core.tab.TabFxView;
  *
  * @author Pavel Castornii
  */
-public interface ShellTabFxView<P extends ShellTabPresenter<?, ?>> extends TabFxView<P>, ShellTabView {
+public interface ShellTabFxView<P extends ShellTabPresenter<?, ?>> extends TabFxView<P>, DialogContainerFxView,
+        ShellTabView {
 
     interface Composer extends TabFxView.Composer, DialogContainerFxView.Composer, ShellTabComposer {
 

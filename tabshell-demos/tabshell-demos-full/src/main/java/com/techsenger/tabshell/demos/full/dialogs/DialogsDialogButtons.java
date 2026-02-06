@@ -16,14 +16,13 @@
 
 package com.techsenger.tabshell.demos.full.dialogs;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
-import java.util.List;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogsDialogView extends DialogView {
+public interface DialogsDialogButtons {
 
-    void setDialogTypes(List<DialogType> types);
+    ResultButtonName CLOSE = new ResultButtonName();
 }

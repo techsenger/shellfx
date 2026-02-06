@@ -22,5 +22,5 @@ package com.techsenger.tabshell.dialogs.alert;
  */
 public enum AlertDialogType {
 
-    INFO, WARNING, ERROR
+    INFO, WARNING, ERROR, CONFIRMATION
 }

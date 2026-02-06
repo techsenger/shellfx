@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dialogs;
+package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
-import java.util.List;
+import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.storage.GenericFile;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogsDialogView extends DialogView {
+public interface FileChooserDialogPort extends DialogPort {
 
-    void setDialogTypes(List<DialogType> types);
+    GenericFile getResult();
 }

@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dialogs;
+package com.techsenger.tabshell.dialogs;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
-import java.util.List;
+import com.techsenger.patternfx.core.ComponentName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogsDialogView extends DialogView {
+public interface DialogComponents {
 
-    void setDialogTypes(List<DialogType> types);
+    ComponentName ALERT_DIALOG = new ComponentName("AlertDialog");
+
+    ComponentName YES_NO_DIALOG = new ComponentName("YesNoDialog");
+
+    ComponentName FILE_CHOOSER_DIALOG = new ComponentName("FileChooserDialog");
+
+    ComponentName NAME_VALUE_DIALOG = new ComponentName("NameValueDialog");
 }
