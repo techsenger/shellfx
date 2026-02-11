@@ -25,6 +25,9 @@ import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogFxView;
 import com.techsenger.tabshell.demos.full.dialogs.DialogsDialogPresenter;
 import com.techsenger.tabshell.demos.full.dock.DockLayoutTabFxView;
 import com.techsenger.tabshell.demos.full.dock.DockLayoutTabPresenter;
+import com.techsenger.tabshell.demos.full.page.PagedTabFxView;
+import com.techsenger.tabshell.demos.full.page.PagedTabHistory;
+import com.techsenger.tabshell.demos.full.page.PagedTabPresenter;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuGroup;
@@ -59,20 +62,21 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
         registerDockLayoutItem();
 //        registerJfxTabDockItem();
         registerWebBrowserItem();
+        registerPagedTabItem();
     }
 
     protected void registerMenu() {
         ControlFactory<NamedMenu> f = (v) -> {
-            return new NamedMenu(DemoMenuNames.DEMO, "_Demo", 1000);
+            return new NamedMenu(DemoMenus.DEMO, "_Demo", 1000);
         };
         addRegistration(getRegistry().registerMenu(CoreComponents.SHELL, null, f));
     }
 
     protected void registerDefaultGroup() {
         ControlFactory<NamedMenuGroup> f = (v) -> {
-            return new NamedMenuGroup(DemoMenuNames.DEFAULT, 100);
+            return new NamedMenuGroup(DemoMenus.DEFAULT, 100);
         };
-        addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, DemoMenuNames.DEMO, f));
+        addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, DemoMenus.DEMO, f));
     }
 
 //    protected void registerTextEditorItem() {
@@ -130,7 +134,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
 //
     protected void registerTerminalItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoMenuNames.TERMINAL, "_Terminal",
+            var item = new NamedMenuItem(DemoMenus.TERMINAL, "_Terminal",
                     new FontIconView(TerminalIcons.TERMINAL), 300);
             item.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
             item.setOnAction((e) -> {
@@ -143,12 +147,12 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenus.DEFAULT, f));
     }
 
     protected void registerDialogsItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoMenuNames.DIALOGS, "Dialogs", 500);
+            var item = new NamedMenuItem(DemoMenus.DIALOGS, "Dialogs", 500);
             item.setOnAction((e) -> {
                 var shellV = (ShellFxView<?>) v;
                 var shellP = shellV.getPresenter();
@@ -160,12 +164,12 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenus.DEFAULT, f));
     }
 
     protected void registerDockLayoutItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoMenuNames.DOCK_LAYOUT, "Dock Layout", 600);
+            var item = new NamedMenuItem(DemoMenus.DOCK_LAYOUT, "Dock Layout", 600);
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
                 var dockTabView = new DockLayoutTabFxView(shell);
@@ -176,7 +180,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenus.DEFAULT, f));
     }
 
 //    protected void registerJfxTabDockItem() {
@@ -208,7 +212,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
 //
     protected void registerWebBrowserItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(DemoMenuNames.WEB_BROWSER, "Web Browser", 800);
+            var item = new NamedMenuItem(DemoMenus.WEB_BROWSER, "Web Browser", 800);
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
                 var browserView = new WebBrowserTabFxView<>(shell);
@@ -218,6 +222,24 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenuNames.DEFAULT, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenus.DEFAULT, f));
+    }
+
+    protected void registerPagedTabItem() {
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(DemoMenus.PAGED_TAB, "Paged Tab", 900);
+            item.setOnAction((e) -> {
+                var shell = (ShellFxView<?>) v;
+                var tabView = new PagedTabFxView(shell);
+                var historyManager = shell.getPresenter().getHistoryManager();
+                var tabPresenter = new PagedTabPresenter(tabView,
+                        () -> historyManager.getOrCreateHistory(PagedTabHistory.class, PagedTabHistory::new));
+                tabPresenter.initialize();
+                shell.getComposer().addTab(tabView);
+                tabView.requestFocus();
+            });
+            return item;
+        };
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenus.DEFAULT, f));
     }
 }

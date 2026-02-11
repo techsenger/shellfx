@@ -19,7 +19,11 @@ package com.techsenger.tabshell.core.page;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 /**
  *
@@ -35,6 +39,10 @@ public abstract class AbstractPageFxView<P extends PagePresenter<?, ?>>
     private final Label titleLabel = new Label();
 
     private final IconViewBox iconViewBox = new IconViewBox();
+
+    private final HBox titleBox = new HBox(iconViewBox, titleLabel);
+
+    private final BooleanProperty selected = new SimpleBooleanProperty();
 
     public AbstractPageFxView() {
         super();
@@ -60,6 +68,25 @@ public abstract class AbstractPageFxView<P extends PagePresenter<?, ?>>
         iconViewBox.setIcon(icon);
     }
 
+    @Override
+    public boolean isSelected() {
+        return selected.get();
+    }
+
+    @Override
+    public void setSelected(boolean value) {
+        selected.set(value);
+    }
+
+    @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
+    }
+
+    protected BooleanProperty selectedProperty() {
+        return selected;
+    }
+
     protected Label getTitleLabel() {
         return titleLabel;
     }
@@ -68,13 +95,18 @@ public abstract class AbstractPageFxView<P extends PagePresenter<?, ?>>
         return iconViewBox;
     }
 
-    @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
+    protected HBox getTitleBox() {
+        return titleBox;
     }
 
     @Override
     protected Composer createComposer() {
         return new AbstractPageFxView.Composer();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        HBox.setHgrow(titleLabel, Priority.ALWAYS);
     }
 }

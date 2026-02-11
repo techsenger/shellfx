@@ -41,4 +41,12 @@ public interface DemoComponents {
     ComponentName DEMO_DIALOGS_DIALOG = new ComponentName("DemoDialogsDialog");
 
     ComponentName DEMO_THEME_DIALOG = new ComponentName("DemoThemeDialog");
+
+    ComponentName DEMO_PAGE_0 = new ComponentName("DemoPage0");
+
+    ComponentName DEMO_PAGE_1 = new ComponentName("DemoPage1");
+
+    ComponentName DEMO_PAGE_2 = new ComponentName("DemoPage2");
+
+    ComponentName DEMO_PAGED_TAB = new ComponentName("DemoPagedTab");
 }

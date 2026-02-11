@@ -26,7 +26,7 @@ import com.techsenger.tabshell.material.menu.MenuName;
  *
  * @author Pavel Castornii
  */
-public interface DemoMenuNames {
+public interface DemoMenus {
 
     MenuName DEMO = new MenuName();
 
@@ -45,4 +45,6 @@ public interface DemoMenuNames {
     MenuItemName JFX_DOCK = new MenuItemName();
 
     MenuItemName WEB_BROWSER = new MenuItemName();
+
+    MenuItemName PAGED_TAB = new MenuItemName();
 }

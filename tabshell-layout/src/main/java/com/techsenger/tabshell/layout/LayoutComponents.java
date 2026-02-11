@@ -37,4 +37,6 @@ public interface LayoutComponents {
     ComponentName TAB_POPUP = new ComponentName("TabPopup");
 
     ComponentName PLACEHOLDER = new ComponentName("Placeholder");
+
+    ComponentName PAGE_HOST = new ComponentName("PageHost");
 }

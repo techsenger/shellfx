@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.demos.full.page;
 
-.tree-table-view {
-    -fx-border-width: 0;
-}
+import com.techsenger.tabshell.core.shelltab.ShellTabHistory;
+import com.techsenger.tabshell.layout.pagehost.PageHostHistory;
 
-.tree-table-view .tree-table-row-cell {
-    -fx-background-insets: 0, 0;
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class PagedTabHistory extends ShellTabHistory {
 
-.tree-table-view .tree-table-row-cell .label.default-value {
-    -fx-text-fill: -color-fg-muted;
-}
+    private PageHostHistory hostHistory = new PageHostHistory();
 
-.tree-table-view .tree-table-row-cell .css-container {
-    -fx-alignment: TOP_LEFT;
-}
+    public PageHostHistory getHostHistory() {
+        return hostHistory;
+    }
 
-.tree-table-view .tree-table-row-cell .css-container > .css-hint {
-    -fx-font-size: 0.65em;
+    public void setHostHistory(PageHostHistory hostHistory) {
+        this.hostHistory = hostHistory;
+    }
 }

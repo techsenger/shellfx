@@ -16,25 +16,12 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.jfx.ElementUtils;
-import com.techsenger.tabshell.jfx.inspector.PropertyItem.PropertyValue;
 import com.techsenger.tabshell.material.style.SizeConstants;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import devtoolsfx.connector.LocalElement;
-import devtoolsfx.event.EventSource;
-import devtoolsfx.scenegraph.Element;
-import devtoolsfx.scenegraph.attributes.Attribute;
-import static devtoolsfx.scenegraph.attributes.Attribute.DisplayHint.INSETS;
-import static devtoolsfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
-import devtoolsfx.scenegraph.attributes.Attribute.ValueState;
-import devtoolsfx.scenegraph.attributes.AttributeCategory;
 import java.text.DecimalFormat;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeCell;
@@ -45,7 +32,6 @@ import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -296,7 +282,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         getContentPane().getStylesheets().add(styles);
 
         nodeTreeView.setCellFactory(tv -> new NodeCell());
-        nodeTreeView.getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        nodeTreeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
         VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
         var nodeSearchPanel = getComponent().getNodeSearchPanel().getView();
         nodeSearchPanel.getNode().getItems().addAll(nodeSearchPanel.getSearchField(),

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.menu;
-
-import com.techsenger.tabshell.shared.menu.FileMenuNames;
-import com.techsenger.tabshell.material.menu.MenuItemName;
+package com.techsenger.tabshell.core.page;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DemoFileMenuNames extends FileMenuNames {
+public interface PageContainerFxView<P extends PageContainerPresenter<?, ?>> {
 
-    MenuItemName THEME = new MenuItemName();
+    interface Composer extends PageContainerComposer {
 
+    }
+
+    Composer getComposer();
 }

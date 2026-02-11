@@ -67,4 +67,9 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
     protected PageHistory getHistory() {
         return (PageHistory) super.getHistory();
     }
+
+    @Override
+    protected Port createPort() {
+        return new AbstractPagePresenter.Port();
+    }
 }

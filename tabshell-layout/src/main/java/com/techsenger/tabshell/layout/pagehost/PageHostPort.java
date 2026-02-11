@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.layout.pagehost;
 
-.tree-table-view {
-    -fx-border-width: 0;
-}
+import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.page.PageContainerPort;
 
-.tree-table-view .tree-table-row-cell {
-    -fx-background-insets: 0, 0;
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface PageHostPort extends AreaPort, PageContainerPort {
 
-.tree-table-view .tree-table-row-cell .label.default-value {
-    -fx-text-fill: -color-fg-muted;
-}
-
-.tree-table-view .tree-table-row-cell .css-container {
-    -fx-alignment: TOP_LEFT;
-}
-
-.tree-table-view .tree-table-row-cell .css-container > .css-hint {
-    -fx-font-size: 0.65em;
 }

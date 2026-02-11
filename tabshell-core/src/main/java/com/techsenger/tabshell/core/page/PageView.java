@@ -27,4 +27,6 @@ import com.techsenger.tabshell.core.area.AreaView;
 public interface PageView extends AreaView, Titled, Iconed {
 
     boolean isSelected();
+
+    void setSelected(boolean selected);
 }

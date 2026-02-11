@@ -125,4 +125,9 @@ public interface StyleClasses {
      * Use this class for Hyperlinks to make them look like labels.
      */
     String NO_URL = "no-url";
+
+    /**
+     * This style class is used in atlantafx.
+     */
+    String NO_BORDER = "edge-to-edge";
 }

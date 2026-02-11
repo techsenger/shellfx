@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.demos.full.menu;
 
-.tree-table-view {
-    -fx-border-width: 0;
-}
+import com.techsenger.tabshell.shared.menu.FileMenuNames;
+import com.techsenger.tabshell.material.menu.MenuItemName;
 
-.tree-table-view .tree-table-row-cell {
-    -fx-background-insets: 0, 0;
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface DemoFileMenus extends FileMenuNames {
 
-.tree-table-view .tree-table-row-cell .label.default-value {
-    -fx-text-fill: -color-fg-muted;
-}
+    MenuItemName THEME = new MenuItemName();
 
-.tree-table-view .tree-table-row-cell .css-container {
-    -fx-alignment: TOP_LEFT;
-}
-
-.tree-table-view .tree-table-row-cell .css-container > .css-hint {
-    -fx-font-size: 0.65em;
 }

@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.layout.pagehost;
 
-.tree-table-view {
-    -fx-border-width: 0;
-}
+import com.techsenger.tabshell.core.area.AreaHistory;
 
-.tree-table-view .tree-table-row-cell {
-    -fx-background-insets: 0, 0;
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class PageHostHistory extends AreaHistory {
 
-.tree-table-view .tree-table-row-cell .label.default-value {
-    -fx-text-fill: -color-fg-muted;
-}
+    private double dividerPosition;
 
-.tree-table-view .tree-table-row-cell .css-container {
-    -fx-alignment: TOP_LEFT;
-}
+    public double getDividerPosition() {
+        return dividerPosition;
+    }
 
-.tree-table-view .tree-table-row-cell .css-container > .css-hint {
-    -fx-font-size: 0.65em;
+    public void setDividerPosition(double dividerPosition) {
+        this.dividerPosition = dividerPosition;
+    }
 }

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.core.page;
 
-/* icon label */
-.status-bar .worker-pane {
-    -fx-padding: 0 25 0 0;
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface PageContainerView {
 
-.status-bar .hyperlink {
-    -fx-text-fill: -color-fg-default;
 }
