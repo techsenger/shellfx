@@ -291,7 +291,7 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         super.restoreAppearance();
         var h = getHistory();
         var v = getView();
-        if (!h.isFresh()) {
+        if (!h.isNew()) {
             if (h.isMaximized()) {
                 v.setMaximized(true);
             } else {

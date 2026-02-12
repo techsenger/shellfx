@@ -95,7 +95,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     protected void postInitialize() {
         super.postInitialize();
         var history = getHistory();
-        if (history.isFresh()) {
+        if (history.isNew()) {
             getView().setDividerPosition(0.2);
         }
     }

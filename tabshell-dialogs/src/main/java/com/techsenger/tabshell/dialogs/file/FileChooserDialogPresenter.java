@@ -212,7 +212,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         view.setPrefWidth(800);
         view.setPrefHeight(500);
         view.setupFor(type);
-        if (getHistory().isFresh()) {
+        if (getHistory().isNew()) {
             var tableHistory = createInitialTableHistory();
             view.setTableHistory(tableHistory);
         }
