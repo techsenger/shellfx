@@ -37,4 +37,6 @@ public interface DialogsDialogComposer extends DialogComposer {
 
     FileChooserDialogPort addFileChooserDialog(FileChooserType type, AppearanceSettings settings,
             HistoryManager manager);
+
+    DialogPort addPagedDialog(HistoryManager manager);
 }

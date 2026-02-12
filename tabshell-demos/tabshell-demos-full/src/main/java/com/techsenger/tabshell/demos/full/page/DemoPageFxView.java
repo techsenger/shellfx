@@ -35,8 +35,9 @@ public class DemoPageFxView extends AbstractPageFxView<PagePresenter<?, ?>> impl
 
     private final VBox box = new VBox(getTitleBox(), textArea);
 
-    public DemoPageFxView(String title) {
+    public DemoPageFxView(String title, Insets padding) {
         this.getTitleLabel().setText(title);
+        this.box.setPadding(padding);
     }
 
     @Override
@@ -54,7 +55,6 @@ public class DemoPageFxView extends AbstractPageFxView<PagePresenter<?, ?>> impl
         super.build();
         textArea.setWrapText(true);
         VBox.setVgrow(textArea, Priority.ALWAYS);
-        box.setPadding(new Insets(SizeConstants.INSET));
         box.setSpacing(SizeConstants.INSET);
     }
 }

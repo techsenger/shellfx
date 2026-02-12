@@ -16,14 +16,12 @@
 
 package com.techsenger.tabshell.demos.full.page;
 
-import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
+import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.demos.full.DemoComponents;
 import com.techsenger.tabshell.layout.pagehost.PageHostFxView;
 import com.techsenger.tabshell.layout.pagehost.PageHostPresenter;
-import com.techsenger.tabshell.material.style.StyleClasses;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToolBar;
+import com.techsenger.tabshell.material.button.ResultButton;
+import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -31,20 +29,20 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class PagedTabFxView extends AbstractShellTabFxView<PagedTabPresenter> implements PagedTabView {
+public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter> implements PagedDialogView {
 
-    public class Composer extends AbstractShellTabFxView.Composer {
+    public class Composer extends AbstractDialogFxView.Composer {
 
         @Override
         public void compose() {
             super.compose();
-            var rootItem = MenuFactory.create(MenuFactory.PageType.TAB);
+            var rootItem = MenuFactory.create(MenuFactory.PageType.DIALOG);
             pageHost = new PageHostFxView<>(rootItem);
             var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());
             hostPresenter.initialize();
 
             getModifiableChildren().add(pageHost);
-            getContentPane().getChildren().add(pageHost.getNode());
+            getContentBox().getChildren().add(pageHost.getNode());
             VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
 
             pageHost.getComposer().selectPage(DemoComponents.DEMO_PAGE_1);
@@ -54,8 +52,10 @@ public class PagedTabFxView extends AbstractShellTabFxView<PagedTabPresenter> im
 
     private PageHostFxView<?> pageHost;
 
-    public PagedTabFxView(ShellFxView<?> shell) {
-        super(shell);
+    private final ResultButton okButton = new ResultButton(PagedDialogButtons.OK, "OK");
+
+    public PagedDialogFxView(boolean resizable) {
+        super(resizable);
     }
 
     @Override
@@ -70,15 +70,15 @@ public class PagedTabFxView extends AbstractShellTabFxView<PagedTabPresenter> im
 
     @Override
     protected Composer createComposer() {
-        return new PagedTabFxView.Composer();
+        return new PagedDialogFxView.Composer();
     }
 
     @Override
     protected void build() {
         super.build();
-        var button = new Button("Test");
-        var toolBar = new ToolBar(button);
-        toolBar.getStyleClass().add(StyleClasses.BLEND);
-        getContentPane().getChildren().add(toolBar);
+        registerButtons(okButton);
+        addRightButtons(okButton.getName());
+        setButtonDefault(okButton.getName(), true);
+        getContentBox().setPadding(Insets.EMPTY);
     }
 }

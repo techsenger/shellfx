@@ -58,7 +58,8 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
                 dialog.setCancelVisible(false);
             }),
             Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
-            Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS))
+            Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
+            Map.entry(DialogType.PAGED, () -> showPagedDialog())
     );
 
     private final AppearanceSettings settings;
@@ -116,5 +117,9 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
                 port.requestClose();
             }
         });
+    }
+
+    private void showPagedDialog() {
+        getComposer().addPagedDialog(historyManager);
     }
 }

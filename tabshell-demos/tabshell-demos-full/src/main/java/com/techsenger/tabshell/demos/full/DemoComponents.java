@@ -49,4 +49,6 @@ public interface DemoComponents {
     ComponentName DEMO_PAGE_2 = new ComponentName("DemoPage2");
 
     ComponentName DEMO_PAGED_TAB = new ComponentName("DemoPagedTab");
+
+    ComponentName DEMO_PAGED_DIALOG = new ComponentName("DemoPagedDialog");
 }

@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dialogs;
+package com.techsenger.tabshell.demos.full.page;
+
+import com.techsenger.tabshell.core.dialog.DialogHistory;
+import com.techsenger.tabshell.layout.pagehost.PageHostHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-enum DialogType {
+public class PagedDialogHistory extends DialogHistory {
 
-    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, OPEN_FILE, SAVE_FILE, PAGED
+    private PageHostHistory hostHistory = new PageHostHistory();
+
+    public PageHostHistory getHostHistory() {
+        return hostHistory;
+    }
+
+    public void setHostHistory(PageHostHistory hostHistory) {
+        this.hostHistory = hostHistory;
+    }
+
 }

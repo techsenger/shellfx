@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dialogs;
+package com.techsenger.tabshell.demos.full.page;
+
+import com.techsenger.tabshell.core.dialog.DialogView;
 
 /**
  *
  * @author Pavel Castornii
  */
-enum DialogType {
+public interface PagedDialogView extends DialogView {
 
-    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, OPEN_FILE, SAVE_FILE, PAGED
 }

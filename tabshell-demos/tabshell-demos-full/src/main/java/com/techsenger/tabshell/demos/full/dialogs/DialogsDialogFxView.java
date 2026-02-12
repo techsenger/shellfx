@@ -22,6 +22,9 @@ import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.demos.full.page.PagedDialogFxView;
+import com.techsenger.tabshell.demos.full.page.PagedDialogHistory;
+import com.techsenger.tabshell.demos.full.page.PagedDialogPresenter;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
@@ -55,6 +58,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var presenter = new AlertDialogPresenter<>(view, OverlayScope.SHELL, type, message);
             presenter.initialize();
             getContainer().getComposer().addDialog(view);
+            view.requestFocus();
             return presenter.getPort();
         }
 
@@ -64,6 +68,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var presenter = new NameValueDialogPresenter<>(view, OverlayScope.SHELL);
             presenter.initialize();
             getContainer().getComposer().addDialog(view);
+            view.requestFocus();
             return presenter.getPort();
         }
 
@@ -74,6 +79,18 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var presenter = new FileChooserDialogPresenter<>(view, OverlayScope.SHELL, type, settings, manager);
             presenter.initialize();
             getContainer().getComposer().addDialog(view);
+            view.requestFocus();
+            return presenter.getPort();
+        }
+
+        @Override
+        public DialogPort addPagedDialog(HistoryManager hm) {
+            var view = new PagedDialogFxView(true);
+            var presenter = new PagedDialogPresenter(view, OverlayScope.SHELL,
+                    () -> hm.getOrCreateHistory(PagedDialogHistory.class, PagedDialogHistory::new));
+            presenter.initialize();
+            getContainer().getComposer().addDialog(view);
+            view.requestFocus();
             return presenter.getPort();
         }
     }

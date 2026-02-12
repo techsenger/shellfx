@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demos.full.dialogs;
+package com.techsenger.tabshell.demos.full.page;
+
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-enum DialogType {
+public interface PagedDialogButtons {
 
-    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, OPEN_FILE, SAVE_FILE, PAGED
+    ResultButtonName OK = new ResultButtonName();
 }

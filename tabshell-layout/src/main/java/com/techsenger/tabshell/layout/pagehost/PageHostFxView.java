@@ -25,6 +25,7 @@ import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -123,6 +124,10 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
     public void setShowRoot(boolean value) {
         this.pageTreeView.setShowRoot(value);
+    }
+
+    public void setContentPadding(Insets padding) {
+        this.contentBox.setPadding(padding);
     }
 
     @Override
