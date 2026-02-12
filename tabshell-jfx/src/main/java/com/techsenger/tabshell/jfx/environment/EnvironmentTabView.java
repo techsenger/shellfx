@@ -16,19 +16,15 @@
 
 package com.techsenger.tabshell.jfx.environment;
 
-import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ListChangeListener;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
@@ -80,9 +76,9 @@ public class EnvironmentTabView<T extends EnvironmentTabViewModel<?>, S extends 
         tableView.setPlaceholder(new Label(""));
         VBox.setVgrow(tableView, Priority.ALWAYS);
 
-        getContentPane().getChildren().addAll(searchPanel.getNode(), tableView);
+        getContentBox().getChildren().addAll(searchPanel.getNode(), tableView);
         var styles = EnvironmentTabView.class.getResource("environment-tab.css").toExternalForm();
-        getContentPane().getStylesheets().add(styles);
+        getContentBox().getStylesheets().add(styles);
     }
 
     @Override

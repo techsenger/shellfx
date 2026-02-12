@@ -48,12 +48,12 @@ public class TerminalTabFxView<P extends TerminalTabPresenter<?, ?>> extends Abs
             toolBar = createToolBar();
             toolBar.getPresenter().initialize();
             view.getModifiableChildren().add(toolBar);
-            view.getContentPane().getChildren().add(toolBar.getNode());
+            view.getContentBox().getChildren().add(toolBar.getNode());
 
             layout = createLayout(null);
             layout.getPresenter().initialize();
             view.getModifiableChildren().add(layout);
-            view.getContentPane().getChildren().add(layout.getNode());
+            view.getContentBox().getChildren().add(layout.getNode());
 
             area = createArea();
             area.getPresenter().initialize();

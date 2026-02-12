@@ -292,7 +292,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
     private final MenuManager menuManager;
 
-    private final VBox contentPane = new VBox();
+    private final VBox contentBox = new VBox();
 
     private final StackPane stackPane = new StackPane();
 
@@ -324,7 +324,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         var dialogCount = new SimpleIntegerProperty();
         stageController = new ShellStageController(stage, DEFAULT_WIDTH, DEFAULT_HEIGHT, dialogCount);
         this.menuManager = new MenuManager(this, this.menuBar);
-        this.dialogManager = new ShellDialogManager(stageController, stackPane, contentPane);
+        this.dialogManager = new ShellDialogManager(stageController, stackPane, contentBox);
         dialogCount.bind(Bindings.size(this.dialogManager.getDialogs()));
     }
 
@@ -486,7 +486,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
         tabPane.getStyleClass().addAll("shell-tab-pane", Styles.DENSE);
         VBox.setVgrow(tabPane, Priority.ALWAYS);
-        this.contentPane.getChildren().add(tabPane);
+        this.contentBox.getChildren().add(tabPane);
         TabContainerFxViewUtils.initTabPane(tabPane, getPresenter());
         var tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
@@ -499,7 +499,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
                 return (tabCount - 1 - index) * -1.0;
             }
         });
-        stageController.contentProperty().set(this.contentPane);
+        stageController.contentProperty().set(this.contentBox);
         //we add stackpane behind stage root
         stackPane.getChildren().add(stage.getScene().getRoot());
         stackPane.getStyleClass().add("root-stack-pane");

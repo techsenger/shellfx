@@ -140,7 +140,7 @@ public abstract class AbstractEditorTabView<T extends AbstractEditorTabViewModel
         this.getStatusBar().getRightItems().add(0, hbox);
         textArea.getStyleClass().add("editor");
         var css = AbstractEditorTabView.class.getResource("editor.css").toExternalForm();
-        this.getContentPane().getStylesheets().add(css);
+        this.getContentBox().getStylesheets().add(css);
         cutItem.setAccelerator(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN));
         pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
     }

@@ -49,11 +49,11 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
 
     private final ComponentTab root = new ComponentTab(this);
 
-    private final VBox contentPane = new VBox();
+    private final VBox contentBox = new VBox();
 
     private final Pane bgPane = new Pane();
 
-    private final StackPane wrapperPane = new StackPane(contentPane);
+    private final StackPane wrapperPane = new StackPane(contentBox);
 
     private final IconViewBox iconViewBox = new IconViewBox();
 
@@ -155,12 +155,12 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
     @Override
     protected void initialize() {
         this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
-                () -> getContentPane().sceneProperty());
+                () -> getContentBox().sceneProperty());
         super.initialize();
     }
 
-    protected VBox getContentPane() {
-        return contentPane;
+    protected VBox getContentBox() {
+        return contentBox;
     }
 
     @Override

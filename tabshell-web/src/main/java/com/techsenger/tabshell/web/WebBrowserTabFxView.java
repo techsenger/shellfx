@@ -50,13 +50,13 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
             var toolBar = createToolBar();
             toolBar.getPresenter().initialize();
             view.getModifiableChildren().add(toolBar);
-            view.getContentPane().getChildren().add(toolBar.getNode());
+            view.getContentBox().getChildren().add(toolBar.getNode());
             view.toolBar = toolBar;
 
             var layout = createLayout(null);
             layout.getPresenter().initialize();
             view.getModifiableChildren().add(layout);
-            view.getContentPane().getChildren().add(layout.getNode());
+            view.getContentBox().getChildren().add(layout.getNode());
             view.layout = layout;
 
             var area = createArea();

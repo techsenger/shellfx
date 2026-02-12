@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.hex.inspector;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.tab.AbstractTabView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
@@ -146,7 +145,7 @@ public class DataInspectorTabView<T extends DataInspectorTabViewModel, S extends
         baseGridPane.setPadding(new Insets(SizeConstants.INSET));
 
         this.toolBar.getStyleClass().add(Styles.DENSE);
-        getContentPane().getChildren().addAll(toolBar, typeTableView, baseGridPane);
+        getContentBox().getChildren().addAll(toolBar, typeTableView, baseGridPane);
     }
 
     @Override

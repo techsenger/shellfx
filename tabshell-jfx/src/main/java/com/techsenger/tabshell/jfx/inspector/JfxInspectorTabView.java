@@ -279,7 +279,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
         nodeTreeView.setRoot(rootItem);
 
         var styles = JfxInspectorTabView.class.getResource("inspector-tab.css").toExternalForm();
-        getContentPane().getStylesheets().add(styles);
+        getContentBox().getStylesheets().add(styles);
 
         nodeTreeView.setCellFactory(tv -> new NodeCell());
         nodeTreeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
@@ -328,7 +328,7 @@ public class JfxInspectorTabView<T extends JfxInspectorTabViewModel<?>, S extend
                 propertyTableView);
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
-        getContentPane().getChildren().add(splitPane);
+        getContentBox().getChildren().add(splitPane);
     }
 
     @Override

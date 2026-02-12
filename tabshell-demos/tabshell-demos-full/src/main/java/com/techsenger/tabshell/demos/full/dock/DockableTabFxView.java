@@ -44,7 +44,7 @@ public class DockableTabFxView extends AbstractTabFxView<DockableTabPresenter> {
     @Override
     protected void build() {
         super.build();
-        getContentPane().getChildren().add(stackPane);
+        getContentBox().getChildren().add(stackPane);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
     }
 

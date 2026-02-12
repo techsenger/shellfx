@@ -54,7 +54,7 @@ package com.techsenger.tabshell.shared.worker;
 //        this.table.getStyleClass().addAll(Styles.DENSE, Styles.BORDERED);
 //        this.table.setPlaceholder(new Label());
 //        VBox.setVgrow(table, Priority.ALWAYS);
-//        this.getContentPane().getChildren().add(table);
+//        this.getContentBox().getChildren().add(table);
 //        this.buildTableColumns();
 //    }
 //

@@ -16,16 +16,12 @@
 
 package com.techsenger.tabshell.jfx.stylesheet;
 
-import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
@@ -72,7 +68,7 @@ public class StylesheetTabView<T extends StylesheetTabViewModel<?>, S extends St
         treeView.setCellFactory(e -> new StylesheetTreeCell());
 
         VBox.setVgrow(treeView, Priority.ALWAYS);
-        getContentPane().getChildren().addAll(searchPanel.getNode(), treeView);
+        getContentBox().getChildren().addAll(searchPanel.getNode(), treeView);
         rebuiltTree();
     }
 

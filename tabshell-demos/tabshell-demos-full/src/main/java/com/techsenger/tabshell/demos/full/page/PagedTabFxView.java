@@ -44,7 +44,7 @@ public class PagedTabFxView extends AbstractShellTabFxView<PagedTabPresenter> im
             hostPresenter.initialize();
 
             getModifiableChildren().add(pageHost);
-            getContentPane().getChildren().add(pageHost.getNode());
+            getContentBox().getChildren().add(pageHost.getNode());
             VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
 
             pageHost.getComposer().selectPage(DemoComponents.DEMO_PAGE_1);
@@ -79,6 +79,6 @@ public class PagedTabFxView extends AbstractShellTabFxView<PagedTabPresenter> im
         var button = new Button("Test");
         var toolBar = new ToolBar(button);
         toolBar.getStyleClass().add(StyleClasses.BLEND);
-        getContentPane().getChildren().add(toolBar);
+        getContentBox().getChildren().add(toolBar);
     }
 }

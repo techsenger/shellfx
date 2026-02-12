@@ -126,12 +126,12 @@ public class DockLayoutTabFxView extends AbstractShellTabFxView<DockLayoutTabPre
         });
         var toolbar = new ToolBar(removeButton, addButton);
         toolbar.getStyleClass().add(StyleClasses.BLEND);
-        getContentPane().getChildren().add(toolbar);
+        getContentBox().getChildren().add(toolbar);
 
     }
 
     private void addLayout() {
-        getContentPane().getChildren().add(layout.getNode());
+        getContentBox().getChildren().add(layout.getNode());
         var lastArea = layout.getBottomBar().getLastArea();
         var hBox = new HBox(new Label("Label 1"), new Separator(Orientation.VERTICAL),
                 new Label("Label 2"));

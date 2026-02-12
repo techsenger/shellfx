@@ -17,14 +17,9 @@
 package com.techsenger.tabshell.jfx.eventlog;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.tab.AbstractTabView;
-import com.techsenger.tabshell.jfx.style.JfxIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.application.Platform;
-import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.CheckMenuItem;
@@ -35,7 +30,6 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
@@ -120,7 +114,7 @@ public class EventLogTabView<T extends EventLogTabViewModel<?>, S extends EventL
         textArea.setEditable(false);
         textArea.getStyleClass().add(StyleClasses.MONOSPACE);
         VBox.setVgrow(textScrollPane, Priority.ALWAYS);
-        getContentPane().getChildren().addAll(searchPanel.getNode(), textScrollPane);
+        getContentBox().getChildren().addAll(searchPanel.getNode(), textScrollPane);
     }
 
     @Override

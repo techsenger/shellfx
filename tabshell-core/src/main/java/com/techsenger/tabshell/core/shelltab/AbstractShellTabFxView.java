@@ -107,7 +107,7 @@ public abstract class AbstractShellTabFxView<P extends ShellTabPresenter<?, ?>>
         }
     }
 
-    private final DialogManager dialogManager = new DefaultDialogManager(getWrapperPane(), getContentPane());
+    private final DialogManager dialogManager = new DefaultDialogManager(getWrapperPane(), getContentBox());
 
     private final ShellFxView<?> shell;
 

@@ -129,8 +129,8 @@ public class DemoTabFxView<P extends DemoTabPresenter<?, ?>> extends AbstractShe
         super.build();
         hBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(SizeConstants.INSET);
-        getContentPane().setAlignment(Pos.CENTER);
-        getContentPane().getChildren().add(hBox);
+        getContentBox().setAlignment(Pos.CENTER);
+        getContentBox().getChildren().add(hBox);
 
     }
 

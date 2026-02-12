@@ -16,13 +16,9 @@
 
 package com.techsenger.tabshell.jfx.inspector;
 
-import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -30,7 +26,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
@@ -139,7 +134,7 @@ public class PropertyDialogView<T extends PropertyDialogViewModel, S extends Pro
         wrapper.setPadding(new Insets(SizeConstants.INSET, SizeConstants.INSET, 0, SizeConstants.INSET));
 
         getButtonBox().getChildren().add(getOkButton());
-        getContentPane().getChildren().addAll(wrapper, getButtonBox());
+        getContentBox().getChildren().addAll(wrapper, getButtonBox());
     }
 }
 

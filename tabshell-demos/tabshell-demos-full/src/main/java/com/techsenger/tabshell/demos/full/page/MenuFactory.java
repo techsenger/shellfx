@@ -36,7 +36,7 @@ final class MenuFactory {
         DIALOG, TAB
     }
 
-    private static class PageItem implements Page {
+    private static final class PageItem implements Page {
 
         private final ComponentName name;
 

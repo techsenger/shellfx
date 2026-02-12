@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.text.viewer;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.dialogs.simple.AbstractSimpleDialogView;
 import com.techsenger.tabshell.material.FxUtils;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.toolkit.fx.input.IntegerTextFormatter;
@@ -94,7 +93,7 @@ public class GoToLineDialogView<T extends GoToLineDialogViewModel, S extends GoT
         columnComboBox.setItems(viewModel.getColumns());
         FxUtils.makeValueUpdateOnEnter(columnComboBox);
 
-        getContentPane().getChildren().addAll(gridPane, getButtonBox());
+        getContentBox().getChildren().addAll(gridPane, getButtonBox());
         getFocusTrap().activate();
     }
 

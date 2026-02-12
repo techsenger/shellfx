@@ -75,7 +75,7 @@
 //        hBox.setAlignment(Pos.CENTER_LEFT);
 //
 //        getButtonBox().getChildren().addAll(getCancelButton(), getOkButton());
-//        getContentPane().getChildren().addAll(hBox, getButtonBox());
+//        getContentBox().getChildren().addAll(hBox, getButtonBox());
 //    }
 //
 //    @Override

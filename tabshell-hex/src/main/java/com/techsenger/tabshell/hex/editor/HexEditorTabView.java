@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.hex.editor;
 
-import com.techsenger.tabshell.core.tab.AbstractShellTabView;
 import com.techsenger.tabshell.layout.dock.DockLayoutView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -45,7 +44,7 @@ public class HexEditorTabView<T extends HexEditorTabViewModel<?>, S extends HexE
 
     void addContent(HexToolBarView<?, ?> toolBar, DockLayoutView<?, ?> layout) {
         VBox.setVgrow(layout.getNode(), Priority.ALWAYS);
-        getContentPane().getChildren().addAll(toolBar.getNode(), layout.getNode());
+        getContentBox().getChildren().addAll(toolBar.getNode(), layout.getNode());
     }
 
 }
