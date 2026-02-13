@@ -70,10 +70,10 @@
             <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-hex</artifactId>
         </dependency>-->
-<!--        <dependency>
+        <dependency>
             <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-jfx</artifactId>
-        </dependency>-->
+            <artifactId>tabshell-devtools</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-web</artifactId>

@@ -79,11 +79,10 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
 
     private final SplitPane splitPane = new SplitPane();
 
-    private final DockLayoutFxView<?> layout;
+    private DockLayoutFxView<?> layout;
 
-    protected SplitSpaceFxView(DockLayoutFxView<?> layout) {
+    protected SplitSpaceFxView() {
         super();
-        this.layout = layout;
     }
 
     @Override
@@ -130,6 +129,16 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
     @Override
     protected Composer createComposer() {
         return new Composer();
+    }
+
+    protected DockLayoutFxView<?> getLayout() {
+        return layout;
+    }
+
+    protected void setLayout(DockLayoutFxView<?> layout) {
+        if (this.layout == null) {
+            this.layout = layout;
+        }
     }
 
     void logState(String note) {

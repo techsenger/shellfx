@@ -84,8 +84,8 @@ public final class IconStylesheetFactory {
      *
      * @return
      */
-    public static Stylesheet forJfx() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("jfx.css"));
+    public static Stylesheet forDevTools() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("devtools.css"));
     }
 
     /**
@@ -100,7 +100,7 @@ public final class IconStylesheetFactory {
                 forText(),
                 forHex(),
                 forWeb(),
-                forJfx());
+                forDevTools());
     }
 
     private IconStylesheetFactory() {

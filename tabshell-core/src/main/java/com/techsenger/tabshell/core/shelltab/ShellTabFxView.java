@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.shelltab;
 
+import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.tab.TabFxView;
 
@@ -32,4 +33,6 @@ public interface ShellTabFxView<P extends ShellTabPresenter<?, ?>> extends TabFx
 
     @Override
     Composer getComposer();
+
+    ShellFxView<?> getShell();
 }

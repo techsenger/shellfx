@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogHistory;
-import com.techsenger.tabshell.material.button.ToggleButtonHistory;
 import com.techsenger.tabshell.material.table.TableHistory;
 
 /**
@@ -26,9 +25,9 @@ import com.techsenger.tabshell.material.table.TableHistory;
  */
 public class FileChooserDialogHistory extends DialogHistory {
 
-    private ToggleButtonHistory listButton = new ToggleButtonHistory();
+    private boolean listSelected;
 
-    private ToggleButtonHistory detailsButton = new ToggleButtonHistory();
+    private boolean detailsSelected;
 
     private TableHistory table;
 
@@ -36,12 +35,20 @@ public class FileChooserDialogHistory extends DialogHistory {
 
     }
 
-    public ToggleButtonHistory getListButton() {
-        return listButton;
+    public boolean isListSelected() {
+        return listSelected;
     }
 
-    public ToggleButtonHistory getDetailsButton() {
-        return detailsButton;
+    public void setListSelected(boolean listSelected) {
+        this.listSelected = listSelected;
+    }
+
+    public boolean isDetailsSelected() {
+        return detailsSelected;
+    }
+
+    public void setDetailsSelected(boolean detailsSelected) {
+        this.detailsSelected = detailsSelected;
     }
 
     public TableHistory getTable() {

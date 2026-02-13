@@ -17,13 +17,12 @@
 package com.techsenger.tabshell.terminal.find;
 
 import com.techsenger.jeditermfx.ui.FindResult;
-import com.techsenger.tabshell.shared.find.FullFindPanelView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FindPanelView extends FullFindPanelView {
+public interface FindPanelView extends com.techsenger.tabshell.shared.find.FindPanelView {
 
     void setResult(FindResult result);
 

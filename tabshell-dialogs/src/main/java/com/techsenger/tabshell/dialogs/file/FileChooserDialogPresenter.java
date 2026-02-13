@@ -189,8 +189,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         super.saveAppearance();
         var history = getHistory();
         var view = getView();
-        history.getListButton().setSelected(view.isListSelected());
-        history.getDetailsButton().setSelected(view.isDetailsSelected());
+        history.setListSelected(view.isListSelected());
+        history.setDetailsSelected(view.isDetailsSelected());
         history.setTable(view.getTableHistory());
     }
 
@@ -199,8 +199,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         super.restoreAppearance();
         var history = getHistory();
         var view = getView();
-        view.setListSelected(history.getListButton().isSelected());
-        view.setDetailsSelected(history.getDetailsButton().isSelected());
+        view.setListSelected(history.isListSelected());
+        view.setDetailsSelected(history.isDetailsSelected());
         view.setTableHistory(history.getTable());
     }
 

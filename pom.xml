@@ -153,7 +153,7 @@
             </dependency>
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-jfx</artifactId>
+                <artifactId>tabshell-devtools</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -192,8 +192,8 @@
 <!--        <module>tabshell-hex</module>-->
 <!--        <module>tabshell-registrars</module>-->
         <module>tabshell-demos</module>
-<!--        <module>tabshell-jfx</module>-->
         <module>tabshell-web</module>
+        <module>tabshell-devtools</module>
     </modules>
 
     <build>

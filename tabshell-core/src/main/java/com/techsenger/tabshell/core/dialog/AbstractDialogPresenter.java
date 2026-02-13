@@ -49,7 +49,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
         @Override
         public void setCloseAction(Runnable value) {
-            presenter.setCloseAction(closeAction);
+            presenter.setCloseAction(value);
         }
 
         @Override

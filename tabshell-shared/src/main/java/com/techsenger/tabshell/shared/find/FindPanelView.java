@@ -16,40 +16,10 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.tabshell.core.area.AreaView;
-import java.util.List;
-
 /**
  *
  * @author Pavel Castornii
  */
-public interface FindPanelView extends AreaView {
+public interface FindPanelView extends FindBaseView {
 
-    void setFindText(String text);
-
-    String getFindText();
-
-    void setFindTexts(List<String> texts);
-
-    List<String> getFindTexts();
-
-    void setNotFound(boolean value);
-
-    boolean isNotFound();
-
-    void setMatchCaseSelected(boolean value);
-
-    boolean isMatchCaseSelected();
-
-    void setMatchCaseDisable(boolean value);
-
-    boolean isMatchCaseDisable();
-
-    void setMatchesText(String text);
-
-    String getMatchesText();
-
-    void setMatchesVisible(boolean visible);
-
-    boolean isMatchesVisible();
 }

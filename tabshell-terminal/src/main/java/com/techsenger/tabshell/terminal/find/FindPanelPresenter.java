@@ -27,8 +27,8 @@ import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.shared.find.AbstractFullFindPanelPresenter;
-import com.techsenger.tabshell.shared.find.FullFindPanelHistory;
+import com.techsenger.tabshell.shared.find.AbstractFindPanelPresenter;
+import com.techsenger.tabshell.shared.find.FindPanelHistory;
 import com.techsenger.tabshell.terminal.TerminalComponents;
 
 /**
@@ -36,9 +36,9 @@ import com.techsenger.tabshell.terminal.TerminalComponents;
  * @author Pavel Castornii
  */
 public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
-        extends AbstractFullFindPanelPresenter<V, C> {
+        extends AbstractFindPanelPresenter<V, C> {
 
-    protected class Port extends AbstractFullFindPanelPresenter.Port implements FindPanelPort {
+    protected class Port extends AbstractFindPanelPresenter.Port implements FindPanelPort {
 
         @Override
         public void setFindText(String text) {
@@ -50,7 +50,7 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
 
     private final Runnable closeHandler;
 
-    public FindPanelPresenter(V view, HistoryProvider<FullFindPanelHistory> historyProvider,
+    public FindPanelPresenter(V view, HistoryProvider<FindPanelHistory> historyProvider,
             TerminalTextBuffer textBuffer, Runnable closeHandler) {
         super(view);
         setHistoryPolicy(HistoryPolicy.ALL);
@@ -71,7 +71,7 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(TerminalComponents.FIND_PANEL);
+        return new Descriptor(TerminalComponents.SEARCH_PANEL);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
     protected void find() {
         var pattern = getView().getFindText();
         if (pattern.isEmpty()) {
-            handleResetMatches();
+            resetMatches();
             getView().setMatchesVisible(false);
             return;
         }
@@ -121,12 +121,18 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
         getView().setResult(result);
     }
 
-    protected void handleTextInput(String text) {
+    @Override
+    protected void handleFind() {
         if (getView().getResult() == null) {
             find();
         } else {
             handleFindNext();
         }
+    }
+
+    @Override
+    protected void handleFindCleared() {
+        resetMatches();
     }
 
     @Override
@@ -147,18 +153,33 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
     }
 
     @Override
-    protected void handleResetMatches() {
+    protected void handleFindTextEdited(String text) {
+        super.handleFindTextEdited(text);
+        resetMatches();
+    }
+
+    @Override
+    protected void handleHighlight() {
+        super.handleHighlight();
+        resetMatches();
+    }
+
+    @Override
+    protected void handleMatchCase() {
+        super.handleMatchCase();
+        resetMatches();
+    }
+
+    protected void resetMatches() {
         getView().setResult(null);
         getView().setNotFound(false);
     }
 
     protected void updateResultText(FindResult r) {
         if (r == null || r.getMatches().isEmpty()) {
-            getView().setMatchesVisible(false);
-            getView().setNotFound(true);
+            showFindResultInfo(0);
         } else {
-            getView().setMatchesVisible(true);
-            getView().setMatchesText(r.selectedMatch().getIndex() + " / " + r.getMatches().size());
+            showFindResultInfo(r.selectedMatch().getIndex(), r.getMatches().size());
         }
     }
 }

@@ -18,15 +18,22 @@
     Author: Pavel Castornii
 */
 
-GridPane.find {
-    -fx-border-color: -color-border-muted;
-    -fx-border-width: 1px 0 0 0;
+
+.find-right-box {
+    -fx-spacing: 6;
 }
 
-.label.result {
-  -fx-background-color: -color-bg-subtle, -color-bg-subtle;
-  -fx-background-insets: 0, 1;
-  -fx-text-fill: -color-fg-found;
-  -fx-padding: 2 8 2 8;
-  -fx-background-radius: 4;
+.find-right-box .label.matches {
+    -fx-background-color: -color-bg-subtle, -color-bg-subtle;
+    -fx-background-insets: 0, 1;
+    -fx-text-fill: -color-fg-found;
+    -fx-background-radius: 4;
+}
+
+.find-right-box.dense .label.matches {
+    -fx-padding: 2 8 2 8;
+}
+
+.find-right-box.extra-dense .label.matches {
+    -fx-padding: 0 4 0 4;
 }

@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.List;
@@ -49,6 +50,8 @@ class ThemeApplier {
 
     private final ObservableList<Stylesheet> stylesheets;
 
+    private final SettingsSubscription themeSubscription;
+
     /**
      * Constructor.
      *
@@ -61,7 +64,7 @@ class ThemeApplier {
         this.scene = controller.getStage().getScene();
         addTheme(settings.getTheme(), false);
         logSceneStylesheets();
-        settings.observeTheme((oldV, newV) -> {
+        themeSubscription = settings.observeTheme((oldV, newV) -> {
             removeTheme(oldV);
             addTheme(newV, true);
             //without applying css and layout title bar spacers are not updated

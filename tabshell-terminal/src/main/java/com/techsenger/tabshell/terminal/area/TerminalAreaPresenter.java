@@ -201,11 +201,11 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
         }
     }
 
-    protected void handleShowFind() {
-        if (getComposer().getFindPanel() == null) {
-            getComposer().addFindPanel(browser.get().getHistory().getFindPanel());
+    protected void handleShowSearch() {
+        if (getComposer().getSearchPanel() == null) {
+            getComposer().addSearchPanel(browser.get().getHistory().getSearchPanel());
         }
-        var findPane = getComposer().getFindPanel();
+        var findPane = getComposer().getSearchPanel();
         var selectedText = getView().getSelectedText();
         if (selectedText != null) {
             findPane.setFindText(selectedText);
@@ -213,9 +213,9 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
         findPane.requestFocus();
     }
 
-    protected void handleHideFind() {
-        if (getComposer().getFindPanel() != null) {
-            getComposer().removeFindPanel();
+    protected void handleHideSearch() {
+        if (getComposer().getSearchPanel() != null) {
+            getComposer().removeSearchPanel();
             getView().requestFocus();
         }
     }

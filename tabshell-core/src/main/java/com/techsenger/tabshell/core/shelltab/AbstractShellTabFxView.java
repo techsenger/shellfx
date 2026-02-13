@@ -116,6 +116,7 @@ public abstract class AbstractShellTabFxView<P extends ShellTabPresenter<?, ?>>
         this.shell = shell;
     }
 
+    @Override
     public ShellFxView<?> getShell() {
         return shell;
     }

@@ -24,12 +24,14 @@ import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
 import com.techsenger.tabshell.layout.dock.DockLayoutPresenter;
 import com.techsenger.tabshell.layout.dock.SideBarPolicy;
 import com.techsenger.tabshell.layout.dock.TabDockFxView;
+import com.techsenger.tabshell.layout.dock.UtilityDockContainerFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -40,9 +42,11 @@ import javafx.scene.layout.HBox;
  *
  * @author Pavel Castornii
  */
-public class DockLayoutTabFxView extends AbstractShellTabFxView<DockLayoutTabPresenter> {
+public class DockLayoutTabFxView extends AbstractShellTabFxView<DockLayoutTabPresenter>
+        implements UtilityDockContainerFxView {
 
-    private final class Composer extends AbstractShellTabFxView.Composer {
+    private final class Composer extends AbstractShellTabFxView.Composer
+            implements UtilityDockContainerFxView.Composer {
 
         private final DockLayoutTabFxView view = DockLayoutTabFxView.this;
 
@@ -72,6 +76,11 @@ public class DockLayoutTabFxView extends AbstractShellTabFxView<DockLayoutTabPre
             splitSpace.getComposer().addChild(tabDock);
         }
 
+        @Override
+        public void addUtilityDock(TabDockFxView<?> tabDock) {
+            view.layout.getComposer().addTabDock(tabDock, Side.BOTTOM, 250);
+        }
+
         protected TextViewerFxView createTextViewer() {
             var v = new TextViewerFxView();
             var p = new TextViewerPresenter(v);
@@ -88,7 +97,7 @@ public class DockLayoutTabFxView extends AbstractShellTabFxView<DockLayoutTabPre
         private void fillTabs(TabDockFxView<?> tabDock) {
             for (var i = 0; i < 10; i++) {
                 var tabView = new DockableTabFxView();
-                var tabPresenter = new DockableTabPresenter(tabView, i);
+                var tabPresenter = new DockableTabPresenter(tabView, i + 1);
                 tabPresenter.initialize();
                 tabDock.getComposer().addTab(tabView);
             }

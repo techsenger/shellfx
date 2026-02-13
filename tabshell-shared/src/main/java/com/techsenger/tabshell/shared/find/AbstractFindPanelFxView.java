@@ -17,186 +17,114 @@
 package com.techsenger.tabshell.shared.find;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.core.area.AbstractAreaFxView;
-import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.style.SharedIcons;
+import com.techsenger.toolkit.fx.FocusTrap;
+import com.techsenger.toolkit.fx.Spacer;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
-import java.util.List;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 
 /**
  *
  * @author Pavel Castornii
  */
 public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresenter<?, ?>>
-        extends AbstractAreaFxView<P> implements FindPanelView {
+        extends AbstractFindBaseFxView<P> implements FindPanelView {
 
-    private static final String RESULT_LABEL_STYLE_CLASS = "result";
+    protected static final String FOUND_STYLE_CLASS = "found";
 
-    private final ComboBox<String> findComboBox = new ComboBox<>();
+    private final GridPane gridPane = new GridPane();
 
-    private final Label matchesLabel = new Label();
+    private final Label findLabel = new Label("Find");
 
-    private final StackPane findComboBoxWrapper = new StackPane(findComboBox, matchesLabel);
+    private final HBox findLabelWrapper = new HBox(findLabel);
 
-    private final ToggleButton matchCaseButton = new ToggleButton(null, new FontIconView(SharedIcons.MATCH_CASE));
+    private final Button closeButton = new Button();
 
-    private final BooleanProperty notFound = new SimpleBooleanProperty();
+    private final HBox toolBox = new HBox();
+
+    private final FocusTrap focusTrap = new FocusTrap(gridPane);
+
+    public AbstractFindPanelFxView(FindTrigger searchTrigger) {
+        super(searchTrigger);
+    }
 
     @Override
     public void requestFocus() {
-        NodeUtils.requestFocus(this.findComboBox.getEditor(), () -> {
+        NodeUtils.requestFocus(getFindComboBox().getEditor(), () -> {
             onFindComboBoxFocused();
+            if (!this.focusTrap.isActivated()) {
+                this.focusTrap.activate();
+            }
         });
     }
 
     @Override
-    public void setFindText(String text) {
-        this.findComboBox.getEditor().textProperty().set(text);
-    }
-
-    @Override
-    public String getFindText() {
-        return this.findComboBox.getEditor().textProperty().get();
-    }
-
-    @Override
-    public void setMatchCaseSelected(boolean value) {
-        this.matchCaseButton.setSelected(value);
-    }
-
-    @Override
-    public boolean isMatchCaseSelected() {
-        return this.matchCaseButton.isSelected();
-    }
-
-    @Override
-    public void setMatchCaseDisable(boolean value) {
-        this.matchCaseButton.setDisable(value);
-    }
-
-    @Override
-    public boolean isMatchCaseDisable() {
-        return this.matchCaseButton.isDisable();
-    }
-
-    @Override
-    public void setMatchesText(String text) {
-        this.matchesLabel.textProperty().set(text);
-    }
-
-    @Override
-    public String getMatchesText() {
-        return this.matchesLabel.textProperty().get();
-    }
-
-    @Override
-    public void setMatchesVisible(boolean visible) {
-        this.matchesLabel.setVisible(visible);
-    }
-
-    @Override
-    public boolean isMatchesVisible() {
-        return this.matchesLabel.isVisible();
-    }
-
-    @Override
-    public void setFindTexts(List<String> texts) {
-        this.findComboBox.getItems().clear();
-        this.findComboBox.getItems().addAll(texts);
-    }
-
-    @Override
-    public List<String> getFindTexts() {
-        return this.findComboBox.getItems();
-    }
-
-    @Override
-    public void setNotFound(boolean value) {
-        this.notFound.set(value);
-    }
-
-    @Override
-    public boolean isNotFound() {
-        return this.notFound.get();
+    public Pane getNode() {
+        return this.gridPane;
     }
 
     @Override
     protected void build() {
         super.build();
-        this.findComboBox.setEditable(true);
-        this.findComboBox.getStyleClass().addAll(Styles.DENSE, StyleClasses.NO_SELECTED);
-        this.matchesLabel.getStyleClass().add(RESULT_LABEL_STYLE_CLASS);
-        StackPane.setMargin(this.matchesLabel, new Insets(0, SizeConstants.INSET * 2, 0, 0));
-        this.findComboBoxWrapper.setAlignment(Pos.CENTER_RIGHT);
-        this.findComboBoxWrapper.setPadding(new Insets(SizeConstants.THIRD_INSET, 0,
-                SizeConstants.THIRD_INSET, 0));
+        getFindComboBox().getStyleClass().add(Styles.DENSE);
+        getFindRightBox().getStyleClass().add(Styles.DENSE);
+        var css = AbstractFindPanelFxView.class.getResource("find-panel.css").toExternalForm();
+        this.gridPane.getStylesheets().add(css);
+        this.gridPane.getStyleClass().add("find");
+        ColumnConstraints column0 = new ColumnConstraints();
+        column0.setHgrow(Priority.NEVER);
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setHgrow(Priority.ALWAYS);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setHgrow(Priority.NEVER);
+        this.gridPane.getColumnConstraints().addAll(column0, column1, column2);
 
-        this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
-        this.matchCaseButton.setSelected(false);
-        this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
-        this.matchCaseButton.setFocusTraversable(false);
-    }
+        this.findLabel.setMinWidth(Label.USE_PREF_SIZE);
+        // 3 = 2(padding) + 1(bg-insetts)
+        this.findLabelWrapper.setPadding(new Insets(2, SizeConstants.INSET, 3, SizeConstants.INSET));
+        this.findLabelWrapper.setAlignment(Pos.CENTER_LEFT);
+        GridPane.setVgrow(this.findLabelWrapper, Priority.ALWAYS);
+        GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
 
-    @Override
-    protected void bind() {
-        super.bind();
-        this.findComboBox.maxWidthProperty().bind(this.findComboBoxWrapper.widthProperty().subtract(1));
-    }
+        this.closeButton.setOnAction(e -> getPresenter().handleClose());
+        this.closeButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
+        this.closeButton.setFocusTraversable(false);
 
-    @Override
-    protected void addListeners() {
-        super.addListeners();
-        notFound.addListener((ov, oldV, newV) -> {
-            if (Boolean.TRUE.equals(newV)) {
-                this.findComboBox.getEditor().pseudoClassStateChanged(Styles.STATE_DANGER, true);
-                this.findComboBox.pseudoClassStateChanged(Styles.STATE_DANGER, true);
-            } else {
-                this.findComboBox.getEditor().pseudoClassStateChanged(Styles.STATE_DANGER, false);
-                this.findComboBox.pseudoClassStateChanged(Styles.STATE_DANGER, false);
-            }
+        this.toolBox.getChildren().addAll(getFindPreviousButton(), getFindNextButton(), getMatchCaseButton(),
+                getWholeWordButton(), getRegExpButton(), getHighlightButton(),
+                new Spacer(SizeConstants.INSET - SizeConstants.THIRD_INSET * 2), this.closeButton);
+        this.toolBox.getStyleClass().add(Styles.DENSE);
+        this.toolBox.setSpacing(SizeConstants.THIRD_INSET);
+        this.toolBox.setAlignment(Pos.CENTER_LEFT);
+        this.toolBox.setPadding(new Insets(0, SizeConstants.INSET, 0, SizeConstants.THIRD_INSET));
+        GridPane.setVgrow(this.toolBox, Priority.ALWAYS);
 
-        });
-        this.findComboBox.getEditor().textProperty().addListener((ov, t, t1) -> getPresenter().handleResetMatches());
+        gridPane.add(this.findLabelWrapper, 0, 0);
+        gridPane.add(getFindComboBoxWrapper(), 1, 0);
+        gridPane.add(this.toolBox, 2, 0);
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        this.matchCaseButton.setOnAction((event) -> getPresenter().handleResetMatches());
+        var p = getPresenter();
+        closeButton.setOnAction(e -> getPresenter().handleClose());
     }
 
-    protected void onFindComboBoxFocused() {
-        var text = this.findComboBox.getEditor().getText();
-        if (text != null && !text.isEmpty()) {
-            var pos = (int) text.codePointCount(0, text.length());
-            this.findComboBox.getEditor().positionCaret(pos);
-        }
+    protected GridPane getGridPane() {
+        return gridPane;
     }
 
-    protected ComboBox<String> getFindComboBox() {
-        return findComboBox;
-    }
-
-    protected Label getMatchesLabel() {
-        return matchesLabel;
-    }
-
-    protected StackPane getFindComboBoxWrapper() {
-        return findComboBoxWrapper;
-    }
-
-    protected ToggleButton getMatchCaseButton() {
-        return matchCaseButton;
+    protected FocusTrap getFocusTrap() {
+        return focusTrap;
     }
 }

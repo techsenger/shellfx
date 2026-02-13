@@ -22,8 +22,8 @@ package com.techsenger.tabshell.layout.dock;
  */
 class PlaceholderFxView extends TabDockFxView<PlaceholderPresenter> implements PlaceholderView {
 
-    PlaceholderFxView(DockLayoutFxView<?> layout) {
-        super(layout);
+    PlaceholderFxView() {
+        super();
     }
 
 }

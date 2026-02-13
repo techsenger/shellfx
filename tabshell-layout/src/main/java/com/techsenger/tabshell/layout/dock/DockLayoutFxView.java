@@ -733,7 +733,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
 
     public class Composer extends AbstractAreaFxView.Composer implements DockLayoutComposer {
 
-        private final DockLayoutFxView<?> view = DockLayoutFxView.this;
+        private final DockLayoutFxView<P> view = DockLayoutFxView.this;
 
         private final ObjectProperty<SideBarPolicy> rightBarPolicy =
                 new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
@@ -785,13 +785,29 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
         }
 
         public TabDockFxView<?> createTabDock() {
-            var v = new TabDockFxView<>(view);
+            var v = new TabDockFxView<>();
+            v.setLayout(view);
             var p = new TabDockPresenter<>(v);
             return v;
         }
 
+        /**
+         * Adds a new TabDock to one of the sides of the layout with the specified width/height. For example, this
+         * method can be used to add some tools to the bottom of the layout.
+         *
+         * @param dock
+         * @param side
+         * @param size
+         */
+        public void addTabDock(TabDockFxView<?> dock, Side side, double size) {
+            dock.setLayout(view);
+            var index = resolveNewIndex(view.getRoot(), side);
+            view.addTabDock(null, view.getRoot(), dock, index, side, true, size);
+        }
+
         public SplitSpaceFxView<?> createSplitSpace(Orientation orientation) {
-            var v = new SplitSpaceFxView<>(view);
+            var v = new SplitSpaceFxView<>();
+            v.setLayout(view);
             v.setOrientation(orientation);
             var p = new SplitSpacePresenter<>(v);
             return v;
@@ -944,7 +960,8 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
         }
 
         protected PlaceholderFxView createPlaceholder() {
-            var v = new PlaceholderFxView(view);
+            var v = new PlaceholderFxView();
+            v.setLayout(view);
             var p = new PlaceholderPresenter(v);
             return v;
         }
@@ -966,11 +983,6 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
                 popup.getPresenter().deinitialize();
                 wrapper.set(null);
             }
-        }
-
-        void addTabDock(TabDockFxView<?> dock, Side side, double size) {
-            var index = resolveNewIndex(view.getRoot(), side);
-            view.addTabDock(null, view.getRoot(), dock, index, side, true, size);
         }
 
         private SideBarFxView<?> addBar(Side side, SideBarHistory sideBarHistory,
@@ -2020,6 +2032,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
 
     private TabDockFxView<?> wrapAndAddTabDock(Orientation newOrientation, ContainerInfo anchorInfo,
             ContainerInfo newInfo, TabDockFxView<?> newTabDock) {
+        newTabDock.setLayout(this);
         var newSplitSpace = wrap(anchorInfo.getContainer().getArea(), anchorInfo.getIndex());
         newSplitSpace.getComposer().addChild(newInfo.getIndex(), newTabDock);
 
@@ -2082,6 +2095,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
      */
     private void addTabDock(Side side, ContainerInfo anchorInfo, ContainerInfo siblingInfo,
             ContainerInfo newInfo, TabDockFxView<?> newTabDock) {
+        newTabDock.setLayout(this);
         var parentComponent = (SplitSpaceFxView<?>) anchorInfo.getContainer().getArea().getParent();
         var splitPane = parentComponent.getNode();
         double[] oldPositions = splitPane.getDividerPositions();
@@ -2126,6 +2140,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
      */
     private void addTabDock(double[] grandParentPositions, SplitSpaceFxView<?> parent, TabDockFxView<?> dock,
             int index, Side side, boolean sideShouldBeChecked, double size) {
+        dock.setLayout(this);
         if (sideShouldBeChecked && !checkNewSide(parent, index, side)) {
             boolean wrapParent = false;
             if (parent != getRoot()) {

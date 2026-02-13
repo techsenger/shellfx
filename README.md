@@ -23,6 +23,9 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
     * [Tab](#core-tab)
     * [Popup](#core-popup)
     * [Dialog](#core-dialog)
+* [Shared Components](#shared)
+    * [FindBase](#shared-find-base)
+    * [FindPanel](#shared-find-panel)
 * [JFX Components](#jfx)
     * [JfxTabDock](#jfx-tab-dock)
     * [JfxInspectorTab](#jfx-inspector-tab)
@@ -238,6 +241,21 @@ There are two types of scope: `Shell` and `Tab`. If a dialog has a `Shell` scope
 anything in `Shell` while this dialog is displayed until it is closed. If a dialog has a `Tab` scope, only the
 tab that triggered the dialog will be blocked when it is displayed. All other tabs, the main menu, etc., will be
 available to the user.
+
+## Shared Components <a name="shared"></a>
+
+Shared components are auxiliary components built on top of Core components and used by components from other modules.
+
+### FindBase <a name="shared-find-base"></a>
+`FindBase` is an abstract base search component that contains the entire search view implementation, including both
+submit search and instant search functionality. Since child components may be of different types (toolbar, panel, etc.),
+this component includes only minimal CSS styling. It is important to note that this component does not contain any
+logic for executing the search itself. At he same time there are base `*FindPort` interfaces without implementation.
+
+### FindPanel <a name="shared-find-panel"></a>
+`FindPanel` is an abstract class for find panels that are placed at the bottom of other components, such as a terminal,
+text editor, hex editor, etc. It is important to note that this component does not contain any logic for executing the
+search itself.
 
 ## JFX Components <a name="jfx"></a>
 

@@ -20,6 +20,7 @@ import com.techsenger.tabshell.core.DefaultShellFxView;
 import com.techsenger.tabshell.core.DefaultShellPresenter;
 import com.techsenger.tabshell.demos.core.history.DemoHistoryManager;
 import com.techsenger.tabshell.demos.core.settings.DemoSettings;
+import com.techsenger.tabshell.demos.full.menu.DemoFileMenuRegistrar;
 import com.techsenger.tabshell.demos.full.menu.DemoMenuRegistrar;
 import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import javafx.application.Application;
@@ -43,8 +44,8 @@ public class Demo extends Application {
 
         //adding menu
         var controlRegistry = view.getControlRegistry();
-//        var fmr = new DemoFileMenuRegistrar(controlRegistry);
-//        fmr.register();
+        var fmr = new DemoFileMenuRegistrar(controlRegistry);
+        fmr.register();
 //        var emr = new EditMenuRegistrar(controlRegistry);
 //        emr.register();
         var dmr = new DemoMenuRegistrar(controlRegistry);

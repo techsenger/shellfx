@@ -25,7 +25,7 @@ module com.techsenger.tabshell.demos.full {
     requires com.techsenger.tabshell.shared;
 //    requires com.techsenger.tabshell.text;
 //    requires com.techsenger.tabshell.hex;
-//    requires com.techsenger.tabshell.jfx;
+    requires com.techsenger.tabshell.devtools;
     requires com.techsenger.tabshell.web;
     requires com.techsenger.tabshell.storage;
     requires com.techsenger.tabshell.dialogs;

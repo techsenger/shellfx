@@ -16,66 +16,23 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.core.history.HistoryUtils;
-import java.util.ArrayList;
 
 /**
  *
  * @author Pavel Castornii
  */
 public abstract class AbstractFindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
-        extends AbstractAreaPresenter<V, C> {
+        extends AbstractFindBasePresenter<V, C> {
 
     public AbstractFindPanelPresenter(V view) {
-        super(view);
+        super(view, FindFeature.values());
     }
 
-
-    @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
-        var h = getHistory();
-        var v = getView();
-        v.setMatchCaseSelected(h.getMatchCaseButton().isSelected());
-    }
-
-    @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
-        var h = getHistory();
-        var v = getView();
-        h.getMatchCaseButton().setSelected(v.isMatchCaseSelected());
-    }
-
-    @Override
-    protected void restoreData() {
-        super.restoreData();
-        var h = getHistory();
-        var v = getView();
-        v.setFindTexts(h.getFindTexts());
-    }
-
-    @Override
-    protected void saveData() {
-        super.saveData();
-        var h = getHistory();
-        var v = getView();
-        h.setFindTexts(new ArrayList<>(v.getFindTexts()));
-    }
-
-    protected void saveFindTextToHistory() {
-        var texts = getView().getFindTexts();
-        HistoryUtils.addFirst(texts, getView().getFindText());
-        getView().setFindTexts(texts);
-    }
+    protected abstract void handleClose();
 
     @Override
     protected FindPanelHistory getHistory() {
         return (FindPanelHistory) super.getHistory();
     }
-
-    protected abstract void handleResetMatches();
-
 }

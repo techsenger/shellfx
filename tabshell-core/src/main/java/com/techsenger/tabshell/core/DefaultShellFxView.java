@@ -283,7 +283,6 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         }
     }
 
-
     private final Application application;
 
     private final Stage stage;

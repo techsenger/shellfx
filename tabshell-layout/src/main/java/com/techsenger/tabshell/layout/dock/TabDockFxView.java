@@ -51,13 +51,12 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
 
     private final HBox tabHeaderLastBox = new HBox(minimizeButton);
 
-    private final DockLayoutFxView<?> layout;
-
     private final BooleanProperty draggable = new SimpleBooleanProperty(true);
 
-    protected TabDockFxView(DockLayoutFxView<?> layout) {
+    private DockLayoutFxView<?> layout;
+
+    protected TabDockFxView() {
         super();
-        this.layout = layout;
     }
 
     @Override
@@ -81,7 +80,6 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         var tabPane = getNode();
         tabPane.setTabDragEnabled(true);
         tabPane.setTabDropEnabled(true);
-        tabPane.setDragAndDropContext(layout.getDragAndDropContext());
 
         tabHeaderFirstBox.getStyleClass().add("tab-header-first-box");
         minimizeButton.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
@@ -95,7 +93,7 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         tabHeaderArea.getFirstArea().getChildren().add(tabHeaderFirstBox);
         tabHeaderArea.getLastArea().getChildren().add(tabHeaderLastBox);
         tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
-        tabHeaderArea.setTabDragContentFactory(layout::createTabDragContent);
+        tabHeaderArea.setTabDragContentFactory((s) -> layout.createTabDragContent(s));
         tabHeaderArea.setTabDragScrollStep(10.0);
     }
 
@@ -151,5 +149,12 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
 
     protected DockLayoutFxView<?> getLayout() {
         return layout;
+    }
+
+    protected void setLayout(DockLayoutFxView<?> layout) {
+        if (this.layout == null) {
+            this.layout = layout;
+            getNode().setDragAndDropContext(layout.getDragAndDropContext());
+        }
     }
 }

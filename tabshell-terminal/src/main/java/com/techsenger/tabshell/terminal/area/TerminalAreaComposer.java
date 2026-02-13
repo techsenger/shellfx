@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.terminal.area;
 
 import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.shared.find.FullFindPanelHistory;
+import com.techsenger.tabshell.shared.find.FindPanelHistory;
 import com.techsenger.tabshell.terminal.find.FindPanelPort;
 
 /**
@@ -26,11 +26,11 @@ import com.techsenger.tabshell.terminal.find.FindPanelPort;
  */
 public interface TerminalAreaComposer extends AreaComposer {
 
-    void addFindPanel(FullFindPanelHistory history);
+    void addSearchPanel(FindPanelHistory history);
 
-    void removeFindPanel();
+    void removeSearchPanel();
 
-    FindPanelPort getFindPanel();
+    FindPanelPort getSearchPanel();
 
     void addWebBrowser(String url);
 

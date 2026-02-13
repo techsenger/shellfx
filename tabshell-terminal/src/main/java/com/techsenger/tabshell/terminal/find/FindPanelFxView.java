@@ -17,22 +17,23 @@
 package com.techsenger.tabshell.terminal.find;
 
 import com.techsenger.jeditermfx.ui.FindResult;
-import com.techsenger.tabshell.shared.find.AbstractFullFindPanelFxView;
+import com.techsenger.tabshell.shared.find.AbstractFindPanelFxView;
+import com.techsenger.tabshell.shared.find.FindTrigger;
 import com.techsenger.tabshell.terminal.area.TabJediTermFxWidget;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import javafx.scene.control.ComboBox;
-import javafx.scene.input.KeyCode;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPanelFxView<P extends FindPanelPresenter<?, ?>> extends AbstractFullFindPanelFxView<P>
+public class FindPanelFxView<P extends FindPanelPresenter<?, ?>> extends AbstractFindPanelFxView<P>
         implements FindPanelView {
 
     private final TabJediTermFxWidget widget;
 
     public FindPanelFxView(TabJediTermFxWidget widget) {
+        super(FindTrigger.ON_SUBMIT);
         this.widget = widget;
     }
 
@@ -56,8 +57,6 @@ public class FindPanelFxView<P extends FindPanelPresenter<?, ?>> extends Abstrac
         widget.getTerminalPanel().selectPrevFindMatch();
     }
 
-
-
     @Override
     protected ComboBox<String> getFindComboBox() {
         return super.getFindComboBox();
@@ -69,16 +68,6 @@ public class FindPanelFxView<P extends FindPanelPresenter<?, ?>> extends Abstrac
         ValueUtils.callAndAddListener(getHighlightButton().selectedProperty(), (ov, oldV, newV) -> {
             widget.getTerminalPanel().setFindMatchHighlighted(newV);
             widget.getTerminalPanel().repaint();
-        });
-    }
-
-    @Override
-    protected void addHandlers() {
-        super.addHandlers();
-        getFindComboBox().setOnKeyPressed((event) -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                getPresenter().handleTextInput(getFindComboBox().getEditor().getText());
-            }
         });
     }
 

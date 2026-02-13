@@ -195,6 +195,14 @@
     -fx-text-fill: -color-fg-default;
 }
 
+.combo-box.extra-dense > .combo-box {
+    -fx-padding: 0;
+}
+
+.combo-box.extra-dense > .text-field {
+    -fx-padding: 0.15em 0.6em 0.15em 0.6em;
+}
+
 /*
     TextField
 */
@@ -262,7 +270,7 @@
 .tool-bar.dense {
     -fx-min-height: -1;
     -fx-max-height: -1;
-    -fx-padding: 2 4 3 4; /* 3 = 2(padding) + 1(bg-insetts) */
+    -fx-padding: 1 4 2 4; /* 3 = 2(padding) + 1(bg-insetts) */
 }
 
 .tool-bar.dense .button.iconed,
