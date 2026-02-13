@@ -16,29 +16,12 @@
 
 package com.techsenger.tabshell.text.viewer;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.tabshell.core.CloseCheckResult;
-import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.dialog.DialogScope;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
 import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
-import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.core.settings.ViewerSettings;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogViewModel;
-import com.techsenger.tabshell.dialogs.file.FileOpenerViewModel;
-import com.techsenger.tabshell.dialogs.file.FileSaverViewModel;
-import com.techsenger.tabshell.dialogs.yesno.YesNoDialogViewModel;
-import com.techsenger.tabshell.layout.workertab.AbstractWorkerTabViewModel;
-import com.techsenger.tabshell.shared.menu.EditMenuNames;
-import com.techsenger.tabshell.shared.menu.FileMenuNames;
 import com.techsenger.tabshell.storage.FileStorages;
-import com.techsenger.tabshell.storage.FileTaskProvider;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.storage.TextFileTaskProvider;
 import com.techsenger.toolkit.core.Pair;
-import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -55,9 +38,7 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.concurrent.Worker;
 import javafx.scene.control.IndexRange;
-import org.fxmisc.undo.UndoManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,9 +203,9 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
                     column--;
                 }
                 moveTo.next(new Pair<>(line, column));
-                logger.debug("Moved caret to line: {}, column: {}", line, column);
+                logger.debug("{} Moved caret to line: {}, column: {}", getDescriptor().getLogPrefix(), line, column);
             } catch (Exception ex) {
-                logger.error("e", ex);
+                logger.error("{} Error", getDescriptor().getLogPrefix(), ex);
             }
         });
         getMediator().addGoToLineDialog(viewModel);
