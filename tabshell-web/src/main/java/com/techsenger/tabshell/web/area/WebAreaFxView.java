@@ -17,12 +17,15 @@
 package com.techsenger.tabshell.web.area;
 
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 
 /**
  *
@@ -97,7 +100,6 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
         VBox.setVgrow(box, Priority.ALWAYS);
         this.webView.getEngine()
                 .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0");
-
     }
 
     @Override
@@ -114,9 +116,27 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
                 getPresenter().handleHistoryChanged(history.getEntries().get(0).getUrl());
             }
         });
+        this.webView.getEngine().documentProperty().addListener((ov, oldV, newV) -> {
+            if (newV != null) {
+                extractIconUrls();
+            }
+        });
     }
 
     protected WebView getWebView() {
         return webView;
+    }
+
+    private void extractIconUrls() {
+        JSObject jsArray = (JSObject) this.webView.getEngine().executeScript(
+            "Array.from(document.querySelectorAll(\"link[rel*='icon']\")).map(l => l.href)"
+        );
+        int length = (int) jsArray.getMember("length");
+        List<String> urls = new ArrayList<>();
+        for (int i = 0; i < length; i++) {
+            String absoluteUrl = (String) jsArray.getSlot(i);
+            urls.add(absoluteUrl);
+        }
+        getPresenter().handleFaviconExtracted(urls);
     }
 }

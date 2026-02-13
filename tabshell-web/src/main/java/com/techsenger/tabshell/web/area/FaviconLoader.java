@@ -25,6 +25,8 @@ import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -34,15 +36,17 @@ import javax.imageio.stream.ImageInputStream;
  */
 public final class FaviconLoader {
 
-    public static Image loadFavicon(URL url, int size) {
+    private static final Logger logger = LoggerFactory.getLogger(FaviconLoader.class);
+
+    public static Image resolveAndLoad(URL siteUrl, int size) {
         try {
             // 1. Try Google Service
-            Image icon = loadPng("https://www.google.com/s2/favicons?sz=" + size + "&domain=" + url.getHost());
+            Image icon = loadPng("https://www.google.com/s2/favicons?sz=" + size + "&domain=" + siteUrl.getHost());
             if (icon != null && icon.getWidth() > 1) {
                 return icon;
             }
 
-            String baseUrl = buildBaseUrl(url);
+            String baseUrl = buildBaseUrl(siteUrl);
 
             // 2. Try .ico
             String icoUrl = baseUrl + "/favicon.ico";
@@ -55,12 +59,13 @@ public final class FaviconLoader {
             String pngUrl = baseUrl + "/favicon.png";
             icon = loadPng(pngUrl);
             return icon;
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            logger.error("Error resolving and loading favicon", ex);
             return null;
         }
     }
 
-    private static Image loadIco(String icoUrl) {
+    public static Image loadIco(String icoUrl) {
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(icoUrl).openConnection();
             conn.addRequestProperty("User-Agent", "Mozilla/5.0");
@@ -69,6 +74,7 @@ public final class FaviconLoader {
             byte[] data = conn.getInputStream().readAllBytes();
             conn.disconnect();
 
+            // Note ImageIO requires twelvemonkeys plugin.
             try (ImageInputStream input = ImageIO.createImageInputStream(new ByteArrayInputStream(data))) {
                 // Get ICO reader via ImageIO
                 Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
@@ -87,14 +93,16 @@ public final class FaviconLoader {
             }
             return null;
         } catch (Exception e) {
+            logger.error("Error loading ico favicon", e);
             return null;
         }
     }
 
-    private static Image loadPng(String pngUrl) {
+    public static Image loadPng(String pngUrl) {
         try {
-            return new Image(pngUrl, 32, 32, true, true);
+            return new Image(pngUrl, true);
         } catch (Exception e) {
+            logger.error("Error loading png favicon", e);
             return null;
         }
     }
@@ -108,6 +116,7 @@ public final class FaviconLoader {
             // Create JavaFX Image from PNG bytes
             return new Image(new ByteArrayInputStream(out.toByteArray()));
         } catch (Exception e) {
+            logger.error("Error converting ico to fx image", e);
             return null;
         }
     }

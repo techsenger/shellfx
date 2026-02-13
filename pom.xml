@@ -100,6 +100,11 @@
                 <artifactId>javafx-swing</artifactId>
                 <version>${javafx.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>jdk-jsobject</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>

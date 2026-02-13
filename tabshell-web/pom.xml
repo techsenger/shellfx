@@ -58,5 +58,14 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>jdk-jsobject</artifactId>
+        </dependency>
+        <dependency>
+            <!-- ico plugin for ImageIO -->
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-bmp</artifactId>
+        </dependency>
      </dependencies>
 </project>
