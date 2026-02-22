@@ -24,6 +24,7 @@ import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
@@ -44,7 +45,8 @@ import java.util.regex.Matcher;
  *
  * @author Pavel Castornii
  */
-public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> extends AbstractTabPresenter<V, C> {
+public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> extends AbstractTabPresenter<V, C>
+        implements AddablePresenter {
 
     protected class Port extends AbstractTabPresenter<V, C>.Port implements NodeTabPort {
 
@@ -165,13 +167,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     }
 
     @Override
-    protected Port createPort() {
-        return new NodeTabPresenter.Port();
-    }
-
-    @Override
-    protected void postInitialize() {
-        super.postInitialize();
+    public void handleAdded() {
         this.tabDock.setOnSelection((selected) -> handleNodeSelected(getView().getSelectedNode()));
         // this event is fired only when a node is selected in inspector mode (using select button)
         // at the same time after that is is necessary to select the node using selectNode(..) method
@@ -192,6 +188,11 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
                 default -> { }
             }
         });
+    }
+
+    @Override
+    protected Port createPort() {
+        return new NodeTabPresenter.Port();
     }
 
     protected void handleNodeSelected(Element node) {

@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import javafx.application.Platform;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -196,6 +197,12 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     @Override
     protected Composer createComposer() {
         return new ComponentTabFxView.Composer();
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        Platform.runLater(() -> getPresenter().handleAdded());
     }
 
     @Override

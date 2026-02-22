@@ -38,6 +38,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -440,6 +441,12 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     @Override
     protected Composer createComposer() {
         return new NodeTabFxView.Composer();
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        Platform.runLater(() -> getPresenter().handleAdded());
     }
 
     @Override

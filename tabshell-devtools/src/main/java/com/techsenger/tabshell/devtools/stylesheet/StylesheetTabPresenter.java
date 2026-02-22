@@ -24,6 +24,7 @@ import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.POPUP;
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.STAGE;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
@@ -42,7 +43,7 @@ import java.util.regex.Matcher;
  * @author Pavel Castornii
  */
 public class StylesheetTabPresenter<V extends StylesheetTabView, C extends StylesheetTabComposer>
-        extends AbstractTabPresenter<V, C> {
+        extends AbstractTabPresenter<V, C> implements AddablePresenter {
 
     private static String formatWindowType(int uid, WindowProperties props) {
         String text;
@@ -122,19 +123,17 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
     }
 
     @Override
+    public void handleAdded() {
+        rebuildTree();
+    }
+
+    @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(DevToolsComponents.STYLESHEET_TAB);
     }
 
     protected Connector getConnector() {
         return connector;
-    }
-
-    @Override
-    protected void postInitialize() {
-        super.postInitialize();
-        var toolBar = getComposer().getToolBar();
-        rebuildTree();
     }
 
     protected void handleStylesheetSelected(StylesheetItem s) {

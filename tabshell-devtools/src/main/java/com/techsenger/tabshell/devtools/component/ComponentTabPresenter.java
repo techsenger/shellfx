@@ -18,6 +18,7 @@ package com.techsenger.tabshell.devtools.component;
 
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
@@ -38,7 +39,7 @@ import java.util.regex.Matcher;
  * @author Pavel Castornii
  */
 public class ComponentTabPresenter<V extends ComponentTabView, C extends ComponentTabComposer>
-        extends AbstractTabPresenter<V, C> {
+        extends AbstractTabPresenter<V, C> implements AddablePresenter {
 
     private record FindMatch(ComponentItem item, List<Integer> path) { }
 
@@ -162,14 +163,13 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.COMPONENT_TAB);
+    public void handleAdded() {
+        refresh();
     }
 
     @Override
-    protected void postInitialize() {
-        super.postInitialize();
-        refresh();
+    protected Descriptor createDescriptor() {
+        return new Descriptor(DevToolsComponents.COMPONENT_TAB);
     }
 
     protected void handleComponentSelected(Element componentNode) {

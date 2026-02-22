@@ -25,6 +25,7 @@ import com.techsenger.tabshell.shared.find.FindFeature;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -104,6 +105,12 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
     @Override
     protected Composer createComposer() {
         return new StylesheetTabFxView.Composer();
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        Platform.runLater(() -> getPresenter().handleAdded());
     }
 
     @Override
