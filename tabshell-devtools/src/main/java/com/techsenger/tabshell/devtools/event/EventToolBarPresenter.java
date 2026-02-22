@@ -88,8 +88,8 @@ public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaCom
             Map.entry(WindowPropertiesEvent.class, new AtomicBoolean(true)));
 
 
-    public EventToolBarPresenter(V view, EventToolBarAwarePort awarePort) {
-        super(view, awarePort, FindFeature.MATCH_CASE, FindFeature.REG_EXP, FindFeature.WHOLE_WORD);
+    public EventToolBarPresenter(V view, EventToolBarAwarePort toolBarAware) {
+        super(view, toolBarAware, FindFeature.MATCH_CASE);
     }
 
     @Override
@@ -113,6 +113,11 @@ public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaCom
         getView().setEventTypes(eventTypesByClass);
     }
 
+    @Override
+    protected EventToolBarAwarePort getToolBarAware() {
+        return (EventToolBarAwarePort) super.getToolBarAware();
+    }
+
     protected void handleRecord(boolean selected) {
         getToolBarAware().onRecord(selected);
     }
@@ -121,9 +126,12 @@ public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaCom
         getToolBarAware().onClear();
     }
 
-    @Override
-    protected EventToolBarAwarePort getToolBarAware() {
-        return (EventToolBarAwarePort) super.getToolBarAware();
+    protected void handleFilterSelected(boolean selected) {
+        getToolBarAware().onFilterSelected(selected);
+    }
+
+    protected void handleSelectedNodeOnly(boolean selected) {
+        getToolBarAware().onSelectedNodeOnly(selected);
     }
 
     protected void handleSelectAllEvents() {

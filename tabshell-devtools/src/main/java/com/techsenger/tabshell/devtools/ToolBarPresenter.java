@@ -56,18 +56,9 @@ public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer> ext
                 return null;
             }
 
-            String text = v.getFindText().trim();
+            String text = v.getFindText();
             int flags = v.isMatchCaseSelected() ? 0 : Pattern.CASE_INSENSITIVE;
-
-            String patternText;
-            if (getFeatures().contains(FindFeature.REG_EXP) && v.isRegExpSelected()) {
-                patternText = text;
-            } else if (getFeatures().contains(FindFeature.WHOLE_WORD) && v.isWholeWordSelected()) {
-                patternText = "\\b" + Pattern.quote(text) + "\\b";
-            } else {
-                patternText = Pattern.quote(text);
-            }
-
+            String patternText = Pattern.quote(text);
             return Pattern.compile(patternText, flags).matcher("");
         }
     }

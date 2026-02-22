@@ -110,21 +110,36 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
         this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
         this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
+        
         // selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
         eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
         var selectAllTypesItem = new MenuItem("Select All Types");
-        selectAllTypesItem.setOnAction(e -> getPresenter().handleSelectAllEvents());
+        selectAllTypesItem.setOnAction(e -> {
+            for (var item : eventTypesButton.getItems()) {
+                if (item instanceof CheckMenuItem cmi) {
+                    cmi.setSelected(true);
+                }
+            }
+            getPresenter().handleSelectAllEvents();
+        });
         var deselectAllTypesItem = new MenuItem("Deselect All Types");
-        deselectAllTypesItem.setOnAction(e -> getPresenter().handleDeselectAllEvents());
+        deselectAllTypesItem.setOnAction(e -> {
+            for (var item : eventTypesButton.getItems()) {
+                if (item instanceof CheckMenuItem cmi) {
+                    cmi.setSelected(false);
+                }
+            }
+            getPresenter().handleDeselectAllEvents();
+        });
         eventTypesButton.getItems().addAll(new SeparatorMenuItem(), selectAllTypesItem, deselectAllTypesItem);
+
         statisticsLabel.setMinWidth(Label.USE_PREF_SIZE);
         statisticsDataLabel.setStyle("-fx-min-width: 6em");
         statisticsDataLabel.setTooltip(new Tooltip("Displayed / Total events"));
         getNode().getItems().clear();
         getNode().getItems().addAll(recordButton, clearButton, new Separator(Orientation.VERTICAL),
             filterButton, selectedOnlyButton, getFindComboBoxWrapper(), getMatchCaseButton(),
-            getRegExpButton(), getWholeWordButton(), eventTypesButton, new Separator(Orientation.VERTICAL),
-            statisticsLabel, statisticsDataLabel);
+            eventTypesButton, new Separator(Orientation.VERTICAL), statisticsLabel, statisticsDataLabel);
     }
 
     @Override
@@ -132,9 +147,9 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
         super.addListeners();
         recordButton.selectedProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
-                recordIconView.setIcon(DevToolsIcons.RECORD_START);
-            } else {
                 recordIconView.setIcon(DevToolsIcons.RECORD_STOP);
+            } else {
+                recordIconView.setIcon(DevToolsIcons.RECORD_START);
             }
         });
     }
@@ -144,5 +159,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
         super.addHandlers();
         recordButton.setOnAction(e -> getPresenter().handleRecord(recordButton.isSelected()));
         clearButton.setOnAction(e -> getPresenter().handleClear());
+        filterButton.setOnAction(e -> getPresenter().handleFilterSelected(filterButton.isSelected()));
+        selectedOnlyButton.setOnAction(e -> getPresenter().handleSelectedNodeOnly(selectedOnlyButton.isSelected()));
     }
 }

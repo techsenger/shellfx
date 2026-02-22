@@ -26,6 +26,8 @@ public interface EventToolBarAwarePort extends ToolBarAwarePort {
 
     void onRecord(boolean selected);
 
+    void onFilterSelected(boolean selected);
+
     void onSelectedNodeOnly(boolean selected);
 
     void onEventTypesChanged();

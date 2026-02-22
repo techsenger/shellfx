@@ -89,8 +89,13 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
         }
 
         @Override
-        public void onSelectedNodeOnly(boolean selected) {
+        public void onFilterSelected(boolean selected) {
             filter.setSelected(selected);
+        }
+
+        @Override
+        public void onSelectedNodeOnly(boolean selected) {
+            filter.setSelectedNodeOnly(selected);
         }
 
         @Override
@@ -254,8 +259,9 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
     protected boolean matchesFilter(Filter filter, LogEntry entry) {
         if (filter.isSelectedNodeOnly()) {
+            var selectedNode = nodeTab.getSelectedNode();
             if (!(entry.event() instanceof ElementEvent elementEvent)
-                    || !Objects.equals(elementEvent.getElement(), nodeTab.getSelectedNode())) {
+                    || !Objects.equals(elementEvent.getElement(), selectedNode)) {
                 return false;
             }
         }
