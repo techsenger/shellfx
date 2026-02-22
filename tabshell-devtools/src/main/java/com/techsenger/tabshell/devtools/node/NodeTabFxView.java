@@ -388,6 +388,12 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     }
 
     @Override
+    public void selectRoot() {
+        nodeTreeView.getSelectionModel().select(0);
+        nodeTreeView.scrollTo(nodeTreeView.getSelectionModel().getSelectedIndex());
+    }
+
+    @Override
     public void refreshNodes() {
         var selectedNode = getSelectedNode();
         updateNodeRoot();

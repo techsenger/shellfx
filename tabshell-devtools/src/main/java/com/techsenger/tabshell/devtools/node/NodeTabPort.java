@@ -27,4 +27,6 @@ public interface NodeTabPort {
     Element getSelectedNode();
 
     void selectNode(Element node);
+
+    void selectRoot();
 }

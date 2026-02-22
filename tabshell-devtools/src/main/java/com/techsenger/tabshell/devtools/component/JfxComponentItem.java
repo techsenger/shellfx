@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.devtools.component;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import java.util.List;
 import java.util.UUID;
@@ -54,16 +53,7 @@ public class JfxComponentItem implements ComponentItem {
         return view.getChildren().stream().map(v -> new JfxComponentItem(v)).map(t -> (ComponentItem) t).toList();
     }
 
-    /**
-     * Only Shell doesn't provide node.
-     *
-     * @return
-     */
-    Object getNode() {
-        if (this.view instanceof ChildFxView<?> child) {
-            return child.getNode();
-        } else {
-            return null;
-        }
+    public ParentFxView<?> getView() {
+        return view;
     }
 }

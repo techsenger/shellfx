@@ -110,7 +110,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
         this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
         this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
-        
+
         // selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
         eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
         var selectAllTypesItem = new MenuItem("Select All Types");

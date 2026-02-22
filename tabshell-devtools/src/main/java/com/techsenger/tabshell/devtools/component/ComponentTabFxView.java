@@ -16,7 +16,13 @@
 
 package com.techsenger.tabshell.devtools.component;
 
+import com.techsenger.connectorfx.LocalElement;
+import com.techsenger.connectorfx.event.EventSource;
+import com.techsenger.connectorfx.scenegraph.Element;
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
@@ -203,6 +209,30 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
 
         VBox.setVgrow(treeView, Priority.ALWAYS);
         getContentBox().getChildren().add(treeView);
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        treeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+            if (newV != null) {
+                var component = newV.getValue();
+                var jfxComponent = (JfxComponentItem) component;
+                var fxView = jfxComponent.getView();
+                Element element;
+                if (fxView instanceof ShellFxView<?> shell) {
+                    var stage = shell.getStage();
+                    element = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
+                } else if (fxView instanceof TabFxView<?> tab) {
+                    element = LocalElement.of(tab.getNode().getContent());
+                } else if (fxView instanceof AreaFxView<?> area) {
+                    element = LocalElement.of(area.getNode());
+                } else {
+                    throw new AssertionError("Unknown type of the component");
+                }
+                getPresenter().handleComponentSelected(element);
+            }
+        });
     }
 
     protected TreeView<ComponentItem> getTreeView() {

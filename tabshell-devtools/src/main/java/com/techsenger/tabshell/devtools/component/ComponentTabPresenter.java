@@ -16,12 +16,14 @@
 
 package com.techsenger.tabshell.devtools.component;
 
+import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
+import com.techsenger.tabshell.devtools.node.NodeTabPort;
 import com.techsenger.tabshell.shared.find.FindNavigationAwarePort;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -135,15 +137,18 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
 
     private final ComponentService service;
 
+    private final NodeTabPort nodeTab;
+
     private ComponentItem rootComponent;
 
     private List<FindMatch> matches = Collections.EMPTY_LIST;
 
     private int currentMatchIndex = -1;
 
-    public ComponentTabPresenter(V view, ComponentService service) {
+    public ComponentTabPresenter(V view, ComponentService service, NodeTabPort nodeTab) {
         super(view);
         this.service = service;
+        this.nodeTab = nodeTab;
     }
 
     @Override
@@ -164,8 +169,13 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        var toolBar = getComposer().getToolBar();
         refresh();
+    }
+
+    protected void handleComponentSelected(Element componentNode) {
+        if (componentNode != null) {
+            this.nodeTab.selectNode(componentNode);
+        }
     }
 
     protected void refresh() {

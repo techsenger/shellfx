@@ -55,7 +55,13 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
         @Override
         public void selectNode(Element node) {
+            createNodeIndex();
             getView().selectNode(node);
+        }
+
+        @Override
+        public void selectRoot() {
+            getView().selectRoot();
         }
     }
 

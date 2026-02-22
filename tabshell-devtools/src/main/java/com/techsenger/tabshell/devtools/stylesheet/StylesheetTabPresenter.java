@@ -31,6 +31,7 @@ import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ElementUtils;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
+import com.techsenger.tabshell.devtools.node.NodeTabPort;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -97,10 +98,13 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
 
     private final DevToolsTabDockPort dock;
 
-    public StylesheetTabPresenter(V view, Connector connector, DevToolsTabDockPort dock) {
+    private final NodeTabPort nodeTab;
+
+    public StylesheetTabPresenter(V view, Connector connector, DevToolsTabDockPort dock, NodeTabPort nodeTab) {
         super(view);
         this.connector = connector;
         this.dock = dock;
+        this.nodeTab = nodeTab;
     }
 
     @Override
@@ -133,16 +137,27 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
         rebuildTree();
     }
 
+    protected void handleStylesheetSelected(StylesheetItem s) {
+        if (s.type() == StylesheetItemType.APPLICATION || s.type() == StylesheetItemType.STYLESHEET) {
+            return;
+        }
+        if (s.node() != null) {
+            nodeTab.selectNode(s.node());
+        } else {
+            nodeTab.selectRoot();
+        }
+    }
+
     protected void rebuildTree() {
         var entry = connector.getStyledElements(dock.getWindowUid());
         Matcher matcher = getComposer().getToolBar().createFindMatcher();
 
         List<StylesheetItem> items = new ArrayList<>();
         var item = new StylesheetItem(StylesheetItemType.APPLICATION,
-                "Application [" + connector.getUserAgentStylesheet() + "]", true);
+                "Application [" + connector.getUserAgentStylesheet() + "]", true, null);
         items.add(item);
         item = new StylesheetItem(StylesheetItemType.WINDOW,
-                formatWindowType(dock.getWindowUid(), entry.getKey()), true);
+                formatWindowType(dock.getWindowUid(), entry.getKey()), true, null);
         items.add(item);
 
         var found = 0;
@@ -153,7 +168,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
                 found++;
                 items.add(item);
                 for (var s : sceneStylesheets) {
-                    items.add(new StylesheetItem(StylesheetItemType.STYLESHEET, s, false));
+                    items.add(new StylesheetItem(StylesheetItemType.STYLESHEET, s, false, null));
                 }
             }
         }
@@ -164,7 +179,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
                 found++;
                 items.add(item);
                 for (var s : e.getNodeProperties().stylesheets()) {
-                    items.add(new StylesheetItem(StylesheetItemType.STYLESHEET, s, false));
+                    items.add(new StylesheetItem(StylesheetItemType.STYLESHEET, s, false, null));
                 }
             }
         }
@@ -180,15 +195,15 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
         StylesheetItem item = null;
         if (el == null) {
             if (matcher == null) {
-                item = new StylesheetItem(StylesheetItemType.NODE, "Scene", false);
+                item = new StylesheetItem(StylesheetItemType.NODE, "Scene", false, el);
             } else {
                 if (matcher.reset("Scene").find()) {
-                    item = new StylesheetItem(StylesheetItemType.NODE, "Scene", false);
+                    item = new StylesheetItem(StylesheetItemType.NODE, "Scene", false, el);
                 }
             }
         } else {
             if (matcher == null) {
-                item = new StylesheetItem(StylesheetItemType.NODE, ElementUtils.getTitle(el), false);
+                item = new StylesheetItem(StylesheetItemType.NODE, ElementUtils.getTitle(el), false, el);
             } else {
                 var id = el.getNodeProperties().id();
                 var styleClasses = el.getNodeProperties().styleClass();
@@ -196,7 +211,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
                         || (id != null && matcher.reset(id).find())
                         || (styleClasses != null && styleClasses.stream()
                                 .filter(s -> matcher.reset(s).find()).anyMatch(e -> true))) {
-                    item = new StylesheetItem(StylesheetItemType.NODE, ElementUtils.getTitle(el), false);
+                    item = new StylesheetItem(StylesheetItemType.NODE, ElementUtils.getTitle(el), false, el);
                 }
             }
         }

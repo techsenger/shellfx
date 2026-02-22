@@ -32,6 +32,8 @@ public interface NodeTabView extends TabView {
 
     Element getSelectedNode();
 
+    void selectRoot();
+
     void refreshNodes();
 
     void selectNode(Element node);

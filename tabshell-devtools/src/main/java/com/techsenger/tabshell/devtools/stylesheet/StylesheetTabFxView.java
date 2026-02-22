@@ -119,6 +119,16 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
         getContentBox().getChildren().add(treeView);
     }
 
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        treeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+            if (newV != null) {
+                getPresenter().handleStylesheetSelected(newV.getValue());
+            }
+        });
+    }
+
     protected TreeView<StylesheetItem> getTreeView() {
         return treeView;
     }

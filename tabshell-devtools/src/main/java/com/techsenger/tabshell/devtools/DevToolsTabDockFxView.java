@@ -54,19 +54,19 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
         public void compose() {
             super.compose();
 
-            var componentTab = createComponentTab();
-            componentTab.getPresenter().initialize();
-            addTab(componentTab);
-
             var nodeTab = createNodeTab();
             nodeTab.getPresenter().initialize();
+            var componentTab = createComponentTab(nodeTab.getPresenter().getPort());
+            componentTab.getPresenter().initialize();
+
+            addTab(componentTab);
             addTab(nodeTab);
 
             var eventTab = createEventTab(nodeTab.getPresenter().getPort());
             eventTab.getPresenter().initialize();
             addTab(eventTab);
 
-            var stylesheetTab = createStylesheetTab();
+            var stylesheetTab = createStylesheetTab(nodeTab.getPresenter().getPort());
             stylesheetTab.getPresenter().initialize();
             addTab(stylesheetTab);
 
@@ -77,9 +77,9 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
             selectTab(0);
         }
 
-        protected ComponentTabFxView<?> createComponentTab() {
+        protected ComponentTabFxView<?> createComponentTab(NodeTabPort nodeTab) {
             var view = new ComponentTabFxView<>();
-            var presenter = new ComponentTabPresenter<>(view, new JfxComponentService(shellTab.getShell()));
+            var presenter = new ComponentTabPresenter<>(view, new JfxComponentService(shellTab.getShell()), nodeTab);
             return view;
         }
 
@@ -95,10 +95,10 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
             return view;
         }
 
-        protected StylesheetTabFxView<?> createStylesheetTab() {
+        protected StylesheetTabFxView<?> createStylesheetTab(NodeTabPort nodeTab) {
             var view = new StylesheetTabFxView<>();
             var windowUid = shellTab.getShell().getStage().hashCode();
-            var presenter = new StylesheetTabPresenter<>(view, connector, getPresenter().getPort());
+            var presenter = new StylesheetTabPresenter<>(view, connector, getPresenter().getPort(), nodeTab);
             return view;
         }
 

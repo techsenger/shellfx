@@ -16,11 +16,13 @@
 
 package com.techsenger.tabshell.devtools.stylesheet;
 
+import com.techsenger.connectorfx.scenegraph.Element;
+
 /**
  *
  * @author Pavel Castornii
  */
-public record StylesheetItem(StylesheetItemType type, String name, boolean expanded) {
+public record StylesheetItem(StylesheetItemType type, String name, boolean expanded, Element node) {
 
 
 }
