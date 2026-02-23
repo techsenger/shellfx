@@ -148,6 +148,11 @@
     -fx-padding: 0 0.5em 0 0.25em;
 }
 
+/* the alignment of the text in the first column in rows under tree-disclosure-node */
+.tree-table-view .tree-table-row-cell > .tree-table-cell > HBox {
+  -fx-alignment: CENTER_LEFT;
+}
+
 /*
     TreeView
 */
