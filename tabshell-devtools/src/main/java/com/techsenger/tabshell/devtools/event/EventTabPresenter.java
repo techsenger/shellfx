@@ -142,7 +142,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
     private final StringBuilder textBuilder = new StringBuilder();
 
-    private int displayedEntriesCount;
+    private int matchedEntriesCount;
 
     private int totalEntriesCount;
 
@@ -222,7 +222,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
                     }
                 }
                 totalEntriesCount = totalEntriesCount + newEntriesCount;
-                displayedEntriesCount = displayedEntriesCount + processedEntries.size();
+                matchedEntriesCount = matchedEntriesCount + processedEntries.size();
                 sendText(processedEntries);
                 updateStatistics();
                 processedEntries.clear();
@@ -287,7 +287,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
         newEntries.clear();
         getView().clearText();
         // after all
-        displayedEntriesCount = 0;
+        matchedEntriesCount = 0;
         totalEntriesCount = 0;
         updateStatistics();
     }
@@ -303,6 +303,6 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
     private void updateStatistics() {
         var tb = getComposer().getToolBar();
-        tb.setStatistics(displayedEntriesCount + " / " + totalEntriesCount);
+        tb.setStatistics(matchedEntriesCount + " / " + totalEntriesCount);
     }
 }

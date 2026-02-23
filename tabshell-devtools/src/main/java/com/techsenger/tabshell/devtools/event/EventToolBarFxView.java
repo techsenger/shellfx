@@ -135,7 +135,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
 
         statisticsLabel.setMinWidth(Label.USE_PREF_SIZE);
         statisticsDataLabel.setStyle("-fx-min-width: 6em");
-        statisticsDataLabel.setTooltip(new Tooltip("Displayed / Total events"));
+        statisticsDataLabel.setTooltip(new Tooltip("Matched Events / Total Events"));
         getNode().getItems().clear();
         getNode().getItems().addAll(recordButton, clearButton, new Separator(Orientation.VERTICAL),
             filterButton, selectedOnlyButton, getFindComboBoxWrapper(), getMatchCaseButton(),
