@@ -16,16 +16,11 @@
 
 package com.techsenger.tabshell.devtools.component;
 
-import com.techsenger.tabshell.core.tab.TabComposer;
-import com.techsenger.tabshell.devtools.ToolBarPort;
-
 /**
  *
  * @author Pavel Castornii
  */
-public interface ComponentTabComposer extends TabComposer {
+public enum InspectorCategory {
 
-    ToolBarPort getComponentToolBar();
-
-    ToolBarPort getInspectorToolBar();
+    PROPERTY, FX_VIEW, PRESENTER, PORT, COMPOSER, HISTORY
 }

@@ -18,6 +18,7 @@ package com.techsenger.tabshell.devtools.component;
 
 import com.techsenger.tabshell.core.tab.TabView;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -25,7 +26,7 @@ import java.util.List;
  */
 public interface ComponentTabView extends TabView {
 
-    void setRootItem(ComponentItem item);
+    void setRootComponent(ComponentItem item);
 
     /**
      * Contains the indexes of the child nodes. The first index (0) is the root. The second index is the root child
@@ -34,7 +35,9 @@ public interface ComponentTabView extends TabView {
      *
      * @param path
      */
-    void selectItem(List<Integer> path);
+    void selectComponent(List<Integer> path);
 
-    ComponentItem getSelectedItem();
+    ComponentItem getSelectedComponent();
+
+    void updateInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory);
 }

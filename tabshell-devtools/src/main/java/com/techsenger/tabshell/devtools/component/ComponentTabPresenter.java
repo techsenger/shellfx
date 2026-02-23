@@ -18,6 +18,12 @@ package com.techsenger.tabshell.devtools.component;
 
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.patternfx.mvp.ParentPort;
+import com.techsenger.patternfx.mvp.ParentPresenter;
+import com.techsenger.patternfx.mvp.ParentView;
+import com.techsenger.patternfx.mvp.Presenter;
+import com.techsenger.patternfx.mvp.View;
 import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
@@ -27,8 +33,11 @@ import com.techsenger.tabshell.devtools.ToolBarAwarePort;
 import com.techsenger.tabshell.devtools.node.NodeTabPort;
 import com.techsenger.tabshell.shared.find.FindNavigationAwarePort;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -54,7 +63,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
             }
             return true;
         };
-        List<Integer> path = new ArrayList();
+        List<Integer> path = new ArrayList<>();
         path.add(0); // root
         traverse(root, path, func);
         return results;
@@ -70,7 +79,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
                 return true;
             }
         };
-        List<Integer> path = new ArrayList();
+        List<Integer> path = new ArrayList<>();
         path.add(0); // root
         traverse(root, path, func);
         return foundPath;
@@ -100,40 +109,176 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         return true;
     }
 
-    protected class ToolBarAwarePortImpl implements ToolBarAwarePort, FindNavigationAwarePort {
+    private record InspectorMatchResult(List<InspectorItem> items, int totalMatches) {
+
+    }
+
+    private static InspectorMatchResult matchInspectorItems(Class<? extends View> fxViewClass,
+            Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Matcher matcher) {
+        var descriptor = presenter.getDescriptor();
+        ParentPort port = null;
+        if (ParentView.class.isAssignableFrom(fxViewClass)) {
+            var parentPresenter = (ParentPresenter<?, ?>) presenter;
+            port = parentPresenter.getPort();
+        }
+        var totalMatches = 0;
+        var items = new ArrayList<InspectorItem>();
+        // properties
+        var tempItems = new ArrayList<InspectorItem>();
+        items.add(new InspectorItem(InspectorCategory.PROPERTY, "Property", null, List.of("Value"), null));
+        var savedSize = items.size();
+        tempItems.add(new InspectorItem(null, "Name", null, List.of(descriptor.getName().getText()), null));
+        tempItems.add(new InspectorItem(null, "UUID", null, List.of(descriptor.getUuid().toString()), null));
+        tempItems.add(new InspectorItem(null, "State", null, List.of(descriptor.getState().toString()), null));
+        tempItems.add(new InspectorItem(null, "HistoryPolicy", null, List.of(presenter.getHistoryPolicy().toString()),
+                null));
+        for (var item : tempItems) {
+            if (matcher == null || matcher.reset(item.name()).find()) {
+                items.add(item);
+            }
+        }
+        totalMatches += items.size() - savedSize;
+        removeCategoryIfRequired(savedSize, items);
+
+        var  categoryItem = new InspectorItem(InspectorCategory.FX_VIEW, "FX View", null, List.of("Interfaces"), null);
+        totalMatches += matchInspectorItems(fxViewClass, categoryItem, items, matcher);
+
+        categoryItem = new InspectorItem(InspectorCategory.PRESENTER, "Presenter", null, List.of("Interfaces"), null);
+        totalMatches += matchInspectorItems(presenter.getClass(), categoryItem, items, matcher);
+
+        if (fxComposerClass != null) {
+            categoryItem = new InspectorItem(InspectorCategory.COMPOSER, "Composer", null, List.of("Interfaces"), null);
+            totalMatches += matchInspectorItems(fxComposerClass, categoryItem, items, matcher);
+        }
+        if (port != null) {
+            categoryItem = new InspectorItem(InspectorCategory.PORT, "Primary Port", null,
+                    List.of("Interfaces"), null);
+            totalMatches += matchInspectorItems(port.getClass(), categoryItem, items, matcher);
+        }
+        return new InspectorMatchResult(items, totalMatches);
+    }
+
+    private static int matchInspectorItems(Class<?> clazz, InspectorItem cat, List<InspectorItem> items,
+            Matcher matcher) {
+        items.add(cat);
+        var savedSize = items.size();
+        createInspectorItems(clazz, items, matcher);
+        int totalMatches = items.size() - savedSize;
+        removeCategoryIfRequired(savedSize, items);
+        return totalMatches;
+    }
+
+    private static void removeCategoryIfRequired(int savedSize, List<InspectorItem> items) {
+        if (savedSize == items.size()) {
+            items.removeLast();
+        }
+    }
+
+    private static List<Class<?>> getHierarchyFromObject(Class<?> clazz) {
+        List<Class<?>> hierarchy = new ArrayList<>();
+        Class<?> current = clazz;
+        while (current != null) {
+            hierarchy.add(current);
+            current = current.getSuperclass();
+        }
+        Collections.reverse(hierarchy);
+        return hierarchy;
+    }
+
+    private static void createInspectorItems(Class<?> clazz, List<InspectorItem> items, Matcher matcher) {
+        var classes = getHierarchyFromObject(clazz);
+        for (var c : classes) {
+            var matched = false;
+            String componentClass = getSimpleName(c);
+            if (matcher == null || matcher.reset(componentClass).find()) {
+                matched = true;
+            }
+            var iSimpleNames = new ArrayList<String>();
+            var iFullNames = new ArrayList<String>();
+            for (var i : c.getInterfaces()) {
+                var interfaceClass = getSimpleName(i);
+                if (!matched) {
+                    matched = matcher.reset(interfaceClass).find();
+                }
+                iSimpleNames.add(interfaceClass);
+                iFullNames.add(i.getName());
+            }
+            if (matched) {
+                items.add(new InspectorItem(null, componentClass, c.getName(), iSimpleNames, iFullNames));
+            }
+        }
+    }
+
+    private static String getSimpleName(Class<?> clazz) {
+        if (clazz.getEnclosingClass() != null) {
+            String name = clazz.getName();
+            int lastDot = name.lastIndexOf('.');
+            String withoutPackage = name.substring(lastDot + 1);
+            return withoutPackage;
+            //return withoutPackage.replace('$', '.');
+        } else {
+            return clazz.getSimpleName();
+        }
+    }
+
+    protected class ComponentToolBarAwarePort implements ToolBarAwarePort, FindNavigationAwarePort {
 
         @Override
         public void onMatchCase(boolean selected) {
-            clearMatches();
-            findMatches();
+            clearFoundComponents();
+            findComponents();
         }
 
         @Override
         public void onRefresh() {
-            refresh();
+            refreshComponents();
         }
 
         @Override
         public void onFind() {
             // It is necessary to refresh the tree on every find because we work directly
             // with the live component tree, not with a snapshot/copy of it
-            refresh();
+            refreshComponents();
         }
 
         @Override
         public void onFindCleared() {
-            clearMatches();
+            clearFoundComponents();
         }
 
         @Override
         public void onFindNext() {
-            findNext();
+            findNextComponent();
         }
 
         @Override
         public void onFindPrevious() {
-            findPrevious();
+            findPreviousComponent();
         }
+    }
+
+    protected class InspectorToolBarAwarePort implements ToolBarAwarePort {
+
+        @Override
+        public void onMatchCase(boolean selected) {
+            refreshInspector();
+        }
+
+        @Override
+        public void onRefresh() {
+            refreshInspector();
+        }
+
+        @Override
+        public void onFind() {
+            refreshInspector();
+        }
+
+        @Override
+        public void onFindCleared() {
+            refreshInspector();
+        }
+
     }
 
     private final ComponentService service;
@@ -142,9 +287,17 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
 
     private ComponentItem rootComponent;
 
-    private List<FindMatch> matches = Collections.EMPTY_LIST;
+    private List<FindMatch> componentMatches = Collections.emptyList();
 
     private int currentMatchIndex = -1;
+
+    private final Map<InspectorCategory, Boolean> expandedByCategory = new HashMap<>();
+
+    private Class<? extends View> componentFxViewClass;
+
+    private Class<? extends ParentComposer> componentFxComposerClass;
+
+    private Presenter<?> componentPresenter;
 
     public ComponentTabPresenter(V view, ComponentService service, NodeTabPort nodeTab) {
         super(view);
@@ -164,7 +317,8 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
 
     @Override
     public void handleAdded() {
-        refresh();
+        refreshComponents();
+        Arrays.stream(InspectorCategory.values()).forEach((v) -> expandedByCategory.put(v, Boolean.FALSE));
     }
 
     @Override
@@ -172,67 +326,96 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         return new Descriptor(DevToolsComponents.COMPONENT_TAB);
     }
 
-    protected void handleComponentSelected(Element componentNode) {
+    protected void handleComponentSelected(Class<? extends View> fxViewClass,
+            Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Element componentNode) {
         if (componentNode != null) {
             this.nodeTab.selectNode(componentNode);
         }
+        this.componentFxViewClass = fxViewClass;
+        this.componentFxComposerClass = fxComposerClass;
+        this.componentPresenter = presenter;
+        refreshInspector();
     }
 
-    protected void refresh() {
-        var selectedItem = getView().getSelectedItem();
+    protected void handleCategoryExpanded(InspectorCategory category, boolean expanded) {
+        expandedByCategory.put(category, expanded);
+    }
+
+    protected void refreshComponents() {
+        var selectedComponent = getView().getSelectedComponent();
         this.rootComponent = this.service.getRootComponent();
-        getView().setRootItem(rootComponent);
-        clearMatches();
-        findMatches();
-        if (selectedItem != null && this.matches.isEmpty()) { // restoring selected item
-            var path = getPath(rootComponent, selectedItem.getUuid());
+        getView().setRootComponent(rootComponent);
+        clearFoundComponents();
+        findComponents();
+        if (selectedComponent != null && this.componentMatches.isEmpty()) { // restoring selected item
+            var path = getPath(rootComponent, selectedComponent.getUuid());
             if (!path.isEmpty()) {
-                getView().selectItem(path);
+                getView().selectComponent(path);
             }
         }
     }
 
-    private void findMatches() {
-        var findMatcher = getComposer().getToolBar().createFindMatcher();
+    private void findComponents() {
+        var findMatcher = getComposer().getComponentToolBar().createFindMatcher();
         if (findMatcher != null) {
-            this.matches = findMatches(rootComponent, findMatcher);
-            if (!this.matches.isEmpty()) {
+            this.componentMatches = findMatches(rootComponent, findMatcher);
+            if (!this.componentMatches.isEmpty()) {
                 this.currentMatchIndex = 0;
-                getView().selectItem(this.matches.get(this.currentMatchIndex).path());
+                getView().selectComponent(this.componentMatches.get(this.currentMatchIndex).path());
             }
-            updateMatchesInfo();
+            updateFoundComponentInfo();
         }
     }
 
-    private void findNext() {
-        if (!this.matches.isEmpty()) {
+    private void findNextComponent() {
+        if (!this.componentMatches.isEmpty()) {
             this.currentMatchIndex++;
-            if (this.currentMatchIndex >= this.matches.size()) {
+            if (this.currentMatchIndex >= this.componentMatches.size()) {
                 this.currentMatchIndex = 0;
             }
-            updateMatchesInfo();
-            getView().selectItem(this.matches.get(currentMatchIndex).path());
+            updateFoundComponentInfo();
+            getView().selectComponent(this.componentMatches.get(currentMatchIndex).path());
         }
     }
 
-    private void findPrevious() {
-        if (!this.matches.isEmpty()) {
+    private void findPreviousComponent() {
+        if (!this.componentMatches.isEmpty()) {
             this.currentMatchIndex--;
             if (this.currentMatchIndex < 0) {
-                this.currentMatchIndex = this.matches.size() - 1;
+                this.currentMatchIndex = this.componentMatches.size() - 1;
             }
-            updateMatchesInfo();
-            getView().selectItem(this.matches.get(currentMatchIndex).path());
+            updateFoundComponentInfo();
+            getView().selectComponent(this.componentMatches.get(currentMatchIndex).path());
         }
     }
 
-    private void clearMatches() {
-        this.matches = Collections.EMPTY_LIST;
+    private void clearFoundComponents() {
+        this.componentMatches = Collections.emptyList();
         this.currentMatchIndex = -1;
-        getComposer().getToolBar().hideFindResultInfo();
+        getComposer().getComponentToolBar().hideFindResultInfo();
     }
 
-    private void updateMatchesInfo() {
-        getComposer().getToolBar().showFindResultInfo(currentMatchIndex + 1, this.matches.size());
+    private void updateFoundComponentInfo() {
+        getComposer().getComponentToolBar().showFindResultInfo(currentMatchIndex + 1, this.componentMatches.size());
+    }
+
+    private void refreshInspector() {
+        if (this.componentFxViewClass != null) {
+            var matcher = getComposer().getInspectorToolBar().createFindMatcher();
+            var result = matchInspectorItems(
+                    this.componentFxViewClass,
+                    this.componentFxComposerClass,
+                    this.componentPresenter,
+                    matcher);
+            getView().updateInspector(result.items, expandedByCategory);
+            if (matcher != null) {
+                getComposer().getInspectorToolBar().showFindResultInfo(result.totalMatches);
+            } else {
+                getComposer().getInspectorToolBar().hideFindResultInfo();
+            }
+        } else {
+            getView().updateInspector(Collections.emptyList(), expandedByCategory);
+            getComposer().getInspectorToolBar().hideFindResultInfo();
+        }
     }
 }

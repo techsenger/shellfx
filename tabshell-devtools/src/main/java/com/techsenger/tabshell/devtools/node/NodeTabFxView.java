@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.devtools.node;
 
+import atlantafx.base.theme.Tweaks;
 import com.techsenger.connectorfx.ConnectorOptions;
 import com.techsenger.connectorfx.LocalElement;
 import com.techsenger.connectorfx.event.EventSource;
@@ -489,7 +490,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         });
         valueColumn.setCellFactory(col -> new ValueTableCell());
         propertyTableView.getColumns().addAll(propertyColumn, valueColumn);
-        propertyTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, "no-header");
+        propertyTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, Tweaks.NO_HEADER);
         propertyTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         propertyTableView.setShowRoot(false);
         propertyTableView.setPlaceholder(new Label(""));

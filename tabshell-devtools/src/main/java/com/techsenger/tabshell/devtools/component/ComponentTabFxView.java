@@ -16,9 +16,12 @@
 
 package com.techsenger.tabshell.devtools.component;
 
+import atlantafx.base.theme.Tweaks;
 import com.techsenger.connectorfx.LocalElement;
 import com.techsenger.connectorfx.event.EventSource;
 import com.techsenger.connectorfx.scenegraph.Element;
+import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
@@ -30,12 +33,21 @@ import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.FindFeature;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -123,6 +135,33 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         }
     }
 
+    private static TreeItem<InspectorItem> createRootItem(List<InspectorItem> items, ComponentTabPresenter<?, ?> p,
+            Map<InspectorCategory, Boolean> expandedByCat) {
+        var root = new TreeItem<InspectorItem>();
+        TreeItem<InspectorItem> category = null;
+        for (var item : items) {
+            if (item.category() != null) {
+                category = createCategoryItem(item, p, expandedByCat);
+                root.getChildren().add(category);
+            } else {
+                category.getChildren().add(new TreeItem<>(item));
+            }
+        }
+        return root;
+    }
+
+    private static TreeItem<InspectorItem> createCategoryItem(InspectorItem item, ComponentTabPresenter<?, ?> p,
+            Map<InspectorCategory, Boolean> expandedByCategory) {
+        var treeItem = new TreeItem<>(item);
+        if (item.category() != null) {
+            treeItem.setExpanded(expandedByCategory.get(item.category()));
+            treeItem.expandedProperty().addListener((ov, oldV, newV) -> {
+                p.handleCategoryExpanded(item.category(), newV);
+            });
+        }
+        return treeItem;
+    }
+
     public class Composer extends AbstractTabFxView<P>.Composer implements ComponentTabComposer {
 
         private final ComponentTabFxView<P> view = ComponentTabFxView.this;
@@ -131,28 +170,55 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         public void compose() {
             super.compose();
 
-            view.toolBar = createToolBar();
-            view.toolBar.getPresenter().initialize();
-            view.getModifiableChildren().add(view.toolBar);
-            view.getContentBox().getChildren().add(0, view.toolBar.getNode());
+            view.componentToolBar = createComponentToolBar();
+            view.componentToolBar.getPresenter().initialize();
+            view.getModifiableChildren().add(view.componentToolBar);
+            view.componentBox.getChildren().add(0, view.componentToolBar.getNode());
+
+            view.inspectorToolBar = createInspectorToolBar();
+            view.inspectorToolBar.getPresenter().initialize();
+            view.getModifiableChildren().add(view.inspectorToolBar);
+            view.inspectorBox.getChildren().add(0, view.inspectorToolBar.getNode());
         }
 
-        protected ToolBarFxView<?> createToolBar() {
+        @Override
+        public ToolBarPort getComponentToolBar() {
+            return view.componentToolBar.getPresenter().getPort();
+        }
+
+        @Override
+        public ToolBarPort getInspectorToolBar() {
+            return view.inspectorToolBar.getPresenter().getPort();
+        }
+
+        protected ToolBarFxView<?> createComponentToolBar() {
             var view = new ToolBarFxView<>("Name / UUID");
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new ToolBarAwarePortImpl(),
+            var presenter = new ToolBarPresenter<>(view, getPresenter().new ComponentToolBarAwarePort(),
                     FindFeature.MATCH_CASE, FindFeature.FIND_NEXT, FindFeature.FIND_PREVIOUS);
             return view;
         }
 
-        @Override
-        public ToolBarPort getToolBar() {
-            return view.toolBar.getPresenter().getPort();
+        protected ToolBarFxView<?> createInspectorToolBar() {
+            var view = new ToolBarFxView<>("Property / ElementClass / ElementInterface");
+            var presenter = new ToolBarPresenter<>(view, getPresenter().new InspectorToolBarAwarePort(),
+                    FindFeature.MATCH_CASE);
+            return view;
         }
     }
 
-    private final TreeView<ComponentItem> treeView = new TreeView<>();
+    private final TreeView<ComponentItem> componentTreeView = new TreeView<>();
 
-    private ToolBarFxView<?> toolBar;
+    private final VBox componentBox = new VBox(componentTreeView);
+
+    private final TreeTableView<InspectorItem> inspectorTableView = new TreeTableView();
+
+    private final VBox inspectorBox = new VBox(inspectorTableView);
+
+    private final SplitPane splitPane = new SplitPane(componentBox, inspectorBox);
+
+    private ToolBarFxView<?> componentToolBar;
+
+    private ToolBarFxView<?> inspectorToolBar;
 
     @Override
     public void requestFocus() {
@@ -160,32 +226,42 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     }
 
     @Override
-    public void setRootItem(ComponentItem item) {
+    public void setRootComponent(ComponentItem item) {
         rebuildTree(item);
     }
 
     @Override
-    public void selectItem(List<Integer> path) {
+    public void selectComponent(List<Integer> path) {
         TreeItem<ComponentItem> treeItem = null;
         for (var index : path) {
             if (treeItem == null) {
-                treeItem = treeView.getRoot();
+                treeItem = componentTreeView.getRoot();
             } else {
                 treeItem = treeItem.getChildren().get(index);
             }
             treeItem.setExpanded(true);
         }
-        treeView.getSelectionModel().select(treeItem);
-        treeView.scrollTo(treeView.getSelectionModel().getSelectedIndex());
+        componentTreeView.getSelectionModel().select(treeItem);
+        componentTreeView.scrollTo(componentTreeView.getSelectionModel().getSelectedIndex());
     }
 
     @Override
-    public ComponentItem getSelectedItem() {
-        var item = treeView.getSelectionModel().getSelectedItem();
+    public ComponentItem getSelectedComponent() {
+        var item = componentTreeView.getSelectionModel().getSelectedItem();
         if (item != null) {
             return item.getValue();
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public void updateInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory) {
+        if (!items.isEmpty()) {
+            var root = createRootItem(items, getPresenter(), expandedByCategory);
+            inspectorTableView.setRoot(root);
+        } else {
+            inspectorTableView.setRoot(null);
         }
     }
 
@@ -210,18 +286,92 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         super.build();
         setTitle("Components");
         setClosable(false);
-        treeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
-        treeView.setShowRoot(true);
-        treeView.setCellFactory(e -> new ComponentTreeCell());
+        componentTreeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
+        componentTreeView.setShowRoot(true);
+        componentTreeView.setCellFactory(e -> new ComponentTreeCell());
+        VBox.setVgrow(componentTreeView, Priority.ALWAYS);
 
-        VBox.setVgrow(treeView, Priority.ALWAYS);
-        getContentBox().getChildren().add(treeView);
+        TreeTableColumn<InspectorItem, InspectorItem> propertyColumn = new TreeTableColumn<>("Property");
+        propertyColumn.setCellValueFactory(param -> {
+            // root is not shown
+            var item = param.getValue().getValue();
+            return new SimpleObjectProperty<>(item);
+        });
+        propertyColumn.setCellFactory(col -> new TreeTableCell<InspectorItem, InspectorItem>() {
+            @Override
+            protected void updateItem(InspectorItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    if (item.category() != null) {
+                        setGraphic(null);
+                        setText(item.name());
+                    } else {
+                        var label = new Label(item.name());
+                        if (item.nameTooltip() != null) {
+                            label.setTooltip(new Tooltip(item.nameTooltip()));
+                        }
+                        HBox hbox = new HBox(label);
+                        setGraphic(hbox);
+                        setText(null);
+                    }
+                }
+            }
+        });
+
+        TreeTableColumn<InspectorItem, InspectorItem> valueColumn = new TreeTableColumn<>("Value");
+        valueColumn.setCellValueFactory(param -> {
+            // root is not shown
+            var item = param.getValue().getValue();
+            return new SimpleObjectProperty<>(item);
+        });
+        valueColumn.setCellFactory(col -> new TreeTableCell<InspectorItem, InspectorItem>() {
+            @Override
+            protected void updateItem(InspectorItem item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    if (item.category() != null) {
+                        setGraphic(null);
+                        setText(item.values().get(0));
+                    } else {
+                        HBox hbox = new HBox();
+                        if (item.values() != null) {
+                            for (var i = 0; i < item.values().size(); i++) {
+                                var value = item.values().get(i);
+                                var label = new Label(value);
+                                if (item.valueTooltips() != null) {
+                                    label.setTooltip(new Tooltip(item.valueTooltips().get(i)));
+                                }
+                                hbox.getChildren().add(label);
+                            }
+                        }
+                        setGraphic(hbox);
+                        setText(null);
+                    }
+                }
+            }
+        });
+
+        inspectorTableView.getColumns().addAll(propertyColumn, valueColumn);
+        inspectorTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, Tweaks.NO_HEADER);
+        inspectorTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        inspectorTableView.setShowRoot(false);
+        inspectorTableView.setPlaceholder(new Label(""));
+        VBox.setVgrow(inspectorTableView, Priority.ALWAYS);
+
+        VBox.setVgrow(splitPane, Priority.ALWAYS);
+        getContentBox().getChildren().add(splitPane);
     }
 
     @Override
     protected void addListeners() {
         super.addListeners();
-        treeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+        componentTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV != null) {
                 var component = newV.getValue();
                 var jfxComponent = (JfxComponentItem) component;
@@ -237,18 +387,49 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
                 } else {
                     throw new AssertionError("Unknown type of the component");
                 }
-                getPresenter().handleComponentSelected(element);
+                Class<? extends ParentComposer> fxComposerClass = null;
+                if (fxView instanceof ParentFxView<?> pfxv) {
+                    fxComposerClass = pfxv.getComposer().getClass();
+                }
+                getPresenter().handleComponentSelected(fxView.getClass(), fxComposerClass, fxView.getPresenter(),
+                        element);
+            } else {
+                getPresenter().handleComponentSelected(null, null, null, null);
             }
         });
     }
 
-    protected TreeView<ComponentItem> getTreeView() {
-        return treeView;
+    protected TreeView<ComponentItem> getComponentTreeView() {
+        return componentTreeView;
+    }
+
+    protected VBox getComponentBox() {
+        return componentBox;
+    }
+
+    protected TreeTableView<InspectorItem> getInspectorTableView() {
+        return inspectorTableView;
+    }
+
+    protected VBox getInspectorBox() {
+        return inspectorBox;
+    }
+
+    protected SplitPane getSplitPane() {
+        return splitPane;
+    }
+
+    protected ToolBarFxView<?> getComponentToolBar() {
+        return componentToolBar;
+    }
+
+    protected ToolBarFxView<?> getInspectorToolBar() {
+        return inspectorToolBar;
     }
 
     private void rebuildTree(ComponentItem rootItem) {
         var rootTreeItem = convertToTreeItem(rootItem);
         // do not use the same root multiple times, as it causes a bug with node expansion
-        treeView.setRoot(rootTreeItem);
+        componentTreeView.setRoot(rootTreeItem);
     }
 }

@@ -35,3 +35,11 @@
 .tab-dock.tab-pane-pro > .tab-header-area > .first-area > .tab-header-first-box > .dock-button .font-icon-view {
     -fx-font-size: 1.2em;
 }
+
+.tree-table-view {
+    -fx-border-width: 0;
+}
+
+.tree-table-view .tree-table-row-cell {
+    -fx-background-insets: 0, 0;
+}

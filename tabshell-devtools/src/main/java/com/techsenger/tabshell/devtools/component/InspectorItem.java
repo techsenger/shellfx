@@ -16,16 +16,13 @@
 
 package com.techsenger.tabshell.devtools.component;
 
-import com.techsenger.tabshell.core.tab.TabComposer;
-import com.techsenger.tabshell.devtools.ToolBarPort;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ComponentTabComposer extends TabComposer {
+public record InspectorItem(InspectorCategory category, String name, String nameTooltip, List<String> values,
+        List<String> valueTooltips) {
 
-    ToolBarPort getComponentToolBar();
-
-    ToolBarPort getInspectorToolBar();
 }
