@@ -20,17 +20,17 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.web.WebComponents;
-import com.techsenger.tabshell.web.area.WebAreaPort;
-import java.util.function.Supplier;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WebToolBarPresenter<V extends WebToolBarView, C extends AreaComposer>
+public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer>
         extends AbstractAreaPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements WebToolBarPort {
+    protected class Port extends AbstractAreaPresenter.Port implements ToolBarPort {
+
+        private final ToolBarPresenter<V, C> presenter = ToolBarPresenter.this;
 
         @Override
         public void setBackDisable(boolean value) {
@@ -51,18 +51,22 @@ public class WebToolBarPresenter<V extends WebToolBarView, C extends AreaCompose
         public void setUrl(String value) {
             getView().setUrl(value);
         }
+
+        @Override
+        public void setListener(ToolBarListener listener) {
+            presenter.listener = listener;
+        }
     }
 
-    private final Supplier<WebAreaPort> area;
+    private ToolBarListener listener;
 
-    public WebToolBarPresenter(V view, Supplier<WebAreaPort> area) {
+    public ToolBarPresenter(V view) {
         super(view);
-        this.area = area;
     }
 
     @Override
-    public WebToolBarPort getPort() {
-        return (WebToolBarPort) super.getPort();
+    public ToolBarPort getPort() {
+        return (ToolBarPort) super.getPort();
     }
 
     @Override
@@ -70,24 +74,24 @@ public class WebToolBarPresenter<V extends WebToolBarView, C extends AreaCompose
         return new Descriptor(WebComponents.WEB_TOOL_BAR);
     }
 
-    protected void handleBackAction() {
-        area.get().navigateBack();
+    protected void onBack() {
+        listener.onNavigateBack();
     }
 
-    protected void handleForwardAction() {
-        area.get().navigateForward();
+    protected void onForward() {
+        listener.onNavigateForward();
     }
 
-    protected void handleReloadAction() {
-        area.get().reload();
+    protected void onReload() {
+        listener.onReload();
     }
 
-    protected void handleUrlInput(String url) {
-        area.get().load(url);
+    protected void onLoad(String url) {
+        listener.onLoad(url);
     }
 
     @Override
     protected Port createPort() {
-        return new WebToolBarPresenter.Port();
+        return new ToolBarPresenter.Port();
     }
 }

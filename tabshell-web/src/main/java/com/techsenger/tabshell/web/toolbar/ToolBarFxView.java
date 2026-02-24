@@ -34,8 +34,7 @@ import javafx.scene.layout.Priority;
  *
  * @author Pavel Castornii
  */
-public class WebToolBarFxView<P extends WebToolBarPresenter<?, ?>> extends AbstractAreaFxView<P>
-        implements WebToolBarView {
+public class ToolBarFxView<P extends ToolBarPresenter<?, ?>> extends AbstractAreaFxView<P> implements ToolBarView {
 
     private final Button backButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_LEFT));
 
@@ -47,7 +46,7 @@ public class WebToolBarFxView<P extends WebToolBarPresenter<?, ?>> extends Abstr
 
     private final ToolBar toolBar = new ToolBar(backButton, forwardButton, reloadButton, urlTextField);
 
-    public WebToolBarFxView() {
+    public ToolBarFxView() {
         super();
     }
 
@@ -132,12 +131,12 @@ public class WebToolBarFxView<P extends WebToolBarPresenter<?, ?>> extends Abstr
     protected void addHandlers() {
         super.addHandlers();
         var presenter = getPresenter();
-        reloadButton.setOnAction(e -> presenter.handleReloadAction());
-        backButton.setOnAction(e -> presenter.handleBackAction());
-        forwardButton.setOnAction(e -> presenter.handleForwardAction());
+        reloadButton.setOnAction(e -> presenter.onReload());
+        backButton.setOnAction(e -> presenter.onBack());
+        forwardButton.setOnAction(e -> presenter.onForward());
         urlTextField.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                presenter.handleUrlInput(urlTextField.getText());
+                presenter.onLoad(urlTextField.getText());
             }
         });
     }

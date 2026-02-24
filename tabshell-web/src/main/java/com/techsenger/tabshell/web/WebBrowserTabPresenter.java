@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public class WebBrowserTabPresenter<V extends WebBrowserTabView, C extends WebBrowserTabComposer>
         extends AbstractShellTabPresenter<V, C> {
 
-    private final String url;
+    private String url;
 
     public WebBrowserTabPresenter(V view, String url) {
         super(view);
@@ -47,15 +47,6 @@ public class WebBrowserTabPresenter<V extends WebBrowserTabView, C extends WebBr
     }
 
     @Override
-    protected void postInitialize() {
-        super.postInitialize();
-        var v = getView();
-        if (url != null) {
-            getComposer().getArea().load(url);
-        }
-    }
-
-    @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(WebComponents.WEB_BROWSER_TAB);
     }
@@ -66,5 +57,11 @@ public class WebBrowserTabPresenter<V extends WebBrowserTabView, C extends WebBr
         if (getComposer().getArea().getLocation() == null) {
             getComposer().getToolBar().requestFocus();
         }
+    }
+
+    String getAndClearUrl() {
+        var v = this.url;
+        this.url = null;
+        return v;
     }
 }

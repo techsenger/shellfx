@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AreaPort;
  *
  * @author Pavel Castornii
  */
-public interface WebToolBarPort extends AreaPort {
+public interface ToolBarPort extends AreaPort {
 
     void setBackDisable(boolean value);
 
@@ -31,4 +31,6 @@ public interface WebToolBarPort extends AreaPort {
     void setReloadDisable(boolean value);
 
     void setUrl(String value);
+
+    void setListener(ToolBarListener listener);
 }

@@ -24,7 +24,8 @@ import com.techsenger.tabshell.material.icon.ImageIcon;
 import com.techsenger.tabshell.web.WebComponents;
 import com.techsenger.tabshell.web.model.UrlUtils;
 import com.techsenger.tabshell.web.style.WebIcons;
-import com.techsenger.tabshell.web.toolbar.WebToolBarPort;
+import com.techsenger.tabshell.web.toolbar.ToolBarListener;
+import com.techsenger.tabshell.web.toolbar.ToolBarPort;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -48,10 +49,16 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
 
     protected class Port extends AbstractAreaPresenter.Port implements WebAreaPort {
 
-        private final WebAreaPresenter<?, ?> presenter = WebAreaPresenter.this;
+        @Override
+        public String getLocation() {
+            return getView().getLocation();
+        }
+    }
+
+    protected class ToolBarListenerPort implements ToolBarListener {
 
         @Override
-        public void navigateBack() {
+        public void onNavigateBack() {
             var newIndex = getView().getHistoryIndex() - 1;
             if (newIndex >= 0) {
                 getView().loadHistory(newIndex);
@@ -59,7 +66,7 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         }
 
         @Override
-        public void navigateForward() {
+        public void onNavigateForward() {
             var newIndex = getView().getHistoryIndex() + 1;
             if (newIndex < getView().getHistorySize()) {
                 getView().loadHistory(newIndex);
@@ -67,28 +74,13 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         }
 
         @Override
-        public void reload() {
-            presenter.getView().reload();
+        public void onReload() {
+            getView().reload();
         }
 
         @Override
-        public void load(String urlStr) {
-            if (urlStr != null) {
-                var url = UrlUtils.normalize(urlStr);
-                if (url == null || !UrlUtils.isValid(url)) {
-                    url = UrlUtils.getSearch(urlStr);
-                }
-                if (url != null) {
-                    getView().load(url.toString());
-                } else {
-                    setDefaultTitleAndIcon();
-                }
-            }
-        }
+        public void onLoad(String urlStr) {
 
-        @Override
-        public String getLocation() {
-            return presenter.getView().getLocation();
         }
     }
 
@@ -96,12 +88,16 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
 
     private final Supplier<ShellTabPort> browser;
 
-    private final Supplier<WebToolBarPort> toolBar;
+    private final Supplier<ToolBarPort> toolBar;
 
-    public WebAreaPresenter(V view, Supplier<ShellTabPort> browser, Supplier<WebToolBarPort> toolBar) {
+    private String url;
+
+    public WebAreaPresenter(V view, Supplier<ShellTabPort> browser, Supplier<ToolBarPort> toolBar, String url) {
         super(view);
         this.browser = browser;
         this.toolBar = toolBar;
+        this.toolBar.get().setListener(new ToolBarListenerPort());
+        this.url = url;
     }
 
     @Override
@@ -113,6 +109,10 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
     protected void postInitialize() {
         super.postInitialize();
         setDefaultTitleAndIcon();
+        if (this.url != null) {
+            load(url);
+            this.url = null;
+        }
     }
 
     @Override
@@ -206,6 +206,20 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         logger.debug("{} Extracted favicon info; type: {}, url: {}", getDescriptor().getLogPrefix(), icon.type(),
                 icon.url());
         loadFavicon(icon.type(), icon.url());
+    }
+
+    private void load(String urlStr) {
+        if (urlStr != null) {
+            var url = UrlUtils.normalize(urlStr);
+            if (url == null || !UrlUtils.isValid(url)) {
+                url = UrlUtils.getSearch(urlStr);
+            }
+            if (url != null) {
+                getView().load(url.toString());
+            } else {
+                setDefaultTitleAndIcon();
+            }
+        }
     }
 
     private void loadFavicon(FavIconType iconType, String iconUrl) {

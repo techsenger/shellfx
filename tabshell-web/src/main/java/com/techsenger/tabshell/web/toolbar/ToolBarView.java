@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AreaView;
  *
  * @author Pavel Castornii
  */
-public interface WebToolBarView extends AreaView {
+public interface ToolBarView extends AreaView {
 
     boolean isBackDisabled();
 

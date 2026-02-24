@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.web.area;
-
-import com.techsenger.tabshell.core.area.AreaPort;
+package com.techsenger.tabshell.web.toolbar;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WebAreaPort extends AreaPort {
+public interface ToolBarListener {
 
-    String getLocation();
+    void onNavigateBack();
+
+    void onNavigateForward();
+
+    void onLoad(String url);
+
+    void onReload();
 }

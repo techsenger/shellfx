@@ -26,9 +26,9 @@ import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.web.area.WebAreaFxView;
 import com.techsenger.tabshell.web.area.WebAreaPort;
 import com.techsenger.tabshell.web.area.WebAreaPresenter;
-import com.techsenger.tabshell.web.toolbar.WebToolBarFxView;
-import com.techsenger.tabshell.web.toolbar.WebToolBarPort;
-import com.techsenger.tabshell.web.toolbar.WebToolBarPresenter;
+import com.techsenger.tabshell.web.toolbar.ToolBarFxView;
+import com.techsenger.tabshell.web.toolbar.ToolBarPort;
+import com.techsenger.tabshell.web.toolbar.ToolBarPresenter;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 
@@ -53,15 +53,15 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
             view.getContentBox().getChildren().add(toolBar.getNode());
             view.toolBar = toolBar;
 
+            var area = createArea();
+            area.getPresenter().initialize();
+            view.area = area;
+
             var layout = createLayout(null);
             layout.getPresenter().initialize();
             view.getModifiableChildren().add(layout);
             view.getContentBox().getChildren().add(layout.getNode());
             view.layout = layout;
-
-            var area = createArea();
-            area.getPresenter().initialize();
-            view.area = area;
 
             var splitSpace = layout.getComposer().createSplitSpace(Orientation.HORIZONTAL);
             splitSpace.getPresenter().initialize();
@@ -71,7 +71,7 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
         }
 
         @Override
-        public WebToolBarPort getToolBar() {
+        public ToolBarPort getToolBar() {
             return view.toolBar.getPresenter().getPort();
         }
 
@@ -86,23 +86,24 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
             return v;
         }
 
-        protected WebToolBarFxView<?> createToolBar() {
-            var view = new WebToolBarFxView<>();
-            var presenter = new WebToolBarPresenter<>(view, () -> this.view.area.getPresenter().getPort());
+        protected ToolBarFxView<?> createToolBar() {
+            var view = new ToolBarFxView<>();
+            var presenter = new ToolBarPresenter<>(view);
             return view;
         }
 
         protected WebAreaFxView<?> createArea() {
             var view = new WebAreaFxView<>();
-            var presenter = new WebAreaPresenter<>(view, () -> this.view.getPresenter().getPort(),
-                    () -> this.view.toolBar.getPresenter().getPort());
+            var browserPresenter = this.view.getPresenter();
+            var presenter = new WebAreaPresenter<>(view, () -> browserPresenter.getPort(),
+                    () -> this.view.toolBar.getPresenter().getPort(), browserPresenter.getAndClearUrl());
             return view;
         }
     }
 
     private DockLayoutFxView<?> layout;
 
-    private WebToolBarFxView<?> toolBar;
+    private ToolBarFxView<?> toolBar;
 
     private WebAreaFxView<?> area;
 
@@ -125,7 +126,7 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
         return new Composer();
     }
 
-    protected WebToolBarFxView<?> getToolBar() {
+    protected ToolBarFxView<?> getToolBar() {
         return toolBar;
     }
 
