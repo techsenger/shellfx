@@ -79,7 +79,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
                 var tabs = view.detachedTabs.stream().map(t -> t.getNode()).collect(Collectors.toList());
                 view.root.getTabs().addAll(tabs);
                 view.root.getSelectionModel().select(selectedIndex);
-                view.detachedTabs = Collections.EMPTY_LIST;
+                view.detachedTabs = Collections.emptyList();
                 view.tabsDetached = false;
                 logger.debug("{} Attached tabs", getDescriptor().getLogPrefix());
             }
@@ -113,7 +113,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     private final TabPanePro root = new TabPanePro();
 
-    private List<? extends TabFxView<?>> detachedTabs = Collections.EMPTY_LIST;
+    private List<? extends TabFxView<?>> detachedTabs = Collections.emptyList();
 
     private int selectedIndex;
 

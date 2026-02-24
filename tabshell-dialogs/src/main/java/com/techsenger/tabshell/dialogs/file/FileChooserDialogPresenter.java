@@ -399,7 +399,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
 
     private void updateFiles(GenericFile selectedFile) {
         var view = getView();
-        view.setFiles(Collections.EMPTY_LIST);
+        view.setFiles(Collections.emptyList());
         boolean defaultUsed = false;
         if (this.storage == null || this.directory == null) {
             setDefaultStorageAndDirectory();

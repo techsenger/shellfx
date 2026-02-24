@@ -50,7 +50,7 @@ public class Stylesheet {
      * @param url the url of the stylesheet.
      */
     public Stylesheet(URL url) {
-        this(url, Collections.EMPTY_SET);
+        this(url, Collections.emptySet());
     }
 
     /**
