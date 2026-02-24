@@ -89,7 +89,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
         return new Descriptor(DevToolsComponents.TAB_DOCK);
     }
 
-    protected void handleSelect() {
+    protected void onSelect() {
         var connector = getView().getConnector();
         var opts = connector.getOptions();
         if (opts.isInspectMode()) {
@@ -104,7 +104,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
         updateHighlightOptions(getView().isSelectionSelected());
     }
 
-    protected void handleSelection(boolean selected) {
+    protected void onSelection(boolean selected) {
         var connector = getView().getConnector();
         if (!selected) {
             connector.getOptions().setInspectMode(false);

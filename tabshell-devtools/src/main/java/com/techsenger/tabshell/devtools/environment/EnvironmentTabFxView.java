@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.devtools.environment;
 
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
@@ -38,7 +39,6 @@ import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -158,7 +158,7 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
             TreeTableRow<EnvironmentItem> row = new TreeTableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    getPresenter().handleItemRequested(row.getItem());
+                    getPresenter().onItemRequested(row.getItem());
                 }
             });
             return row;

@@ -225,7 +225,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
             resolveTabHeaderVisibility();
         });
         this.root.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
-                getPresenter().handleSelectedTabChange(newV.intValue()));
+                getPresenter().onSelectedTabChanged(newV.intValue()));
         this.root.getTabs().addListener((ListChangeListener<? super Tab>) (change) -> {
             resolveTabHeaderVisibility();
         });

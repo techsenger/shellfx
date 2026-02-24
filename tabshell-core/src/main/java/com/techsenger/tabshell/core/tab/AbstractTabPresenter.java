@@ -119,13 +119,13 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
         }
 
         @Override
-        public void handleMenuShowing(MenuName menuName) {
-            presenter.handleMenuShowing(menuName);
+        public void onMenuShowing(MenuName menuName) {
+            presenter.onMenuShowing(menuName);
         }
 
         @Override
-        public void handleMenuHiding(MenuName menuName) {
-            presenter.handleMenuHiding(menuName);
+        public void onMenuHiding(MenuName menuName) {
+            presenter.onMenuHiding(menuName);
         }
 
         @Override
@@ -146,7 +146,7 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
     }
 
     @Override
-    public void handleSelected(boolean selected) {
+    public void onSelected(boolean selected) {
         // empty
     }
 
@@ -174,11 +174,11 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
         return (TabHistory) super.getHistory();
     }
 
-    protected void handleMenuShowing(MenuName menuName) {
+    protected void onMenuShowing(MenuName menuName) {
         // empty
     }
 
-    protected void handleMenuHiding(MenuName menuName) {
+    protected void onMenuHiding(MenuName menuName) {
         // empty
     }
 }

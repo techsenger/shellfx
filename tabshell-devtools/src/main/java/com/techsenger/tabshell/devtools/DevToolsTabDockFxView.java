@@ -19,6 +19,7 @@ package com.techsenger.tabshell.devtools;
 import atlantafx.base.theme.Styles;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.LocalConnector;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.shelltab.ShellTabFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabPresenter;
@@ -40,7 +41,6 @@ import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -172,8 +172,8 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        selectButton.setOnAction(e -> getPresenter().handleSelect());
-        selectionButton.setOnAction(e -> getPresenter().handleSelection(selectionButton.isSelected()));
+        selectButton.setOnAction(e -> getPresenter().onSelect());
+        selectionButton.setOnAction(e -> getPresenter().onSelection(selectionButton.isSelected()));
     }
 
     @Override

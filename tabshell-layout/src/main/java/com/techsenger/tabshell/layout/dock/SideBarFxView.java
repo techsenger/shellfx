@@ -287,7 +287,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         button.getStyleClass().addAll(StyleClasses.MINI_ICONED_BUTTON, Styles.FLAT);
         button.setOnAction(e -> {
             removePopup();
-            handleRestoreButtonAction(tab);
+            onRestoreButtonAction(tab);
         });
         tab.setGraphic(button);
         tab.setClosable(false);
@@ -303,7 +303,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         return t;
     }
 
-    protected void handleRestoreButtonAction(Tab tab) {
+    protected void onRestoreButtonAction(Tab tab) {
         var restoreTabIndex = tabPane.getTabs().indexOf(tab);
         var tabDock = removeTabDock(restoreTabIndex);
         var side = getPresenter().getSide();

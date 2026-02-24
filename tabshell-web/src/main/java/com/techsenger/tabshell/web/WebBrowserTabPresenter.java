@@ -50,8 +50,8 @@ public class WebBrowserTabPresenter<V extends WebBrowserTabView, C extends WebBr
     }
 
     @Override
-    public void handleSelected(boolean selected) {
-        super.handleSelected(selected);
+    public void onSelected(boolean selected) {
+        super.onSelected(selected);
         if (getComposer().getArea().getLocation() == null) {
             getComposer().getToolBar().requestFocus();
         }

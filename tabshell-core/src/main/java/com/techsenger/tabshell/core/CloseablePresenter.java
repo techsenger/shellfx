@@ -77,7 +77,7 @@ public interface CloseablePresenter<V extends ParentView, C extends ParentCompos
                 if (checkResult == CloseCheckResult.NOT_READY) {
                     acceptResult(CloseRequestResult.NOT_READY_TO_CLOSE);
                 } else if (prepRequiredComponent != null) {
-                    prepRequiredComponent.prepareToClose(this::handlePreparationResult);
+                    prepRequiredComponent.prepareToClose(this::onResultPrepared);
                 } else {
                     logger().debug("{} All components are ready to be closed; performing close",
                             getDescriptor().getLogPrefix());
@@ -86,7 +86,7 @@ public interface CloseablePresenter<V extends ParentView, C extends ParentCompos
                 }
             }
 
-            private void handlePreparationResult(ClosePreparationResult prepResult) {
+            private void onResultPrepared(ClosePreparationResult prepResult) {
                 Objects.requireNonNull(prepResult, "Preparation result can't be null");
                 if (prepResult == ClosePreparationResult.CANCELLED) {
                     acceptResult(CloseRequestResult.PREPARATION_CANCELLED);

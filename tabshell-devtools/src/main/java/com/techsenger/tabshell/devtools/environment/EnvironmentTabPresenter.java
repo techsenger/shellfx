@@ -125,7 +125,7 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView, C extends Env
         getView().setItems(items);
     }
 
-    protected void handleItemRequested(EnvironmentItem i) {
+    protected void onItemRequested(EnvironmentItem i) {
         if (i.getType() == EnvironmentItemType.PROPERTY) {
             var dialog = getComposer().addNameValueDialog();
             dialog.setTitle("Property Dialog");

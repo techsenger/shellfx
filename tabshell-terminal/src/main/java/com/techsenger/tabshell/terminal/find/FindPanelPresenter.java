@@ -122,51 +122,51 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
     }
 
     @Override
-    protected void handleFind() {
+    protected void onFind() {
         if (getView().getResult() == null) {
             find();
         } else {
-            handleFindNext();
+            onFindNext();
         }
     }
 
     @Override
-    protected void handleFindCleared() {
+    protected void onFindCleared() {
         resetMatches();
     }
 
     @Override
-    protected void handleClose() {
+    protected void onClose() {
         closeHandler.run();
     }
 
     @Override
-    protected void handleFindPrevious() {
+    protected void onFindPrevious() {
         getView().selectPrevMatch();
         updateResultText(getView().getResult());
     }
 
     @Override
-    protected void handleFindNext() {
+    protected void onFindNext() {
         getView().selectNextMatch();
         updateResultText(getView().getResult());
     }
 
     @Override
-    protected void handleFindTextEdited(String text) {
-        super.handleFindTextEdited(text);
+    protected void onFindTextEdited(String text) {
+        super.onFindTextEdited(text);
         resetMatches();
     }
 
     @Override
-    protected void handleHighlight() {
-        super.handleHighlight();
+    protected void onHighlight() {
+        super.onHighlight();
         resetMatches();
     }
 
     @Override
-    protected void handleMatchCase() {
-        super.handleMatchCase();
+    protected void onMatchCase() {
+        super.onMatchCase();
         resetMatches();
     }
 

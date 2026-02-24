@@ -115,7 +115,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.matchCaseButton.setSelected(false);
         this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.matchCaseButton.setFocusTraversable(false);
-        this.matchCaseButton.setOnAction((event) -> getPresenter().handleMatchCase());
+        this.matchCaseButton.setOnAction((event) -> getPresenter().onMatchCase());
     }
 
     @Override
@@ -219,7 +219,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.findNextButton.setTooltip(new Tooltip("Next"));
         this.findNextButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.findNextButton.setFocusTraversable(false);
-        findNextButton.setOnAction(e -> getPresenter().handleFindNext());
+        findNextButton.setOnAction(e -> getPresenter().onFindNext());
     }
 
     @Override
@@ -244,7 +244,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.findPreviousButton.setTooltip(new Tooltip("Previous"));
         this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.findPreviousButton.setFocusTraversable(false);
-        findPreviousButton.setOnAction(e -> getPresenter().handleFindPrevious());
+        findPreviousButton.setOnAction(e -> getPresenter().onFindPrevious());
     }
 
     @Override
@@ -269,7 +269,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
         this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.wholeWordButton.setFocusTraversable(false);
-        this.wholeWordButton.setOnAction((event) -> getPresenter().handleWholeWord());
+        this.wholeWordButton.setOnAction((event) -> getPresenter().onWholeWord());
     }
 
     @Override
@@ -310,7 +310,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
         this.regExpButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.regExpButton.setFocusTraversable(false);
-        this.regExpButton.setOnAction((event) -> getPresenter().handleRegExp());
+        this.regExpButton.setOnAction((event) -> getPresenter().onRegExp());
     }
 
     @Override
@@ -351,7 +351,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.highlightButton.setTooltip(new Tooltip("Highlight All"));
         this.highlightButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.highlightButton.setFocusTraversable(false);
-        this.highlightButton.setOnAction(e -> getPresenter().handleHighlight());
+        this.highlightButton.setOnAction(e -> getPresenter().onHighlight());
     }
 
     @Override
@@ -429,7 +429,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
 
         });
         this.findComboBox.getEditor().textProperty()
-                .addListener((ov, t, t1) -> getPresenter().handleFindTextEdited(findComboBox.getEditor().getText()));
+                .addListener((ov, t, t1) -> getPresenter().onFindTextEdited(findComboBox.getEditor().getText()));
     }
 
     @Override
@@ -451,7 +451,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
                 }
             }
             if (newV == null || newV.isEmpty()) {
-                getPresenter().handleFindCleared();
+                getPresenter().onFindCleared();
             }
         });
 
@@ -468,7 +468,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
             invokeFindHandler();
         });
 
-        clearButton.setOnAction(e -> getPresenter().handleClearFindText());
+        clearButton.setOnAction(e -> getPresenter().onClearFindText());
     }
 
     /**
@@ -566,7 +566,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
             if (this.findTrigger == FindTrigger.ON_TYPE && text.length() < minSearchLength) {
                 return;
             }
-            getPresenter().handleFind();
+            getPresenter().onFind();
         }
     }
 }

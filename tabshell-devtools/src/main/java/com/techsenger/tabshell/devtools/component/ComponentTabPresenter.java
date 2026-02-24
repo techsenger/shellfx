@@ -315,7 +315,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     }
 
     @Override
-    public void handleAdded() {
+    public void onAdded() {
         refreshComponents();
         Arrays.stream(InspectorCategory.values()).forEach((v) -> expandedByCategory.put(v, Boolean.FALSE));
     }
@@ -325,7 +325,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         return new Descriptor(DevToolsComponents.COMPONENT_TAB);
     }
 
-    protected void handleComponentSelected(Class<? extends View> fxViewClass,
+    protected void onComponentSelected(Class<? extends View> fxViewClass,
             Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Element componentNode) {
         if (componentNode != null) {
             this.nodeTab.selectNode(componentNode);
@@ -336,7 +336,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         refreshInspector();
     }
 
-    protected void handleCategoryExpanded(InspectorCategory category, boolean expanded) {
+    protected void onCategoryExpanded(InspectorCategory category, boolean expanded) {
         expandedByCategory.put(category, expanded);
     }
 

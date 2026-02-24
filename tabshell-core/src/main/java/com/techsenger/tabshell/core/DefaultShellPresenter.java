@@ -136,32 +136,32 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
 
         @Override
         public void closeOtherTabs(ShellTabPort tab) {
-            presenter.handleCloseOtherTabs(tab);
+            presenter.onCloseOtherTabs(tab);
         }
 
         @Override
         public void closeTabs(List<? extends ShellTabPort> tabs) {
-            presenter.handleCloseTabs(tabs);
+            presenter.onCloseTabs(tabs);
         }
 
         @Override
         public void closeAllTabs() {
-            presenter.handleCloseAllTabs();
+            presenter.onCloseAllTabs();
         }
 
         @Override
         public void closeRightTabs(ShellTabPort tab) {
-            presenter.handleCloseRightTabs(tab);
+            presenter.onCloseRightTabs(tab);
         }
 
         @Override
         public void closeLeftTabs(ShellTabPort tab) {
-            presenter.handleCloseLeftTabs(tab);
+            presenter.onCloseLeftTabs(tab);
         }
 
         @Override
         public void closeTab(ShellTabPort tab) {
-            presenter.handleCloseTab(tab);
+            presenter.onCloseTab(tab);
         }
     }
 
@@ -208,7 +208,7 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
-    public void handleSelectedTabChange(int index) {
+    public void onSelectedTabChanged(int index) {
         // empty
     }
 
@@ -249,12 +249,12 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
-    public void handleMenuShowing(MenuName menuName) {
+    public void onMenuShowing(MenuName menuName) {
         // empty
     }
 
     @Override
-    public void handleMenuHiding(MenuName menuName) {
+    public void onMenuHiding(MenuName menuName) {
         // empty
     }
 

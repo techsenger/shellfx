@@ -95,7 +95,7 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
         GridPane.setVgrow(this.findLabelWrapper, Priority.ALWAYS);
         GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
 
-        this.closeButton.setOnAction(e -> getPresenter().handleClose());
+        this.closeButton.setOnAction(e -> getPresenter().onClose());
         this.closeButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
         this.closeButton.setFocusTraversable(false);
 
@@ -117,7 +117,7 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
     protected void addHandlers() {
         super.addHandlers();
         var p = getPresenter();
-        closeButton.setOnAction(e -> getPresenter().handleClose());
+        closeButton.setOnAction(e -> getPresenter().onClose());
     }
 
     protected GridPane getGridPane() {

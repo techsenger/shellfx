@@ -66,7 +66,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         return new PageHostPresenter.Port();
     }
 
-    protected void handlePageSelected(Page page) {
+    protected void onPageSelected(Page page) {
         getComposer().selectPage(page.getName());
     }
 

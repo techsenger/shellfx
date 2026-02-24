@@ -146,10 +146,10 @@ public class DemoTabFxView<P extends DemoTabPresenter<?, ?>> extends AbstractShe
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        this.shellDialogButton.setOnAction(e -> getPresenter().handleDialogOpen(OverlayScope.SHELL));
-        this.tabDialogButton.setOnAction(e -> getPresenter().handleDialogOpen(OverlayScope.TAB));
-        this.shellPopupButton.setOnAction(e -> getPresenter().handlePopupOpen(OverlayScope.SHELL));
-        this.tabPopupButton.setOnAction(e -> getPresenter().handlePopupOpen(OverlayScope.TAB));
+        this.shellDialogButton.setOnAction(e -> getPresenter().onDialogOpen(OverlayScope.SHELL));
+        this.tabDialogButton.setOnAction(e -> getPresenter().onDialogOpen(OverlayScope.TAB));
+        this.shellPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.SHELL));
+        this.tabPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.TAB));
     }
 
     @Override

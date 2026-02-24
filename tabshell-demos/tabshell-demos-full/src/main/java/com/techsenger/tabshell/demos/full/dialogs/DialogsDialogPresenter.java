@@ -101,7 +101,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         });
     }
 
-    protected void handleDialogClick(DialogType type) {
+    protected void onDialogClick(DialogType type) {
         var action = this.dialogActionsByType.get(type);
         action.run();
     }

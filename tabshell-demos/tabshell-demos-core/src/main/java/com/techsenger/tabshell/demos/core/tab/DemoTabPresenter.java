@@ -78,7 +78,7 @@ public class DemoTabPresenter<V extends DemoTabView, C extends DemoTabComposer>
         return new Descriptor(DemoComponents.DEMO_TAB);
     }
 
-    protected void handleDialogOpen(OverlayScope scope) {
+    protected void onDialogOpen(OverlayScope scope) {
         var dialog = getComposer().addDemoDialog(scope, true);
         dialog.setResultAction((name) -> {
             if (name == DemoResultButtons.OK) {
@@ -87,7 +87,7 @@ public class DemoTabPresenter<V extends DemoTabView, C extends DemoTabComposer>
         });
     }
 
-    protected void handlePopupOpen(OverlayScope scope) {
+    protected void onPopupOpen(OverlayScope scope) {
         getComposer().addDemoPopup(scope);
     }
 

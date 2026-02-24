@@ -71,45 +71,45 @@ public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer> ext
     }
 
     @Override
-    protected void handleFindTextEdited(String text) {
-        super.handleFindTextEdited(text);
+    protected void onFindTextEdited(String text) {
+        super.onFindTextEdited(text);
         getView().setNotFound(false);
     }
 
     @Override
-    protected void handleFind() {
+    protected void onFind() {
         this.toolBarAware.onFind();
     }
 
     @Override
-    protected void handleFindCleared() {
+    protected void onFindCleared() {
         this.toolBarAware.onFindCleared();
     }
 
     @Override
-    protected void handleFindPrevious() {
-        super.handleFindPrevious();
+    protected void onFindPrevious() {
+        super.onFindPrevious();
         if (this.toolBarAware instanceof FindNavigationAwarePort p) {
             p.onFindPrevious();
         }
     }
 
     @Override
-    protected void handleFindNext() {
-        super.handleFindNext();
+    protected void onFindNext() {
+        super.onFindNext();
         if (this.toolBarAware instanceof FindNavigationAwarePort p) {
             p.onFindNext();
         }
     }
 
     @Override
-    protected void handleMatchCase() {
-        super.handleMatchCase();
+    protected void onMatchCase() {
+        super.onMatchCase();
         getView().setNotFound(false);
         this.toolBarAware.onMatchCase(getView().isMatchCaseSelected());
     }
 
-    protected void handleRefresh() {
+    protected void onRefresh() {
         this.toolBarAware.onRefresh();
     }
 

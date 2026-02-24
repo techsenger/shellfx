@@ -131,7 +131,7 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         return new WebAreaPresenter.Port();
     }
 
-    protected void handlePageTitleChanged(String title) {
+    protected void onPageTitleChanged(String title) {
         if (title != null && !title.isEmpty()) {
             this.pageTitle = title;
             var browser = this.browser.get();
@@ -145,7 +145,7 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
      *
      * @param url
      */
-    protected void handleHistoryChanged(String url) {
+    protected void onHistoryChanged(String url) {
         browser.get().setIcon(null);
         var toolBar = this.toolBar.get();
         toolBar.setBackDisable(getView().getHistoryIndex() == 0);
@@ -159,7 +159,7 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
         }
     }
 
-    protected void handleFaviconExtracted(List<String> urls) {
+    protected void onFaviconExtracted(List<String> urls) {
         record Icon(FavIconType type, String url) { }
         class IconRegistry {
             private String ico;

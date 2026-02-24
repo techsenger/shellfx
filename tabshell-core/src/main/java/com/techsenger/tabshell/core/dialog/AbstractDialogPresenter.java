@@ -131,14 +131,14 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
     }
 
     @Override
-    public void handleClose() {
+    public void onClose() {
         if (this.closeAction != null) {
             this.closeAction.run();
         }
     }
 
     @Override
-    public void handleResult(ResultButtonName name) {
+    public void onResult(ResultButtonName name) {
         if (this.resultAction != null) {
             this.resultAction.accept(name);
         }

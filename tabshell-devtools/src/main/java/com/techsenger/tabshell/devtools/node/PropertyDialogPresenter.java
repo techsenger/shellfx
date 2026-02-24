@@ -92,7 +92,7 @@ public class PropertyDialogPresenter<V extends PropertyDialogView, C extends Pro
         setResultAction((button) -> requestClose());
     }
 
-    protected void handleFollowLink(String url) {
+    protected void onFollowLink(String url) {
         getComposer().addBrowser(url);
     }
 

@@ -513,7 +513,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         var presenter = getPresenter();
         this.tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             this.menuManager.updateMenuBar(getCurrentMenuAware());
-            presenter.handleSelectedTabChange(tabPane.getSelectionModel().getSelectedIndex());
+            presenter.onSelectedTabChanged(tabPane.getSelectionModel().getSelectedIndex());
         });
     }
 

@@ -25,6 +25,7 @@ import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.INSETS;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.shelltab.ShellTabFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
@@ -56,7 +57,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -448,7 +448,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     @Override
     protected void initialize() {
         super.initialize();
-        Platform.runLater(() -> getPresenter().handleAdded());
+        Platform.runLater(() -> getPresenter().onAdded());
     }
 
     @Override
@@ -505,9 +505,9 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         super.addListeners();
         nodeTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV == null) {
-                getPresenter().handleNodeSelected(null);
+                getPresenter().onNodeSelected(null);
             } else {
-                getPresenter().handleNodeSelected(newV.getValue());
+                getPresenter().onNodeSelected(newV.getValue());
             }
         });
     }
@@ -519,7 +519,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
             TreeTableRow<PropertyItem> row = new TreeTableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    getPresenter().handlePropertyRequested(row.getItem());
+                    getPresenter().onPropertyRequested(row.getItem());
                 }
             });
             return row;

@@ -159,7 +159,7 @@ public class MenuManager {
 
     private void doOnMenuShowing(NamedMenu menu, MenuUpdateHelper updateHelper) {
         var menuAware = this.shellView.getCurrentMenuAware();
-        menuAware.handleMenuShowing(menu.getName());
+        menuAware.onMenuShowing(menu.getName());
         StringBuilder logMessageBuilder = null;
         if (logger.isEnabledForLevel(MenuLogger.CONFIGURED_MENU_LOG_LEVEL)) {
             logMessageBuilder = new StringBuilder();
@@ -212,7 +212,7 @@ public class MenuManager {
     private void doOnMenuHiding(NamedMenu menu, MenuUpdateHelper updateHelper) {
         var selectedTab = this.shellView.getSelectedTab();
         if (selectedTab != null) {
-            selectedTab.getPresenter().getPort().handleMenuHiding(menu.getName());
+            selectedTab.getPresenter().getPort().onMenuHiding(menu.getName());
         }
         for (var item : menu.getItems()) {
             if (item instanceof NamedMenu) {

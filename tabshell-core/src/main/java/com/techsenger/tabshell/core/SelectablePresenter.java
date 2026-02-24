@@ -26,5 +26,5 @@ public interface SelectablePresenter {
      * Called when the component is selected/deselected (also called when a new component is created even if there
      * are no other ones).
      */
-    void handleSelected(boolean selected);
+    void onSelected(boolean selected);
 }

@@ -45,7 +45,7 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
     }
 
     @Override
-    public void handleSelectedTabChange(int index) {
+    public void onSelectedTabChanged(int index) {
         // empty
     }
 }

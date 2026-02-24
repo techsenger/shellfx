@@ -153,14 +153,14 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     }
 
     @Override
-    public void handleResult(ResultButtonName name) {
+    public void onResult(ResultButtonName name) {
         if (name == FileChooserButtons.OK) {
             this.resultFile = getResultFile();
             if (this.resultFile == null) {
                 return;
             }
         }
-        super.handleResult(name);
+        super.onResult(name);
     }
 
     @Override
@@ -231,7 +231,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         return settings;
     }
 
-    protected void handleLocationRequested(Location location) {
+    protected void onLocationRequested(Location location) {
         navigateTo(location.getStorage(), location.getUri());
     }
 
@@ -239,7 +239,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
      * Locations updated only when user clicks enter to show the list. At all other times, the list contains only one
      * element with the current directory.
      */
-    void handleLocationsOpened() {
+    void onLocationsOpened() {
         if (locationsUpdated) {
             return;
         }
@@ -276,13 +276,13 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         this.locationsUpdated = true;
     }
 
-    protected void handleFileRequested(GenericFile file) {
+    protected void onFileRequested(GenericFile file) {
         if (file.isDirectory()) {
             navigateTo(file.getStorage(), file.getUri());
         }
     }
 
-    protected void handleNavigateUp() {
+    protected void onNavigateUp() {
         if (storage == null || directory == null) {
             return;
         }
@@ -294,14 +294,14 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         updateFiles(null);
     }
 
-    protected void handleNavigateHome() {
+    protected void onNavigateHome() {
         var file = GenericFile.getHome(storages);
         if (file != null) {
-            handleFileRequested(file);
+            onFileRequested(file);
         }
     }
 
-    protected void handleNewDirectoryRequested() {
+    protected void onNewDirectoryRequested() {
         if (this.editType != null) {
             return;
         }
@@ -317,7 +317,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         this.editType = EditType.NEW_DIRECTORY;
     }
 
-    protected void handleRenameRequested(int fileIndex) {
+    protected void onRenameRequested(int fileIndex) {
         if (this.editType != null) {
             return;
         }
@@ -325,7 +325,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         getView().editFile(fileIndex);
     }
 
-    protected void handleEditCommitted(GenericFile file) {
+    protected void onEditCommitted(GenericFile file) {
         switch (editType) {
             case NEW_DIRECTORY -> {
                 var dirUri = UriUtils.resolvePath(directory, file.getName());
@@ -352,7 +352,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         this.editType = null;
     }
 
-    protected void handleEditCancelled(GenericFile file) {
+    protected void onEditCancelled(GenericFile file) {
         switch (editType) {
             case NEW_DIRECTORY -> {
                 getView().removeFile(0);
@@ -365,15 +365,15 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         this.editType = null;
     }
 
-    protected void handleListSelected() {
+    protected void onListSelected() {
         getView().setListSelected(true);
     }
 
-    protected void handleDetailsSelected() {
+    protected void onDetailsSelected() {
         getView().setDetailsSelected(true);
     }
 
-    protected void handleFileSelected(GenericFile file) {
+    protected void onFileSelected(GenericFile file) {
         if (file != null && !file.isDirectory()) {
             getView().setFileName(file.getName());
         } else {
@@ -381,11 +381,11 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         }
     }
 
-    protected void handleRefresh() {
+    protected void onRefresh() {
         updateFiles(getView().getSelectedFile());
     }
 
-    protected void handleFilterSelected(ExtensionFilter filter) {
+    protected void onFilterSelected(ExtensionFilter filter) {
         updateFiles(null);
     }
 

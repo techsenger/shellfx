@@ -50,7 +50,7 @@ public interface MenuAware {
      *
      * @param menuName
      */
-    void handleMenuShowing(MenuName menuName);
+    void onMenuShowing(MenuName menuName);
 
     /**
      * This method is called on hiding menu popup.
@@ -59,5 +59,5 @@ public interface MenuAware {
      *
      * @param menuName
      */
-    void handleMenuHiding(MenuName menuName);
+    void onMenuHiding(MenuName menuName);
 }

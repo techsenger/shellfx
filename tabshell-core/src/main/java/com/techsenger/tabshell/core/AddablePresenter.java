@@ -28,5 +28,5 @@ public interface AddablePresenter {
      * This method is invoked from the View via {@link javafx.application.Platform#runLater(Runnable)}
      * to ensure the JavaFX scene graph is fully updated before the initial work is performed.
      */
-    void handleAdded();
+    void onAdded();
 }

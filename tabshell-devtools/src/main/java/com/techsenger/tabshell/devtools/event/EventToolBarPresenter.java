@@ -118,33 +118,33 @@ public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaCom
         return (EventToolBarAwarePort) super.getToolBarAware();
     }
 
-    protected void handleRecord(boolean selected) {
+    protected void onRecord(boolean selected) {
         getToolBarAware().onRecord(selected);
     }
 
-    protected void handleClear() {
+    protected void onClear() {
         getToolBarAware().onClear();
     }
 
-    protected void handleFilterSelected(boolean selected) {
+    protected void onFilterSelected(boolean selected) {
         getToolBarAware().onFilterSelected(selected);
     }
 
-    protected void handleSelectedNodeOnly(boolean selected) {
+    protected void onSelectedNodeOnly(boolean selected) {
         getToolBarAware().onSelectedNodeOnly(selected);
     }
 
-    protected void handleSelectAllEvents() {
+    protected void onSelectAllEvents() {
         this.eventTypesByClass.values().forEach(e -> e.set(true));
         getToolBarAware().onEventTypesChanged();
     }
 
-    protected void handleDeselectAllEvents() {
+    protected void onDeselectAllEvents() {
         this.eventTypesByClass.values().forEach(e -> e.set(false));
         getToolBarAware().onEventTypesChanged();
     }
 
-    protected void handleEventSelected(Class<? extends ConnectorEvent> clazz, boolean selected) {
+    protected void onEventSelected(Class<? extends ConnectorEvent> clazz, boolean selected) {
         this.eventTypesByClass.get(clazz).set(selected);
         getToolBarAware().onEventTypesChanged();
     }

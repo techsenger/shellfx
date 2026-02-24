@@ -516,7 +516,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         for (var button: buttons) {
             this.buttonsByName.put(button.getName(), button);
             button.setOnAction((e) -> {
-                getPresenter().handleResult(button.getName());
+                getPresenter().onResult(button.getName());
             });
         }
     }

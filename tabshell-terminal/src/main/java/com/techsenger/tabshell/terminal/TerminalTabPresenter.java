@@ -24,8 +24,8 @@ import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabPresenter;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
-import java.util.function.Consumer;
 import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
+import java.util.function.Consumer;
 
 /**
  *
@@ -113,7 +113,7 @@ public class TerminalTabPresenter<V extends TerminalTabView, C extends TerminalT
     }
 
     @Override
-    public void handleSelected(boolean selected) {
+    public void onSelected(boolean selected) {
         if (selected) {
             getComposer().getArea().requestFocus();
         }

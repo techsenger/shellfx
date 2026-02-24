@@ -134,7 +134,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             {
                 setOnMouseClicked(event -> {
                     if (event.getClickCount() == 2 && !isEmpty()) {
-                        getPresenter().handleDialogClick(getItem());
+                        getPresenter().onDialogClick(getItem());
                     }
                 });
             }

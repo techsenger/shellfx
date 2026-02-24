@@ -20,6 +20,7 @@ import atlantafx.base.theme.Tweaks;
 import com.techsenger.connectorfx.LocalElement;
 import com.techsenger.connectorfx.event.EventSource;
 import com.techsenger.connectorfx.scenegraph.Element;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.patternfx.mvp.ParentComposer;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.ShellFxView;
@@ -52,7 +53,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -157,7 +157,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         if (item.category() != null) {
             treeItem.setExpanded(expandedByCategory.get(item.category()));
             treeItem.expandedProperty().addListener((ov, oldV, newV) -> {
-                p.handleCategoryExpanded(item.category(), newV);
+                p.onCategoryExpanded(item.category(), newV);
             });
         }
         return treeItem;
@@ -279,7 +279,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     @Override
     protected void initialize() {
         super.initialize();
-        Platform.runLater(() -> getPresenter().handleAdded());
+        Platform.runLater(() -> getPresenter().onAdded());
     }
 
     @Override
@@ -392,10 +392,10 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
                 if (fxView instanceof ParentFxView<?> pfxv) {
                     fxComposerClass = pfxv.getComposer().getClass();
                 }
-                getPresenter().handleComponentSelected(fxView.getClass(), fxComposerClass, fxView.getPresenter(),
+                getPresenter().onComponentSelected(fxView.getClass(), fxComposerClass, fxView.getPresenter(),
                         element);
             } else {
-                getPresenter().handleComponentSelected(null, null, null, null);
+                getPresenter().onComponentSelected(null, null, null, null);
             }
         });
     }

@@ -123,7 +123,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
     }
 
     @Override
-    public void handleAdded() {
+    public void onAdded() {
         rebuildTree();
     }
 
@@ -136,7 +136,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
         return connector;
     }
 
-    protected void handleStylesheetSelected(StylesheetItem s) {
+    protected void onStylesheetSelected(StylesheetItem s) {
         if (s.type() == StylesheetItemType.APPLICATION || s.type() == StylesheetItemType.STYLESHEET) {
             return;
         }

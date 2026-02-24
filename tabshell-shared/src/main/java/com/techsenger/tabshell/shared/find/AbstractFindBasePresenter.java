@@ -45,39 +45,39 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView, C extend
         return features;
     }
 
-    protected void handleClearFindText() {
+    protected void onClearFindText() {
         getView().setFindText(null);
     }
 
-    protected void handleMatchCase() {
+    protected void onMatchCase() {
 
     }
 
-    protected void handleFindNext() {
+    protected void onFindNext() {
 
     }
 
-    protected void handleFindPrevious() {
+    protected void onFindPrevious() {
 
     }
 
-    protected void handleWholeWord() {
+    protected void onWholeWord() {
 
     }
 
-    protected void handleRegExp() {
+    protected void onRegExp() {
 
     }
 
-    protected void handleHighlight() {
+    protected void onHighlight() {
 
     }
 
-    protected abstract void handleFind();
+    protected abstract void onFind();
 
-    protected abstract void handleFindCleared();
+    protected abstract void onFindCleared();
 
-    protected void handleFindTextEdited(String text) {
+    protected void onFindTextEdited(String text) {
         if (text == null || text.isEmpty()) {
             getView().setClearVisible(false);
             hideFindResultInfo();

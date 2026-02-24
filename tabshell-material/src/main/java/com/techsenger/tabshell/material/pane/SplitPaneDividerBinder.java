@@ -75,8 +75,8 @@ public class SplitPaneDividerBinder {
         this.splitPane = splitPane;
         this.externalList = externalList;
 
-        this.dividersChangeListener = this::handleDividersListChange;
-        this.externalChangeListener = this::handleExternalListChange;
+        this.dividersChangeListener = this::onDividersListChange;
+        this.externalChangeListener = this::onExternalListChange;
 
         if (!externalList.isEmpty()) {
             copyFromExternalList();
@@ -107,22 +107,22 @@ public class SplitPaneDividerBinder {
     /**
      * Handles changes in the SplitPane's dividers list with precise index tracking.
      */
-    private void handleDividersListChange(ListChangeListener.Change<? extends SplitPane.Divider> change) {
+    private void onDividersListChange(ListChangeListener.Change<? extends SplitPane.Divider> change) {
         while (change.next()) {
             if (change.wasAdded()) {
-                handleAddedDividers(change);
+                onAddedDividers(change);
             }
 
             if (change.wasRemoved()) {
-                handleRemovedDividers(change);
+                onRemovedDividers(change);
             }
 
             if (change.wasPermutated()) {
-                handlePermutatedDividers(change);
+                onPermutatedDividers(change);
             }
 
             if (change.wasReplaced()) {
-                handleReplacedDividers(change);
+                onReplacedDividers(change);
             }
         }
         copyToExternalList();
@@ -132,7 +132,7 @@ public class SplitPaneDividerBinder {
         }
     }
 
-    private void handleAddedDividers(ListChangeListener.Change<? extends SplitPane.Divider> change) {
+    private void onAddedDividers(ListChangeListener.Change<? extends SplitPane.Divider> change) {
         int addIndex = change.getFrom();
         for (SplitPane.Divider divider : change.getAddedSubList()) {
             addDividerListener(divider, addIndex++);
@@ -142,7 +142,7 @@ public class SplitPaneDividerBinder {
         updateIndexesAfter(addIndex);
     }
 
-    private void handleRemovedDividers(ListChangeListener.Change<? extends SplitPane.Divider> change) {
+    private void onRemovedDividers(ListChangeListener.Change<? extends SplitPane.Divider> change) {
         for (SplitPane.Divider divider : change.getRemoved()) {
             removeDividerListener(divider);
         }
@@ -151,7 +151,7 @@ public class SplitPaneDividerBinder {
         updateIndexesAfter(change.getFrom());
     }
 
-    private void handlePermutatedDividers(ListChangeListener.Change<? extends SplitPane.Divider> change) {
+    private void onPermutatedDividers(ListChangeListener.Change<? extends SplitPane.Divider> change) {
         // For permutation, we need to update all indexes according to the new order
         var dividers = splitPane.getDividers();
         for (int i = 0; i < dividers.size(); i++) {
@@ -162,10 +162,10 @@ public class SplitPaneDividerBinder {
         }
     }
 
-    private void handleReplacedDividers(ListChangeListener.Change<? extends SplitPane.Divider> change) {
+    private void onReplacedDividers(ListChangeListener.Change<? extends SplitPane.Divider> change) {
         // Replacement means some dividers were removed and others added at the same positions
-        handleRemovedDividers(change);
-        handleAddedDividers(change);
+        onRemovedDividers(change);
+        onAddedDividers(change);
     }
 
     /**
@@ -181,7 +181,7 @@ public class SplitPaneDividerBinder {
         }
     }
 
-    private void handleExternalListChange(ListChangeListener.Change<? extends Double> change) {
+    private void onExternalListChange(ListChangeListener.Change<? extends Double> change) {
         if (updatingFromSplitPane) {
             return;
         }

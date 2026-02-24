@@ -167,13 +167,13 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     }
 
     @Override
-    public void handleAdded() {
-        this.tabDock.setOnSelection((selected) -> handleNodeSelected(getView().getSelectedNode()));
+    public void onAdded() {
+        this.tabDock.setOnSelection((selected) -> onNodeSelected(getView().getSelectedNode()));
         // this event is fired only when a node is selected in inspector mode (using select button)
         // at the same time after that is is necessary to select the node using selectNode(..) method
         connector.getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
             createNodeIndex();
-            getView().selectNode(e.element()); // -> handleNodeSelected(..)
+            getView().selectNode(e.element()); // -> onNodeSelected(..)
         });
 
         var catExpansion = new HashMap<AttributeCategory, Boolean>();
@@ -195,7 +195,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         return new NodeTabPresenter.Port();
     }
 
-    protected void handleNodeSelected(Element node) {
+    protected void onNodeSelected(Element node) {
         if (node == null) {
             return;
         }
@@ -209,7 +209,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         }
     }
 
-    protected void handlePropertyRequested(PropertyItem item) {
+    protected void onPropertyRequested(PropertyItem item) {
         if (item.getType() != PropertyItemType.PROPERTY) {
             return;
         }

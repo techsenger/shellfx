@@ -91,7 +91,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
             var menuItem = new CheckMenuItem(e.getKey().getSimpleName());
             menuItem.setSelected(e.getValue().get());
             menuItem.selectedProperty()
-                    .addListener((ov, oldV, newV) -> getPresenter().handleEventSelected(e.getKey(), newV));
+                    .addListener((ov, oldV, newV) -> getPresenter().onEventSelected(e.getKey(), newV));
             items.add(menuItem);
 
         });
@@ -120,7 +120,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
                     cmi.setSelected(true);
                 }
             }
-            getPresenter().handleSelectAllEvents();
+            getPresenter().onSelectAllEvents();
         });
         var deselectAllTypesItem = new MenuItem("Deselect All Types");
         deselectAllTypesItem.setOnAction(e -> {
@@ -129,7 +129,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
                     cmi.setSelected(false);
                 }
             }
-            getPresenter().handleDeselectAllEvents();
+            getPresenter().onDeselectAllEvents();
         });
         eventTypesButton.getItems().addAll(new SeparatorMenuItem(), selectAllTypesItem, deselectAllTypesItem);
 
@@ -157,9 +157,9 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        recordButton.setOnAction(e -> getPresenter().handleRecord(recordButton.isSelected()));
-        clearButton.setOnAction(e -> getPresenter().handleClear());
-        filterButton.setOnAction(e -> getPresenter().handleFilterSelected(filterButton.isSelected()));
-        selectedOnlyButton.setOnAction(e -> getPresenter().handleSelectedNodeOnly(selectedOnlyButton.isSelected()));
+        recordButton.setOnAction(e -> getPresenter().onRecord(recordButton.isSelected()));
+        clearButton.setOnAction(e -> getPresenter().onClear());
+        filterButton.setOnAction(e -> getPresenter().onFilterSelected(filterButton.isSelected()));
+        selectedOnlyButton.setOnAction(e -> getPresenter().onSelectedNodeOnly(selectedOnlyButton.isSelected()));
     }
 }

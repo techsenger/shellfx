@@ -102,9 +102,9 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         super.addListeners();
         ValueUtils.callAndAddListener(draggable, (ov, oldV, newV) -> {
             if (newV) {
-                dragIconView.setOnDragDetected(e -> layout.handleDockDragDetected(this, dragIconView, e));
-                dragIconView.setOnMouseDragged(e -> layout.handleDockMouseDragged(this, dragIconView, e));
-                dragIconView.setOnMouseReleased(e -> layout.handleDockMouseReleased(this, dragIconView, e));
+                dragIconView.setOnDragDetected(e -> layout.onDockDragDetected(this, dragIconView, e));
+                dragIconView.setOnMouseDragged(e -> layout.onDockMouseDragged(this, dragIconView, e));
+                dragIconView.setOnMouseReleased(e -> layout.onDockMouseReleased(this, dragIconView, e));
                 tabHeaderFirstBox.getChildren().add(0, dragIconView);
             } else {
                 tabHeaderFirstBox.getChildren().remove(dragIconView);
@@ -123,12 +123,12 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         super.addHandlers();
         minimizeButton.setOnAction(e -> layout.minimizeTabDock(this));
         var tabPane = getNode();
-        tabPane.addTabDragHandler(tab -> layout.handleTabDrag((ComponentTab) tab));
+        tabPane.addTabDragHandler(tab -> layout.onTabDrag((ComponentTab) tab));
         // this handler is called when mouse is over TabHeaderArea
-        tabPane.addTabDropHandler((tab, s) -> layout.handleTabDrop((ComponentTab) tab));
+        tabPane.addTabDropHandler((tab, s) -> layout.onTabDrop((ComponentTab) tab));
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
-                e -> layout.handleTabHeaderAreaMouseDragOver(tabPane, e));
+                e -> layout.onTabHeaderAreaMouseDragOver(tabPane, e));
     }
 
     protected Button getMinimizeButton() {

@@ -40,7 +40,7 @@ public final class TabContainerFxViewUtils {
                     for (var t : change.getAddedSubList()) {
                         ComponentTab tab = (ComponentTab) t;
                         tab.setOnCloseRequest((e) -> {
-                            presenter.handleCloseTab((T) tab.getView().getPresenter().getPort());
+                            presenter.onCloseTab((T) tab.getView().getPresenter().getPort());
                             e.consume();
                         });
                         //tabs can be added only by one
@@ -67,32 +67,32 @@ public final class TabContainerFxViewUtils {
         close.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.handleCloseTab((T) t.getView().getPresenter().getPort());
+                presenter.onCloseTab((T) t.getView().getPresenter().getPort());
             }
         });
         MenuItem closeAll = new MenuItem("Close All");
         closeAll.setOnAction((e) -> {
-            presenter.handleCloseAllTabs();
+            presenter.onCloseAllTabs();
         });
         MenuItem closeOther = new MenuItem("Close Other");
         closeOther.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.handleCloseOtherTabs((T) t.getView().getPresenter().getPort());
+                presenter.onCloseOtherTabs((T) t.getView().getPresenter().getPort());
             }
         });
         MenuItem closeRight = new MenuItem("Close to the Right");
         closeRight.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.handleCloseRightTabs((T) t.getView().getPresenter().getPort());
+                presenter.onCloseRightTabs((T) t.getView().getPresenter().getPort());
             }
         });
         MenuItem closeLeft = new MenuItem("Close to the Left");
         closeLeft.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.handleCloseLeftTabs((T) t.getView().getPresenter().getPort());
+                presenter.onCloseLeftTabs((T) t.getView().getPresenter().getPort());
             }
         });
 

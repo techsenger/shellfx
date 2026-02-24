@@ -158,7 +158,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
             addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
                 if (e.getClickCount() == 2) {
                     var file = getItem();
-                    getPresenter().handleFileRequested(file);
+                    getPresenter().onFileRequested(file);
                 }
             });
             setManualEdit(true);
@@ -168,13 +168,13 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         @Override
         public void cancelEdit() {
             super.cancelEdit();
-            getPresenter().handleEditCancelled(getItem());
+            getPresenter().onEditCancelled(getItem());
         }
 
         @Override
         public void commitEdit(GenericFile newValue) {
             super.commitEdit(newValue);
-            getPresenter().handleEditCommitted(newValue);
+            getPresenter().onEditCommitted(newValue);
         }
 
         @Override
@@ -327,13 +327,13 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         this.nameColumn = this.fileTableView.findNameColumn();
         nameColumn.setOnEditCancel(e -> {
             var file = (GenericFile) e.getOldValue();
-            getPresenter().handleEditCancelled(file);
+            getPresenter().onEditCancelled(file);
             nameColumn.setEditable(false);
         });
         nameColumn.setOnEditCommit(e -> {
             //var oldFile = (GenericFile) e.getOldValue();
             var newFile = (GenericFile) e.getNewValue(); //from converter
-            getPresenter().handleEditCommitted(newFile);
+            getPresenter().onEditCommitted(newFile);
             nameColumn.setEditable(false);
         });
     }
@@ -485,7 +485,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         locationComboBox.setCellFactory(cb -> {
             var cell = new LocationCell(false);
             cell.setOnMousePressed(e -> {
-                getPresenter().handleLocationRequested(cell.getItem());
+                getPresenter().onLocationRequested(cell.getItem());
             });
             return cell;
         });
@@ -521,7 +521,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
             row.setOnMouseClicked(e -> {
                 if (e.getClickCount() == 2) {
                     var file = row.getItem();
-                    getPresenter().handleFileRequested(file);
+                    getPresenter().onFileRequested(file);
                 }
             });
             row.setContextMenu(itemContextMenu);
@@ -574,16 +574,16 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     protected void addListeners() {
         this.fileListView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (isListSelected()) {
-                getPresenter().handleFileSelected(newV);
+                getPresenter().onFileSelected(newV);
             }
         });
         this.fileTableView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (isDetailsSelected()) {
-                getPresenter().handleFileSelected(newV);
+                getPresenter().onFileSelected(newV);
             }
         });
         this.filterComboBox.getSelectionModel().selectedItemProperty().addListener((ov, odlV, newV) -> {
-            getPresenter().handleFilterSelected(newV);
+            getPresenter().onFilterSelected(newV);
         });
     }
 
@@ -591,17 +591,17 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     protected void addHandlers() {
         super.addHandlers();
         var presenter = getPresenter();
-        this.levelUpButton.setOnAction(e -> presenter.handleNavigateUp());
-        this.homeButton.setOnAction(e -> presenter.handleNavigateHome());
-        this.createButton.setOnAction(e -> presenter.handleNewDirectoryRequested());
+        this.levelUpButton.setOnAction(e -> presenter.onNavigateUp());
+        this.homeButton.setOnAction(e -> presenter.onNavigateHome());
+        this.createButton.setOnAction(e -> presenter.onNewDirectoryRequested());
         this.listButton.setOnAction(e -> {
             if (listButton.isSelected()) {
-                getPresenter().handleListSelected();
+                getPresenter().onListSelected();
             }
         });
         this.detailsButton.setOnAction(e -> {
             if (detailsButton.isSelected()) {
-                getPresenter().handleDetailsSelected();
+                getPresenter().onDetailsSelected();
             }
         });
         //when setOnShowing is used then popup height is calculated incorrectly
@@ -609,7 +609,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         //another reason - update location property only after locations have been populated
         locationComboBox.setOnMousePressed(e -> {
             //update locations only when popup is shown
-            getPresenter().handleLocationsOpened();
+            getPresenter().onLocationsOpened();
         });
         getNode().addEventHandler(DialogResizeEvent.DIALOG_RESIZE_STARTED, e -> {
             if (listButton.selectedProperty().get()) {
@@ -694,7 +694,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
                 index = this.fileTableView.getSelectionModel().getSelectedIndex();
             }
             if (index >= 0) {
-                getPresenter().handleRenameRequested(index);
+                getPresenter().onRenameRequested(index);
             }
         });
         return renameItem;
@@ -702,7 +702,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
 
     private MenuItem createRefreshMenuItem() {
         var menuItem = new MenuItem("Refresh");
-        menuItem.setOnAction(e -> getPresenter().handleRefresh());
+        menuItem.setOnAction(e -> getPresenter().onRefresh());
         return menuItem;
     }
 }

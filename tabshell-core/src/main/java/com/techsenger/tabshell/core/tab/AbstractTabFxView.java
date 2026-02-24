@@ -173,7 +173,7 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
     @Override
     protected void addListeners() {
         super.addListeners();
-        this.root.selectedProperty().addListener((ov, oldV, newV) -> getPresenter().handleSelected(newV));
+        this.root.selectedProperty().addListener((ov, oldV, newV) -> getPresenter().onSelected(newV));
     }
 
     @Override

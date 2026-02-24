@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.devtools.stylesheet;
 
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
@@ -31,7 +32,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -111,7 +111,7 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
     @Override
     protected void initialize() {
         super.initialize();
-        Platform.runLater(() -> getPresenter().handleAdded());
+        Platform.runLater(() -> getPresenter().onAdded());
     }
 
     @Override
@@ -132,7 +132,7 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
         super.addListeners();
         treeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             if (newV != null) {
-                getPresenter().handleStylesheetSelected(newV.getValue());
+                getPresenter().onStylesheetSelected(newV.getValue());
             }
         });
     }

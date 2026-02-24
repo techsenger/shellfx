@@ -106,14 +106,14 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
     protected void addListeners() {
         super.addListeners();
         this.webView.getEngine().titleProperty()
-                .addListener((ov, oldV, newV) -> getPresenter().handlePageTitleChanged(newV));
+                .addListener((ov, oldV, newV) -> getPresenter().onPageTitleChanged(newV));
         var history = this.webView.getEngine().getHistory();
         history.currentIndexProperty().addListener((obs, oldValue, newValue) -> {
-            getPresenter().handleHistoryChanged(history.getEntries().get(history.getCurrentIndex()).getUrl());
+            getPresenter().onHistoryChanged(history.getEntries().get(history.getCurrentIndex()).getUrl());
         });
         history.getEntries().addListener((ListChangeListener<WebHistory.Entry>) c -> {
             if (history.getEntries().size() == 1) { // index is still 0
-                getPresenter().handleHistoryChanged(history.getEntries().get(0).getUrl());
+                getPresenter().onHistoryChanged(history.getEntries().get(0).getUrl());
             }
         });
         this.webView.getEngine().documentProperty().addListener((ov, oldV, newV) -> {
@@ -137,6 +137,6 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
             String absoluteUrl = (String) jsArray.getSlot(i);
             urls.add(absoluteUrl);
         }
-        getPresenter().handleFaviconExtracted(urls);
+        getPresenter().onFaviconExtracted(urls);
     }
 }

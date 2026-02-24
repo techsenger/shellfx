@@ -175,7 +175,7 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
             if (isResizing) {
                 double deltaX = e.getSceneX() - onResizeX;
                 double deltaY = e.getSceneY() - onResizeY;
-                handleResize(deltaX, deltaY);
+                onResize(deltaX, deltaY);
                 e.consume();
             }
         });
@@ -299,7 +299,7 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
         }
     }
 
-    private void handleResize(double deltaX, double deltaY) {
+    private void onResize(double deltaX, double deltaY) {
         double newHeight;
         double newWidth;
         switch (getPresenter().getSide()) {

@@ -28,7 +28,7 @@ public interface DialogPresenter<V extends DialogView, C extends DialogComposer>
     @Override
     DialogPort getPort();
 
-    void handleClose();
+    void onClose();
 
-    void handleResult(ResultButtonName name);
+    void onResult(ResultButtonName name);
 }

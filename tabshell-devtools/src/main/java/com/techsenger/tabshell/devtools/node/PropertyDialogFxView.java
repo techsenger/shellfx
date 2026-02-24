@@ -103,7 +103,7 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
         nameBox.getChildren().add(link);
         nameBox.setSpacing(SizeConstants.THIRD_INSET);
         link.setOnAction(e -> {
-            getPresenter().handleFollowLink(url);
+            getPresenter().onFollowLink(url);
         });
     }
 
@@ -124,7 +124,7 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
         cssBox.getChildren().add(link);
         cssBox.setSpacing(SizeConstants.THIRD_INSET);
         link.setOnAction(e -> {
-            getPresenter().handleFollowLink(url);
+            getPresenter().onFollowLink(url);
         });
     }
 

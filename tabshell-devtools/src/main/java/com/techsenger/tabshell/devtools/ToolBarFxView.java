@@ -73,7 +73,7 @@ public class ToolBarFxView<P extends ToolBarPresenter<?, ?>> extends AbstractFin
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        this.refreshButton.setOnAction((e) -> getPresenter().handleRefresh());
+        this.refreshButton.setOnAction((e) -> getPresenter().onRefresh());
     }
 
 

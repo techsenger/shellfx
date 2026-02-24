@@ -29,7 +29,7 @@ public abstract class AbstractFindPanelPresenter<V extends FindPanelView, C exte
         super(view, FindFeature.values());
     }
 
-    protected abstract void handleClose();
+    protected abstract void onClose();
 
     @Override
     protected FindPanelHistory getHistory() {

@@ -154,7 +154,7 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     protected void addListeners() {
         super.addListeners();
         pageTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
-            getPresenter().handlePageSelected(newV.getValue());
+            getPresenter().onPageSelected(newV.getValue());
         });
     }
 

@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dock;
 
 import com.techsenger.patternfx.mvp.ChildFxView;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
@@ -72,7 +73,6 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Popup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  * How it works. When the user starts a drag-and-drop operation and moves the mouse, an instance of {@link DockInfo} is
@@ -257,10 +257,10 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
             super(layout, area);
             eventPane.setMouseTransparent(false);
             // eventPane.setStyle("-fx-background-color: yellow");
-            eventPane.setOnMouseDragOver(e -> getLayout().handleContainerMouseDragOver(provideMousePosition(e)));
-            eventPane.setOnMouseDragExited(e -> getLayout().handleContainerMouseDragExited(provideMousePosition(e)));
+            eventPane.setOnMouseDragOver(e -> getLayout().onContainerMouseDragOver(provideMousePosition(e)));
+            eventPane.setOnMouseDragExited(e -> getLayout().onContainerMouseDragExited(provideMousePosition(e)));
             eventPane.setOnMouseDragReleased(e -> getLayout()
-                    .handleContainerMouseDragReleased(provideMousePosition(e)));
+                    .onContainerMouseDragReleased(provideMousePosition(e)));
         }
 
         @Override
@@ -1245,17 +1245,17 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
         logger.debug("{} Removed empty TabDock", getDescriptor().getLogPrefix());
     }
 
-    void handleTabDragDetected(ComponentTab tab) {
+    void onTabDragDetected(ComponentTab tab) {
         this.dragTab = tab;
         updateDragInProgress(true, DraggableType.TAB);
     }
 
-    void handleTabDrag(ComponentTab tab) {
+    void onTabDrag(ComponentTab tab) {
         this.dragTab = tab;
         updateDragInProgress(true, DraggableType.TAB);
     }
 
-    void handleTabDrop(ComponentTab tab) {
+    void onTabDrop(ComponentTab tab) {
         try {
             processDropInsideTabHeaderArea();
         } finally {
@@ -1263,7 +1263,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
         }
     }
 
-    void handleTabHeaderAreaMouseDragOver(TabPanePro tabPane, MouseDragEvent e) {
+    void onTabHeaderAreaMouseDragOver(TabPanePro tabPane, MouseDragEvent e) {
         TabDockContainer tabDockContainer = (TabDockContainer) tabPane.getParent();
         var pos = new MousePosition(tabDockContainer, e, null, false, true);
         handleMouseDragOverOnTabHeaderArea(pos, tabDockContainer);
@@ -1275,7 +1275,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
      * @param dock
      * @param position
      */
-    void handleDockDragDetected(TabDockFxView<?> dock, FontIconView iconView, MouseEvent e) {
+    void onDockDragDetected(TabDockFxView<?> dock, FontIconView iconView, MouseEvent e) {
         this.dragDock = dock;
         TabPaneProSkin sourceSkin = (TabPaneProSkin) dock.getNode().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
@@ -1292,7 +1292,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
         updateDragInProgress(true, DraggableType.TAB_DOCK);
     }
 
-    void handleDockMouseDragged(TabDockFxView<?> dock, FontIconView iconView, MouseEvent e) {
+    void onDockMouseDragged(TabDockFxView<?> dock, FontIconView iconView, MouseEvent e) {
         if (this.dragDockPopup != null) {
             this.dragDockPopup.setAnchorX(e.getScreenX());
             this.dragDockPopup.setAnchorY(e.getScreenY());
@@ -1300,16 +1300,16 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
         }
     }
 
-    void handleDockMouseReleased(TabDockFxView<?> dock, FontIconView iconView, MouseEvent e) {
+    void onDockMouseReleased(TabDockFxView<?> dock, FontIconView iconView, MouseEvent e) {
         hideDragDockPopup();
         updateDragInProgress(false, DraggableType.TAB_DOCK);
     }
 
-    void handleContainerMouseDragExited(MousePosition mousePosition) {
+    void onContainerMouseDragExited(MousePosition mousePosition) {
         hideIndicator();
     }
 
-    void handleContainerMouseDragOver(MousePosition mousePosition) {
+    void onContainerMouseDragOver(MousePosition mousePosition) {
         hideIndicator();
         this.dockInfo = createBaseDockInfo(mousePosition);
         showIndicator();
@@ -1320,7 +1320,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
      *
      * @param mousePosition
      */
-    void handleContainerMouseDragReleased(MousePosition mousePosition) {
+    void onContainerMouseDragReleased(MousePosition mousePosition) {
         try {
             processDropOutsideTabHeaderArea();
         } finally {

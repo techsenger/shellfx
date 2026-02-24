@@ -30,14 +30,14 @@ public interface TabContainerPresenter<T extends TabPort, C extends TabContainer
 
     C getComposer();
 
-    void handleSelectedTabChange(int index);
+    void onSelectedTabChanged(int index);
 
-    default void handleCloseOtherTabs(T tab) {
+    default void onCloseOtherTabs(T tab) {
         var otherTabs = getComposer().getTabs().stream().filter((t) -> t != tab).collect(Collectors.toList());
-        handleCloseTabs(otherTabs);
+        onCloseTabs(otherTabs);
     }
 
-    default void handleCloseTabs(List<? extends T> tabs) {
+    default void onCloseTabs(List<? extends T> tabs) {
         class Closer {
 
             private int index = 0;
@@ -65,11 +65,11 @@ public interface TabContainerPresenter<T extends TabPort, C extends TabContainer
         new Closer().run();
     }
 
-    default void handleCloseAllTabs() {
-        this.handleCloseTabs(new ArrayList<>(getComposer().getTabs()));
+    default void onCloseAllTabs() {
+        this.onCloseTabs(new ArrayList<>(getComposer().getTabs()));
     }
 
-    default void handleCloseRightTabs(T tab) {
+    default void onCloseRightTabs(T tab) {
         var tabs = getComposer().getTabs();
         var index = tabs.indexOf(tab);
         if (index == -1 || index + 1 == tabs.size()) {
@@ -78,11 +78,11 @@ public interface TabContainerPresenter<T extends TabPort, C extends TabContainer
         List<T> tabsToClose = new ArrayList<>();
         for (var i = index + 1; i < tabs.size(); i++) {
             tabsToClose.add(tabs.get(i));
-            this.handleCloseTabs(tabsToClose);
+            this.onCloseTabs(tabsToClose);
         }
     }
 
-    default void handleCloseLeftTabs(T tab) {
+    default void onCloseLeftTabs(T tab) {
         var tabs = getComposer().getTabs();
         var index = tabs.indexOf(tab);
         if (index == -1 || index == 0) {
@@ -91,11 +91,11 @@ public interface TabContainerPresenter<T extends TabPort, C extends TabContainer
         List<T> tabsToClose = new ArrayList<>();
         for (var i = index - 1; i >= 0; i--) {
             tabsToClose.add(tabs.get(i));
-            this.handleCloseTabs(tabsToClose);
+            this.onCloseTabs(tabsToClose);
         }
     }
 
-    default void handleCloseTab(T tab) {
+    default void onCloseTab(T tab) {
         tab.requestClose();
     }
 }
