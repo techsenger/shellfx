@@ -16,22 +16,18 @@
 
 package com.techsenger.tabshell.terminal.toolbar;
 
-import com.techsenger.tabshell.core.area.AreaHistory;
+import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.terminal.TerminalPaletteType;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TerminalToolBarHistory extends AreaHistory {
+public interface ToolBarPort extends AreaPort {
 
-    private TerminalPaletteType paletteType;
+    TerminalPaletteType getPaletteType();
 
-    public TerminalPaletteType getPaletteType() {
-        return paletteType;
-    }
+    void setCopyDisable(boolean value);
 
-    public void setPaletteType(TerminalPaletteType paletteType) {
-        this.paletteType = paletteType;
-    }
+    void setListener(ToolBarListener listener);
 }

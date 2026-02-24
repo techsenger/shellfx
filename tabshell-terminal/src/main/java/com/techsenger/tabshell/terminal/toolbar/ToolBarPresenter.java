@@ -20,20 +20,20 @@ import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.terminal.TerminalPaletteType;
-import com.techsenger.tabshell.terminal.area.TerminalAreaPort;
-import java.util.Arrays;
-import java.util.function.Supplier;
 import com.techsenger.tabshell.terminal.TerminalComponents;
+import com.techsenger.tabshell.terminal.TerminalPaletteType;
+import java.util.Arrays;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TerminalToolBarPresenter<V extends TerminalToolBarView, C extends AreaComposer>
+public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer>
         extends AbstractAreaPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements TerminalToolBarPort {
+    protected class Port extends AbstractAreaPresenter.Port implements ToolBarPort {
+
+        private ToolBarPresenter<V, C> presenter = ToolBarPresenter.this;
 
         @Override
         public TerminalPaletteType getPaletteType() {
@@ -44,13 +44,17 @@ public class TerminalToolBarPresenter<V extends TerminalToolBarView, C extends A
         public void setCopyDisable(boolean value) {
             getView().setCopyDisable(value);
         }
+
+        @Override
+        public void setListener(ToolBarListener listener) {
+            presenter.listener = listener;
+        }
     }
 
-    private final Supplier<TerminalAreaPort> area;
+    private ToolBarListener listener;
 
-    public TerminalToolBarPresenter(V view, TerminalToolBarHistory history, Supplier<TerminalAreaPort> area) {
+    public ToolBarPresenter(V view, ToolBarHistory history) {
         super(view);
-        this.area = area;
         setHistoryPolicy(HistoryPolicy.ALL);
         setHistoryProvider(() -> history);
     }
@@ -60,59 +64,57 @@ public class TerminalToolBarPresenter<V extends TerminalToolBarView, C extends A
         return (Port) super.getPort();
     }
 
-    protected void handleNewAction() {
-        area.get().addNew();
+    protected void onAddNew() {
+        this.listener.onAddNew();
     }
 
-    protected void handleClearAction() {
-        area.get().clear();
+    protected void onClear() {
+        this.listener.onClear();
     }
 
-    protected void handleCopyAction() {
-        area.get().copy();
+    protected void onCopy() {
+        this.listener.onCopy();
     }
 
-    protected void handlePasteAction() {
-        area.get().paste();
+    protected void onPaste() {
+        this.listener.onPaste();
     }
 
-    protected void handleSelectAllAction() {
-        area.get().selectAll();
+    protected void onSelectAll() {
+        this.listener.onSelectAll();
     }
 
-    protected void handleOpenUrlAction() {
-
-    }
-
-    protected void handleFindAction() {
+    protected void onOpenUrl() {
 
     }
 
-    protected void handlePageUpAction() {
-        area.get().scrollPageUp();
+    protected void onFind() {
+
     }
 
-    protected void handlePageDownAction() {
-        area.get().scrollPageDown();
+    protected void onPageUp() {
+        this.listener.onPageUp();
     }
 
-    protected void handleLineUpAction() {
-        area.get().scrollLineUp();
+    protected void onPageDown() {
+        this.listener.onPageDown();
     }
 
-    protected void handleLineDownAction() {
-        area.get().scrollLineDown();
+    protected void onLineUp() {
+        this.listener.onLineUp();
     }
 
-    protected void handlePaletteTypeChanged(TerminalPaletteType type) {
-        if (area.get() != null) {
-            area.get().setPaletteType(type);
-        }
+    protected void onLineDown() {
+        this.listener.onLineDown();
+    }
+
+    protected void onPaletteTypeChanged(TerminalPaletteType type) {
+        this.listener.onPaletteTypeChanged(type);
     }
 
     @Override
     protected Port createPort() {
-        return new TerminalToolBarPresenter.Port();
+        return new ToolBarPresenter.Port();
     }
 
     @Override
@@ -128,8 +130,8 @@ public class TerminalToolBarPresenter<V extends TerminalToolBarView, C extends A
     }
 
     @Override
-    protected TerminalToolBarHistory getHistory() {
-        return (TerminalToolBarHistory) super.getHistory();
+    protected ToolBarHistory getHistory() {
+        return (ToolBarHistory) super.getHistory();
     }
 
     @Override

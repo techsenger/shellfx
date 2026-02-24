@@ -24,6 +24,7 @@ import com.techsenger.tabshell.shared.find.FindPanelHistory;
 import com.techsenger.tabshell.terminal.TerminalTabFxView;
 import com.techsenger.tabshell.terminal.TerminalTabPresenter;
 import com.techsenger.tabshell.terminal.find.FindPanelFxView;
+import com.techsenger.tabshell.terminal.find.FindPanelPort;
 import com.techsenger.tabshell.terminal.find.FindPanelPresenter;
 import com.techsenger.tabshell.web.WebBrowserTabFxView;
 import com.techsenger.tabshell.web.WebBrowserTabPresenter;
@@ -33,7 +34,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import com.techsenger.tabshell.terminal.find.FindPanelPort;
 
 /**
  *
@@ -61,30 +61,30 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
         }
 
         @Override
-        public void addSearchPanel(FindPanelHistory history) {
-            if (view.searchPanel != null) {
+        public void addFindPanel(FindPanelHistory history) {
+            if (view.findPanel != null) {
                 return;
             }
-            view.searchPanel = createSearchPanel(history);
-            view.searchPanel.getPresenter().initialize();
-            view.getModifiableChildren().add(searchPanel);
-            view.node.getChildren().add(view.searchPanel.getNode());
+            view.findPanel = createFindPanel(history);
+            view.findPanel.getPresenter().initialize();
+            view.getModifiableChildren().add(findPanel);
+            view.node.getChildren().add(view.findPanel.getNode());
         }
 
         @Override
-        public void removeSearchPanel() {
-            if (view.searchPanel == null) {
+        public void removeFindPanel() {
+            if (view.findPanel == null) {
                 return;
             }
-            view.getModifiableChildren().remove(searchPanel);
-            view.node.getChildren().remove(view.searchPanel.getNode());
-            view.searchPanel.getPresenter().deinitialize();
-            view.searchPanel = null;
+            view.getModifiableChildren().remove(findPanel);
+            view.node.getChildren().remove(view.findPanel.getNode());
+            view.findPanel.getPresenter().deinitialize();
+            view.findPanel = null;
         }
 
         @Override
-        public FindPanelPort getSearchPanel() {
-            return view.searchPanel == null ? null : view.searchPanel.getPresenter().getPort();
+        public FindPanelPort getFindPanel() {
+            return view.findPanel == null ? null : view.findPanel.getPresenter().getPort();
         }
 
         protected WebBrowserTabFxView<?> createWebBrowser(String url) {
@@ -99,10 +99,10 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
             return view;
         }
 
-        protected FindPanelFxView<?> createSearchPanel(FindPanelHistory history) {
+        protected FindPanelFxView<?> createFindPanel(FindPanelHistory history) {
             var view = new FindPanelFxView<>(widget);
             var presenter = new FindPanelPresenter<>(view, () -> history, widget.getTerminalTextBuffer(),
-                    () -> getPresenter().handleHideSearch());
+                    () -> getPresenter().onHideFind());
             return view;
         }
     }
@@ -111,7 +111,7 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
 
     private final ShellFxView<?> shell;
 
-    private FindPanelFxView<?> searchPanel;
+    private FindPanelFxView<?> findPanel;
 
     private final VBox node = new VBox();
 
@@ -136,19 +136,19 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
 
     @Override
     public void createTerminal(TerminalSettingsProvider settingsProvider, PtyProcessTtyConnector ttyConnector) {
-        this.widget = new TabJediTermFxWidget(80, 24, settingsProvider, () -> getPresenter().handleShowSearch());
+        this.widget = new TabJediTermFxWidget(80, 24, settingsProvider, () -> getPresenter().onShowFind());
         widget.setTtyConnector(ttyConnector);
         widget.addHyperlinkFilter(new DefaultHyperlinkFilter() {
 
             @Override
             protected void open(String url) {
-                getPresenter().handleLinkAction(url);
+                getPresenter().onOpenLink(url);
             }
         });
         VBox.setVgrow(widget.getPane(), Priority.ALWAYS);
         widget.start();
         getTerminalPanel().selectedTextProperty()
-                .addListener((ov, oldV, newV) -> getPresenter().handleTextSelected(newV));
+                .addListener((ov, oldV, newV) -> getPresenter().onTextSelected(newV));
         this.node.getChildren().add(widget.getPane());
     }
 
@@ -212,8 +212,8 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
         return widget;
     }
 
-    protected FindPanelFxView<?> getSearchPanel() {
-        return searchPanel;
+    protected FindPanelFxView<?> getFindPanel() {
+        return findPanel;
     }
 
     @Override
@@ -226,8 +226,8 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
     protected void addHandlers() {
         super.addHandlers();
         node.addEventFilter(KeyEvent.KEY_PRESSED, (e) -> {
-            if (this.searchPanel != null && e.getCode() == KeyCode.ESCAPE) {
-                getPresenter().handleHideSearch();
+            if (this.findPanel != null && e.getCode() == KeyCode.ESCAPE) {
+                getPresenter().onHideFind();
                 e.consume();
             }
         });

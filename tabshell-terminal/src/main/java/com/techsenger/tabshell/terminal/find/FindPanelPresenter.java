@@ -71,7 +71,7 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(TerminalComponents.SEARCH_PANEL);
+        return new Descriptor(TerminalComponents.FIND_PANEL);
     }
 
     @Override

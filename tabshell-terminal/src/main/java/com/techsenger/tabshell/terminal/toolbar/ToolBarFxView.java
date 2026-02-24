@@ -42,8 +42,8 @@ import javafx.util.Callback;
  *
  * @author Pavel Castornii
  */
-public class TerminalToolBarFxView<P extends TerminalToolBarPresenter<?, ?>> extends AbstractAreaFxView<P>
-        implements TerminalToolBarView {
+public class ToolBarFxView<P extends ToolBarPresenter<?, ?>> extends AbstractAreaFxView<P>
+        implements ToolBarView {
 
     private final Button newButton = new Button(null, new FontIconView(SharedIcons.ADD));
 
@@ -157,23 +157,23 @@ public class TerminalToolBarFxView<P extends TerminalToolBarPresenter<?, ?>> ext
         super.addListeners();
         var presenter = getPresenter();
         this.paletteTypesComboBox.getSelectionModel().selectedItemProperty()
-                .addListener((ov, oldV, newV) -> presenter.handlePaletteTypeChanged(newV));
+                .addListener((ov, oldV, newV) -> presenter.onPaletteTypeChanged(newV));
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
         var presenter = getPresenter();
-        newButton.setOnAction(e -> presenter.handleNewAction());
-        clearButton.setOnAction(e -> presenter.handleClearAction());
-        copyButton.setOnAction(e -> presenter.handleCopyAction());
-        pasteButton.setOnAction(e -> presenter.handlePasteAction());
-        selectAllButton.setOnAction(e -> presenter.handleSelectAllAction());
-        findButton.setOnAction(e -> presenter.handleFindAction());
-        pageUpButton.setOnAction(e -> presenter.handlePageUpAction());
-        pageDownButton.setOnAction(e -> presenter.handlePageDownAction());
-        lineUpButton.setOnAction(e -> presenter.handleLineUpAction());
-        lineDownButton.setOnAction(e -> presenter.handleLineDownAction());
+        newButton.setOnAction(e -> presenter.onAddNew());
+        clearButton.setOnAction(e -> presenter.onClear());
+        copyButton.setOnAction(e -> presenter.onCopy());
+        pasteButton.setOnAction(e -> presenter.onPaste());
+        selectAllButton.setOnAction(e -> presenter.onSelectAll());
+        findButton.setOnAction(e -> presenter.onFind());
+        pageUpButton.setOnAction(e -> presenter.onPageUp());
+        pageDownButton.setOnAction(e -> presenter.onPageDown());
+        lineUpButton.setOnAction(e -> presenter.onLineUp());
+        lineDownButton.setOnAction(e -> presenter.onLineDown());
     }
 
     protected Button getNewButton() {

@@ -26,11 +26,11 @@ import com.techsenger.tabshell.terminal.find.FindPanelPort;
  */
 public interface TerminalAreaComposer extends AreaComposer {
 
-    void addSearchPanel(FindPanelHistory history);
+    void addFindPanel(FindPanelHistory history);
 
-    void removeSearchPanel();
+    void removeFindPanel();
 
-    FindPanelPort getSearchPanel();
+    FindPanelPort getFindPanel();
 
     void addWebBrowser(String url);
 

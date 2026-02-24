@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.terminal;
 
+import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.shelltab.ShellTabPort;
-import com.techsenger.tabshell.terminal.area.TerminalAreaPort;
-import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarPort;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
 
 /**
  *
@@ -28,9 +28,9 @@ public interface TerminalTabPort extends ShellTabPort {
 
     String getDirectory();
 
-    TerminalToolBarPort getToolBar();
+    ToolBarPort getToolBar();
 
-    TerminalAreaPort getArea();
+    AreaPort getArea();
 
     TerminalTabHistory getHistory();
 }

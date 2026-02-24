@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.terminal;
 
+import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.shelltab.ShellTabComposer;
-import com.techsenger.tabshell.terminal.area.TerminalAreaPort;
-import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarPort;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
 
 /**
  *
@@ -26,7 +26,7 @@ import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarPort;
  */
 public interface TerminalTabComposer extends ShellTabComposer {
 
-    TerminalToolBarPort getToolBar();
+    ToolBarPort getToolBar();
 
-    TerminalAreaPort getArea();
+    AreaPort getArea();
 }

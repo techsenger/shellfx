@@ -14,34 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.terminal.area;
+package com.techsenger.tabshell.terminal.toolbar;
 
-import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.area.AreaView;
 import com.techsenger.tabshell.terminal.TerminalPaletteType;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TerminalAreaPort extends AreaPort {
+public interface ToolBarView extends AreaView {
 
-    void addNew();
+    void setPaletteTypes(List<TerminalPaletteType> types);
 
-    void clear();
-
-    void copy();
-
-    void paste();
-
-    void selectAll();
-
-    void scrollPageUp();
-
-    void scrollPageDown();
-
-    void scrollLineUp();
-
-    void scrollLineDown();
+    TerminalPaletteType getPaletteType();
 
     void setPaletteType(TerminalPaletteType type);
+
+    void setCopyDisable(boolean value);
 }

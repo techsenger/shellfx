@@ -18,7 +18,7 @@ package com.techsenger.tabshell.terminal;
 
 import com.techsenger.tabshell.core.shelltab.ShellTabHistory;
 import com.techsenger.tabshell.shared.find.FindPanelHistory;
-import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarHistory;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarHistory;
 
 /**
  *
@@ -26,15 +26,15 @@ import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarHistory;
  */
 public class TerminalTabHistory extends ShellTabHistory {
 
-    private final TerminalToolBarHistory toolBar = new TerminalToolBarHistory();
+    private final ToolBarHistory toolBar = new ToolBarHistory();
 
-    private final FindPanelHistory searchPanel = new FindPanelHistory();
+    private final FindPanelHistory findPanel = new FindPanelHistory();
 
-    public TerminalToolBarHistory getToolBar() {
+    public ToolBarHistory getToolBar() {
         return toolBar;
     }
 
-    public FindPanelHistory getSearchPanel() {
-        return searchPanel;
+    public FindPanelHistory getFindPanel() {
+        return findPanel;
     }
 }

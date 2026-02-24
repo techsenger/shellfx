@@ -30,5 +30,5 @@ public interface TerminalComponents {
 
     ComponentName TERMINAL_AREA = new ComponentName("TerminalArea");
 
-    ComponentName SEARCH_PANEL = new ComponentName("TerminalSearchPanel");
+    ComponentName FIND_PANEL = new ComponentName("TerminalFindPanel");
 }

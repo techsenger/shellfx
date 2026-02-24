@@ -17,19 +17,19 @@
 package com.techsenger.tabshell.terminal;
 
 import com.techsenger.patternfx.core.HistoryProvider;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
 import com.techsenger.tabshell.layout.dock.DockLayoutFxView;
 import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
 import com.techsenger.tabshell.layout.dock.DockLayoutPresenter;
 import com.techsenger.tabshell.terminal.area.TerminalAreaFxView;
-import com.techsenger.tabshell.terminal.area.TerminalAreaPort;
 import com.techsenger.tabshell.terminal.area.TerminalAreaPresenter;
-import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarFxView;
-import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarPort;
-import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarPresenter;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarFxView;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarPresenter;
 import javafx.geometry.Orientation;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -67,26 +67,18 @@ public class TerminalTabFxView<P extends TerminalTabPresenter<?, ?>> extends Abs
         }
 
         @Override
-        public TerminalToolBarPort getToolBar() {
+        public ToolBarPort getToolBar() {
             return view.toolBar.getPresenter().getPort();
         }
 
         @Override
-        public TerminalAreaPort getArea() {
+        public AreaPort getArea() {
             return view.area.getPresenter().getPort();
         }
 
-        protected TerminalToolBarFxView<?> createToolBar() {
-            var view = new TerminalToolBarFxView<>();
-            var presenter = new TerminalToolBarPresenter<>(view,
-                    getPresenter().getHistory().getToolBar(),
-                    () -> {
-                        if (this.view.area != null) {
-                            return this.view.area.getPresenter().getPort();
-                        } else {
-                            return null;
-                        }
-                    });
+        protected ToolBarFxView<?> createToolBar() {
+            var view = new ToolBarFxView<>();
+            var presenter = new ToolBarPresenter<>(view, getPresenter().getHistory().getToolBar());
             return view;
         }
 
@@ -98,12 +90,13 @@ public class TerminalTabFxView<P extends TerminalTabPresenter<?, ?>> extends Abs
 
         protected TerminalAreaFxView<?> createArea() {
             var view = new TerminalAreaFxView<>(this.view.getShell());
-            var presenter = new TerminalAreaPresenter<>(view, () -> getPresenter().getPort());
+            var presenter = new TerminalAreaPresenter<>(view, () -> getPresenter().getPort(),
+                    () -> toolBar.getPresenter().getPort());
             return view;
         }
     }
 
-    private TerminalToolBarFxView<?> toolBar;
+    private ToolBarFxView<?> toolBar;
 
     private DockLayoutFxView<?> layout;
 

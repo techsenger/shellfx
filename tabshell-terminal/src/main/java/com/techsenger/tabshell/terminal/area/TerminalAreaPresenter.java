@@ -23,8 +23,11 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.shared.web.WebBrowser;
+import com.techsenger.tabshell.terminal.TerminalComponents;
 import com.techsenger.tabshell.terminal.TerminalPaletteType;
 import com.techsenger.tabshell.terminal.TerminalTabPort;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarListener;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -32,7 +35,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.techsenger.tabshell.terminal.TerminalComponents;
 
 /**
  *
@@ -43,70 +45,72 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
 
     private static final Logger logger = LoggerFactory.getLogger(TerminalAreaPresenter.class);
 
-    protected class Port extends AbstractAreaPresenter.Port implements TerminalAreaPort {
+    protected class ToolBarListenerPort implements ToolBarListener {
 
         private final TerminalAreaPresenter<?, ?> presenter = TerminalAreaPresenter.this;
 
         @Override
-        public void addNew() {
+        public void onAddNew() {
             getComposer().addTerminal(presenter.browser.get().getDirectory());
         }
 
         @Override
-        public void clear() {
+        public void onClear() {
             getView().clear();
             getView().requestFocus();
         }
 
         @Override
-        public void copy() {
+        public void onCopy() {
             getView().copy();
             getView().requestFocus();
         }
 
         @Override
-        public void paste() {
+        public void onPaste() {
             getView().paste();
             getView().requestFocus();
         }
 
         @Override
-        public void selectAll() {
+        public void onSelectAll() {
             getView().selectAll();
             getView().requestFocus();
         }
 
         @Override
-        public void scrollPageUp() {
+        public void onPageUp() {
             getView().scrollPageUp();
             getView().requestFocus();
         }
 
         @Override
-        public void scrollPageDown() {
+        public void onPageDown() {
             getView().scrollPageDown();
             getView().requestFocus();
         }
 
         @Override
-        public void scrollLineUp() {
+        public void onLineUp() {
             getView().scrollLineUp();
             getView().requestFocus();
         }
 
         @Override
-        public void scrollLineDown() {
+        public void onLineDown() {
             getView().scrollLineDown();
             getView().requestFocus();
         }
 
         @Override
-        public void setPaletteType(TerminalPaletteType type) {
+        public void onPaletteTypeChanged(TerminalPaletteType type) {
             presenter.setPaletteType(type);
         }
     }
 
     private final Supplier<TerminalTabPort> browser;
+
+    private final Supplier<ToolBarPort> toolBar;
 
     private TerminalPalette terminalPalette;
 
@@ -116,19 +120,11 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
 
     private SettingsSubscription themeSubscription;
 
-    public TerminalAreaPresenter(V view, Supplier<TerminalTabPort> browser) {
+    public TerminalAreaPresenter(V view, Supplier<TerminalTabPort> browser, Supplier<ToolBarPort> toolBar) {
         super(view);
         this.browser = browser;
-    }
-
-    @Override
-    public TerminalAreaPort getPort() {
-        return (TerminalAreaPort) super.getPort();
-    }
-
-    @Override
-    protected Port createPort() {
-        return new TerminalAreaPresenter.Port();
+        this.toolBar = toolBar;
+        toolBar.get().setListener(new ToolBarListenerPort());
     }
 
     @Override
@@ -183,7 +179,7 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
         }
     }
 
-    protected void handleTextSelected(String selectedText) {
+    protected void onTextSelected(String selectedText) {
         this.selectedText = selectedText;
         browser.get().getToolBar().setCopyDisable(selectedText == null);
     }
@@ -192,7 +188,7 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
         return selectedText;
     }
 
-    protected void handleLinkAction(String url) {
+    protected void onOpenLink(String url) {
         var settings = browser.get().getShell().getSettings();
         if (settings.getWebBrowser().isUsedByDefault()) {
             getComposer().addWebBrowser(url);
@@ -201,11 +197,11 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
         }
     }
 
-    protected void handleShowSearch() {
-        if (getComposer().getSearchPanel() == null) {
-            getComposer().addSearchPanel(browser.get().getHistory().getSearchPanel());
+    protected void onShowFind() {
+        if (getComposer().getFindPanel() == null) {
+            getComposer().addFindPanel(browser.get().getHistory().getFindPanel());
         }
-        var findPane = getComposer().getSearchPanel();
+        var findPane = getComposer().getFindPanel();
         var selectedText = getView().getSelectedText();
         if (selectedText != null) {
             findPane.setFindText(selectedText);
@@ -213,9 +209,9 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
         findPane.requestFocus();
     }
 
-    protected void handleHideSearch() {
-        if (getComposer().getSearchPanel() != null) {
-            getComposer().removeSearchPanel();
+    protected void onHideFind() {
+        if (getComposer().getFindPanel() != null) {
+            getComposer().removeFindPanel();
             getView().requestFocus();
         }
     }

@@ -20,12 +20,12 @@ import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabPresenter;
-import com.techsenger.tabshell.terminal.area.TerminalAreaPort;
 import com.techsenger.tabshell.terminal.style.TerminalIcons;
-import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarPort;
 import java.util.function.Consumer;
+import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
 
 /**
  *
@@ -44,12 +44,12 @@ public class TerminalTabPresenter<V extends TerminalTabView, C extends TerminalT
         }
 
         @Override
-        public TerminalToolBarPort getToolBar() {
+        public ToolBarPort getToolBar() {
             return getComposer().getToolBar();
         }
 
         @Override
-        public TerminalAreaPort getArea() {
+        public AreaPort getArea() {
             return getComposer().getArea();
         }
 

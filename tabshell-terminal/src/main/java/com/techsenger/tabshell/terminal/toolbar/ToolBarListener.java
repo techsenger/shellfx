@@ -16,16 +16,31 @@
 
 package com.techsenger.tabshell.terminal.toolbar;
 
-import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.terminal.TerminalPaletteType;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TerminalToolBarPort extends AreaPort {
+public interface ToolBarListener {
 
-    TerminalPaletteType getPaletteType();
+    void onAddNew();
 
-    void setCopyDisable(boolean value);
+    void onClear();
+
+    void onCopy();
+
+    void onPaste();
+
+    void onSelectAll();
+
+    void onPageUp();
+
+    void onPageDown();
+
+    void onLineUp();
+
+    void onLineDown();
+
+    void onPaletteTypeChanged(TerminalPaletteType type);
 }
