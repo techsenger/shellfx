@@ -23,6 +23,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -33,8 +34,8 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
     public class Composer extends AbstractTabFxView<P>.Composer implements EventTabComposer {
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
             toolBar = createToolBar();
             toolBar.getPresenter().initialize();
             getModifiableChildren().add(toolBar);

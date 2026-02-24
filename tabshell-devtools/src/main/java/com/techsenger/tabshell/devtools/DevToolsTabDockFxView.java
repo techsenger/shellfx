@@ -40,6 +40,7 @@ import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -51,8 +52,8 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
     public class Composer extends TabDockFxView<P>.Composer {
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
 
             var nodeTab = createNodeTab();
             nodeTab.getPresenter().initialize();

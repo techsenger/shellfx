@@ -26,6 +26,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -36,8 +37,8 @@ public class PagedTabFxView extends AbstractShellTabFxView<PagedTabPresenter> im
     public class Composer extends AbstractShellTabFxView.Composer {
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
             var rootItem = MenuFactory.create(MenuFactory.PageType.TAB);
             pageHost = new PageHostFxView<>(rootItem);
             var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());

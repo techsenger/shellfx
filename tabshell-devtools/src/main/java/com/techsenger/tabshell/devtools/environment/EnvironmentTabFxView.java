@@ -38,6 +38,7 @@ import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -51,8 +52,8 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
         private final EnvironmentTabFxView<P> view = EnvironmentTabFxView.this;
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
             view.toolBar = createToolBar();
             view.toolBar.getPresenter().initialize();
             getModifiableChildren().add(view.toolBar);

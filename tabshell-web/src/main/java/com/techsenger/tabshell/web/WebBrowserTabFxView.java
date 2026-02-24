@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.web;
 
 import com.techsenger.patternfx.core.HistoryProvider;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
 import com.techsenger.tabshell.layout.dock.DockLayoutFxView;
@@ -44,8 +45,8 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
         private final WebBrowserTabFxView<?> view = WebBrowserTabFxView.this;
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
 
             var toolBar = createToolBar();
             toolBar.getPresenter().initialize();
@@ -53,7 +54,8 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
             view.getContentBox().getChildren().add(toolBar.getNode());
             view.toolBar = toolBar;
 
-            var area = createArea();
+            var webParams = (WebComposeParameters) params;
+            var area = createArea(webParams.getUrl());
             area.getPresenter().initialize();
             view.area = area;
 
@@ -92,11 +94,11 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
             return view;
         }
 
-        protected WebAreaFxView<?> createArea() {
+        protected WebAreaFxView<?> createArea(String url) {
             var view = new WebAreaFxView<>();
             var browserPresenter = this.view.getPresenter();
             var presenter = new WebAreaPresenter<>(view, () -> browserPresenter.getPort(),
-                    () -> this.view.toolBar.getPresenter().getPort(), browserPresenter.getAndClearUrl());
+                    () -> this.view.toolBar.getPresenter().getPort(), url);
             return view;
         }
     }

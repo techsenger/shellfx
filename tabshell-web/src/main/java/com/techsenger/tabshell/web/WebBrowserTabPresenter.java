@@ -29,11 +29,9 @@ import java.util.function.Consumer;
 public class WebBrowserTabPresenter<V extends WebBrowserTabView, C extends WebBrowserTabComposer>
         extends AbstractShellTabPresenter<V, C> {
 
-    private String url;
-
     public WebBrowserTabPresenter(V view, String url) {
         super(view);
-        this.url = url;
+        getParameters().setUrl(url);
     }
 
     @Override
@@ -59,9 +57,13 @@ public class WebBrowserTabPresenter<V extends WebBrowserTabView, C extends WebBr
         }
     }
 
-    String getAndClearUrl() {
-        var v = this.url;
-        this.url = null;
-        return v;
+    @Override
+    protected WebComposeParameters createParameters() {
+        return new WebComposeParameters();
+    }
+
+    @Override
+    protected WebComposeParameters getParameters() {
+        return (WebComposeParameters) super.getParameters();
     }
 }

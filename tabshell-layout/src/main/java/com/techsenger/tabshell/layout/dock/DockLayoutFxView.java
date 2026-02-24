@@ -72,6 +72,7 @@ import javafx.scene.transform.Rotate;
 import javafx.stage.Popup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  * How it works. When the user starts a drag-and-drop operation and moves the mouse, an instance of {@link DockInfo} is
@@ -745,8 +746,8 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
                 new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
             var placeholderV = createPlaceholder();
             placeholderV.getPresenter().initialize();
             view.placeholder = placeholderV;

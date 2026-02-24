@@ -56,6 +56,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -277,8 +278,8 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     public class Composer extends AbstractTabFxView<P>.Composer implements NodeTabComposer {
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
 
             nodeToolBar = createNodeToolBar();
             nodeToolBar.getPresenter().initialize();

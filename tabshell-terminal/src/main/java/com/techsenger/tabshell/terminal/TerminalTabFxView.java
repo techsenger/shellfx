@@ -29,6 +29,7 @@ import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarFxView;
 import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarPort;
 import com.techsenger.tabshell.terminal.toolbar.TerminalToolBarPresenter;
 import javafx.geometry.Orientation;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -42,8 +43,8 @@ public class TerminalTabFxView<P extends TerminalTabPresenter<?, ?>> extends Abs
         private final TerminalTabFxView<?> view = TerminalTabFxView.this;
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
 
             toolBar = createToolBar();
             toolBar.getPresenter().initialize();

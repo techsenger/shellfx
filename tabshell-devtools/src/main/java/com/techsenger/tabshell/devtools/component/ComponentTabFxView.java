@@ -52,6 +52,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -167,8 +168,8 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         private final ComponentTabFxView<P> view = ComponentTabFxView.this;
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
 
             view.componentToolBar = createComponentToolBar();
             view.componentToolBar.getPresenter().initialize();

@@ -37,6 +37,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -51,8 +52,8 @@ public class DockLayoutTabFxView extends AbstractShellTabFxView<DockLayoutTabPre
         private final DockLayoutTabFxView view = DockLayoutTabFxView.this;
 
         @Override
-        public void compose() {
-            super.compose();
+        public void compose(ComposeParameters params) {
+            super.compose(params);
             var historyManager = view.getShell().getPresenter().getHistoryManager();
             var layout = createLayout(() -> historyManager.getHistory(DockLayoutTabHistory.class).getDockLayout());
             layout.getPresenter().initialize();
