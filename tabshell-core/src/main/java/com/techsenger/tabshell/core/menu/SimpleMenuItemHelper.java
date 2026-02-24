@@ -67,7 +67,7 @@ public class SimpleMenuItemHelper implements MenuItemHelper {
     }
 
     @Override
-    public void doOnItemAction() {
+    public void onItemAction() {
 
     }
 }

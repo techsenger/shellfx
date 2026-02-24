@@ -159,7 +159,7 @@ public class DefaultFindViewTest {
     }
 
     @Test
-    public void doOnTextChange_deletionLastCharater_intersectingRangeRemoved() {
+    public void onTextChange_deletionLastCharater_intersectingRangeRemoved() {
         var textArea = new ExtendedTextArea("ansi b ansi b");
         var component = createComponent(textArea);
         var view = component.getView();
@@ -179,7 +179,7 @@ public class DefaultFindViewTest {
     }
 
     @Test
-    public void doOnTextChange_deletionFirstCharater_intersectingRangeRemoved() {
+    public void onTextChange_deletionFirstCharater_intersectingRangeRemoved() {
         var textArea = new ExtendedTextArea("ansi b ansi b");
         var component = createComponent(textArea);
         var view = component.getView();
@@ -199,7 +199,7 @@ public class DefaultFindViewTest {
     }
 
     @Test
-    public void doOnTextChange_insertInMiddle_intersectingRangeRemoved() {
+    public void onTextChange_insertInMiddle_intersectingRangeRemoved() {
         var textArea = new ExtendedTextArea("ansi ansi");
         var component = createComponent(textArea);
         var view = component.getView();
@@ -219,7 +219,7 @@ public class DefaultFindViewTest {
     }
 
     @Test
-    public void doOnTextChange_insertBefore_rangeUpdated() {
+    public void onTextChange_insertBefore_rangeUpdated() {
         var textArea = new ExtendedTextArea("ansi ansi");
         var component = createComponent(textArea);
         var view = component.getView();
@@ -241,7 +241,7 @@ public class DefaultFindViewTest {
     }
 
     @Test
-    public void doOnTextChange_insertAfter_rangeUpdated() {
+    public void onTextChange_insertAfter_rangeUpdated() {
         var textArea = new ExtendedTextArea("ansi ansi");
         var component = createComponent(textArea);
         var view = component.getView();

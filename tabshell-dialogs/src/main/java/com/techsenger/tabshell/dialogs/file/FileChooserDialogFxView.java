@@ -613,12 +613,12 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         });
         getNode().addEventHandler(DialogResizeEvent.DIALOG_RESIZE_STARTED, e -> {
             if (listButton.selectedProperty().get()) {
-                this.fileListView.doOnResizeStarted();
+                this.fileListView.onResizeStarted();
             }
         });
         getNode().addEventHandler(DialogResizeEvent.DIALOG_RESIZE_FINISHED, e -> {
             if (listButton.selectedProperty().get()) {
-                this.fileListView.doOnResizeFinished();
+                this.fileListView.onResizeFinished();
             }
         });
     }

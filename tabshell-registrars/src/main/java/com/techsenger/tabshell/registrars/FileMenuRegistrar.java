@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.registrars;
 
-import com.techsenger.tabshell.core.CoreComponentNames;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
@@ -82,7 +81,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
                 var helper = view.getMenuItemHelper(item.getName());
-                helper.doOnItemAction();
+                helper.onItemAction();
             });
             return item;
 
@@ -99,7 +98,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
                 var helper = view.getMenuItemHelper(item.getName());
-                helper.doOnItemAction();
+                helper.onItemAction();
 
             });
             return item;
@@ -115,7 +114,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             item.setOnAction((e) -> {
                 var view = shellView.getSelectedTab();
                 var helper = view.getMenuItemHelper(item.getName());
-                helper.doOnItemAction();
+                helper.onItemAction();
             });
             return item;
         };

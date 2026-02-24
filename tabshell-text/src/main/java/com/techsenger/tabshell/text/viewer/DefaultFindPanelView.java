@@ -22,7 +22,6 @@ import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.textarea.ExtendedTextArea;
 import com.techsenger.tabshell.material.textarea.TextAreaStyle;
 import com.techsenger.tabshell.material.textarea.TextAreaStyleNames;
-import com.techsenger.tabshell.shared.find.AbstractFullFindPanelView;
 import com.techsenger.toolkit.core.collection.ListUtils;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import java.util.ArrayList;
@@ -177,7 +176,7 @@ public class DefaultFindPanelView<T extends DefaultFindPanelViewModel<?>, S exte
         });
         //as we will do style changes, we don't neet changes on their styles update
         this.changeObserver = this.textArea.richChanges().observe((c) -> {
-            doOnTextChange(c);
+            onTextChange(c);
         });
     }
 
@@ -352,7 +351,7 @@ public class DefaultFindPanelView<T extends DefaultFindPanelViewModel<?>, S exte
         }
     }
 
-    private void doOnTextChange(RichTextChange<Collection<String>, String, Collection<TextAreaStyle>> c) {
+    private void onTextChange(RichTextChange<Collection<String>, String, Collection<TextAreaStyle>> c) {
         if (!this.textArea.isStyleOnlyChange(c)) {
             var viewModel = this.getViewModel();
             if (viewModel.isHighlightActive()) {

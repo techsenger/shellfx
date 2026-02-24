@@ -478,8 +478,8 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        titleBar.setOnMousePressed((event) -> this.doOnMousePressed(event));
-        titleBar.setOnMouseDragged((event) -> this.doOnMouseDragged(event));
+        titleBar.setOnMousePressed((event) -> this.onMousePressed(event));
+        titleBar.setOnMouseDragged((event) -> this.onMouseDragged(event));
         closeButton.setOnAction(e -> {
             var r = getPresenter().getCloseAction();
             if (r != null) {
@@ -544,7 +544,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         return mainBox;
     }
 
-    private void doOnMousePressed(MouseEvent event) {
+    private void onMousePressed(MouseEvent event) {
         if (isMoving()) {
             offsetX = event.getSceneX() - this.dialogBox.getLayoutX();
             offsetY = event.getSceneY() - this.dialogBox.getLayoutY();
@@ -552,7 +552,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         }
     }
 
-    private void doOnMouseDragged(MouseEvent event) {
+    private void onMouseDragged(MouseEvent event) {
         if (isMoving()) {
             var newX = event.getSceneX() - offsetX;
             var newY = event.getSceneY() - offsetY;

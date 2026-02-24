@@ -62,5 +62,5 @@ public interface MenuItemHelper {
      * So, this method is used when there is a menu item that can be used for many tabs.
      *
      */
-    void doOnItemAction();
+    void onItemAction();
 }

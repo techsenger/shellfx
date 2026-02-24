@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * This listView requires calling {@link ColumnListView#doOnResizeStarted()} and
- * {@link ColumnListView#doOnResizeFinished()} on resizing. See DialogResizeEvent and StageResizeEvent.
+ * This listView requires calling {@link ColumnListView#onResizeStarted()} and
+ * {@link ColumnListView#onResizeFinished()} on resizing. See DialogResizeEvent and StageResizeEvent.
  *
  * <p>Row height is calculated creating one empty cell in one column before creating cells for items.
  *
@@ -354,7 +354,7 @@ public class ColumnListView<T> extends Region {
                 .addListener((ov, oldV, newV) -> refresh(RefreshTrigger.SCROLL_BAR_HEIGHT));
         this.virtualFlow.getHBar().visibleProperty()
                 .addListener((ov, oldV, newV) -> refresh(RefreshTrigger.SCROLL_BAR_VISIBILITY));
-        //firstVisibleCellIndex is set via doOnResizeStarted.
+        //firstVisibleCellIndex is set via onResizeStarted.
         this.virtualFlow.heightProperty()
                 .addListener((ov, oldV, newV) -> savePositionAndRefreshView(RefreshTrigger.VIRTUAL_FLOW_HEIGHT));
         virtualFlow.setCellFactory(vf -> new ColumnListViewColumn<>(this) {
@@ -534,11 +534,11 @@ public class ColumnListView<T> extends Region {
         this.virtualFlow.scrollTo(columnIndex);
     }
 
-    public void doOnResizeStarted() {
+    public void onResizeStarted() {
         this.firstVisibleCellIndex = resolveFirstVisibleCellIndex();
     }
 
-    public void doOnResizeFinished() {
+    public void onResizeFinished() {
         this.firstVisibleCellIndex = 0;
     }
 

@@ -37,8 +37,8 @@ public class HexEditorTabView<T extends HexEditorTabViewModel<?>, S extends HexE
     }
 
     @Override
-    public void doOnSelected() {
-        super.doOnSelected();
+    public void onSelected() {
+        super.onSelected();
         getComponent().getArea().getView().requestFocus();
     }
 

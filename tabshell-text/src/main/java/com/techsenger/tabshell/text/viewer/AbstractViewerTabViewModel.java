@@ -117,13 +117,13 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
         addMenuItemHelpers(//file
             new SimpleMenuItemHelper(FileMenuNames.OPEN, Boolean.TRUE, Boolean.TRUE) {
                 @Override
-                public void doOnItemAction() {
+                public void onItemAction() {
                     openFile(DialogScope.TAB, FileStorages.getAll(true));
                 }
             },
             new SimpleMenuItemHelper(FileMenuNames.SAVE, Boolean.TRUE) {
                 @Override
-                public void doOnItemAction() {
+                public void onItemAction() {
                     writeFile();
                 }
 
@@ -135,7 +135,7 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
             new SimpleMenuItemHelper(FileMenuNames.SAVE_AS, Boolean.TRUE) {
 
                 @Override
-                public void doOnItemAction() {
+                public void onItemAction() {
                     saveFile(DialogScope.TAB, FileStorages.getAll(true));
                 }
 
@@ -479,7 +479,7 @@ public abstract class AbstractViewerTabViewModel<T extends ViewerTabMediator> ex
         return getMediator().getShell().getHistoryManager();
     }
 
-    protected void doOnCloseRequest() {
+    protected void onCloseRequest() {
 
     }
 

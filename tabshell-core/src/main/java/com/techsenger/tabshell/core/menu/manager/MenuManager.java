@@ -115,8 +115,8 @@ public class MenuManager {
         }
         //listener if menu/items are added/removed dinamically to/from menu(!)
         namedMenu.getItems().addListener(menuItemsListener);
-        namedMenu.setOnShowing((e) -> this.doOnMenuShowing(namedMenu, updateHelper));
-        namedMenu.setOnHiding((e) -> this.doOnMenuHiding(namedMenu, updateHelper));
+        namedMenu.setOnShowing((e) -> this.onMenuShowing(namedMenu, updateHelper));
+        namedMenu.setOnHiding((e) -> this.onMenuHiding(namedMenu, updateHelper));
         namedMenu.setOnAction(new MenuActionInterceptor(this.shellView, namedMenu));
         for (var m : namedMenu.getItems()) {
             if (m instanceof NamedMenu) {
@@ -157,7 +157,7 @@ public class MenuManager {
         }
     }
 
-    private void doOnMenuShowing(NamedMenu menu, MenuUpdateHelper updateHelper) {
+    private void onMenuShowing(NamedMenu menu, MenuUpdateHelper updateHelper) {
         var menuAware = this.shellView.getCurrentMenuAware();
         menuAware.onMenuShowing(menu.getName());
         StringBuilder logMessageBuilder = null;
@@ -209,7 +209,7 @@ public class MenuManager {
         MenuLogger.logComponentMenuMessage(menu.getText(), menuAware, logMessageBuilder);
     }
 
-    private void doOnMenuHiding(NamedMenu menu, MenuUpdateHelper updateHelper) {
+    private void onMenuHiding(NamedMenu menu, MenuUpdateHelper updateHelper) {
         var selectedTab = this.shellView.getSelectedTab();
         if (selectedTab != null) {
             selectedTab.getPresenter().getPort().onMenuHiding(menu.getName());

@@ -70,11 +70,11 @@
 //            getFocusTrap().deactivate();
 //            this.pageContainer.getChildren().clear();
 //            if (oldV != null) {
-//                oldV.doOnDeselected();
+//                oldV.onDeselected();
 //            }
 //            if (newV != null) {
 //                this.pageContainer.getChildren().add(newV.getNode());
-//                newV.doOnSelected();
+//                newV.onSelected();
 //                getFocusTrap().activate();
 //            }
 //        });
