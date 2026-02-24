@@ -56,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.patternfx</groupId>
-            <artifactId>patternfx-mvvmx</artifactId>
+            <artifactId>patternfx-mvp</artifactId>
         </dependency>
         <dependency>
             <groupId>org.fxmisc.flowless</groupId>
