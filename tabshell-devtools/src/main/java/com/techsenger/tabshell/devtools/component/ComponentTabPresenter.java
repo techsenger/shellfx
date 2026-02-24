@@ -214,8 +214,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
             String name = clazz.getName();
             int lastDot = name.lastIndexOf('.');
             String withoutPackage = name.substring(lastDot + 1);
-            return withoutPackage;
-            //return withoutPackage.replace('$', '.');
+            return withoutPackage.replace('$', '.');
         } else {
             return clazz.getSimpleName();
         }
