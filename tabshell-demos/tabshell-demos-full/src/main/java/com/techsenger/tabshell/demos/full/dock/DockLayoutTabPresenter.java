@@ -63,6 +63,6 @@ public class DockLayoutTabPresenter extends AbstractShellTabPresenter<ShellTabVi
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_DOCK_LAYOUT_TAB);
+        return new Descriptor(DemoComponents.DOCK_LAYOUT_TAB);
     }
 }

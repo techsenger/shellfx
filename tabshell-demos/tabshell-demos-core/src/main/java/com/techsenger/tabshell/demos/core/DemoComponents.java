@@ -22,11 +22,15 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface DemoComponents {
+public final class DemoComponents {
 
-    ComponentName DEMO_POPUP = new ComponentName("DemoPopup");
+    public static final ComponentName DEMO_POPUP = new ComponentName("Demo.Popup");
 
-    ComponentName DEMO_DIALOG = new ComponentName("DemoDialog");
+    public static final ComponentName DEMO_DIALOG = new ComponentName("Demo.Dialog");
 
-    ComponentName DEMO_TAB = new ComponentName("DemoTab");
+    public static final ComponentName DEMO_TAB = new ComponentName("Demo.Tab");
+
+    private DemoComponents() {
+        // empty
+    }
 }

@@ -22,11 +22,15 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface WebComponents {
+public final class WebComponents {
 
-    ComponentName WEB_BROWSER_TAB = new ComponentName("WebBrowserTab");
+    public static final ComponentName BROWSER_TAB = new ComponentName("Web.BrowserTab");
 
-    ComponentName WEB_TOOL_BAR = new ComponentName("WebToolBar");
+    public static final ComponentName TOOL_BAR = new ComponentName("Web.ToolBar");
 
-    ComponentName WEB_AREA = new ComponentName("WebArea");
+    public static final ComponentName MAIN_AREA = new ComponentName("Web.MainArea");
+
+    private WebComponents() {
+        // empty
+    }
 }

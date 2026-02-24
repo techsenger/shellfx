@@ -16,24 +16,29 @@
 
 package com.techsenger.tabshell.hex;
 
-import com.techsenger.patternfx.core.GroupName;
 import com.techsenger.patternfx.core.Name;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface HexComponentNames {
+public final class HexComponentNames {
 
-    Name HEX_TOOL_BAR = new Name("HexToolBar");
+    public static final Name TOOL_BAR = new Name("Hex.ToolBar");
 
-    Name HEX_AREA = new Name("HexArea");
+    public static final Name MAIN_AREA = new Name("Hex.MainArea");
 
-    Name HEX_EDITOR_TAB = new Name("HexEditorTab");
+    public static final Name EDITOR_TAB = new Name("Hex.EditorTab");
 
-    Name HEX_EDITOR_CARET = new Name("HexEditorCaret");
+    public static final Name EDITOR_CARET = new Name("Hex.EditorCaret");
 
-    Name DATA_INSPECTOR_TAB = new Name("DataInspectorTab");
+    public static final Name DATA_INSPECTOR_TAB = new Name("Hex.DataInspectorTab");
 
-    GroupName TOOLS = new GroupName("Tools");
+    public static final GroupName TOOLS = new GroupName("Tools");
+
+    private HexComponentNames() {
+        // empty
+    }
+
+
 }

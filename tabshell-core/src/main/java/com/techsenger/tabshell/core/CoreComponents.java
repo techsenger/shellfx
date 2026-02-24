@@ -22,8 +22,11 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface CoreComponents {
+public final class CoreComponents {
 
-    ComponentName SHELL = new ComponentName("Shell");
+    public static final ComponentName SHELL = new ComponentName("Core.Shell");
 
+    private CoreComponents() {
+        // empty
+    }
 }

@@ -39,7 +39,7 @@ public class PagedDialogPresenter extends AbstractDialogPresenter<PagedDialogVie
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_PAGED_DIALOG);
+        return new Descriptor(DemoComponents.PAGED_DIALOG);
     }
 
     @Override

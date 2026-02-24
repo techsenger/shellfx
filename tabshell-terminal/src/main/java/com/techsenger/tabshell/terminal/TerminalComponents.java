@@ -22,13 +22,17 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface TerminalComponents {
+public final class TerminalComponents {
 
-    ComponentName TERMINAL_TAB = new ComponentName("TerminalTab");
+    public static final ComponentName TERMINAL_TAB = new ComponentName("Terminal.Tab");
 
-    ComponentName TERMINAL_TOOL_BAR = new ComponentName("TerminalToolBar");
+    public static final ComponentName TOOL_BAR = new ComponentName("Terminal.ToolBar");
 
-    ComponentName TERMINAL_AREA = new ComponentName("TerminalArea");
+    public static final ComponentName MAIN_AREA = new ComponentName("Terminal.MainArea");
 
-    ComponentName FIND_PANEL = new ComponentName("TerminalFindPanel");
+    public static final ComponentName FIND_PANEL = new ComponentName("Terminal.FindPanel");
+
+    private TerminalComponents() {
+        // empty
+    }
 }

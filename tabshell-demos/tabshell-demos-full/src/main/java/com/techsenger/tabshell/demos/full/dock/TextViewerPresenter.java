@@ -34,7 +34,7 @@ public class TextViewerPresenter extends AbstractAreaPresenter<AreaView, AreaCom
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_TEXT_VIEWER);
+        return new Descriptor(DemoComponents.TEXT_VIEWER);
     }
 
 }

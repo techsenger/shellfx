@@ -49,7 +49,7 @@ public class DockableTabPresenter extends AbstractTabPresenter<TabView, TabCompo
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_DOCKABLE_TAB);
+        return new Descriptor(DemoComponents.DOCKABLE_TAB);
     }
 
     @Override

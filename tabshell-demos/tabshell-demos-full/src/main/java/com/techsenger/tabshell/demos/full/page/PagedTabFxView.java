@@ -48,7 +48,7 @@ public class PagedTabFxView extends AbstractShellTabFxView<PagedTabPresenter> im
             getContentBox().getChildren().add(pageHost.getNode());
             VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
 
-            pageHost.getComposer().selectPage(DemoComponents.DEMO_PAGE_1);
+            pageHost.getComposer().selectPage(DemoComponents.PAGE_1);
 
         }
     }

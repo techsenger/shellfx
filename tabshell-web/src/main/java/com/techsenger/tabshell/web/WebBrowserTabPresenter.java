@@ -46,7 +46,7 @@ public class WebBrowserTabPresenter<V extends WebBrowserTabView, C extends WebBr
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(WebComponents.WEB_BROWSER_TAB);
+        return new Descriptor(WebComponents.BROWSER_TAB);
     }
 
     @Override

@@ -71,7 +71,7 @@ public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer>
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(WebComponents.WEB_TOOL_BAR);
+        return new Descriptor(WebComponents.TOOL_BAR);
     }
 
     protected void onBack() {

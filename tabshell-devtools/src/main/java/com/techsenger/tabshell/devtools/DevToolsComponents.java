@@ -22,23 +22,27 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface DevToolsComponents {
+public final class DevToolsComponents {
 
-    ComponentName TAB_DOCK = new ComponentName("DevToolsTabDock");
+    public static final ComponentName TAB_DOCK = new ComponentName("DevTools.TabDock");
 
-    ComponentName TOOL_BAR = new ComponentName("DevToolsToolBar");
+    public static final ComponentName TOOL_BAR = new ComponentName("DevTools.ToolBar");
 
-    ComponentName COMPONENT_TAB = new ComponentName("DevToolsComponentTab");
+    public static final ComponentName COMPONENT_TAB = new ComponentName("DevTools.ComponentTab");
 
-    ComponentName NODE_TAB = new ComponentName("DevToolsNodeTab");
+    public static final ComponentName NODE_TAB = new ComponentName("DevTools.NodeTab");
 
-    ComponentName PROPERTY_DIALOG = new ComponentName("DevToolsPropertyDialog");
+    public static final ComponentName PROPERTY_DIALOG = new ComponentName("DevTools.PropertyDialog");
 
-    ComponentName EVENT_TAB = new ComponentName("DevToolsEventTab");
+    public static final ComponentName EVENT_TAB = new ComponentName("DevTools.EventTab");
 
-    ComponentName EVENT_TOOL_BAR = new ComponentName("DevToolsEventToolBar");
+    public static final ComponentName EVENT_TOOL_BAR = new ComponentName("DevTools.EventToolBar");
 
-    ComponentName STYLESHEET_TAB = new ComponentName("DevToolsStylesheetTab");
+    public static final ComponentName STYLESHEET_TAB = new ComponentName("DevTools.StylesheetTab");
 
-    ComponentName ENVIRONMENT_TAB = new ComponentName("DevToolsEnvironmentTab");
+    public static final ComponentName ENVIRONMENT_TAB = new ComponentName("DevTools.EnvironmentTab");
+
+    private DevToolsComponents() {
+        // empty
+    }
 }

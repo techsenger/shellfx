@@ -22,13 +22,17 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface DialogComponents {
+public final class DialogComponents {
 
-    ComponentName ALERT_DIALOG = new ComponentName("AlertDialog");
+    public static final ComponentName ALERT_DIALOG = new ComponentName("Dialogs.AlertDialog");
 
-    ComponentName YES_NO_DIALOG = new ComponentName("YesNoDialog");
+    public static final ComponentName YES_NO_DIALOG = new ComponentName("Dialogs.YesNoDialog");
 
-    ComponentName FILE_CHOOSER_DIALOG = new ComponentName("FileChooserDialog");
+    public static final ComponentName FILE_CHOOSER_DIALOG = new ComponentName("Dialogs.FileChooserDialog");
 
-    ComponentName NAME_VALUE_DIALOG = new ComponentName("NameValueDialog");
+    public static final ComponentName NAME_VALUE_DIALOG = new ComponentName("Dialogs.NameValueDialog");
+
+    private DialogComponents() {
+        // empty
+    }
 }

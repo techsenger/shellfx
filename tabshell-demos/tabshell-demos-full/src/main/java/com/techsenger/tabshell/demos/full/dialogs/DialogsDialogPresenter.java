@@ -74,7 +74,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_DIALOGS_DIALOG);
+        return new Descriptor(DemoComponents.DIALOGS_DIALOG);
     }
 
     @Override

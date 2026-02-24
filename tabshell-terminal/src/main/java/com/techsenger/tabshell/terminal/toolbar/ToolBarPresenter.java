@@ -119,7 +119,7 @@ public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer>
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(TerminalComponents.TERMINAL_TOOL_BAR);
+        return new Descriptor(TerminalComponents.TOOL_BAR);
     }
 
     @Override

@@ -22,21 +22,25 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface LayoutComponents {
+public final class LayoutComponents {
 
-    ComponentName TAB_HOST = new ComponentName("TabHost");
+    public static final ComponentName TAB_HOST = new ComponentName("Layout.TabHost");
 
-    ComponentName DOCK_LAYOUT = new ComponentName("DockLayout");
+    public static final ComponentName DOCK_LAYOUT = new ComponentName("Layout.DockLayout");
 
-    ComponentName SPLIT_SPACE = new ComponentName("SplitSpace");
+    public static final ComponentName SPLIT_SPACE = new ComponentName("Layout.SplitSpace");
 
-    ComponentName TAB_DOCK = new ComponentName("TabDock");
+    public static final ComponentName TAB_DOCK = new ComponentName("Layout.TabDock");
 
-    ComponentName SIDE_BAR = new ComponentName("SideBar");
+    public static final ComponentName SIDE_BAR = new ComponentName("Layout.SideBar");
 
-    ComponentName TAB_POPUP = new ComponentName("TabPopup");
+    public static final ComponentName TAB_POPUP = new ComponentName("Layout.TabPopup");
 
-    ComponentName PLACEHOLDER = new ComponentName("Placeholder");
+    public static final ComponentName PLACEHOLDER = new ComponentName("Layout.Placeholder");
 
-    ComponentName PAGE_HOST = new ComponentName("PageHost");
+    public static final ComponentName PAGE_HOST = new ComponentName("Layout.PageHost");
+
+    private LayoutComponents() {
+        // empty
+    }
 }

@@ -44,7 +44,7 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_THEME_DIALOG);
+        return new Descriptor(DemoComponents.THEME_DIALOG);
     }
 
     @Override

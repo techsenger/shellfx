@@ -24,31 +24,35 @@ import com.techsenger.patternfx.core.ComponentName;
  *
  * @author Pavel Castornii
  */
-public interface DemoComponents {
+public final class DemoComponents {
 
-    ComponentName DEMO_EDITOR_TAB = new ComponentName("DemoEditorTab");
+    public static final ComponentName EDITOR_TAB = new ComponentName("Demo.EditorTab");
 
-    ComponentName DEMO_HEX_EDITOR_TAB = new ComponentName("DemoHexEditorTab");
+    public static final ComponentName HEX_EDITOR_TAB = new ComponentName("Demo.HexEditorTab");
 
-    ComponentName DEMO_HEX_TOOL_BAR = new ComponentName("DemoHexToolBar");
+    public static final ComponentName HEX_TOOL_BAR = new ComponentName("Demo.HexToolBar");
 
-    ComponentName DEMO_DOCK_LAYOUT_TAB = new ComponentName("DemoDockLayoutTab");
+    public static final ComponentName DOCK_LAYOUT_TAB = new ComponentName("Demo.DockLayoutTab");
 
-    ComponentName DEMO_DOCKABLE_TAB = new ComponentName("DemoDockableTab");
+    public static final ComponentName DOCKABLE_TAB = new ComponentName("Demo.DockableTab");
 
-    ComponentName DEMO_TEXT_VIEWER = new ComponentName("DemoTextViewer");
+    public static final ComponentName TEXT_VIEWER = new ComponentName("Demo.TextViewer");
 
-    ComponentName DEMO_DIALOGS_DIALOG = new ComponentName("DemoDialogsDialog");
+    public static final ComponentName DIALOGS_DIALOG = new ComponentName("Demo.DialogsDialog");
 
-    ComponentName DEMO_THEME_DIALOG = new ComponentName("DemoThemeDialog");
+    public static final ComponentName THEME_DIALOG = new ComponentName("Demo.ThemeDialog");
 
-    ComponentName DEMO_PAGE_0 = new ComponentName("DemoPage0");
+    public static final ComponentName PAGE_0 = new ComponentName("Demo.Page0");
 
-    ComponentName DEMO_PAGE_1 = new ComponentName("DemoPage1");
+    public static final ComponentName PAGE_1 = new ComponentName("Demo.Page1");
 
-    ComponentName DEMO_PAGE_2 = new ComponentName("DemoPage2");
+    public static final ComponentName PAGE_2 = new ComponentName("Demo.Page2");
 
-    ComponentName DEMO_PAGED_TAB = new ComponentName("DemoPagedTab");
+    public static final ComponentName PAGED_TAB = new ComponentName("Demo.PagedTab");
 
-    ComponentName DEMO_PAGED_DIALOG = new ComponentName("DemoPagedDialog");
+    public static final ComponentName PAGED_DIALOG = new ComponentName("Demo.PagedDialog");
+
+    private DemoComponents() {
+        // empty
+    }
 }

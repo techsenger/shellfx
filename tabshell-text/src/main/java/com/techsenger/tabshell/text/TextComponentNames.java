@@ -22,9 +22,13 @@ import com.techsenger.patternfx.core.Name;
  *
  * @author Pavel Castornii
  */
-public interface TextComponentNames {
+public final class TextComponentNames {
 
-    Name FIND_PANEL = new Name("FindPanel");
+    public static final Name FIND_PANEL = new Name("Text.FindPanel");
 
-    Name GO_TO_LINE_DIALOG = new Name("GoToLineDialog");
+    public static final Name GO_TO_LINE_DIALOG = new Name("Text.GoToLineDialog");
+
+    private TextComponentNames() {
+        // empty
+    }
 }

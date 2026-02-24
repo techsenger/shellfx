@@ -129,7 +129,7 @@ public class TerminalAreaPresenter<V extends TerminalAreaView, C extends Termina
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(TerminalComponents.TERMINAL_AREA);
+        return new Descriptor(TerminalComponents.MAIN_AREA);
     }
 
     @Override

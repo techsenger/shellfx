@@ -40,7 +40,7 @@ public class PagedTabPresenter extends AbstractShellTabPresenter<PagedTabView, S
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_PAGED_TAB);
+        return new Descriptor(DemoComponents.PAGED_TAB);
     }
 
     @Override

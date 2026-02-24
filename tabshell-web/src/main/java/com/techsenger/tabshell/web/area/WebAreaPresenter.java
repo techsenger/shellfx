@@ -123,7 +123,7 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(WebComponents.WEB_AREA);
+        return new Descriptor(WebComponents.MAIN_AREA);
     }
 
     @Override

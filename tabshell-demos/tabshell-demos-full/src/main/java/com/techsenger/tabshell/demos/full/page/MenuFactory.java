@@ -100,13 +100,13 @@ final class MenuFactory {
 
         // items for menu
         var rootItem = new TreeItem<Page>(null);
-        var item0 = new TreeItem<Page>(new PageItem("Page 0", DemoComponents.DEMO_PAGE_0,
-                new PageFactoryImpl(DemoComponents.DEMO_PAGE_0, 0)));
-        var item1 = new TreeItem<Page>(new PageItem("Page 1", DemoComponents.DEMO_PAGE_1,
-                new PageFactoryImpl(DemoComponents.DEMO_PAGE_1, 1)));
+        var item0 = new TreeItem<Page>(new PageItem("Page 0", DemoComponents.PAGE_0,
+                new PageFactoryImpl(DemoComponents.PAGE_0, 0)));
+        var item1 = new TreeItem<Page>(new PageItem("Page 1", DemoComponents.PAGE_1,
+                new PageFactoryImpl(DemoComponents.PAGE_1, 1)));
         item1.setExpanded(true);
-        var item2 = new TreeItem<Page>(new PageItem("Page 2", DemoComponents.DEMO_PAGE_2,
-                new PageFactoryImpl(DemoComponents.DEMO_PAGE_2, 2)));
+        var item2 = new TreeItem<Page>(new PageItem("Page 2", DemoComponents.PAGE_2,
+                new PageFactoryImpl(DemoComponents.PAGE_2, 2)));
         rootItem.getChildren().addAll(item0, item1);
         item1.getChildren().add(item2);
         return rootItem;
