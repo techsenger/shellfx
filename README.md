@@ -36,7 +36,7 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
 * [Dependencies](#dependencies)
-* [Code building](#code-building)
+* [Code Building](#code-building)
 * [Running Demos](#running-demos)
     * [Core Demo](#running-core-demo)
     * [Full Demo](#running-full-demo)
