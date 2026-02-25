@@ -68,7 +68,7 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
         registerTerminalItem();
         registerDialogsItem();
         registerDockLayoutItem();
-        registerJfxTabDockItem();
+        registerDevToolsTabDockItem();
         registerWebBrowserItem();
         registerPagedTabItem();
     }
@@ -191,19 +191,19 @@ public class DemoMenuRegistrar extends AbstractControlRegistrar  {
         addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, DemoMenu.DEFAULT, f));
     }
 
-    protected void registerJfxTabDockItem() {
+    protected void registerDevToolsTabDockItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
             var item = new NamedMenuItem(DemoMenu.DEV_TOOLS, "DevTools", 700);
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
                 var currentTab = shell.getSelectedTab();
                 if (currentTab != null && currentTab instanceof UtilityDockContainerFxView tab) {
-                    var jfxView = new DevToolsTabDockFxView<>(currentTab);
+                    var view = new DevToolsTabDockFxView<>(currentTab);
                     var hm = shell.getPresenter().getHistoryManager();
-                    var jfxPresenter = new DevToolsTabDockPresenter<>(jfxView, shell.getPresenter().getSettings(),
+                    var presenter = new DevToolsTabDockPresenter<>(view, shell.getPresenter().getSettings(),
                             () -> hm.getOrCreateHistory(DevToolsTabDockHistory.class, DevToolsTabDockHistory::new));
-                    jfxPresenter.initialize();
-                    tab.getComposer().addUtilityDock(jfxView);
+                    presenter.initialize();
+                    tab.getComposer().addUtilityDock(view);
                 } else {
                     var alertView = new AlertDialogFxView<>(false);
                     var alertPresenter = new AlertDialogPresenter<>(alertView, OverlayScope.SHELL,

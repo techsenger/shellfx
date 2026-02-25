@@ -80,7 +80,7 @@ public final class IconStylesheetFactory {
     }
 
     /**
-     * Creates and returns the stylesheet with icons for the 'jfx' module.
+     * Creates and returns the stylesheet with icons for the 'devtools' module.
      *
      * @return
      */
