@@ -30,6 +30,7 @@ import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.FindFeature;
 import java.util.HashSet;
@@ -39,6 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tooltip;
@@ -51,6 +53,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,7 +203,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         }
 
         protected ToolBarFxView<?> createInspectorToolBar() {
-            var view = new ToolBarFxView<>("Property / ElementClass / ElementInterface");
+            var view = new ToolBarFxView<>("Property / Class / Interface");
             var presenter = new ToolBarPresenter<>(view, getPresenter().new InspectorToolBarAwarePort(),
                     FindFeature.MATCH_CASE);
             return view;
@@ -341,14 +344,23 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
                         setText(item.values().get(0));
                     } else {
                         HBox hbox = new HBox();
+                        hbox.setSpacing(SizeConstants.HALF_INSET);
                         if (item.values() != null) {
                             for (var i = 0; i < item.values().size(); i++) {
                                 var value = item.values().get(i);
-                                var label = new Label(value);
-                                if (item.valueTooltips() != null) {
-                                    label.setTooltip(new Tooltip(item.valueTooltips().get(i)));
+                                Node node;
+                                if (i + 1 < item.values().size()) {
+                                    node = new Text(value + ",");
+                                    if (item.valueTooltips() != null) {
+                                        Tooltip.install(node, new Tooltip(item.valueTooltips().get(i)));
+                                    }
+                                } else {
+                                    node = new Label(value);
+                                    if (item.valueTooltips() != null) {
+                                        ((Label) node).setTooltip(new Tooltip(item.valueTooltips().get(i)));
+                                    }
                                 }
-                                hbox.getChildren().add(label);
+                                hbox.getChildren().add(node);
                             }
                         }
                         setGraphic(hbox);

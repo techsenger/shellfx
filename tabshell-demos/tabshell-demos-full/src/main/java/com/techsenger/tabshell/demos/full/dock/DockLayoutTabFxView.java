@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.demos.full.dock;
 
 import com.techsenger.patternfx.core.HistoryProvider;
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
 import com.techsenger.tabshell.layout.dock.DockLayoutFxView;
@@ -37,7 +38,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -47,7 +47,7 @@ public class DockLayoutTabFxView extends AbstractShellTabFxView<DockLayoutTabPre
         implements UtilityDockContainerFxView {
 
     private final class Composer extends AbstractShellTabFxView.Composer
-            implements UtilityDockContainerFxView.Composer {
+            implements UtilityDockContainerFxView.Composer, TestInterface {
 
         private final DockLayoutTabFxView view = DockLayoutTabFxView.this;
 
