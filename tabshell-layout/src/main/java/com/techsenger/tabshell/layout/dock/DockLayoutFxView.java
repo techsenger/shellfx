@@ -2295,7 +2295,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
             }
             builder.append("\n");
             builder.append("    ".repeat(iterator.getDepth()));
-            builder.append(view.getDescriptor().getFullName());
+            builder.append(view.getDescriptor().getName());
             builder.append(" [");
             if (uuid != null) {
                 builder.append("uuid: ");
