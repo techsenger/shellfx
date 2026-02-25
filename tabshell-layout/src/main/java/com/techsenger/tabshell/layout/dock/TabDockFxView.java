@@ -20,10 +20,10 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabFxView;
+import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
@@ -43,11 +43,11 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
 
     static final double MIN_SIZE = 100; // temp
 
-    private final FontIconView dragIconView = new FontIconView(SharedIcons.DRAG_VERTICAL);
+    private final FontIconView dragIconView = new FontIconView(LayoutIcons.DRAG_VERTICAL);
 
     private final HBox tabHeaderFirstBox = new HBox();
 
-    private final Button minimizeButton = new Button(null, new FontIconView(SharedIcons.REMOVE));
+    private final Button minimizeButton = new Button(null, new FontIconView(LayoutIcons.REMOVE));
 
     private final HBox tabHeaderLastBox = new HBox(minimizeButton);
 

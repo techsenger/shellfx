@@ -22,7 +22,6 @@ module com.techsenger.tabshell.layout {
     requires com.techsenger.patternfx.mvp;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
-    requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabpanepro.core;
     requires javafx.base;
     requires javafx.graphics;
@@ -35,5 +34,6 @@ module com.techsenger.tabshell.layout {
     exports com.techsenger.tabshell.layout;
     exports com.techsenger.tabshell.layout.dock;
     exports com.techsenger.tabshell.layout.pagehost;
+    exports com.techsenger.tabshell.layout.style;
     exports com.techsenger.tabshell.layout.tabhost;
 }

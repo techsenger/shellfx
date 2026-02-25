@@ -35,6 +35,15 @@ public final class IconStylesheetFactory {
     }
 
     /**
+     * Creates and returns the stylesheet with icons for the 'layout' module.
+     *
+     * @return
+     */
+    public static Stylesheet forLayout() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("layout.css"));
+    }
+
+    /**
      * Creates and returns the stylesheet with icons for the 'dialogs' module.
      *
      * @return
@@ -95,6 +104,7 @@ public final class IconStylesheetFactory {
      */
     public static List<Stylesheet> forAll() {
         return List.of(forShared(),
+                forLayout(),
                 forDialogs(),
                 forTerminal(),
                 forText(),

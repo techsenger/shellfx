@@ -154,14 +154,6 @@
     -fx-code-point: 983588; /* file-outline */
 }
 
-.font-icon-view.drag-vertical-icon {
-    -fx-code-point: 983517; /* drag-vertical */
-}
-
-.font-icon-view.restore-window-icon {
-    -fx-code-point: 984498; /* window-restore */
-}
-
 .font-icon-view.refresh-icon {
     -fx-code-point: 984144; /* refresh */
 }
