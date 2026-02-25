@@ -32,7 +32,7 @@ import com.techsenger.tabshell.layout.LayoutComponents;
 public class PageHostPresenter<V extends PageHostView, C extends PageHostComposer>
         extends AbstractAreaPresenter<V, C> implements PageContainerPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements PageHostPort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements PageHostPort {
 
         @Override
         public PagePort getSelectedPage() {
@@ -57,8 +57,8 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     @Override
-    public PageHostPort getPort() {
-        return (PageHostPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

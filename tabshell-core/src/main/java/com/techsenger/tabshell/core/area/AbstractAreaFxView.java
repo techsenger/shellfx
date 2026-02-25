@@ -26,7 +26,7 @@ import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 public abstract class AbstractAreaFxView<P extends AreaPresenter<?, ?>>
         extends AbstractChildFxView<P> implements AreaFxView<P> {
 
-    public class Composer extends AbstractChildFxView.Composer implements AreaFxView.Composer {
+    public class Composer extends AbstractChildFxView<P>.Composer implements AreaFxView.Composer {
 
     }
 

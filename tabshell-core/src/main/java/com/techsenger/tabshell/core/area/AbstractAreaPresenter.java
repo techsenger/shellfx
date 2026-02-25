@@ -25,7 +25,7 @@ import com.techsenger.patternfx.mvp.AbstractChildPresenter;
 public abstract class AbstractAreaPresenter<V extends AreaView, C extends AreaComposer>
         extends AbstractChildPresenter<V, C> implements AreaPresenter<V, C> {
 
-    protected class Port extends AbstractChildPresenter.Port implements AreaPort {
+    protected class Port extends AbstractChildPresenter<V, C>.Port implements AreaPort {
 
         public Port() {
             // empty
@@ -47,8 +47,8 @@ public abstract class AbstractAreaPresenter<V extends AreaView, C extends AreaCo
     }
 
     @Override
-    public AreaPort getPort() {
-        return (AreaPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

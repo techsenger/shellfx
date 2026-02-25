@@ -139,9 +139,9 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
 
     private static final Object BAR_TAB_KEY = new Object();
 
-    public class Composer extends AbstractAreaFxView.Composer {
+    public class Composer extends AbstractAreaFxView<P>.Composer {
 
-        private final SideBarFxView<?> view = SideBarFxView.this;
+        private final SideBarFxView<P> view = SideBarFxView.this;
 
         /**
          * Returns an unmodifiable list of minimized tab docks.
@@ -149,7 +149,9 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
          * @return
          */
         public List<TabDockPort> getTabDocks() {
-            return view.getTabDocks().stream().map(t -> t.getPresenter().getPort()).toList();
+            return view.getTabDocks().stream()
+                    .map(t -> (TabDockPort) t.getPresenter().getPort())
+                    .toList();
         }
 
         public TabPopupPort getPopup() {

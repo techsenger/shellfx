@@ -87,9 +87,9 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
     private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");
 
-    public class Composer extends AbstractParentFxView.Composer implements ShellFxView.Composer {
+    public class Composer extends AbstractParentFxView<P>.Composer implements ShellFxView.Composer {
 
-        private final DefaultShellFxView<?> view = DefaultShellFxView.this;
+        private final DefaultShellFxView<P> view = DefaultShellFxView.this;
 
         @Override
         public List<? extends ShellTabPort> getTabs() {

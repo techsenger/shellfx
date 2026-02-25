@@ -46,10 +46,10 @@ import org.slf4j.LoggerFactory;
 public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAreaFxView<P>
         implements TabContainerFxView<TabFxView<?>>, TabHostView {
 
-    public class Composer extends AbstractAreaFxView.Composer implements TabHostComposer,
+    public class Composer extends AbstractAreaFxView<P>.Composer implements TabHostComposer,
             TabContainerFxView.Composer<TabFxView<?>> {
 
-        private final TabHostFxView<?> view = TabHostFxView.this;
+        private final TabHostFxView<P> view = TabHostFxView.this;
 
         @Override
         public List<? extends TabPort> getTabs() {

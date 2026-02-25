@@ -28,7 +28,7 @@ import javafx.geometry.Side;
  */
 public class SideBarPresenter<V extends SideBarView, C extends SideBarComposer> extends AbstractAreaPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements SideBarPort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements SideBarPort {
 
         @Override
         public List<? extends TabDockPort> getTabDocks() {
@@ -55,8 +55,8 @@ public class SideBarPresenter<V extends SideBarView, C extends SideBarComposer> 
     }
 
     @Override
-    public SideBarPort getPort() {
-        return (SideBarPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

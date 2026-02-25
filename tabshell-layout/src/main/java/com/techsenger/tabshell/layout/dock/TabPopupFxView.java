@@ -50,9 +50,9 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
 
     private static final double RESIZE_MARGIN = 2.0;
 
-    public class Composer extends AbstractAreaFxView.Composer implements TabPopupComposer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements TabPopupComposer {
 
-        private final TabPopupFxView<?> view = TabPopupFxView.this;
+        private final TabPopupFxView<P> view = TabPopupFxView.this;
 
         @Override
         public List<? extends TabPort> getTabs() {

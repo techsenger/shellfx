@@ -47,7 +47,7 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
 
     private static final Logger logger = LoggerFactory.getLogger(WebAreaPresenter.class);
 
-    protected class Port extends AbstractAreaPresenter.Port implements WebAreaPort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements WebAreaPort {
 
         @Override
         public String getLocation() {
@@ -101,8 +101,8 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
     }
 
     @Override
-    public WebAreaPort getPort() {
-        return (WebAreaPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

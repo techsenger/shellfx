@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
 public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends AbstractAreaFxView<P>
         implements SplitSpaceView {
 
-    public class Composer extends AbstractAreaFxView.Composer {
+    public class Composer extends AbstractAreaFxView<P>.Composer {
 
-        private final SplitSpaceFxView<?> view = SplitSpaceFxView.this;
+        private final SplitSpaceFxView<P> view = SplitSpaceFxView.this;
 
         public void addChild(AreaFxView<?> child) {
             Node container = view.layout.createContainer(child);

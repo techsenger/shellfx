@@ -30,9 +30,9 @@ import javafx.geometry.Orientation;
 public class SplitSpacePresenter<V extends SplitSpaceView, C extends AreaComposer>
         extends AbstractAreaPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements SplitSpacePort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements SplitSpacePort {
 
-        private final SplitSpacePresenter<?, ?> presenter = SplitSpacePresenter.this;
+        private final SplitSpacePresenter<V, C> presenter = SplitSpacePresenter.this;
 
         @Override
         public Orientation getOrientation() {

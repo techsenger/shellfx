@@ -34,9 +34,9 @@ import java.util.function.Consumer;
 public class TerminalTabPresenter<V extends TerminalTabView, C extends TerminalTabComposer>
         extends AbstractShellTabPresenter<V, C> {
 
-    protected class Port extends AbstractShellTabPresenter.Port implements TerminalTabPort {
+    protected class Port extends AbstractShellTabPresenter<V, C>.Port implements TerminalTabPort {
 
-        private final TerminalTabPresenter<?, ?> presenter = TerminalTabPresenter.this;
+        private final TerminalTabPresenter<V, C> presenter = TerminalTabPresenter.this;
 
         @Override
         public String getDirectory() {
@@ -81,8 +81,8 @@ public class TerminalTabPresenter<V extends TerminalTabView, C extends TerminalT
     }
 
     @Override
-    public TerminalTabPort getPort() {
-        return (TerminalTabPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

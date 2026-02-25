@@ -39,9 +39,9 @@ import javafx.scene.layout.VBox;
  */
 public class DemoTabFxView<P extends DemoTabPresenter<?, ?>> extends AbstractShellTabFxView<P> implements DemoTabView {
 
-    public class Composer extends AbstractShellTabFxView.Composer implements DemoTabComposer {
+    public class Composer extends AbstractShellTabFxView<P>.Composer implements DemoTabComposer {
 
-        private final DemoTabFxView<?> view = DemoTabFxView.this;
+        private final DemoTabFxView<P> view = DemoTabFxView.this;
 
         @Override
         public DialogPort addDemoDialog(OverlayScope scope, boolean resizable) {

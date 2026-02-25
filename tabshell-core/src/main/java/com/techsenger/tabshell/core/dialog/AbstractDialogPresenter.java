@@ -29,9 +29,9 @@ import java.util.function.Consumer;
 public abstract class AbstractDialogPresenter<V extends DialogView, C extends DialogComposer>
         extends AbstractPopupPresenter<V, C> implements DialogPresenter<V, C> {
 
-    protected class Port extends AbstractPopupPresenter.Port implements DialogPort {
+    protected class Port extends AbstractPopupPresenter<V, C>.Port implements DialogPort {
 
-        private final AbstractDialogPresenter<?, ?> presenter = AbstractDialogPresenter.this;
+        private final AbstractDialogPresenter<V, C> presenter = AbstractDialogPresenter.this;
 
         public Port() {
             // empty
@@ -126,8 +126,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
     }
 
     @Override
-    public DialogPort getPort() {
-        return (DialogPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

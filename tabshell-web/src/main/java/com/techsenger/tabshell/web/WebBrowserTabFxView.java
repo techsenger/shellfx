@@ -40,9 +40,9 @@ import javafx.geometry.Orientation;
 public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
         extends AbstractShellTabFxView<P> implements WebBrowserTabView {
 
-    protected class Composer extends AbstractShellTabFxView.Composer implements WebBrowserTabComposer {
+    protected class Composer extends AbstractShellTabFxView<P>.Composer implements WebBrowserTabComposer {
 
-        private final WebBrowserTabFxView<?> view = WebBrowserTabFxView.this;
+        private final WebBrowserTabFxView<P> view = WebBrowserTabFxView.this;
 
         @Override
         public void compose(ComposeParameters params) {

@@ -18,7 +18,7 @@ package com.techsenger.tabshell.demos.full.dock;
 
 /**
  * This is an empty interface just to check how multiple interfaces are shown in dev tools.
- * 
+ *
  * @author Pavel Castornii
  */
 public interface TestInterface {

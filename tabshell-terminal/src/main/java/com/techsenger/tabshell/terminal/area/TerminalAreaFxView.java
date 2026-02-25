@@ -42,9 +42,9 @@ import javafx.scene.layout.VBox;
 public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends AbstractAreaFxView<P>
         implements TerminalAreaView {
 
-    public class Composer extends AbstractAreaFxView.Composer implements TerminalAreaComposer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements TerminalAreaComposer {
 
-        private final TerminalAreaFxView<?> view = TerminalAreaFxView.this;
+        private final TerminalAreaFxView<P> view = TerminalAreaFxView.this;
 
         @Override
         public void addWebBrowser(String url) {

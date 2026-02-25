@@ -40,9 +40,9 @@ import java.util.function.Consumer;
 public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         extends AbstractParentPresenter<V, C> implements ShellPresenter<V, C> {
 
-    protected class Port extends AbstractParentPresenter.Port implements ShellPort {
+    protected class Port extends AbstractParentPresenter<V, C>.Port implements ShellPort {
 
-        private final DefaultShellPresenter<?, ?> presenter = DefaultShellPresenter.this;
+        private final DefaultShellPresenter<V, C> presenter = DefaultShellPresenter.this;
 
         @Override
         public ShellTabPort getSelectedTab() {
@@ -234,8 +234,8 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
-    public ShellPort getPort() {
-        return (ShellPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

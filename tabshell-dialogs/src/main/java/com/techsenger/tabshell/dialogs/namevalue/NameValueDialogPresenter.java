@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 public class NameValueDialogPresenter<V extends NameValueDialogView, C extends DialogComposer>
         extends AbstractDialogPresenter<V, C> {
 
-    protected class Port extends AbstractDialogPresenter.Port implements NameValueDialogPort {
+    protected class Port extends AbstractDialogPresenter<V, C>.Port implements NameValueDialogPort {
 
         private final NameValueDialogPresenter<V, C> presenter = NameValueDialogPresenter.this;
 
@@ -112,8 +112,8 @@ public class NameValueDialogPresenter<V extends NameValueDialogView, C extends D
     }
 
     @Override
-    public NameValueDialogPort getPort() {
-        return (NameValueDialogPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

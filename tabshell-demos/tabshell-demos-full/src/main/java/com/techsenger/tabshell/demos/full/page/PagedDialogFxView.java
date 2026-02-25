@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.page;
 
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.demos.full.DemoComponents;
 import com.techsenger.tabshell.layout.pagehost.PageHostFxView;
@@ -24,7 +25,6 @@ import com.techsenger.tabshell.material.button.ResultButton;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -32,7 +32,7 @@ import com.techsenger.patternfx.mvp.ComposeParameters;
  */
 public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter> implements PagedDialogView {
 
-    public class Composer extends AbstractDialogFxView.Composer {
+    public class Composer extends AbstractDialogFxView<PagedDialogPresenter>.Composer {
 
         @Override
         public void compose(ComposeParameters params) {

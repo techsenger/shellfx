@@ -26,7 +26,7 @@ import com.techsenger.tabshell.material.icon.Icon;
 public abstract class AbstractPagePresenter<V extends PageView, C extends PageComposer>
         extends AbstractAreaPresenter<V, C> implements PagePresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements PagePort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements PagePort {
 
         public Port() {
             // empty
@@ -59,8 +59,8 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
     }
 
     @Override
-    public PagePort getPort() {
-        return (PagePort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

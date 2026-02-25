@@ -36,9 +36,9 @@ import java.util.List;
 public abstract class AbstractShellTabFxView<P extends ShellTabPresenter<?, ?>>
         extends AbstractTabFxView<P> implements ShellTabFxView<P> {
 
-    public class Composer extends AbstractTabFxView.Composer implements ShellTabFxView.Composer {
+    public class Composer extends AbstractTabFxView<P>.Composer implements ShellTabFxView.Composer {
 
-        private final AbstractShellTabFxView<?> view = AbstractShellTabFxView.this;
+        private final AbstractShellTabFxView<P> view = AbstractShellTabFxView.this;
 
         @Override
         public ShellPort getShell() {

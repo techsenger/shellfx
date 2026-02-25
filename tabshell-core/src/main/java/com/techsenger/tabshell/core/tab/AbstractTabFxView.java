@@ -34,9 +34,9 @@ import javafx.scene.layout.VBox;
 public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
         extends AbstractChildFxView<P> implements TabFxView<P> {
 
-    public class Composer extends AbstractChildFxView.Composer implements TabFxView.Composer {
+    public class Composer extends AbstractChildFxView<P>.Composer implements TabFxView.Composer {
 
-        private final AbstractTabFxView<?> view = AbstractTabFxView.this;
+        private final AbstractTabFxView<P> view = AbstractTabFxView.this;
 
         @Override
         public void remove() {

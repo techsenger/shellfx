@@ -134,7 +134,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         }
     }
 
-    public class Composer extends AbstractDialogFxView.Composer implements FileChooserDialogComposer {
+    public class Composer extends AbstractDialogFxView<P>.Composer implements FileChooserDialogComposer {
 
         @Override
         public DialogPort addAlertDialog(OverlayScope scope, AlertDialogType type, String message) {

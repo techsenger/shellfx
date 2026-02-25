@@ -732,7 +732,7 @@ public class DockLayoutFxView<P extends DockLayoutPresenter<?, ?>> extends Abstr
         return singlingInfo;
     }
 
-    public class Composer extends AbstractAreaFxView.Composer implements DockLayoutComposer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements DockLayoutComposer {
 
         private final DockLayoutFxView<P> view = DockLayoutFxView.this;
 

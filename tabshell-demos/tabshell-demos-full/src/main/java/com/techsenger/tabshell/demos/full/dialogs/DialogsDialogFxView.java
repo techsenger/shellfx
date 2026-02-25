@@ -50,7 +50,8 @@ import javafx.scene.layout.VBox;
  */
 public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPresenter> implements DialogsDialogView {
 
-    public class Composer extends AbstractDialogFxView.Composer implements DialogsDialogComposer {
+    public class Composer extends AbstractDialogFxView<DialogsDialogPresenter>.Composer
+            implements DialogsDialogComposer {
 
         @Override
         public DialogPort addAlertDialog(AlertDialogType type, String message) {

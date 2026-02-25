@@ -64,7 +64,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         NEW_DIRECTORY, RENAME_FILE
     }
 
-    protected class Port extends AbstractDialogPresenter.Port implements FileChooserDialogPort {
+    protected class Port extends AbstractDialogPresenter<V, C>.Port implements FileChooserDialogPort {
 
         private final FileChooserDialogPresenter<V, C> presenter = FileChooserDialogPresenter.this;
 
@@ -123,8 +123,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     }
 
     @Override
-    public FileChooserDialogPort getPort() {
-        return (FileChooserDialogPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     public FileChooserType getType() {

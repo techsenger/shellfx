@@ -75,8 +75,8 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
     }
 
     @Override
-    public DevToolsTabDockPort getPort() {
-        return (DevToolsTabDockPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

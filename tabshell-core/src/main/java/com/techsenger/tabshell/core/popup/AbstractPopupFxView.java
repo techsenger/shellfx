@@ -33,9 +33,9 @@ import javafx.scene.layout.VBox;
 public abstract class AbstractPopupFxView<P extends PopupPresenter<?, ?>>
         extends AbstractAreaFxView<P> implements PopupFxView<P> {
 
-    public class Composer extends AbstractAreaFxView.Composer implements PopupFxView.Composer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements PopupFxView.Composer {
 
-        private final AbstractPopupFxView<?> view = AbstractPopupFxView.this;
+        private final AbstractPopupFxView<P> view = AbstractPopupFxView.this;
 
         @Override
         public void remove() {

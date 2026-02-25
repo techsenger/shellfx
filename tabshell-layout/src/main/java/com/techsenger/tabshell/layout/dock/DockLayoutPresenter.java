@@ -28,7 +28,7 @@ import com.techsenger.tabshell.layout.LayoutComponents;
 public class DockLayoutPresenter<V extends DockLayoutView, C extends DockLayoutComposer>
         extends AbstractAreaPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements DockLayoutPort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements DockLayoutPort {
 
     }
 
@@ -43,8 +43,8 @@ public class DockLayoutPresenter<V extends DockLayoutView, C extends DockLayoutC
     }
 
     @Override
-    public DockLayoutPort getPort() {
-        return (DockLayoutPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

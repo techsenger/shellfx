@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demos.full.page;
 
+import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
 import com.techsenger.tabshell.demos.full.DemoComponents;
@@ -26,7 +27,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -34,7 +34,7 @@ import com.techsenger.patternfx.mvp.ComposeParameters;
  */
 public class PagedTabFxView extends AbstractShellTabFxView<PagedTabPresenter> implements PagedTabView {
 
-    public class Composer extends AbstractShellTabFxView.Composer {
+    public class Composer extends AbstractShellTabFxView<PagedTabPresenter>.Composer {
 
         @Override
         public void compose(ComposeParameters params) {

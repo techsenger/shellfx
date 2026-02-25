@@ -32,7 +32,7 @@ import javafx.scene.layout.Priority;
 public abstract class AbstractPageFxView<P extends PagePresenter<?, ?>>
         extends AbstractAreaFxView<P> implements PageFxView<P> {
 
-    public class Composer extends AbstractAreaFxView.Composer implements PageFxView.Composer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements PageFxView.Composer {
 
     }
 

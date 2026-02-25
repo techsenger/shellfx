@@ -38,7 +38,7 @@ import com.techsenger.tabshell.terminal.TerminalComponents;
 public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
         extends AbstractFindPanelPresenter<V, C> {
 
-    protected class Port extends AbstractFindPanelPresenter.Port implements FindPanelPort {
+    protected class Port extends AbstractFindPanelPresenter<V, C>.Port implements FindPanelPort {
 
         @Override
         public void setFindText(String text) {
@@ -60,8 +60,8 @@ public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
     }
 
     @Override
-    public FindPanelPort getPort() {
-        return (FindPanelPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

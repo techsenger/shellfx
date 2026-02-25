@@ -46,7 +46,7 @@ import javafx.scene.layout.HBox;
 public class DockLayoutTabFxView extends AbstractShellTabFxView<DockLayoutTabPresenter>
         implements UtilityDockContainerFxView {
 
-    private final class Composer extends AbstractShellTabFxView.Composer
+    private final class Composer extends AbstractShellTabFxView<DockLayoutTabPresenter>.Composer
             implements UtilityDockContainerFxView.Composer, TestInterface {
 
         private final DockLayoutTabFxView view = DockLayoutTabFxView.this;

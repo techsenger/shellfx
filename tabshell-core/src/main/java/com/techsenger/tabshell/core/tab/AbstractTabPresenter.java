@@ -35,9 +35,9 @@ import java.util.function.Consumer;
 public abstract class AbstractTabPresenter<V extends TabView, C extends TabComposer>
         extends AbstractChildPresenter<V, C> implements TabPresenter<V, C> {
 
-    protected class Port extends AbstractChildPresenter.Port implements TabPort {
+    protected class Port extends AbstractChildPresenter<V, C>.Port implements TabPort {
 
-        private final AbstractTabPresenter<?, ?> presenter = AbstractTabPresenter.this;
+        private final AbstractTabPresenter<V, C> presenter = AbstractTabPresenter.this;
 
         public Port() {
             // empty
@@ -160,8 +160,8 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
     }
 
     @Override
-    public TabPort getPort() {
-        return (TabPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

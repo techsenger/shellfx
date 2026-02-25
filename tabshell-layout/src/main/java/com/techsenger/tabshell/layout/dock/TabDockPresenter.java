@@ -28,9 +28,9 @@ import com.techsenger.tabshell.layout.tabhost.TabHostPresenter;
 public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
         extends TabHostPresenter<V, C> {
 
-    protected class Port extends TabHostPresenter.Port implements TabDockPort {
+    protected class Port extends TabHostPresenter<V, C>.Port implements TabDockPort {
 
-        private final TabDockPresenter<?, ?> presenter = TabDockPresenter.this;
+        private final TabDockPresenter<V, C> presenter = TabDockPresenter.this;
 
         @Override
         public ComponentPosition getMinimizedPosition() {
@@ -51,8 +51,8 @@ public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
     }
 
     @Override
-    public TabDockPort getPort() {
-        return (TabDockPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     protected ComponentPosition getMinimizedPosition() {

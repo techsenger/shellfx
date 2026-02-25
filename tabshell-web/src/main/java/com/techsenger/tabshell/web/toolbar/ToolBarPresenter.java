@@ -28,7 +28,7 @@ import com.techsenger.tabshell.web.WebComponents;
 public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer>
         extends AbstractAreaPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements ToolBarPort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements ToolBarPort {
 
         private final ToolBarPresenter<V, C> presenter = ToolBarPresenter.this;
 
@@ -65,8 +65,8 @@ public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer>
     }
 
     @Override
-    public ToolBarPort getPort() {
-        return (ToolBarPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

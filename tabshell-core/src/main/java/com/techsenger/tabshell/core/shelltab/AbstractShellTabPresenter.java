@@ -29,9 +29,9 @@ import java.util.List;
 public abstract class AbstractShellTabPresenter<V extends ShellTabView, C extends ShellTabComposer>
         extends AbstractTabPresenter<V, C> implements ShellTabPresenter<V, C> {
 
-    protected class Port extends AbstractTabPresenter.Port implements ShellTabPort {
+    protected class Port extends AbstractTabPresenter<V, C>.Port implements ShellTabPort {
 
-        private final AbstractShellTabPresenter<?, ?> presenter = AbstractShellTabPresenter.this;
+        private final AbstractShellTabPresenter<V, C> presenter = AbstractShellTabPresenter.this;
 
         public Port() {
             // empty
@@ -58,7 +58,7 @@ public abstract class AbstractShellTabPresenter<V extends ShellTabView, C extend
     }
 
     @Override
-    public ShellTabPort getPort() {
+    public Port getPort() {
         return (Port) super.getPort();
     }
 

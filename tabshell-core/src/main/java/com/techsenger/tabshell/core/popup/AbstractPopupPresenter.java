@@ -29,9 +29,9 @@ import java.util.function.Consumer;
 public abstract class AbstractPopupPresenter<V extends PopupView, C extends PopupComposer>
         extends AbstractAreaPresenter<V, C> implements PopupPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements PopupPort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements PopupPort {
 
-        private final AbstractPopupPresenter<?, ?> presenter = AbstractPopupPresenter.this;
+        private final AbstractPopupPresenter<V, C> presenter = AbstractPopupPresenter.this;
 
         public Port() {
             // empty
@@ -89,8 +89,8 @@ public abstract class AbstractPopupPresenter<V extends PopupView, C extends Popu
     }
 
     @Override
-    public PopupPort getPort() {
-        return (PopupPort) super.getPort();
+    public Port getPort() {
+        return (Port) super.getPort();
     }
 
     @Override

@@ -42,7 +42,7 @@ import javafx.util.Callback;
 public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractAreaFxView<P>
         implements PageContainerFxView<P>, PageHostView {
 
-    public class Composer extends AbstractAreaFxView.Composer implements PageContainerFxView.Composer,
+    public class Composer extends AbstractAreaFxView<P>.Composer implements PageContainerFxView.Composer,
             PageHostComposer {
 
         private final PageHostFxView<P> view = PageHostFxView.this;

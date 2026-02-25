@@ -31,7 +31,7 @@ import java.util.Arrays;
 public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer>
         extends AbstractAreaPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter.Port implements ToolBarPort {
+    protected class Port extends AbstractAreaPresenter<V, C>.Port implements ToolBarPort {
 
         private ToolBarPresenter<V, C> presenter = ToolBarPresenter.this;
 

@@ -65,9 +65,9 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
     private static final PseudoClass INACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("inactive");
 
-    public class Composer extends AbstractPopupFxView.Composer implements DialogFxView.Composer {
+    public class Composer extends AbstractPopupFxView<P>.Composer implements DialogFxView.Composer {
 
-        private final AbstractDialogFxView<?> view = AbstractDialogFxView.this;
+        private final AbstractDialogFxView<P> view = AbstractDialogFxView.this;
 
         @Override
         public void remove() {
