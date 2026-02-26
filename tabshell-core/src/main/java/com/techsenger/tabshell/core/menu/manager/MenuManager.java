@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.DefaultShellFxView;
-import com.techsenger.tabshell.core.menu.MenuAware;
+import com.techsenger.tabshell.core.MenuAwarePort;
 import com.techsenger.tabshell.material.menu.MenuName;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuItem;
@@ -68,7 +68,7 @@ public class MenuManager {
         });
     }
 
-    public void updateMenuBar(MenuAware menuAware) {
+    public void updateMenuBar(MenuAwarePort menuAware) {
         StringBuilder logMessageBuilder = null;
         if (logger.isDebugEnabled()) {
             logMessageBuilder = new StringBuilder();
@@ -158,7 +158,7 @@ public class MenuManager {
     }
 
     private void onMenuShowing(NamedMenu menu, MenuUpdateHelper updateHelper) {
-        var menuAware = this.shellView.getCurrentMenuAware();
+        MenuAwarePort menuAware = (MenuAwarePort) this.shellView.getMenuAware().getPresenter().getPort();
         menuAware.onMenuShowing(menu.getName());
         StringBuilder logMessageBuilder = null;
         if (logger.isEnabledForLevel(MenuLogger.CONFIGURED_MENU_LOG_LEVEL)) {
@@ -210,10 +210,8 @@ public class MenuManager {
     }
 
     private void onMenuHiding(NamedMenu menu, MenuUpdateHelper updateHelper) {
-        var selectedTab = this.shellView.getSelectedTab();
-        if (selectedTab != null) {
-            selectedTab.getPresenter().getPort().onMenuHiding(menu.getName());
-        }
+        var menuAware = (MenuAwarePort) this.shellView.getMenuAware().getPresenter().getPort();
+        menuAware.onMenuHiding(menu.getName());
         for (var item : menu.getItems()) {
             if (item instanceof NamedMenu) {
                 unconfigureMenu(menu, updateHelper);
@@ -224,7 +222,7 @@ public class MenuManager {
     }
 
     private void configureMenu(NamedMenu namedMenu, MenuUpdateHelper updateHelper,
-            MenuAware menuAware, StringBuilder logMessageBuilder) {
+            MenuAwarePort menuAware, StringBuilder logMessageBuilder) {
         //supported
         NamedMenuUpdate update = null;
         var helper = menuAware.getMenuHelper(namedMenu.getName());
@@ -256,7 +254,7 @@ public class MenuManager {
         namedMenu.setDisable(false);
     }
 
-    private void configureMenuItem(NamedMenu namedMenu, MenuUpdateHelper updateHelper, MenuAware menuAware,
+    private void configureMenuItem(NamedMenu namedMenu, MenuUpdateHelper updateHelper, MenuAwarePort menuAware,
             NamedMenuItem namedItem, StringBuilder logMessageBuilder) {
         //supported
         NamedMenuItemUpdate update = null;

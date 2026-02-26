@@ -17,14 +17,14 @@
 package com.techsenger.tabshell.terminal;
 
 import com.techsenger.tabshell.core.area.AreaPort;
-import com.techsenger.tabshell.core.shelltab.ShellTabComposer;
+import com.techsenger.tabshell.core.tab.TabComposer;
 import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TerminalTabComposer extends ShellTabComposer {
+public interface TerminalTabComposer extends TabComposer {
 
     ToolBarPort getToolBar();
 

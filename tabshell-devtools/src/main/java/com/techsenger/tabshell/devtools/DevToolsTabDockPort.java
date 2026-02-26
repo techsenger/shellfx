@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.devtools;
 
 import com.techsenger.connectorfx.HighlightOptions;
-import com.techsenger.tabshell.layout.dock.TabDockPort;
+import com.techsenger.tabshell.layout.dockhost.TabDockPort;
 import java.util.function.Consumer;
 
 /**

@@ -17,14 +17,14 @@
 package com.techsenger.tabshell.terminal;
 
 import com.techsenger.tabshell.core.area.AreaPort;
-import com.techsenger.tabshell.core.shelltab.ShellTabPort;
+import com.techsenger.tabshell.core.tab.TabPort;
 import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TerminalTabPort extends ShellTabPort {
+public interface TerminalTabPort extends TabPort {
 
     String getDirectory();
 

@@ -18,6 +18,7 @@ package com.techsenger.tabshell.devtools.node;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
+import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
@@ -49,7 +50,7 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
         public void addBrowser(String url) {
             var browser = createBrowser(url);
             browser.getPresenter().initialize();
-            shell.getComposer().addTab(browser);
+            tabContainer.getComposer().addTab(browser);
         }
 
         protected WebBrowserTabFxView<?> createBrowser(String url) {
@@ -81,9 +82,12 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
 
     private final ShellFxView<?> shell;
 
-    public PropertyDialogFxView(boolean resizable, ShellFxView<?> shell) {
+    private final TabContainerFxView<?> tabContainer;
+
+    public PropertyDialogFxView(boolean resizable, ShellFxView<?> shell, TabContainerFxView<?> tabContainer) {
         super(resizable);
         this.shell = shell;
+        this.tabContainer = tabContainer;
     }
 
     @Override

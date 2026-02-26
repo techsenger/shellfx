@@ -26,7 +26,6 @@ import com.techsenger.tabshell.core.menu.MenuHelpers;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.settings.Settings;
-import com.techsenger.tabshell.core.shelltab.ShellTabPort;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
@@ -43,21 +42,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     protected class Port extends AbstractParentPresenter<V, C>.Port implements ShellPort {
 
         private final DefaultShellPresenter<V, C> presenter = DefaultShellPresenter.this;
-
-        @Override
-        public ShellTabPort getSelectedTab() {
-            return getComposer().getSelectedTab();
-        }
-
-        @Override
-        public void selectTab(int tabIndex) {
-            getView().selectTab(tabIndex);
-        }
-
-        @Override
-        public int getSelectedTabIndex() {
-            return getView().getSelectedTabIndex();
-        }
 
         @Override
         public HistoryManager getHistoryManager() {
@@ -92,11 +76,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         @Override
         public String getTitle() {
             return getView().getTitle();
-        }
-
-        @Override
-        public List<? extends ShellTabPort> getTabs() {
-            return getComposer().getTabs();
         }
 
         @Override
@@ -135,33 +114,23 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         }
 
         @Override
-        public void closeOtherTabs(ShellTabPort tab) {
-            presenter.onCloseOtherTabs(tab);
+        public MenuHelper getMenuHelper(MenuName menuName) {
+            return presenter.menuHelpers.getMenuHelpersByName().get(menuName);
         }
 
         @Override
-        public void closeTabs(List<? extends ShellTabPort> tabs) {
-            presenter.onCloseTabs(tabs);
+        public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
+            return presenter.menuHelpers.getMenuItemHelpersByName().get(menuItemName);
         }
 
         @Override
-        public void closeAllTabs() {
-            presenter.onCloseAllTabs();
+        public void onMenuShowing(MenuName menuName) {
+            // empty
         }
 
         @Override
-        public void closeRightTabs(ShellTabPort tab) {
-            presenter.onCloseRightTabs(tab);
-        }
-
-        @Override
-        public void closeLeftTabs(ShellTabPort tab) {
-            presenter.onCloseLeftTabs(tab);
-        }
-
-        @Override
-        public void closeTab(ShellTabPort tab) {
-            presenter.onCloseTab(tab);
+        public void onMenuHiding(MenuName menuName) {
+            // empty
         }
     }
 
@@ -208,11 +177,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
-    public void onSelectedTabChanged(int index) {
-        // empty
-    }
-
-    @Override
     public void close() {
         var iterator = getComposer().breadthFirstIterator();
         while (iterator.hasNext()) {
@@ -239,26 +203,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
-    public MenuHelper getMenuHelper(MenuName menuName) {
-        return this.menuHelpers.getMenuHelpersByName().get(menuName);
-    }
-
-    @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-        return this.menuHelpers.getMenuItemHelpersByName().get(menuItemName);
-    }
-
-    @Override
-    public void onMenuShowing(MenuName menuName) {
-        // empty
-    }
-
-    @Override
-    public void onMenuHiding(MenuName menuName) {
-        // empty
-    }
-
-    @Override
     public Runnable getOnClose() {
         return this.onClose;
     }
@@ -276,14 +220,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     @Override
     protected Port createPort() {
         return new DefaultShellPresenter.Port();
-    }
-
-    @Override
-    protected void postInitialize() {
-        super.postInitialize();
-        var appearance = getSettings().getAppearance();
-        getView().setRegularFont(appearance.getRegularFont());
-        appearance.observeRegularFont((oldV, newV) -> getView().setRegularFont(newV));
     }
 
     @Override

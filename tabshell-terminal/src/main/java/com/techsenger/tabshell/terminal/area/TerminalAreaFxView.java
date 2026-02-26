@@ -20,6 +20,7 @@ import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter;
 import com.techsenger.jeditermfx.ui.TerminalPanel;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
+import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.shared.find.FindPanelHistory;
 import com.techsenger.tabshell.terminal.TerminalTabFxView;
 import com.techsenger.tabshell.terminal.TerminalTabPresenter;
@@ -50,14 +51,14 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
         public void addWebBrowser(String url) {
             var browser = createWebBrowser(url);
             browser.getPresenter().initialize();
-            shell.getComposer().addTab(browser);
+            tabContainer.getComposer().addTab(browser);
         }
 
         @Override
         public void addTerminal(String directory) {
             var terminal = createTerminal(directory);
             terminal.getPresenter().initialize();
-            shell.getComposer().addTab(terminal);
+            tabContainer.getComposer().addTab(terminal);
         }
 
         @Override
@@ -94,7 +95,7 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
         }
 
         protected TerminalTabFxView<?> createTerminal(String directory) {
-            var view = new TerminalTabFxView<>(shell);
+            var view = new TerminalTabFxView<>(shell, tabContainer);
             var presenter = new TerminalTabPresenter<>(view, directory, shell.getPresenter().getHistoryManager());
             return view;
         }
@@ -111,12 +112,15 @@ public class TerminalAreaFxView<P extends TerminalAreaPresenter<?, ?>> extends A
 
     private final ShellFxView<?> shell;
 
+    private final TabContainerFxView<?> tabContainer;
+
     private FindPanelFxView<?> findPanel;
 
     private final VBox node = new VBox();
 
-    public TerminalAreaFxView(ShellFxView<?> shell) {
+    public TerminalAreaFxView(ShellFxView<?> shell, TabContainerFxView<?> tabContainer) {
         this.shell = shell;
+        this.tabContainer = tabContainer;
     }
 
     @Override

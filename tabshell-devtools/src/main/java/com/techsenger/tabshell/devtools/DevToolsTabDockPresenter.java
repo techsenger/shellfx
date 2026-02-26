@@ -24,7 +24,7 @@ import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
-import com.techsenger.tabshell.layout.dock.TabDockPresenter;
+import com.techsenger.tabshell.layout.dockhost.TabDockPresenter;
 import com.techsenger.tabshell.layout.tabhost.TabHostComposer;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.color.ColorUtils;

@@ -25,6 +25,7 @@ import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.core.tab.TabContainerFxViewUtils;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.core.tab.TabPort;
+import com.techsenger.tabshell.layout.LayoutView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.Collections;
 import java.util.List;
@@ -33,8 +34,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +47,10 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAreaFxView<P>
-        implements TabContainerFxView<TabFxView<?>>, TabHostView {
+        implements TabContainerFxView<P>, TabHostView, LayoutView {
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements TabHostComposer,
-            TabContainerFxView.Composer<TabFxView<?>> {
+            TabContainerFxView.Composer {
 
         private final TabHostFxView<P> view = TabHostFxView.this;
 
@@ -111,6 +114,8 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     private static final Logger logger = LoggerFactory.getLogger(TabHostFxView.class);
 
+    private final boolean workspace;
+
     private final TabPanePro root = new TabPanePro();
 
     private List<? extends TabFxView<?>> detachedTabs = Collections.emptyList();
@@ -126,8 +131,9 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     private boolean tabsDetached;
 
-    public TabHostFxView() {
+    public TabHostFxView(boolean workspace) {
         super();
+        this.workspace = workspace;
     }
 
     @Override
@@ -187,6 +193,18 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     }
 
     @Override
+    public boolean isWorkspace() {
+        return this.workspace;
+    }
+
+    @Override
+    public void updateRegularFont(Font font) {
+        if (this.workspace) {
+            root.setTabMaxWidth(font.getSize() * 15);
+        }
+    }
+
+    @Override
     protected Composer createComposer() {
         return new TabHostFxView.Composer();
     }
@@ -207,8 +225,29 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     protected void build() {
         super.build();
         TabContainerFxViewUtils.initTabPane(root, getPresenter());
+        this.root.getStylesheets().add(TabHostFxView.class.getResource("tab-host.css").toExternalForm());
         this.root.getStyleClass().add(Styles.DENSE);
         VBox.setVgrow(this.root, Priority.ALWAYS);
+        if (this.workspace) {
+            buildWorkspace();
+        }
+    }
+
+    protected void buildWorkspace() {
+        root.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+        root.getStyleClass().addAll("workspace-tab-pane", Styles.DENSE);
+        TabContainerFxViewUtils.initTabPane(root, getPresenter());
+        var tabHeaderArea = getTabHeaderArea();
+        tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
+        tabHeaderArea.setTabGap(-10.0);
+        // right corner is on top
+        tabHeaderArea.setTabViewOrderResolver((tabHeader, index, tabCount, selected) -> {
+            if (selected) {
+                return  tabCount * -1.0;
+            } else {
+                return (tabCount - 1 - index) * -1.0;
+            }
+        });
     }
 
     @Override
@@ -236,6 +275,18 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         TabPaneProSkin sourceSkin = (TabPaneProSkin) tabPane.getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
         return tabHeaderArea;
+    }
+
+    @Override
+    protected void unbuild() {
+        super.unbuild();
+        if (this.workspace) {
+            unbuildWorkspace();
+        }
+    }
+
+    protected void unbuildWorkspace() {
+
     }
 
     private void resolveTabHeaderVisibility() {

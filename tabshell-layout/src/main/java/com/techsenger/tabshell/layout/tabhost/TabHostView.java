@@ -18,13 +18,13 @@ package com.techsenger.tabshell.layout.tabhost;
 
 import com.techsenger.tabshell.core.area.AreaView;
 import com.techsenger.tabshell.core.tab.TabContainerView;
-import com.techsenger.tabshell.core.tab.TabView;
+import javafx.scene.text.Font;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabHostView extends AreaView, TabContainerView<TabView> {
+public interface TabHostView extends AreaView, TabContainerView {
 
     boolean isTabHeaderAutoHide();
 
@@ -33,4 +33,6 @@ public interface TabHostView extends AreaView, TabContainerView<TabView> {
     boolean isTabHeaderVisible();
 
     void setTabHeaderVisible(boolean value);
+
+    void updateRegularFont(Font font);
 }

@@ -18,13 +18,12 @@ package com.techsenger.tabshell.layout.tabhost;
 
 import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.core.tab.TabContainerComposer;
-import com.techsenger.tabshell.core.tab.TabPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabHostComposer extends AreaComposer, TabContainerComposer<TabPort> {
+public interface TabHostComposer extends AreaComposer, TabContainerComposer {
 
     /**
      * Checks if tabs are detached.

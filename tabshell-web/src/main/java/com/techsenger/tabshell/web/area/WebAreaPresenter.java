@@ -19,7 +19,7 @@ package com.techsenger.tabshell.web.area;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.core.shelltab.ShellTabPort;
+import com.techsenger.tabshell.core.tab.TabPort;
 import com.techsenger.tabshell.material.icon.ImageIcon;
 import com.techsenger.tabshell.web.WebComponents;
 import com.techsenger.tabshell.web.model.UrlUtils;
@@ -80,19 +80,19 @@ public class WebAreaPresenter<V extends WebAreaView, C extends AreaComposer> ext
 
         @Override
         public void onLoad(String urlStr) {
-
+            load(urlStr);
         }
     }
 
     private String pageTitle;
 
-    private final Supplier<ShellTabPort> browser;
+    private final Supplier<TabPort> browser;
 
     private final Supplier<ToolBarPort> toolBar;
 
     private String url;
 
-    public WebAreaPresenter(V view, Supplier<ShellTabPort> browser, Supplier<ToolBarPort> toolBar, String url) {
+    public WebAreaPresenter(V view, Supplier<TabPort> browser, Supplier<ToolBarPort> toolBar, String url) {
         super(view);
         this.browser = browser;
         this.toolBar = toolBar;

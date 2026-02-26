@@ -18,14 +18,15 @@ package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.ChildPort;
 import com.techsenger.tabshell.core.CloseablePort;
-import com.techsenger.tabshell.core.menu.MenuAware;
+import com.techsenger.tabshell.core.ShellPort;
+import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabPort extends ChildPort, CloseablePort, MenuAware {
+public interface TabPort extends ChildPort, CloseablePort, DialogContainerPort {
 
     boolean isWaiting();
 
@@ -48,4 +49,6 @@ public interface TabPort extends ChildPort, CloseablePort, MenuAware {
     boolean isClosable();
 
     void setClosable(boolean value);
+
+    ShellPort getShell();
 }

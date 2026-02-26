@@ -18,18 +18,15 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.MenuHelpers;
 import com.techsenger.tabshell.core.settings.Settings;
-import com.techsenger.tabshell.core.shelltab.ShellTabPort;
-import com.techsenger.tabshell.core.tab.TabContainerPresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface ShellPresenter<V extends ShellView, C extends ShellComposer> extends ParentPresenter<V, C>,
-        CloseablePresenter<V, C>, TabContainerPresenter<ShellTabPort, C>, MenuAware {
+        CloseablePresenter<V, C> {
 
     @Override
     ShellPort getPort();

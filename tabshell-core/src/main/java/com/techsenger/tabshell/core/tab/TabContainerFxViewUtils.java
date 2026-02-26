@@ -33,14 +33,14 @@ public final class TabContainerFxViewUtils {
 
     private static final Object TAB_KEY = new Object();
 
-    public static <T extends TabPort> void initTabPane(TabPane tabPane, TabContainerPresenter<T, ?> presenter) {
+    public static void initTabPane(TabPane tabPane, TabContainerPresenter<?, ?> presenter) {
         tabPane.getTabs().addListener((ListChangeListener<? super Tab>) (change)  -> {
             while (change.next()) {
                 if (change.wasAdded()) {
                     for (var t : change.getAddedSubList()) {
                         ComponentTab tab = (ComponentTab) t;
                         tab.setOnCloseRequest((e) -> {
-                            presenter.onCloseTab((T) tab.getView().getPresenter().getPort());
+                            presenter.onCloseTab(tab.getView().getPresenter().getPort());
                             e.consume();
                         });
                         //tabs can be added only by one
@@ -57,8 +57,8 @@ public final class TabContainerFxViewUtils {
         });
     }
 
-    private static <T extends TabPort> ContextMenu createTabContextMenu(ObservableList<ComponentTab> tabs,
-            ComponentTab tab, TabContainerPresenter<T, ?> presenter) {
+    private static ContextMenu createTabContextMenu(ObservableList<ComponentTab> tabs,
+            ComponentTab tab, TabContainerPresenter<?, ?> presenter) {
         ContextMenu contextMenu = new ContextMenu();
         // we use a weak reference as a workaround for JDK-8283449
         contextMenu.getProperties().put(TAB_KEY, new WeakReference<ComponentTab>(tab));
@@ -67,7 +67,7 @@ public final class TabContainerFxViewUtils {
         close.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.onCloseTab((T) t.getView().getPresenter().getPort());
+                presenter.onCloseTab(t.getView().getPresenter().getPort());
             }
         });
         MenuItem closeAll = new MenuItem("Close All");
@@ -78,21 +78,21 @@ public final class TabContainerFxViewUtils {
         closeOther.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.onCloseOtherTabs((T) t.getView().getPresenter().getPort());
+                presenter.onCloseOtherTabs(t.getView().getPresenter().getPort());
             }
         });
         MenuItem closeRight = new MenuItem("Close to the Right");
         closeRight.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.onCloseRightTabs((T) t.getView().getPresenter().getPort());
+                presenter.onCloseRightTabs(t.getView().getPresenter().getPort());
             }
         });
         MenuItem closeLeft = new MenuItem("Close to the Left");
         closeLeft.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.onCloseLeftTabs((T) t.getView().getPresenter().getPort());
+                presenter.onCloseLeftTabs(t.getView().getPresenter().getPort());
             }
         });
 

@@ -19,10 +19,10 @@ package com.techsenger.tabshell.web;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
-import com.techsenger.tabshell.layout.dock.DockLayoutFxView;
-import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
-import com.techsenger.tabshell.layout.dock.DockLayoutPresenter;
+import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
+import com.techsenger.tabshell.layout.dockhost.DockHostHistory;
+import com.techsenger.tabshell.layout.dockhost.DockHostPresenter;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.web.area.WebAreaFxView;
 import com.techsenger.tabshell.web.area.WebAreaPort;
@@ -38,9 +38,9 @@ import javafx.geometry.Orientation;
  * @author Pavel Castornii
  */
 public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
-        extends AbstractShellTabFxView<P> implements WebBrowserTabView {
+        extends AbstractTabFxView<P> implements WebBrowserTabView {
 
-    protected class Composer extends AbstractShellTabFxView<P>.Composer implements WebBrowserTabComposer {
+    protected class Composer extends AbstractTabFxView<P>.Composer implements WebBrowserTabComposer {
 
         private final WebBrowserTabFxView<P> view = WebBrowserTabFxView.this;
 
@@ -82,9 +82,9 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
             return view.area.getPresenter().getPort();
         }
 
-        protected DockLayoutFxView<?> createLayout(HistoryProvider<DockLayoutHistory> provider) {
-            var v = new DockLayoutFxView<>();
-            var p = new DockLayoutPresenter<>(v, provider);
+        protected DockHostFxView<?> createLayout(HistoryProvider<DockHostHistory> provider) {
+            var v = new DockHostFxView<>();
+            var p = new DockHostPresenter<>(v, provider);
             return v;
         }
 
@@ -103,7 +103,7 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
         }
     }
 
-    private DockLayoutFxView<?> layout;
+    private DockHostFxView<?> layout;
 
     private ToolBarFxView<?> toolBar;
 
@@ -132,7 +132,7 @@ public class WebBrowserTabFxView<P extends WebBrowserTabPresenter<?, ?>>
         return toolBar;
     }
 
-    protected DockLayoutFxView<?> getLayout() {
+    protected DockHostFxView<?> getLayout() {
         return layout;
     }
 

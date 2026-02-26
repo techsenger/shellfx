@@ -26,9 +26,11 @@ import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.Display
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
 import com.techsenger.patternfx.mvp.ComposeParameters;
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.popup.OverlayScope;
-import com.techsenger.tabshell.core.shelltab.ShellTabFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.devtools.ElementUtils;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
@@ -277,6 +279,8 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
     public class Composer extends AbstractTabFxView<P>.Composer implements NodeTabComposer {
 
+        private final NodeTabFxView<P> view = NodeTabFxView.this;
+
         @Override
         public void compose(ComposeParameters params) {
             super.compose(params);
@@ -306,7 +310,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         public void addPropertyDialog(Element element, PropertyItem item, String declaringClassName) {
             var dialog = createPropertyDialog(element, item, declaringClassName);
             dialog.getPresenter().initialize();
-            shellTab.getComposer().addDialog(dialog);
+            dialogContainer.getComposer().addDialog(dialog);
         }
 
         protected ToolBarFxView<?> createNodeToolBar() {
@@ -325,13 +329,15 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
         protected PropertyDialogFxView<?> createPropertyDialog(Element element, PropertyItem item,
                 String declaringClassName) {
-            var view = new PropertyDialogFxView<>(true, shellTab.getShell());
+            var view = new PropertyDialogFxView<>(true, this.view.getShell(), tabContainer);
             var presenter = new PropertyDialogPresenter<>(view, OverlayScope.TAB, element, item, declaringClassName);
             return view;
         }
     }
 
-    private final ShellTabFxView<?> shellTab;
+    private final TabContainerFxView<?> tabContainer;
+
+    private final DialogContainerFxView dialogContainer;
 
     private ToolBarFxView<?> nodeToolBar;
 
@@ -351,9 +357,11 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
     private final SplitPane splitPane = new SplitPane(nodeBox, propertyBox);
 
-    public NodeTabFxView(ShellTabFxView<?> shellTab) {
-        super();
-        this.shellTab = shellTab;
+    public NodeTabFxView(ShellFxView<?> shell, TabContainerFxView<?> tabContainer,
+            DialogContainerFxView dialogContainer) {
+        super(shell);
+        this.dialogContainer = dialogContainer;
+        this.tabContainer = tabContainer;
     }
 
     @Override
@@ -546,10 +554,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         return splitPane;
     }
 
-    protected ShellTabFxView<?> getShellTab() {
-        return shellTab;
-    }
-
     protected ToolBarFxView<?> getNodeToolBar() {
         return nodeToolBar;
     }
@@ -559,7 +563,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     }
 
     private void updateNodeRoot() {
-        var stage = shellTab.getShell().getStage();
+        var stage = getShell().getStage();
         var root = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
         var rootItem = createNodeItem(root);
         nodeTreeView.setRoot(rootItem);

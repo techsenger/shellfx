@@ -20,12 +20,14 @@ import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AreaPort;
-import com.techsenger.tabshell.core.shelltab.AbstractShellTabFxView;
-import com.techsenger.tabshell.layout.dock.DockLayoutFxView;
-import com.techsenger.tabshell.layout.dock.DockLayoutHistory;
-import com.techsenger.tabshell.layout.dock.DockLayoutPresenter;
+import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.core.tab.TabContainerFxView;
+import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
+import com.techsenger.tabshell.layout.dockhost.DockHostHistory;
+import com.techsenger.tabshell.layout.dockhost.DockHostPresenter;
 import com.techsenger.tabshell.terminal.area.TerminalAreaFxView;
 import com.techsenger.tabshell.terminal.area.TerminalAreaPresenter;
+import com.techsenger.tabshell.terminal.style.TerminalIcons;
 import com.techsenger.tabshell.terminal.toolbar.ToolBarFxView;
 import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
 import com.techsenger.tabshell.terminal.toolbar.ToolBarPresenter;
@@ -35,10 +37,10 @@ import javafx.geometry.Orientation;
  *
  * @author Pavel Castornii
  */
-public class TerminalTabFxView<P extends TerminalTabPresenter<?, ?>> extends AbstractShellTabFxView<P>
+public class TerminalTabFxView<P extends TerminalTabPresenter<?, ?>> extends AbstractTabFxView<P>
         implements TerminalTabView {
 
-    public class Composer extends AbstractShellTabFxView.Composer implements TerminalTabComposer {
+    public class Composer extends AbstractTabFxView.Composer implements TerminalTabComposer {
 
         private final TerminalTabFxView<?> view = TerminalTabFxView.this;
 
@@ -82,28 +84,31 @@ public class TerminalTabFxView<P extends TerminalTabPresenter<?, ?>> extends Abs
             return view;
         }
 
-        protected DockLayoutFxView<?> createLayout(HistoryProvider<DockLayoutHistory> provider) {
-            var v = new DockLayoutFxView<>();
-            var p = new DockLayoutPresenter<>(v, provider);
+        protected DockHostFxView<?> createLayout(HistoryProvider<DockHostHistory> provider) {
+            var v = new DockHostFxView<>();
+            var p = new DockHostPresenter<>(v, provider);
             return v;
         }
 
         protected TerminalAreaFxView<?> createArea() {
-            var view = new TerminalAreaFxView<>(this.view.getShell());
+            var view = new TerminalAreaFxView<>(this.view.getShell(), tabContainer);
             var presenter = new TerminalAreaPresenter<>(view, () -> getPresenter().getPort(),
                     () -> toolBar.getPresenter().getPort());
             return view;
         }
     }
 
+    private final TabContainerFxView<?> tabContainer;
+
     private ToolBarFxView<?> toolBar;
 
-    private DockLayoutFxView<?> layout;
+    private DockHostFxView<?> layout;
 
     private TerminalAreaFxView<?> area;
 
-    public TerminalTabFxView(ShellFxView<?> shell) {
+    public TerminalTabFxView(ShellFxView<?> shell, TabContainerFxView<?> tabContainer) {
         super(shell);
+        this.tabContainer = tabContainer;
     }
 
     @Override
@@ -114,6 +119,13 @@ public class TerminalTabFxView<P extends TerminalTabPresenter<?, ?>> extends Abs
     @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        setIcon(TerminalIcons.TERMINAL);
+        setTitle("Terminal");
     }
 
     @Override

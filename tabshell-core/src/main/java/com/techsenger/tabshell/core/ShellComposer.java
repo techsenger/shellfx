@@ -18,13 +18,11 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentComposer;
 import com.techsenger.tabshell.core.dialog.DialogContainerComposer;
-import com.techsenger.tabshell.core.shelltab.ShellTabPort;
-import com.techsenger.tabshell.core.tab.TabContainerComposer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellComposer extends ParentComposer, TabContainerComposer<ShellTabPort>, DialogContainerComposer {
+public interface ShellComposer extends ParentComposer, DialogContainerComposer {
 
 }

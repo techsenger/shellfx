@@ -145,7 +145,7 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         HBox.setHgrow(contentBox, Priority.ALWAYS);
         this.contentBox.getStyleClass().add("content-box");
 
-        var css = PageHostFxView.class.getResource("pagehost.css").toExternalForm();
+        var css = PageHostFxView.class.getResource("page-host.css").toExternalForm();
         this.splitPane.getStylesheets().add(css);
 
     }

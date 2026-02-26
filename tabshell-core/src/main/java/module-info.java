@@ -40,7 +40,6 @@ module com.techsenger.tabshell.core {
     exports com.techsenger.tabshell.core.registry;
     exports com.techsenger.tabshell.core.settings;
     exports com.techsenger.tabshell.core.settings.xml;
-    exports com.techsenger.tabshell.core.shelltab;
     exports com.techsenger.tabshell.core.tab;
 
     opens com.techsenger.tabshell.core.settings.xml to jakarta.xml.bind;

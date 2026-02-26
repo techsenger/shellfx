@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.area;
 
 import com.techsenger.patternfx.mvp.AbstractChildFxView;
+import com.techsenger.tabshell.core.FxViewUtils;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 
 /**
@@ -55,6 +56,7 @@ public abstract class AbstractAreaFxView<P extends AreaPresenter<?, ?>>
     protected void initialize() {
         this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
                 () -> getNode().sceneProperty());
+        FxViewUtils.setComponent(getNode(), this);
         super.initialize();
     }
 

@@ -16,19 +16,23 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.patternfx.mvp.ParentFxView;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerFxView<V extends TabFxView<?>> {
+public interface TabContainerFxView<P extends TabContainerPresenter<?, ?>> extends ParentFxView<P> {
 
-     interface Composer<T extends GenericTabFxView> {
+     interface Composer extends ParentFxView.Composer {
 
-        void addTab(T tab);
+        void addTab(TabFxView<?> tab);
 
-        void removeTab(T tab);
+        void removeTab(TabFxView<?> tab);
     }
 
+    @Override
+    Composer getComposer();
 
-    V getSelectedTab();
+    TabFxView<?> getSelectedTab();
 }

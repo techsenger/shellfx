@@ -20,7 +20,9 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.LocalConnector;
 import com.techsenger.patternfx.mvp.ComposeParameters;
-import com.techsenger.tabshell.core.shelltab.ShellTabFxView;
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
+import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabPresenter;
 import com.techsenger.tabshell.devtools.component.JfxComponentService;
@@ -34,7 +36,7 @@ import com.techsenger.tabshell.devtools.node.NodeTabPresenter;
 import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabFxView;
 import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabPresenter;
-import com.techsenger.tabshell.layout.dock.TabDockFxView;
+import com.techsenger.tabshell.layout.dockhost.TabDockFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
@@ -79,32 +81,32 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
         }
 
         protected ComponentTabFxView<?> createComponentTab(NodeTabPort nodeTab) {
-            var view = new ComponentTabFxView<>();
-            var presenter = new ComponentTabPresenter<>(view, new JfxComponentService(shellTab.getShell()), nodeTab);
+            var view = new ComponentTabFxView<>(shell);
+            var presenter = new ComponentTabPresenter<>(view, new JfxComponentService(shell), nodeTab);
             return view;
         }
 
         protected NodeTabFxView<?> createNodeTab() {
-            var view = new NodeTabFxView<>(shellTab);
+            var view = new NodeTabFxView<>(shell, tabContainer, dialogContainer);
             var presenter = new NodeTabPresenter<>(view, connector, getPresenter().getPort());
             return view;
         }
 
         protected EventTabFxView<?> createEventTab(NodeTabPort nodeTab) {
-            var view = new EventTabFxView<>();
+            var view = new EventTabFxView<>(shell);
             var presenter = new EventTabPresenter<>(view, connector, nodeTab);
             return view;
         }
 
         protected StylesheetTabFxView<?> createStylesheetTab(NodeTabPort nodeTab) {
-            var view = new StylesheetTabFxView<>();
-            var windowUid = shellTab.getShell().getStage().hashCode();
+            var view = new StylesheetTabFxView<>(shell);
+            var windowUid = shell.getStage().hashCode();
             var presenter = new StylesheetTabPresenter<>(view, connector, getPresenter().getPort(), nodeTab);
             return view;
         }
 
         protected EnvironmentTabFxView<?> createEnvironmentTab() {
-            var view = new EnvironmentTabFxView<>(shellTab.getComposer());
+            var view = new EnvironmentTabFxView<>(shell, dialogContainer.getComposer());
             var presenter = new EnvironmentTabPresenter<>(view, connector);
             return view;
         }
@@ -116,14 +118,21 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
     private final Button settingsButton = new Button(null, new FontIconView(SharedIcons.SETTINGS));
 
-    private final ShellTabFxView<?> shellTab;
+    private final ShellFxView<?> shell;
+
+    private final TabContainerFxView<?> tabContainer;
+
+    private final DialogContainerFxView dialogContainer;
 
     private final Connector connector;
 
-    public DevToolsTabDockFxView(ShellTabFxView<?> shellTab) {
+    public DevToolsTabDockFxView(ShellFxView<?> shell, TabContainerFxView<?> tabContainer,
+            DialogContainerFxView dialogContainer) {
         super();
-        this.shellTab = shellTab;
-        this.connector = new LocalConnector(shellTab.getShell().getStage(), null);
+        this.shell = shell;
+        this.tabContainer = tabContainer;
+        this.dialogContainer = dialogContainer;
+        this.connector = new LocalConnector(shell.getStage(), null);
     }
 
     @Override
@@ -143,7 +152,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
     @Override
     public int getWindowUid() {
-        return shellTab.getShell().getStage().hashCode();
+        return shell.getStage().hashCode();
     }
 
     @Override

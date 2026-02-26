@@ -23,6 +23,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
@@ -100,6 +101,8 @@ public class WebAreaFxView<P extends WebAreaPresenter<?, ?>> extends AbstractAre
         VBox.setVgrow(box, Priority.ALWAYS);
         this.webView.getEngine()
                 .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0");
+        webView.setPageFill(Color.TRANSPARENT);
+        webView.getEngine().load(null); // to update page fill settings
     }
 
     @Override

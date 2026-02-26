@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.core.shelltab.ShellTabHistory;
+import com.techsenger.tabshell.core.tab.TabHistory;
 import com.techsenger.tabshell.shared.find.FindPanelHistory;
 import com.techsenger.tabshell.terminal.toolbar.ToolBarHistory;
 
@@ -24,7 +24,7 @@ import com.techsenger.tabshell.terminal.toolbar.ToolBarHistory;
  *
  * @author Pavel Castornii
  */
-public class TerminalTabHistory extends ShellTabHistory {
+public class TerminalTabHistory extends TabHistory {
 
     private final ToolBarHistory toolBar = new ToolBarHistory();
 

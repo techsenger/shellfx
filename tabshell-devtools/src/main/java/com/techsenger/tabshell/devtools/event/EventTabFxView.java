@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.devtools.event;
 
+import com.techsenger.patternfx.mvp.ComposeParameters;
+import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.application.Platform;
@@ -23,7 +25,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 
 /**
  *
@@ -62,6 +63,10 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
     private final VirtualizedScrollPane<InlineCssTextArea> textScrollPane = new VirtualizedScrollPane(textArea);
 
     private EventToolBarFxView<?> toolBar;
+
+    public EventTabFxView(ShellFxView<?> shell) {
+        super(shell);
+    }
 
     @Override
     public void requestFocus() {

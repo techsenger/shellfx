@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.devtools.stylesheet;
 
 import com.techsenger.patternfx.mvp.ComposeParameters;
+import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
@@ -84,8 +85,8 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
 
     private ToolBarFxView<?> toolBar;
 
-    public StylesheetTabFxView() {
-        super();
+    public StylesheetTabFxView(ShellFxView<?> shell) {
+        super(shell);
     }
 
     @Override

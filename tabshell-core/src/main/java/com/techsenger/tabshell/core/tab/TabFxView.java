@@ -17,15 +17,17 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.ChildFxView;
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 
 /**
  * A view for components that has a root with JavaFX Tab class.
  *
  * @author Pavel Castornii
  */
-public interface TabFxView<P extends TabPresenter<?, ?>> extends ChildFxView<P>, GenericTabFxView, TabView {
+public interface TabFxView<P extends TabPresenter<?, ?>> extends ChildFxView<P>, TabView, DialogContainerFxView {
 
-    interface Composer extends ChildFxView.Composer, TabComposer {
+    interface Composer extends ChildFxView.Composer, TabComposer, DialogContainerFxView.Composer {
 
         void remove();
     }
@@ -35,4 +37,6 @@ public interface TabFxView<P extends TabPresenter<?, ?>> extends ChildFxView<P>,
 
     @Override
     Composer getComposer();
+
+    ShellFxView<?> getShell();
 }

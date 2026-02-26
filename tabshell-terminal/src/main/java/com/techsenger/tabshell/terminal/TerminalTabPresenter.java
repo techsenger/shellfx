@@ -22,8 +22,7 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.shelltab.AbstractShellTabPresenter;
-import com.techsenger.tabshell.terminal.style.TerminalIcons;
+import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.terminal.toolbar.ToolBarPort;
 import java.util.function.Consumer;
 
@@ -32,9 +31,9 @@ import java.util.function.Consumer;
  * @author Pavel Castornii
  */
 public class TerminalTabPresenter<V extends TerminalTabView, C extends TerminalTabComposer>
-        extends AbstractShellTabPresenter<V, C> {
+        extends AbstractTabPresenter<V, C> {
 
-    protected class Port extends AbstractShellTabPresenter<V, C>.Port implements TerminalTabPort {
+    protected class Port extends AbstractTabPresenter<V, C>.Port implements TerminalTabPort {
 
         private final TerminalTabPresenter<V, C> presenter = TerminalTabPresenter.this;
 
@@ -88,14 +87,6 @@ public class TerminalTabPresenter<V extends TerminalTabView, C extends TerminalT
     @Override
     protected Port createPort() {
         return new TerminalTabPresenter.Port();
-    }
-
-    @Override
-    protected void postInitialize() {
-        super.postInitialize();
-        var view = getView();
-        view.setIcon(TerminalIcons.TERMINAL);
-        view.setTitle("Terminal");
     }
 
     @Override

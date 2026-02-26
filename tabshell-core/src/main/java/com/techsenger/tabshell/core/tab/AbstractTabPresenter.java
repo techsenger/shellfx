@@ -20,12 +20,13 @@ import com.techsenger.patternfx.mvp.AbstractChildPresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.CloseRequestResult;
-import com.techsenger.tabshell.core.menu.MenuHelper;
+import com.techsenger.tabshell.core.ShellPort;
+import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.menu.MenuHelpers;
-import com.techsenger.tabshell.core.menu.MenuItemHelper;
+import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.material.icon.Icon;
-import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -109,26 +110,6 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
         }
 
         @Override
-        public MenuHelper getMenuHelper(MenuName menuName) {
-            return presenter.getMenuHelpers().getMenuHelpersByName().get(menuName);
-        }
-
-        @Override
-        public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-            return presenter.getMenuHelpers().getMenuItemHelpersByName().get(menuItemName);
-        }
-
-        @Override
-        public void onMenuShowing(MenuName menuName) {
-            presenter.onMenuShowing(menuName);
-        }
-
-        @Override
-        public void onMenuHiding(MenuName menuName) {
-            presenter.onMenuHiding(menuName);
-        }
-
-        @Override
         public boolean isClosable() {
             return getView().isClosable();
         }
@@ -136,6 +117,21 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
         @Override
         public void setClosable(boolean value) {
             getView().setClosable(value);
+        }
+
+        @Override
+        public List<? extends DialogPort> getDialogs() {
+            return getComposer().getDialogs();
+        }
+
+        @Override
+        public List<? extends PopupPort> getPopups() {
+            return getComposer().getPopups();
+        }
+
+        @Override
+        public ShellPort getShell() {
+            return presenter.getComposer().getShell();
         }
     }
 

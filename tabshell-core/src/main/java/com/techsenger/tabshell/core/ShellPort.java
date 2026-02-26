@@ -20,15 +20,13 @@ import com.techsenger.patternfx.mvp.ParentPort;
 import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.Settings;
-import com.techsenger.tabshell.core.shelltab.ShellTabPort;
-import com.techsenger.tabshell.core.tab.TabContainerPort;
 import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellPort extends ParentPort, TabContainerPort<ShellTabPort>, DialogContainerPort, CloseablePort {
+public interface ShellPort extends ParentPort, DialogContainerPort, CloseablePort, MenuAwarePort {
 
     /**
      * Returns the history manager.

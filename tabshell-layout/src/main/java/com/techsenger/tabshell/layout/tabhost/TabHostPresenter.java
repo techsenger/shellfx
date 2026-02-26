@@ -18,9 +18,7 @@ package com.techsenger.tabshell.layout.tabhost;
 
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.core.tab.TabContainerComposer;
 import com.techsenger.tabshell.core.tab.TabContainerPresenter;
-import com.techsenger.tabshell.core.tab.TabPort;
 import com.techsenger.tabshell.layout.LayoutComponents;
 
 /**
@@ -28,7 +26,7 @@ import com.techsenger.tabshell.layout.LayoutComponents;
  * @author Pavel Castornii
  */
 public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> extends AbstractAreaPresenter<V, C>
-        implements TabContainerPresenter<TabPort, TabContainerComposer<TabPort>> {
+        implements TabContainerPresenter<V, C> {
 
     public TabHostPresenter(V view) {
         super(view);

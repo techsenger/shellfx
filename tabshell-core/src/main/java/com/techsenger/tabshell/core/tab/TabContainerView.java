@@ -16,11 +16,13 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.patternfx.mvp.ParentView;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerView<T extends TabView> {
+public interface TabContainerView extends ParentView {
 
     /**
      * Makes tab with specified index selected.

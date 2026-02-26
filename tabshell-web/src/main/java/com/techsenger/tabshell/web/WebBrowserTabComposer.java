@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.tabshell.core.shelltab.ShellTabComposer;
+import com.techsenger.tabshell.core.tab.TabComposer;
 import com.techsenger.tabshell.web.area.WebAreaPort;
 import com.techsenger.tabshell.web.toolbar.ToolBarPort;
 
@@ -24,7 +24,7 @@ import com.techsenger.tabshell.web.toolbar.ToolBarPort;
  *
  * @author Pavel Castornii
  */
-public interface WebBrowserTabComposer extends ShellTabComposer {
+public interface WebBrowserTabComposer extends TabComposer {
 
     ToolBarPort getToolBar();
 

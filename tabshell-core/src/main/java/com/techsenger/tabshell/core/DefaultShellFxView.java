@@ -16,27 +16,22 @@
 
 package com.techsenger.tabshell.core;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.patternfx.mvp.AbstractParentFxView;
+import com.techsenger.patternfx.mvp.ChildFxView;
+import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.stagepro.core.StandardStageController;
-import com.techsenger.tabpanepro.core.TabPanePro;
-import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
+import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.menu.MenuAware;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.popup.PopupFxView;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.shelltab.ShellTabFxView;
-import com.techsenger.tabshell.core.shelltab.ShellTabPort;
 import com.techsenger.tabshell.core.style.CssAnchor;
-import com.techsenger.tabshell.core.tab.ComponentTab;
-import com.techsenger.tabshell.core.tab.TabContainerFxViewUtils;
 import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
@@ -48,13 +43,17 @@ import com.techsenger.tabshell.material.theme.JavaFxTheme;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.HostServices;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,8 +69,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,37 +91,6 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         private final DefaultShellFxView<P> view = DefaultShellFxView.this;
 
         @Override
-        public List<? extends ShellTabPort> getTabs() {
-            return view.getTabPane().getTabs().stream()
-                    .map(t -> (ShellTabFxView<?>) ((ComponentTab) t).getView())
-                    .map(v -> v.getPresenter().getPort())
-                    .toList();
-        }
-
-        @Override
-        public void addTab(ShellTabFxView<?> tab) {
-            view.tabPane.getTabs().add(tab.getNode());
-            view.getModifiableChildren().add(tab);
-        }
-
-        @Override
-        public void removeTab(ShellTabFxView<?> tab) {
-            view.tabPane.getTabs().remove(tab.getNode());
-            view.getModifiableChildren().remove(tab);
-            tab.getPresenter().deinitializeTree();
-        }
-
-        @Override
-        public ShellTabPort getSelectedTab() {
-            var selectedTab = view.getSelectedTab();
-            if (selectedTab != null) {
-                return selectedTab.getPresenter().getPort();
-            } else {
-                return null;
-            }
-        }
-
-        @Override
         public OverlayScope getOverlayScope() {
             return OverlayScope.SHELL;
         }
@@ -134,10 +102,11 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
                 view.dialogManager.showDialog(dialog);
                 view.getModifiableChildren().add(dialog);
             } else {
-                var selectedTab = view.getSelectedTab();
-                if (selectedTab != null) {
-                    selectedTab.getComposer().addDialog(dialog);
-                }
+                var temp = 0;
+//                var selectedTab = view.getSelectedTab();
+//                if (selectedTab != null) {
+//                    selectedTab.getComposer().addDialog(dialog);
+//                }
             }
         }
 
@@ -149,10 +118,11 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
                 view.getModifiableChildren().remove(dialog);
                 dialog.getPresenter().deinitializeTree();
             } else {
-                var selectedTab = view.getSelectedTab();
-                if (selectedTab != null) {
-                    selectedTab.getComposer().removeDialog(dialog);
-                }
+                var temp = 0;
+//                var selectedTab = view.getSelectedTab();
+//                if (selectedTab != null) {
+//                    selectedTab.getComposer().removeDialog(dialog);
+//                }
             }
         }
 
@@ -168,10 +138,11 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
                 view.dialogManager.showPopup(popup, anchors);
                 view.getModifiableChildren().add(popup);
             } else {
-                var selectedTab = view.getSelectedTab();
-                if (selectedTab != null) {
-                    selectedTab.getComposer().addPopup(popup, anchors);
-                }
+                var temp = 0;
+//                var selectedTab = view.getSelectedTab();
+//                if (selectedTab != null) {
+//                    selectedTab.getComposer().addPopup(popup, anchors);
+//                }
             }
         }
 
@@ -183,16 +154,23 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
                 view.getModifiableChildren().remove(popup);
                 popup.getPresenter().deinitializeTree();
             } else {
-                var selectedTab = view.getSelectedTab();
-                if (selectedTab != null) {
-                    selectedTab.getComposer().removePopup(popup);
-                }
+                var temp = 0;
+//                var selectedTab = view.getSelectedTab();
+//                if (selectedTab != null) {
+//                    selectedTab.getComposer().removePopup(popup);
+//                }
             }
         }
 
         @Override
         public List<? extends PopupPort> getPopups() {
             return view.getDialogManager().getPopups().stream().map(d -> d.getPresenter().getPort()).toList();
+        }
+
+        public void addWorkspace(AreaFxView<?> workspace) {
+            VBox.setVgrow(workspace.getNode(), Priority.ALWAYS);
+            view.getModifiableChildren().add(workspace);
+            view.contentBox.getChildren().add(workspace.getNode());
         }
     }
 
@@ -252,6 +230,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
             getResizer().disabledProperty().bind(getStage().maximizedProperty()
                     .or(Bindings.not(getStage().resizableProperty()))
                     .or(dialogCount.greaterThan(0)));
+            FxViewUtils.setComponent(getStageBox(), DefaultShellFxView.this);
         }
 
         void setUnfocused(boolean unfocused) {
@@ -287,6 +266,10 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
     private final Stage stage;
 
+    private final ObservableList<Stylesheet> stylesheets;
+
+    private AreaFxView<?> workspace;
+
     private final MenuBar menuBar = new MenuBar();
 
     private final MenuManager menuManager;
@@ -295,15 +278,20 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
     private final StackPane stackPane = new StackPane();
 
-    private final TabPanePro tabPane = new TabPanePro();
-
     private final ShellStageController stageController;
 
     private final DialogManager dialogManager;
 
-    private final ObservableList<Stylesheet> stylesheets;
-
     private final ControlRegistry controlRegistry = new ControlRegistry();
+
+    private final ReadOnlyObjectWrapper<ParentFxView<?>> focused = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyObjectWrapper<ParentFxView<?>> menuAware = new ReadOnlyObjectWrapper<>();
+
+    /**
+     * PauseTransition used to implement debounce on the JavaFX thread with duration.
+     */
+    private PauseTransition focusDebouncePause = new PauseTransition(Duration.millis(250));
 
     private ThemeApplier themeApplier;
 
@@ -314,7 +302,9 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     }
 
     public DefaultShellFxView(Application application, Stage stage, List<Stylesheet> stylesheets) {
+        Objects.requireNonNull(application, "Application can't be null");
         this.application = application;
+        Objects.requireNonNull(stage, "Stage can't be null");
         this.stage = stage;
         this.stylesheets = FXCollections.observableArrayList(createDefaultStylesheets());
         if (stylesheets != null) {
@@ -328,8 +318,13 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     }
 
     @Override
+    public AreaFxView<?> getWorkspace() {
+        return this.workspace;
+    }
+
+    @Override
     public void requestFocus() {
-        this.tabPane.requestFocus();
+        this.workspace.requestFocus();
     }
 
     @Override
@@ -349,7 +344,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
     @Override
     public void updateMenuBar() {
-        this.menuManager.updateMenuBar(getCurrentMenuAware());
+        this.menuManager.updateMenuBar((MenuAwarePort) getMenuAware().getPresenter().getPort());
         logger.debug("{} Menu bar updated", getDescriptor().getLogPrefix());
     }
 
@@ -363,22 +358,6 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         this.stylesheets.removeAll(sheets);
     }
 
-    public MenuAware getCurrentMenuAware() {
-        var selectedTab = getSelectedTab();
-        if (selectedTab != null) {
-            return selectedTab.getPresenter().getPort();
-        } else {
-            return getPresenter();
-        }
-    }
-
-    @Override
-    public void selectTab(int tabIndex) {
-        if (tabIndex >= 0 && tabIndex < this.tabPane.getTabs().size())  {
-            this.tabPane.getSelectionModel().select(tabIndex);
-        }
-    }
-
     @Override
     public HostServices getHostServices() {
         return this.application.getHostServices();
@@ -387,16 +366,6 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     @Override
     public Stage getStage() {
         return this.stage;
-    }
-
-    @Override
-    public ShellTabFxView<?> getSelectedTab() {
-        var tab = (ComponentTab) this.tabPane.getSelectionModel().getSelectedItem();
-        if (tab != null) {
-            return (ShellTabFxView<?>) tab.getView();
-        } else {
-            return null;
-        }
     }
 
     @Override
@@ -430,11 +399,6 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     }
 
     @Override
-    public int getSelectedTabIndex() {
-        return this.tabPane.getSelectionModel().getSelectedIndex();
-    }
-
-    @Override
     public Icon<?> getIcon() {
         return this.stageController.iconViewBox.getIcon();
     }
@@ -460,8 +424,31 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     }
 
     @Override
-    public void setRegularFont(Font font) {
-        tabPane.setTabMaxWidth(font.getSize() * 15);
+    public ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty() {
+        return this.focused.getReadOnlyProperty();
+    }
+
+    @Override
+    public ParentFxView<?> getFocused() {
+        return this.focused.get();
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<ParentFxView<?>> menuAwareProperty() {
+        return this.menuAware.getReadOnlyProperty();
+    }
+
+    @Override
+    public ParentFxView<?> getMenuAware() {
+        return this.menuAware.get();
+    }
+
+    protected void setFocused(ParentFxView<?> focused) {
+        this.focused.set(focused);
+    }
+
+    protected void setMenuAware(ParentFxView<?> menuAware) {
+        this.menuAware.set(menuAware);
     }
 
     @Override
@@ -474,6 +461,12 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     }
 
     @Override
+    protected void initialize() {
+        super.initialize();
+        setMenuAware(this);
+    }
+
+    @Override
     protected void build() {
         super.build();
         var presenter = getPresenter();
@@ -482,22 +475,6 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         this.fontApplier = new FontApplier(stackPane,
                 presenter.getSettings().getAppearance());
 
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
-        tabPane.getStyleClass().addAll("shell-tab-pane", Styles.DENSE);
-        VBox.setVgrow(tabPane, Priority.ALWAYS);
-        this.contentBox.getChildren().add(tabPane);
-        TabContainerFxViewUtils.initTabPane(tabPane, getPresenter());
-        var tabHeaderArea = getTabHeaderArea();
-        tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
-        tabHeaderArea.setTabGap(-10.0);
-        // right corner is on top
-        tabHeaderArea.setTabViewOrderResolver((tabHeader, index, tabCount, selected) -> {
-            if (selected) {
-                return  tabCount * -1.0;
-            } else {
-                return (tabCount - 1 - index) * -1.0;
-            }
-        });
         stageController.contentProperty().set(this.contentBox);
         //we add stackpane behind stage root
         stackPane.getChildren().add(stage.getScene().getRoot());
@@ -506,14 +483,21 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         stage.show();
     }
 
-
     @Override
     protected void addListeners() {
         super.addListeners();
-        var presenter = getPresenter();
-        this.tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
-            this.menuManager.updateMenuBar(getCurrentMenuAware());
-            presenter.onSelectedTabChanged(tabPane.getSelectionModel().getSelectedIndex());
+        this.stage.getScene().focusOwnerProperty().addListener((ov, oldV, newV) -> {
+            this.focusDebouncePause.stop();
+            this.focusDebouncePause.playFromStart();
+        });
+        this.focused.addListener((ov, oldV, newV) -> {
+            logger.debug("{} Focused component: {}", getDescriptor().getLogPrefix(),
+                    (newV == null) ? null : newV.getDescriptor().getFullName());
+        });
+        this.menuAware.addListener((ov, oldV, newV) -> {
+            logger.debug("{} Menu aware component: {}", getDescriptor().getLogPrefix(),
+                    (newV == null) ? null : newV.getDescriptor().getFullName());
+            updateMenuBar();
         });
     }
 
@@ -521,6 +505,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     protected void addHandlers() {
         super.addHandlers();
         this.stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::fixAcceleratorKeyPressed);
+        this.focusDebouncePause.setOnFinished((e) -> onFocusPauseFinished());
 //        var viewModel = getViewModel();
 //        stage.addEventHandler(StageResizeEvent.STAGE_RESIZE_FINISHED, e -> {
 //            if (!stage.isMaximized()) {
@@ -532,16 +517,6 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
     protected ShellStageController getStageController() {
         return stageController;
-    }
-
-    protected TabPaneProSkin.TabHeaderArea getTabHeaderArea() {
-        TabPaneProSkin sourceSkin = (TabPaneProSkin) this.tabPane.getSkin();
-        TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
-        return tabHeaderArea;
-    }
-
-    protected TabPanePro getTabPane() {
-        return tabPane;
     }
 
     /**
@@ -573,5 +548,60 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         return List.of(
                 new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
                 new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
+    }
+
+    private void onFocusPauseFinished() {
+        var newNode = this.stage.getScene().getFocusOwner();
+        if (newNode == null) {
+            setFocused(null);
+            setMenuAware(this);
+            return;
+        }
+        Node currentNode = newNode;
+        while (currentNode != null) {
+            var component = FxViewUtils.getComponent(currentNode);
+            if (component != null) {
+                setFocused(component);
+                break;
+            }
+            currentNode = currentNode.getParent();
+        }
+        resolvedMenuAware(currentNode);
+    }
+
+    private void resolvedMenuAware(Node node) {
+        if (node instanceof TabPane tabPane) {
+            if (!tabPane.getTabs().isEmpty()) {
+                return; // while there are tabs only they can be focused
+            }
+        }
+        ParentFxView<?> focused = getFocused();
+        if (focused == null) {
+            setMenuAware(this);
+            return;
+        }
+        if (focused == this) { // when user clicks on shell main menu, the previous  menu aware is used
+            return;
+        }
+        ParentFxView<?> currentComponent = focused;
+        while (true) {
+            var port = currentComponent.getPresenter().getPort();
+            if (port instanceof MenuAwarePort menuAware) {
+                setMenuAware(currentComponent);
+                return;
+            }
+            if (currentComponent instanceof ChildFxView<?> child) {
+                currentComponent = child.getParent();
+                if (currentComponent == null) {
+                    logger.warn("{} Child {} has no parent", getDescriptor().getLogPrefix(),
+                            child.getDescriptor().getFullName());
+                    setMenuAware(this);
+                    return;
+                }
+            } else {
+                setMenuAware(this);
+                return;
+            }
+        }
     }
 }

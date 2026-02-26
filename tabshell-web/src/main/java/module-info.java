@@ -30,7 +30,7 @@ module com.techsenger.tabshell.web {
     requires java.desktop;
     requires org.apache.commons.validator;
     requires jdk.jsobject;
-    // requires com.twelvemonkeys.imageio.bmp;
+    requires com.twelvemonkeys.imageio.bmp;
 
     exports com.techsenger.tabshell.web;
     exports com.techsenger.tabshell.web.area;

@@ -26,7 +26,7 @@ public final class LayoutComponents {
 
     public static final ComponentName TAB_HOST = new ComponentName("Layout.TabHost");
 
-    public static final ComponentName DOCK_LAYOUT = new ComponentName("Layout.DockLayout");
+    public static final ComponentName DOCK_HOST = new ComponentName("Layout.DockHost");
 
     public static final ComponentName SPLIT_SPACE = new ComponentName("Layout.SplitSpace");
 

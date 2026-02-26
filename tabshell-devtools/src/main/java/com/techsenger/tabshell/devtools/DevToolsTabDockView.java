@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.devtools;
 
 import com.techsenger.connectorfx.Connector;
-import com.techsenger.tabshell.layout.dock.TabDockView;
+import com.techsenger.tabshell.layout.dockhost.TabDockView;
 
 /**
  *

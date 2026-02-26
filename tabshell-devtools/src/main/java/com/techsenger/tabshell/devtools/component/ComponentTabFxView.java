@@ -224,6 +224,10 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
 
     private ToolBarFxView<?> inspectorToolBar;
 
+    public ComponentTabFxView(ShellFxView<?> shell) {
+        super(shell);
+    }
+
     @Override
     public void requestFocus() {
 

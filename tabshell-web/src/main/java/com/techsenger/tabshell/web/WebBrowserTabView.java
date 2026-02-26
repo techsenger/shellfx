@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.web;
 
-import com.techsenger.tabshell.core.shelltab.ShellTabView;
+import com.techsenger.tabshell.core.tab.TabView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WebBrowserTabView extends ShellTabView {
+public interface WebBrowserTabView extends TabView {
 
 }

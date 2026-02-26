@@ -19,7 +19,7 @@ package com.techsenger.tabshell.web;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.shelltab.AbstractShellTabPresenter;
+import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import java.util.function.Consumer;
 
 /**
@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * @author Pavel Castornii
  */
 public class WebBrowserTabPresenter<V extends WebBrowserTabView, C extends WebBrowserTabComposer>
-        extends AbstractShellTabPresenter<V, C> {
+        extends AbstractTabPresenter<V, C> {
 
     public WebBrowserTabPresenter(V view, String url) {
         super(view);

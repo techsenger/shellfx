@@ -18,16 +18,14 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.tab.TabContainerView;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
-import javafx.scene.text.Font;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellView extends ParentView, TabContainerView, Iconed, Titled {
+public interface ShellView extends ParentView, Iconed, Titled {
 
     /**
      * The width of the stage if the stage is not maximized.
@@ -83,6 +81,4 @@ public interface ShellView extends ParentView, TabContainerView, Iconed, Titled 
      * @param sheets
      */
     void removeStylesheets(List<Stylesheet> sheets);
-
-    void setRegularFont(Font font);
 }

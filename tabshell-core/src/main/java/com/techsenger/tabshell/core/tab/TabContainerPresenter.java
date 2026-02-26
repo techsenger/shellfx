@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.core.ComponentState;
+import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.tabshell.core.CloseRequestResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,24 +27,25 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerPresenter<T extends TabPort, C extends TabContainerComposer<T>> {
+public interface TabContainerPresenter<V extends TabContainerView, C extends TabContainerComposer>
+        extends ParentPresenter<V, C> {
 
     C getComposer();
 
     void onSelectedTabChanged(int index);
 
-    default void onCloseOtherTabs(T tab) {
+    default void onCloseOtherTabs(TabPort tab) {
         var otherTabs = getComposer().getTabs().stream().filter((t) -> t != tab).collect(Collectors.toList());
         onCloseTabs(otherTabs);
     }
 
-    default void onCloseTabs(List<? extends T> tabs) {
+    default void onCloseTabs(List<? extends TabPort> tabs) {
         class Closer {
 
             private int index = 0;
 
             private void run() {
-                T tab = null;
+                TabPort tab = null;
                 for (var i = index; i < tabs.size(); i++) {
                     index++;
                     tab = tabs.get(i);
@@ -69,33 +71,33 @@ public interface TabContainerPresenter<T extends TabPort, C extends TabContainer
         this.onCloseTabs(new ArrayList<>(getComposer().getTabs()));
     }
 
-    default void onCloseRightTabs(T tab) {
+    default void onCloseRightTabs(TabPort tab) {
         var tabs = getComposer().getTabs();
         var index = tabs.indexOf(tab);
         if (index == -1 || index + 1 == tabs.size()) {
             return;
         }
-        List<T> tabsToClose = new ArrayList<>();
+        List<TabPort> tabsToClose = new ArrayList<>();
         for (var i = index + 1; i < tabs.size(); i++) {
             tabsToClose.add(tabs.get(i));
             this.onCloseTabs(tabsToClose);
         }
     }
 
-    default void onCloseLeftTabs(T tab) {
+    default void onCloseLeftTabs(TabPort tab) {
         var tabs = getComposer().getTabs();
         var index = tabs.indexOf(tab);
         if (index == -1 || index == 0) {
             return;
         }
-        List<T> tabsToClose = new ArrayList<>();
+        List<TabPort> tabsToClose = new ArrayList<>();
         for (var i = index - 1; i >= 0; i--) {
             tabsToClose.add(tabs.get(i));
             this.onCloseTabs(tabsToClose);
         }
     }
 
-    default void onCloseTab(T tab) {
+    default void onCloseTab(TabPort tab) {
         tab.requestClose();
     }
 }

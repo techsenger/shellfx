@@ -17,10 +17,10 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
-import com.techsenger.tabshell.core.shelltab.ShellTabFxView;
-import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import javafx.application.HostServices;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.stage.Stage;
 
 /**
@@ -29,10 +29,9 @@ import javafx.stage.Stage;
  * @author Pavel Castornii
  */
 public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxView<P>,
-        TabContainerFxView<ShellTabFxView<?>>, DialogContainerFxView, ShellView {
+        DialogContainerFxView, ShellView {
 
-    interface Composer extends ParentFxView.Composer, DialogContainerFxView.Composer,
-            TabContainerFxView.Composer<ShellTabFxView<?>>, ShellComposer {
+    interface Composer extends ParentFxView.Composer, DialogContainerFxView.Composer, ShellComposer {
 
     }
 
@@ -52,4 +51,32 @@ public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxVie
 
     @Override
     Composer getComposer();
+
+    /**
+     * Defines the component that currently has the focus.
+     *
+     * @return
+     */
+    ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty();
+
+    /**
+     * Returns the value of {@link #focusedProperty()}.
+     *
+     * @return
+     */
+    ParentFxView<?> getFocused();
+
+    /**
+     * Defines the component that is currently forms the menu in the Shell.
+     * @return
+     */
+    ReadOnlyObjectProperty<ParentFxView<?>> menuAwareProperty();
+
+    /**
+     * Returns the value of {@link #menuAwareProperty()}.
+     * @return
+     */
+    ParentFxView<?> getMenuAware();
+
+    AreaFxView<?> getWorkspace();
 }

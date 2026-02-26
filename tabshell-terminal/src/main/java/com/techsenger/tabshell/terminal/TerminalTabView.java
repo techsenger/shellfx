@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.terminal;
 
-import com.techsenger.tabshell.core.shelltab.ShellTabView;
+import com.techsenger.tabshell.core.tab.TabView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TerminalTabView extends ShellTabView {
+public interface TerminalTabView extends TabView {
 
 }

@@ -42,7 +42,7 @@
     </developers>
 
     <properties>
-        <publishing.plugin.exclusions>tabshell-demos-core,tabshell-demos-all</publishing.plugin.exclusions>
+        <publishing.plugin.exclusions>tabshell-demo</publishing.plugin.exclusions>
         <maven.compiler.release>25</maven.compiler.release>
         <javafx.version>26-ea+6</javafx.version>
     </properties>
@@ -191,7 +191,7 @@
         <module>tabshell-dialogs</module>
 <!--        <module>tabshell-hex</module>-->
 <!--        <module>tabshell-registrars</module>-->
-        <module>tabshell-demos</module>
+        <module>tabshell-demo</module>
         <module>tabshell-web</module>
         <module>tabshell-devtools</module>
     </modules>

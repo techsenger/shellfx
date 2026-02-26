@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.DefaultShellFxView;
+import com.techsenger.tabshell.core.MenuAwarePort;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -47,7 +48,7 @@ class MenuActionInterceptor implements ActionInterceptor {
 
     @Override
     public void handle(ActionEvent t) {
-        var menuAware = shellView.getCurrentMenuAware();
+        MenuAwarePort menuAware = (MenuAwarePort) shellView.getMenuAware().getPresenter().getPort();
         var helper = menuAware.getMenuHelper(menu.getName());
         var included = true;
         var valid = false;

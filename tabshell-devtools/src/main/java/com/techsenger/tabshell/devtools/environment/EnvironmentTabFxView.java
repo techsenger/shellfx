@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.devtools.environment;
 
 import com.techsenger.patternfx.mvp.ComposeParameters;
+import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
@@ -92,8 +93,8 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
 
     private final DialogContainerFxView.Composer dialogContainer;
 
-    public EnvironmentTabFxView(DialogContainerFxView.Composer dialogContainer) {
-        super();
+    public EnvironmentTabFxView(ShellFxView<?> shell, DialogContainerFxView.Composer dialogContainer) {
+        super(shell);
         this.dialogContainer = dialogContainer;
     }
 
