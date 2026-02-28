@@ -22,7 +22,6 @@ import com.techsenger.connectorfx.LocalConnector;
 import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
-import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabPresenter;
 import com.techsenger.tabshell.devtools.component.JfxComponentService;
@@ -87,7 +86,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
         }
 
         protected NodeTabFxView<?> createNodeTab() {
-            var view = new NodeTabFxView<>(shell, tabContainer, dialogContainer);
+            var view = new NodeTabFxView<>(shell, dialogContainer);
             var presenter = new NodeTabPresenter<>(view, connector, getPresenter().getPort());
             return view;
         }
@@ -120,17 +119,13 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
     private final ShellFxView<?> shell;
 
-    private final TabContainerFxView<?> tabContainer;
-
     private final DialogContainerFxView dialogContainer;
 
     private final Connector connector;
 
-    public DevToolsTabDockFxView(ShellFxView<?> shell, TabContainerFxView<?> tabContainer,
-            DialogContainerFxView dialogContainer) {
+    public DevToolsTabDockFxView(ShellFxView<?> shell, DialogContainerFxView dialogContainer) {
         super();
         this.shell = shell;
-        this.tabContainer = tabContainer;
         this.dialogContainer = dialogContainer;
         this.connector = new LocalConnector(shell.getStage(), null);
     }

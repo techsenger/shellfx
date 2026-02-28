@@ -21,7 +21,6 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.dialog.DialogComposer;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import java.util.function.Consumer;
 
@@ -92,8 +91,8 @@ public class NameValueDialogPresenter<V extends NameValueDialogView, C extends D
         }
     }
 
-    public NameValueDialogPresenter(V view, OverlayScope scope) {
-        super(view, scope);
+    public NameValueDialogPresenter(V view) {
+        super(view);
     }
 
     @Override

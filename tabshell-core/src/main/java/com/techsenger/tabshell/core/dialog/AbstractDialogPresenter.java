@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 import java.util.List;
 import java.util.function.Consumer;
@@ -121,8 +120,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     private Consumer<ResultButtonName> resultAction = (name) -> requestClose();
 
-    public AbstractDialogPresenter(V view, OverlayScope scope) {
-        super(view, scope, true);
+    public AbstractDialogPresenter(V view) {
+        super(view, true);
     }
 
     @Override

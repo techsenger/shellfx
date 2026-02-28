@@ -1,18 +1,20 @@
 # Techsenger TabShell
 
-Techsenger TabShell is a platform for building tab-based applications in JavaFX using the MVP pattern.
+Techsenger TabShell is a platform for building tab-based applications in JavaFX, where an application is structured as
+a tree of MVP components.
 
-The platform consists of two parts: the core and ready-made components. The core includes the core shell and classes
-for creating components. Ready-made components are used as needed and significantly reduce the development time of the
-final application.
+TabShell is built around two core subsystems: the dynamic main menu and the workspace. The main menu is assembled
+at runtime and automatically adapts to the currently focused component. The workspace provides the structural
+foundation of the application and defines how components are arranged and interact visually. The platform supports
+two primary workspace models: browser-like and IDE-like.
+
+In addition, it includes a set of commonly used dialogs (including a universal file chooser) and developer tools that
+allow working with both the MVP component tree and the underlying JavaFX scene graph.
 
 TabShell is built on top of the [PatternFX](https://github.com/techsenger/patternfx) framework.
 
 ## Table of Contents
 * [Demo](#demo)
-    * [Text Editor](#demo-text-editor)
-    * [Hex Editor](#demo-hex-editor)
-    * [Terminal](#demo-terminal)
     * [Dialogs](#demo-dialogs)
 * [Features](#features)
 * [When to Use?](#when-to-use)
@@ -42,9 +44,6 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
     * [EventTab](#devtools-event-tab)
     * [StylesheetTab](#devtools-stylesheet-tab)
     * [EnvironmentTab](#devtools-environment-tab)
-* [Web Components](#web)
-    * [WebBrowserTab](#web-browser-tab)
-    * [WebToolBar](#web-tool-bar)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
 * [Dependencies](#dependencies)
@@ -55,18 +54,6 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
 * [Support Us](#support-us)
 
 ## Demo <a name="demo"></a>
-
-### Text Editor <a name="demo-text-editor"></a>
-
-![TabShell Text Editor](https://github.com/user-attachments/assets/42b61472-3ce6-4309-91fe-8ecd188f494f)
-
-### Hex Editor (In Progress) <a name="demo-hex-editor"></a>
-
-![Screenshot from 2025-06-11 23-30-02](https://github.com/user-attachments/assets/13fd4345-db82-40d1-b79a-b71341c90a09)
-
-### Terminal <a name="demo-terminal"></a>
-
-![Screenshot from 2025-06-11 23-53-30](https://github.com/user-attachments/assets/d7be0f9f-38ba-4e0f-aa75-23ed830c7f60)
 
 ### Dialogs <a name="demo-dialogs"></a>
 
@@ -88,17 +75,6 @@ Key features of TabShell include:
 * Support for 7 themes (4 dark and 3 light).
 * API for working with all colors in the palettes of all themes
 * Styling with CSS.
-
-Currently, the primary ready-made components include:
-
-* Shell.
-* Different layouts.
-* Terminal.
-* Text viewer/editor.
-* Hex editor.
-* Simple web browser.
-* Dialogs.
-* Devtools.
 
 ## When to Use <a name="when-to-use"></a>
 
@@ -139,16 +115,11 @@ The platform consists of the following modules:
 local file system. Additional storage providers (for Google Drive, Dropbox, FTP, and similar) can be implemented
 separately.
 * Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation etc.
-* Text — contains text viewer and editor components.
-* Hex — contains hex editor.
-* Terminal — includes a terminal emulator component.
-* Registrars — provides default registrars (for menu items, etc.).
 * Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use
 custom icons instead, simply create your own stylesheets and add them to Shell.
 * DevTools — contains tools for exploring component tree and JavaFX scene graph.
-* Web — includes a simple web browser built on JavaFX WebView.
 * Demo — showcases TabShell's core functionality, provides examples for building custom components, and
-presents all ready-made components.
+presents ready-made components.
 
 If you don't plan to use ready-made components, just three modules (material, core, layout) are sufficient to run
 TabShell and develop custom components. See [Running Demo](#running-demo) for details.
@@ -173,9 +144,9 @@ When working with components, there are several important points to keep in mind
 its parent component (by calling the `deinitialize()` method). This approach allows developers to perform additional
 configuration or setup after initialization but before attaching the component to the component tree.
 
-2. Working with components involves maintaining two hierarchies — the component tree and the JavaFX node tree. Therefore,
-any addition or removal of a component must be reflected in both structures. For example, removing a component from
-the node tree without removing it from the component tree will result in a memory leak. DevTools provide the ability
+2. Working with components involves maintaining two hierarchies — the component tree and the JavaFX scene graph.
+Therefore, any addition or removal of a component must be reflected in both structures. For example, removing a component
+from the node tree without removing it from the component tree will result in a memory leak. DevTools provide the ability
 to inspect and monitor both hierarchies.
 
 ### Shell <a name="core-shell"></a>
@@ -189,7 +160,7 @@ responsible for the following tasks:
 * Theme management.
 * Workspace management.
 
-The Shell core does not contain any business logic. It is only a shell for tabs that contain logic.
+The Shell core does not contain any business logic. It is only a shell for other components that contain logic.
 
 Working with the main menu of the `Shell` is carried out in two directions:
 
@@ -208,8 +179,14 @@ registered/unregistered in the `ControlRegistry`. When the menu needs to be upda
 by `Shell` to construct the final menu.
 
 The `MenuManager` is responsible for managing the state of menu elements and responding to their actions. It
-interacts with a component that provides a port implementing the `MenuAwarePort` interface. The algorithm works as
-follows: `Shell` tracks the component that currently has focus and stores it in `ShellFxView#focusedProperty()`.
+interacts with a component that provides a port implementing the `MenuAwarePort` interface.
+
+The algorithm works as follows. First, the component that has focus is determined. The `Shell` tracks changes to
+the focused node using `Scene#focusOwnerProperty()`. When this property changes, the component that owns the node is
+identified, and the result is stored in `ShellFxView#focusedProperty()`. Note that if a component should become focused
+when the user clicks on an empty area of that component (for example, a `Pane`), you must explicitly call
+`pane.requestFocus()`.
+
 At the same time, the focused component may not participate in menu formation (for example, it could be just a toolbar).
 Therefore, after the focused component changes, `Shell` searches from the focused component up to the root of the
 tree — the Shell — for the first component whose port implements `MenuAwarePort`. Note that `Shell` can also form
@@ -343,9 +320,8 @@ logic for executing the search itself. At the same time, the base `*FindPort` in
 implementations.
 
 ### FindPanel <a name="shared-find-panel"></a>
-`FindPanel` is an abstract class for find panels that are placed at the bottom of other components, such as a terminal,
-text editor, hex editor, etc. It is important to note that this component does not contain any logic for executing the
-search itself.
+`FindPanel` is an abstract class for find panels that are placed at the bottom of other components. It is important
+to note that this component does not contain any logic for executing the search itself.
 
 ## Dialog Components <a name="dialog"></a>
 

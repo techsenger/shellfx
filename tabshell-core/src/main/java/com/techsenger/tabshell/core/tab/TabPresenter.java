@@ -19,7 +19,6 @@ package com.techsenger.tabshell.core.tab;
 import com.techsenger.patternfx.mvp.ChildPresenter;
 import com.techsenger.tabshell.core.CloseablePresenter;
 import com.techsenger.tabshell.core.SelectablePresenter;
-import com.techsenger.tabshell.core.menu.MenuHelpers;
 
 /**
  *
@@ -30,6 +29,4 @@ public interface TabPresenter<V extends TabView, C extends TabComposer> extends 
 
     @Override
     TabPort getPort();
-
-    MenuHelpers getMenuHelpers();
 }

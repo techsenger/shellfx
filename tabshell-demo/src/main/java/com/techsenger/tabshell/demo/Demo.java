@@ -19,10 +19,9 @@ package com.techsenger.tabshell.demo;
 import com.techsenger.tabshell.core.DefaultShellFxView;
 import com.techsenger.tabshell.core.DefaultShellPresenter;
 import com.techsenger.tabshell.core.area.AreaFxView;
-import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.demo.history.DemoHistoryManager;
-import com.techsenger.tabshell.demo.menu.DemoFileMenuRegistrar;
-import com.techsenger.tabshell.demo.menu.DemoMenuRegistrar;
+import com.techsenger.tabshell.demo.menu.ExtraMenuRegistrar;
+import com.techsenger.tabshell.demo.menu.FileMenuRegistrar;
 import com.techsenger.tabshell.demo.settings.DemoSettings;
 import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.layout.dockhost.DockHostHistory;
@@ -44,11 +43,6 @@ import javafx.stage.Stage;
  * @author Pavel Castornii
  */
 public class Demo extends Application {
-
-    private enum WorkspaceType {
-
-        TAB_HOST, TAB_DOCK
-    }
 
     private final Label label = new Label("Select Workspace:");
 
@@ -87,41 +81,39 @@ public class Demo extends Application {
     private void createShell(WorkspaceType workspaceType) {
         //creating shell
         var stage = new Stage();
-        var shellV = new DefaultShellFxView<>(this, stage, IconStylesheetFactory.forAll());
-        var shellP = new DefaultShellPresenter<>(shellV, DemoSettings.createSettings(), new DemoHistoryManager());
-        shellP.initialize();
-        shellP.setOnClose(() -> Platform.exit());
-        shellV.setTitle("TabShell Full Demo");
+        var shellView = new DefaultShellFxView<>(this, stage, IconStylesheetFactory.forAll());
+        var shellPresenter = new DefaultShellPresenter<>(shellView, DemoSettings.createSettings(),
+                new DemoHistoryManager());
+        shellPresenter.setOnClose(() -> Platform.exit());
+        shellPresenter.initialize();
+        shellView.setTitle("TabShell Full Demo");
 
         // creating workspace
-        TabContainerFxView<?> tabContainer;
         AreaFxView<?> workspace;
         switch (workspaceType) {
-            case TAB_HOST -> {
+            case BROWSER_LIKE -> {
                 var tabHost = HostFactory.createTabHost();
-                tabContainer = tabHost;
                 workspace = tabHost;
             }
-            case TAB_DOCK -> {
-                var dockHost = HostFactory.createDockHost(shellV, () -> shellP.getHistoryManager()
+            case IDE_LIKE -> {
+                var dockHost = HostFactory.createDockHost(shellView, () -> shellPresenter.getHistoryManager()
                         .getOrCreateHistory(DockHostHistory.class, DockHostHistory::new));
                 var rightTabDock = dockHost.getComposer().createTabDock();
-                tabContainer = rightTabDock;
+                rightTabDock.getPresenter().initialize();
                 dockHost.getRoot().getComposer().addChild(rightTabDock);
+                dockHost.getComposer().setMain(rightTabDock);
                 workspace = dockHost;
             }
             default -> throw new AssertionError();
         }
-        shellV.getComposer().addWorkspace(workspace);
+        shellView.getComposer().addWorkspace(workspace);
 
         //adding menu
-        var controlRegistry = shellV.getControlRegistry();
-        var fmr = new DemoFileMenuRegistrar(controlRegistry);
+        var controlRegistry = shellView.getControlRegistry();
+        var fmr = new FileMenuRegistrar(controlRegistry, shellView);
         fmr.register();
-//        var emr = new EditMenuRegistrar(controlRegistry);
-//        emr.register();
-        var dmr = new DemoMenuRegistrar(controlRegistry, tabContainer);
+        var dmr = new ExtraMenuRegistrar(controlRegistry);
         dmr.register();
-        shellV.upgradeMenuBar();
+        shellView.upgradeMenuBar();
     }
 }

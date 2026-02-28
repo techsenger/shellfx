@@ -22,7 +22,6 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.dialog.DialogComposer;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
 
@@ -32,8 +31,8 @@ import java.util.function.Consumer;
  */
 public class PagedDialogPresenter extends AbstractDialogPresenter<PagedDialogView, DialogComposer> {
 
-    public PagedDialogPresenter(PagedDialogView view, OverlayScope scope, HistoryProvider<PagedDialogHistory> hp) {
-        super(view, scope);
+    public PagedDialogPresenter(PagedDialogView view, HistoryProvider<PagedDialogHistory> hp) {
+        super(view);
         setHistoryProvider(hp);
     }
 

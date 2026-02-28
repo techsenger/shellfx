@@ -30,19 +30,15 @@ public final class DemoComponents {
 
     public static final ComponentName DEMO_DIALOG = new ComponentName("Demo.Dialog");
 
-    public static final ComponentName DEMO_TAB = new ComponentName("Demo.Tab");
-
-    public static final ComponentName EDITOR_TAB = new ComponentName("Demo.EditorTab");
-
-    public static final ComponentName HEX_EDITOR_TAB = new ComponentName("Demo.HexEditorTab");
-
-    public static final ComponentName HEX_TOOL_BAR = new ComponentName("Demo.HexToolBar");
-
-    public static final ComponentName DOCK_HOST_TAB = new ComponentName("Demo.DockHostTab");
+    public static final ComponentName MAIN_TAB = new ComponentName("Demo.MainTab");
 
     public static final ComponentName DOCKABLE_TAB = new ComponentName("Demo.DockableTab");
 
-    public static final ComponentName TEXT_VIEWER = new ComponentName("Demo.TextViewer");
+    public static final ComponentName MENU_AWARE_AREA = new ComponentName("Demo.MenuAwareArea");
+
+    public static final ComponentName IDE_TAB = new ComponentName("Demo.IdeTab");
+
+    public static final ComponentName SIMPLE_MAIN_TAB = new ComponentName("Demo.SimpleMainTab");
 
     public static final ComponentName DIALOGS_DIALOG = new ComponentName("Demo.DialogsDialog");
 

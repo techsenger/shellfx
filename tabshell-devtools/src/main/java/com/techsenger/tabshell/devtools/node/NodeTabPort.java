@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.devtools.node;
 
 import com.techsenger.connectorfx.scenegraph.Element;
+import java.util.function.Consumer;
 
 /**
  *
@@ -29,4 +30,6 @@ public interface NodeTabPort {
     void selectNode(Element node);
 
     void selectRoot();
+
+    void setLinkOpener(Consumer<String> opener);
 }

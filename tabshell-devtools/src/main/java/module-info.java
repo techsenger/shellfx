@@ -26,7 +26,6 @@ module com.techsenger.tabshell.devtools {
     requires com.techsenger.tabshell.layout;
     requires com.techsenger.tabshell.dialogs;
     requires com.techsenger.tabshell.material;
-    requires com.techsenger.tabshell.web;
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;

@@ -53,42 +53,6 @@ public final class IconStylesheetFactory {
     }
 
     /**
-     * Creates and returns the stylesheet with icons for the 'terminal' module.
-     *
-     * @return
-     */
-    public static Stylesheet forTerminal() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("terminal.css"));
-    }
-
-    /**
-     * Creates and returns the stylesheet with icons for the 'text' module.
-     *
-     * @return
-     */
-    public static Stylesheet forText() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("text.css"));
-    }
-
-    /**
-     * Creates and returns the stylesheet with icons for the 'hex' module.
-     *
-     * @return
-     */
-    public static Stylesheet forHex() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("hex.css"));
-    }
-
-    /**
-     * Creates and returns the stylesheet with icons for the 'web' module.
-     *
-     * @return
-     */
-    public static Stylesheet forWeb() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("web.css"));
-    }
-
-    /**
      * Creates and returns the stylesheet with icons for the 'devtools' module.
      *
      * @return
@@ -106,10 +70,6 @@ public final class IconStylesheetFactory {
         return List.of(forShared(),
                 forLayout(),
                 forDialogs(),
-                forTerminal(),
-                forText(),
-                forHex(),
-                forWeb(),
                 forDevTools());
     }
 

@@ -21,7 +21,6 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.dialog.DialogComposer;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
 
@@ -31,8 +30,8 @@ import java.util.function.Consumer;
  */
 public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView, DialogComposer> {
 
-    public DemoDialogPresenter(DemoDialogView view, OverlayScope scope) {
-        super(view, scope);
+    public DemoDialogPresenter(DemoDialogView view) {
+        super(view);
     }
 
     @Override

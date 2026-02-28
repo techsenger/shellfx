@@ -22,7 +22,6 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
@@ -96,14 +95,14 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
 
     private EditType editType;
 
-    public FileChooserDialogPresenter(V view, OverlayScope scope, FileChooserType type, AppearanceSettings settings,
+    public FileChooserDialogPresenter(V view, FileChooserType type, AppearanceSettings settings,
             HistoryManager historyManager) {
-        this(view, scope, type, FileStorages.getAll(true), settings, historyManager);
+        this(view, type, FileStorages.getAll(true), settings, historyManager);
     }
 
-    public FileChooserDialogPresenter(V view, OverlayScope scope, FileChooserType type, List<FileStorage> storages,
+    public FileChooserDialogPresenter(V view, FileChooserType type, List<FileStorage> storages,
                     AppearanceSettings settings, HistoryManager historyManager) {
-        super(view, scope);
+        super(view);
         this.settings = settings;
         this.type = type;
         this.storages = storages;
@@ -456,7 +455,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     }
 
     private void showWarning(String text) {
-        getComposer().addAlertDialog(getOverlayScope(), AlertDialogType.WARNING, text);
+        getComposer().addAlertDialog(AlertDialogType.WARNING, text);
     }
 
     private void setDefaultStorageAndDirectory() {

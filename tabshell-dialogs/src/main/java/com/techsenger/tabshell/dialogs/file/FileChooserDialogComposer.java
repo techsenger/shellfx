@@ -18,7 +18,6 @@ package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 
 /**
@@ -27,5 +26,5 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
  */
 public interface FileChooserDialogComposer extends DialogComposer {
 
-    DialogPort addAlertDialog(OverlayScope scope, AlertDialogType type, String message);
+    DialogPort addAlertDialog(AlertDialogType type, String message);
 }

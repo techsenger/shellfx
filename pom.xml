@@ -138,37 +138,12 @@
             </dependency>
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-text</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-terminal</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-hex</artifactId>
+                <artifactId>tabshell-icons</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.techsenger.tabshell</groupId>
                 <artifactId>tabshell-devtools</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-web</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-registrars</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.techsenger.tabshell</groupId>
-                <artifactId>tabshell-icons</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
@@ -181,13 +156,8 @@
         <module>tabshell-storage</module>
         <module>tabshell-icons</module>
         <module>tabshell-shared</module>
-<!--        <module>tabshell-text</module>-->
-        <module>tabshell-terminal</module>
         <module>tabshell-dialogs</module>
-<!--        <module>tabshell-hex</module>-->
-<!--        <module>tabshell-registrars</module>-->
         <module>tabshell-demo</module>
-        <module>tabshell-web</module>
         <module>tabshell-devtools</module>
     </modules>
 

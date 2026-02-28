@@ -20,7 +20,6 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.page.PagedDialogFxView;
 import com.techsenger.tabshell.demo.page.PagedDialogHistory;
@@ -56,7 +55,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         @Override
         public DialogPort addAlertDialog(AlertDialogType type, String message) {
             var view = new AlertDialogFxView<>(false);
-            var presenter = new AlertDialogPresenter<>(view, OverlayScope.SHELL, type, message);
+            var presenter = new AlertDialogPresenter<>(view, type, message);
             presenter.initialize();
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
@@ -66,7 +65,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         @Override
         public NameValueDialogPort addNameValueDialog() {
             var view = new NameValueDialogFxView<>(true);
-            var presenter = new NameValueDialogPresenter<>(view, OverlayScope.SHELL);
+            var presenter = new NameValueDialogPresenter<>(view);
             presenter.initialize();
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
@@ -77,7 +76,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         public FileChooserDialogPort addFileChooserDialog(FileChooserType type, AppearanceSettings settings,
                 HistoryManager manager) {
             var view = new FileChooserDialogFxView<>(true);
-            var presenter = new FileChooserDialogPresenter<>(view, OverlayScope.SHELL, type, settings, manager);
+            var presenter = new FileChooserDialogPresenter<>(view, type, settings, manager);
             presenter.initialize();
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
@@ -87,7 +86,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         @Override
         public DialogPort addPagedDialog(HistoryManager hm) {
             var view = new PagedDialogFxView(true);
-            var presenter = new PagedDialogPresenter(view, OverlayScope.SHELL,
+            var presenter = new PagedDialogPresenter(view,
                     () -> hm.getOrCreateHistory(PagedDialogHistory.class, PagedDialogHistory::new));
             presenter.initialize();
             getContainer().getComposer().addDialog(view);

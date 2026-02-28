@@ -44,10 +44,6 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-layout</artifactId>
         </dependency>
         <dependency>

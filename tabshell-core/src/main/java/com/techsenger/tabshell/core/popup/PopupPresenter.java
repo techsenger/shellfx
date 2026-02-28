@@ -26,8 +26,6 @@ import com.techsenger.tabshell.core.area.AreaPresenter;
 public interface PopupPresenter<V extends PopupView, C extends PopupComposer>
         extends AreaPresenter<V, C>, CloseablePresenter<V, C> {
 
-    OverlayScope getOverlayScope();
-
     /**
      * Returns {@code true} if the popup blocks interaction with underlying content (modal) and {@code false} otherwise.
      *

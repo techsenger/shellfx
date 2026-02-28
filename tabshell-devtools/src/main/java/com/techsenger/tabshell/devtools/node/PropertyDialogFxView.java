@@ -18,13 +18,10 @@ package com.techsenger.tabshell.devtools.node;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
-import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.shared.style.SharedIcons;
-import com.techsenger.tabshell.web.WebBrowserTabFxView;
-import com.techsenger.tabshell.web.WebBrowserTabPresenter;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Hyperlink;
@@ -43,22 +40,6 @@ import javafx.scene.layout.VBox;
  */
 public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  extends AbstractDialogFxView<P>
         implements PropertyDialogView {
-
-    public class Composer extends AbstractDialogFxView<P>.Composer implements PropertyDialogComposer {
-
-        @Override
-        public void addBrowser(String url) {
-            var browser = createBrowser(url);
-            browser.getPresenter().initialize();
-            tabContainer.getComposer().addTab(browser);
-        }
-
-        protected WebBrowserTabFxView<?> createBrowser(String url) {
-            var view = new WebBrowserTabFxView<>(shell);
-            var presenter = new WebBrowserTabPresenter<>(view, url);
-            return view;
-        }
-    }
 
     private final GridPane gridPane = new GridPane();
 
@@ -82,12 +63,9 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
 
     private final ShellFxView<?> shell;
 
-    private final TabContainerFxView<?> tabContainer;
-
-    public PropertyDialogFxView(boolean resizable, ShellFxView<?> shell, TabContainerFxView<?> tabContainer) {
+    public PropertyDialogFxView(boolean resizable, ShellFxView<?> shell) {
         super(resizable);
         this.shell = shell;
-        this.tabContainer = tabContainer;
     }
 
     @Override
@@ -135,16 +113,6 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
     @Override
     public void setState(String state) {
         stateTextField.setText(state);
-    }
-
-    @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
-    }
-
-    @Override
-    protected Composer createComposer() {
-        return new PropertyDialogFxView.Composer();
     }
 
     @Override

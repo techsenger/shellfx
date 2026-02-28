@@ -21,7 +21,6 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
@@ -67,7 +66,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     private final HistoryManager historyManager;
 
     public DialogsDialogPresenter(DialogsDialogView view, AppearanceSettings settings, HistoryManager manager) {
-        super(view, OverlayScope.SHELL);
+        super(view);
         this.settings = settings;
         this.historyManager = manager;
     }

@@ -52,6 +52,7 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
     @Override
     public void requestFocus() {
         fooTextField.requestFocus();
+        fooTextField.deselect();
     }
 
     @Override

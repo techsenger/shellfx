@@ -19,6 +19,7 @@ package com.techsenger.tabshell.devtools.node;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.tabshell.core.tab.TabComposer;
 import com.techsenger.tabshell.devtools.ToolBarPort;
+import java.util.function.Consumer;
 
 /**
  *
@@ -30,5 +31,5 @@ public interface NodeTabComposer extends TabComposer {
 
     ToolBarPort getPropertyToolBar();
 
-    void addPropertyDialog(Element node, PropertyItem item, String declaringClassName);
+    void addPropertyDialog(Element node, PropertyItem item, String declaringClassName, Consumer<String> linkOpener);
 }

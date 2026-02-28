@@ -56,28 +56,8 @@
         </dependency>
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-terminal</artifactId>
-        </dependency>
-<!--        <dependency>
-            <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-text</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-hex</artifactId>
-        </dependency>-->
-        <dependency>
-            <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-devtools</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-web</artifactId>
-        </dependency>
-<!--        <dependency>
-            <groupId>com.techsenger.tabshell</groupId>
-            <artifactId>tabshell-registrars</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-icons</artifactId>

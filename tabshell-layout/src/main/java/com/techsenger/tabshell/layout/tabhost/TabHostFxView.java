@@ -80,8 +80,8 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         public void attachTabs() {
             if (tabsDetached) {
                 var tabs = view.detachedTabs.stream().map(t -> t.getNode()).collect(Collectors.toList());
-                view.root.getTabs().addAll(tabs);
-                view.root.getSelectionModel().select(selectedIndex);
+                view.tabPane.getTabs().addAll(tabs);
+                view.tabPane.getSelectionModel().select(selectedIndex);
                 view.detachedTabs = Collections.emptyList();
                 view.tabsDetached = false;
                 logger.debug("{} Attached tabs", getDescriptor().getLogPrefix());
@@ -91,22 +91,22 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         @Override
         public void detachTabs() {
             if (!tabsDetached) {
-                view.selectedIndex = view.root.getSelectionModel().getSelectedIndex();
-                view.detachedTabs = view.root.getTabs()
+                view.selectedIndex = view.tabPane.getSelectionModel().getSelectedIndex();
+                view.detachedTabs = view.tabPane.getTabs()
                         .stream().map(t -> ((ComponentTab) t).getView()).collect(Collectors.toList());
-                view.root.getTabs().clear();
+                view.tabPane.getTabs().clear();
                 view.tabsDetached = true;
                 logger.debug("{} Detached tabs", getDescriptor().getLogPrefix());
             }
         }
 
         public void addTab(TabFxView<?> tab) {
-            view.root.getTabs().add(tab.getNode());
+            view.tabPane.getTabs().add(tab.getNode());
             view.getModifiableChildren().add(tab);
         }
 
         public void removeTab(TabFxView<?> tab) {
-            view.root.getTabs().remove(tab.getNode());
+            view.tabPane.getTabs().remove(tab.getNode());
             view.getModifiableChildren().remove(tab);
             tab.getPresenter().deinitializeTree();
         }
@@ -116,7 +116,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     private final boolean workspace;
 
-    private final TabPanePro root = new TabPanePro();
+    private final TabPanePro tabPane = new TabPanePro();
 
     private List<? extends TabFxView<?>> detachedTabs = Collections.emptyList();
 
@@ -138,8 +138,12 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     @Override
     public TabFxView<?> getSelectedTab() {
-        var tab = this.root.getSelectionModel().getSelectedItem();
-        return ((ComponentTab) tab).getView();
+        var tab = this.tabPane.getSelectionModel().getSelectedItem();
+        if (tab != null) {
+            return ((ComponentTab) tab).getView();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -152,7 +156,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     @Override
     public TabPanePro getNode() {
-        return this.root;
+        return this.tabPane;
     }
 
     @Override
@@ -177,14 +181,14 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     @Override
     public void selectTab(int tabIndex) {
-        if (tabIndex >= 0 && tabIndex <= this.root.getTabs().size() - 1) {
-            this.root.getSelectionModel().select(tabIndex);
+        if (tabIndex >= 0 && tabIndex <= this.tabPane.getTabs().size() - 1) {
+            this.tabPane.getSelectionModel().select(tabIndex);
         }
     }
 
     @Override
     public int getSelectedTabIndex() {
-        return this.root.getSelectionModel().getSelectedIndex();
+        return this.tabPane.getSelectionModel().getSelectedIndex();
     }
 
     @Override
@@ -200,7 +204,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     @Override
     public void updateRegularFont(Font font) {
         if (this.workspace) {
-            root.setTabMaxWidth(font.getSize() * 15);
+            tabPane.setTabMaxWidth(font.getSize() * 15);
         }
     }
 
@@ -224,19 +228,19 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     @Override
     protected void build() {
         super.build();
-        TabContainerFxViewUtils.initTabPane(root, getPresenter());
-        this.root.getStylesheets().add(TabHostFxView.class.getResource("tab-host.css").toExternalForm());
-        this.root.getStyleClass().add(Styles.DENSE);
-        VBox.setVgrow(this.root, Priority.ALWAYS);
+        TabContainerFxViewUtils.initTabPane(tabPane, getPresenter());
+        this.tabPane.getStylesheets().add(TabHostFxView.class.getResource("tab-host.css").toExternalForm());
+        this.tabPane.getStyleClass().add(Styles.DENSE);
+        VBox.setVgrow(this.tabPane, Priority.ALWAYS);
         if (this.workspace) {
             buildWorkspace();
         }
     }
 
     protected void buildWorkspace() {
-        root.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
-        root.getStyleClass().addAll("workspace-tab-pane", Styles.DENSE);
-        TabContainerFxViewUtils.initTabPane(root, getPresenter());
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+        tabPane.getStyleClass().addAll("workspace-tab-pane", Styles.DENSE);
+        TabContainerFxViewUtils.initTabPane(tabPane, getPresenter());
         var tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
         tabHeaderArea.setTabGap(-10.0);
@@ -255,17 +259,17 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         super.addListeners();
         tabHeaderVisibleProperty().addListener((ov, oldV, newV) -> {
             if (newV) {
-                this.root.getStyleClass().remove(StyleClasses.HIDDEN_TABS);
+                this.tabPane.getStyleClass().remove(StyleClasses.HIDDEN_TABS);
             } else {
-                this.root.getStyleClass().add(StyleClasses.HIDDEN_TABS);
+                this.tabPane.getStyleClass().add(StyleClasses.HIDDEN_TABS);
             }
         });
         this.tabHeaderAutoHide.addListener((ov, oldV, newV) -> {
             resolveTabHeaderVisibility();
         });
-        this.root.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
+        this.tabPane.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
                 getPresenter().onSelectedTabChanged(newV.intValue()));
-        this.root.getTabs().addListener((ListChangeListener<? super Tab>) (change) -> {
+        this.tabPane.getTabs().addListener((ListChangeListener<? super Tab>) (change) -> {
             resolveTabHeaderVisibility();
         });
     }
@@ -290,7 +294,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     }
 
     private void resolveTabHeaderVisibility() {
-        if (this.tabHeaderAutoHide.get() && this.root.getTabs().size() == 1) {
+        if (this.tabHeaderAutoHide.get() && this.tabPane.getTabs().size() == 1) {
             setTabHeaderVisible(false);
         } else {
             setTabHeaderVisible(true);

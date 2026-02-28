@@ -20,7 +20,6 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.popup.PopupComposer;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
@@ -31,8 +30,8 @@ import java.util.function.Consumer;
  */
 public class DemoPopupPresenter extends AbstractPopupPresenter<DemoPopupView, PopupComposer> {
 
-    public DemoPopupPresenter(DemoPopupView view, OverlayScope scope, boolean modal) {
-        super(view, scope, modal);
+    public DemoPopupPresenter(DemoPopupView view, boolean modal) {
+        super(view, modal);
     }
 
     @Override

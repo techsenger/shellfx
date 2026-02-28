@@ -16,21 +16,21 @@
 
 package com.techsenger.tabshell.devtools.node;
 
+import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.popup.OverlayScope;
-import com.techsenger.tabshell.devtools.UrlUtils;
-import com.techsenger.connectorfx.scenegraph.Element;
-import java.util.function.Consumer;
+import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
+import com.techsenger.tabshell.devtools.UrlUtils;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogPresenter<V extends PropertyDialogView, C extends PropertyDialogComposer>
+public class PropertyDialogPresenter<V extends PropertyDialogView, C extends DialogComposer>
         extends AbstractDialogPresenter<V, C> {
 
     private final Element node;
@@ -39,12 +39,15 @@ public class PropertyDialogPresenter<V extends PropertyDialogView, C extends Pro
 
     private final String declaringClassName;
 
-    public PropertyDialogPresenter(V view, OverlayScope scope, Element node, PropertyItem item,
-            String declaringClassName) {
-        super(view, scope);
+    private final Consumer<String> linkOpener;
+
+    public PropertyDialogPresenter(V view, Element node, PropertyItem item, String declaringClassName,
+            Consumer<String> linkOpener) {
+        super(view);
         this.node = node;
         this.item = item;
         this.declaringClassName = declaringClassName;
+        this.linkOpener = linkOpener;
     }
 
     @Override
@@ -93,7 +96,7 @@ public class PropertyDialogPresenter<V extends PropertyDialogView, C extends Pro
     }
 
     protected void onFollowLink(String url) {
-        getComposer().addBrowser(url);
+        this.linkOpener.accept(url);
     }
 
     protected String resolveNameUrl() {

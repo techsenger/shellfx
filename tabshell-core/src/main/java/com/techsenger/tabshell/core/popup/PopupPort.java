@@ -26,13 +26,6 @@ import com.techsenger.tabshell.core.area.AreaPort;
 public interface PopupPort extends AreaPort, CloseablePort {
 
     /**
-     * Returns the scope of the popup.
-     *
-     * @return
-     */
-    OverlayScope getOverlayScope();
-
-    /**
      * Returns {@code true} if the popup blocks interaction with underlying content (modal) and {@code false} otherwise.
      *
      * @return

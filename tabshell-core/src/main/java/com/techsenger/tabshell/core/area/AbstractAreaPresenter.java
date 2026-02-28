@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.area;
 
 import com.techsenger.patternfx.mvp.AbstractChildPresenter;
+import com.techsenger.tabshell.core.menu.MenuHelpers;
 
 /**
  *
@@ -42,6 +43,8 @@ public abstract class AbstractAreaPresenter<V extends AreaView, C extends AreaCo
         }
     }
 
+    private final MenuHelpers menuHelpers = new MenuHelpers();
+
     public AbstractAreaPresenter(V view) {
         super(view);
     }
@@ -49,6 +52,10 @@ public abstract class AbstractAreaPresenter<V extends AreaView, C extends AreaCo
     @Override
     public Port getPort() {
         return (Port) super.getPort();
+    }
+
+    public MenuHelpers getMenuHelpers() {
+        return menuHelpers;
     }
 
     @Override

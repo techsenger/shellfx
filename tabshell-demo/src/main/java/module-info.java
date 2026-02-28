@@ -23,14 +23,9 @@ module com.techsenger.tabshell.demo {
     requires com.techsenger.patternfx.mvp;
     requires com.techsenger.tabshell.layout;
     requires com.techsenger.tabshell.shared;
-//    requires com.techsenger.tabshell.text;
-//    requires com.techsenger.tabshell.hex;
     requires com.techsenger.tabshell.devtools;
-    requires com.techsenger.tabshell.web;
     requires com.techsenger.tabshell.storage;
     requires com.techsenger.tabshell.dialogs;
-    requires com.techsenger.tabshell.terminal;
-//    requires com.techsenger.tabshell.registrars;
     requires com.techsenger.tabshell.icons;
     requires com.techsenger.tabpanepro.core;
 

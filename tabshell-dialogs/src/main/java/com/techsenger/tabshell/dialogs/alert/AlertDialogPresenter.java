@@ -21,7 +21,6 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.dialog.DialogComposer;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.INFO;
@@ -40,8 +39,8 @@ public class AlertDialogPresenter<V extends AlertDialogView, C extends DialogCom
 
     private String message;
 
-    public AlertDialogPresenter(V view, OverlayScope scope, AlertDialogType dialogType, String message) {
-        super(view, scope);
+    public AlertDialogPresenter(V view, AlertDialogType dialogType, String message) {
+        super(view);
         this.dialogType = dialogType;
         this.message = message;
     }

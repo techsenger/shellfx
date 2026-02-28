@@ -32,6 +32,7 @@ import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
 import com.techsenger.tabshell.shared.find.FindNavigationAwarePort;
+import com.techsenger.tabshell.shared.web.WebBrowser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -50,6 +51,8 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
     protected class Port extends AbstractTabPresenter<V, C>.Port implements NodeTabPort {
 
+        private final NodeTabPresenter<V, C> presenter = NodeTabPresenter.this;
+
         @Override
         public Element getSelectedNode() {
             return getView().getSelectedNode();
@@ -64,6 +67,11 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         @Override
         public void selectRoot() {
             getView().selectRoot();
+        }
+
+        @Override
+        public void setLinkOpener(Consumer<String> opener) {
+            presenter.linkOpener = opener;
         }
     }
 
@@ -145,6 +153,8 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
     private int foundPropertyCount = 0;
 
+    private Consumer<String> linkOpener = (ulr) -> WebBrowser.open(ulr);
+
     public NodeTabPresenter(V view, Connector connector, DevToolsTabDockPort tabDock) {
         super(view);
         this.connector = connector;
@@ -219,7 +229,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         if (field != null && node != null && node.getClassInfo().module().startsWith("javafx.")) {
             declaringClassName = this.connector.getDeclaringClass(node.getClassInfo().className(), field);
         }
-        getComposer().addPropertyDialog(node, item, declaringClassName);
+        getComposer().addPropertyDialog(node, item, declaringClassName, linkOpener);
     }
 
     @Override

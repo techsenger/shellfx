@@ -29,7 +29,6 @@ module com.techsenger.tabshell.shared {
     requires atlantafx.base;
     requires jakarta.xml.bind;
 
-    exports com.techsenger.tabshell.shared.menu;
     exports com.techsenger.tabshell.shared.find;
     exports com.techsenger.tabshell.shared.style;
     exports com.techsenger.tabshell.shared.web;

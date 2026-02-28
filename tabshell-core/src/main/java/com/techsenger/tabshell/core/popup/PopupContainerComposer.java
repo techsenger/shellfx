@@ -25,13 +25,6 @@ import java.util.List;
 public interface PopupContainerComposer {
 
     /**
-     * Returns the scope supported by this container.
-     *
-     * @return the supported scope
-     */
-    OverlayScope getOverlayScope();
-
-    /**
      * Returns an unmodifiable list of ports. A new list instance is created on each call.
      *
      * @return

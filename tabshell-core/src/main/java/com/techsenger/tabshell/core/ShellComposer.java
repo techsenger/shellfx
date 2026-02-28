@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.dialog.DialogContainerComposer;
 
 /**
@@ -25,4 +26,5 @@ import com.techsenger.tabshell.core.dialog.DialogContainerComposer;
  */
 public interface ShellComposer extends ParentComposer, DialogContainerComposer {
 
+    AreaPort getWorkspace();
 }

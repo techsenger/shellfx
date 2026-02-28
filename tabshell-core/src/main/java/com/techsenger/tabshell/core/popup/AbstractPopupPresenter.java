@@ -38,11 +38,6 @@ public abstract class AbstractPopupPresenter<V extends PopupView, C extends Popu
         }
 
         @Override
-        public OverlayScope getOverlayScope() {
-            return presenter.getOverlayScope();
-        }
-
-        @Override
         public boolean isModal() {
             return presenter.isModal();
         }
@@ -68,19 +63,11 @@ public abstract class AbstractPopupPresenter<V extends PopupView, C extends Popu
         }
     }
 
-    private final OverlayScope scope;
-
     private final boolean modal;
 
-    public AbstractPopupPresenter(V view, OverlayScope scope, boolean modal) {
+    public AbstractPopupPresenter(V view, boolean modal) {
         super(view);
-        this.scope = scope;
         this.modal = modal;
-    }
-
-    @Override
-    public OverlayScope getOverlayScope() {
-        return scope;
     }
 
     @Override

@@ -21,12 +21,12 @@ import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.area.AreaFxView;
+import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.popup.PopupFxView;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
@@ -62,7 +62,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -91,39 +90,16 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         private final DefaultShellFxView<P> view = DefaultShellFxView.this;
 
         @Override
-        public OverlayScope getOverlayScope() {
-            return OverlayScope.SHELL;
-        }
-
-        @Override
         public void addDialog(DialogFxView<?> dialog) {
-            var scope = dialog.getPresenter().getOverlayScope();
-            if (scope == getOverlayScope()) {
-                view.dialogManager.showDialog(dialog);
-                view.getModifiableChildren().add(dialog);
-            } else {
-                var temp = 0;
-//                var selectedTab = view.getSelectedTab();
-//                if (selectedTab != null) {
-//                    selectedTab.getComposer().addDialog(dialog);
-//                }
-            }
+            view.dialogManager.showDialog(dialog);
+            view.getModifiableChildren().add(dialog);
         }
 
         @Override
         public void removeDialog(DialogFxView<?> dialog) {
-            var scope = dialog.getPresenter().getOverlayScope();
-            if (scope == getOverlayScope()) {
-                view.dialogManager.hideDialog(dialog);
-                view.getModifiableChildren().remove(dialog);
-                dialog.getPresenter().deinitializeTree();
-            } else {
-                var temp = 0;
-//                var selectedTab = view.getSelectedTab();
-//                if (selectedTab != null) {
-//                    selectedTab.getComposer().removeDialog(dialog);
-//                }
-            }
+            view.dialogManager.hideDialog(dialog);
+            view.getModifiableChildren().remove(dialog);
+            dialog.getPresenter().deinitializeTree();
         }
 
         @Override
@@ -133,33 +109,15 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
         @Override
         public void addPopup(PopupFxView<?> popup, Anchors anchors) {
-            var scope = popup.getPresenter().getOverlayScope();
-            if (scope == getOverlayScope()) {
-                view.dialogManager.showPopup(popup, anchors);
-                view.getModifiableChildren().add(popup);
-            } else {
-                var temp = 0;
-//                var selectedTab = view.getSelectedTab();
-//                if (selectedTab != null) {
-//                    selectedTab.getComposer().addPopup(popup, anchors);
-//                }
-            }
+            view.dialogManager.showPopup(popup, anchors);
+            view.getModifiableChildren().add(popup);
         }
 
         @Override
         public void removePopup(PopupFxView<?> popup) {
-            var scope = popup.getPresenter().getOverlayScope();
-            if (scope == getOverlayScope()) {
-                view.dialogManager.hidePopup(popup);
-                view.getModifiableChildren().remove(popup);
-                popup.getPresenter().deinitializeTree();
-            } else {
-                var temp = 0;
-//                var selectedTab = view.getSelectedTab();
-//                if (selectedTab != null) {
-//                    selectedTab.getComposer().removePopup(popup);
-//                }
-            }
+            view.dialogManager.hidePopup(popup);
+            view.getModifiableChildren().remove(popup);
+            popup.getPresenter().deinitializeTree();
         }
 
         @Override
@@ -168,9 +126,15 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         }
 
         public void addWorkspace(AreaFxView<?> workspace) {
-            VBox.setVgrow(workspace.getNode(), Priority.ALWAYS);
+            view.workspace = workspace;
             view.getModifiableChildren().add(workspace);
+            VBox.setVgrow(workspace.getNode(), Priority.ALWAYS);
             view.contentBox.getChildren().add(workspace.getNode());
+        }
+
+        @Override
+        public AreaPort getWorkspace() {
+            return view.getWorkspace().getPresenter().getPort();
         }
     }
 
@@ -570,11 +534,6 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     }
 
     private void resolvedMenuAware(Node node) {
-        if (node instanceof TabPane tabPane) {
-            if (!tabPane.getTabs().isEmpty()) {
-                return; // while there are tabs only they can be focused
-            }
-        }
         ParentFxView<?> focused = getFocused();
         if (focused == null) {
             setMenuAware(this);

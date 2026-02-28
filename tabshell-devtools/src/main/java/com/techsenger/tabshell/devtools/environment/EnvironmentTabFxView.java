@@ -19,7 +19,6 @@ package com.techsenger.tabshell.devtools.environment;
 import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
@@ -82,7 +81,7 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
 
         protected NameValueDialogFxView<?> createNameValueDialog() {
             var view = new NameValueDialogFxView<>(true);
-            var presenter = new NameValueDialogPresenter<>(view, OverlayScope.TAB);
+            var presenter = new NameValueDialogPresenter<>(view);
             return view;
         }
     }

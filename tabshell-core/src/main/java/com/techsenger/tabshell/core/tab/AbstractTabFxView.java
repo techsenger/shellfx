@@ -24,19 +24,16 @@ import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogManager;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.popup.PopupFxView;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
-import com.techsenger.toolkit.fx.utils.NodeUtils;
 import java.util.List;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -66,59 +63,34 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
         }
 
         @Override
-        public OverlayScope getOverlayScope() {
-            return OverlayScope.TAB;
-        }
-
-        @Override
         public List<? extends DialogPort> getDialogs() {
             return view.dialogManager.getDialogs().stream().map(v -> v.getPresenter().getPort()).toList();
         }
 
         @Override
         public void addDialog(DialogFxView<?> dialog) {
-            var scope = dialog.getPresenter().getOverlayScope();
-            if (scope == getOverlayScope()) {
-                view.dialogManager.showDialog(dialog);
-                view.getModifiableChildren().add(dialog);
-            } else {
-                view.getShell().getComposer().addDialog(dialog);
-            }
+            view.dialogManager.showDialog(dialog);
+            view.getModifiableChildren().add(dialog);
         }
 
         @Override
         public void removeDialog(DialogFxView<?> dialog) {
-            var scope = dialog.getPresenter().getOverlayScope();
-            if (scope == getOverlayScope()) {
-                view.dialogManager.hideDialog(dialog);
-                view.getModifiableChildren().remove(dialog);
-                dialog.getPresenter().deinitializeTree();
-            } else {
-                view.getShell().getComposer().removeDialog(dialog);
-            }
+            view.dialogManager.hideDialog(dialog);
+            view.getModifiableChildren().remove(dialog);
+            dialog.getPresenter().deinitializeTree();
         }
 
         @Override
         public void addPopup(PopupFxView<?> popup, Anchors anchors) {
-            var scope = popup.getPresenter().getOverlayScope();
-            if (scope == getOverlayScope()) {
-                view.dialogManager.showPopup(popup, anchors);
-                view.getModifiableChildren().add(popup);
-            } else {
-                view.getShell().getComposer().addPopup(popup, anchors);
-            }
+            view.dialogManager.showPopup(popup, anchors);
+            view.getModifiableChildren().add(popup);
         }
 
         @Override
         public void removePopup(PopupFxView<?> popup) {
-            var scope = popup.getPresenter().getOverlayScope();
-            if (scope == getOverlayScope()) {
-                view.dialogManager.hidePopup(popup);
-                view.getModifiableChildren().remove(popup);
-                popup.getPresenter().deinitializeTree();
-            } else {
-                view.getShell().getComposer().removePopup(popup);
-            }
+            view.dialogManager.hidePopup(popup);
+            view.getModifiableChildren().remove(popup);
+            popup.getPresenter().deinitializeTree();
         }
 
         @Override
@@ -269,9 +241,6 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
     protected void addListeners() {
         super.addListeners();
         this.root.selectedProperty().addListener((ov, oldV, newV) -> {
-            if (newV) {
-                NodeUtils.requestFocus(this.contentBox);
-            }
             getPresenter().onSelected(newV);
         });
     }
@@ -279,14 +248,8 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
     @Override
     protected void addHandlers() {
         super.addHandlers();
+        this.wrapperPane.setFocusTraversable(true);
         getNode().setOnCloseRequest((e) -> getPresenter().close());
-        // otherwise scene focus owner doesn't work
-        this.contentBox.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-            if (e.getTarget() == this.contentBox) {
-                this.contentBox.requestFocus();
-                e.consume(); // otherwise the tabpane will become focused
-            }
-        });
     }
 
     protected StackPane getWrapperPane() {

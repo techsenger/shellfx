@@ -21,7 +21,6 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.dialog.DialogComposer;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
@@ -38,7 +37,7 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
     private final AppearanceSettings settings;
 
     public ThemeDialogPresenter(ThemeDialogView view, AppearanceSettings settings) {
-        super(view, OverlayScope.SHELL);
+        super(view);
         this.settings = settings;
     }
 

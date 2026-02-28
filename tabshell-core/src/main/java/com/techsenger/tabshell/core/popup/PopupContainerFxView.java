@@ -29,20 +29,12 @@ public interface PopupContainerFxView {
         /**
          * Adds the specified popup component to the component tree.
          *
-         * <p>If the popup scope of the component does not match this container's scope, the popup is forwarded to
-         * the appropriate container: {@link ShellTab} forwards {@link Scope.SHELL} popups to
-         * {@link Shell}, and {@link Shell} forwards {@link Scope.TAB} popups to the selected {@link ShellTab}.
-         *
          * @param popup the popup component to add
          */
         void addPopup(PopupFxView<?> popup, Anchors anchors);
 
         /**
          * Removes the specified popup component from the component tree.
-         *
-         * <p>If the popup scope of the component does not match this container's scope, the popup is forwarded to
-         * the appropriate container: {@link ShellTab} forwards {@link Scope.SHELL} popups to
-         * {@link Shell}, and {@link Shell} forwards {@link Scope.TAB} popups to the selected {@link ShellTab}.
          *
          * @param popup the popup component to remove
          */

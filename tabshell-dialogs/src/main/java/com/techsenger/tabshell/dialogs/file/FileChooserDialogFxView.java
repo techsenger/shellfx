@@ -20,7 +20,6 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
-import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
@@ -137,16 +136,16 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     public class Composer extends AbstractDialogFxView<P>.Composer implements FileChooserDialogComposer {
 
         @Override
-        public DialogPort addAlertDialog(OverlayScope scope, AlertDialogType type, String message) {
-            var dialog = createAlertDialog(scope, type, message);
+        public DialogPort addAlertDialog(AlertDialogType type, String message) {
+            var dialog = createAlertDialog(type, message);
             dialog.getPresenter().initialize();
             getContainer().getComposer().addDialog(dialog);
             return dialog.getPresenter().getPort();
         }
 
-        protected AlertDialogFxView<?> createAlertDialog(OverlayScope scope, AlertDialogType type, String message) {
+        protected AlertDialogFxView<?> createAlertDialog(AlertDialogType type, String message) {
             var view = new AlertDialogFxView(false);
-            var presenter = new AlertDialogPresenter<>(view, scope, type, message);
+            var presenter = new AlertDialogPresenter<>(view, type, message);
             return view;
         }
     }

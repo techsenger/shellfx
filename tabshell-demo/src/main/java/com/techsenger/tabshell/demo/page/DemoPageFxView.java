@@ -18,7 +18,6 @@ package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.page.AbstractPageFxView;
 import com.techsenger.tabshell.core.page.PagePresenter;
-import com.techsenger.tabshell.demo.text.Text;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
