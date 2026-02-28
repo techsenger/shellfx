@@ -102,19 +102,27 @@ Currently, the primary ready-made components include:
 
 ## When to Use <a name="when-to-use"></a>
 
-With the widespread adoption of web browsers, tab-based interfaces have become familiar and intuitive for most users.
-TabShell leverages this familiarity to create desktop applications where users can comfortably work with multiple
-contexts simultaneously.
+TabShell is well suited for medium to large JavaFX applications that require a structured UI architecture and
+flexible workspace management.
 
-Perfect for:
+It is particularly effective for projects that:
 
-* Code editors where developers work with multiple files.
-* Enterprise systems managing different data entities like orders, customers, and products.
-* Database administration tools running parallel queries and comparisons.
-* Data analysis applications with multiple datasets and visualization tabs.
-* File managers and content browsers handling various file types.
-* Monitoring dashboards displaying different metrics and logs
-* Customer support systems with multiple client sessions open
+- Rely on a component-based MVP architecture.
+- Contain multiple tabs or require complex workspace layouts (including docking-based layouts).
+- Need dynamic menus, theming support, and centralized shell-level infrastructure.
+- Benefit from built-in DevTools for inspecting both the component tree and the JavaFX scene graph.
+
+TabShell provides a scalable foundation for applications where UI complexity grows over time and clear structural
+boundaries are essential.
+
+Typical application types include:
+
+- Enterprise systems managing different data entities.
+- Code editors and lightweight IDEs.
+- Database and query tools.
+- File managers and content browsers.
+- Monitoring and analytics dashboards.
+- Tools that require parallel workflows within multiple tabs or panels.
 
 The tab-based approach allows users to maintain workflow context while switching between different tasks, making
 complex applications more intuitive and productive.
