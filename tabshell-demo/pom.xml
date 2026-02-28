@@ -35,10 +35,6 @@
             <artifactId>tabshell-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.techsenger.tabshell.demos</groupId>
-            <artifactId>tabshell-demos-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.techsenger.tabshell</groupId>
             <artifactId>tabshell-layout</artifactId>
         </dependency>

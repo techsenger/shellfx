@@ -32,7 +32,6 @@ module com.techsenger.tabshell.demo {
     requires com.techsenger.tabshell.terminal;
 //    requires com.techsenger.tabshell.registrars;
     requires com.techsenger.tabshell.icons;
-    requires com.techsenger.tabshell.demos.core;
     requires com.techsenger.tabpanepro.core;
 
     requires org.slf4j;

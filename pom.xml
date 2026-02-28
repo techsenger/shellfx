@@ -171,11 +171,6 @@
                 <artifactId>tabshell-icons</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.techsenger.tabshell.demos</groupId>
-                <artifactId>tabshell-demos-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
