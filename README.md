@@ -380,19 +380,6 @@ This component allows inspecting which stylesheets are applied to nodes within t
 
 This component provides access to platform settings, system properties, and environment variables.
 
-## Web Components <a name="web"></a>
-
-Web components are components that reside in the web module. Together, they form a simple web browser built on
-JavaFX WebView.
-
-### WebBrowserTab <a name="web-browser-tab"></a>
-
-WebBrowserTab is the main component. It represents a Tab for the Shell and can contain all other web components.
-
-### WebToolBar <a name="web-tool-bar"></a>
-
-WebToolBar is a component that represents the browser’s ToolBar.
-
 ## Quick Start <a name="quick-start"></a>
 
 To get started with TabShell, it is recommended to follow these steps:
