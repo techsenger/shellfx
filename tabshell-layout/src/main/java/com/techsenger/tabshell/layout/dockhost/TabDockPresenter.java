@@ -42,9 +42,17 @@ public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
             presenter.minimizedPosition = position;
         }
 
+        @Override
+        public TabDockState getState() {
+            return presenter.state;
+        }
     }
 
     private ComponentPosition minimizedPosition;
+
+    private TabDockState state = TabDockState.DETACHED;
+
+    private TabDockTransitionState transitionState;
 
     public TabDockPresenter(V view) {
         super(view);
@@ -53,6 +61,10 @@ public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
     @Override
     public Port getPort() {
         return (Port) super.getPort();
+    }
+
+    public TabDockState getState() {
+        return state;
     }
 
     protected ComponentPosition getMinimizedPosition() {
@@ -67,5 +79,22 @@ public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
     @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(LayoutComponents.TAB_DOCK);
+    }
+
+    protected void onMinimize() {
+        this.transitionState = TabDockTransitionState.TO_MINIMIZED;
+    }
+
+    protected void onMinimized() {
+        updateState(TabDockState.MINIMIZED);
+    }
+
+    TabDockTransitionState getTransitionState() {
+        return transitionState;
+    }
+
+    private void updateState(TabDockState state) {
+        this.state = state;
+        transitionState = null;
     }
 }

@@ -810,6 +810,12 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             view.addTabDock(null, view.getRoot(), dock, index, side, true, size);
         }
 
+        public void removeTabDock(TabDockFxView<?> dock) {
+            view.removeTabDock(dock, true);
+            view.printTreeDebugInfo();
+            logger.debug("{} Removed TabDock", getDescriptor().getLogPrefix());
+        }
+
         public SplitSpaceFxView<?> createSplitSpace(Orientation orientation) {
             var v = new SplitSpaceFxView<>();
             v.setDockHost(view);
@@ -988,6 +994,14 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
                 popup.getPresenter().deinitialize();
                 wrapper.set(null);
             }
+        }
+
+        void restoreTabDock(TabDockFxView<?> tabDock) {
+            view.restoreTabDock(tabDock);
+        }
+
+        void minimizeTabDock(TabDockFxView<?> tabDock) {
+            view.minimizeTabDock(tabDock);
         }
 
         private SideBarFxView<?> addBar(Side side, SideBarHistory sideBarHistory,
@@ -1243,12 +1257,6 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         container.getChildren().clear();
     }
 
-    void processEmptyTabPane(TabPanePro tabPane) {
-        removeTabDock(tabPane);
-        printTreeDebugInfo();
-        logger.debug("{} Removed empty TabDock", getDescriptor().getLogPrefix());
-    }
-
     void onTabDragDetected(ComponentTab tab) {
         this.dragTab = tab;
         updateDragInProgress(true, DraggableType.TAB);
@@ -1332,7 +1340,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         }
     }
 
-    void minimizeTabDock(TabDockFxView<?> dock) {
+    private void minimizeTabDock(TabDockFxView<?> dock) {
         // saving current position
         var side = resolveSide(dock);
         SplitSpaceFxView<?> parent = (SplitSpaceFxView<?>) dock.getParent();
@@ -1352,7 +1360,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             logger.debug("{} Minimized position: {}", getDescriptor().getLogPrefix(), pos);
         }
         // removing the dock
-        removeTabDock(dock.getNode());
+        removeTabDock(dock, false);
         // createaing a sidebar if it is null
         getComposer().addBar(side);
 
@@ -1363,7 +1371,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         printTreeDebugInfo();
     }
 
-    void restoreTabDock(TabDockFxView<?> dock) {
+    private void restoreTabDock(TabDockFxView<?> dock) {
         dock.getComposer().attachTabs();
 
         // attempt 0 - find the parent by UUID
@@ -1577,7 +1585,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
                 // it is necessary to create a new info with a new index for example,
                 // if there are new children, besides the old parent should be used
                 var oldInfo = oldContainer.createInfo(oldParent);
-                removeTabDock(oldParent, oldInfo);
+                removeTabDock(oldParent, oldInfo, true);
 
                 // finally replacing the placeholder
                 SplitSpaceFxView<?> newParent = (SplitSpaceFxView<?>) placeholder.getParent();
@@ -1948,7 +1956,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         } else {
             parentSplitPane = (SplitPane) parentComponent.getNode();
             parentOldPositions = parentSplitPane.getDividerPositions();
-            parentComponent.getComposer().removeChild(index);
+            parentComponent.getComposer().removeChild(index, false);
             parentComponent.getComposer().addChild(index, newSplitSpace);
         }
 
@@ -1983,7 +1991,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             }
             var oldPositions = grandparentComponent.getNode().getDividerPositions();
             // removing parent
-            grandparentComponent.getComposer().removeChild(index);
+            grandparentComponent.getComposer().removeChild(index, true);
             // adding tab docks
             for (var i = 0; i < otherTabDocks.size(); i++) {
                 grandparentComponent.getComposer().addChild(index + i, otherTabDocks.get(i));
@@ -2018,19 +2026,19 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
      *
      * @param tabPane
      */
-    private void removeTabDock(TabPanePro tabPane) {
-        TabDockContainer tabDockContainer = (TabDockContainer) tabPane.getParent();
+    private void removeTabDock(TabDockFxView<?> tabDock, boolean deinitialize) {
+        TabDockContainer tabDockContainer = (TabDockContainer) tabDock.getNode().getParent();
         ContainerInfo tabDockInfo = tabDockContainer.createInfo();
-        SplitSpaceFxView<?> parent = (SplitSpaceFxView<?>) tabDockContainer.getArea().getParent();
-        removeTabDock(parent, tabDockInfo);
+        SplitSpaceFxView<?> parent = (SplitSpaceFxView<?>) tabDock.getParent();
+        removeTabDock(parent, tabDockInfo, deinitialize);
     }
 
-    private void removeTabDock(SplitSpaceFxView<?> parent, ContainerInfo tabDockInfo) {
+    private void removeTabDock(SplitSpaceFxView<?> parent, ContainerInfo tabDockInfo, boolean deinitialize) {
         var parentInfo = getContainer(parent).createInfo();
         if (parent.getChildren().size() == 2) {
-            removeTabDockAndUnwrap(parentInfo, tabDockInfo);
+            removeTabDockAndUnwrap(parentInfo, tabDockInfo, deinitialize);
         } else {
-            removeTabDock(parentInfo, tabDockInfo);
+            removeTabDock(parentInfo, tabDockInfo, deinitialize);
         }
     }
 
@@ -2074,11 +2082,11 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
      * @param parentInfo
      * @param anchorInfo
      */
-    private void removeTabDockAndUnwrap(ContainerInfo parentInfo, ContainerInfo anchorInfo) {
+    private void removeTabDockAndUnwrap(ContainerInfo parentInfo, ContainerInfo anchorInfo, boolean deinitialize) {
         // parent has only two children
         SplitSpaceFxView<?> parentComponent = (SplitSpaceFxView<?>) parentInfo.getContainer().getArea();
         // removing empty tabdock
-        parentComponent.getComposer().removeChild(anchorInfo.getIndex());
+        parentComponent.getComposer().removeChild(anchorInfo.getIndex(), deinitialize);
         if (logger.isDebugEnabled()) {
             logger.debug("{} Removed {} from {}",
                     getDescriptor().getLogPrefix(),
@@ -2207,7 +2215,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
      *
      * @param tabDockInfo
      */
-    private void removeTabDock(ContainerInfo parent, ContainerInfo tabDockInfo) {
+    private void removeTabDock(ContainerInfo parent, ContainerInfo tabDockInfo, boolean deinitialize) {
         var tabDockContainer = tabDockInfo.getContainer();
         AreaFxView<?> componentToRemove = tabDockContainer.getArea();
         SplitSpaceFxView<?> splitSpace = (SplitSpaceFxView<?>) parent.getContainer().getArea();
@@ -2220,7 +2228,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             removedChildSize = tabDockInfo.getContainer().getArea().getNode().getHeight();
         }
 
-        splitSpace.getComposer().removeChild(tabDockInfo.getIndex());
+        splitSpace.getComposer().removeChild(tabDockInfo.getIndex(), deinitialize);
         final var dividerSize = splitSpace.computeDividerSize();
 
         final var finalOldSplitSpaneSize = oldSplitPaneSize;

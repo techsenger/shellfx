@@ -29,7 +29,6 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.geometry.Dimension2D;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
@@ -185,7 +184,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
 
         void addPopupToLayout(Side side) {
             var history = view.getPresenter().getHistory();
-            var v = new TabPopupFxView<>(view);
+            var v = new TabPopupFxView<>(view, dockHost.getCenterDimension());
             var p = new TabPopupPresenter<>(v, side, () -> history.getOrCreatePopup());
             p.initialize();
             view.getDockHost().getComposer().addTabPopup(v);
@@ -312,7 +311,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         if (tabDocks.isEmpty() && dockHost.getComposer().getBarPolicy(side) != SideBarPolicy.EXISTS_ALWAYS) {
             dockHost.getComposer().removeBar(side);
         }
-        dockHost.restoreTabDock(tabDock);
+        dockHost.getComposer().restoreTabDock(tabDock);
     }
 
     protected void removePopup() {
@@ -373,10 +372,6 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
 
     protected ObservableList<TabDockFxView<?>> getTabDocks() {
         return tabDocks;
-    }
-
-    Dimension2D getCenterDimension() {
-        return dockHost.getCenterDimension();
     }
 
     boolean containsSelectedTab() {

@@ -58,13 +58,19 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
         }
 
         public void removeChild(int index) {
-            var child = removeChildFromView(index);
-            child.getPresenter().deinitialize();
+            removeChild(index, true);
         }
 
         public void replacePlaceholder(int index, TabDockFxView<?> tabDock) {
             removeChildFromView(index);
             addChild(index, tabDock);
+        }
+
+        void removeChild(int index, boolean deinitialize) {
+            var child = removeChildFromView(index);
+            if (deinitialize) {
+                child.getPresenter().deinitialize();
+            }
         }
 
         private AreaFxView<?> removeChildFromView(int index) {

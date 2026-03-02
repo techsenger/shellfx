@@ -27,6 +27,7 @@ import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Dimension2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import static javafx.geometry.Side.BOTTOM;
@@ -96,9 +97,12 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
 
     private final SideBarFxView<?> sideBar;
 
-    public TabPopupFxView(SideBarFxView<?> sideBar) {
+    private final Dimension2D centerDimension;
+
+    public TabPopupFxView(SideBarFxView<?> sideBar, Dimension2D centerDimension) {
         super();
         this.sideBar = sideBar;
+        this.centerDimension = centerDimension;
     }
 
     @Override
@@ -248,7 +252,6 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
     }
 
     private void setInitialSizeAndPosition() {
-        var centerDimension = sideBar.getCenterDimension();
         double width = centerDimension.getWidth();
         double height = centerDimension.getHeight();
         var presenter = getPresenter();

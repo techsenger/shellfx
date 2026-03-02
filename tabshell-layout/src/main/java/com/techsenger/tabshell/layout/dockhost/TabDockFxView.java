@@ -102,9 +102,6 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         super.addListeners();
         ValueUtils.callAndAddListener(draggable, (ov, oldV, newV) -> {
             if (newV) {
-                dragIconView.setOnDragDetected(e -> dockHost.onDockDragDetected(this, dragIconView, e));
-                dragIconView.setOnMouseDragged(e -> dockHost.onDockMouseDragged(this, dragIconView, e));
-                dragIconView.setOnMouseReleased(e -> dockHost.onDockMouseReleased(this, dragIconView, e));
                 tabHeaderFirstBox.getChildren().add(0, dragIconView);
             } else {
                 tabHeaderFirstBox.getChildren().remove(dragIconView);
@@ -112,8 +109,9 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         });
         var tabPane = getNode();
         tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
-            if (tabPane.getTabs().isEmpty() && getPresenter().getMinimizedPosition() == null) {
-                dockHost.processEmptyTabPane(tabPane);
+            if (tabPane.getTabs().isEmpty()
+                    && getPresenter().getTransitionState() != TabDockTransitionState.TO_MINIMIZED) {
+                dockHost.getComposer().removeTabDock(this);
             }
         });
     }
@@ -121,7 +119,14 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        minimizeButton.setOnAction(e -> dockHost.minimizeTabDock(this));
+        dragIconView.setOnDragDetected(e -> dockHost.onDockDragDetected(this, dragIconView, e));
+        dragIconView.setOnMouseDragged(e -> dockHost.onDockMouseDragged(this, dragIconView, e));
+        dragIconView.setOnMouseReleased(e -> dockHost.onDockMouseReleased(this, dragIconView, e));
+        minimizeButton.setOnAction(e -> {
+            getPresenter().onMinimize();
+            dockHost.getComposer().minimizeTabDock(this);
+            getPresenter().onMinimized();
+        });
         var tabPane = getNode();
         tabPane.addTabDragHandler(tab -> dockHost.onTabDrag((ComponentTab) tab));
         // this handler is called when mouse is over TabHeaderArea

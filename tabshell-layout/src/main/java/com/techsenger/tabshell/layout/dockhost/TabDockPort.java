@@ -42,4 +42,6 @@ public interface TabDockPort extends AreaPort {
      * @param position the original {@link ComponentPosition} of the component before minimization
      */
     void setMinimizedPosition(ComponentPosition position);
+
+    TabDockState getState();
 }
