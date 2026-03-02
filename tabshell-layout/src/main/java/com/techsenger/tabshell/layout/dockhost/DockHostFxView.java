@@ -535,6 +535,10 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         return (AbstractContainer<?>) view.getNode().getParent();
     }
 
+    private static boolean hasContainer(AreaFxView<?> view) {
+        return view.getNode().getParent() instanceof  AbstractContainer<?>;
+    }
+
     private static TabDockContainer getContainer(TabDockFxView<?> view) {
         return (TabDockContainer) view.getNode().getParent();
     }
@@ -2260,8 +2264,8 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         var iterator = getRoot().depthFirstIterator();
         while (iterator.hasNext()) {
             ChildFxView<?> child = (ChildFxView<?>) iterator.next();
-            if (child instanceof AreaFxView<?> area) {
-                AbstractContainer container = getContainer(area);
+            if (child instanceof AreaFxView<?> area && hasContainer(area)) {
+                AbstractContainer<?> container = getContainer(area);
                 container.updateDragInProgress(value, type);
             }
         }
