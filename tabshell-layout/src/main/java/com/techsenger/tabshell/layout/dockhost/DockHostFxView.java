@@ -1336,7 +1336,6 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         // saving current position
         var side = resolveSide(dock);
         SplitSpaceFxView<?> parent = (SplitSpaceFxView<?>) dock.getParent();
-        var parentPos = parent.getNode().getDividerPositions();
         var index = parent.getChildren().indexOf(dock);
         var siblings = parent.getChildren().stream().filter(c -> c != dock)
                 .map(c -> c.getDescriptor().getUuid()).collect(Collectors.toList());
