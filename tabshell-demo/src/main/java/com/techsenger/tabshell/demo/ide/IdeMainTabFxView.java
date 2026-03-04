@@ -53,11 +53,12 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?, ?>> extends Abstr
 
         @Override
         public DialogPort addDemoDialog(boolean resizable) {
-            var v = new DemoDialogFxView(resizable);
+            var v = new DemoDialogFxView();
             var p = new DemoDialogPresenter(v);
             p.initialize();
+            p.setResizable(resizable);
             view.getShell().getComposer().addDialog(v);
-            return p.getPort();
+            return p;
         }
 
         @Override
@@ -70,7 +71,7 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?, ?>> extends Abstr
             } else {
                 view.getComposer().addPopup(v, Anchors.bottomRight(20, 20));
             }
-            return p.getPort();
+            return p;
         }
     }
 

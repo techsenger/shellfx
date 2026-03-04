@@ -54,44 +54,47 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
 
         @Override
         public DialogPort addAlertDialog(AlertDialogType type, String message) {
-            var view = new AlertDialogFxView<>(false);
+            var view = new AlertDialogFxView<>();
             var presenter = new AlertDialogPresenter<>(view, type, message);
             presenter.initialize();
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
-            return presenter.getPort();
+            return presenter;
         }
 
         @Override
         public NameValueDialogPort addNameValueDialog() {
-            var view = new NameValueDialogFxView<>(true);
+            var view = new NameValueDialogFxView<>();
             var presenter = new NameValueDialogPresenter<>(view);
             presenter.initialize();
+            presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
-            return presenter.getPort();
+            return presenter;
         }
 
         @Override
         public FileChooserDialogPort addFileChooserDialog(FileChooserType type, AppearanceSettings settings,
                 HistoryManager manager) {
-            var view = new FileChooserDialogFxView<>(true);
+            var view = new FileChooserDialogFxView<>();
             var presenter = new FileChooserDialogPresenter<>(view, type, settings, manager);
             presenter.initialize();
+            presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
-            return presenter.getPort();
+            return presenter;
         }
 
         @Override
         public DialogPort addPagedDialog(HistoryManager hm) {
-            var view = new PagedDialogFxView(true);
+            var view = new PagedDialogFxView();
             var presenter = new PagedDialogPresenter(view,
                     () -> hm.getOrCreateHistory(PagedDialogHistory.class, PagedDialogHistory::new));
             presenter.initialize();
+            presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
-            return presenter.getPort();
+            return presenter;
         }
     }
 
@@ -102,7 +105,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
     private final ResultButton closeButton = new ResultButton(DialogsDialogButtons.CLOSE, "Close");
 
     public DialogsDialogFxView() {
-        super(true);
+        super();
     }
 
     @Override
@@ -153,6 +156,5 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         VBox.setVgrow(wrapper, Priority.ALWAYS);
         getContentBox().getChildren().add(wrapper);
         registerButtons(closeButton);
-        addRightButtons(DialogsDialogButtons.CLOSE);
     }
 }

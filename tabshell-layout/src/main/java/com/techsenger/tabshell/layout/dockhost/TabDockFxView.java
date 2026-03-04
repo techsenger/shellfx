@@ -24,10 +24,7 @@ import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.List;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -51,8 +48,6 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
 
     private final HBox tabHeaderLastBox = new HBox(minimizeButton);
 
-    private final BooleanProperty draggable = new SimpleBooleanProperty(true);
-
     private DockHostFxView<?> dockHost;
 
     protected TabDockFxView() {
@@ -60,13 +55,16 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
     }
 
     @Override
-    public boolean isDraggable() {
-        return draggable.get();
-    }
-
-    @Override
     public void setDraggable(boolean value) {
-        this.draggable.set(value);
+        if (value) {
+            if (dragIconView.getParent() == null) {
+            tabHeaderFirstBox.getChildren().add(0, dragIconView);
+            }
+        } else {
+            if (dragIconView.getParent() != null) {
+                tabHeaderFirstBox.getChildren().remove(dragIconView);
+            }
+        }
     }
 
     @Override
@@ -100,13 +98,6 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
     @Override
     protected void addListeners() {
         super.addListeners();
-        ValueUtils.callAndAddListener(draggable, (ov, oldV, newV) -> {
-            if (newV) {
-                tabHeaderFirstBox.getChildren().add(0, dragIconView);
-            } else {
-                tabHeaderFirstBox.getChildren().remove(dragIconView);
-            }
-        });
         var tabPane = getNode();
         tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
             if (tabPane.getTabs().isEmpty()

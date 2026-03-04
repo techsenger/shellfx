@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.alert;
 
+import com.techsenger.tabshell.material.button.DefaultResultButtonName;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
@@ -24,11 +25,11 @@ import com.techsenger.tabshell.material.button.ResultButtonName;
  */
 public interface AlertDialogButtons {
 
-    ResultButtonName OK = new ResultButtonName();
+    ResultButtonName OK = new DefaultResultButtonName();
 
-    ResultButtonName YES = new ResultButtonName();
+    ResultButtonName YES = new DefaultResultButtonName();
 
-    ResultButtonName NO = new ResultButtonName();
+    ResultButtonName NO = new DefaultResultButtonName();
 
-    ResultButtonName CANCEL = new ResultButtonName();
+    ResultButtonName CANCEL = new DefaultResultButtonName();
 }

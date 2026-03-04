@@ -64,7 +64,7 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
 
         @Override
         public ToolBarPort getToolBar() {
-            return view.toolBar.getPresenter().getPort();
+            return view.toolBar.getPresenter();
         }
     }
 
@@ -118,8 +118,6 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
     @Override
     protected void build() {
         super.build();
-        setTitle("Stylesheets");
-        setClosable(false);
         treeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
         treeView.setShowRoot(true);
         treeView.setCellFactory(e -> new StylesheetTreeCell());

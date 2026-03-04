@@ -781,12 +781,12 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
 
         @Override
         public SplitSpacePort getRoot() {
-            return view.getRoot() == null ? null : view.getRoot().getPresenter().getPort();
+            return view.getRoot() == null ? null : view.getRoot().getPresenter();
         }
 
         @Override
         public AreaPort getMain() {
-            return view.getMain() == null ? null : view.getMain().getPresenter().getPort();
+            return view.getMain() == null ? null : view.getMain().getPresenter();
         }
 
         public TabDockFxView<?> createTabDock() {
@@ -816,10 +816,9 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             logger.debug("{} Removed TabDock", getDescriptor().getLogPrefix());
         }
 
-        public SplitSpaceFxView<?> createSplitSpace(Orientation orientation) {
+        public SplitSpaceFxView<?> createSplitSpace() {
             var v = new SplitSpaceFxView<>();
             v.setDockHost(view);
-            v.setOrientation(orientation);
             var p = new SplitSpacePresenter<>(v);
             return v;
         }
@@ -849,23 +848,23 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             switch (side) {
                 case RIGHT -> {
                     view.getNode().setRight(null);
-                    var sideBar = getRightBar();
+                    var sideBar = view.getRightBar();
                     rightBar.set(null);
-                    sideBar.deinitialize();
+                    sideBar.getPresenter().deinitialize();
                     getModifiableChildren().remove(sideBar);
                 }
                 case BOTTOM -> {
                     view.getNode().setBottom(null);
-                    var sideBar = getBottomBar();
+                    var sideBar = view.getBottomBar();
                     bottomBar.set(null);
-                    sideBar.deinitialize();
+                    sideBar.getPresenter().deinitialize();
                     getModifiableChildren().remove(sideBar);
                 }
                 case LEFT -> {
                     view.getNode().setLeft(null);
-                    var sideBar = getLeftBar();
+                    var sideBar = view.getLeftBar();
                     leftBar.set(null);
-                    sideBar.deinitialize();
+                    sideBar.getPresenter().deinitialize();
                     getModifiableChildren().remove(sideBar);
                 }
                 default -> throw new AssertionError();
@@ -874,24 +873,24 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
 
         @Override
         public SideBarPort getRightBar() {
-            return view.getRightBar() == null ? null : view.getRightBar().getPresenter().getPort();
+            return view.getRightBar() == null ? null : view.getRightBar().getPresenter();
         }
 
         @Override
         public SideBarPort getBottomBar() {
-            return view.getBottomBar() == null ? null : view.getBottomBar().getPresenter().getPort();
+            return view.getBottomBar() == null ? null : view.getBottomBar().getPresenter();
         }
 
         @Override
         public SideBarPort getLeftBar() {
-            return view.getLeftBar() == null ? null : view.getLeftBar().getPresenter().getPort();
+            return view.getLeftBar() == null ? null : view.getLeftBar().getPresenter();
         }
 
         @Override
         public SideBarPort getBar(Side side) {
             var barFxView = view.resolveBar(side).get();
             if (barFxView != null) {
-                return barFxView.getPresenter().getPort();
+                return barFxView.getPresenter();
             } else {
                 return null;
             }
@@ -951,17 +950,17 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
 
         @Override
         public TabPopupPort getRightPopup() {
-            return view.getRightPopup() == null ? null : view.getRightPopup().getPresenter().getPort();
+            return view.getRightPopup() == null ? null : view.getRightPopup().getPresenter();
         }
 
         @Override
         public TabPopupPort getBottomPopup() {
-            return view.getBottomPopup() == null ? null : view.getBottomPopup().getPresenter().getPort();
+            return view.getBottomPopup() == null ? null : view.getBottomPopup().getPresenter();
         }
 
         @Override
         public TabPopupPort getLeftPopup() {
-            return view.getLeftPopup() == null ? null : view.getLeftPopup().getPresenter().getPort();
+            return view.getLeftPopup() == null ? null : view.getLeftPopup().getPresenter();
         }
 
         protected SideBarFxView<?> createBar(Side side, SideBarHistory history) {
@@ -1354,7 +1353,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         var pos = new ComponentPosition(pathFromRoot, siblings, parent.getNode().getOrientation(), side,
                 dock.getDescriptor().getUuid(), index, dock.getNode().getWidth(), dock.getNode().getHeight());
         pos.buildMaps();
-        dock.getPresenter().getPort().setMinimizedPosition(pos);
+        dock.getPresenter().setMinimizedPosition(pos);
         if (logger.isDebugEnabled()) {
             parent.logState("Before minimizing");
             logger.debug("{} Minimized position: {}", getDescriptor().getLogPrefix(), pos);
@@ -1377,7 +1376,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         // attempt 0 - find the parent by UUID
         var position = dock.getPresenter().getMinimizedPosition();
         var pathFromRoot = position.getPathFromRoot();
-        dock.getPresenter().getPort().setMinimizedPosition(null);
+        dock.getPresenter().setMinimizedPosition(null);
         var splitSpacesByUuid = new HashMap<UUID, SplitSpaceFxView<?>>();
         var iterator = getRoot().breadthFirstIterator();
         while (iterator.hasNext()) {
@@ -1505,7 +1504,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         Side resolvedSide;
         if (child == getMain()) {
             SplitSpaceFxView<?> parentSplitSpace = (SplitSpaceFxView<?>) child.getParent();
-            if (parentSplitSpace.getOrientation() == Orientation.HORIZONTAL) {
+            if (parentSplitSpace.getPresenter().getOrientation() == Orientation.HORIZONTAL) {
                 resolvedSide = LEFT;
                 if (isLastPosition) {
                     resolvedSide = RIGHT;
@@ -1944,8 +1943,9 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         if (currentOrientation == Orientation.HORIZONTAL) {
             newOrientation = Orientation.VERTICAL;
         }
-        var newSplitSpace = getComposer().createSplitSpace(newOrientation);
+        var newSplitSpace = getComposer().createSplitSpace();
         newSplitSpace.getPresenter().initialize();
+        newSplitSpace.getPresenter().setOrientation(newOrientation);
 
         double[] parentOldPositions = null;
         SplitPane parentSplitPane = null;

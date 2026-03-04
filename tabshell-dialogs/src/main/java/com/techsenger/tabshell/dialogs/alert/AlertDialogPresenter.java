@@ -26,6 +26,7 @@ import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.INFO;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.WARNING;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
+import com.techsenger.tabshell.material.icon.Icon;
 import java.util.function.Consumer;
 
 /**
@@ -39,15 +40,12 @@ public class AlertDialogPresenter<V extends AlertDialogView, C extends DialogCom
 
     private String message;
 
+    private Icon<?> messageIcon;
+
     public AlertDialogPresenter(V view, AlertDialogType dialogType, String message) {
         super(view);
         this.dialogType = dialogType;
         this.message = message;
-    }
-
-    @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DialogComponents.ALERT_DIALOG);
     }
 
     @Override
@@ -64,41 +62,62 @@ public class AlertDialogPresenter<V extends AlertDialogView, C extends DialogCom
         return dialogType;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+        getView().setMessage(message);
+    }
+
+    public Icon<?> getMessageIcon() {
+        return messageIcon;
+    }
+
+    public void setMessageIcon(Icon<?> messageIcon) {
+        this.messageIcon = messageIcon;
+        getView().setMessageIcon(messageIcon);
+    }
+
+    @Override
+    protected Descriptor createDescriptor() {
+        return new Descriptor(DialogComponents.ALERT_DIALOG);
+    }
+
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        var view = getView();
         switch (dialogType) {
             case INFO:
-                view.setTitle("Info");
-                view.setMessageIcon(DialogIcons.INFO);
+                setTitle("Info");
+                setMessageIcon(DialogIcons.INFO);
             break;
             case ERROR:
-                view.setTitle("Error");
-                view.setMessageIcon(DialogIcons.ERROR);
+                setTitle("Error");
+                setMessageIcon(DialogIcons.ERROR);
             break;
             case WARNING:
-                view.setTitle("Warning");
-                view.setMessageIcon(DialogIcons.WARNING);
+                setTitle("Warning");
+                setMessageIcon(DialogIcons.WARNING);
             break;
             case CONFIRMATION:
-                view.setTitle("Confirm");
-                view.setMessageIcon(DialogIcons.QUESTION);
+                setTitle("Confirm");
+                setMessageIcon(DialogIcons.QUESTION);
                 break;
             default:
                 throw new AssertionError("Unknown type - " + dialogType);
         }
         if (dialogType != AlertDialogType.CONFIRMATION) {
-            view.addRightButtons(AlertDialogButtons.OK);
-            view.setButtonDefault(AlertDialogButtons.OK, true);
+            setRightButtons(AlertDialogButtons.OK);
+            setButtonDefault(AlertDialogButtons.OK, true);
         } else {
-            view.addRightButtons(AlertDialogButtons.NO, AlertDialogButtons.YES);
-            view.setButtonDefault(AlertDialogButtons.YES, true);
+            setRightButtons(AlertDialogButtons.NO, AlertDialogButtons.YES);
+            setButtonDefault(AlertDialogButtons.YES, true);
         }
         setResultAction((result) -> requestClose());
-        view.setPrefWidth(600);
-        getView().setMessage(message);
-        this.message = null;
-        view.setButtonWidthEqual(true);
+        setPrefWidth(600);
+        setMessage(message);
+        setButtonWidthEqual(true);
     }
 }

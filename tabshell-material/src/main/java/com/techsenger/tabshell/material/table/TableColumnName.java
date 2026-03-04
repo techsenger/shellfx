@@ -22,13 +22,6 @@ import com.techsenger.patternfx.core.Name;
  *
  * @author Pavel Castornii
  */
-public class TableColumnName extends Name {
+public interface TableColumnName extends Name {
 
-    public TableColumnName() {
-        super(null);
-    }
-
-    public TableColumnName(String text) {
-        super(text);
-    }
 }

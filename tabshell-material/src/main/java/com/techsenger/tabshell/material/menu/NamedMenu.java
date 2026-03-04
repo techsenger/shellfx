@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.material.menu;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.tabshell.material.Named;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
@@ -29,7 +30,7 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public class NamedMenu extends Menu implements NamedMenuElement<MenuName> {
+public class NamedMenu extends Menu implements NamedMenuElement<MenuName>, Named {
 
     private final MenuName name;
 

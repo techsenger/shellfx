@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.material.button;
 
-import com.techsenger.tabshell.material.icon.Icon;
+import com.techsenger.patternfx.core.AbstractName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface Iconed {
+public class DefaultButtonName extends AbstractName implements ButtonName {
 
-    /**
-     * Returns the icon of the component.
-     * @return
-     */
-    Icon<?> getIcon();
-
-    /**
-     * Sets the icon of the component.
-     *
-     * @param icon
-     */
-    void setIcon(Icon<?> icon);
+    public DefaultButtonName() {
+        super(null);
+    }
 
 }

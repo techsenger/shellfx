@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.dialogs;
 
 import com.techsenger.tabshell.material.button.ButtonName;
+import com.techsenger.tabshell.material.button.DefaultButtonName;
 
 /**
  *
@@ -24,13 +25,13 @@ import com.techsenger.tabshell.material.button.ButtonName;
  */
 public interface DialogButtonNames {
 
-    ButtonName OK = new ButtonName();
+    ButtonName OK = new DefaultButtonName();
 
-    ButtonName CANCEL = new ButtonName();
+    ButtonName CANCEL = new DefaultButtonName();
 
-    ButtonName APPLY = new ButtonName();
+    ButtonName APPLY = new DefaultButtonName();
 
-    ButtonName YES = new ButtonName();
+    ButtonName YES = new DefaultButtonName();
 
-    ButtonName NO = new ButtonName();
+    ButtonName NO = new DefaultButtonName();
 }

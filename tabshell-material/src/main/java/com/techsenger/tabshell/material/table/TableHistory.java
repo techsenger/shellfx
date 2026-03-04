@@ -24,21 +24,21 @@ import java.util.List;
  */
 public class TableHistory {
 
-    private List<TableColumnHistory> columns;
+    private List<TableColumnInfo> columns;
 
     public TableHistory() {
 
     }
 
-    public TableHistory(List<TableColumnHistory> columns) {
+    public TableHistory(List<TableColumnInfo> columns) {
         this.columns = columns;
     }
 
-    public List<TableColumnHistory> getColumns() {
+    public List<TableColumnInfo> getColumns() {
         return columns;
     }
 
-    public void setColumns(List<TableColumnHistory> columns) {
+    public void setColumns(List<TableColumnInfo> columns) {
         this.columns = columns;
     }
 }

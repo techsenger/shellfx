@@ -34,14 +34,5 @@ public interface TabDockPort extends AreaPort {
      */
     ComponentPosition getMinimizedPosition();
 
-    /**
-     * Sets the value that stores the original position of this component in the layout before it was minimized
-     * to the SideBar. This position is used to restore the component to its original place when expanded
-     * from the SideBar.
-     *
-     * @param position the original {@link ComponentPosition} of the component before minimization
-     */
-    void setMinimizedPosition(ComponentPosition position);
-
     TabDockState getState();
 }

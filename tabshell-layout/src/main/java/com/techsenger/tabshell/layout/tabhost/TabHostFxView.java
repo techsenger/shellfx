@@ -57,7 +57,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         @Override
         public List<? extends TabPort> getTabs() {
             return view.getNode().getTabs().stream()
-                    .map(t -> ((ComponentTab) t).getView().getPresenter().getPort())
+                    .map(t -> ((ComponentTab) t).getView().getPresenter())
                     .toList();
         }
 
@@ -65,7 +65,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         public TabPort getSelectedTab() {
             var tab = view.getSelectedTab();
             if (tab != null) {
-                return tab.getPresenter().getPort();
+                return tab.getPresenter();
             } else {
                 return null;
             }
@@ -160,18 +160,8 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     }
 
     @Override
-    public boolean isTabHeaderAutoHide() {
-        return tabHeaderAutoHide.get();
-    }
-
-    @Override
     public void setTabHeaderAutoHide(boolean value) {
         this.tabHeaderAutoHide.set(value);
-    }
-
-    @Override
-    public boolean isTabHeaderVisible() {
-        return tabHeaderVisible.get();
     }
 
     @Override

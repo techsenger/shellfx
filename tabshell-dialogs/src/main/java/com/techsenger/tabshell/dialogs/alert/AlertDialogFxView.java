@@ -48,23 +48,13 @@ public class AlertDialogFxView<P extends AlertDialogPresenter<?, ?>> extends Abs
 
     private final ResultButton noButton = new ResultButton(AlertDialogButtons.NO, "No");
 
-    public AlertDialogFxView(boolean resizable) {
-        super(resizable);
-    }
-
-    @Override
-    public String getMessage() {
-        return messageLabel.getText();
+    public AlertDialogFxView() {
+        super();
     }
 
     @Override
     public void setMessage(String message) {
         this.messageLabel.setText(message);
-    }
-
-    @Override
-    public Icon<?> getMessageIcon() {
-        return this.messageIconViewBox.getIcon();
     }
 
     @Override

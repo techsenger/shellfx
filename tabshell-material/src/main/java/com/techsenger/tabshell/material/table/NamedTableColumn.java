@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.material.table;
 
 import com.techsenger.tabshell.material.Named;
+import java.util.function.BiConsumer;
 import javafx.scene.control.TableColumn;
 
 /**
@@ -27,17 +28,18 @@ public class NamedTableColumn<S, T> extends TableColumn<S, T> implements Named {
 
     private final TableColumnName name;
 
-    public NamedTableColumn(TableColumnName name) {
+    private BiConsumer<Double, Double> partialListener;
+
+    public <R extends Enum<R> & TableColumnName> NamedTableColumn(R name) {
         super();
         this.name = name;
     }
 
-    public NamedTableColumn(TableColumnName name, String string) {
+    public <R extends Enum<R> & TableColumnName> NamedTableColumn(R name, String string) {
         super(string);
         this.name = name;
     }
 
-    @Override
     public TableColumnName getName() {
         return name;
     }

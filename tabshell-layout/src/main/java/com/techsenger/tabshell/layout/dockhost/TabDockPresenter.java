@@ -26,27 +26,7 @@ import com.techsenger.tabshell.layout.tabhost.TabHostPresenter;
  * @author Pavel Castornii
  */
 public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
-        extends TabHostPresenter<V, C> {
-
-    protected class Port extends TabHostPresenter<V, C>.Port implements TabDockPort {
-
-        private final TabDockPresenter<V, C> presenter = TabDockPresenter.this;
-
-        @Override
-        public ComponentPosition getMinimizedPosition() {
-            return presenter.getMinimizedPosition();
-        }
-
-        @Override
-        public void setMinimizedPosition(ComponentPosition position) {
-            presenter.minimizedPosition = position;
-        }
-
-        @Override
-        public TabDockState getState() {
-            return presenter.state;
-        }
-    }
+        extends TabHostPresenter<V, C> implements TabDockPort  {
 
     private ComponentPosition minimizedPosition;
 
@@ -54,26 +34,33 @@ public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
 
     private TabDockTransitionState transitionState;
 
+    private boolean draggable;
+
     public TabDockPresenter(V view) {
         super(view);
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public ComponentPosition getMinimizedPosition() {
+        return this.minimizedPosition;
     }
 
+    @Override
     public TabDockState getState() {
         return state;
     }
 
-    protected ComponentPosition getMinimizedPosition() {
-        return minimizedPosition;
+    public boolean isDraggable() {
+        return draggable;
     }
 
-    @Override
-    protected Port createPort() {
-        return new TabDockPresenter.Port();
+    public void setDraggable(boolean draggable) {
+        this.draggable = draggable;
+        getView().setDraggable(draggable);
+    }
+
+    protected void setMinimizedPosition(ComponentPosition position) {
+        this.minimizedPosition = position;
     }
 
     @Override

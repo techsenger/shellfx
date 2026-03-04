@@ -34,33 +34,8 @@ import com.techsenger.tabshell.material.menu.MenuName;
  *
  * @author Pavel Castornii
  */
-public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaView, MenuAwareAreaComposer> {
-
-    protected class Port extends AbstractAreaPresenter<MenuAwareAreaView, MenuAwareAreaComposer>.Port
-            implements MenuAwarePort {
-
-        private final MenuAwareAreaPresenter presenter = MenuAwareAreaPresenter.this;
-
-        @Override
-        public MenuHelper getMenuHelper(MenuName menuName) {
-            return presenter.getMenuHelpers().getMenuHelpersByName().get(menuName);
-        }
-
-        @Override
-        public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-            return presenter.getMenuHelpers().getMenuItemHelpersByName().get(menuItemName);
-        }
-
-        @Override
-        public void onMenuShowing(MenuName menuName) {
-
-        }
-
-        @Override
-        public void onMenuHiding(MenuName menuName) {
-
-        }
-    }
+public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaView, MenuAwareAreaComposer>
+        implements MenuAwarePort {
 
     public MenuAwareAreaPresenter(MenuAwareAreaView view) {
         super(view);
@@ -70,13 +45,23 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public MenuHelper getMenuHelper(MenuName menuName) {
+        return getMenuHelpers().getMenuHelpersByName().get(menuName);
     }
 
     @Override
-    protected Port createPort() {
-        return new MenuAwareAreaPresenter.Port();
+    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
+        return getMenuHelpers().getMenuItemHelpersByName().get(menuItemName);
+    }
+
+    @Override
+    public void onMenuShowing(MenuName menuName) {
+
+    }
+
+    @Override
+    public void onMenuHiding(MenuName menuName) {
+
     }
 
     @Override

@@ -187,12 +187,12 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
 
         @Override
         public ToolBarPort getComponentToolBar() {
-            return view.componentToolBar.getPresenter().getPort();
+            return view.componentToolBar.getPresenter();
         }
 
         @Override
         public ToolBarPort getInspectorToolBar() {
-            return view.inspectorToolBar.getPresenter().getPort();
+            return view.inspectorToolBar.getPresenter();
         }
 
         protected ToolBarFxView<?> createComponentToolBar() {
@@ -254,16 +254,6 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     }
 
     @Override
-    public ComponentItem getSelectedComponent() {
-        var item = componentTreeView.getSelectionModel().getSelectedItem();
-        if (item != null) {
-            return item.getValue();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public void updateInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory) {
         if (!items.isEmpty()) {
             var root = createRootItem(items, getPresenter(), expandedByCategory);
@@ -292,8 +282,6 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     @Override
     protected void build() {
         super.build();
-        setTitle("Components");
-        setClosable(false);
         componentTreeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
         componentTreeView.setShowRoot(true);
         componentTreeView.setCellFactory(e -> new ComponentTreeCell());
@@ -408,10 +396,10 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
                 if (fxView instanceof ParentFxView<?> pfxv) {
                     fxComposerClass = pfxv.getComposer().getClass();
                 }
-                getPresenter().onComponentSelected(fxView.getClass(), fxComposerClass, fxView.getPresenter(),
+                getPresenter().onComponentSelected(component, fxView.getClass(), fxComposerClass, fxView.getPresenter(),
                         element);
             } else {
-                getPresenter().onComponentSelected(null, null, null, null);
+                getPresenter().onComponentSelected(null, null, null, null, null);
             }
         });
     }

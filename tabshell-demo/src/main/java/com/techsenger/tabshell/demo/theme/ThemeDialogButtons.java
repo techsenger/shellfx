@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demo.theme;
 
+import com.techsenger.tabshell.material.button.DefaultResultButtonName;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
@@ -24,7 +25,7 @@ import com.techsenger.tabshell.material.button.ResultButtonName;
  */
 public interface ThemeDialogButtons {
 
-    ResultButtonName CANCEL = new ResultButtonName();
+    ResultButtonName CANCEL = new DefaultResultButtonName();
 
-    ResultButtonName OK = new ResultButtonName();
+    ResultButtonName OK = new DefaultResultButtonName();
 }

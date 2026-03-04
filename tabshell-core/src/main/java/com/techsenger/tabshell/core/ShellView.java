@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface ShellView extends ParentView, Iconed, Titled {
+public interface ShellView extends ParentView, WriteOnlyShell {
 
     /**
      * The width of the stage if the stage is not maximized.
@@ -36,18 +36,6 @@ public interface ShellView extends ParentView, Iconed, Titled {
      * The height of the stage if the stage is not maximized.
      */
     double DEFAULT_HEIGHT = 800;
-
-    boolean isMaximized();
-
-    void setMaximized(boolean value);
-
-    double getWidth();
-
-    void setWidth(double value);
-
-    double getHeight();
-
-    void setHeight(double value);
 
     /**
      * Returns the control registry. There can be only one registry in the application.

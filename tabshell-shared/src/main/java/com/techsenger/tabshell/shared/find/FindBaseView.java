@@ -27,77 +27,45 @@ public interface FindBaseView extends AreaView {
 
     void setFindText(String text);
 
-    String getFindText();
-
     void setFindTexts(List<String> texts);
 
-    List<String> getFindTexts();
-
     void setNotFound(boolean value);
-
-    boolean isNotFound();
 
     void setupMatchCase();
 
     void setMatchCaseSelected(boolean value);
 
-    boolean isMatchCaseSelected();
-
-    void setMatchCaseDisable(boolean value);
-
-    boolean isMatchCaseDisable();
+    void setMatchCaseDisabled(boolean value);
 
     void setMatchesText(String text);
 
-    String getMatchesText();
-
     void setMatchesVisible(boolean visible);
-
-    boolean isMatchesVisible();
 
     void setClearVisible(boolean visible);
 
-    boolean isClearVisible();
-
     void setupFindNext();
 
-    void setFindNextDisable(boolean value);
-
-    boolean isFindNextDisable();
+    void setFindNextDisabled(boolean value);
 
     void setupFindPrevious();
 
-    void setFindPreviousDisable(boolean value);
-
-    boolean isFindPreviousDisable();
+    void setFindPreviousDisabled(boolean value);
 
     void setupWholeWord();
 
     void setWholeWordSelected(boolean value);
 
-    boolean isWholeWordSelected();
-
-    void setWholeWordDisable(boolean value);
-
-    boolean isWholeWordDisable();
+    void setWholeWordDisabled(boolean value);
 
     void setupRegExp();
 
     void setRegExpSelected(boolean value);
 
-    boolean isRegExpSelected();
-
-    void setRegExpDisable(boolean value);
-
-    boolean isRegExpDisable();
+    void setRegExpDisabled(boolean value);
 
     void setupHighlight();
 
     void setHighlightSelected(boolean value);
 
-    boolean isHighlightSelected();
-
-    void setHighlightDisable(boolean value);
-
-    boolean isHighlightDisable();
+    void setHighlightDisabled(boolean value);
 }

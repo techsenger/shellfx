@@ -16,23 +16,14 @@
 
 package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.CloseablePresenter;
 import com.techsenger.tabshell.core.area.AreaPresenter;
+import com.techsenger.tabshell.core.CloseAwarePresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupPresenter<V extends PopupView, C extends PopupComposer>
-        extends AreaPresenter<V, C>, CloseablePresenter<V, C> {
+public interface PopupPresenter<V extends PopupView, C extends PopupComposer> extends AreaPresenter<V, C>,
+        CloseAwarePresenter<V, C>, PopupPort {
 
-    /**
-     * Returns {@code true} if the popup blocks interaction with underlying content (modal) and {@code false} otherwise.
-     *
-     * @return
-     */
-    boolean isModal();
-
-    @Override
-    PopupPort getPort();
 }

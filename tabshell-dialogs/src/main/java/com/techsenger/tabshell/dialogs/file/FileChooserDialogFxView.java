@@ -24,19 +24,21 @@ import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
-import static com.techsenger.tabshell.dialogs.file.FileChooserType.OPEN;
-import static com.techsenger.tabshell.dialogs.file.FileChooserType.SAVE_AS;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.list.TextFieldColumnListCell;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.material.table.TableHistory;
+import com.techsenger.tabshell.material.table.TableColumnInfo;
+import com.techsenger.tabshell.material.table.TableColumnManager;
+import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.shared.style.SharedIcons;
+import com.techsenger.tabshell.storage.FileColumnBuilder;
+import com.techsenger.tabshell.storage.FileColumnNames;
 import com.techsenger.tabshell.storage.GenericFile;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -50,10 +52,13 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
+import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -140,11 +145,11 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
             var dialog = createAlertDialog(type, message);
             dialog.getPresenter().initialize();
             getContainer().getComposer().addDialog(dialog);
-            return dialog.getPresenter().getPort();
+            return dialog.getPresenter();
         }
 
         protected AlertDialogFxView<?> createAlertDialog(AlertDialogType type, String message) {
-            var view = new AlertDialogFxView(false);
+            var view = new AlertDialogFxView();
             var presenter = new AlertDialogPresenter<>(view, type, message);
             return view;
         }
@@ -231,9 +236,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
 
     private final ObservableList<GenericFile> files = FXCollections.observableArrayList();
 
-    private FileTableView fileTableView;
+    private final TableView<GenericFile> fileTableView = new TableView<>(this.files);
 
-    private TableColumn<GenericFile, ?> nameColumn;
+    private TableColumnManager fileColumnManager = new TableColumnManager(fileTableView);
 
     private FileListView fileListView;
 
@@ -249,8 +254,8 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
 
     private AppearanceSettings settings;
 
-    public FileChooserDialogFxView(boolean  resizable) {
-        super(resizable);
+    public FileChooserDialogFxView() {
+        super();
     }
 
     @Override
@@ -269,38 +274,13 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     }
 
     @Override
-    public void setLocationCaption(String value) {
-        this.locationLabel.setText(value);
-    }
-
-    @Override
-    public String getLocationCaption() {
-        return this.locationLabel.getText();
-    }
-
-    @Override
-    public List<Location> getLocations() {
-        return Collections.unmodifiableList(locationComboBox.getItems());
-    }
-
-    @Override
     public void setLocations(List<Location> locations) {
         locationComboBox.setItems(FXCollections.observableArrayList(locations));
     }
 
     @Override
-    public Location getLocation() {
-        return locationComboBox.getSelectionModel().getSelectedItem();
-    }
-
-    @Override
     public void setLocation(Location value) {
         this.locationComboBox.getSelectionModel().select(value);
-    }
-
-    @Override
-    public boolean isListSelected() {
-        return listButton.isSelected();
     }
 
     @Override
@@ -310,48 +290,26 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     }
 
     @Override
-    public boolean isDetailsSelected() {
-        return detailsButton.isSelected();
-    }
-
-    @Override
     public void setDetailsSelected(boolean value) {
         this.detailsButton.setSelected(value);
         updateDetailsSelected(value);
     }
 
     @Override
-    public void setTableHistory(TableHistory history) {
-        this.fileTableView.restoreHistory(history);
-        this.nameColumn = this.fileTableView.findNameColumn();
-        nameColumn.setOnEditCancel(e -> {
-            var file = (GenericFile) e.getOldValue();
-            getPresenter().onEditCancelled(file);
-            nameColumn.setEditable(false);
-        });
-        nameColumn.setOnEditCommit(e -> {
-            //var oldFile = (GenericFile) e.getOldValue();
-            var newFile = (GenericFile) e.getNewValue(); //from converter
-            getPresenter().onEditCommitted(newFile);
-            nameColumn.setEditable(false);
-        });
+    public void setLocationCaption(String value) {
+        this.locationLabel.setText(value);
     }
 
     @Override
-    public TableHistory getTableHistory() {
-        return this.fileTableView.createHistory();
-    }
-
-    @Override
-    public List<GenericFile> getFiles() {
-        return Collections.unmodifiableList(this.files);
+    public void addColumns(Map<TableColumnName, TableColumnInfo> infosByName) {
+        this.fileColumnManager.addColumns(infosByName);
     }
 
     @Override
     public void setFiles(List<GenericFile> files) {
         this.files.clear();
         this.files.addAll(files);
-        if (isListSelected()) {
+        if (this.listButton.isSelected()) {
             this.fileListView.refresh();
         }
     }
@@ -374,7 +332,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
 
     @Override
     public void selectFile(int index) {
-        if (isListSelected()) {
+        if (this.listButton.isSelected()) {
             this.fileListView.getSelectionModel().select(index);
         } else {
             this.fileTableView.getSelectionModel().select(index);
@@ -392,23 +350,15 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     }
 
     @Override
-    public GenericFile getSelectedFile() {
-        if (isListSelected()) {
-            return this.fileListView.getSelectionModel().getSelectedItem();
-        } else {
-            return this.fileTableView.getSelectionModel().getSelectedItem();
-        }
-    }
-
-    @Override
     public void editFile(int index) {
         if (listButton.isSelected()) {
             this.fileListView.getSelectionModel().select(index);
             this.fileListView.edit(index);
         } else {
             this.fileTableView.getSelectionModel().select(index);
-            nameColumn.setEditable(true);
-            this.fileTableView.edit(index, nameColumn);
+            var column = fileColumnManager.getColumnsByName().get(FileColumnNames.NAME);
+            column.setEditable(true);
+            this.fileTableView.edit(index, (TableColumn<GenericFile, Object>) column);
         }
     }
 
@@ -423,46 +373,13 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     }
 
     @Override
-    public String getFileName() {
-        return fileNameTextField.getText();
-    }
-
-    @Override
-    public List<ExtensionFilter> getExtensionFilters() {
-        return Collections.unmodifiableList(this.filterComboBox.getItems());
-    }
-
-    @Override
     public void setExtensionFilters(List<ExtensionFilter> filters) {
         this.filterComboBox.setItems(FXCollections.observableArrayList(filters));
     }
 
     @Override
-    public ExtensionFilter getExtensionFilter() {
-        return this.filterComboBox.getSelectionModel().getSelectedItem();
-    }
-
-    @Override
     public void setExtensionFilter(ExtensionFilter filter) {
         this.filterComboBox.getSelectionModel().select(filter);
-    }
-
-    @Override
-    public void setupFor(FileChooserType type) {
-        switch (type) {
-            case OPEN:
-                setTitle("Open");
-                setIcon(SharedIcons.OPEN);
-                setLocationCaption("Look In");
-                break;
-            case SAVE_AS:
-                setTitle("Save As");
-                setIcon(SharedIcons.SAVE_AS);
-                setLocationCaption("Save In");
-                break;
-            default:
-                throw new AssertionError();
-        }
     }
 
     @Override
@@ -473,7 +390,46 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     @Override
     protected void build() {
         super.build();
-        this.fileTableView = new FileTableView(files, this.settings);
+        this.fileTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.SAME_SPACING_COLUMN);
+        this.fileTableView.setEditable(true);
+        this.fileTableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
+        this.fileTableView.setPlaceholder(new Label(""));
+        var columnBuilder = new FileColumnBuilder(settings.getRegularFont());
+        this.fileColumnManager.registerColumnFactory(FileColumnNames.TYPE, () -> {
+            var column = columnBuilder.buildTypeColumn(SharedIcons.DIRECTORY, SharedIcons.FILE);
+            column.setEditable(false);
+            column.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN_FIRST);
+            return column;
+        });
+        var strConverter = new FileStringConverter();
+        this.fileColumnManager.registerColumnFactory(FileColumnNames.NAME, () -> {
+            var column = columnBuilder.buildNameColumn();
+            column.setEditable(false);
+            column.setCellFactory(r -> new TextFieldTableCell<>(strConverter));
+            column.setOnEditCancel(e -> {
+                var file = (GenericFile) e.getOldValue();
+                getPresenter().onEditCancelled(file);
+                column.setEditable(false);
+            });
+            column.setOnEditCommit(e -> {
+                var newFile = (GenericFile) e.getNewValue(); //from converter
+                getPresenter().onEditCommitted(newFile);
+                column.setEditable(false);
+            });
+            return column;
+        });
+        this.fileColumnManager.registerColumnFactory(FileColumnNames.SIZE, () -> {
+            var column = columnBuilder.buildSizeColumn();
+            column.setEditable(false);
+            return column;
+        });
+        this.fileColumnManager.registerColumnFactory(FileColumnNames.LAST_MODIFIED, () -> {
+            var coumn = columnBuilder.buildLastModifiedColumn();
+            coumn.setEditable(false);
+            coumn.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN_LAST);
+            return coumn;
+        });
+
         this.fileListView = new FileListView(files, new ContextMenu(createRefreshMenuItem()));
         updateListSelected(true);
 
@@ -565,25 +521,27 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         getContentBox().getChildren().addAll(main);
 
         registerButtons(cancelButton, okButton);
-        addRightButtons(FileChooserButtons.CANCEL, FileChooserButtons.OK);
-        setButtonDefault(FileChooserButtons.OK, true);
     }
 
     @Override
     protected void addListeners() {
         this.fileListView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
-            if (isListSelected()) {
+            if (this.listButton.isSelected()) {
                 getPresenter().onFileSelected(newV);
             }
         });
         this.fileTableView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
-            if (isDetailsSelected()) {
+            if (this.detailsButton.isSelected()) {
                 getPresenter().onFileSelected(newV);
             }
         });
         this.filterComboBox.getSelectionModel().selectedItemProperty().addListener((ov, odlV, newV) -> {
             getPresenter().onFilterSelected(newV);
         });
+        this.fileColumnManager.setWidthListener(getPresenter()::onColumnWidthChanged);
+        this.fileColumnManager.setSortTypeListener(getPresenter()::onColumnSortTypeChanged);
+        this.fileColumnManager.setIndexListener(getPresenter()::onColumnIndexChanged);
+        this.fileColumnManager.setSortIndexListener(getPresenter()::onColumnSortIndexChanged);
     }
 
     @Override
@@ -592,17 +550,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         var presenter = getPresenter();
         this.levelUpButton.setOnAction(e -> presenter.onNavigateUp());
         this.homeButton.setOnAction(e -> presenter.onNavigateHome());
-        this.createButton.setOnAction(e -> presenter.onNewDirectoryRequested());
-        this.listButton.setOnAction(e -> {
-            if (listButton.isSelected()) {
-                getPresenter().onListSelected();
-            }
-        });
-        this.detailsButton.setOnAction(e -> {
-            if (detailsButton.isSelected()) {
-                getPresenter().onDetailsSelected();
-            }
-        });
+        this.createButton.setOnAction(e -> presenter.onNewDirectory());
+        this.listButton.setOnAction(e -> getPresenter().onList(listButton.isSelected()));
+        this.detailsButton.setOnAction(e -> getPresenter().onDetails(detailsButton.isSelected()));
         //when setOnShowing is used then popup height is calculated incorrectly
         //maybe because OnMousePressed handler is called before OnShowing handler.
         //another reason - update location property only after locations have been populated
@@ -693,7 +643,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
                 index = this.fileTableView.getSelectionModel().getSelectedIndex();
             }
             if (index >= 0) {
-                getPresenter().onRenameRequested(index);
+                getPresenter().onRename(index);
             }
         });
         return renameItem;

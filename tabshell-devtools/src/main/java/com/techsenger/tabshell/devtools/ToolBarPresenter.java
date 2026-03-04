@@ -28,40 +28,8 @@ import java.util.regex.Pattern;
  *
  * @author Pavel Castornii
  */
-public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer> extends AbstractFindBasePresenter<V, C> {
-
-    protected class Port extends AbstractFindBasePresenter<V, C>.Port implements ToolBarPort {
-
-        private final ToolBarPresenter<V, C> presenter = ToolBarPresenter.this;
-
-        @Override
-        public void showFindResultInfo(int totalMatches) {
-            presenter.showFindResultInfo(totalMatches);
-        }
-
-        @Override
-        public void showFindResultInfo(int currentMatch, int totalMatches) {
-            presenter.showFindResultInfo(currentMatch, totalMatches);
-        }
-
-        @Override
-        public void hideFindResultInfo() {
-            presenter.hideFindResultInfo();
-        }
-
-        @Override
-        public Matcher createFindMatcher() {
-            var v = presenter.getView();
-            if (v.getFindText() == null || v.getFindText().isBlank()) {
-                return null;
-            }
-
-            String text = v.getFindText();
-            int flags = v.isMatchCaseSelected() ? 0 : Pattern.CASE_INSENSITIVE;
-            String patternText = Pattern.quote(text);
-            return Pattern.compile(patternText, flags).matcher("");
-        }
-    }
+public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer>
+        extends AbstractFindBasePresenter<V, C> implements ToolBarPort {
 
     private final ToolBarAwarePort toolBarAware;
 
@@ -71,8 +39,35 @@ public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer> ext
     }
 
     @Override
-    protected void onFindTextEdited(String text) {
-        super.onFindTextEdited(text);
+    public Matcher createFindMatcher() {
+        String text = getFindText();
+        if (text == null || text.isBlank()) {
+            return null;
+        }
+
+        int flags = isMatchCaseSelected() ? 0 : Pattern.CASE_INSENSITIVE;
+        String patternText = Pattern.quote(text);
+        return Pattern.compile(patternText, flags).matcher("");
+    }
+
+    @Override
+    public void hideFindResultInfo() {
+        super.hideFindResultInfo();
+    }
+
+    @Override
+    public void showFindResultInfo(int currentMatch, int totalMatches) {
+        super.showFindResultInfo(currentMatch, totalMatches);
+    }
+
+    @Override
+    public void showFindResultInfo(int totalMatches) {
+        super.showFindResultInfo(totalMatches);
+    }
+
+    @Override
+    protected void onFindTextChanged(String text) {
+        super.onFindTextChanged(text);
         getView().setNotFound(false);
     }
 
@@ -103,10 +98,10 @@ public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer> ext
     }
 
     @Override
-    protected void onMatchCase() {
-        super.onMatchCase();
+    protected void onMatchCase(boolean selected) {
+        super.onMatchCase(selected);
         getView().setNotFound(false);
-        this.toolBarAware.onMatchCase(getView().isMatchCaseSelected());
+        this.toolBarAware.onMatchCase(selected);
     }
 
     protected void onRefresh() {
@@ -116,16 +111,6 @@ public class ToolBarPresenter<V extends ToolBarView, C extends AreaComposer> ext
     @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(DevToolsComponents.TOOL_BAR);
-    }
-
-    @Override
-    public Port getPort() {
-        return (Port) super.getPort();
-    }
-
-    @Override
-    protected Port createPort() {
-        return new ToolBarPresenter.Port();
     }
 
     protected ToolBarAwarePort getToolBarAware() {

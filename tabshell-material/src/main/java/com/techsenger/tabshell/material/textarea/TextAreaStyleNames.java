@@ -22,5 +22,5 @@ package com.techsenger.tabshell.material.textarea;
  */
 public interface TextAreaStyleNames {
 
-    TextAreaStyleName FIND_HIGHLIGHT = new TextAreaStyleName();
+    TextAreaStyleName FIND_HIGHLIGHT = new DefaultTextAreaStyleName();
 }

@@ -57,7 +57,7 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
 
         @Override
         public List<? extends TabPort> getTabs() {
-            return view.getTabs().stream().map(v -> v.getPresenter().getPort()).toList();
+            return view.getTabs().stream().map(v -> v.getPresenter()).toList();
         }
 
         public void addTab(TabFxView<?> tab) {

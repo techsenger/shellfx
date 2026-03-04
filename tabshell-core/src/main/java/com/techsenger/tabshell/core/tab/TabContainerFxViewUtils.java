@@ -40,7 +40,7 @@ public final class TabContainerFxViewUtils {
                     for (var t : change.getAddedSubList()) {
                         ComponentTab tab = (ComponentTab) t;
                         tab.setOnCloseRequest((e) -> {
-                            presenter.onCloseTab(tab.getView().getPresenter().getPort());
+                            presenter.onCloseTab(tab.getView().getPresenter());
                             e.consume();
                         });
                         //tabs can be added only by one
@@ -67,7 +67,7 @@ public final class TabContainerFxViewUtils {
         close.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.onCloseTab(t.getView().getPresenter().getPort());
+                presenter.onCloseTab(t.getView().getPresenter());
             }
         });
         MenuItem closeAll = new MenuItem("Close All");
@@ -78,21 +78,21 @@ public final class TabContainerFxViewUtils {
         closeOther.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.onCloseOtherTabs(t.getView().getPresenter().getPort());
+                presenter.onCloseOtherTabs(t.getView().getPresenter());
             }
         });
         MenuItem closeRight = new MenuItem("Close to the Right");
         closeRight.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.onCloseRightTabs(t.getView().getPresenter().getPort());
+                presenter.onCloseRightTabs(t.getView().getPresenter());
             }
         });
         MenuItem closeLeft = new MenuItem("Close to the Left");
         closeLeft.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                presenter.onCloseLeftTabs(t.getView().getPresenter().getPort());
+                presenter.onCloseLeftTabs(t.getView().getPresenter());
             }
         });
 

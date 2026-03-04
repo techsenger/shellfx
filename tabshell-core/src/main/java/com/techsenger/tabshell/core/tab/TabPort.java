@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.ChildPort;
-import com.techsenger.tabshell.core.CloseablePort;
+import com.techsenger.tabshell.core.CloseAwarePort;
 import com.techsenger.tabshell.core.ShellPort;
 import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 import com.techsenger.tabshell.material.icon.Icon;
@@ -26,29 +26,24 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public interface TabPort extends ChildPort, CloseablePort, DialogContainerPort {
+public interface TabPort extends ChildPort, CloseAwarePort, DialogContainerPort {
+
+    /**
+     * Returns whether the tab can be closed.
+     *
+     * @return true if the tab can be closed, false otherwise
+     */
+    boolean isClosable();
 
     boolean isWaiting();
 
-    void setWaiting(boolean value);
+    boolean isSelected();
 
     String getTitle();
 
-    void setTitle(String title);
-
     Icon<?> getIcon();
 
-    void setIcon(Icon<?> icon);
-
     String getTooltip();
-
-    void setTooltip(String tooltip);
-
-    boolean isSelected();
-
-    boolean isClosable();
-
-    void setClosable(boolean value);
 
     ShellPort getShell();
 }

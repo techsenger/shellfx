@@ -26,7 +26,7 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public interface ShellPort extends ParentPort, DialogContainerPort, CloseablePort, MenuAwarePort {
+public interface ShellPort extends ParentPort, DialogContainerPort, CloseAwarePort, MenuAwarePort, ReadOnlyShell {
 
     /**
      * Returns the history manager.
@@ -70,8 +70,17 @@ public interface ShellPort extends ParentPort, DialogContainerPort, CloseablePor
      */
     boolean isMaximized();
 
+    /**
+     * Returns the title of the component.
+     *
+     * @return
+     */
     String getTitle();
 
+    /**
+     * Returns the icon of the component.
+     * @return
+     */
     Icon<?> getIcon();
 
 }

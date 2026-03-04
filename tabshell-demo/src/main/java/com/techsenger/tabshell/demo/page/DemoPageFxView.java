@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.page.AbstractPageFxView;
-import com.techsenger.tabshell.core.page.PagePresenter;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
@@ -28,7 +27,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class DemoPageFxView extends AbstractPageFxView<PagePresenter<?, ?>> implements DemoPageView {
+public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implements DemoPageView {
 
     private final TextArea textArea = new TextArea(Text.INSTANCE);
 

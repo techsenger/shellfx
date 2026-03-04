@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.traits;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface Titled {
+public interface Closable {
 
     /**
-     * Returns the title of the component.
+     * Returns whether the component can be closed.
      *
-     * @return
+     * @return true if the tab can be closed, false otherwise
      */
-    String getTitle();
+    boolean isClosable();
 
     /**
-     * Sets the title of the component.
+     * Sets whether the component can be closed.
      *
-     * @param title
+     * @param closable true to allow closing the tab, false to prevent it
      */
-    void setTitle(String title);
+    void setClosable(boolean closable);
 }

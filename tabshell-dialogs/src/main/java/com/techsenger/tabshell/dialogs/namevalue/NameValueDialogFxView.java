@@ -48,8 +48,8 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?, ?>>
 
     private final ResultButton okButton = new ResultButton(NameValueButtons.OK, "OK");
 
-    public NameValueDialogFxView(boolean resizable) {
-        super(resizable);
+    public NameValueDialogFxView() {
+        super();
     }
 
     @Override
@@ -63,18 +63,8 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?, ?>>
     }
 
     @Override
-    public String getName() {
-        return this.nameTextField.getText();
-    }
-
-    @Override
     public void setNameEditable(boolean value) {
         this.nameTextField.setEditable(value);
-    }
-
-    @Override
-    public boolean isNameEditable() {
-        return this.nameTextField.isEditable();
     }
 
     @Override
@@ -83,18 +73,8 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?, ?>>
     }
 
     @Override
-    public String getValue() {
-        return this.valueTextArea.getText();
-    }
-
-    @Override
     public void setValueEditable(boolean value) {
         this.valueTextArea.setEditable(value);
-    }
-
-    @Override
-    public boolean isValueEditable() {
-        return this.valueTextArea.isEditable();
     }
 
     @Override
@@ -122,7 +102,6 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?, ?>>
 
         okButton.setDefaultButton(true);
         registerButtons(cancelButton, okButton);
-        addRightButtons(NameValueButtons.CANCEL, NameValueButtons.OK);
     }
 
     protected Label getNameLabel() {

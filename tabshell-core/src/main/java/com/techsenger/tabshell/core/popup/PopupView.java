@@ -24,11 +24,7 @@ import com.techsenger.tabshell.core.area.AreaView;
  */
 public interface PopupView extends AreaView {
 
-    double getPrefWidth();
-
     void setPrefWidth(double value);
-
-    double getPrefHeight();
 
     void setPrefHeight(double value);
 
@@ -41,12 +37,4 @@ public interface PopupView extends AreaView {
      * @param waiting {@code true} to enable the waiting state, {@code false} to restore normal interaction
      */
     void setWaiting(boolean waiting);
-
-    /**
-     * Returns whether the dialog is currently in the waiting state.
-     *
-     * @return {@code true} if the dialog is waiting and user interaction is disabled,
-     *         {@code false} otherwise
-     */
-    boolean isWaiting();
 }

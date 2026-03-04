@@ -27,17 +27,16 @@ public class NamedTreeTableColumn<S, T> extends TreeTableColumn<S, T> implements
 
     private final TreeTableColumnName name;
 
-    public NamedTreeTableColumn(TreeTableColumnName name) {
+    public <R extends Enum<R> & TreeTableColumnName> NamedTreeTableColumn(R name) {
         super();
         this.name = name;
     }
 
-    public NamedTreeTableColumn(TreeTableColumnName name, String string) {
+    public <R extends Enum<R> & TreeTableColumnName> NamedTreeTableColumn(R name, String string) {
         super(string);
         this.name = name;
     }
 
-    @Override
     public TreeTableColumnName getName() {
         return name;
     }

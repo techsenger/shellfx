@@ -20,6 +20,6 @@ package com.techsenger.tabshell.material.button;
  *
  * @author Pavel Castornii
  */
-public class ResultButtonName extends ButtonName {
+public interface ResultButtonName extends ButtonName {
 
 }

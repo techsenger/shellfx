@@ -26,11 +26,7 @@ import javafx.geometry.Orientation;
  */
 public interface SplitSpaceView extends AreaView {
 
-    Orientation getOrientation();
-
     void setOrientation(Orientation orientation);
-
-    List<Double> getDividerPositions();
 
     void setDividerPositions(List<Double> positions);
 }

@@ -29,15 +29,8 @@ import javafx.geometry.Side;
  *
  * @author Pavel Castornii
  */
-public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupComposer> extends AbstractAreaPresenter<V, C> {
-
-    protected class Port extends AbstractAreaPresenter<V, C>.Port implements TabPopupPort {
-
-        @Override
-        public List<? extends TabPort> getTabs() {
-            return getComposer().getTabs();
-        }
-    }
+public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupComposer> extends AbstractAreaPresenter<V, C>
+        implements TabPopupPort {
 
     private double oldWidth = 250;
 
@@ -67,6 +60,11 @@ public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupCompose
     }
 
     @Override
+    public List<? extends TabPort> getTabs() {
+        return getComposer().getTabs();
+    }
+
+    @Override
     protected TabPopupHistory getHistory() {
         return (TabPopupHistory) super.getHistory();
     }
@@ -84,11 +82,10 @@ public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupCompose
         super.saveAppearance();
         // If the user moves the mouse quickly, components may be created
         // and removed even before they have been rendered
-        var v = getView();
-        if (v.getWidth() > 0.1 && v.getHeight() > 0.1) {
+        if (getWidth() > 0.1 && getHeight() > 0.1) {
             var h = getHistory();
-            h.setWidth(v.getWidth());
-            h.setHeight(v.getHeight());
+            h.setWidth(getWidth());
+            h.setHeight(getHeight());
         }
     }
 
@@ -98,16 +95,6 @@ public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupCompose
 
     protected void setOldWidth(double oldWidth) {
         this.oldWidth = oldWidth;
-    }
-
-    @Override
-    public Port getPort() {
-        return (Port) super.getPort();
-    }
-
-    @Override
-    protected Port createPort() {
-        return new TabPopupPresenter.Port();
     }
 
     @Override

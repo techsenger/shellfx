@@ -22,9 +22,6 @@ import com.techsenger.patternfx.core.Name;
  *
  * @author Pavel Castornii
  */
-public class TreeTableColumnName extends Name {
+public interface TreeTableColumnName extends Name {
 
-    public TreeTableColumnName() {
-        super(null);
-    }
 }

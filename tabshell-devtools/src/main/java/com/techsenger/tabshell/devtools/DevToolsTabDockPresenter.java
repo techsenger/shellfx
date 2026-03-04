@@ -36,27 +36,7 @@ import java.util.function.Consumer;
  * @author Pavel Castornii
  */
 public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends TabHostComposer>
-        extends TabDockPresenter<V, C> {
-
-    protected class Port extends TabDockPresenter<V, C>.Port implements DevToolsTabDockPort {
-
-        private final DevToolsTabDockPresenter<V, C> presenter = DevToolsTabDockPresenter.this;
-
-        @Override
-        public int getWindowUid() {
-            return getView().getWindowUid();
-        }
-
-        @Override
-        public HighlightOptions getHighlightOptions() {
-            return presenter.highlightOptions;
-        }
-
-        @Override
-        public void setOnSelection(Consumer<Boolean> action) {
-            presenter.onSelection = action;
-        }
-    }
+        extends TabDockPresenter<V, C> implements DevToolsTabDockPort {
 
     private final Settings settings;
 
@@ -66,6 +46,8 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
 
     private Consumer<Boolean> onSelection;
 
+    private boolean selectionSelected;
+
     public DevToolsTabDockPresenter(V view, Settings settings, HistoryProvider<DevToolsTabDockHistory> hp) {
         super(view);
         this.settings = settings;
@@ -74,14 +56,28 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
         this.setHistoryPolicy(HistoryPolicy.APPEARANCE);
     }
 
-    @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public boolean isSelectionSelected() {
+        return selectionSelected;
+    }
+
+    public void setSelectionSelected(boolean selectionSelected) {
+        this.selectionSelected = selectionSelected;
+        getView().setSelectionSelected(selectionSelected);
     }
 
     @Override
-    protected Port createPort() {
-        return new DevToolsTabDockPresenter.Port();
+    public int getWindowUid() {
+        return getView().getWindowUid();
+    }
+
+    @Override
+    public HighlightOptions getHighlightOptions() {
+        return highlightOptions;
+    }
+
+    @Override
+    public void setOnSelection(Consumer<Boolean> action) {
+        onSelection = action;
     }
 
     @Override
@@ -95,16 +91,17 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
         if (opts.isInspectMode()) {
             opts.setInspectMode(false);
         } else {
-            if (!getView().isSelectionSelected()) {
-                getView().setSelectionSelected(true);
+            if (!isSelectionSelected()) {
+                setSelectionSelected(true);
             }
             connector.clearSelection(getView().getWindowUid());
             opts.setInspectMode(true);
         }
-        updateHighlightOptions(getView().isSelectionSelected());
+        updateHighlightOptions(isSelectionSelected());
     }
 
     protected void onSelection(boolean selected) {
+        this.selectionSelected = selected;
         var connector = getView().getConnector();
         if (!selected) {
             connector.getOptions().setInspectMode(false);
@@ -122,7 +119,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
         super.postInitialize();
         var history = getHistory();
         if (history.isNew()) {
-            getView().setSelectionSelected(true);
+            setSelectionSelected(true);
         }
         var connector = getView().getConnector();
         connector.start();
@@ -136,7 +133,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
             }
         });
         updateHighlight(this.settings.getAppearance().getTheme());
-        updateHighlightOptions(getView().isSelectionSelected());
+        updateHighlightOptions(isSelectionSelected());
     }
 
     @Override
@@ -176,16 +173,14 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
     protected void saveAppearance() {
         super.saveAppearance();
         var h = getHistory();
-        var v = getView();
-        h.setSelectionSelected(v.isSelectionSelected());
+        h.setSelectionSelected(isSelectionSelected());
     }
 
     @Override
     protected void restoreAppearance() {
         super.restoreAppearance();
         var h = getHistory();
-        var v = getView();
-        v.setSelectionSelected(v.isSelectionSelected());
+        setSelectionSelected(h.isSelectionSelected());
     }
 
     /**

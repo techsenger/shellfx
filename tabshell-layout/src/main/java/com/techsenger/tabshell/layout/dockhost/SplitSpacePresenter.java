@@ -20,7 +20,9 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.layout.LayoutComponents;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javafx.geometry.Orientation;
 
 /**
@@ -28,45 +30,43 @@ import javafx.geometry.Orientation;
  * @author Pavel Castornii
  */
 public class SplitSpacePresenter<V extends SplitSpaceView, C extends AreaComposer>
-        extends AbstractAreaPresenter<V, C> {
+        extends AbstractAreaPresenter<V, C> implements SplitSpacePort {
 
-    protected class Port extends AbstractAreaPresenter<V, C>.Port implements SplitSpacePort {
+    private Orientation orientation = Orientation.HORIZONTAL;
 
-        private final SplitSpacePresenter<V, C> presenter = SplitSpacePresenter.this;
-
-        @Override
-        public Orientation getOrientation() {
-            return presenter.getView().getOrientation();
-        }
-
-        @Override
-        public List<Double> getDividerPositions() {
-            return presenter.getView().getDividerPositions();
-        }
-
-        @Override
-        public void setDividerPositions(List<Double> positions) {
-            presenter.getView().setDividerPositions(positions);
-        }
-
-    }
+    private double[] dividerPositions = new double[0];
 
     public SplitSpacePresenter(V view) {
         super(view);
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public Orientation getOrientation() {
+        return this.orientation;
+    }
+
+    public void setOrientation(Orientation orientation) {
+        Objects.requireNonNull(orientation, "Orientation can't be null");
+        this.orientation = orientation;
+        getView().setOrientation(orientation);
     }
 
     @Override
-    protected Port createPort() {
-        return new SplitSpacePresenter.Port();
+    public List<Double> getDividerPositions() {
+        return Arrays.stream(dividerPositions).boxed().toList();
+    }
+
+    @Override
+    public void setDividerPositions(List<Double> positions) {
+        getView().setDividerPositions(positions);
     }
 
     @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(LayoutComponents.SPLIT_SPACE);
+    }
+
+    protected void onDividerPositionsChanged(double[] pos) {
+        this.dividerPositions = pos;
     }
 }

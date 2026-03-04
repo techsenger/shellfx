@@ -26,11 +26,7 @@ import com.techsenger.tabshell.layout.LayoutComponents;
  * @author Pavel Castornii
  */
 public class DockHostPresenter<V extends DockHostView, C extends DockHostComposer>
-        extends AbstractAreaPresenter<V, C> {
-
-    protected class Port extends AbstractAreaPresenter<V, C>.Port implements DockHostPort {
-
-    }
+        extends AbstractAreaPresenter<V, C> implements DockHostPort {
 
     public DockHostPresenter(V view, HistoryProvider<? extends DockHostHistory> history) {
         super(view);
@@ -40,16 +36,6 @@ public class DockHostPresenter<V extends DockHostView, C extends DockHostCompose
     @Override
     protected DockHostHistory getHistory() {
         return (DockHostHistory) super.getHistory();
-    }
-
-    @Override
-    public Port getPort() {
-        return (Port) super.getPort();
-    }
-
-    @Override
-    protected Port createPort() {
-        return new DockHostPresenter.Port();
     }
 
     @Override

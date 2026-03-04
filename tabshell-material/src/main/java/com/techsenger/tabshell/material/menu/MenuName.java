@@ -23,9 +23,6 @@ import com.techsenger.patternfx.core.Name;
  *
  * @author Pavel Castornii
  */
-public class MenuName extends Name {
+public interface MenuName extends Name {
 
-    public MenuName() {
-        super(null);
-    }
 }

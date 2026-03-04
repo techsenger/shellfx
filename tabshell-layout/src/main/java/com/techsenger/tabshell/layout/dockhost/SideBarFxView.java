@@ -79,7 +79,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         }
 
         public void deinit() {
-            this.minimizedTab.getView().getPresenter().getPort().setClosable(this.minimizedTabClosable);
+            this.minimizedTab.getView().getPresenter().setClosable(this.minimizedTabClosable);
             this.minimizedTab.getProperties().remove(BAR_TAB_KEY);
         }
     }
@@ -149,21 +149,21 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
          */
         public List<TabDockPort> getTabDocks() {
             return view.getTabDocks().stream()
-                    .map(t -> (TabDockPort) t.getPresenter().getPort())
+                    .map(t -> (TabDockPort) t.getPresenter())
                     .toList();
         }
 
         public TabPopupPort getPopup() {
             var popup = view.getPopup();
             if (popup != null) {
-                return popup.getPresenter().getPort();
+                return popup.getPresenter();
             } else {
                 return null;
             }
         }
 
         public DockHostPort getLayout() {
-            return view.getDockHost().getPresenter().getPort();
+            return view.getDockHost().getPresenter();
         }
 
         void addTabDock(TabDockFxView<?> tabDock) {
@@ -324,7 +324,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
     protected void openTabInPopup(BarTab barTab) {
         barTab.setShownInPopup(true);
         var minimizedTab = barTab.getMinimizedTab();
-        minimizedTab.getView().getPresenter().getPort().setClosable(false);
+        minimizedTab.getView().getPresenter().setClosable(false);
         var popupTabPane = getPopup().getTabPane();
         var tabs = popupTabPane.getTabs();
         if (tabs.size() == 1) {

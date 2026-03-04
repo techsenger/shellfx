@@ -16,6 +16,9 @@
 
 package com.techsenger.tabshell.demo.menu;
 
+import com.techsenger.tabshell.material.menu.DefaultMenuGroupName;
+import com.techsenger.tabshell.material.menu.DefaultMenuItemName;
+import com.techsenger.tabshell.material.menu.DefaultMenuName;
 import com.techsenger.tabshell.material.menu.MenuGroupName;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
@@ -28,13 +31,13 @@ import com.techsenger.tabshell.material.menu.MenuName;
  */
 public interface ExtraMenu {
 
-    MenuName NAME = new MenuName();
+    MenuName NAME = new DefaultMenuName();
 
-    MenuGroupName FOO_GROUP = new MenuGroupName("Foo");
+    MenuGroupName FOO_GROUP = new DefaultMenuGroupName("Foo");
 
-    MenuItemName FOO_ITEM = new MenuItemName(); //group foo
+    MenuItemName FOO_ITEM = new DefaultMenuItemName(); //group foo
 
-    MenuGroupName BAR_GROUP = new MenuGroupName("Bar");
+    MenuGroupName BAR_GROUP = new DefaultMenuGroupName("Bar");
 
-    MenuItemName BAR_ITEM = new MenuItemName(); //group bar
+    MenuItemName BAR_ITEM = new DefaultMenuItemName(); //group bar
 }

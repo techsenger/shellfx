@@ -17,13 +17,15 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.material.button.ResultButtonName;
+import com.techsenger.tabshell.material.icon.Icon;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogShared {
+public interface ReadOnlyDialog {
 
     /**
      * Returns whether this dialog is active.
@@ -102,4 +104,35 @@ public interface DialogShared {
      * @return an unmodifiable list of button names on the right side
      */
     List<ResultButtonName> getRightButtons();
+
+    /**
+     * Returns the disabled state of the specified result button.
+     *
+     * @param name the name of the result button
+     * @return an {@link Optional} containing {@code true} if the button is disabled, {@code false} if enabled,
+     *         or empty if the button does not exist
+     */
+    Optional<Boolean> getButtonDisabled(ResultButtonName name);
+
+    /**
+     * Returns whether the specified result button is the default button for the dialog.
+     *
+     * @param name the name of the result button
+     * @return an {@link Optional} containing {@code true} if the button is the default, {@code false} otherwise,
+     *         or empty if the button does not exist
+     */
+    Optional<Boolean> getButtonDefault(ResultButtonName name);
+
+    /**
+     * Returns the title of the component.
+     *
+     * @return
+     */
+    String getTitle();
+
+    /**
+     * Returns the icon of the component.
+     * @return
+     */
+    Icon<?> getIcon();
 }

@@ -30,6 +30,4 @@ public interface DevToolsTabDockView extends TabDockView {
     int getWindowUid();
 
     void setSelectionSelected(boolean value);
-
-    boolean isSelectionSelected();
 }

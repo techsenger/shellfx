@@ -33,8 +33,6 @@ import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -152,19 +150,9 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
     private RegionResizer resizer;
 
-    public AbstractDialogFxView(boolean resizable) {
-        super();
-        setResizable(resizable);
-    }
-
     @Override
     public VBox getNode() {
         return this.dialogBox;
-    }
-
-    @Override
-    public boolean isActive() {
-        return active.get();
     }
 
     @Override
@@ -173,18 +161,8 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
-    public double getPrefWidth() {
-        return dialogBox.getPrefWidth();
-    }
-
-    @Override
     public void setPrefWidth(double value) {
         dialogBox.setPrefWidth(value);
-    }
-
-    @Override
-    public double getPrefHeight() {
-        return dialogBox.getPrefHeight();
     }
 
     @Override
@@ -193,18 +171,8 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
-    public double getMinWidth() {
-        return minWidth.get();
-    }
-
-    @Override
     public void setMinWidth(double value) {
         this.minWidth.set(value);
-    }
-
-    @Override
-    public double getMinHeight() {
-        return this.minHeight.get();
     }
 
     @Override
@@ -213,18 +181,8 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
-    public double getMaxWidth() {
-        return maxWidth.get();
-    }
-
-    @Override
     public void setMaxWidth(double value) {
        this.maxWidth.set(value);
-    }
-
-    @Override
-    public double getMaxHeight() {
-        return maxHeight.get();
     }
 
     @Override
@@ -233,18 +191,8 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
-    public String getTitle() {
-        return titleLabel.textProperty().get();
-    }
-
-    @Override
     public void setTitle(String title) {
         titleLabel.textProperty().set(title);
-    }
-
-    @Override
-    public boolean isOutOfBoundsAllowed() {
-        return outOfBoundsAllowed.get();
     }
 
     @Override
@@ -253,28 +201,13 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
-    public boolean isResizable() {
-        return this.resizable.get();
-    }
-
-    @Override
     public void setResizable(boolean value) {
         this.resizable.set(value);
     }
 
     @Override
-    public Icon<?> getIcon() {
-        return iconViewBox.getIcon();
-    }
-
-    @Override
     public void setIcon(Icon<?> icon) {
         iconViewBox.setIcon(icon);
-    }
-
-    @Override
-    public boolean isButtonWidthEqual() {
-        return buttonWidthEqual.get();
     }
 
     @Override
@@ -293,61 +226,15 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
-    public boolean isCloseDisabled() {
-        return this.closeButton.isDisable();
-    }
-
-    @Override
-    public void addLeftButtons(ResultButtonName... names) {
+    public void setLeftButtons(ResultButtonName... names) {
+        removeButtons(leftButtonBox);
         addButtons(leftButtonBox, names);
     }
 
     @Override
-    public void removeLeftButtons(ResultButtonName... names) {
-        removeButtons(leftButtonBox, names);
-    }
-
-    @Override
-    public void removeLeftButtons() {
-        removeButtons(leftButtonBox);
-    }
-
-    @Override
-    public List<ResultButtonName> getLeftButtons() {
-        return getButtons(leftButtonBox);
-    }
-
-    @Override
-    public void addRightButtons(ResultButtonName... names) {
-        addButtons(rightButtonBox, names);
-    }
-
-    @Override
-    public void removeRightButtons(ResultButtonName... names) {
-        removeButtons(rightButtonBox, names);
-    }
-
-    @Override
-    public void removeRightButtons() {
+    public void setRightButtons(ResultButtonName... names) {
         removeButtons(rightButtonBox);
-    }
-
-    @Override
-    public List<ResultButtonName> getRightButtons() {
-        return getButtons(rightButtonBox);
-    }
-
-    @Override
-    public void setButtonVisible(ResultButtonName name, boolean value) {
-        var button = this.buttonsByName.get(name);
-        if (button != null) {
-            button.setVisible(value);
-        }
-    }
-
-    @Override
-    public Optional<Boolean> getButtonVisible(ResultButtonName name) {
-        return Optional.ofNullable(this.buttonsByName.get(name)).map(Button::isVisible);
+        addButtons(rightButtonBox, names);
     }
 
     @Override
@@ -359,25 +246,6 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
-    public Optional<Boolean> getButtonDisabled(ResultButtonName name) {
-        return Optional.ofNullable(this.buttonsByName.get(name)).map(Button::isDisable);
-    }
-
-    @Override
-    public void setButtonText(ResultButtonName name, String value) {
-        var button = this.buttonsByName.get(name);
-        if (button != null) {
-            button.setText(value);
-        }
-        updateButtonsEqual();
-    }
-
-    @Override
-    public Optional<String> getButtonText(ResultButtonName name) {
-        return Optional.ofNullable(this.buttonsByName.get(name)).map(Button::getText);
-    }
-
-    @Override
     public void setButtonDefault(ResultButtonName name, boolean value) {
         var button = this.buttonsByName.get(name);
         if (button != null) {
@@ -385,18 +253,24 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         }
     }
 
-    @Override
-    public Optional<Boolean> getButtonDefault(ResultButtonName name) {
-        return Optional.ofNullable(this.buttonsByName.get(name)).map(Button::isDefaultButton);
+    public boolean isOutOfBoundsAllowed() {
+        return outOfBoundsAllowed.get();
     }
 
-    protected DialogContainerFxView getContainer() {
-        return (DialogContainerFxView) getParent();
+    public boolean isActive() {
+        return active.get();
     }
 
-    @Override
-    protected Composer createComposer() {
-        return new AbstractDialogFxView.Composer();
+    public boolean isResizable() {
+        return resizable.get();
+    }
+
+    public boolean isButtonWidthEqual() {
+        return buttonWidthEqual.get();
+    }
+
+    protected BooleanProperty activeProperty() {
+        return resizable;
     }
 
     protected BooleanProperty resizableProperty() {
@@ -409,6 +283,15 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
     protected BooleanProperty outOfBoundsAllowedProperty() {
         return outOfBoundsAllowed;
+    }
+
+    protected DialogContainerFxView getContainer() {
+        return (DialogContainerFxView) getParent();
+    }
+
+    @Override
+    protected Composer createComposer() {
+        return new AbstractDialogFxView.Composer();
     }
 
     protected FocusTrap getFocusTrap() {
@@ -512,19 +395,31 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
                 .toList();
     }
 
+    /**
+     * Registers a result button. After registration button can be modified only from presenter.
+     *
+     * @param buttons
+     */
     protected void registerButtons(ResultButton... buttons) {
         for (var button: buttons) {
             this.buttonsByName.put(button.getName(), button);
             button.setOnAction((e) -> {
                 getPresenter().onResult(button.getName());
             });
+            getPresenter().onButtonRegistered(button.getName(), button.isDefaultButton(), button.isDisable());
         }
     }
 
+    /**
+     * Unregisters a result button.
+     *
+     * @param buttons
+     */
     protected void unregisterButtons(ResultButton... buttons) {
         for (var button : buttons) {
             this.buttonsByName.remove(button.getName());
             button.setOnAction(null);
+            getPresenter().onButtonUnregistered(button.getName());
         }
     }
 
@@ -601,21 +496,10 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         updateTrap();
     }
 
-    private void removeButtons(HBox box, ResultButtonName... names) {
-        Set<ResultButtonName> set = Set.of(names);
-        box.getChildren().removeIf(node ->
-            node instanceof ResultButton button && set.contains(button.getName())
-        );
-        updateButtonsEqual();
-        updateTrap();
-    }
-
     private void removeButtons(HBox box) {
         box.getChildren().removeIf(node ->
             node instanceof ResultButton button && buttonsByName.keySet().contains(button.getName())
         );
-        updateButtonsEqual();
-        updateTrap();
     }
 
     private List<ResultButtonName> getButtons(HBox box) {

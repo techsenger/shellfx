@@ -24,7 +24,7 @@ import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractAreaFxView<P extends AreaPresenter<?, ?>>
+public abstract class AbstractAreaFxView<P extends AbstractAreaPresenter<?, ?>>
         extends AbstractChildFxView<P> implements AreaFxView<P> {
 
     public class Composer extends AbstractChildFxView<P>.Composer implements AreaFxView.Composer {
@@ -38,16 +38,6 @@ public abstract class AbstractAreaFxView<P extends AreaPresenter<?, ?>>
     }
 
     @Override
-    public double getWidth() {
-        return getNode().getWidth();
-    }
-
-    @Override
-    public double getHeight() {
-        return getNode().getHeight();
-    }
-
-    @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
     }
@@ -58,6 +48,13 @@ public abstract class AbstractAreaFxView<P extends AreaPresenter<?, ?>>
                 () -> getNode().sceneProperty());
         FxViewUtils.setComponent(getNode(), this);
         super.initialize();
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        getNode().widthProperty().addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue()));
+        getNode().heightProperty().addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
     }
 
     @Override

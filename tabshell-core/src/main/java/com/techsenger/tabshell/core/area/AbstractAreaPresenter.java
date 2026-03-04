@@ -26,32 +26,14 @@ import com.techsenger.tabshell.core.menu.MenuHelpers;
 public abstract class AbstractAreaPresenter<V extends AreaView, C extends AreaComposer>
         extends AbstractChildPresenter<V, C> implements AreaPresenter<V, C> {
 
-    protected class Port extends AbstractChildPresenter<V, C>.Port implements AreaPort {
-
-        public Port() {
-            // empty
-        }
-
-        @Override
-        public double getWidth() {
-            return getView().getWidth();
-        }
-
-        @Override
-        public double getHeight() {
-            return getView().getHeight();
-        }
-    }
-
     private final MenuHelpers menuHelpers = new MenuHelpers();
+
+    private double width;
+
+    private double height;
 
     public AbstractAreaPresenter(V view) {
         super(view);
-    }
-
-    @Override
-    public Port getPort() {
-        return (Port) super.getPort();
     }
 
     public MenuHelpers getMenuHelpers() {
@@ -59,12 +41,25 @@ public abstract class AbstractAreaPresenter<V extends AreaView, C extends AreaCo
     }
 
     @Override
-    protected Port createPort() {
-        return new AbstractAreaPresenter.Port();
+    public double getWidth() {
+        return width;
+    }
+
+    @Override
+    public double getHeight() {
+        return height;
     }
 
     @Override
     protected AreaHistory getHistory() {
         return (AreaHistory) super.getHistory();
+    }
+
+    protected void onWidthChanged(double width) {
+        this.width = width;
+    }
+
+    protected void onHeightChanged(double width) {
+        this.width = width;
     }
 }

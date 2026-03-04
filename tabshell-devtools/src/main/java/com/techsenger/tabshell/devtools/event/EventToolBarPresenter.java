@@ -44,33 +44,8 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaComposer> extends ToolBarPresenter<V, C> {
-
-    protected class Port extends ToolBarPresenter<V, C>.Port implements EventToolBarPort {
-
-        @Override
-        public void setStatistics(String text) {
-            getView().setStatistics(text);
-        }
-
-        @Override
-        public boolean isFilterSelected() {
-            return getView().isFilterSelected();
-        }
-
-        @Override
-        public boolean isSelectedNodeOnly() {
-            return getView().isSelectedNodeOnly();
-        }
-
-        @Override
-        public Set<Class<? extends ConnectorEvent>> getSelectedEventTypes() {
-            return eventTypesByClass.entrySet().stream()
-                    .filter(e -> e.getValue().get())
-                    .map(e -> e.getKey())
-                    .collect(Collectors.toSet());
-        }
-    }
+public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaComposer>
+        extends ToolBarPresenter<V, C> implements EventToolBarPort {
 
     private final Map<Class<? extends ConnectorEvent>, AtomicBoolean> eventTypesByClass = Map.ofEntries(
             Map.entry(AttributeListEvent.class, new AtomicBoolean(true)),
@@ -87,19 +62,50 @@ public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaCom
             Map.entry(WindowClosedEvent.class, new AtomicBoolean(true)),
             Map.entry(WindowPropertiesEvent.class, new AtomicBoolean(true)));
 
+    private boolean filterSelected;
+
+    private boolean selectedNodeOnly;
+
+    private String statistics;
+
+    private boolean recordSelected;
 
     public EventToolBarPresenter(V view, EventToolBarAwarePort toolBarAware) {
         super(view, toolBarAware, FindFeature.MATCH_CASE);
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public Set<Class<? extends ConnectorEvent>> getSelectedEventTypes() {
+        return eventTypesByClass.entrySet().stream()
+                .filter(e -> e.getValue().get())
+                .map(e -> e.getKey())
+                .collect(Collectors.toSet());
     }
 
     @Override
-    protected Port createPort() {
-        return new EventToolBarPresenter.Port();
+    public boolean isFilterSelected() {
+        return filterSelected;
+    }
+
+    public void setFilterSelected(boolean filterSelected) {
+        this.filterSelected = filterSelected;
+        getView().setFilterSelected(filterSelected);
+    }
+
+    public void setSelectedNodeOnly(boolean selectedNodeOnly) {
+        this.selectedNodeOnly = selectedNodeOnly;
+        getView().setSelectedNodeOnly(selectedNodeOnly);
+    }
+
+    @Override
+    public boolean isSelectedNodeOnly() {
+        return this.selectedNodeOnly;
+    }
+
+    @Override
+    public void setStatistics(String text) {
+        this.statistics = text;
+        getView().setStatistics(text);
     }
 
     @Override
@@ -119,6 +125,7 @@ public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaCom
     }
 
     protected void onRecord(boolean selected) {
+        this.recordSelected = selected;
         getToolBarAware().onRecord(selected);
     }
 
@@ -126,11 +133,13 @@ public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaCom
         getToolBarAware().onClear();
     }
 
-    protected void onFilterSelected(boolean selected) {
+    protected void onFilter(boolean selected) {
+        this.filterSelected = selected;
         getToolBarAware().onFilterSelected(selected);
     }
 
     protected void onSelectedNodeOnly(boolean selected) {
+        this.selectedNodeOnly = selected;
         getToolBarAware().onSelectedNodeOnly(selected);
     }
 

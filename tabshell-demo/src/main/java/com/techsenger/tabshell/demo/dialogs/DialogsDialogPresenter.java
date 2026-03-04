@@ -26,6 +26,7 @@ import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.file.FileChooserButtons;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueButtons;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -54,7 +55,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
                 dialog.setTitle("Name & Value");
                 dialog.setName("Some Name");
                 dialog.setValue("Some Value");
-                dialog.setCancelVisible(false);
+                dialog.setRightButtons(NameValueButtons.OK);
             }),
             Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
             Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
@@ -90,14 +91,16 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     protected void postInitialize() {
         super.postInitialize();
         var view = getView();
-        view.setPrefWidth(600);
-        view.setPrefHeight(300);
-        view.setTitle("Dialogs");
-        view.setButtonWidthEqual(true);
+        setResizable(true);
+        setPrefWidth(600);
+        setPrefHeight(300);
+        setTitle("Dialogs");
+        setButtonWidthEqual(true);
         view.setDialogTypes(Arrays.asList(DialogType.values()));
         setResultAction((result) -> {
             requestClose();
         });
+        setRightButtons(DialogsDialogButtons.CLOSE);
     }
 
     protected void onDialogClick(DialogType type) {

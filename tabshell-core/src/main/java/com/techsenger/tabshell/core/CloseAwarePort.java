@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public interface CloseablePort {
+public interface CloseAwarePort {
 
     int CLOSE_REQUEST_MAX_ATTEMPTS = 5;
 

@@ -17,25 +17,16 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.ChildView;
-import com.techsenger.tabshell.core.Iconed;
-import com.techsenger.tabshell.core.Titled;
-import com.techsenger.tabshell.core.Tooltiped;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabView extends ChildView, Iconed, Titled, Tooltiped {
+public interface TabView extends ChildView {
 
     /**
-     * Returns whether the tab can be closed.
-     *
-     * @return true if the tab can be closed, false otherwise
-     */
-    boolean isClosable();
-
-    /**
-     * Sets whether the tab can be closed.
+     * Sets whether the component can be closed.
      *
      * @param closable true to allow closing the tab, false to prevent it
      */
@@ -43,7 +34,11 @@ public interface TabView extends ChildView, Iconed, Titled, Tooltiped {
 
     void setWaiting(boolean waiting);
 
-    boolean isWaiting();
+    void setIcon(Icon<?> icon);
+
+    void setTitle(String title);
+
+    void setTooltip(String tooltip);
 
     boolean isSelected();
 }

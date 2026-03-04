@@ -17,16 +17,23 @@
 package com.techsenger.tabshell.dialogs.namevalue;
 
 import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface NameValueDialogPort extends NameValueDialogShared, DialogPort {
+public interface NameValueDialogPort extends DialogPort, NameValueDialogShared {
 
     void setTitle(String title);
 
-    void setCancelVisible(boolean visible);
+    String getName();
 
-    boolean isCancelVisible();
+    boolean isNameEditable();
+
+    String getValue();
+
+    boolean isValueEditable();
+
+    void setRightButtons(ResultButtonName... buttons);
 }

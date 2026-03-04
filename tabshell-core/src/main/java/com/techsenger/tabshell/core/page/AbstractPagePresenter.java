@@ -26,50 +26,51 @@ import com.techsenger.tabshell.material.icon.Icon;
 public abstract class AbstractPagePresenter<V extends PageView, C extends PageComposer>
         extends AbstractAreaPresenter<V, C> implements PagePresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter<V, C>.Port implements PagePort {
+    private boolean selected;
 
-        public Port() {
-            // empty
-        }
+    private String title;
 
-        @Override
-        public boolean isSelected() {
-            return getView().isSelected();
-        }
-
-        @Override
-        public String getTitle() {
-            return getView().getTitle();
-        }
-
-        @Override
-        public Icon<?> getIcon() {
-            return getView().getIcon();
-        }
-
-    }
+    private Icon<?> icon;
 
     public AbstractPagePresenter(V view) {
         super(view);
     }
 
     @Override
+    public boolean isSelected() {
+        return selected;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public Icon<?> getIcon() {
+        return icon;
+    }
+
+    @Override
     public void onSelected(boolean selected) {
+        this.selected = selected;
         getView().requestFocus();
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public void setTitle(String title) {
+        this.title = title;
+        getView().setTitle(title);
+    }
+
+    @Override
+    public void setIcon(Icon<?> icon) {
+        this.icon = icon;
+        getView().setIcon(icon);
     }
 
     @Override
     protected PageHistory getHistory() {
         return (PageHistory) super.getHistory();
-    }
-
-    @Override
-    protected Port createPort() {
-        return new AbstractPagePresenter.Port();
     }
 }

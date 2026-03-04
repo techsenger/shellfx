@@ -45,8 +45,8 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
 
     private final ResultButton cancelButton = new ResultButton(DemoResultButtons.CANCEL, "Cancel");
 
-    public DemoDialogFxView(boolean resizable) {
-        super(resizable);
+    public DemoDialogFxView() {
+        super();
     }
 
     @Override
@@ -73,8 +73,6 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
 
         okButton.setDefaultButton(true);
         registerButtons(okButton, cancelButton);
-        addRightButtons(DemoResultButtons.CANCEL, DemoResultButtons.OK);
-
         getContentBox().getChildren().add(gridPane);
         getContentBox().setSpacing(SizeConstants.INSET);
         getFocusTrap().activate();

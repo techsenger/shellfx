@@ -24,7 +24,4 @@ import com.techsenger.patternfx.mvp.ChildView;
  */
 public interface AreaView extends ChildView {
 
-    double getWidth();
-
-    double getHeight();
 }

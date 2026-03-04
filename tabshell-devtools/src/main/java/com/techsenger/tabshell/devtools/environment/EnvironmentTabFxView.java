@@ -62,14 +62,17 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
 
         @Override
         public ToolBarPort getToolBar() {
-            return view.toolBar.getPresenter().getPort();
+            return view.toolBar.getPresenter();
         }
 
         @Override
         public NameValueDialogPort addNameValueDialog() {
             var dialog = createNameValueDialog();
+            var presenter = dialog.getPresenter();
+            presenter.initialize();
+            presenter.setResizable(true);
             dialogContainer.addDialog(dialog);
-            return dialog.getPresenter().getPort();
+            return presenter;
         }
 
         protected ToolBarFxView<?> createToolBar() {
@@ -80,7 +83,7 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
         }
 
         protected NameValueDialogFxView<?> createNameValueDialog() {
-            var view = new NameValueDialogFxView<>(true);
+            var view = new NameValueDialogFxView<>();
             var presenter = new NameValueDialogPresenter<>(view);
             return view;
         }
@@ -120,8 +123,6 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
     @Override
     protected void build() {
         super.build();
-        setTitle("Environment");
-        setClosable(false);
 
         TreeTableColumn<EnvironmentItem, String> propertyColumn = new TreeTableColumn<>("Property");
         propertyColumn.setCellValueFactory(param -> {

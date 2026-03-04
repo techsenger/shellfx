@@ -18,9 +18,11 @@ package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.material.table.TableHistory;
+import com.techsenger.tabshell.material.table.TableColumnInfo;
+import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -32,29 +34,15 @@ public interface FileChooserDialogView extends DialogView {
 
     void setLocationCaption(String value);
 
-    String getLocationCaption();
-
-    List<Location> getLocations();
-
     void setLocations(List<Location> locations);
-
-    Location getLocation();
 
     void setLocation(Location value);
 
-    boolean isListSelected();
-
     void setListSelected(boolean value);
-
-    boolean isDetailsSelected();
 
     void setDetailsSelected(boolean value);
 
-    void setTableHistory(TableHistory history);
-
-    TableHistory getTableHistory();
-
-    List<GenericFile> getFiles();
+    void addColumns(Map<TableColumnName, TableColumnInfo> infosByName);
 
     void setFiles(List<GenericFile> files);
 
@@ -66,23 +54,13 @@ public interface FileChooserDialogView extends DialogView {
 
     void scrollToFile(int index);
 
-    GenericFile getSelectedFile();
-
     void editFile(int index);
 
     void sortFiles();
 
     void setFileName(String fileName);
 
-    String getFileName();
-
-    List<ExtensionFilter> getExtensionFilters();
-
     void setExtensionFilters(List<ExtensionFilter> filters);
 
-    ExtensionFilter getExtensionFilter();
-
     void setExtensionFilter(ExtensionFilter filter);
-
-    void setupFor(FileChooserType type);
 }

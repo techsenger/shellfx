@@ -18,7 +18,13 @@ package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
 import com.techsenger.tabshell.material.button.ResultButtonName;
+import com.techsenger.tabshell.material.icon.Icon;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -28,90 +34,28 @@ import java.util.function.Consumer;
 public abstract class AbstractDialogPresenter<V extends DialogView, C extends DialogComposer>
         extends AbstractPopupPresenter<V, C> implements DialogPresenter<V, C> {
 
-    protected class Port extends AbstractPopupPresenter<V, C>.Port implements DialogPort {
+    private static final class ButtonModel {
 
-        private final AbstractDialogPresenter<V, C> presenter = AbstractDialogPresenter.this;
+        private boolean isDefault;
 
-        public Port() {
-            // empty
+        private boolean disabled;
+
+        public boolean isDefault() {
+            return isDefault;
         }
 
-        @Override
-        public boolean isActive() {
-            return presenter.getView().isActive();
+        public void setDefault(boolean isDefault) {
+            this.isDefault = isDefault;
         }
 
-        @Override
-        public Runnable getCloseAction() {
-            return presenter.getCloseAction();
+        public boolean isDisabled() {
+            return disabled;
         }
 
-        @Override
-        public void setCloseAction(Runnable value) {
-            presenter.setCloseAction(value);
-        }
-
-        @Override
-        public Consumer<ResultButtonName> getResultAction() {
-            return presenter.resultAction;
-        }
-
-        @Override
-        public void setResultAction(Consumer<ResultButtonName> action) {
-            presenter.resultAction = action;
-        }
-
-        @Override
-        public double getMinWidth() {
-            return getView().getMinWidth();
-        }
-
-        @Override
-        public double getMinHeight() {
-            return getView().getMinHeight();
-        }
-
-        @Override
-        public double getMaxWidth() {
-            return getView().getMaxWidth();
-        }
-
-        @Override
-        public double getMaxHeight() {
-            return getView().getMaxHeight();
-        }
-
-        @Override
-        public boolean isOutOfBoundsAllowed() {
-            return getView().isOutOfBoundsAllowed();
-        }
-
-        @Override
-        public boolean isResizable() {
-            return getView().isResizable();
-        }
-
-        @Override
-        public boolean isButtonWidthEqual() {
-            return getView().isButtonWidthEqual();
-        }
-
-        @Override
-        public boolean isCloseDisabled() {
-            return getView().isCloseDisabled();
-        }
-
-        @Override
-        public List<ResultButtonName> getLeftButtons() {
-            return getView().getLeftButtons();
-        }
-
-        @Override
-        public List<ResultButtonName> getRightButtons() {
-            return getView().getRightButtons();
+        public void setDisabled(boolean disabled) {
+            this.disabled = disabled;
         }
     }
-
     /**
      * If it is necessary to close a dialog then dialog helper should be used. Default implementation uses window
      * closer set from view.
@@ -120,13 +64,36 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     private Consumer<ResultButtonName> resultAction = (name) -> requestClose();
 
+    private boolean active;
+
+    private double minWidth;
+
+    private double minHeight;
+
+    private double maxWidth;
+
+    private double maxHeight;
+
+    private boolean outOfBoundsAllowed;
+
+    private boolean resizable;
+
+    private boolean buttonWidthEqual;
+
+    private boolean closeDisabled;
+
+    private String title;
+
+    private Icon<?> icon;
+
+    private final List<ResultButtonName> leftButtons = new ArrayList<>();
+
+    private final List<ResultButtonName> rightButtons = new ArrayList<>();
+
+    private final Map<ResultButtonName, ButtonModel> buttonsByName = new HashMap<>();
+
     public AbstractDialogPresenter(V view) {
         super(view, true);
-    }
-
-    @Override
-    public Port getPort() {
-        return (Port) super.getPort();
     }
 
     @Override
@@ -144,23 +111,200 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
     }
 
     @Override
-    protected Port createPort() {
-        return new AbstractDialogPresenter.Port();
+    public boolean isActive() {
+        return active;
     }
 
-    protected Runnable getCloseAction() {
+    public void setActive(boolean active) {
+        this.active = active;
+        getView().setActive(active);
+    }
+
+    @Override
+    public double getMinWidth() {
+        return minWidth;
+    }
+
+    public void setMinWidth(double minWidth) {
+        this.minWidth = minWidth;
+        getView().setMinWidth(maxWidth);
+    }
+
+    @Override
+    public double getMinHeight() {
+        return minHeight;
+    }
+
+    public void setMinHeight(double minHeight) {
+        this.minHeight = minHeight;
+        getView().setMinHeight(maxWidth);
+    }
+
+    @Override
+    public double getMaxWidth() {
+        return maxWidth;
+    }
+
+    public void setMaxWidth(double maxWidth) {
+        this.maxWidth = maxWidth;
+        getView().setMaxWidth(maxWidth);
+    }
+
+    @Override
+    public double getMaxHeight() {
+        return maxHeight;
+    }
+
+    public void setMaxHeight(double maxHeight) {
+        this.maxHeight = maxHeight;
+        getView().setMaxHeight(maxHeight);
+    }
+
+    @Override
+    public boolean isOutOfBoundsAllowed() {
+        return outOfBoundsAllowed;
+    }
+
+    public void setOutOfBoundsAllowed(boolean outOfBoundsAllowed) {
+        this.outOfBoundsAllowed = outOfBoundsAllowed;
+        getView().setOutOfBoundsAllowed(outOfBoundsAllowed);
+    }
+
+    @Override
+    public boolean isResizable() {
+        return resizable;
+    }
+
+    public void setResizable(boolean resizable) {
+        this.resizable = resizable;
+        getView().setResizable(active);
+    }
+
+    @Override
+    public boolean isButtonWidthEqual() {
+        return buttonWidthEqual;
+    }
+
+    public void setButtonWidthEqual(boolean buttonWidthEqual) {
+        this.buttonWidthEqual = buttonWidthEqual;
+        getView().setButtonWidthEqual(active);
+    }
+
+    @Override
+    public boolean isCloseDisabled() {
+        return closeDisabled;
+    }
+
+    public void setCloseDisabled(boolean closeDisabled) {
+        this.closeDisabled = closeDisabled;
+        getView().setCloseDisabled(active);
+    }
+
+    @Override
+    public List<ResultButtonName> getLeftButtons() {
+        return Collections.unmodifiableList(this.leftButtons);
+    }
+
+    @Override
+    public List<ResultButtonName> getRightButtons() {
+        return Collections.unmodifiableList(this.rightButtons);
+    }
+
+    @Override
+    public void setLeftButtons(ResultButtonName... names) {
+        this.leftButtons.clear();
+        List<ResultButtonName> foundNames = new ArrayList<>();
+        for (var name : names) {
+            var button = this.buttonsByName.get(name);
+            if (button != null) {
+                this.leftButtons.add(name);
+                foundNames.add(name);
+            }
+        }
+        getView().setLeftButtons(foundNames.toArray(ResultButtonName[]::new));
+    }
+
+    @Override
+    public void setRightButtons(ResultButtonName... names) {
+        this.rightButtons.clear();
+        List<ResultButtonName> foundNames = new ArrayList<>();
+        for (var name : names) {
+            var button = this.buttonsByName.get(name);
+            if (button != null) {
+                this.rightButtons.add(name);
+                foundNames.add(name);
+            }
+        }
+        getView().setRightButtons(foundNames.toArray(ResultButtonName[]::new));
+    }
+
+    @Override
+    public void setButtonDisabled(ResultButtonName name, boolean value) {
+        var button = this.buttonsByName.get(name);
+        if (button != null) {
+            button.setDisabled(value);
+            getView().setButtonDisabled(name, value);
+        }
+    }
+
+    @Override
+    public void setButtonDefault(ResultButtonName name, boolean value) {
+        var button = this.buttonsByName.get(name);
+        if (button != null) {
+            button.setDefault(value);
+            getView().setButtonDefault(name, value);
+        }
+    }
+
+    @Override
+    public Optional<Boolean> getButtonDisabled(ResultButtonName name) {
+        return Optional.ofNullable(this.buttonsByName.get(name)).map(ButtonModel::isDisabled);
+    }
+
+    @Override
+    public Optional<Boolean> getButtonDefault(ResultButtonName name) {
+        return Optional.ofNullable(this.buttonsByName.get(name)).map(ButtonModel::isDefault);
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+        getView().setTitle(title);
+    }
+
+    @Override
+    public String getTitle() {
+        return this.title;
+    }
+
+    @Override
+    public void setIcon(Icon<?> icon) {
+        this.icon = icon;
+        getView().setIcon(icon);
+    }
+
+    @Override
+    public Icon<?> getIcon() {
+        return this.icon;
+    }
+
+    @Override
+    public Runnable getCloseAction() {
         return closeAction;
     }
 
-    protected void setCloseAction(Runnable closeAction) {
+    @Override
+    public void setCloseAction(Runnable closeAction) {
         this.closeAction = closeAction;
     }
 
-    protected Consumer<ResultButtonName> getResultAction() {
+    @Override
+    public Consumer<ResultButtonName> getResultAction() {
         return resultAction;
     }
 
-    protected void setResultAction(Consumer<ResultButtonName> resultAction) {
+    @Override
+    public void setResultAction(Consumer<ResultButtonName> resultAction) {
         this.resultAction = resultAction;
     }
 
@@ -173,17 +317,26 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
     protected void restoreAppearance() {
         super.restoreAppearance();
         var h = getHistory();
-        var v = getView();
-        v.setPrefWidth(h.getWidth());
-        v.setPrefHeight(h.getHeight());
+        setPrefWidth(h.getWidth());
+        setPrefHeight(h.getHeight());
     }
 
     @Override
     protected void saveAppearance() {
         super.saveAppearance();
         var h = getHistory();
-        var v = getView();
-        h.setWidth(v.getWidth());
-        h.setHeight(v.getHeight());
+        h.setWidth(getWidth());
+        h.setHeight(getHeight());
+    }
+
+    void onButtonRegistered(ResultButtonName name, boolean isDefault, boolean disabled) {
+        var model = new ButtonModel();
+        model.setDefault(isDefault);
+        model.setDisabled(disabled);
+        this.buttonsByName.put(name, model);
+    }
+
+    void onButtonUnregistered(ResultButtonName name) {
+        this.buttonsByName.remove(name);
     }
 }

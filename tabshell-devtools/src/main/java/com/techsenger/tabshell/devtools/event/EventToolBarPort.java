@@ -27,4 +27,8 @@ import java.util.Set;
 public interface EventToolBarPort extends ToolBarPort, EventToolBarShared {
 
     Set<Class<? extends ConnectorEvent>> getSelectedEventTypes();
+
+    boolean isFilterSelected();
+
+    boolean isSelectedNodeOnly();
 }

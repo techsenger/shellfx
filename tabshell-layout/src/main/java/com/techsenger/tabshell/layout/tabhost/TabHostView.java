@@ -26,11 +26,7 @@ import javafx.scene.text.Font;
  */
 public interface TabHostView extends AreaView, TabContainerView {
 
-    boolean isTabHeaderAutoHide();
-
     void setTabHeaderAutoHide(boolean value);
-
-    boolean isTabHeaderVisible();
 
     void setTabHeaderVisible(boolean value);
 

@@ -25,10 +25,13 @@ import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
+import static com.techsenger.tabshell.dialogs.file.FileChooserType.OPEN;
+import static com.techsenger.tabshell.dialogs.file.FileChooserType.SAVE_AS;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.icon.StyleFontIcon;
-import com.techsenger.tabshell.material.table.TableColumnHistory;
+import com.techsenger.tabshell.material.table.TableColumnInfo;
+import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.material.table.TableHistory;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.storage.FileColumnNames;
@@ -44,7 +47,9 @@ import com.techsenger.toolkit.core.file.FileUtils;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
@@ -55,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public class FileChooserDialogPresenter<V extends FileChooserDialogView, C extends FileChooserDialogComposer>
-        extends AbstractDialogPresenter<V, C> {
+        extends AbstractDialogPresenter<V, C> implements FileChooserDialogPort {
 
     private static final Logger logger = LoggerFactory.getLogger(FileChooserDialogPresenter.class);
 
@@ -63,15 +68,23 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         NEW_DIRECTORY, RENAME_FILE
     }
 
-    protected class Port extends AbstractDialogPresenter<V, C>.Port implements FileChooserDialogPort {
+    private List<Location> locations;
 
-        private final FileChooserDialogPresenter<V, C> presenter = FileChooserDialogPresenter.this;
+    private Location location;
 
-        @Override
-        public GenericFile getResult() {
-            return presenter.resultFile;
-        }
-    }
+    private boolean listSelected;
+
+    private boolean detailsSelected;
+
+    private List<GenericFile> files;
+
+    private GenericFile selectedFile;
+
+    private ExtensionFilter extensionFilter;
+
+    private String fileName;
+
+    private List<ExtensionFilter> extensionFilters;
 
     private final FileChooserType type;
 
@@ -80,8 +93,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     private String initialFileName;
 
     private FileStorage storage;
-
-    private String fileName;
 
     private URI directory;
 
@@ -94,6 +105,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     private GenericFile resultFile;
 
     private EditType editType;
+
+    private final Map<TableColumnName, TableColumnInfo> columns = new HashMap<>();
 
     public FileChooserDialogPresenter(V view, FileChooserType type, AppearanceSettings settings,
             HistoryManager historyManager) {
@@ -119,11 +132,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Port getPort() {
-        return (Port) super.getPort();
     }
 
     public FileChooserType getType() {
@@ -162,14 +170,89 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         super.onResult(name);
     }
 
-    @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DialogComponents.FILE_CHOOSER_DIALOG);
+    public List<Location> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<Location> locations) {
+        this.locations = locations;
+        getView().setLocations(locations);
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+        getView().setLocation(location);
+    }
+
+    public boolean isListSelected() {
+        return listSelected;
+    }
+
+    public void setListSelected(boolean listSelected) {
+        this.listSelected = listSelected;
+        getView().setListSelected(listSelected);
+    }
+
+    public boolean isDetailsSelected() {
+        return detailsSelected;
+    }
+
+    public void setDetailsSelected(boolean detailsSelected) {
+        this.detailsSelected = detailsSelected;
+        getView().setDetailsSelected(detailsSelected);
+    }
+
+    public List<GenericFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<GenericFile> files) {
+        this.files = files;
+        getView().setFiles(files);
+    }
+
+    public GenericFile getSelectedFile() {
+        return selectedFile;
+    }
+
+    public ExtensionFilter getExtensionFilter() {
+        return extensionFilter;
+    }
+
+    public void setExtensionFilter(ExtensionFilter extensionFilter) {
+        this.extensionFilter = extensionFilter;
+        getView().setExtensionFilter(extensionFilter);
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+        getView().setFileName(fileName);
+    }
+    public List<ExtensionFilter> getExtensionFilters() {
+        return extensionFilters;
+    }
+
+    public void setExtensionFilters(List<ExtensionFilter> extensionFilters) {
+        this.extensionFilters = extensionFilters;
+        getView().setExtensionFilters(extensionFilters);
     }
 
     @Override
-    protected Port createPort() {
-        return new FileChooserDialogPresenter.Port();
+    public GenericFile getResult() {
+        return this.resultFile;
+    }
+
+    @Override
+    protected Descriptor createDescriptor() {
+        return new Descriptor(DialogComponents.FILE_CHOOSER_DIALOG);
     }
 
     @Override
@@ -187,35 +270,50 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     protected void saveAppearance() {
         super.saveAppearance();
         var history = getHistory();
-        var view = getView();
-        history.setListSelected(view.isListSelected());
-        history.setDetailsSelected(view.isDetailsSelected());
-        history.setTable(view.getTableHistory());
+        history.setListSelected(isListSelected());
+        history.setDetailsSelected(isDetailsSelected());
+        var tableHistory = new TableHistory(this.columns.values().stream().toList());
+        history.setTable(tableHistory);
     }
 
     @Override
     protected void restoreAppearance() {
         super.restoreAppearance();
         var history = getHistory();
-        var view = getView();
-        view.setListSelected(history.isListSelected());
-        view.setDetailsSelected(history.isDetailsSelected());
-        view.setTableHistory(history.getTable());
+        setListSelected(history.isListSelected());
+        setDetailsSelected(history.isDetailsSelected());
+        for (var c : history.getTable().getColumns()) {
+            this.columns.put(c.getName(), c);
+        }
+        getView().addColumns(this.columns);
     }
 
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        var view = getView();
-        view.setButtonWidthEqual(true);
-        view.setPrefWidth(800);
-        view.setPrefHeight(500);
-        view.setupFor(type);
+        setButtonWidthEqual(true);
+        setPrefWidth(800);
+        setPrefHeight(500);
+        switch (type) {
+            case OPEN -> {
+                setTitle("Open");
+                setIcon(SharedIcons.OPEN);
+                getView().setLocationCaption("Look In");
+            }
+            case SAVE_AS -> {
+                setTitle("Save As");
+                setIcon(SharedIcons.SAVE_AS);
+                getView().setLocationCaption("Save In");
+            }
+            default -> throw new AssertionError();
+        }
         if (getHistory().isNew()) {
-            var tableHistory = createInitialTableHistory();
-            view.setTableHistory(tableHistory);
+            createInitialColumns();
+            getView().addColumns(columns);
         }
         updateFiles(null);
+        setRightButtons(FileChooserButtons.CANCEL, FileChooserButtons.OK);
+        setButtonDefault(FileChooserButtons.OK, true);
     }
 
     protected URI getDirectory() {
@@ -270,8 +368,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
                 }
             }
         }
-        getView().setLocations(locations);
-        getView().setLocation(selectedLocation);
+        setLocations(locations);
+        setLocation(selectedLocation);
         this.locationsUpdated = true;
     }
 
@@ -300,7 +398,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         }
     }
 
-    protected void onNewDirectoryRequested() {
+    protected void onNewDirectory() {
         if (this.editType != null) {
             return;
         }
@@ -316,7 +414,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         this.editType = EditType.NEW_DIRECTORY;
     }
 
-    protected void onRenameRequested(int fileIndex) {
+    protected void onRename(int fileIndex) {
         if (this.editType != null) {
             return;
         }
@@ -364,31 +462,50 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         this.editType = null;
     }
 
-    protected void onListSelected() {
-        getView().setListSelected(true);
+    protected void onList(boolean selected) {
+        setListSelected(selected);
     }
 
-    protected void onDetailsSelected() {
-        getView().setDetailsSelected(true);
+    protected void onDetails(boolean selected) {
+        setDetailsSelected(selected);
     }
 
     protected void onFileSelected(GenericFile file) {
         if (file != null && !file.isDirectory()) {
-            getView().setFileName(file.getName());
+            setFileName(file.getName());
         } else {
-            getView().setFileName(null);
+            setFileName(null);
         }
     }
 
     protected void onRefresh() {
-        updateFiles(getView().getSelectedFile());
+        updateFiles(getSelectedFile());
     }
 
     protected void onFilterSelected(ExtensionFilter filter) {
+        this.extensionFilter = filter;
         updateFiles(null);
     }
 
+    protected void onColumnWidthChanged(TableColumnName name, double width) {
+        var info = this.columns.get(name);
+        info.setWidth(width);
+    }
 
+    protected void onColumnSortTypeChanged(TableColumnName name, TableColumn.SortType sortType) {
+        var info = this.columns.get(name);
+        info.setSortType(sortType);
+    }
+
+    protected void onColumnIndexChanged(TableColumnName name, int index) {
+        var info = this.columns.get(name);
+        info.setIndex(index);
+    }
+
+    protected void onColumnSortIndexChanged(TableColumnName name, Integer index) {
+        var info = this.columns.get(name);
+        info.setSortIndex(index);
+    }
 
     private void navigateTo(FileStorage storage, URI uri) {
         this.storage = storage;
@@ -397,8 +514,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     }
 
     private void updateFiles(GenericFile selectedFile) {
-        var view = getView();
-        view.setFiles(Collections.emptyList());
+        setFiles(Collections.emptyList());
         boolean defaultUsed = false;
         if (this.storage == null || this.directory == null) {
             setDefaultStorageAndDirectory();
@@ -419,7 +535,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         }
         updateLocation();
         List<GenericFile> filteredFiles = new ArrayList<>();
-        var extFilter = view.getExtensionFilter();
+        var extFilter = getExtensionFilter();
         if (extFilter != null && !extFilter.matchesAllFiles()) {
             for (var f : storageFiles) {
                 if (f.isDirectory()) {
@@ -430,15 +546,15 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
                     }
                 }
             }
-            view.setFiles(filteredFiles);
+            setFiles(filteredFiles);
         } else {
-            view.setFiles(storageFiles);
+            setFiles(storageFiles);
         }
-        view.sortFiles();
+        getView().sortFiles();
         //only after sorting we can find the selected file index
         var selectedFileIndex = -1;
         if (selectedFile != null) {
-            var files = view.getFiles();
+            var files = getFiles();
             for (int i = 0; i < files.size(); i++) {
                 var file = files.get(i);
                 if (file.getType() == selectedFile.getType() && file.getName() != null
@@ -448,8 +564,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
                 }
             }
             if (selectedFileIndex != -1) {
-                view.selectFile(selectedFileIndex);
-                view.scrollToFile(selectedFileIndex);
+                getView().selectFile(selectedFileIndex);
+                getView().scrollToFile(selectedFileIndex);
             }
         }
     }
@@ -490,9 +606,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         // The created location must be added to the locations list.
         // We add only one location at a time - the currently selected one.
         // If the user clicks the combobox, all locations will be updated.
-        var view = getView();
-        view.setLocations(List.of(location));
-        view.setLocation(location);
+        setLocations(List.of(location));
+        setLocation(location);
         this.locationsUpdated = false;
     }
 
@@ -523,21 +638,25 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         return location;
     }
 
-    private TableHistory createInitialTableHistory() {
-        var columns = new ArrayList<TableColumnHistory>();
-        var typeColumn = new TableColumnHistory(FileColumnNames.TYPE.toString());
-        columns.add(typeColumn);
+    private void createInitialColumns() {
+        var typeColumn = new TableColumnInfo(FileColumnNames.TYPE);
         typeColumn.setSortIndex(0);
         typeColumn.setSortType(TableColumn.SortType.ASCENDING);
-        var nameColumn = new TableColumnHistory(FileColumnNames.NAME.toString());
-        columns.add(nameColumn);
+        typeColumn.setIndex(0);
+        columns.put(typeColumn.getName(), typeColumn);
+
+        var nameColumn = new TableColumnInfo(FileColumnNames.NAME);
+        nameColumn.setIndex(1);
         nameColumn.setSortIndex(1);
         nameColumn.setSortType(TableColumn.SortType.ASCENDING);
-        var sizeColumn = new TableColumnHistory(FileColumnNames.SIZE.toString());
-        columns.add(sizeColumn);
-        var modifiedColumn = new TableColumnHistory(FileColumnNames.LAST_MODIFIED.toString());
-        columns.add(modifiedColumn);
-        return new TableHistory(columns);
+        columns.put(nameColumn.getName(), nameColumn);
+
+        var sizeColumn = new TableColumnInfo(FileColumnNames.SIZE);
+        sizeColumn.setIndex(2);
+        columns.put(sizeColumn.getName(), sizeColumn);
+        var modifiedColumn = new TableColumnInfo(FileColumnNames.LAST_MODIFIED);
+        modifiedColumn.setIndex(3);
+        columns.put(modifiedColumn.getName(), modifiedColumn);
     }
 
     private GenericFile getResultFile() {
@@ -545,8 +664,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
             showWarning("Storage or/and directory are not selected.");
             return null;
         }
-        var view = getView();
-        var fileName = view.getFileName();
+        var fileName = getFileName();
         if (fileName == null) {
             showWarning("File name is not specified.");
             return null;
@@ -557,17 +675,17 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
             return null;
         }
         //there is a file with such name
-        for (var file : view.getFiles()) {
+        for (var file : getFiles()) {
             if (!file.isDirectory() && file.getName().equals(fileName)) {
                 return file;
             }
         }
         //there is no file with such name
         if (this.type == FileChooserType.SAVE_AS) {
-            if (!view.getExtensionFilters().isEmpty() && view.getExtensionFilter() != null
-                    && !view.getExtensionFilter().matchesAllFiles()) {
+            if (!getExtensionFilters().isEmpty() && getExtensionFilter() != null
+                    && !getExtensionFilter().matchesAllFiles()) {
                 var extension = FileUtils.getExtension(fileName);
-                var filter = view.getExtensionFilter();
+                var filter = getExtensionFilter();
                 if (extension != null) {
                     if (!filter.matches(fileName)) {
                         showWarning("The file '" + fileName + "' does not satisfy the filter criteria.");

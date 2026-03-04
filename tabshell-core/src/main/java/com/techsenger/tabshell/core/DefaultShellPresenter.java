@@ -19,6 +19,7 @@ package com.techsenger.tabshell.core;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.AbstractParentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
@@ -39,101 +40,6 @@ import java.util.function.Consumer;
 public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         extends AbstractParentPresenter<V, C> implements ShellPresenter<V, C> {
 
-    protected class Port extends AbstractParentPresenter<V, C>.Port implements ShellPort {
-
-        private final DefaultShellPresenter<V, C> presenter = DefaultShellPresenter.this;
-
-        @Override
-        public HistoryManager getHistoryManager() {
-            return presenter.getHistoryManager();
-        }
-
-        @Override
-        public Settings getSettings() {
-            return presenter.getSettings();
-        }
-
-        @Override
-        public <T extends Settings> T getSettings(Class<T> settingsClass) {
-            return presenter.getSettings(settingsClass);
-        }
-
-        @Override
-        public double getWidth() {
-            return getView().getWidth();
-        }
-
-        @Override
-        public double getHeight() {
-            return getView().getHeight();
-        }
-
-        @Override
-        public boolean isMaximized() {
-            return getView().isMaximized();
-        }
-
-        @Override
-        public String getTitle() {
-            return getView().getTitle();
-        }
-
-        @Override
-        public Icon<?> getIcon() {
-            return getView().getIcon();
-        }
-
-        @Override
-        public List<? extends PopupPort> getPopups() {
-            return getComposer().getPopups();
-        }
-
-        @Override
-        public List<? extends DialogPort> getDialogs() {
-            return getComposer().getDialogs();
-        }
-
-        @Override
-        public void close() {
-            presenter.close();
-        }
-
-        @Override
-        public void requestClose(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {
-            presenter.requestClose(maxAttempts, resultConsumer);
-        }
-
-        @Override
-        public CloseCheckResult isReadyToClose() {
-            return presenter.isReadyToClose();
-        }
-
-        @Override
-        public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
-            presenter.prepareToClose(resultCallback);
-        }
-
-        @Override
-        public MenuHelper getMenuHelper(MenuName menuName) {
-            return presenter.menuHelpers.getMenuHelpersByName().get(menuName);
-        }
-
-        @Override
-        public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-            return presenter.menuHelpers.getMenuItemHelpersByName().get(menuItemName);
-        }
-
-        @Override
-        public void onMenuShowing(MenuName menuName) {
-            // empty
-        }
-
-        @Override
-        public void onMenuHiding(MenuName menuName) {
-            // empty
-        }
-    }
-
     private final Settings settings;
 
     private final HistoryManager historyManager;
@@ -141,6 +47,16 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     private final MenuHelpers menuHelpers = new MenuHelpers();
 
     private Runnable onClose;
+
+    private double width;
+
+    private double height;
+
+    private String title;
+
+    private boolean maximized;
+
+    private Icon<?> icon;
 
     public DefaultShellPresenter(V view, Settings settings, HistoryManager historyManager) {
         super(view);
@@ -182,7 +98,7 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         while (iterator.hasNext()) {
             var c = iterator.next();
             if (iterator.getDepth() > 0) {
-                c.deinitialize();
+                ((Presenter<?>) c).deinitialize();
             }
         }
         // the shell is deinitilized at the end
@@ -198,11 +114,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
-    }
-
-    @Override
     public Runnable getOnClose() {
         return this.onClose;
     }
@@ -213,30 +124,121 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
+    public double getWidth() {
+        return width;
+    }
+
+    @Override
+    public void setWidth(double width) {
+        this.width = width;
+        getView().setWidth(width);
+    }
+
+    @Override
+    public double getHeight() {
+        return height;
+    }
+
+    @Override
+    public void setHeight(double height) {
+        this.height = height;
+        getView().setHeight(height);
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+        getView().setTitle(title);
+    }
+
+    @Override
+    public Icon<?> getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(Icon<?> icon) {
+        this.icon = icon;
+        getView().setIcon(icon);
+    }
+
+    @Override
+    public boolean isMaximized() {
+        return maximized;
+    }
+
+    @Override
+    public void setMaximized(boolean maximized) {
+        this.maximized = maximized;
+        getView().setMaximized(maximized);
+    }
+
+    @Override
+    public List<? extends PopupPort> getPopups() {
+        return getComposer().getPopups();
+    }
+
+    @Override
+    public List<? extends DialogPort> getDialogs() {
+        return getComposer().getDialogs();
+    }
+
+    @Override
+    public MenuHelper getMenuHelper(MenuName menuName) {
+        return menuHelpers.getMenuHelpersByName().get(menuName);
+    }
+
+    @Override
+    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
+        return menuHelpers.getMenuItemHelpersByName().get(menuItemName);
+    }
+
+    @Override
+    public void onMenuShowing(MenuName menuName) {
+        // empty
+    }
+
+    @Override
+    public void onMenuHiding(MenuName menuName) {
+        // empty
+    }
+
+    @Override
     protected DefaultShellHistory getHistory() {
         return (DefaultShellHistory) super.getHistory();
     }
 
-    @Override
-    protected Port createPort() {
-        return new DefaultShellPresenter.Port();
+    protected void onWidthChanged(double width) {
+        this.width = width;
+    }
+
+    protected void onHeightChanged(double height) {
+        this.height = height;
+    }
+
+    protected void onMaximized(boolean maximized) {
+        this.maximized = maximized;
     }
 
     @Override
     protected void restoreAppearance() {
         super.restoreAppearance();
         var h = getHistory();
-        var v = getView();
         if (!h.isNew()) {
             if (h.isMaximized()) {
-                v.setMaximized(true);
+                setMaximized(true);
             } else {
-                v.setHeight(h.getHeight());
-                v.setWidth(h.getWidth());
+                setHeight(h.getHeight());
+                setWidth(h.getWidth());
             }
         } else {
-            v.setHeight(ShellView.DEFAULT_HEIGHT);
-            v.setWidth(ShellView.DEFAULT_WIDTH); // todo:
+            setHeight(ShellView.DEFAULT_HEIGHT);
+            setWidth(ShellView.DEFAULT_WIDTH);
         }
     }
 
@@ -244,10 +246,9 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     protected void saveAppearance() {
         super.saveAppearance();
         var h = getHistory();
-        var v = getView();
-        h.setWidth(v.getWidth());
-        h.setHeight(v.getHeight());
-        h.setMaximized(v.isMaximized());
+        h.setWidth(getWidth());
+        h.setHeight(getHeight());
+        h.setMaximized(isMaximized());
     }
 
     @Override

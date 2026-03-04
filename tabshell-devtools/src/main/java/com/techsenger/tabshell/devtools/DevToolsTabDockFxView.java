@@ -58,17 +58,17 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
             var nodeTab = createNodeTab();
             nodeTab.getPresenter().initialize();
-            var componentTab = createComponentTab(nodeTab.getPresenter().getPort());
+            var componentTab = createComponentTab(nodeTab.getPresenter());
             componentTab.getPresenter().initialize();
 
             addTab(componentTab);
             addTab(nodeTab);
 
-            var eventTab = createEventTab(nodeTab.getPresenter().getPort());
+            var eventTab = createEventTab(nodeTab.getPresenter());
             eventTab.getPresenter().initialize();
             addTab(eventTab);
 
-            var stylesheetTab = createStylesheetTab(nodeTab.getPresenter().getPort());
+            var stylesheetTab = createStylesheetTab(nodeTab.getPresenter());
             stylesheetTab.getPresenter().initialize();
             addTab(stylesheetTab);
 
@@ -87,7 +87,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
         protected NodeTabFxView<?> createNodeTab() {
             var view = new NodeTabFxView<>(shell, dialogContainer);
-            var presenter = new NodeTabPresenter<>(view, connector, getPresenter().getPort());
+            var presenter = new NodeTabPresenter<>(view, connector, getPresenter());
             return view;
         }
 
@@ -100,7 +100,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
         protected StylesheetTabFxView<?> createStylesheetTab(NodeTabPort nodeTab) {
             var view = new StylesheetTabFxView<>(shell);
             var windowUid = shell.getStage().hashCode();
-            var presenter = new StylesheetTabPresenter<>(view, connector, getPresenter().getPort(), nodeTab);
+            var presenter = new StylesheetTabPresenter<>(view, connector, getPresenter(), nodeTab);
             return view;
         }
 
@@ -138,11 +138,6 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
     @Override
     public void setSelectionSelected(boolean value) {
         this.selectionButton.setSelected(value);
-    }
-
-    @Override
-    public boolean isSelectionSelected() {
-        return this.selectionButton.isSelected();
     }
 
     @Override

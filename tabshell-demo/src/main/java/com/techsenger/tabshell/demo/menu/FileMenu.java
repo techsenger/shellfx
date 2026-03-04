@@ -16,6 +16,9 @@
 
 package com.techsenger.tabshell.demo.menu;
 
+import com.techsenger.tabshell.material.menu.DefaultMenuGroupName;
+import com.techsenger.tabshell.material.menu.DefaultMenuItemName;
+import com.techsenger.tabshell.material.menu.DefaultMenuName;
 import com.techsenger.tabshell.material.menu.MenuGroupName;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
@@ -26,23 +29,23 @@ import com.techsenger.tabshell.material.menu.MenuName;
  */
 public interface FileMenu {
 
-    MenuName NAME = new MenuName();
+    MenuName NAME = new DefaultMenuName();
 
-    MenuGroupName DEMO = new MenuGroupName("Demo");
+    MenuGroupName DEMO = new DefaultMenuGroupName("Demo");
 
-    MenuItemName MAIN_TAB = new MenuItemName();
+    MenuItemName MAIN_TAB = new DefaultMenuItemName();
 
-    MenuItemName PAGED_TAB = new MenuItemName();
+    MenuItemName PAGED_TAB = new DefaultMenuItemName();
 
-    MenuItemName DIALOGS = new MenuItemName();
+    MenuItemName DIALOGS = new DefaultMenuItemName();
 
-    MenuItemName DEV_TOOLS = new MenuItemName();
+    MenuItemName DEV_TOOLS = new DefaultMenuItemName();
 
-    MenuGroupName SETTINGS = new MenuGroupName("Settings");
+    MenuGroupName SETTINGS = new DefaultMenuGroupName("Settings");
 
-    MenuItemName THEME = new MenuItemName();
+    MenuItemName THEME = new DefaultMenuItemName();
 
-    MenuGroupName LAST = new MenuGroupName("Exit");
+    MenuGroupName LAST = new DefaultMenuGroupName("Exit");
 
-    MenuItemName EXIT = new MenuItemName();
+    MenuItemName EXIT = new DefaultMenuItemName();
 }

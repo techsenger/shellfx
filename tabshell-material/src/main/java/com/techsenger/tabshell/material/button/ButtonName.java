@@ -22,9 +22,6 @@ import com.techsenger.patternfx.core.Name;
  *
  * @author Pavel Castornii
  */
-public class ButtonName extends Name {
+public interface ButtonName extends Name {
 
-    public ButtonName() {
-        super(null);
-    }
 }

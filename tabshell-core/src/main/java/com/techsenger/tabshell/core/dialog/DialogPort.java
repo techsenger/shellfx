@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public interface DialogPort extends DialogShared, PopupPort {
+public interface DialogPort extends ReadOnlyDialog, PopupPort {
 
     /**
      * Returns the action to be executed when the dialog is closed via the close button or window close event.

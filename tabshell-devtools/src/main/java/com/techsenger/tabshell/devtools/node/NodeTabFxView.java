@@ -40,6 +40,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -109,13 +110,13 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
     private static final class CategoryTreeItem extends TreeItem<PropertyItem> {
 
-        private final Map<AttributeCategory, Boolean> categoryExpansion;
-
-        private CategoryTreeItem(PropertyItem item, Map<AttributeCategory, Boolean> categoryExpansion) {
+        private CategoryTreeItem(PropertyItem item) {
             setValue(item);
-            this.categoryExpansion = categoryExpansion;
-            setExpanded(this.categoryExpansion.get(item.getCategory()));
-            expandedProperty().addListener((ov, oldV, newV) -> this.categoryExpansion.put(item.getCategory(), newV));
+        }
+
+        public void setNotifier(BiConsumer<AttributeCategory, Boolean> notifier) {
+            expandedProperty().addListener((ov, oldV, newV) -> notifier
+                    .accept(getValue().getCategory(), newV));
         }
     }
 
@@ -297,12 +298,12 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
         @Override
         public ToolBarPort getNodeToolBar() {
-            return nodeToolBar.getPresenter().getPort();
+            return nodeToolBar.getPresenter();
         }
 
         @Override
         public ToolBarPort getPropertyToolBar() {
-            return propertyToolBar.getPresenter().getPort();
+            return propertyToolBar.getPresenter();
         }
 
         @Override
@@ -310,6 +311,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
                 Consumer<String> linkOpener) {
             var dialog = createPropertyDialog(element, item, declaringClassName, linkOpener);
             dialog.getPresenter().initialize();
+            dialog.getPresenter().setResizable(true);
             dialogContainer.getComposer().addDialog(dialog);
         }
 
@@ -329,7 +331,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
         protected PropertyDialogFxView<?> createPropertyDialog(Element element, PropertyItem item,
                 String declaringClassName, Consumer<String> linkOpener) {
-            var view = new PropertyDialogFxView<>(true, this.view.getShell());
+            var view = new PropertyDialogFxView<>(this.view.getShell());
             var presenter = new PropertyDialogPresenter<>(view, element, item, declaringClassName,
                     linkOpener);
             return view;
@@ -349,8 +351,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     private final VBox nodeBox = new VBox(nodeTreeView);
 
     private final TreeTableView<PropertyItem> propertyTableView = new TreeTableView<>();
-
-    private Map<AttributeCategory, Boolean> categoryExpansion;
 
     private final VBox propertyBox = new VBox(propertyTableView);
 
@@ -372,21 +372,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     }
 
     @Override
-    public Element getRootNode() {
-        return this.nodeTreeView.getRoot().getValue();
-    }
-
-    @Override
-    public Element getSelectedNode() {
-        var item = this.nodeTreeView.getSelectionModel().getSelectedItem();
-        if (item != null) {
-            return item.getValue();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public void selectNode(Element node) {
         var treeItem = this.treeItemsByNode.get(node);
         if (treeItem != null) {
@@ -403,7 +388,11 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
     @Override
     public void refreshNodes() {
-        var selectedNode = getSelectedNode();
+        var selectedItem = this.nodeTreeView.getSelectionModel().getSelectedItem();
+        Element selectedNode = null;
+        if (selectedItem != null) {
+            selectedNode = selectedItem.getValue();
+        }
         updateNodeRoot();
         refreshNodeIndex();
         selectNode(selectedNode);
@@ -420,29 +409,22 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     }
 
     @Override
-    public void addProperties(AttributeCategory category, List<PropertyItem> props) {
+    public void addProperties(AttributeCategory category, boolean expanded, List<PropertyItem> props) {
         var rootTreeItem = this.propertyTableView.getRoot();
         if (rootTreeItem == null) {
             rootTreeItem = new TreeItem<>(new PropertyItem());
             this.propertyTableView.setRoot(rootTreeItem);
         }
-        var cat = new CategoryTreeItem(new PropertyItem(category), this.categoryExpansion);
+        var cat = new CategoryTreeItem(new PropertyItem(category));
+        cat.setExpanded(expanded);
+        // and only now
+        cat.setNotifier(getPresenter()::onCategoryExpanded);
         rootTreeItem.getChildren().add(cat);
         for (var prop : props) {
             prop.setValueData(createValueData(prop));
             var treeItem = new TreeItem<>(prop);
             cat.getChildren().add(treeItem);
         }
-    }
-
-    @Override
-    public void setCategoryExpansion(Map<AttributeCategory, Boolean> expansion) {
-        this.categoryExpansion = expansion;
-    }
-
-    @Override
-    public Map<AttributeCategory, Boolean> getCategoryExpansion() {
-        return this.categoryExpansion;
     }
 
     @Override
@@ -459,8 +441,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     @Override
     protected void build() {
         super.build();
-        setTitle("Nodes");
-        setClosable(false);
         var styles = NodeTabFxView.class.getResource("node-tab.css").toExternalForm();
         getContentBox().getStylesheets().add(styles);
 
@@ -508,13 +488,8 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     @Override
     protected void addListeners() {
         super.addListeners();
-        nodeTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
-            if (newV == null) {
-                getPresenter().onNodeSelected(null);
-            } else {
-                getPresenter().onNodeSelected(newV.getValue());
-            }
-        });
+        nodeTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) ->
+            getPresenter().onNodeSelected(newV == null ? null : newV.getValue()));
     }
 
     @Override
@@ -564,5 +539,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         var root = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
         var rootItem = createNodeItem(root);
         nodeTreeView.setRoot(rootItem);
+        getPresenter().onRootChanged(root);
     }
 }

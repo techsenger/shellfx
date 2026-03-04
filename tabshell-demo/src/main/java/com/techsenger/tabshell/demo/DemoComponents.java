@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.demo;
 
 import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.DefaultComponentName;
 
 /**
  * Keys are used to identify components at they are always accessible and are kept in API. Classes cannot
@@ -26,33 +27,33 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public final class DemoComponents {
 
-    public static final ComponentName DEMO_POPUP = new ComponentName("Demo.Popup");
+    public static final ComponentName DEMO_POPUP = new DefaultComponentName("Demo.Popup");
 
-    public static final ComponentName DEMO_DIALOG = new ComponentName("Demo.Dialog");
+    public static final ComponentName DEMO_DIALOG = new DefaultComponentName("Demo.Dialog");
 
-    public static final ComponentName MAIN_TAB = new ComponentName("Demo.MainTab");
+    public static final ComponentName MAIN_TAB = new DefaultComponentName("Demo.MainTab");
 
-    public static final ComponentName DOCKABLE_TAB = new ComponentName("Demo.DockableTab");
+    public static final ComponentName DOCKABLE_TAB = new DefaultComponentName("Demo.DockableTab");
 
-    public static final ComponentName MENU_AWARE_AREA = new ComponentName("Demo.MenuAwareArea");
+    public static final ComponentName MENU_AWARE_AREA = new DefaultComponentName("Demo.MenuAwareArea");
 
-    public static final ComponentName IDE_TAB = new ComponentName("Demo.IdeTab");
+    public static final ComponentName IDE_TAB = new DefaultComponentName("Demo.IdeTab");
 
-    public static final ComponentName SIMPLE_MAIN_TAB = new ComponentName("Demo.SimpleMainTab");
+    public static final ComponentName SIMPLE_MAIN_TAB = new DefaultComponentName("Demo.SimpleMainTab");
 
-    public static final ComponentName DIALOGS_DIALOG = new ComponentName("Demo.DialogsDialog");
+    public static final ComponentName DIALOGS_DIALOG = new DefaultComponentName("Demo.DialogsDialog");
 
-    public static final ComponentName THEME_DIALOG = new ComponentName("Demo.ThemeDialog");
+    public static final ComponentName THEME_DIALOG = new DefaultComponentName("Demo.ThemeDialog");
 
-    public static final ComponentName PAGE_0 = new ComponentName("Demo.Page0");
+    public static final ComponentName PAGE_0 = new DefaultComponentName("Demo.Page0");
 
-    public static final ComponentName PAGE_1 = new ComponentName("Demo.Page1");
+    public static final ComponentName PAGE_1 = new DefaultComponentName("Demo.Page1");
 
-    public static final ComponentName PAGE_2 = new ComponentName("Demo.Page2");
+    public static final ComponentName PAGE_2 = new DefaultComponentName("Demo.Page2");
 
-    public static final ComponentName PAGED_TAB = new ComponentName("Demo.PagedTab");
+    public static final ComponentName PAGED_TAB = new DefaultComponentName("Demo.PagedTab");
 
-    public static final ComponentName PAGED_DIALOG = new ComponentName("Demo.PagedDialog");
+    public static final ComponentName PAGED_DIALOG = new DefaultComponentName("Demo.PagedDialog");
 
     private DemoComponents() {
         // empty

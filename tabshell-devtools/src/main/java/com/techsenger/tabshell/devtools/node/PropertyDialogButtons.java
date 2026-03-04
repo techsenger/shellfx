@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.devtools.node;
 
+import com.techsenger.tabshell.material.button.DefaultResultButtonName;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
@@ -24,5 +25,5 @@ import com.techsenger.tabshell.material.button.ResultButtonName;
  */
 public interface PropertyDialogButtons {
 
-    ResultButtonName OK = new ResultButtonName();
+    ResultButtonName OK = new DefaultResultButtonName();
 }

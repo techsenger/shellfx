@@ -23,6 +23,7 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.DemoComponents;
+import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import java.util.Arrays;
 import java.util.function.Consumer;
@@ -59,8 +60,14 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
     @Override
     protected void postInitialize() {
         super.postInitialize();
+        setTitle("Select Theme");
+        setIcon(new FontIcon(984334)); // theme-light-dark
+        setPrefWidth(500);
+        setResizable(false);
         getView().setThemes(Arrays.stream(AtlantaFxTheme.values()).collect(Collectors.toList()));
         getView().setTheme(settings.getTheme());
+        setRightButtons(ThemeDialogButtons.CANCEL, ThemeDialogButtons.OK);
+        setButtonDefault(ThemeDialogButtons.OK, true);
         setResultAction((buttonName) -> {
             if (buttonName == ThemeDialogButtons.OK) {
                 settings.setTheme(getView().getTheme());

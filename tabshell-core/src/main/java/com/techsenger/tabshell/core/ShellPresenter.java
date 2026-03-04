@@ -17,25 +17,14 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentPresenter;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelpers;
-import com.techsenger.tabshell.core.settings.Settings;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface ShellPresenter<V extends ShellView, C extends ShellComposer> extends ParentPresenter<V, C>,
-        CloseablePresenter<V, C> {
-
-    @Override
-    ShellPort getPort();
-
-    HistoryManager getHistoryManager();
-
-    Settings getSettings();
-
-    <T extends Settings> T getSettings(Class<T> settingsClass);
+        CloseAwarePresenter<V, C>, ReadOnlyShell, WriteOnlyShell, ShellPort {
 
     MenuHelpers getMenuHelpers();
 

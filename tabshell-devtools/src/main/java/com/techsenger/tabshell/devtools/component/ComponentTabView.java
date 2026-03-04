@@ -37,7 +37,5 @@ public interface ComponentTabView extends TabView {
      */
     void selectComponent(List<Integer> path);
 
-    ComponentItem getSelectedComponent();
-
     void updateInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory);
 }

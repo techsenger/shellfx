@@ -118,8 +118,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         var descriptor = presenter.getDescriptor();
         ParentPort port = null;
         if (ParentView.class.isAssignableFrom(fxViewClass)) {
-            var parentPresenter = (ParentPresenter<?, ?>) presenter;
-            port = parentPresenter.getPort();
+            port = (ParentPresenter<?, ?>) presenter;
         }
         var totalMatches = 0;
         var items = new ArrayList<InspectorItem>();
@@ -298,6 +297,8 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
 
     private Presenter<?> componentPresenter;
 
+    private ComponentItem selectedComponent;
+
     public ComponentTabPresenter(V view, ComponentService service, NodeTabPort nodeTab) {
         super(view);
         this.service = service;
@@ -314,6 +315,10 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public ComponentItem getSelectedComponent() {
+        return selectedComponent;
+    }
+
     @Override
     public void onAdded() {
         refreshComponents();
@@ -321,12 +326,20 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     }
 
     @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        setTitle("Components");
+        setClosable(false);
+    }
+
+    @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(DevToolsComponents.COMPONENT_TAB);
     }
 
-    protected void onComponentSelected(Class<? extends View> fxViewClass,
+    protected void onComponentSelected(ComponentItem component, Class<? extends View> fxViewClass,
             Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Element componentNode) {
+        this.selectedComponent = component;
         if (componentNode != null) {
             this.nodeTab.selectNode(componentNode);
         }
@@ -341,7 +354,6 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     }
 
     protected void refreshComponents() {
-        var selectedComponent = getView().getSelectedComponent();
         this.rootComponent = this.service.getRootComponent();
         getView().setRootComponent(rootComponent);
         clearFoundComponents();

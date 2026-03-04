@@ -25,17 +25,9 @@ import com.techsenger.tabshell.layout.tabhost.TabHostView;
 public interface TabDockView extends TabHostView {
 
     /**
-     * Returns the value that defines whether this component can be dragged by the user.
-     *
-     * @return the current draggable state of this component
-     */
-    boolean isDraggable();
-
-    /**
      * Sets the value that defines whether this component can be dragged by the user.
      *
      * @param value the new draggable state for this component
      */
     void setDraggable(boolean value);
-
 }

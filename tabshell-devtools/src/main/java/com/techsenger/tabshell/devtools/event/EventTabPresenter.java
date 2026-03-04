@@ -170,6 +170,8 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
     @Override
     protected void postInitialize() {
         super.postInitialize();
+        setTitle("Events");
+        setClosable(false);
         var tb = getComposer().getToolBar();
         this.filter.setSelected(tb.isFilterSelected());
         this.filter.setMatcher(tb.createFindMatcher());

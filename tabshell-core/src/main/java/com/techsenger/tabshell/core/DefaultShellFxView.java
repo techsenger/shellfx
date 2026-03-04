@@ -78,7 +78,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
+public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         extends AbstractParentFxView<P> implements ShellFxView<P> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultShellFxView.class);
@@ -104,7 +104,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
         @Override
         public List<? extends DialogPort> getDialogs() {
-            return view.getDialogManager().getDialogs().stream().map(d -> d.getPresenter().getPort()).toList();
+            return view.getDialogManager().getDialogs().stream().map(d -> d.getPresenter()).toList();
         }
 
         @Override
@@ -122,7 +122,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
         @Override
         public List<? extends PopupPort> getPopups() {
-            return view.getDialogManager().getPopups().stream().map(d -> d.getPresenter().getPort()).toList();
+            return view.getDialogManager().getPopups().stream().map(d -> d.getPresenter()).toList();
         }
 
         public void addWorkspace(AreaFxView<?> workspace) {
@@ -134,7 +134,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
         @Override
         public AreaPort getWorkspace() {
-            return view.getWorkspace().getPresenter().getPort();
+            return view.getWorkspace().getPresenter();
         }
     }
 
@@ -308,7 +308,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
 
     @Override
     public void updateMenuBar() {
-        this.menuManager.updateMenuBar((MenuAwarePort) getMenuAware().getPresenter().getPort());
+        this.menuManager.updateMenuBar((MenuAwarePort) getMenuAware().getPresenter());
         logger.debug("{} Menu bar updated", getDescriptor().getLogPrefix());
     }
 
@@ -333,18 +333,8 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     }
 
     @Override
-    public boolean isMaximized() {
-        return this.stage.isMaximized();
-    }
-
-    @Override
     public void setMaximized(boolean value) {
         this.stage.setMaximized(value);
-    }
-
-    @Override
-    public double getWidth() {
-        return this.stage.getWidth();
     }
 
     @Override
@@ -353,28 +343,13 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
     }
 
     @Override
-    public double getHeight() {
-        return this.stage.getHeight();
-    }
-
-    @Override
     public void setHeight(double value) {
         this.stage.setHeight(value);
     }
 
     @Override
-    public Icon<?> getIcon() {
-        return this.stageController.iconViewBox.getIcon();
-    }
-
-    @Override
     public void setIcon(Icon<?> icon) {
         this.stageController.iconViewBox.setIcon(icon);
-    }
-
-    @Override
-    public String getTitle() {
-        return this.stage.getTitle();
     }
 
     @Override
@@ -463,6 +438,9 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
                     (newV == null) ? null : newV.getDescriptor().getFullName());
             updateMenuBar();
         });
+        this.stage.widthProperty().addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue()));
+        this.stage.heightProperty().addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
+        this.stage.maximizedProperty().addListener((ov, oldV, newV) -> getPresenter().onMaximized(newV));
     }
 
     @Override
@@ -544,7 +522,7 @@ public class DefaultShellFxView<P extends ShellPresenter<?, ?>>
         }
         ParentFxView<?> currentComponent = focused;
         while (true) {
-            var port = currentComponent.getPresenter().getPort();
+            var port = currentComponent.getPresenter();
             if (port instanceof MenuAwarePort menuAware) {
                 setMenuAware(currentComponent);
                 return;

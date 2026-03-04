@@ -59,12 +59,12 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
 
         @Override
         public ShellPort getShell() {
-            return view.getShell().getPresenter().getPort();
+            return view.getShell().getPresenter();
         }
 
         @Override
         public List<? extends DialogPort> getDialogs() {
-            return view.dialogManager.getDialogs().stream().map(v -> v.getPresenter().getPort()).toList();
+            return view.dialogManager.getDialogs().stream().map(v -> v.getPresenter()).toList();
         }
 
         @Override
@@ -95,7 +95,7 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
 
         @Override
         public List<? extends PopupPort> getPopups() {
-            return view.dialogManager.getPopups().stream().map(v -> v.getPresenter().getPort()).toList();
+            return view.dialogManager.getPopups().stream().map(v -> v.getPresenter()).toList();
         }
     }
 
@@ -126,23 +126,8 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
     }
 
     @Override
-    public String getTooltip() {
-        var tooltip = this.root.getTooltip();
-        if (tooltip != null) {
-            return tooltip.getText();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public void setTooltip(String tooltip) {
         this.root.setTooltip(new Tooltip(tooltip));
-    }
-
-    @Override
-    public boolean isClosable() {
-        return this.root.isClosable();
     }
 
     @Override
@@ -152,29 +137,16 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
 
     @Override
     public void setWaiting(boolean waiting) {
-        if (isWaiting() == waiting) {
-            return;
-        }
         if (waiting) {
-            bgPane.setMouseTransparent(false);
-            wrapperPane.getChildren().add(bgPane);
-            bgPane.setCursor(Cursor.WAIT);
+            if (bgPane.getParent() == null) {
+                bgPane.setMouseTransparent(false);
+                wrapperPane.getChildren().add(bgPane);
+                bgPane.setCursor(Cursor.WAIT);
+            }
         } else {
-            wrapperPane.getChildren().remove(bgPane);
-        }
-    }
-
-    @Override
-    public boolean isWaiting() {
-        return bgPane.getParent() != null;
-    }
-
-    @Override
-    public Icon<?> getIcon() {
-        if (this.root.getGraphic() == iconViewBox) {
-            return iconViewBox.getIcon();
-        } else {
-            return null;
+            if (bgPane.getParent() != null) {
+                wrapperPane.getChildren().remove(bgPane);
+            }
         }
     }
 
@@ -187,11 +159,6 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
             this.root.setGraphic(new Label());
             iconViewBox.setIcon(null);
         }
-    }
-
-    @Override
-    public String getTitle() {
-        return this.root.getText();
     }
 
     @Override

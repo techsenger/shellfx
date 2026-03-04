@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.dialogs;
 
 import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.DefaultComponentName;
 
 /**
  *
@@ -24,13 +25,13 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public final class DialogComponents {
 
-    public static final ComponentName ALERT_DIALOG = new ComponentName("Dialogs.AlertDialog");
+    public static final ComponentName ALERT_DIALOG = new DefaultComponentName("Dialogs.AlertDialog");
 
-    public static final ComponentName YES_NO_DIALOG = new ComponentName("Dialogs.YesNoDialog");
+    public static final ComponentName YES_NO_DIALOG = new DefaultComponentName("Dialogs.YesNoDialog");
 
-    public static final ComponentName FILE_CHOOSER_DIALOG = new ComponentName("Dialogs.FileChooserDialog");
+    public static final ComponentName FILE_CHOOSER_DIALOG = new DefaultComponentName("Dialogs.FileChooserDialog");
 
-    public static final ComponentName NAME_VALUE_DIALOG = new ComponentName("Dialogs.NameValueDialog");
+    public static final ComponentName NAME_VALUE_DIALOG = new DefaultComponentName("Dialogs.NameValueDialog");
 
     private DialogComponents() {
         // empty

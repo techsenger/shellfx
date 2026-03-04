@@ -63,8 +63,7 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
 
     private final ShellFxView<?> shell;
 
-    public PropertyDialogFxView(boolean resizable, ShellFxView<?> shell) {
-        super(resizable);
+    public PropertyDialogFxView(ShellFxView<?> shell) {
         this.shell = shell;
     }
 
@@ -118,9 +117,6 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
     @Override
     protected void build() {
         super.build();
-        setPrefWidth(650);
-        setPrefHeight(400);
-        setTitle("Property Dialog");
 
         nameLabel.setMinWidth(Label.USE_PREF_SIZE);
         nameBox.setAlignment(Pos.TOP_LEFT);
@@ -152,7 +148,6 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
 
         registerButtons(okButton);
         okButton.setDefaultButton(true);
-        addRightButtons(okButton.getName());
     }
 }
 

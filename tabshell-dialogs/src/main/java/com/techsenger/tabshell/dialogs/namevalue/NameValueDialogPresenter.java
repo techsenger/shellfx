@@ -29,67 +29,15 @@ import java.util.function.Consumer;
  * @author Pavel Castornii
  */
 public class NameValueDialogPresenter<V extends NameValueDialogView, C extends DialogComposer>
-        extends AbstractDialogPresenter<V, C> {
+        extends AbstractDialogPresenter<V, C> implements NameValueDialogPort {
 
-    protected class Port extends AbstractDialogPresenter<V, C>.Port implements NameValueDialogPort {
+    private String name;
 
-        private final NameValueDialogPresenter<V, C> presenter = NameValueDialogPresenter.this;
+    private boolean nameEditable;
 
-        @Override
-        public void setCancelVisible(boolean visible) {
-            getView().setButtonVisible(NameValueButtons.CANCEL, visible);
-        }
+    private String value;
 
-        @Override
-        public boolean isCancelVisible() {
-            return getView().getButtonVisible(NameValueButtons.CANCEL).get();
-        }
-
-        @Override
-        public void setName(String name) {
-            getView().setName(name);
-        }
-
-        @Override
-        public String getName() {
-            return getView().getName();
-        }
-
-        @Override
-        public void setNameEditable(boolean value) {
-            getView().setNameEditable(value);
-        }
-
-        @Override
-        public boolean isNameEditable() {
-            return getView().isNameEditable();
-        }
-
-        @Override
-        public void setValue(String value) {
-            getView().setValue(value);
-        }
-
-        @Override
-        public String getValue() {
-            return getView().getValue();
-        }
-
-        @Override
-        public void setValueEditable(boolean value) {
-            getView().setValueEditable(value);
-        }
-
-        @Override
-        public boolean isValueEditable() {
-            return getView().isValueEditable();
-        }
-
-        @Override
-        public void setTitle(String title) {
-            getView().setTitle(title);
-        }
-    }
+    private boolean valueEditable;
 
     public NameValueDialogPresenter(V view) {
         super(view);
@@ -111,12 +59,52 @@ public class NameValueDialogPresenter<V extends NameValueDialogView, C extends D
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public String getName() {
+        return name;
     }
 
     @Override
-    protected Port createPort() {
-        return new NameValueDialogPresenter.Port();
+    public void setName(String name) {
+        this.name = name;
+        getView().setName(name);
+    }
+
+    @Override
+    public boolean isNameEditable() {
+        return nameEditable;
+    }
+
+    @Override
+    public void setNameEditable(boolean nameEditable) {
+        this.nameEditable = nameEditable;
+        getView().setNameEditable(valueEditable);
+    }
+
+    @Override
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public void setValue(String value) {
+        this.value = value;
+        getView().setValue(value);
+    }
+
+    @Override
+    public boolean isValueEditable() {
+        return valueEditable;
+    }
+
+    @Override
+    public void setValueEditable(boolean valueEditable) {
+        this.valueEditable = valueEditable;
+        getView().setValueEditable(valueEditable);
+    }
+
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        setRightButtons(NameValueButtons.CANCEL, NameValueButtons.OK);
     }
 }

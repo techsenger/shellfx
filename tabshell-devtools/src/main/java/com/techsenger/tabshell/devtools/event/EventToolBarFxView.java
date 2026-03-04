@@ -75,13 +75,13 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
     }
 
     @Override
-    public boolean isFilterSelected() {
-        return this.filterButton.isSelected();
+    public void setFilterSelected(boolean value) {
+        this.filterButton.setSelected(value);
     }
 
     @Override
-    public boolean isSelectedNodeOnly() {
-        return this.selectedOnlyButton.isSelected();
+    public void setSelectedNodeOnly(boolean value) {
+        this.selectedOnlyButton.setSelected(value);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
         super.addHandlers();
         recordButton.setOnAction(e -> getPresenter().onRecord(recordButton.isSelected()));
         clearButton.setOnAction(e -> getPresenter().onClear());
-        filterButton.setOnAction(e -> getPresenter().onFilterSelected(filterButton.isSelected()));
+        filterButton.setOnAction(e -> getPresenter().onFilter(filterButton.isSelected()));
         selectedOnlyButton.setOnAction(e -> getPresenter().onSelectedNodeOnly(selectedOnlyButton.isSelected()));
     }
 }

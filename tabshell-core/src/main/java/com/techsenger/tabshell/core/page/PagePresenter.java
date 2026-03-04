@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.core.page;
 
+import com.techsenger.tabshell.core.traits.Iconed;
 import com.techsenger.tabshell.core.SelectablePresenter;
+import com.techsenger.tabshell.core.traits.Titled;
 import com.techsenger.tabshell.core.area.AreaPresenter;
 
 /**
@@ -24,8 +26,6 @@ import com.techsenger.tabshell.core.area.AreaPresenter;
  * @author Pavel Castornii
  */
 public interface PagePresenter<V extends PageView, C extends PageComposer>
-        extends AreaPresenter<V, C>, SelectablePresenter {
+        extends AreaPresenter<V, C>, SelectablePresenter, Titled, Iconed, PagePort {
 
-    @Override
-    PagePort getPort();
 }

@@ -16,17 +16,18 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.Iconed;
-import com.techsenger.tabshell.core.Titled;
 import com.techsenger.tabshell.core.area.AreaView;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageView extends AreaView, Titled, Iconed {
-
-    boolean isSelected();
+public interface PageView extends AreaView {
 
     void setSelected(boolean selected);
+
+    void setTitle(String title);
+
+    void setIcon(Icon<?> icon);
 }

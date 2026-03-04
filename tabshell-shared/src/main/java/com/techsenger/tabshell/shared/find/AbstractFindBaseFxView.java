@@ -104,18 +104,13 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public String getFindText() {
-        return this.findComboBox.getEditor().textProperty().get();
-    }
-
-    @Override
     public void setupMatchCase() {
         this.matchCaseButton = new ToggleButton(null, new FontIconView(SharedIcons.MATCH_CASE));
         this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
         this.matchCaseButton.setSelected(false);
         this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.matchCaseButton.setFocusTraversable(false);
-        this.matchCaseButton.setOnAction((event) -> getPresenter().onMatchCase());
+        this.matchCaseButton.setOnAction((event) -> getPresenter().onMatchCase(this.matchCaseButton.isSelected()));
     }
 
     @Override
@@ -126,27 +121,9 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public boolean isMatchCaseSelected() {
-        if (this.matchCaseButton != null) {
-            return this.matchCaseButton.isSelected();
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public void setMatchCaseDisable(boolean value) {
+    public void setMatchCaseDisabled(boolean value) {
         if (this.matchCaseButton != null) {
             this.matchCaseButton.setDisable(value);
-        }
-    }
-
-    @Override
-    public boolean isMatchCaseDisable() {
-        if (this.matchCaseButton != null) {
-            return this.matchCaseButton.isDisable();
-        } else {
-            return false;
         }
     }
 
@@ -156,13 +133,8 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public String getMatchesText() {
-        return this.matchesLabel.textProperty().get();
-    }
-
-    @Override
     public void setMatchesVisible(boolean visible) {
-        var visibleNow = isMatchesVisible();
+        var visibleNow = this.matchesLabel.getParent() != null;
         if (visible && !visibleNow) {
             this.findRightBox.getChildren().add(this.matchesLabel);
         }
@@ -172,13 +144,8 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public boolean isMatchesVisible() {
-        return this.matchesLabel.getParent() != null;
-    }
-
-    @Override
     public void setClearVisible(boolean visible) {
-        var visibleNow = isClearVisible();
+        var visibleNow = this.clearButton.getParent() != null;
         if (visible && !visibleNow) {
             this.findRightBox.getChildren().add(0, this.clearButton);
         }
@@ -188,29 +155,14 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public boolean isClearVisible() {
-        return this.clearButton.getParent() != null;
-    }
-
-    @Override
     public void setFindTexts(List<String> texts) {
         this.findComboBox.getItems().clear();
         this.findComboBox.getItems().addAll(texts);
     }
 
     @Override
-    public List<String> getFindTexts() {
-        return this.findComboBox.getItems();
-    }
-
-    @Override
     public void setNotFound(boolean value) {
         this.notFound.set(value);
-    }
-
-    @Override
-    public boolean isNotFound() {
-        return this.notFound.get();
     }
 
     @Override
@@ -223,18 +175,9 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public void setFindNextDisable(boolean value) {
+    public void setFindNextDisabled(boolean value) {
         if (this.findNextButton != null) {
             this.findNextButton.setDisable(value);
-        }
-    }
-
-    @Override
-    public boolean isFindNextDisable() {
-        if (this.findNextButton != null) {
-            return findNextButton.isDisable();
-        } else {
-            return false;
         }
     }
 
@@ -248,18 +191,9 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public void setFindPreviousDisable(boolean value) {
+    public void setFindPreviousDisabled(boolean value) {
         if (this.findPreviousButton != null) {
             this.findPreviousButton.setDisable(value);
-        }
-    }
-
-    @Override
-    public boolean isFindPreviousDisable() {
-        if (this.findPreviousButton != null) {
-            return this.findPreviousButton.isDisable();
-        } else {
-            return false;
         }
     }
 
@@ -269,7 +203,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
         this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.wholeWordButton.setFocusTraversable(false);
-        this.wholeWordButton.setOnAction((event) -> getPresenter().onWholeWord());
+        this.wholeWordButton.setOnAction((event) -> getPresenter().onWholeWord(this.wholeWordButton.isSelected()));
     }
 
     @Override
@@ -280,27 +214,9 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public boolean isWholeWordSelected() {
-        if (this.wholeWordButton != null) {
-            return this.wholeWordButton.isSelected();
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public void setWholeWordDisable(boolean value) {
+    public void setWholeWordDisabled(boolean value) {
         if (this.wholeWordButton != null) {
             this.wholeWordButton.setDisable(value);
-        }
-    }
-
-    @Override
-    public boolean isWholeWordDisable() {
-        if (this.wholeWordButton != null) {
-            return this.wholeWordButton.isDisable();
-        } else {
-            return false;
         }
     }
 
@@ -310,7 +226,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
         this.regExpButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.regExpButton.setFocusTraversable(false);
-        this.regExpButton.setOnAction((event) -> getPresenter().onRegExp());
+        this.regExpButton.setOnAction((event) -> getPresenter().onRegExp(this.regExpButton.isSelected()));
     }
 
     @Override
@@ -321,27 +237,9 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public boolean isRegExpSelected() {
-        if (this.regExpButton != null) {
-            return this.regExpButton.isSelected();
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public void setRegExpDisable(boolean value) {
+    public void setRegExpDisabled(boolean value) {
         if (this.regExpButton != null) {
             this.regExpButton.setDisable(value);
-        }
-    }
-
-    @Override
-    public boolean isRegExpDisable() {
-        if (this.regExpButton != null) {
-            return this.regExpButton.isDisable();
-        } else {
-            return false;
         }
     }
 
@@ -351,7 +249,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.highlightButton.setTooltip(new Tooltip("Highlight All"));
         this.highlightButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT);
         this.highlightButton.setFocusTraversable(false);
-        this.highlightButton.setOnAction(e -> getPresenter().onHighlight());
+        this.highlightButton.setOnAction(e -> getPresenter().onHighlight(this.highlightButton.isSelected()));
     }
 
     @Override
@@ -362,28 +260,9 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public boolean isHighlightSelected() {
-        if (this.highlightButton != null) {
-            return this.highlightButton.isSelected();
-        } else {
-            return false;
-        }
-
-    }
-
-    @Override
-    public void setHighlightDisable(boolean value) {
+    public void setHighlightDisabled(boolean value) {
         if (this.highlightButton != null) {
             this.highlightButton.setDisable(value);
-        }
-    }
-
-    @Override
-    public boolean isHighlightDisable() {
-        if (this.highlightButton != null) {
-            return this.highlightButton.isDisable();
-        } else {
-            return false;
         }
     }
 
@@ -429,7 +308,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
 
         });
         this.findComboBox.getEditor().textProperty()
-                .addListener((ov, t, t1) -> getPresenter().onFindTextEdited(findComboBox.getEditor().getText()));
+                .addListener((ov, t, t1) -> getPresenter().onFindTextChanged(findComboBox.getEditor().getText()));
     }
 
     @Override

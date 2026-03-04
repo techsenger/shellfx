@@ -19,7 +19,6 @@ package com.techsenger.tabshell.demo.theme;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
-import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.List;
@@ -49,7 +48,7 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
     private final ResultButton okButton = new ResultButton(ThemeDialogButtons.OK, "OK");
 
     public ThemeDialogFxView() {
-        super(false);
+        super();
     }
 
     @Override
@@ -75,9 +74,6 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
     @Override
     protected void build() {
         super.build();
-        setTitle("Select Theme");
-        setIcon(new FontIcon(984334)); // theme-light-dark
-        setPrefWidth(500);
         themeLabel.setMinWidth(Region.USE_PREF_SIZE);
         themeComboBox.setMaxWidth(Double.MAX_VALUE);
         themeComboBox.setConverter(new StringConverter<Theme>() {
@@ -98,7 +94,6 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
 
         okButton.setDefaultButton(true);
         registerButtons(cancelButton, okButton);
-        addRightButtons(cancelButton.getName(), okButton.getName());
         getContentBox().getChildren().add(hBox);
     }
 }

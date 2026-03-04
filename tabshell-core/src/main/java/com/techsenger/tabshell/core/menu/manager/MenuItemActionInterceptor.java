@@ -50,7 +50,7 @@ class MenuItemActionInterceptor implements ActionInterceptor {
 
     @Override
     public void handle(ActionEvent t) {
-        MenuAwarePort menuAware = (MenuAwarePort) shellView.getMenuAware().getPresenter().getPort();
+        MenuAwarePort menuAware = (MenuAwarePort) shellView.getMenuAware().getPresenter();
         var helper = menuAware.getMenuItemHelper(item.getName());
         var included = true;
         var valid = false;

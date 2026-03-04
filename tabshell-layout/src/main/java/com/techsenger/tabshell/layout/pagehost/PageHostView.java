@@ -26,6 +26,4 @@ import com.techsenger.tabshell.core.page.PageContainerView;
 public interface PageHostView extends AreaView, PageContainerView {
 
     void setDividerPosition(double pos);
-
-    double getDividerPosition();
 }

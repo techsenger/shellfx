@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.devtools;
 
 import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.DefaultComponentName;
 
 /**
  *
@@ -24,23 +25,23 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public final class DevToolsComponents {
 
-    public static final ComponentName TAB_DOCK = new ComponentName("DevTools.TabDock");
+    public static final ComponentName TAB_DOCK = new DefaultComponentName("DevTools.TabDock");
 
-    public static final ComponentName TOOL_BAR = new ComponentName("DevTools.ToolBar");
+    public static final ComponentName TOOL_BAR = new DefaultComponentName("DevTools.ToolBar");
 
-    public static final ComponentName COMPONENT_TAB = new ComponentName("DevTools.ComponentTab");
+    public static final ComponentName COMPONENT_TAB = new DefaultComponentName("DevTools.ComponentTab");
 
-    public static final ComponentName NODE_TAB = new ComponentName("DevTools.NodeTab");
+    public static final ComponentName NODE_TAB = new DefaultComponentName("DevTools.NodeTab");
 
-    public static final ComponentName PROPERTY_DIALOG = new ComponentName("DevTools.PropertyDialog");
+    public static final ComponentName PROPERTY_DIALOG = new DefaultComponentName("DevTools.PropertyDialog");
 
-    public static final ComponentName EVENT_TAB = new ComponentName("DevTools.EventTab");
+    public static final ComponentName EVENT_TAB = new DefaultComponentName("DevTools.EventTab");
 
-    public static final ComponentName EVENT_TOOL_BAR = new ComponentName("DevTools.EventToolBar");
+    public static final ComponentName EVENT_TOOL_BAR = new DefaultComponentName("DevTools.EventToolBar");
 
-    public static final ComponentName STYLESHEET_TAB = new ComponentName("DevTools.StylesheetTab");
+    public static final ComponentName STYLESHEET_TAB = new DefaultComponentName("DevTools.StylesheetTab");
 
-    public static final ComponentName ENVIRONMENT_TAB = new ComponentName("DevTools.EnvironmentTab");
+    public static final ComponentName ENVIRONMENT_TAB = new DefaultComponentName("DevTools.EnvironmentTab");
 
     private DevToolsComponents() {
         // empty

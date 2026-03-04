@@ -25,11 +25,7 @@ import com.techsenger.tabshell.material.icon.Icon;
  */
 public interface AlertDialogView extends DialogView {
 
-    String getMessage();
-
     void setMessage(String message);
-
-    Icon<?> getMessageIcon();
 
     void setMessageIcon(Icon<?> icon);
 }

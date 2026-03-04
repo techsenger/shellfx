@@ -30,20 +30,9 @@ import com.techsenger.tabshell.layout.LayoutComponents;
  * @author Pavel Castornii
  */
 public class PageHostPresenter<V extends PageHostView, C extends PageHostComposer>
-        extends AbstractAreaPresenter<V, C> implements PageContainerPresenter<V, C> {
+        extends AbstractAreaPresenter<V, C> implements PageContainerPresenter<V, C>, PageHostPort {
 
-    protected class Port extends AbstractAreaPresenter<V, C>.Port implements PageHostPort {
-
-        @Override
-        public PagePort getSelectedPage() {
-            return getComposer().getSelectedPage();
-        }
-
-        @Override
-        public void selectPage(ComponentName page) {
-            getComposer().selectPage(page);
-        }
-    }
+    private double dividerPosition;
 
     public PageHostPresenter(V view, HistoryProvider<PageHostHistory> historyProvider) {
         super(view);
@@ -57,13 +46,26 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public PagePort getSelectedPage() {
+        return getComposer().getSelectedPage();
     }
 
     @Override
-    protected Port createPort() {
-        return new PageHostPresenter.Port();
+    public void selectPage(ComponentName page) {
+        getComposer().selectPage(page);
+    }
+
+    public void setDividerPosition(double pos) {
+        this.dividerPosition = pos;
+        getView().setDividerPosition(pos);
+    }
+
+    public double getDividerPosition() {
+        return this.dividerPosition;
+    }
+
+    protected void onDividerPositionChanged(double pos) {
+        this.dividerPosition = pos;
     }
 
     protected void onPageSelected(Page page) {
@@ -74,16 +76,14 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     protected void saveAppearance() {
         super.saveAppearance();
         var history = getHistory();
-        var view = getView();
-        history.setDividerPosition(view.getDividerPosition());
+        history.setDividerPosition(getDividerPosition());
     }
 
     @Override
     protected void restoreAppearance() {
         super.restoreAppearance();
         var history = getHistory();
-        var view = getView();
-        view.setDividerPosition(history.getDividerPosition());
+        setDividerPosition(history.getDividerPosition());
     }
 
     @Override

@@ -45,7 +45,7 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
 
         @Override
         public EventToolBarPort getToolBar() {
-            return toolBar.getPresenter().getPort();
+            return toolBar.getPresenter();
         }
 
         protected EventToolBarFxView<?> createToolBar() {
@@ -102,8 +102,6 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
     @Override
     protected void build() {
         super.build();
-        setTitle("Events");
-        setClosable(false);
         textArea.setEditable(false);
         textArea.getStyleClass().add(StyleClasses.MONOSPACE);
         VBox.setVgrow(textScrollPane, Priority.ALWAYS);

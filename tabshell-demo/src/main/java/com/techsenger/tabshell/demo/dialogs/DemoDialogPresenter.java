@@ -52,14 +52,10 @@ public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView,
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        var v = getView();
-        v.setPrefWidth(500);
-        v.setTitle("Demo Dialog");
-        v.setButtonWidthEqual(true); //cancel button width will be equal to ok button width
-    }
-
-    @Override
-    protected Port createPort() {
-        return new AbstractDialogPresenter.Port();
+        setResizable(true);
+        setPrefWidth(500);
+        setTitle("Demo Dialog");
+        setButtonWidthEqual(true); //cancel button width will be equal to ok button width
+        setRightButtons(DemoResultButtons.CANCEL, DemoResultButtons.OK);
     }
 }

@@ -103,6 +103,8 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView, C extends Env
     @Override
     protected void postInitialize() {
         super.postInitialize();
+        setTitle("Environment");
+        setClosable(false);
         var toolBar = getComposer().getToolBar();
         refresh();
     }

@@ -16,11 +16,7 @@
 
 package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.CloseCheckResult;
-import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.CloseRequestResult;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import java.util.function.Consumer;
 
 /**
  *
@@ -29,41 +25,11 @@ import java.util.function.Consumer;
 public abstract class AbstractPopupPresenter<V extends PopupView, C extends PopupComposer>
         extends AbstractAreaPresenter<V, C> implements PopupPresenter<V, C> {
 
-    protected class Port extends AbstractAreaPresenter<V, C>.Port implements PopupPort {
-
-        private final AbstractPopupPresenter<V, C> presenter = AbstractPopupPresenter.this;
-
-        public Port() {
-            // empty
-        }
-
-        @Override
-        public boolean isModal() {
-            return presenter.isModal();
-        }
-
-        @Override
-        public void close() {
-            presenter.close();
-        }
-
-        @Override
-        public void requestClose(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {
-            presenter.requestClose(maxAttempts, resultConsumer);
-        }
-
-        @Override
-        public CloseCheckResult isReadyToClose() {
-            return presenter.isReadyToClose();
-        }
-
-        @Override
-        public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
-            presenter.prepareToClose(resultCallback);
-        }
-    }
-
     private final boolean modal;
+
+    private double prefWidth;
+
+    private double prefHeight;
 
     public AbstractPopupPresenter(V view, boolean modal) {
         super(view);
@@ -76,22 +42,32 @@ public abstract class AbstractPopupPresenter<V extends PopupView, C extends Popu
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
-    }
-
-    @Override
     public void close() {
         getComposer().remove();
     }
 
     @Override
-    protected PopupHistory getHistory() {
-        return (PopupHistory) super.getHistory();
+    public double getPrefWidth() {
+        return this.prefWidth;
     }
 
     @Override
-    protected Port createPort() {
-        return new AbstractPopupPresenter.Port();
+    public double getPrefHeight() {
+        return this.prefHeight;
+    }
+
+    public void setPrefWidth(double prefWidth) {
+        this.prefWidth = prefWidth;
+        getView().setPrefWidth(prefWidth);
+    }
+
+    public void setPrefHeight(double prefHeight) {
+        this.prefHeight = prefHeight;
+        getView().setPrefHeight(prefHeight);
+    }
+
+    @Override
+    protected PopupHistory getHistory() {
+        return (PopupHistory) super.getHistory();
     }
 }

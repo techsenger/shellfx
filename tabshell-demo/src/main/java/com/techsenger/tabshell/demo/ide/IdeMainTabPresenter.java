@@ -38,32 +38,7 @@ import java.util.function.Consumer;
  * @author Pavel Castornii
  */
 public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabComposer>
-        extends AbstractTabPresenter<V, C> {
-
-    protected class Port extends AbstractTabPresenter<V, C>.Port implements MenuAwarePort {
-
-        private final IdeMainTabPresenter<V, C> presenter = IdeMainTabPresenter.this;
-
-        @Override
-        public MenuHelper getMenuHelper(MenuName menuName) {
-            return presenter.getMenuHelpers().getMenuHelpersByName().get(menuName);
-        }
-
-        @Override
-        public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-            return presenter.getMenuHelpers().getMenuItemHelpersByName().get(menuItemName);
-        }
-
-        @Override
-        public void onMenuShowing(MenuName menuName) {
-            // empty
-        }
-
-        @Override
-        public void onMenuHiding(MenuName menuName) {
-            // empty
-        }
-    }
+        extends AbstractTabPresenter<V, C> implements MenuAwarePort {
 
     public IdeMainTabPresenter(V view) {
         super(view);
@@ -83,8 +58,23 @@ public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabC
     }
 
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public MenuHelper getMenuHelper(MenuName menuName) {
+        return getMenuHelpers().getMenuHelpersByName().get(menuName);
+    }
+
+    @Override
+    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
+        return getMenuHelpers().getMenuItemHelpersByName().get(menuItemName);
+    }
+
+    @Override
+    public void onMenuShowing(MenuName menuName) {
+        // empty
+    }
+
+    @Override
+    public void onMenuHiding(MenuName menuName) {
+        // empty
     }
 
     @Override
@@ -128,10 +118,5 @@ public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabC
 
     protected void onPopupOpen(OverlayScope scope) {
         getComposer().addDemoPopup(scope);
-    }
-
-    @Override
-    protected Port createPort() {
-        return new IdeMainTabPresenter.Port();
     }
 }

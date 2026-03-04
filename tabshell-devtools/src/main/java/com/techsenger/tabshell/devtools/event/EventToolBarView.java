@@ -28,4 +28,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public interface EventToolBarView extends ToolBarView, EventToolBarShared {
 
     void setEventTypes(Map<Class<? extends ConnectorEvent>, AtomicBoolean> eventTypesByClass);
+
+    void setFilterSelected(boolean value);
+
+    void setSelectedNodeOnly(boolean value);
 }

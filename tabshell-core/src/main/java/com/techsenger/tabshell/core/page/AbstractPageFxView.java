@@ -29,7 +29,7 @@ import javafx.scene.layout.Priority;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageFxView<P extends PagePresenter<?, ?>>
+public abstract class AbstractPageFxView<P extends AbstractPagePresenter<?, ?>>
         extends AbstractAreaFxView<P> implements PageFxView<P> {
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements PageFxView.Composer {
@@ -49,28 +49,13 @@ public abstract class AbstractPageFxView<P extends PagePresenter<?, ?>>
     }
 
     @Override
-    public String getTitle() {
-        return titleLabel.getText();
-    }
-
-    @Override
     public void setTitle(String title) {
         titleLabel.setText(title);
     }
 
     @Override
-    public Icon<?> getIcon() {
-        return iconViewBox.getIcon();
-    }
-
-    @Override
     public void setIcon(Icon<?> icon) {
         iconViewBox.setIcon(icon);
-    }
-
-    @Override
-    public boolean isSelected() {
-        return selected.get();
     }
 
     @Override

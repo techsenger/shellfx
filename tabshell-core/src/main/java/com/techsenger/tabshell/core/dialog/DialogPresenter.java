@@ -16,19 +16,18 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.core.popup.PopupPresenter;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogPresenter<V extends DialogView, C extends DialogComposer> extends PopupPresenter<V, C> {
-
-    @Override
-    DialogPort getPort();
+public interface DialogPresenter<V extends DialogView, C extends DialogComposer> extends PopupPresenter<V, C>,
+        ReadOnlyDialog, WriteOnlyDialog, DialogPort {
 
     void onClose();
 
     void onResult(ResultButtonName name);
+
 }

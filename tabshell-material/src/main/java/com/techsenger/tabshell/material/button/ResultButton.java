@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.material.button;
 
+import com.techsenger.tabshell.material.Named;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 
@@ -23,7 +24,7 @@ import javafx.scene.control.Button;
  *
  * @author Pavel Castornii
  */
-public class ResultButton extends Button {
+public class ResultButton extends Button implements Named {
 
     private final ResultButtonName name;
 
@@ -40,6 +41,7 @@ public class ResultButton extends Button {
         this.name = name;
     }
 
+    @Override
     public ResultButtonName getName() {
         return name;
     }

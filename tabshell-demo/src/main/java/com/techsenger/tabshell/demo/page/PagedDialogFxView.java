@@ -55,8 +55,8 @@ public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter
 
     private final ResultButton okButton = new ResultButton(PagedDialogButtons.OK, "OK");
 
-    public PagedDialogFxView(boolean resizable) {
-        super(resizable);
+    public PagedDialogFxView() {
+        super();
     }
 
     @Override
@@ -78,8 +78,6 @@ public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter
     protected void build() {
         super.build();
         registerButtons(okButton);
-        addRightButtons(okButton.getName());
-        setButtonDefault(okButton.getName(), true);
         getContentBox().setPadding(Insets.EMPTY);
     }
 }

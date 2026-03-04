@@ -20,17 +20,12 @@ import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
 import com.techsenger.tabshell.core.tab.TabView;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface NodeTabView extends TabView {
-
-    Element getRootNode();
-
-    Element getSelectedNode();
 
     void selectRoot();
 
@@ -42,9 +37,5 @@ public interface NodeTabView extends TabView {
 
     void clearProperties();
 
-    void addProperties(AttributeCategory category, List<PropertyItem> items);
-
-    void setCategoryExpansion(Map<AttributeCategory, Boolean> expansion);
-
-    Map<AttributeCategory, Boolean> getCategoryExpansion();
+    void addProperties(AttributeCategory category, boolean expanded, List<PropertyItem> items);
 }

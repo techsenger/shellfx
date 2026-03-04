@@ -132,6 +132,13 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
         return new Descriptor(DevToolsComponents.STYLESHEET_TAB);
     }
 
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        setTitle("Stylesheets");
+        setClosable(false);
+    }
+
     protected Connector getConnector() {
         return connector;
     }

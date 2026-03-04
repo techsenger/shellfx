@@ -24,17 +24,9 @@ public interface NameValueDialogShared {
 
     void setName(String name);
 
-    String getName();
-
     void setNameEditable(boolean value);
-
-    boolean isNameEditable();
 
     void setValue(String value);
 
-    String getValue();
-
     void setValueEditable(boolean value);
-
-    boolean isValueEditable();
 }

@@ -161,7 +161,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                         devTools.getPresenter().initialize();
                         c.getComposer().addUtilityDock(devTools);
                     } else {
-                        var alertView = new AlertDialogFxView<>(false);
+                        var alertView = new AlertDialogFxView<>();
                         var alertPresenter = new AlertDialogPresenter<>(alertView, AlertDialogType.ERROR,
                                 "DevTools can only be opened in the main tab");
                         alertPresenter.initialize();

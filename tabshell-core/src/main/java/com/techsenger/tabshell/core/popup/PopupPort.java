@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.CloseablePort;
 import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.CloseAwarePort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupPort extends AreaPort, CloseablePort {
+public interface PopupPort extends AreaPort, CloseAwarePort {
 
     /**
      * Returns {@code true} if the popup blocks interaction with underlying content (modal) and {@code false} otherwise.
@@ -31,4 +31,8 @@ public interface PopupPort extends AreaPort, CloseablePort {
      * @return
      */
     boolean isModal();
+
+    double getPrefWidth();
+
+    double getPrefHeight();
 }

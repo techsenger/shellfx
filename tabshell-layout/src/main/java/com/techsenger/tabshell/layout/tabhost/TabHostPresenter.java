@@ -28,13 +28,12 @@ import com.techsenger.tabshell.layout.LayoutComponents;
 public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> extends AbstractAreaPresenter<V, C>
         implements TabContainerPresenter<V, C> {
 
+    private boolean tabHeaderAutoHide;
+
+    private boolean tabHeaderVisible;
+
     public TabHostPresenter(V view) {
         super(view);
-    }
-
-    @Override
-    protected Port createPort() {
-        return new AbstractAreaPresenter.Port();
     }
 
     @Override
@@ -45,5 +44,23 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
     @Override
     public void onSelectedTabChanged(int index) {
         // empty
+    }
+
+    public boolean isTabHeaderAutoHide() {
+        return tabHeaderAutoHide;
+    }
+
+    public void setTabHeaderAutoHide(boolean tabHeaderAutoHide) {
+        this.tabHeaderAutoHide = tabHeaderAutoHide;
+        getView().setTabHeaderAutoHide(tabHeaderAutoHide);
+    }
+
+    public boolean isTabHeaderVisible() {
+        return tabHeaderVisible;
+    }
+
+    public void setTabHeaderVisible(boolean tabHeaderVisible) {
+        this.tabHeaderVisible = tabHeaderVisible;
+        getView().setTabHeaderVisible(tabHeaderVisible);
     }
 }

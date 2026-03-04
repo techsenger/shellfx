@@ -76,6 +76,9 @@ public class PropertyDialogPresenter<V extends PropertyDialogView, C extends Dia
     @Override
     protected void postInitialize() {
         super.postInitialize();
+        setPrefWidth(650);
+        setPrefHeight(400);
+        setTitle("Property Dialog");
         getView().setName(item.getAttribute().name());
         var nameUrl = resolveNameUrl();
         if (nameUrl != null) {
@@ -93,6 +96,7 @@ public class PropertyDialogPresenter<V extends PropertyDialogView, C extends Dia
         }
         getView().setState(item.getAttribute().valueState().name());
         setResultAction((button) -> requestClose());
+        setRightButtons(PropertyDialogButtons.OK);
     }
 
     protected void onFollowLink(String url) {

@@ -22,8 +22,8 @@ import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_THIRD;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.LEFT;
@@ -102,21 +102,8 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
     }
 
     @Override
-    public Orientation getOrientation() {
-        return this.splitPane.getOrientation();
-    }
-
-    @Override
     public void setOrientation(Orientation orientation) {
-        Objects.requireNonNull(orientation, "Orientation can't be null");
         this.splitPane.setOrientation(orientation);
-    }
-
-    @Override
-    public List<Double> getDividerPositions() {
-        return Arrays.stream(this.splitPane.getDividerPositions())
-                .boxed()
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -125,6 +112,26 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
                 .mapToDouble(Double::doubleValue)
                 .toArray();
         this.splitPane.setDividerPositions(doubleArray);
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        ChangeListener<Number> listener = (obs, oldPos, newPos) -> {
+            getPresenter().onDividerPositionsChanged(splitPane.getDividerPositions());
+        };
+        splitPane.getDividers().addListener((ListChangeListener<SplitPane.Divider>) change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    change.getAddedSubList()
+                          .forEach(d -> d.positionProperty().addListener(listener));
+                }
+                if (change.wasRemoved()) {
+                    change.getRemoved()
+                          .forEach(d -> d.positionProperty().removeListener(listener));
+                }
+            }
+        });
     }
 
     @Override

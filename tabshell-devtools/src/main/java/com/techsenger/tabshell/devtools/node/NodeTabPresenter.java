@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
@@ -47,33 +48,7 @@ import java.util.regex.Matcher;
  * @author Pavel Castornii
  */
 public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> extends AbstractTabPresenter<V, C>
-        implements AddablePresenter {
-
-    protected class Port extends AbstractTabPresenter<V, C>.Port implements NodeTabPort {
-
-        private final NodeTabPresenter<V, C> presenter = NodeTabPresenter.this;
-
-        @Override
-        public Element getSelectedNode() {
-            return getView().getSelectedNode();
-        }
-
-        @Override
-        public void selectNode(Element node) {
-            createNodeIndex();
-            getView().selectNode(node);
-        }
-
-        @Override
-        public void selectRoot() {
-            getView().selectRoot();
-        }
-
-        @Override
-        public void setLinkOpener(Consumer<String> opener) {
-            presenter.linkOpener = opener;
-        }
-    }
+        implements AddablePresenter, NodeTabPort {
 
     protected class NodeToolBarAwarePort implements ToolBarAwarePort, FindNavigationAwarePort {
 
@@ -120,7 +95,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
         @Override
         public void onRefresh() {
-
+            // connector.reloadSelectedAttributes(...);
         }
 
         @Override
@@ -134,7 +109,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         }
     }
 
-    private final Connector connector;
+      private final Connector connector;
 
     private final DevToolsTabDockPort tabDock;
 
@@ -155,6 +130,16 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
     private Consumer<String> linkOpener = (ulr) -> WebBrowser.open(ulr);
 
+    private Element rootNode;
+
+    private Element selectedNode;
+
+    private Map<AttributeCategory, Boolean> categoryExpansion;
+
+    private List<AttributeListEvent> savedAttributeEvents = new ArrayList<>();
+
+    private boolean selectedProgrammatically;
+
     public NodeTabPresenter(V view, Connector connector, DevToolsTabDockPort tabDock) {
         super(view);
         this.connector = connector;
@@ -171,52 +156,97 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public Element getRootNode() {
+        return rootNode;
+    }
+
+    public Element getSelectedNode() {
+        return selectedNode;
+    }
+
+    public Map<AttributeCategory, Boolean> getCategoryExpansion() {
+        return categoryExpansion;
+    }
+
+    public void setCategoryExpansion(Map<AttributeCategory, Boolean> categoryExpansion) {
+        this.categoryExpansion = categoryExpansion;
+    }
+
     @Override
-    public Port getPort() {
-        return (Port) super.getPort();
+    public void selectNode(Element node) {
+        createNodeIndex();
+        getView().selectNode(node);
+    }
+
+    @Override
+    public void selectRoot() {
+        getView().selectRoot();
+    }
+
+    @Override
+    public void setLinkOpener(Consumer<String> opener) {
+        linkOpener = opener;
     }
 
     @Override
     public void onAdded() {
-        this.tabDock.setOnSelection((selected) -> onNodeSelected(getView().getSelectedNode()));
-        // this event is fired only when a node is selected in inspector mode (using select button)
-        // at the same time after that is is necessary to select the node using selectNode(..) method
-        connector.getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
-            createNodeIndex();
-            getView().selectNode(e.element()); // -> onNodeSelected(..)
-        });
-
-        var catExpansion = new HashMap<AttributeCategory, Boolean>();
-        Arrays.stream(AttributeCategory.values()).forEach(c -> catExpansion.put(c, Boolean.FALSE));
-        getView().setCategoryExpansion(catExpansion);
-        // node selected -> AttributeListEvents -> processEvent -> filterAndAdd
+        this.tabDock.setOnSelection((selected) -> onNodeSelected(getSelectedNode()));
+        // node selected via API or select button -> AttributeListEvents -> processEvent -> filterAndAdd
         connector.getEventBus().subscribe(ConnectorEvent.class, event -> {
             switch (event) {
                 case AttributeListEvent ale -> {
-                    processPropertyEvent(ale);
+                    if (Objects.equals(this.selectedNode, ale.element())) {
+                        if (selectedProgrammatically) {
+                            processPropertyEvent(ale);
+                        } else {
+                            this.savedAttributeEvents.add(ale);
+                        }
+                    } else {
+                        this.savedAttributeEvents.add(ale);
+                    }
                 }
                 default -> { }
             }
         });
-    }
 
-    @Override
-    protected Port createPort() {
-        return new NodeTabPresenter.Port();
+        // this event is fired only when a node is selected in inspector mode (using select button)
+        // note that this event is fired after AttributeListEvent events.
+        connector.getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
+            this.selectedNode = e.element(); // so the onNodeSelected method won't complete
+            createNodeIndex();
+            getView().selectNode(this.selectedNode); // -> onNodeSelected(..)
+            clearProperties();
+            for (var events : this.savedAttributeEvents) { // adding saved events
+                processPropertyEvent(events);
+            }
+            this.savedAttributeEvents.clear();
+        });
     }
 
     protected void onNodeSelected(Element node) {
-        if (node == null) {
+        if (Objects.equals(this.selectedNode, node)) { // equals!
             return;
         }
-        this.propsByCategory.clear();
-        clearFindPropertyResult();
-        getView().clearProperties();
+        this.selectedNode = node;
+        if (this.selectedNode == null) {
+            return;
+        }
+        clearProperties();
+        this.selectedProgrammatically = true;
         if (node.isWindowElement()) {
             this.connector.selectWindow(tabDock.getWindowUid());
         } else {
             this.connector.selectNode(tabDock.getWindowUid(), node, tabDock.getHighlightOptions());
         }
+        this.selectedProgrammatically = false;
+    }
+
+    protected void onCategoryExpanded(AttributeCategory category, boolean expanded) {
+        this.categoryExpansion.put(category, expanded);
+    }
+
+    protected void onRootChanged(Element node) {
+        this.rootNode = node;
     }
 
     protected void onPropertyRequested(PropertyItem item) {
@@ -225,11 +255,24 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         }
         var field = item.getAttribute().field();
         String declaringClassName = null;
-        var node = getView().getSelectedNode();
+        var node = selectedNode;
         if (field != null && node != null && node.getClassInfo().module().startsWith("javafx.")) {
             declaringClassName = this.connector.getDeclaringClass(node.getClassInfo().className(), field);
         }
         getComposer().addPropertyDialog(node, item, declaringClassName, linkOpener);
+    }
+
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        setTitle("Nodes");
+        setClosable(false);
+        var history = getHistory();
+        if (history == null || history.isNew()) {
+            var catExpansion = new HashMap<AttributeCategory, Boolean>();
+            Arrays.stream(AttributeCategory.values()).forEach(c -> catExpansion.put(c, Boolean.FALSE));
+            setCategoryExpansion(catExpansion);
+        }
     }
 
     @Override
@@ -245,13 +288,18 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         return tabDock;
     }
 
+    private void clearProperties() {
+        this.propsByCategory.clear();
+        clearFindPropertyResult();
+        getView().clearProperties();
+    }
+
     private void findNode() {
         createNodeIndex();
         clearFindNodeResult();
         var matcher = getComposer().getNodeToolBar().createFindMatcher();
         if (matcher != null) {
-            var root = getView().getRootNode();
-            findNode(root, matcher);
+            findNode(rootNode, matcher);
             if (!foundNodes.isEmpty()) {
                 getView().selectNode(foundNodes.get(foundNodeIndex));
             }
@@ -325,8 +373,8 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         var sortedList = new ArrayList<>(event.attributes());
         sortedList.sort(Comparator.comparing(Attribute::name));
         var properties = new ArrayList<PropertyItem>();
-        for (var a : sortedList) {
-            var property = new PropertyItem(event.category(), a);
+        for (var attribute : sortedList) {
+            var property = new PropertyItem(event.category(), attribute);
             properties.add(property);
         }
         // adding new items to the map
@@ -353,12 +401,12 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
                 }
             }
             if (!filteredProps.isEmpty()) {
-                getView().addProperties(cat, filteredProps);
+                getView().addProperties(cat, this.categoryExpansion.get(cat), filteredProps);
                 this.foundPropertyCount += filteredProps.size();
             }
             getComposer().getPropertyToolBar().showFindResultInfo(foundPropertyCount);
         } else {
-            getView().addProperties(cat, props);
+            getView().addProperties(cat, this.categoryExpansion.get(cat), props);
         }
     }
 

@@ -16,53 +16,32 @@
 
 package com.techsenger.tabshell.material.table;
 
-import java.io.Serializable;
-import javafx.scene.control.TableColumn;
-
 /**
  *
  * @author Pavel Castornii
  */
-public class TableColumnHistory implements Serializable {
+public abstract class AbstractTableColumnInfo {
 
-    private String name;
+    private int index;
 
-    private double width;
-
-    private TableColumn.SortType sortType;
+    private Double width;
 
     private Integer sortIndex;
 
-    public TableColumnHistory() {
-
+    public int getIndex() {
+        return index;
     }
 
-    public TableColumnHistory(String name) {
-        this.name = name;
+    public void setIndex(int index) {
+        this.index = index;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String key) {
-        this.name = key;
-    }
-
-    public double getWidth() {
+    public Double getWidth() {
         return width;
     }
 
-    public void setWidth(double width) {
+    public void setWidth(Double width) {
         this.width = width;
-    }
-
-    public TableColumn.SortType getSortType() {
-        return sortType;
-    }
-
-    public void setSortType(TableColumn.SortType sortType) {
-        this.sortType = sortType;
     }
 
     public Integer getSortIndex() {

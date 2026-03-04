@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demo.dialogs;
 
+import com.techsenger.tabshell.material.button.DefaultResultButtonName;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
@@ -24,5 +25,5 @@ import com.techsenger.tabshell.material.button.ResultButtonName;
  */
 public interface DialogsDialogButtons {
 
-    ResultButtonName CLOSE = new ResultButtonName();
+    ResultButtonName CLOSE = new DefaultResultButtonName();
 }

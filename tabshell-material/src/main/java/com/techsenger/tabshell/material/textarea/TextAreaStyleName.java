@@ -22,9 +22,6 @@ import com.techsenger.patternfx.core.Name;
  *
  * @author Pavel Castornii
  */
-public class TextAreaStyleName extends Name {
+public interface TextAreaStyleName extends Name {
 
-    public TextAreaStyleName() {
-        super(null);
-    }
 }

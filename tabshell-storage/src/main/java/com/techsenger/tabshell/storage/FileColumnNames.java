@@ -22,13 +22,18 @@ import com.techsenger.tabshell.material.table.TableColumnName;
  *
  * @author Pavel Castornii
  */
-public interface FileColumnNames {
+public enum FileColumnNames implements TableColumnName {
 
-    TableColumnName TYPE = new TableColumnName("Type");
+    NAME("Name"), SIZE("Size"), TYPE("Type"), LAST_MODIFIED("Last Modified");
 
-    TableColumnName NAME = new TableColumnName("Name");
+    private final String text;
 
-    TableColumnName SIZE = new TableColumnName("Size");
+    FileColumnNames(String text) {
+        this.text = text;
+    }
 
-    TableColumnName LAST_MODIFIED = new TableColumnName("Last Modified");
+    @Override
+    public String getText() {
+        return this.text;
+    }
 }

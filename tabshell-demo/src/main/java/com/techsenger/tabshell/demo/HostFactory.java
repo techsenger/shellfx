@@ -57,8 +57,9 @@ public final class HostFactory {
         fillTabs(shell, leftTabDock);
         leftTabDock.selectTab(0);
 
-        var splitSpace = view.getComposer().createSplitSpace(Orientation.HORIZONTAL);
+        var splitSpace = view.getComposer().createSplitSpace();
         splitSpace.getPresenter().initialize();
+        splitSpace.getPresenter().setOrientation(Orientation.HORIZONTAL);
         view.getComposer().setRoot(splitSpace);
         splitSpace.getComposer().addChild(leftTabDock);
         return view;

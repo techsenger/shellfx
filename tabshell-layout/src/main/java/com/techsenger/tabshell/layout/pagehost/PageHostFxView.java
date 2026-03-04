@@ -66,7 +66,7 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
         @Override
         public PagePort getSelectedPage() {
-            return view.page == null ? null : view.page.getPresenter().getPort();
+            return view.page == null ? null : view.page.getPresenter();
         }
     }
 
@@ -117,11 +117,6 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         this.splitPane.getDividers().get(0).setPosition(pos);
     }
 
-    @Override
-    public double getDividerPosition() {
-        return this.splitPane.getDividers().get(0).getPosition();
-    }
-
     public void setShowRoot(boolean value) {
         this.pageTreeView.setShowRoot(value);
     }
@@ -156,6 +151,8 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         pageTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
             getPresenter().onPageSelected(newV.getValue());
         });
+        splitPane.getDividers().getFirst().positionProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onDividerPositionChanged(newV.doubleValue()));
     }
 
     protected TreeView<? extends Page> getPageTreeView() {

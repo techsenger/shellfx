@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.material.menu;
 
+import com.techsenger.tabshell.material.Named;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
@@ -27,7 +28,7 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public class NamedMenuItem extends MenuItem implements NamedMenuElement<MenuItemName> {
+public class NamedMenuItem extends MenuItem implements Named, NamedMenuElement<MenuItemName> {
 
     private final MenuItemName name;
 

@@ -21,8 +21,8 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.core.tab.TabComposer;
 import com.techsenger.tabshell.core.tab.TabView;
-import java.util.function.Consumer;
 import com.techsenger.tabshell.demo.DemoComponents;
+import java.util.function.Consumer;
 
 /**
  *
@@ -46,6 +46,8 @@ public class DockableTabPresenter extends AbstractTabPresenter<TabView, TabCompo
     public void prepareToClose(Consumer resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+
 
     @Override
     protected Descriptor createDescriptor() {

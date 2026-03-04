@@ -22,9 +22,5 @@ package com.techsenger.tabshell.devtools.event;
  */
 public interface EventToolBarShared {
 
-    boolean isFilterSelected();
-
-    boolean isSelectedNodeOnly();
-
     void setStatistics(String text);
 }

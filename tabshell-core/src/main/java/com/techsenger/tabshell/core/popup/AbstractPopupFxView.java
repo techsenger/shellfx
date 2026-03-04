@@ -30,7 +30,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPopupFxView<P extends PopupPresenter<?, ?>>
+public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?, ?>>
         extends AbstractAreaFxView<P> implements PopupFxView<P> {
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements PopupFxView.Composer {
@@ -67,18 +67,8 @@ public abstract class AbstractPopupFxView<P extends PopupPresenter<?, ?>>
     }
 
     @Override
-    public double getPrefWidth() {
-        return stackPane.getPrefWidth();
-    }
-
-    @Override
     public void setPrefWidth(double value) {
         stackPane.setPrefWidth(value);
-    }
-
-    @Override
-    public double getPrefHeight() {
-        return stackPane.getPrefHeight();
     }
 
     @Override
@@ -89,11 +79,6 @@ public abstract class AbstractPopupFxView<P extends PopupPresenter<?, ?>>
     @Override
     public void setWaiting(boolean waiting) {
         this.waiting.set(waiting);
-    }
-
-    @Override
-    public boolean isWaiting() {
-        return this.waiting.get();
     }
 
     @Override

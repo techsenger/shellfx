@@ -41,26 +41,27 @@ public final class TableHistoryUtils {
                 sortedColumnIndexesByColumn.put(c, i);
             }
         }
-        List<TableColumnHistory> columns = new ArrayList<>();
+        List<TableColumnInfo> columns = new ArrayList<>();
         for (var column: table.getColumns()) {
-            var columnHistory = new TableColumnHistory();
-            columnHistory.setName(((NamedTableColumn<?, ?>) column).getName().toString());
-            columnHistory.setWidth(column.getWidth());
+            var columnInfo = new TableColumnInfo();
+            var namedColumn = (NamedTableColumn<?, ?>) column;
+            columnInfo.setName((Enum & TableColumnName) namedColumn.getName());
+            columnInfo.setWidth(column.getWidth());
             if (sortedColumnIndexesByColumn != null) {
                 var sortIndex = sortedColumnIndexesByColumn.get(column);
                 if (sortIndex != null) {
-                    columnHistory.setSortType(column.getSortType());
-                    columnHistory.setSortIndex(sortIndex);
+                    columnInfo.setSortType(column.getSortType());
+                    columnInfo.setSortIndex(sortIndex);
                 }
             }
-            columns.add(columnHistory);
+            columns.add(columnInfo);
         }
         var tableHistory = new TableHistory();
         tableHistory.setColumns(columns);
         return tableHistory;
     }
 
-    public static void restoreTable(TableView<?> table, Function<String, TableColumn<?, ?>> columnProvider,
+    public static void restoreTable(TableView<?> table, Function<TableColumnName, TableColumn<?, ?>> columnProvider,
             TableHistory history, boolean widthIncluded) {
         TreeMap<Integer, TableColumn<?, ?>> sortedColumnByIndex = new TreeMap<>();
         for (var historyColumn : history.getColumns()) {

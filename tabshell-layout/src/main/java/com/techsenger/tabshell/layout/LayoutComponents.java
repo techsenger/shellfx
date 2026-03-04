@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout;
 
 import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.DefaultComponentName;
 
 /**
  *
@@ -24,21 +25,21 @@ import com.techsenger.patternfx.core.ComponentName;
  */
 public final class LayoutComponents {
 
-    public static final ComponentName TAB_HOST = new ComponentName("Layout.TabHost");
+    public static final ComponentName TAB_HOST = new DefaultComponentName("Layout.TabHost");
 
-    public static final ComponentName DOCK_HOST = new ComponentName("Layout.DockHost");
+    public static final ComponentName DOCK_HOST = new DefaultComponentName("Layout.DockHost");
 
-    public static final ComponentName SPLIT_SPACE = new ComponentName("Layout.SplitSpace");
+    public static final ComponentName SPLIT_SPACE = new DefaultComponentName("Layout.SplitSpace");
 
-    public static final ComponentName TAB_DOCK = new ComponentName("Layout.TabDock");
+    public static final ComponentName TAB_DOCK = new DefaultComponentName("Layout.TabDock");
 
-    public static final ComponentName SIDE_BAR = new ComponentName("Layout.SideBar");
+    public static final ComponentName SIDE_BAR = new DefaultComponentName("Layout.SideBar");
 
-    public static final ComponentName TAB_POPUP = new ComponentName("Layout.TabPopup");
+    public static final ComponentName TAB_POPUP = new DefaultComponentName("Layout.TabPopup");
 
-    public static final ComponentName PLACEHOLDER = new ComponentName("Layout.Placeholder");
+    public static final ComponentName PLACEHOLDER = new DefaultComponentName("Layout.Placeholder");
 
-    public static final ComponentName PAGE_HOST = new ComponentName("Layout.PageHost");
+    public static final ComponentName PAGE_HOST = new DefaultComponentName("Layout.PageHost");
 
     private LayoutComponents() {
         // empty

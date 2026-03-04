@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public interface CloseablePresenter<V extends ParentView, C extends ParentComposer> extends CloseablePort {
+public interface CloseAwarePresenter<V extends ParentView, C extends ParentComposer> extends CloseAwarePort {
 
     C getComposer();
 
@@ -44,12 +44,12 @@ public interface CloseablePresenter<V extends ParentView, C extends ParentCompos
                 attemptCount++;
                 logger().debug("{} Close requested; attempt: {}", getDescriptor().getLogPrefix(), attemptCount);
                 CloseCheckResult checkResult = null;
-                CloseablePort notReadyComponent = null;
-                CloseablePort prepRequiredComponent = null;
+                CloseAwarePort notReadyComponent = null;
+                CloseAwarePort prepRequiredComponent = null;
                 var iterator = getComposer().breadthFirstIterator();
                 while (iterator.hasNext()) {
                     var parent = iterator.next();
-                    if (parent instanceof CloseablePort closeable) {
+                    if (parent instanceof CloseAwarePort closeable) {
                         checkResult = closeable.isReadyToClose();
                         Objects.requireNonNull(checkResult, "Preparation result can't be null");
                         if (checkResult == CloseCheckResult.NOT_READY) {

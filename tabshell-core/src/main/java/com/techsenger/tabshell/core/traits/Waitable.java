@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.traits;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface Tooltiped {
+public interface Waitable {
 
-    String getTooltip();
+    void setWaiting(boolean waiting);
 
-    void setTooltip(String tooltip);
+    boolean isWaiting();
 }
