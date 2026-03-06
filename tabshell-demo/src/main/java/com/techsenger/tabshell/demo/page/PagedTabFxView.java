@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demo.page;
 
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.demo.DemoComponents;
@@ -37,8 +36,8 @@ public class PagedTabFxView extends AbstractTabFxView<PagedTabPresenter> impleme
     public class Composer extends AbstractTabFxView<PagedTabPresenter>.Composer {
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
             var rootItem = MenuFactory.create(MenuFactory.PageType.TAB);
             pageHost = new PageHostFxView<>(rootItem);
             var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());

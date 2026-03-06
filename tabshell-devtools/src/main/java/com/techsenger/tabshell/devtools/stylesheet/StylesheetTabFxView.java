@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools.stylesheet;
 
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
@@ -46,8 +45,8 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
         private final StylesheetTabFxView<P> view = StylesheetTabFxView.this;
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
 
             view.toolBar = createToolBar();
             view.toolBar.getPresenter().initialize();

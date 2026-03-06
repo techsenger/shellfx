@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demo.page;
 
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.layout.pagehost.PageHostFxView;
@@ -35,8 +34,8 @@ public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter
     public class Composer extends AbstractDialogFxView<PagedDialogPresenter>.Composer {
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
             var rootItem = MenuFactory.create(MenuFactory.PageType.DIALOG);
             pageHost = new PageHostFxView<>(rootItem);
             var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());

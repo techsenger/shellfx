@@ -20,7 +20,6 @@ import atlantafx.base.theme.Tweaks;
 import com.techsenger.connectorfx.LocalElement;
 import com.techsenger.connectorfx.event.EventSource;
 import com.techsenger.connectorfx.scenegraph.Element;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.patternfx.mvp.ParentComposer;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.ShellFxView;
@@ -171,8 +170,8 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         private final ComponentTabFxView<P> view = ComponentTabFxView.this;
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
 
             view.componentToolBar = createComponentToolBar();
             view.componentToolBar.getPresenter().initialize();

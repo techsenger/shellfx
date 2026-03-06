@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.layout.dockhost;
 
 import com.techsenger.patternfx.mvp.ChildFxView;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
@@ -750,8 +749,8 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
                 new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
             var placeholderV = createPlaceholder();
             placeholderV.getPresenter().initialize();
             view.placeholder = placeholderV;

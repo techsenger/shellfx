@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demo.browser;
 
 import com.techsenger.tabshell.demo.main.TestInterface;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.demo.HostFactory;
@@ -50,8 +49,8 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
         private final BrowserMainTabFxView view = BrowserMainTabFxView.this;
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
             var historyManager = view.getShell().getPresenter().getHistoryManager();
             var dockHost = HostFactory
                     .createDockHost(view.getShell(),

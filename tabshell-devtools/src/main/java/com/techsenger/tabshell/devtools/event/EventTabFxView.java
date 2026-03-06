@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools.event;
 
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.material.style.StyleClasses;
@@ -35,8 +34,8 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
     public class Composer extends AbstractTabFxView<P>.Composer implements EventTabComposer {
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
             toolBar = createToolBar();
             toolBar.getPresenter().initialize();
             getModifiableChildren().add(toolBar);

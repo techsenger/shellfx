@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools.environment;
 
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
@@ -52,8 +51,8 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
         private final EnvironmentTabFxView<P> view = EnvironmentTabFxView.this;
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
             view.toolBar = createToolBar();
             view.toolBar.getPresenter().initialize();
             getModifiableChildren().add(view.toolBar);

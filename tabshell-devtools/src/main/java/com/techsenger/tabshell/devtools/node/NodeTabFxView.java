@@ -25,7 +25,6 @@ import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.INSETS;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
@@ -282,8 +281,8 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         private final NodeTabFxView<P> view = NodeTabFxView.this;
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
 
             nodeToolBar = createNodeToolBar();
             nodeToolBar.getPresenter().initialize();

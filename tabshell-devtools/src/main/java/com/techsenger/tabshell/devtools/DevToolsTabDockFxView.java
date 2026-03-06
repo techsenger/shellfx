@@ -19,7 +19,6 @@ package com.techsenger.tabshell.devtools;
 import atlantafx.base.theme.Styles;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.LocalConnector;
-import com.techsenger.patternfx.mvp.ComposeParameters;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabFxView;
@@ -53,8 +52,8 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
     public class Composer extends TabDockFxView<P>.Composer {
 
         @Override
-        public void compose(ComposeParameters params) {
-            super.compose(params);
+        public void compose() {
+            super.compose();
 
             var nodeTab = createNodeTab();
             nodeTab.getPresenter().initialize();
