@@ -83,7 +83,7 @@ public class Demo extends Application {
         var stage = new Stage();
         var shellView = new DefaultShellFxView<>(this, stage, IconStylesheetFactory.forAll());
         var shellPresenter = new DefaultShellPresenter<>(shellView, DemoSettings.createSettings(),
-                new DemoHistoryManager());
+                new DemoHistoryManager(), getHostServices());
         shellPresenter.setOnClose(() -> Platform.exit());
         shellPresenter.initialize();
         shellView.setTitle("TabShell Full Demo");

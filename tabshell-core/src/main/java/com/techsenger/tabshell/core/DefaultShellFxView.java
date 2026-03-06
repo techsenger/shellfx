@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
-import javafx.application.HostServices;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -320,11 +319,6 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
     @Override
     public void removeStylesheets(List<Stylesheet> sheets) {
         this.stylesheets.removeAll(sheets);
-    }
-
-    @Override
-    public HostServices getHostServices() {
-        return this.application.getHostServices();
     }
 
     @Override

@@ -32,7 +32,6 @@ import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
 import com.techsenger.tabshell.shared.find.FindNavigationAwarePort;
-import com.techsenger.tabshell.shared.web.WebBrowser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -128,7 +127,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
     private int foundPropertyCount = 0;
 
-    private Consumer<String> linkOpener = (ulr) -> WebBrowser.open(ulr);
+    private Consumer<String> linkOpener = (ulr) -> getComposer().getShell().getHostServices().showDocument(ulr);
 
     private Element rootNode;
 

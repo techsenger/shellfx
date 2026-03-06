@@ -31,5 +31,4 @@ module com.techsenger.tabshell.shared {
 
     exports com.techsenger.tabshell.shared.find;
     exports com.techsenger.tabshell.shared.style;
-    exports com.techsenger.tabshell.shared.web;
 }

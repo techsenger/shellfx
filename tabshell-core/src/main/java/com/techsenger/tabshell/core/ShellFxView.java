@@ -19,7 +19,6 @@ package com.techsenger.tabshell.core;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
-import javafx.application.HostServices;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.stage.Stage;
 
@@ -34,13 +33,6 @@ public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxVie
     interface Composer extends ParentFxView.Composer, DialogContainerFxView.Composer, ShellComposer {
 
     }
-
-    /**
-     * Returns application host services.
-     *
-     * @return
-     */
-    HostServices getHostServices();
 
     /**
      * Returns primary stage.

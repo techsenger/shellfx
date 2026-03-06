@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.material.icon.Icon;
+import javafx.application.HostServices;
 
 /**
  *
@@ -48,6 +49,13 @@ public interface ShellPort extends ParentPort, DialogContainerPort, CloseAwarePo
      * @return
      */
     <T extends Settings> T getSettings(Class<T> settingsClass);
+
+    /**
+     * Returns application host services.
+     *
+     * @return
+     */
+    HostServices getHostServices();
 
     /**
      * Returns shell current width.

@@ -32,6 +32,7 @@ import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
 import java.util.List;
 import java.util.function.Consumer;
+import javafx.application.HostServices;
 
 /**
  *
@@ -43,6 +44,8 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     private final Settings settings;
 
     private final HistoryManager historyManager;
+
+    private final HostServices hostServices;
 
     private final MenuHelpers menuHelpers = new MenuHelpers();
 
@@ -58,10 +61,11 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
 
     private Icon<?> icon;
 
-    public DefaultShellPresenter(V view, Settings settings, HistoryManager historyManager) {
+    public DefaultShellPresenter(V view, Settings settings, HistoryManager historyManager, HostServices hostServices) {
         super(view);
         this.settings = settings;
         this.historyManager = historyManager;
+        this.hostServices = hostServices;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager
                 .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
@@ -70,6 +74,11 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     @Override
     public HistoryManager getHistoryManager() {
         return historyManager;
+    }
+
+    @Override
+    public HostServices getHostServices() {
+        return this.hostServices;
     }
 
     @Override
