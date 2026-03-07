@@ -27,6 +27,7 @@ import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_HALF;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_THIRD;
+import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.core.Pair;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
@@ -48,6 +49,8 @@ import javafx.geometry.Dimension2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
@@ -61,7 +64,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -125,10 +134,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractAreaFxView<P>
         implements DockHostView {
-
-    private static final Logger logger = LoggerFactory.getLogger(DockHostFxView.class);
-
-    private static final Double EDGE_THRESHOLD = 20.0;
 
     /**
      * Represents the type of draggable object in the docking system.
@@ -735,6 +740,12 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         return singlingInfo;
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(DockHostFxView.class);
+
+    private static final Double EDGE_THRESHOLD = 20.0;
+
+    private static final Double DRAG_REGION_MAX_WIDTH = 200.0;
+
     public class Composer extends AbstractAreaFxView<P>.Composer implements DockHostComposer {
 
         private final DockHostFxView<P> view = DockHostFxView.this;
@@ -1224,12 +1235,65 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
     }
 
     protected Node createTabDockDragContent(TabPaneProSkin.TabHeaderArea tabHeaderArea) {
-        var tabParams = new SnapshotParameters();
-        WritableImage tabImage = tabHeaderArea.snapshot(tabParams, null);
+        StackPane headersRegion = (StackPane) tabHeaderArea.lookup(".headers-region");
+        double totalWidth = 0;
+        double snapShotWidth = tabHeaderArea.getWidth();
+        Node capturedTabSkin = null;
+        boolean capturedTabSkinIsLast = false;
+        var tabSkins = headersRegion.getChildrenUnmodifiable();
+        for (var i = 0; i < tabSkins.size(); i++) {
+            StackPane tabSkin = (StackPane) tabSkins.get(i);
+            totalWidth += tabSkin.getWidth();
+            if (i == 0 || totalWidth <= DRAG_REGION_MAX_WIDTH) { // at least one node is required
+                capturedTabSkin = tabSkin;
+                capturedTabSkinIsLast = i + 1 == tabSkins.size();
+            } else {
+                break;
+            }
+        }
+
+        if (capturedTabSkin != null) {
+            Bounds bounds = capturedTabSkin.getBoundsInLocal();
+            Point2D rightEdge = new Point2D(bounds.getMaxX(), 0);
+            Point2D rightEdgeInScene = capturedTabSkin.localToScene(rightEdge);
+            Point2D rightEdgeInArea = tabHeaderArea.sceneToLocal(rightEdgeInScene);
+            Bounds areaBounds = tabHeaderArea.getBoundsInLocal();
+            var calculatedWidth = rightEdgeInArea.getX() - areaBounds.getMinX();
+            if (calculatedWidth < snapShotWidth) {
+                snapShotWidth = calculatedWidth;
+            } else {
+                capturedTabSkin = null;
+            }
+        }
+
+        var snapParams = new SnapshotParameters();
+        snapParams.setViewport(new Rectangle2D(0, 0, snapShotWidth, tabHeaderArea.getHeight()));
+
+        WritableImage tabImage = tabHeaderArea.snapshot(snapParams, null);
         ImageView dragView = new ImageView(tabImage);
-        var container = new VBox(dragView);
+        dragView.setSmooth(false);
+        var contentContainer = new HBox(dragView);
+        if (capturedTabSkin != null && !capturedTabSkinIsLast) {
+            var iconView = new FontIconView(LayoutIcons.CHEVRON_DOUBLE_RIGHT);
+            // we need a bg for the icon
+            StackPane headerBg = (StackPane) tabHeaderArea.lookup(".tab-header-background");
+            snapParams = new SnapshotParameters();
+            snapParams.setViewport(new Rectangle2D(0, 0, 10, tabHeaderArea.getHeight()));
+            WritableImage bgImage = headerBg.snapshot(snapParams, null);
+            BackgroundImage backgroundImage = new BackgroundImage(
+                bgImage,
+                BackgroundRepeat.REPEAT, // horizont
+                BackgroundRepeat.NO_REPEAT, // vertical
+                BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT
+            );
+            contentContainer.setAlignment(Pos.CENTER);
+            var iconContainer = new StackPane(iconView);
+            iconContainer.setBackground(new Background(backgroundImage));
+            contentContainer.getChildren().add(iconContainer);
+        }
         //container.getStyleClass().add("tab-drag-content");
-        return container;
+        return contentContainer;
     }
 
     StackPane createContainer(AreaFxView<?> child) {
@@ -1289,7 +1353,6 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         this.dragDock = dock;
         TabPaneProSkin sourceSkin = (TabPaneProSkin) dock.getNode().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
-
         var content = createTabDockDragContent(tabHeaderArea);
         this.dragDockPopup = new Popup();
         this.dragDockPopup.setAutoHide(false);

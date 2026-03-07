@@ -29,4 +29,6 @@ public interface LayoutIcons {
     StyleFontIcon DRAG_VERTICAL = new StyleFontIcon("drag-vertical-icon");
 
     StyleFontIcon RESTORE_WINDOW = new StyleFontIcon("restore-window-icon");
+
+    StyleFontIcon CHEVRON_DOUBLE_RIGHT = new StyleFontIcon("chevron-double-right-icon");
 }
