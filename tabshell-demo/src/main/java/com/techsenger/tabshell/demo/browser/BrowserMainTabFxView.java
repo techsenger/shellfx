@@ -16,10 +16,10 @@
 
 package com.techsenger.tabshell.demo.browser;
 
-import com.techsenger.tabshell.demo.main.TestInterface;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.demo.HostFactory;
+import com.techsenger.tabshell.demo.main.TestInterface;
 import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
 import com.techsenger.tabshell.layout.dockhost.TabDockFxView;
 import com.techsenger.tabshell.layout.dockhost.UtilityDockContainerFxView;
@@ -41,7 +41,7 @@ import javafx.scene.layout.HBox;
  * @author Pavel Castornii
  */
 public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresenter>
-        implements UtilityDockContainerFxView {
+        implements UtilityDockContainerFxView<BrowserMainTabPresenter> {
 
     private final class Composer extends AbstractTabFxView<BrowserMainTabPresenter>.Composer
             implements UtilityDockContainerFxView.Composer, TestInterface {

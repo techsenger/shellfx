@@ -156,7 +156,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                 var shell = (ShellFxView<?>) v;
                 if (shell.getWorkspace() instanceof TabHostFxView<?> tabHost) {
                     var tab = tabHost.getSelectedTab();
-                    if (tab != null && tab instanceof UtilityDockContainerFxView c) {
+                    if (tab != null && tab instanceof UtilityDockContainerFxView<?> c) {
                         var devTools = createDevTools();
                         devTools.getPresenter().initialize();
                         devTools.getPresenter().setDraggable(true);

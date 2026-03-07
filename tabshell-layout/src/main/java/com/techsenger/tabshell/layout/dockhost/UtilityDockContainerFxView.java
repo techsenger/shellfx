@@ -16,6 +16,9 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
+import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvp.ParentPresenter;
+
 /**
  * A container capable of hosting utility TabDock-based components.
  *
@@ -25,12 +28,13 @@ package com.techsenger.tabshell.layout.dockhost;
  *
  * @author Pavel Castornii
  */
-public interface UtilityDockContainerFxView {
+public interface UtilityDockContainerFxView<P extends ParentPresenter<?, ?>> extends ParentFxView<P> {
 
-    interface Composer {
+    interface Composer extends ParentFxView.Composer {
 
         void addUtilityDock(TabDockFxView<?> tabDock);
     }
 
+    @Override
     Composer getComposer();
 }
