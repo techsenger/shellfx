@@ -32,6 +32,7 @@ module com.techsenger.tabshell.material {
     exports com.techsenger.tabshell.material;
     exports com.techsenger.tabshell.material.button;
     exports com.techsenger.tabshell.material.icon;
+    exports com.techsenger.tabshell.material.layout;
     exports com.techsenger.tabshell.material.list;
     exports com.techsenger.tabshell.material.menu;
     exports com.techsenger.tabshell.material.pane;

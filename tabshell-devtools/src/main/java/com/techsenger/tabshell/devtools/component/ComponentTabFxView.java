@@ -29,7 +29,7 @@ import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.layout.LabelHContainer;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.FindFeature;
 import java.util.HashSet;
@@ -39,7 +39,6 @@ import java.util.Set;
 import java.util.UUID;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tooltip;
@@ -52,7 +51,6 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -334,27 +332,25 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
                         setGraphic(null);
                         setText(item.values().get(0));
                     } else {
-                        HBox hbox = new HBox();
-                        hbox.setSpacing(SizeConstants.HALF_INSET);
+
+                        LabelHContainer labelContainer = new LabelHContainer();
                         if (item.values() != null) {
                             for (var i = 0; i < item.values().size(); i++) {
-                                var value = item.values().get(i);
-                                Node node;
-                                if (i + 1 < item.values().size()) {
-                                    node = new Text(value + ",");
-                                    if (item.valueTooltips() != null) {
-                                        Tooltip.install(node, new Tooltip(item.valueTooltips().get(i)));
-                                    }
-                                } else {
-                                    node = new Label(value);
-                                    if (item.valueTooltips() != null) {
-                                        ((Label) node).setTooltip(new Tooltip(item.valueTooltips().get(i)));
-                                    }
+                                var text = item.values().get(i);
+                                if (i + 1 != item.values().size()) {
+                                    text += ", ";
                                 }
-                                hbox.getChildren().add(node);
+                                var label = new Label(text);
+                                Tooltip tooltip = null;
+                                if (item.valueTooltips() != null) {
+                                    tooltip = new Tooltip(item.valueTooltips().get(i));
+                                    label.setTooltip(tooltip);
+                                }
+                                labelContainer.getLabels().add(label);
                             }
                         }
-                        setGraphic(hbox);
+
+                        setGraphic(labelContainer);
                         setText(null);
                     }
                 }
