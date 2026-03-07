@@ -1259,7 +1259,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             Point2D rightEdgeInArea = tabHeaderArea.sceneToLocal(rightEdgeInScene);
             Bounds areaBounds = tabHeaderArea.getBoundsInLocal();
             var calculatedWidth = rightEdgeInArea.getX() - areaBounds.getMinX();
-            if (calculatedWidth < snapShotWidth) {
+            if (calculatedWidth > 0 && calculatedWidth < snapShotWidth) {
                 snapShotWidth = calculatedWidth;
             } else {
                 capturedTabSkin = null;
