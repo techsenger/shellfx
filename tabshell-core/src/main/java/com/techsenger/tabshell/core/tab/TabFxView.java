@@ -25,7 +25,7 @@ import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
  *
  * @author Pavel Castornii
  */
-public interface TabFxView<P extends TabPresenter<?, ?>> extends ChildFxView<P>, TabView, DialogContainerFxView {
+public interface TabFxView<P extends TabPresenter<?, ?>> extends ChildFxView<P>, TabView, DialogContainerFxView<P> {
 
     interface Composer extends ChildFxView.Composer, TabComposer, DialogContainerFxView.Composer {
 

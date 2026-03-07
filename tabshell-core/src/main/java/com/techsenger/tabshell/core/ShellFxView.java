@@ -28,7 +28,7 @@ import javafx.stage.Stage;
  * @author Pavel Castornii
  */
 public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxView<P>,
-        DialogContainerFxView, ShellView {
+        DialogContainerFxView<P>, ShellView {
 
     interface Composer extends ParentFxView.Composer, DialogContainerFxView.Composer, ShellComposer {
 

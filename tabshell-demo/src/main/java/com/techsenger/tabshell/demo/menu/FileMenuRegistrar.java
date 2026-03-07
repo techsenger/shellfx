@@ -224,7 +224,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         return null;
     }
 
-    private DialogContainerFxView resolveDialogContainer() {
+    private DialogContainerFxView<?> resolveDialogContainer() {
         if (shell.getWorkspace() instanceof TabHostFxView<?> tabHost) {
             var tab = tabHost.getSelectedTab();
             return tab;

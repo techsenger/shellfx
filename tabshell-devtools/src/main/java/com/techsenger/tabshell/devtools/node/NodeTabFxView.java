@@ -337,7 +337,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         }
     }
 
-    private final DialogContainerFxView dialogContainer;
+    private final DialogContainerFxView<?> dialogContainer;
 
     private ToolBarFxView<?> nodeToolBar;
 
@@ -355,7 +355,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
     private final SplitPane splitPane = new SplitPane(nodeBox, propertyBox);
 
-    public NodeTabFxView(ShellFxView<?> shell, DialogContainerFxView dialogContainer) {
+    public NodeTabFxView(ShellFxView<?> shell, DialogContainerFxView<?> dialogContainer) {
         super(shell);
         this.dialogContainer = dialogContainer;
     }

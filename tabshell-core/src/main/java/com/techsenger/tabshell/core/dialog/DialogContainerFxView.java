@@ -16,13 +16,14 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.tabshell.core.popup.PopupContainerFxView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogContainerFxView extends PopupContainerFxView {
+public interface DialogContainerFxView<P extends ParentPresenter<?, ?>> extends PopupContainerFxView<P> {
 
     interface Composer extends PopupContainerFxView.Composer, DialogContainerComposer {
 
@@ -42,5 +43,6 @@ public interface DialogContainerFxView extends PopupContainerFxView {
 
     }
 
+    @Override
     Composer getComposer();
 }

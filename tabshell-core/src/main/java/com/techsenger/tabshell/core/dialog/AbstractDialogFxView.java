@@ -285,8 +285,8 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         return outOfBoundsAllowed;
     }
 
-    protected DialogContainerFxView getContainer() {
-        return (DialogContainerFxView) getParent();
+    protected DialogContainerFxView<?> getContainer() {
+        return (DialogContainerFxView<?>) getParent();
     }
 
     @Override

@@ -16,15 +16,17 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.tabshell.material.Anchors;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerFxView {
+public interface PopupContainerFxView<P extends ParentPresenter<?, ?>> extends ParentFxView<P> {
 
-    interface Composer extends PopupContainerComposer {
+    interface Composer extends ParentFxView.Composer, PopupContainerComposer {
 
         /**
          * Adds the specified popup component to the component tree.

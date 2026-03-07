@@ -122,7 +122,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
     private final Connector connector;
 
-    public DevToolsTabDockFxView(ShellFxView<?> shell, DialogContainerFxView dialogContainer) {
+    public DevToolsTabDockFxView(ShellFxView<?> shell, DialogContainerFxView<?> dialogContainer) {
         super();
         this.shell = shell;
         this.dialogContainer = dialogContainer;
