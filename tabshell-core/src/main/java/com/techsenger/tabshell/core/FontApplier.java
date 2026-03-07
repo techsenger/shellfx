@@ -31,9 +31,9 @@ public class FontApplier {
 
     public FontApplier(Pane root, AppearanceSettings settings) {
         updateRegularFont(root, settings.getRegularFont());
-        settings.observeRegularFont((oldV, newV) -> updateRegularFont(root, newV));
+        settings.onRegularFontChanged((oldV, newV) -> updateRegularFont(root, newV));
         updateMonospaceFont(root, settings.getMonospaceFont());
-        settings.observeMonospaceFont((oldV, newV) -> updateMonospaceFont(root, newV));
+        settings.onMonospaceFontChanged((oldV, newV) -> updateMonospaceFont(root, newV));
     }
 
     private void updateRegularFont(Pane root, Font font) {

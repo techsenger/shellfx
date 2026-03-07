@@ -29,7 +29,7 @@ public interface AppearanceSettings {
 
     void setTheme(Theme theme);
 
-    SettingsSubscription observeTheme(SettingsObserver<Theme> observer);
+    SettingsSubscription onThemeChanged(SettingsCallback<Theme> callback);
 
     Font getRegularFont();
 
@@ -40,7 +40,7 @@ public interface AppearanceSettings {
      *
      * @return
      */
-    SettingsSubscription observeRegularFont(SettingsObserver<Font> observer);
+    SettingsSubscription onRegularFontChanged(SettingsCallback<Font> callback);
 
     Font getMonospaceFont();
 
@@ -51,5 +51,5 @@ public interface AppearanceSettings {
      *
      * @return
      */
-    SettingsSubscription observeMonospaceFont(SettingsObserver<Font> observer);
+    SettingsSubscription onMonospaceFontChanged(SettingsCallback<Font> callback);
 }

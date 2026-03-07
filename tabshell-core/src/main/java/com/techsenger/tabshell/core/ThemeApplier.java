@@ -64,7 +64,7 @@ class ThemeApplier {
         this.scene = controller.getStage().getScene();
         addTheme(settings.getTheme(), false);
         logSceneStylesheets();
-        themeSubscription = settings.observeTheme((oldV, newV) -> {
+        themeSubscription = settings.onThemeChanged((oldV, newV) -> {
             removeTheme(oldV);
             addTheme(newV, true);
             //without applying css and layout title bar spacers are not updated

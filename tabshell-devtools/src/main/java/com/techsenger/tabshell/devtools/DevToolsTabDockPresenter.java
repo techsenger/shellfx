@@ -51,7 +51,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
     public DevToolsTabDockPresenter(V view, Settings settings, HistoryProvider<DevToolsTabDockHistory> hp) {
         super(view);
         this.settings = settings;
-        themeSubscription = settings.getAppearance().observeTheme((oldV, newV) -> updateHighlight(newV));
+        themeSubscription = settings.getAppearance().onThemeChanged((oldV, newV) -> updateHighlight(newV));
         this.setHistoryProvider(hp);
         this.setHistoryPolicy(HistoryPolicy.APPEARANCE);
     }

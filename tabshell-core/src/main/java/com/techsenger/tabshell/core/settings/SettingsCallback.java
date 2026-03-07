@@ -21,7 +21,7 @@ package com.techsenger.tabshell.core.settings;
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface SettingsObserver<T> {
+public interface SettingsCallback<T> {
 
     void onChanged(T oldValue, T newValue);
 }

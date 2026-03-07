@@ -53,8 +53,8 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
     }
 
     @Override
-    public SettingsSubscription observeTheme(SettingsObserver<Theme> observer) {
-        return SubscriptionUtils.observe(theme, observer);
+    public SettingsSubscription onThemeChanged(SettingsCallback<Theme> callback) {
+        return SubscriptionUtils.onChanged(theme, callback);
     }
 
     @Override
@@ -68,8 +68,8 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
     }
 
     @Override
-    public SettingsSubscription observeRegularFont(SettingsObserver<Font> observer) {
-        return SubscriptionUtils.observe(regularFont, observer);
+    public SettingsSubscription onRegularFontChanged(SettingsCallback<Font> callback) {
+        return SubscriptionUtils.onChanged(regularFont, callback);
     }
 
     @Override
@@ -83,7 +83,7 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
     }
 
     @Override
-    public SettingsSubscription observeMonospaceFont(SettingsObserver<Font> observer) {
-        return SubscriptionUtils.observe(monospaceFont, observer);
+    public SettingsSubscription onMonospaceFontChanged(SettingsCallback<Font> callback) {
+        return SubscriptionUtils.onChanged(monospaceFont, callback);
     }
 }

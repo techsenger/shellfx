@@ -51,45 +51,45 @@ public final class SubscriptionUtils {
         }
     }
 
-    public static SettingsSubscription observe(IntegerProperty property, SettingsObserver<Integer> observer) {
+    public static SettingsSubscription onChanged(IntegerProperty property, SettingsCallback<Integer> callback) {
         ChangeListener<Number> listener = (ov, oldV, newV) -> {
-            observer.onChanged(oldV.intValue(), newV.intValue());
+            callback.onChanged(oldV.intValue(), newV.intValue());
         };
         var weakListener = new WeakChangeListener<Number>(listener);
         property.addListener(weakListener);
         return new SettingsSubscriptionImpl<>(property, listener, weakListener);
     }
 
-    public static SettingsSubscription observe(LongProperty property, SettingsObserver<Long> observer) {
+    public static SettingsSubscription onChanged(LongProperty property, SettingsCallback<Long> callback) {
         ChangeListener<Number> listener = (ov, oldV, newV) -> {
-            observer.onChanged(oldV.longValue(), newV.longValue());
+            callback.onChanged(oldV.longValue(), newV.longValue());
         };
         var weakListener = new WeakChangeListener<Number>(listener);
         property.addListener(weakListener);
         return new SettingsSubscriptionImpl<>(property, listener, weakListener);
     }
 
-    public static SettingsSubscription observe(DoubleProperty property, SettingsObserver<Double> observer) {
+    public static SettingsSubscription onChanged(DoubleProperty property, SettingsCallback<Double> callback) {
         ChangeListener<Number> listener = (ov, oldV, newV) -> {
-            observer.onChanged(oldV.doubleValue(), newV.doubleValue());
+            callback.onChanged(oldV.doubleValue(), newV.doubleValue());
         };
         var weakListener = new WeakChangeListener<Number>(listener);
         property.addListener(weakListener);
         return new SettingsSubscriptionImpl<>(property, listener, weakListener);
     }
 
-    public static SettingsSubscription observe(FloatProperty property, SettingsObserver<Float> observer) {
+    public static SettingsSubscription onChanged(FloatProperty property, SettingsCallback<Float> callback) {
         ChangeListener<Number> listener = (ov, oldV, newV) -> {
-            observer.onChanged(oldV.floatValue(), newV.floatValue());
+            callback.onChanged(oldV.floatValue(), newV.floatValue());
         };
         var weakListener = new WeakChangeListener<Number>(listener);
         property.addListener(weakListener);
         return new SettingsSubscriptionImpl<>(property, listener, weakListener);
     }
 
-    public static <T> SettingsSubscription observe(Property<T> property, SettingsObserver<T> observer) {
+    public static <T> SettingsSubscription onChanged(Property<T> property, SettingsCallback<T> callback) {
         ChangeListener<T> listener = (ov, oldV, newV) -> {
-            observer.onChanged(oldV, newV);
+            callback.onChanged(oldV, newV);
         };
         var weakListener = new WeakChangeListener<T>(listener);
         property.addListener(weakListener);
