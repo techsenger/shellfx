@@ -54,6 +54,7 @@ public final class HostFactory {
 
         var leftTabDock = view.getComposer().createTabDock();
         leftTabDock.getPresenter().initialize();
+        leftTabDock.getPresenter().setDraggable(true);
         fillTabs(shell, leftTabDock);
         leftTabDock.selectTab(0);
 

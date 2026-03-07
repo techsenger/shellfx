@@ -159,6 +159,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                     if (tab != null && tab instanceof UtilityDockContainerFxView c) {
                         var devTools = createDevTools();
                         devTools.getPresenter().initialize();
+                        devTools.getPresenter().setDraggable(true);
                         c.getComposer().addUtilityDock(devTools);
                     } else {
                         var alertView = new AlertDialogFxView<>();
@@ -170,6 +171,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                 } else if (shell.getWorkspace() instanceof DockHostFxView<?> dockHost) {
                     var devTools = createDevTools();
                     devTools.getPresenter().initialize();
+                    devTools.getPresenter().setDraggable(true);
                     dockHost.getComposer().addTabDock(devTools, Side.BOTTOM, 250);
                 }
             });
