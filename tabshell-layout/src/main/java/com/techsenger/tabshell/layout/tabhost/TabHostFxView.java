@@ -22,17 +22,21 @@ import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerFxView;
-import com.techsenger.tabshell.core.tab.TabContainerFxViewUtils;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.core.tab.TabPort;
 import com.techsenger.tabshell.layout.LayoutView;
 import com.techsenger.tabshell.material.style.StyleClasses;
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Priority;
@@ -48,6 +52,13 @@ import org.slf4j.LoggerFactory;
  */
 public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAreaFxView<P>
         implements TabContainerFxView<P>, TabHostView, LayoutView {
+
+    private static final Object TAB_KEY = new Object();
+
+    private static ComponentTab getTab(ContextMenu menu) {
+        WeakReference<ComponentTab> ref = (WeakReference<ComponentTab>) menu.getProperties().get(TAB_KEY);
+        return ref.get();
+    }
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements TabHostComposer,
             TabContainerFxView.Composer {
@@ -218,7 +229,6 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     @Override
     protected void build() {
         super.build();
-        TabContainerFxViewUtils.initTabPane(tabPane, getPresenter());
         this.tabPane.getStylesheets().add(TabHostFxView.class.getResource("tab-host.css").toExternalForm());
         this.tabPane.getStyleClass().add(Styles.DENSE);
         VBox.setVgrow(this.tabPane, Priority.ALWAYS);
@@ -230,7 +240,6 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     protected void buildWorkspace() {
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
         tabPane.getStyleClass().addAll("workspace-tab-pane", Styles.DENSE);
-        TabContainerFxViewUtils.initTabPane(tabPane, getPresenter());
         var tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
         tabHeaderArea.setTabGap(-10.0);
@@ -259,8 +268,27 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         });
         this.tabPane.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
                 getPresenter().onSelectedTabChanged(newV.intValue()));
-        this.tabPane.getTabs().addListener((ListChangeListener<? super Tab>) (change) -> {
+        tabPane.getTabs().addListener((ListChangeListener<? super Tab>) (change)  -> {
             resolveTabHeaderVisibility();
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    for (var t : change.getAddedSubList()) {
+                        ComponentTab tab = (ComponentTab) t;
+                        tab.setOnCloseRequest((e) -> {
+                            getPresenter().onCloseTab(tab.getView().getPresenter());
+                            e.consume();
+                        });
+                        //tabs can be added only by one
+                        tabPane.getSelectionModel().select(t);
+                        tab.setContextMenu(createTabContextMenu((ObservableList) tabPane.getTabs(), tab));
+                    }
+                } else if (change.wasRemoved()) {
+                    for (var t : change.getRemoved()) {
+                        t.setOnCloseRequest(null);
+                        t.setContextMenu(null);
+                    }
+                }
+            }
         });
     }
 
@@ -281,6 +309,77 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     protected void unbuildWorkspace() {
 
+    }
+
+    protected ContextMenu createTabContextMenu(ObservableList<ComponentTab> tabs, ComponentTab tab) {
+        ContextMenu contextMenu = new ContextMenu();
+        // we use a weak reference as a workaround for JDK-8283449
+        contextMenu.getProperties().put(TAB_KEY, new WeakReference<ComponentTab>(tab));
+
+        MenuItem close = new MenuItem("Close", new Label(" "));
+        close.setOnAction((e) -> {
+            var t = getTab(contextMenu);
+            if (t != null) {
+                getPresenter().onCloseTab(t.getView().getPresenter());
+            }
+        });
+        MenuItem closeAll = new MenuItem("Close All");
+        closeAll.setOnAction((e) -> {
+            getPresenter().onCloseAllTabs();
+        });
+        MenuItem closeOther = new MenuItem("Close Other");
+        closeOther.setOnAction((e) -> {
+            var t = getTab(contextMenu);
+            if (t != null) {
+                getPresenter().onCloseOtherTabs(t.getView().getPresenter());
+            }
+        });
+        MenuItem closeRight = new MenuItem("Close to the Right");
+        closeRight.setOnAction((e) -> {
+            var t = getTab(contextMenu);
+            if (t != null) {
+                getPresenter().onCloseRightTabs(t.getView().getPresenter());
+            }
+        });
+        MenuItem closeLeft = new MenuItem("Close to the Left");
+        closeLeft.setOnAction((e) -> {
+            var t = getTab(contextMenu);
+            if (t != null) {
+                getPresenter().onCloseLeftTabs(t.getView().getPresenter());
+            }
+        });
+
+        contextMenu.getItems().addAll(close, closeAll, closeOther, closeRight, closeLeft);
+        contextMenu.setOnShowing((e) -> {
+            if (tabs.size() == 0) {
+                return;
+            }
+            if (tabs.size() == 1) {
+                closeAll.setDisable(true);
+                closeOther.setDisable(true);
+                closeLeft.setDisable(true);
+                closeRight.setDisable(true);
+            } else {
+                closeAll.setDisable(false);
+                closeOther.setDisable(false);
+                closeLeft.setDisable(false);
+                closeRight.setDisable(false);
+            }
+            var t = getTab(contextMenu);
+            if (t != null) {
+                if (tabs.get(tabs.size() - 1) == t) {
+                    closeRight.setDisable(true);
+                } else {
+                    closeRight.setDisable(false);
+                }
+                if (tabs.get(0) == t) {
+                    closeLeft.setDisable(true);
+                } else {
+                    closeLeft.setDisable(false);
+                }
+            }
+        });
+        return contextMenu;
     }
 
     private void resolveTabHeaderVisibility() {

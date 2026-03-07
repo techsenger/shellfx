@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
-import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.layout.tabhost.TabHostPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabDockPort extends AreaPort {
+public interface TabDockPort extends TabHostPort {
 
     /**
      * Returns the value that stores the original position of this component in the layout before it was minimized

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.page;
+package com.techsenger.tabshell.layout.tabhost;
+
+import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.tab.TabContainerPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerPresenter<V extends PageContainerView, C extends PageContainerComposer>
-        extends PageContainerPort {
+public interface TabHostPort extends AreaPort, TabContainerPort {
 
 }

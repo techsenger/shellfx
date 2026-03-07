@@ -19,18 +19,22 @@ package com.techsenger.tabshell.layout.tabhost;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.tab.TabContainerPresenter;
+import com.techsenger.tabshell.core.tab.TabPort;
 import com.techsenger.tabshell.layout.LayoutComponents;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> extends AbstractAreaPresenter<V, C>
-        implements TabContainerPresenter<V, C> {
+        implements TabContainerPresenter<V, C>, TabHostPort {
 
     private boolean tabHeaderAutoHide;
 
     private boolean tabHeaderVisible;
+
+    private int selectedTabIndex;
 
     public TabHostPresenter(V view) {
         super(view);
@@ -43,7 +47,7 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
 
     @Override
     public void onSelectedTabChanged(int index) {
-        // empty
+        this.selectedTabIndex = index;
     }
 
     public boolean isTabHeaderAutoHide() {
@@ -62,5 +66,49 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
     public void setTabHeaderVisible(boolean tabHeaderVisible) {
         this.tabHeaderVisible = tabHeaderVisible;
         getView().setTabHeaderVisible(tabHeaderVisible);
+    }
+
+    @Override
+    public TabPort getSelectedTab() {
+        return getComposer().getSelectedTab();
+    }
+
+    @Override
+    public int getSelectedTabIndex() {
+        return this.selectedTabIndex;
+    }
+
+    @Override
+    public void selectTab(int tabIndex) {
+        getView().selectTab(tabIndex);
+    }
+
+    @Override
+    public List<? extends TabPort> getTabs() {
+        return getComposer().getTabs();
+    }
+
+    protected void onCloseOtherTabs(TabPort tab) {
+        closeOtherTabs(tab);
+    }
+
+    protected void onCloseTabs(List<? extends TabPort> tabs) {
+        closeTabs(tabs);
+    }
+
+    protected void onCloseAllTabs() {
+        closeAllTabs();
+    }
+
+    protected void onCloseRightTabs(TabPort tab) {
+        closeRightTabs(tab);
+    }
+
+    protected void onCloseLeftTabs(TabPort tab) {
+        closeLeftTabs(tab);
+    }
+
+    protected void onCloseTab(TabPort tab) {
+        closeTab(tab);
     }
 }

@@ -22,45 +22,74 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerPort<S extends TabPort> {
+public interface TabContainerPort {
 
     /**
-     * Returns selected tab view model.
+     * Returns the currently selected tab.
      *
-     * @return
+     * @return the selected {@link TabPort}, or {@code null} if no tab is selected
      */
-    S getSelectedTab();
+    TabPort getSelectedTab();
 
     /**
-     * Returns the index of the selected tab.
+     * Returns the index of the currently selected tab.
      *
-     * @return
+     * @return zero-based index of the selected tab, or {@code -1} if no tab is selected
      */
     int getSelectedTabIndex();
 
     /**
-     * Selects tab by index.
+     * Selects the tab at the given index.
      *
-     * @param tabIndex
+     * @param tabIndex zero-based index of the tab to select
+     * @throws IndexOutOfBoundsException if the index is out of range
      */
     void selectTab(int tabIndex);
 
     /**
-     * Returns unmodifiable observable list of tabs.
+     * Returns an unmodifiable list of all tabs in this container.
      *
-     * @return
+     * @return unmodifiable {@link List} of {@link TabPort} instances
      */
-    List<? extends S> getTabs();
+    List<? extends TabPort> getTabs();
 
-    void closeOtherTabs(S tab);
+    /**
+     * Closes all tabs except the specified one.
+     *
+     * @param tab the {@link TabPort} to keep open
+     */
+    void closeOtherTabs(TabPort tab);
 
-    void closeTabs(List<? extends S> tabs);
+    /**
+     * Closes all tabs in the given list.
+     *
+     * @param tabs list of {@link TabPort} instances to close
+     */
+    void closeTabs(List<? extends TabPort> tabs);
 
+    /**
+     * Closes all tabs in this container.
+     */
     void closeAllTabs();
 
-    void closeRightTabs(S tab);
+    /**
+     * Closes all tabs to the right of the specified tab.
+     *
+     * @param tab the {@link TabPort} used as a reference point
+     */
+    void closeRightTabs(TabPort tab);
 
-    void closeLeftTabs(S tab);
+    /**
+     * Closes all tabs to the left of the specified tab.
+     *
+     * @param tab the {@link TabPort} used as a reference point
+     */
+    void closeLeftTabs(TabPort tab);
 
-    void closeTab(S tab);
+    /**
+     * Closes the specified tab.
+     *
+     * @param tab the {@link TabPort} to close
+     */
+    void closeTab(TabPort tab);
 }

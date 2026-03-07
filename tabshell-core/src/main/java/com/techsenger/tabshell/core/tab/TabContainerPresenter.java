@@ -28,18 +28,20 @@ import java.util.stream.Collectors;
  * @author Pavel Castornii
  */
 public interface TabContainerPresenter<V extends TabContainerView, C extends TabContainerComposer>
-        extends ParentPresenter<V, C> {
+        extends ParentPresenter<V, C>, TabContainerPort {
 
     C getComposer();
 
     void onSelectedTabChanged(int index);
 
-    default void onCloseOtherTabs(TabPort tab) {
+    @Override
+    default void closeOtherTabs(TabPort tab) {
         var otherTabs = getComposer().getTabs().stream().filter((t) -> t != tab).collect(Collectors.toList());
-        onCloseTabs(otherTabs);
+        closeTabs(otherTabs);
     }
 
-    default void onCloseTabs(List<? extends TabPort> tabs) {
+    @Override
+    default void closeTabs(List<? extends TabPort> tabs) {
         class Closer {
 
             private int index = 0;
@@ -67,11 +69,13 @@ public interface TabContainerPresenter<V extends TabContainerView, C extends Tab
         new Closer().run();
     }
 
-    default void onCloseAllTabs() {
-        this.onCloseTabs(new ArrayList<>(getComposer().getTabs()));
+    @Override
+    default void closeAllTabs() {
+        this.closeTabs(new ArrayList<>(getComposer().getTabs()));
     }
 
-    default void onCloseRightTabs(TabPort tab) {
+    @Override
+    default void closeRightTabs(TabPort tab) {
         var tabs = getComposer().getTabs();
         var index = tabs.indexOf(tab);
         if (index == -1 || index + 1 == tabs.size()) {
@@ -80,11 +84,12 @@ public interface TabContainerPresenter<V extends TabContainerView, C extends Tab
         List<TabPort> tabsToClose = new ArrayList<>();
         for (var i = index + 1; i < tabs.size(); i++) {
             tabsToClose.add(tabs.get(i));
-            this.onCloseTabs(tabsToClose);
+            this.closeTabs(tabsToClose);
         }
     }
 
-    default void onCloseLeftTabs(TabPort tab) {
+    @Override
+    default void closeLeftTabs(TabPort tab) {
         var tabs = getComposer().getTabs();
         var index = tabs.indexOf(tab);
         if (index == -1 || index == 0) {
@@ -93,11 +98,12 @@ public interface TabContainerPresenter<V extends TabContainerView, C extends Tab
         List<TabPort> tabsToClose = new ArrayList<>();
         for (var i = index - 1; i >= 0; i--) {
             tabsToClose.add(tabs.get(i));
-            this.onCloseTabs(tabsToClose);
+            this.closeTabs(tabsToClose);
         }
     }
 
-    default void onCloseTab(TabPort tab) {
+    @Override
+    default void closeTab(TabPort tab) {
         tab.requestClose();
     }
 }
