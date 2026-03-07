@@ -22,5 +22,5 @@ package com.techsenger.tabshell.devtools.component;
  */
 public enum InspectorCategory {
 
-    PROPERTY, FX_VIEW, PRESENTER, PORT, COMPOSER, HISTORY
+    PROPERTY, FX_VIEW, PRESENTER, COMPOSER, HISTORY
 }

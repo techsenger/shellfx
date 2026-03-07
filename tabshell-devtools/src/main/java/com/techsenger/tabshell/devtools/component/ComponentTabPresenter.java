@@ -19,9 +19,6 @@ package com.techsenger.tabshell.devtools.component;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.patternfx.mvp.ParentComposer;
-import com.techsenger.patternfx.mvp.ParentPort;
-import com.techsenger.patternfx.mvp.ParentPresenter;
-import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.patternfx.mvp.View;
 import com.techsenger.tabshell.core.AddablePresenter;
@@ -116,10 +113,6 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     private static InspectorMatchResult matchInspectorItems(Class<? extends View> fxViewClass,
             Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Matcher matcher) {
         var descriptor = presenter.getDescriptor();
-        ParentPort port = null;
-        if (ParentView.class.isAssignableFrom(fxViewClass)) {
-            port = (ParentPresenter<?, ?>) presenter;
-        }
         var totalMatches = 0;
         var items = new ArrayList<InspectorItem>();
         // properties
@@ -148,11 +141,6 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         if (fxComposerClass != null) {
             categoryItem = new InspectorItem(InspectorCategory.COMPOSER, "Composer", null, List.of("Interfaces"), null);
             totalMatches += matchInspectorItems(fxComposerClass, categoryItem, items, matcher);
-        }
-        if (port != null) {
-            categoryItem = new InspectorItem(InspectorCategory.PORT, "Primary Port", null,
-                    List.of("Interfaces"), null);
-            totalMatches += matchInspectorItems(port.getClass(), categoryItem, items, matcher);
         }
         return new InspectorMatchResult(items, totalMatches);
     }
