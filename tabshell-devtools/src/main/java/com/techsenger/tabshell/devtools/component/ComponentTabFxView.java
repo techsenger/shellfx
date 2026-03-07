@@ -22,6 +22,7 @@ import com.techsenger.connectorfx.event.EventSource;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvp.ParentComposer;
 import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.tabshell.core.FxViewUtils;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
@@ -32,6 +33,7 @@ import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.material.layout.LabelHContainer;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.FindFeature;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +84,8 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
      * @param rootItem The root component to convert
      * @return TreeItem representing the component structure
      */
-    private static TreeItem<ComponentItem> convertToTreeItem(ComponentItem rootItem) {
+    private static TreeItem<ComponentItem> convertToTreeItem(ComponentItem rootItem,
+            Map<ParentFxView<?>, TreeItem<ComponentItem>> treeItemsByComponent) {
         if (rootItem == null) {
             return null;
         }
@@ -90,7 +93,8 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         visitedUuids.add(rootItem.getUuid());
 
         TreeItem<ComponentItem> treeRoot = new TreeItem<>(rootItem);
-        addChildren(treeRoot, rootItem.getChildren(), visitedUuids);
+        putToMap(treeItemsByComponent, treeRoot);
+        addChildren(treeRoot, rootItem.getChildren(), visitedUuids, treeItemsByComponent);
         return treeRoot;
     }
 
@@ -102,7 +106,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
      * @param visitedUuids Set of already processed UUIDs
      */
     private static void addChildren(TreeItem<ComponentItem> parentTreeItem, List<ComponentItem> children,
-            Set<UUID> visitedUuids) {
+            Set<UUID> visitedUuids, Map<ParentFxView<?>, TreeItem<ComponentItem>> treeItemsByComponent) {
         if (children == null || children.isEmpty()) {
             return;
         }
@@ -126,14 +130,21 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
             // Add UUID to visited before processing children
             visitedUuids.add(childUuid);
             TreeItem<ComponentItem> childTreeItem = new TreeItem<>(child);
+            putToMap(treeItemsByComponent, childTreeItem);
             parentTreeItem.getChildren().add(childTreeItem);
 
             // Recursively process children
-            addChildren(childTreeItem, child.getChildren(), visitedUuids);
+            addChildren(childTreeItem, child.getChildren(), visitedUuids, treeItemsByComponent);
 
             // Remove UUID from visited when backtracking (to correctly process other branches)
             visitedUuids.remove(childUuid);
         }
+    }
+
+    private static void putToMap(Map<ParentFxView<?>, TreeItem<ComponentItem>> treeItemsByComponent,
+            TreeItem<ComponentItem> treeItem) {
+        var parentFxView = ((JfxComponentItem) treeItem.getValue()).getView();
+        treeItemsByComponent.put(parentFxView, treeItem);
     }
 
     private static TreeItem<InspectorItem> createRootItem(List<InspectorItem> items, ComponentTabPresenter<?, ?> p,
@@ -221,6 +232,8 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
 
     private ToolBarFxView<?> inspectorToolBar;
 
+    private final Map<ParentFxView<?>, TreeItem<ComponentItem>> treeItemsByComponent = new HashMap<>();
+
     public ComponentTabFxView(ShellFxView<?> shell) {
         super(shell);
     }
@@ -248,6 +261,19 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         }
         componentTreeView.getSelectionModel().select(treeItem);
         componentTreeView.scrollTo(componentTreeView.getSelectionModel().getSelectedIndex());
+    }
+
+    @Override
+    public void selectComponent(Element n) {
+        var node = ((LocalElement) n).unwrap();
+        var component = FxViewUtils.findComponent(node);
+        if (component != null) {
+            var treeItem = this.treeItemsByComponent.get(component);
+            if (treeItem != null) {
+                componentTreeView.getSelectionModel().select(treeItem);
+                componentTreeView.scrollTo(componentTreeView.getSelectionModel().getSelectedIndex());
+            }
+        }
     }
 
     @Override
@@ -428,7 +454,8 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     }
 
     private void rebuildTree(ComponentItem rootItem) {
-        var rootTreeItem = convertToTreeItem(rootItem);
+        this.treeItemsByComponent.clear();
+        var rootTreeItem = convertToTreeItem(rootItem, this.treeItemsByComponent);
         // do not use the same root multiple times, as it causes a bug with node expansion
         componentTreeView.setRoot(rootTreeItem);
     }

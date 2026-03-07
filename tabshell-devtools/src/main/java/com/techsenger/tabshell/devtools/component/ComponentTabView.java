@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.devtools.component;
 
+import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.tabshell.core.tab.TabView;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,8 @@ public interface ComponentTabView extends TabView {
      * @param path
      */
     void selectComponent(List<Integer> path);
+
+    void selectComponent(Element node);
 
     void updateInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory);
 }

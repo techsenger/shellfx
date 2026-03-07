@@ -19,7 +19,6 @@ package com.techsenger.tabshell.devtools.node;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.event.AttributeListEvent;
 import com.techsenger.connectorfx.event.ConnectorEvent;
-import com.techsenger.connectorfx.event.NodeSelectedEvent;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
@@ -108,7 +107,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         }
     }
 
-      private final Connector connector;
+    private final Connector connector;
 
     private final DevToolsTabDockPort tabDock;
 
@@ -189,7 +188,22 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
     @Override
     public void onAdded() {
-        this.tabDock.setOnSelection((selected) -> onNodeSelected(getSelectedNode()));
+        tabDock.getSelector().addListener((uid, node) -> {
+            if (Objects.equals(this.selectedNode, node)) {
+                return;
+            }
+            this.selectedNode = node; // so the onNodeSelected method won't complete
+            if (this.selectedNode != null) {
+                createNodeIndex();
+                getView().selectNode(this.selectedNode); // -> onNodeSelected(..)
+                clearProperties();
+                for (var events : this.savedAttributeEvents) { // adding saved events
+                    processPropertyEvent(events);
+                }
+            }
+            this.savedAttributeEvents.clear();
+        });
+
         // node selected via API or select button -> AttributeListEvents -> processEvent -> filterAndAdd
         connector.getEventBus().subscribe(ConnectorEvent.class, event -> {
             switch (event) {
@@ -197,8 +211,6 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
                     if (Objects.equals(this.selectedNode, ale.element())) {
                         if (selectedProgrammatically) {
                             processPropertyEvent(ale);
-                        } else {
-                            this.savedAttributeEvents.add(ale);
                         }
                     } else {
                         this.savedAttributeEvents.add(ale);
@@ -206,19 +218,6 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
                 }
                 default -> { }
             }
-        });
-
-        // this event is fired only when a node is selected in inspector mode (using select button)
-        // note that this event is fired after AttributeListEvent events.
-        connector.getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
-            this.selectedNode = e.element(); // so the onNodeSelected method won't complete
-            createNodeIndex();
-            getView().selectNode(this.selectedNode); // -> onNodeSelected(..)
-            clearProperties();
-            for (var events : this.savedAttributeEvents) { // adding saved events
-                processPropertyEvent(events);
-            }
-            this.savedAttributeEvents.clear();
         });
     }
 
@@ -233,9 +232,9 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         clearProperties();
         this.selectedProgrammatically = true;
         if (node.isWindowElement()) {
-            this.connector.selectWindow(tabDock.getWindowUid());
+            this.tabDock.getSelector().selectWindow(tabDock.getWindowUid());
         } else {
-            this.connector.selectNode(tabDock.getWindowUid(), node, tabDock.getHighlightOptions());
+            this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), node);
         }
         this.selectedProgrammatically = false;
     }

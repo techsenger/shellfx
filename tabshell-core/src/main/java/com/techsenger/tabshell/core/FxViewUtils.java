@@ -57,6 +57,29 @@ public final class FxViewUtils {
         return (ParentFxView<?>) node.getProperties().get(COMPONENT_KEY);
     }
 
+    /**
+     * Traverses the JavaFX node tree upward from the given {@link Node}, searching for the nearest node that has
+     * an associated {@link ParentFxView} component.
+     * <p>
+     * The search starts at the given node itself and walks up the parent chain until a component is found or the
+     * root is reached.
+     *
+     * @param node the JavaFX node to start the search from; must not be {@code null}
+     * @return the nearest {@link ParentFxView} component found in the parent chain,
+     *         or {@code null} if no component is associated with any node up to the root
+     */
+    public static ParentFxView<?> findComponent(Node node) {
+        Node current = node;
+        while (current != null) {
+            ParentFxView<?> component = getComponent(current);
+            if (component != null) {
+                return component;
+            }
+            current = current.getParent();
+        }
+        return null;
+    }
+
     private FxViewUtils() {
         // empty
     }

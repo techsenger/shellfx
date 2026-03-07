@@ -16,9 +16,7 @@
 
 package com.techsenger.tabshell.devtools;
 
-import com.techsenger.connectorfx.HighlightOptions;
 import com.techsenger.tabshell.layout.dockhost.TabDockPort;
-import java.util.function.Consumer;
 
 /**
  *
@@ -28,7 +26,5 @@ public interface DevToolsTabDockPort extends TabDockPort {
 
     int getWindowUid();
 
-    HighlightOptions getHighlightOptions();
-
-    void setOnSelection(Consumer<Boolean> action);
+    Selector getSelector();
 }

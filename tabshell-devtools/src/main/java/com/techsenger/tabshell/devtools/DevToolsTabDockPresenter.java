@@ -17,8 +17,6 @@
 package com.techsenger.tabshell.devtools;
 
 import com.techsenger.connectorfx.Highlight;
-import com.techsenger.connectorfx.HighlightOptions;
-import com.techsenger.connectorfx.event.NodeSelectedEvent;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
@@ -29,7 +27,6 @@ import com.techsenger.tabshell.layout.tabhost.TabHostComposer;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  *
@@ -40,18 +37,17 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
 
     private final Settings settings;
 
-    private HighlightOptions highlightOptions = new HighlightOptions(true, false, false);
-
     private final SettingsSubscription themeSubscription;
 
-    private Consumer<Boolean> onSelection;
-
     private boolean selectionSelected;
+
+    private final Selector selector;
 
     public DevToolsTabDockPresenter(V view, Settings settings, HistoryProvider<DevToolsTabDockHistory> hp) {
         super(view);
         this.settings = settings;
         themeSubscription = settings.getAppearance().onThemeChanged((oldV, newV) -> updateHighlight(newV));
+        this.selector = new Selector(view.getConnector());
         this.setHistoryProvider(hp);
         this.setHistoryPolicy(HistoryPolicy.APPEARANCE);
     }
@@ -63,6 +59,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
     public void setSelectionSelected(boolean selectionSelected) {
         this.selectionSelected = selectionSelected;
         getView().setSelectionSelected(selectionSelected);
+        this.selector.setSelectionVisible(selectionSelected);
     }
 
     @Override
@@ -71,13 +68,8 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
     }
 
     @Override
-    public HighlightOptions getHighlightOptions() {
-        return highlightOptions;
-    }
-
-    @Override
-    public void setOnSelection(Consumer<Boolean> action) {
-        onSelection = action;
+    public Selector getSelector() {
+        return this.selector;
     }
 
     @Override
@@ -88,52 +80,26 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
     protected void onSelect() {
         var connector = getView().getConnector();
         var opts = connector.getOptions();
-        if (opts.isInspectMode()) {
-            opts.setInspectMode(false);
-        } else {
+        if (!opts.isInspectMode()) {
             if (!isSelectionSelected()) {
                 setSelectionSelected(true);
             }
-            connector.clearSelection(getView().getWindowUid());
-            opts.setInspectMode(true);
+            this.selector.clearSelection(getView().getWindowUid());
+            opts.setInspectMode(true); // enable the mode only after clearing selection
         }
-        updateHighlightOptions(isSelectionSelected());
     }
 
     protected void onSelection(boolean selected) {
         this.selectionSelected = selected;
-        var connector = getView().getConnector();
-        if (!selected) {
-            connector.getOptions().setInspectMode(false);
-        }
-        // in any case it is necessary to clear selection, to fire new events
-        connector.clearSelection(getView().getWindowUid());
-        updateHighlightOptions(selected);
-        if (this.onSelection != null) {
-            this.onSelection.accept(selected);
-        }
+        this.selector.setSelectionVisible(selected);
     }
 
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        var history = getHistory();
-        if (history.isNew()) {
-            setSelectionSelected(true);
-        }
         var connector = getView().getConnector();
         connector.start();
-        connector.getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
-            // When inspect mode is set to false the selection is removed because for selection
-            // and inspect mode the same overlay. So, it is necessary to reselect the node.
-            var selected = e.element();
-            connector.getOptions().setInspectMode(false);
-            if (selected != null) {
-                connector.selectNode(getView().getWindowUid(), selected, highlightOptions);
-            }
-        });
         updateHighlight(this.settings.getAppearance().getTheme());
-        updateHighlightOptions(isSelectionSelected());
     }
 
     @Override
@@ -181,19 +147,6 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
         super.restoreAppearance();
         var h = getHistory();
         setSelectionSelected(h.isSelectionSelected());
-    }
-
-    /**
-     * From connector we can get node properties only when this node is selected. So, if we disable selection
-     * we can't update node properties when user selects another node. As a workaround we don't disable selection
-     * but use {@link HighlightOptions} with all {@code false}.
-     */
-    private void updateHighlightOptions(boolean selection) {
-        if (selection) {
-            this.highlightOptions = new HighlightOptions(true, false, false);
-        } else {
-            this.highlightOptions = new HighlightOptions(false, false, false);
-        }
     }
 
     private void updateHighlight(Theme theme) {

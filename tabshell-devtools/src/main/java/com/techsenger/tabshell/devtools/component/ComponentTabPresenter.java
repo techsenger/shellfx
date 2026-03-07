@@ -26,8 +26,8 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
+import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
-import com.techsenger.tabshell.devtools.node.NodeTabPort;
 import com.techsenger.tabshell.shared.find.FindNavigationAwarePort;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -269,7 +269,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
 
     private final ComponentService service;
 
-    private final NodeTabPort nodeTab;
+    private final DevToolsTabDockPort tabDock;
 
     private ComponentItem rootComponent;
 
@@ -287,10 +287,12 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
 
     private ComponentItem selectedComponent;
 
-    public ComponentTabPresenter(V view, ComponentService service, NodeTabPort nodeTab) {
+    private boolean selectNode = true;
+
+    public ComponentTabPresenter(V view, ComponentService service, DevToolsTabDockPort tabDock) {
         super(view);
         this.service = service;
-        this.nodeTab = nodeTab;
+        this.tabDock = tabDock;
     }
 
     @Override
@@ -318,6 +320,12 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         super.postInitialize();
         setTitle("Components");
         setClosable(false);
+        this.tabDock.getSelector().addListener((uid, node) -> {
+            if (node != null) {
+                this.selectNode = false;
+                getView().selectComponent(node);
+            }
+        });
     }
 
     @Override
@@ -328,9 +336,10 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     protected void onComponentSelected(ComponentItem component, Class<? extends View> fxViewClass,
             Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Element componentNode) {
         this.selectedComponent = component;
-        if (componentNode != null) {
-            this.nodeTab.selectNode(componentNode);
+        if (componentNode != null && this.selectNode) {
+            this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), componentNode);
         }
+        this.selectNode = true;
         this.componentFxViewClass = fxViewClass;
         this.componentFxComposerClass = fxComposerClass;
         this.componentPresenter = presenter;
