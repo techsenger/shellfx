@@ -22,6 +22,7 @@ module com.techsenger.tabshell.layout {
     requires com.techsenger.patternfx.mvp;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;
+    requires com.techsenger.tabshell.shared;
     requires com.techsenger.tabpanepro.core;
     requires javafx.base;
     requires javafx.graphics;

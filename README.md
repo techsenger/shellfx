@@ -111,18 +111,15 @@ The platform consists of the following modules:
 * Core — includes the shell itself, base classes for component development, settings, and core utility classes.
 * Layout — offers abstract components for creating tabs with various layouts.
 * Shared — includes components that are used by other components from different modules.
+* Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use
+custom icons instead, simply create your own stylesheets and add them to Shell.
 * Storage — provides abstractions for working with file systems. The module includes a default implementation for the
 local file system. Additional storage providers (for Google Drive, Dropbox, FTP, and similar) can be implemented
 separately.
 * Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation etc.
-* Icons — contains the Material Design Icons font and module-specific stylesheets that utilize these icons. To use
-custom icons instead, simply create your own stylesheets and add them to Shell.
 * DevTools — contains tools for exploring component tree and JavaFX scene graph.
 * Demo — showcases TabShell's core functionality, provides examples for building custom components, and
 presents ready-made components.
-
-If you don't plan to use ready-made components, just three modules (material, core, layout) are sufficient to run
-TabShell and develop custom components. See [Running Demo](#running-demo) for details.
 
 ## Core Components <a name="core"></a>
 
@@ -410,6 +407,11 @@ This project is available on Maven Central. Minimal set of required dependencies
 <dependency>
     <groupId>com.techsenger.tabshell</groupId>
     <artifactId>tabshell-layout</artifactId>
+    <version>${tabshell.version}</version>
+</dependency>
+<dependency>
+    <groupId>com.techsenger.tabshell</groupId>
+    <artifactId>tabshell-icons</artifactId>
     <version>${tabshell.version}</version>
 </dependency>
 ```

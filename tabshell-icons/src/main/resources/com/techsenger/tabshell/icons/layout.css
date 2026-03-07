@@ -22,18 +22,10 @@
     src: url('font/materialdesignicons-webfont.ttf');
 }
 
-.font-icon-view.remove-icon {
-    -fx-code-point: 983924; /* minus */
-}
-
 .font-icon-view.drag-vertical-icon {
     -fx-code-point: 983517; /* drag-vertical */
 }
 
 .font-icon-view.restore-window-icon {
     -fx-code-point: 984498; /* window-restore */
-}
-
-.font-icon-view.chevron-double-right-icon {
-    -fx-code-point: 983358; /* chevron-double-right */
 }

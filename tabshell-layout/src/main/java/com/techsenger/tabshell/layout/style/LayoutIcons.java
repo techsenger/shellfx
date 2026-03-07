@@ -24,11 +24,7 @@ import com.techsenger.tabshell.material.icon.StyleFontIcon;
  */
 public interface LayoutIcons {
 
-    StyleFontIcon REMOVE = new StyleFontIcon("remove-icon");
-
     StyleFontIcon DRAG_VERTICAL = new StyleFontIcon("drag-vertical-icon");
 
     StyleFontIcon RESTORE_WINDOW = new StyleFontIcon("restore-window-icon");
-
-    StyleFontIcon CHEVRON_DOUBLE_RIGHT = new StyleFontIcon("chevron-double-right-icon");
 }

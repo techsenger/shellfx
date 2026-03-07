@@ -24,6 +24,7 @@ import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import java.util.List;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
@@ -44,7 +45,7 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
 
     private final HBox tabHeaderFirstBox = new HBox();
 
-    private final Button minimizeButton = new Button(null, new FontIconView(LayoutIcons.REMOVE));
+    private final Button minimizeButton = new Button(null, new FontIconView(SharedIcons.REMOVE));
 
     private final HBox tabHeaderLastBox = new HBox(minimizeButton);
 

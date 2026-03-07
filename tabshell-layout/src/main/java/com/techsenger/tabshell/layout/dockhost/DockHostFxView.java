@@ -27,8 +27,8 @@ import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_HALF;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_THIRD;
-import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.core.Pair;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import java.util.ArrayList;
@@ -1274,7 +1274,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         dragView.setSmooth(false);
         var contentContainer = new HBox(dragView);
         if (capturedTabSkin != null && !capturedTabSkinIsLast) {
-            var iconView = new FontIconView(LayoutIcons.CHEVRON_DOUBLE_RIGHT);
+            var iconView = new FontIconView(SharedIcons.CHEVRON_DOUBLE_RIGHT);
             // we need a bg for the icon
             StackPane headerBg = (StackPane) tabHeaderArea.lookup(".tab-header-background");
             snapParams = new SnapshotParameters();
