@@ -2362,7 +2362,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
         while (iterator.hasNext()) {
             ChildFxView<?> view = (ChildFxView<?>) iterator.next();
             String orientation = "";
-            UUID uuid = view.getDescriptor().getUuid();
+            String uuid = view.getDescriptor().getShortUuid();
             if (view instanceof SplitSpaceFxView<?> spaceV) {
                 orientation = spaceV.getNode().getOrientation().name().toLowerCase();
             }
@@ -2371,7 +2371,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             builder.append(view.getDescriptor().getName());
             builder.append(" [");
             if (uuid != null) {
-                builder.append("uuid: ");
+                builder.append("shortUuid: ");
                 builder.append(uuid);
             }
             if (orientation.length() > 0) {

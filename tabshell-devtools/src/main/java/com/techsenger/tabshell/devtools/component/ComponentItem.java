@@ -30,6 +30,8 @@ public interface ComponentItem {
 
     UUID getUuid();
 
+    String getShortUuid();
+
     String getText();
 
     List<ComponentItem> getChildren();
