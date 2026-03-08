@@ -28,6 +28,8 @@ import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueButtons;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.tabshell.shared.find.FindNavigationAwarePort;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -106,9 +109,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         return true;
     }
 
-    private record InspectorMatchResult(List<InspectorItem> items, int totalMatches) {
-
-    }
+    private record InspectorMatchResult(List<InspectorItem> items, int totalMatches) { }
 
     private static InspectorMatchResult matchInspectorItems(Class<? extends View> fxViewClass,
             Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Matcher matcher) {
@@ -344,6 +345,24 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         this.componentFxComposerClass = fxComposerClass;
         this.componentPresenter = presenter;
         refreshInspector();
+    }
+
+    protected void onInspectorItemRequested(InspectorItem parent, InspectorItem item) {
+        if (item.category() != null) {
+            return;
+        }
+        NameValueDialogPort dialog;
+        if (parent.category() == InspectorCategory.PROPERTY) {
+            dialog = getComposer().addNameValueDialog("Property", "Value");
+        } else {
+            dialog = getComposer().addNameValueDialog("Class", "Interfaces");
+        }
+        dialog.setRightButtons(NameValueButtons.OK);
+        dialog.setTitle("Inspector Dialog");
+        dialog.setName(item.name());
+        var joiner = new StringJoiner(", ");
+        item.values().forEach(s -> joiner.add(s));
+        dialog.setValue(joiner.toString());
     }
 
     protected void onCategoryExpanded(InspectorCategory category, boolean expanded) {

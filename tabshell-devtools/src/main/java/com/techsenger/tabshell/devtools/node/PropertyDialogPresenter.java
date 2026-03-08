@@ -76,8 +76,8 @@ public class PropertyDialogPresenter<V extends PropertyDialogView, C extends Dia
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        setPrefWidth(650);
-        setPrefHeight(400);
+        setPrefWidth(600);
+        setPrefHeight(350);
         setTitle("Property Dialog");
         getView().setName(item.getAttribute().name());
         var nameUrl = resolveNameUrl();

@@ -79,13 +79,13 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
         }
 
         protected ComponentTabFxView<?> createComponentTab(NodeTabPort nodeTab) {
-            var view = new ComponentTabFxView<>(shell);
+            var view = new ComponentTabFxView<>(shell, dialogContainer.getComposer());
             var presenter = new ComponentTabPresenter<>(view, new JfxComponentService(shell), getPresenter());
             return view;
         }
 
         protected NodeTabFxView<?> createNodeTab() {
-            var view = new NodeTabFxView<>(shell, dialogContainer);
+            var view = new NodeTabFxView<>(shell, dialogContainer.getComposer());
             var presenter = new NodeTabPresenter<>(view, connector, getPresenter());
             return view;
         }

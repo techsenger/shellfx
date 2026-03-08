@@ -49,12 +49,18 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?, ?>>
     private final ResultButton okButton = new ResultButton(NameValueButtons.OK, "OK");
 
     public NameValueDialogFxView() {
-        super();
+
+    }
+
+    public NameValueDialogFxView(String nameLabelText, String valueLabelText) {
+        nameLabel.setText(nameLabelText);
+        valueLabel.setText(valueLabelText);
     }
 
     @Override
     public void requestFocus() {
         nameTextField.requestFocus();
+        nameTextField.deselect();
     }
 
     @Override

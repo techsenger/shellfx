@@ -311,7 +311,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
             var dialog = createPropertyDialog(element, item, declaringClassName, linkOpener);
             dialog.getPresenter().initialize();
             dialog.getPresenter().setResizable(true);
-            dialogContainer.getComposer().addDialog(dialog);
+            dialogContainer.addDialog(dialog);
         }
 
         protected ToolBarFxView<?> createNodeToolBar() {
@@ -337,7 +337,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         }
     }
 
-    private final DialogContainerFxView<?> dialogContainer;
+    private final DialogContainerFxView.Composer dialogContainer;
 
     private ToolBarFxView<?> nodeToolBar;
 
@@ -355,7 +355,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
     private final SplitPane splitPane = new SplitPane(nodeBox, propertyBox);
 
-    public NodeTabFxView(ShellFxView<?> shell, DialogContainerFxView<?> dialogContainer) {
+    public NodeTabFxView(ShellFxView<?> shell, DialogContainerFxView.Composer dialogContainer) {
         super(shell);
         this.dialogContainer = dialogContainer;
     }
@@ -479,6 +479,15 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         propertyTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         propertyTableView.setShowRoot(false);
         propertyTableView.setPlaceholder(new Label(""));
+        propertyTableView.setRowFactory(ttv -> {
+            TreeTableRow<PropertyItem> row = new TreeTableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    getPresenter().onPropertyRequested(row.getItem());
+                }
+            });
+            return row;
+        });
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
         getContentBox().getChildren().add(splitPane);
@@ -489,20 +498,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         super.addListeners();
         nodeTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) ->
             getPresenter().onNodeSelected(newV == null ? null : newV.getValue()));
-    }
-
-    @Override
-    protected void addHandlers() {
-        super.addHandlers();
-        propertyTableView.setRowFactory(ttv -> {
-            TreeTableRow<PropertyItem> row = new TreeTableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    getPresenter().onPropertyRequested(row.getItem());
-                }
-            });
-            return row;
-        });
     }
 
     protected TreeTableView<PropertyItem> getPropertyTableView() {

@@ -22,7 +22,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public record InspectorItem(InspectorCategory category, String name, String nameTooltip, List<String> values,
-        List<String> valueTooltips) {
+public record InspectorItem(InspectorCategory category, String name, String nameTooltip,
+        List<String> values, List<String> valueTooltips) {
 
 }

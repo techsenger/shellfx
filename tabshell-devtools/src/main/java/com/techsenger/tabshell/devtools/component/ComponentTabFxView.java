@@ -25,11 +25,15 @@ import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.FxViewUtils;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
+import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogFxView;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPresenter;
 import com.techsenger.tabshell.material.layout.LabelHContainer;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.FindFeature;
@@ -48,6 +52,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
@@ -203,6 +208,17 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
             return view.inspectorToolBar.getPresenter();
         }
 
+        @Override
+        public NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption) {
+            var dialog = createNameValueDialog(nameCaption, valueCaption);
+            var presenter = dialog.getPresenter();
+            presenter.initialize();
+            presenter.setPrefWidth(600);
+            presenter.setPrefHeight(350);
+            view.dialogContainer.addDialog(dialog);
+            return presenter;
+        }
+
         protected ToolBarFxView<?> createComponentToolBar() {
             var view = new ToolBarFxView<>("Name / UUID");
             var presenter = new ToolBarPresenter<>(view, getPresenter().new ComponentToolBarAwarePort(),
@@ -214,6 +230,12 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
             var view = new ToolBarFxView<>("Property / Class / Interface");
             var presenter = new ToolBarPresenter<>(view, getPresenter().new InspectorToolBarAwarePort(),
                     FindFeature.MATCH_CASE);
+            return view;
+        }
+
+        protected NameValueDialogFxView<?> createNameValueDialog(String nameCaption, String valueCaption) {
+            var view = new NameValueDialogFxView<>(nameCaption, valueCaption);
+            var presenter = new NameValueDialogPresenter<>(view);
             return view;
         }
     }
@@ -234,8 +256,11 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
 
     private final Map<ParentFxView<?>, TreeItem<ComponentItem>> treeItemsByComponent = new HashMap<>();
 
-    public ComponentTabFxView(ShellFxView<?> shell) {
+    private final DialogContainerFxView.Composer dialogContainer;
+
+    public ComponentTabFxView(ShellFxView<?> shell, DialogContainerFxView.Composer dialogContainer) {
         super(shell);
+        this.dialogContainer = dialogContainer;
     }
 
     @Override
@@ -388,6 +413,21 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         inspectorTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         inspectorTableView.setShowRoot(false);
         inspectorTableView.setPlaceholder(new Label(""));
+        inspectorTableView.setRowFactory(ttv -> {
+            TreeTableRow<InspectorItem> row = new TreeTableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    InspectorItem parent = null;
+                    var rowIndex = row.getIndex();
+                    if (rowIndex != 0) {
+                        TreeItem<InspectorItem> prevItem = inspectorTableView.getTreeItem(rowIndex - 1);
+                        parent = prevItem.getValue();
+                    }
+                    getPresenter().onInspectorItemRequested(parent, row.getItem());
+                }
+            });
+            return row;
+        });
         VBox.setVgrow(inspectorTableView, Priority.ALWAYS);
 
         VBox.setVgrow(splitPane, Priority.ALWAYS);
