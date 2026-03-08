@@ -238,7 +238,7 @@ public class MenuManager {
             //update
             if (namedMenu.isVisible() && namedMenu.isUpdatable() && delegate != null) {
                 var state = new MenuElementState(namedMenu.isVisible(), namedMenu.isDisable(),
-                        namedMenu.getText(), namedMenu.getGraphic());
+                        namedMenu.getText(), IconUtils.getIcon(namedMenu));
                 update = delegate.updateMenu(state);
                 if (update != null) {
                     updateHelper.applyUpdate(namedMenu, state, update);
@@ -269,7 +269,7 @@ public class MenuManager {
             //update
             if (namedItem.isVisible() && namedItem.isUpdatable() && delegate != null) {
                 var state = new MenuElementState(namedItem.isVisible(), namedItem.isDisable(),
-                        namedItem.getText(), namedItem.getGraphic());
+                        namedItem.getText(), IconUtils.getIcon(namedItem));
                 update = delegate.updateItem(state);
                 if (update != null) {
                     updateHelper.applyUpdate(namedItem, state, update);

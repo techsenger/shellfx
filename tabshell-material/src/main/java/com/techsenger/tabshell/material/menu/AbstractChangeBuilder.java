@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.material.menu;
 
-import javafx.scene.Node;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
@@ -42,9 +42,9 @@ abstract class AbstractChangeBuilder<T extends NamedMenuItemUpdate, S extends Ab
         return parent;
     }
 
-    public S graphic(Node graphic) {
-        this.change.setGraphic(graphic);
-        this.change.setGraphicChanged(true);
+    public S icon(Icon<?> icon) {
+        this.change.setIcon(icon);
+        this.change.setIconChanged(true);
         return parent;
     }
 

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.material.menu;
 
-import javafx.scene.Node;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
@@ -26,7 +26,7 @@ public interface NamedMenuItemState {
 
     String getText();
 
-    Node getGraphic();
+    Icon<?> getIcon();
 
     boolean isVisible();
 

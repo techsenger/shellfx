@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
-import javafx.scene.Node;
+import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.NamedMenuState;
 
 /**
@@ -31,13 +31,13 @@ class MenuElementState implements NamedMenuState {
 
     private final String text;
 
-    private final Node graphic;
+    private final Icon<?> icon;
 
-    MenuElementState(boolean visible, boolean disabled, String text, Node graphic) {
+    MenuElementState(boolean visible, boolean disabled, String text, Icon<?> icon) {
         this.visible = visible;
         this.disabled = disabled;
         this.text = text;
-        this.graphic = graphic;
+        this.icon = icon;
     }
 
     @Override
@@ -56,7 +56,7 @@ class MenuElementState implements NamedMenuState {
     }
 
     @Override
-    public Node getGraphic() {
-        return graphic;
+    public Icon<?> getIcon() {
+        return icon;
     }
 }

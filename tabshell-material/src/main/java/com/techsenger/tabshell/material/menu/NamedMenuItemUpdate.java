@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.material.menu;
 
-import javafx.scene.Node;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  * As new value can be null we need *changed fields to detect what properties were changed.
@@ -34,11 +34,11 @@ public class NamedMenuItemUpdate {
 
     private String text;
 
-    private Node graphic;
+    private Icon<?> icon;
 
     private boolean textChanged;
 
-    private boolean graphicChanged;
+    private boolean iconChanged;
 
     protected NamedMenuItemUpdate() {
 
@@ -48,31 +48,31 @@ public class NamedMenuItemUpdate {
         return textChanged;
     }
 
-    public boolean isGraphicChanged() {
-        return graphicChanged;
+    public boolean isIconChanged() {
+        return iconChanged;
     }
 
     public String getText() {
         return text;
     }
 
-    public Node getGraphic() {
-        return graphic;
+    public Icon<?> getIcon() {
+        return icon;
     }
 
     void setTextChanged(boolean textChanged) {
         this.textChanged = textChanged;
     }
 
-    void setGraphicChanged(boolean graphicChanged) {
-        this.graphicChanged = graphicChanged;
+    void setIconChanged(boolean iconChanged) {
+        this.iconChanged = iconChanged;
     }
 
     void setText(String text) {
         this.text = text;
     }
 
-    void setGraphic(Node graphic) {
-        this.graphic = graphic;
+    void setIcon(Icon<?> icon) {
+        this.icon = icon;
     }
 }

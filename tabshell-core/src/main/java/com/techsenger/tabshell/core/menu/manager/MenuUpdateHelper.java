@@ -73,8 +73,8 @@ class MenuUpdateHelper {
         if (update.isTextChanged()) {
             item.setText(update.getText());
         }
-        if (update.isGraphicChanged()) {
-            item.setGraphic(update.getGraphic());
+        if (update.isIconChanged()) {
+            IconUtils.setIcon(item, update.getIcon());
         }
     }
 
@@ -86,8 +86,8 @@ class MenuUpdateHelper {
             if (update.isTextChanged()) {
                 item.setText(savedState.getText());
             }
-            if (update.isGraphicChanged()) {
-                item.setGraphic(savedState.getGraphic());
+            if (update.isIconChanged()) {
+                IconUtils.setIcon(item, savedState.getIcon());
             }
         }
         this.updateEntries.clear();
