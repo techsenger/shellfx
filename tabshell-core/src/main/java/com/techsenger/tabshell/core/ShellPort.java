@@ -18,10 +18,7 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentPort;
 import com.techsenger.tabshell.core.dialog.DialogContainerPort;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.material.icon.Icon;
-import javafx.application.HostServices;
 
 /**
  *
@@ -30,32 +27,18 @@ import javafx.application.HostServices;
 public interface ShellPort extends ParentPort, DialogContainerPort, CloseAwarePort, MenuAwarePort, ReadOnlyShell {
 
     /**
-     * Returns the history manager.
+     * Returns the context of the shell.
      *
      * @return
      */
-    HistoryManager getHistoryManager();
+    ShellContext getContext();
 
     /**
-     * Returns the settings of the shell.
+     * Returns the context of the shell as an instance of the specified class using type casting.
      *
      * @return
      */
-    Settings getSettings();
-
-    /**
-     * Returns the settings of the shell as an instance of the specified class using type casting.
-     *
-     * @return
-     */
-    <T extends Settings> T getSettings(Class<T> settingsClass);
-
-    /**
-     * Returns application host services.
-     *
-     * @return
-     */
-    HostServices getHostServices();
+    <T extends ShellContext> T getContext(Class<T> contextClass);
 
     /**
      * Returns shell current width.

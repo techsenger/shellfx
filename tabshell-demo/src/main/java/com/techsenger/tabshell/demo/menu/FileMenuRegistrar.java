@@ -101,7 +101,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                 AbstractTabFxView<?> tabV;
                 if (shell.getWorkspace() instanceof TabHostFxView<?>) {
                     tabV = new BrowserMainTabFxView(shell);
-                    var tabP = new BrowserMainTabPresenter(tabV, shell.getPresenter().getHistoryManager());
+                    var tabP = new BrowserMainTabPresenter(tabV, shell.getPresenter().getContext().getHistoryManager());
                 } else {
                     tabV = new IdeMainTabFxView<>(shell);
                     var tabP = new IdeMainTabPresenter<>((IdeMainTabFxView<?>) tabV);
@@ -120,7 +120,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
                 var tabView = new PagedTabFxView(shell);
-                var historyManager = shell.getPresenter().getHistoryManager();
+                var historyManager = shell.getPresenter().getContext().getHistoryManager();
                 var tabPresenter = new PagedTabPresenter(tabView,
                         () -> historyManager.getOrCreateHistory(PagedTabHistory.class, PagedTabHistory::new));
                 tabPresenter.initialize();
@@ -139,8 +139,9 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                 var shellV = (ShellFxView<?>) v;
                 var shellP = shellV.getPresenter();
                 var dialogView = new DialogsDialogFxView();
-                var dialogPresenter = new DialogsDialogPresenter(dialogView, shellP.getSettings().getAppearance(),
-                        shellP.getHistoryManager());
+                var dialogPresenter = new DialogsDialogPresenter(dialogView,
+                        shellP.getContext().getSettings().getAppearance(),
+                        shellP.getContext().getHistoryManager());
                 dialogPresenter.initialize();
                 shellV.getComposer().addDialog(dialogView);
             });
@@ -182,8 +183,8 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
 
     protected DevToolsTabDockFxView<?> createDevTools() {
         var view = new DevToolsTabDockFxView<>(shell, resolveDialogContainer());
-        var hm = shell.getPresenter().getHistoryManager();
-        var presenter = new DevToolsTabDockPresenter<>(view, shell.getPresenter().getSettings(),
+        var hm = shell.getPresenter().getContext().getHistoryManager();
+        var presenter = new DevToolsTabDockPresenter<>(view, shell.getPresenter().getContext().getSettings(),
                 () -> hm.getOrCreateHistory(DevToolsTabDockHistory.class, DevToolsTabDockHistory::new));
         return view;
     }
@@ -193,7 +194,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             var item = new NamedMenuItem(FileMenu.THEME, "_Theme", 100);
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
-                var appearance = shell.getPresenter().getSettings().getAppearance();
+                var appearance = shell.getPresenter().getContext().getSettings().getAppearance();
                 var view = new ThemeDialogFxView();
                 var presenter = new ThemeDialogPresenter(view, appearance);
                 presenter.initialize();

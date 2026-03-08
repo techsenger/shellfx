@@ -21,18 +21,15 @@ import com.techsenger.patternfx.mvp.AbstractParentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.menu.MenuHelper;
 import com.techsenger.tabshell.core.menu.MenuHelpers;
 import com.techsenger.tabshell.core.menu.MenuItemHelper;
 import com.techsenger.tabshell.core.popup.PopupPort;
-import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
 import java.util.List;
 import java.util.function.Consumer;
-import javafx.application.HostServices;
 
 /**
  *
@@ -41,11 +38,7 @@ import javafx.application.HostServices;
 public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         extends AbstractParentPresenter<V, C> implements ShellPresenter<V, C> {
 
-    private final Settings settings;
-
-    private final HistoryManager historyManager;
-
-    private final HostServices hostServices;
+    private final ShellContext context;
 
     private final MenuHelpers menuHelpers = new MenuHelpers();
 
@@ -61,34 +54,22 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
 
     private Icon<?> icon;
 
-    public DefaultShellPresenter(V view, Settings settings, HistoryManager historyManager, HostServices hostServices) {
+    public DefaultShellPresenter(V view, ShellContext context) {
         super(view);
-        this.settings = settings;
-        this.historyManager = historyManager;
-        this.hostServices = hostServices;
+        this.context = context;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> historyManager
+        setHistoryProvider(() -> context.getHistoryManager()
                 .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
     }
 
     @Override
-    public HistoryManager getHistoryManager() {
-        return historyManager;
+    public ShellContext getContext() {
+        return this.context;
     }
 
     @Override
-    public HostServices getHostServices() {
-        return this.hostServices;
-    }
-
-    @Override
-    public Settings getSettings() {
-        return settings;
-    }
-
-    @Override
-    public <T extends Settings> T getSettings(Class<T> settingsClass) {
-        return (T) settings;
+    public <T extends ShellContext> T getContext(Class<T> contextClass) {
+        return (T) this.context;
     }
 
     @Override

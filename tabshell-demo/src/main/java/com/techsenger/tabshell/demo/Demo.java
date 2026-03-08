@@ -82,8 +82,9 @@ public class Demo extends Application {
         //creating shell
         var stage = new Stage();
         var shellView = new DefaultShellFxView<>(this, stage, IconStylesheetFactory.forAll());
-        var shellPresenter = new DefaultShellPresenter<>(shellView, DemoSettings.createSettings(),
+        var context = new DefaultShellContext(DemoSettings.createSettings(),
                 new DemoHistoryManager(), getHostServices());
+        var shellPresenter = new DefaultShellPresenter<>(shellView, context);
         shellPresenter.setOnClose(() -> Platform.exit());
         shellPresenter.initialize();
         shellView.setTitle("TabShell Full Demo");
@@ -96,7 +97,7 @@ public class Demo extends Application {
                 workspace = tabHost;
             }
             case IDE_LIKE -> {
-                var dockHost = HostFactory.createDockHost(shellView, () -> shellPresenter.getHistoryManager()
+                var dockHost = HostFactory.createDockHost(shellView, () -> context.getHistoryManager()
                         .getOrCreateHistory(DockHostHistory.class, DockHostHistory::new));
                 var rightTabDock = dockHost.getComposer().createTabDock();
                 rightTabDock.getPresenter().initialize();

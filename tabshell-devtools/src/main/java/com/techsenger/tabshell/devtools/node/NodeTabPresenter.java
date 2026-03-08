@@ -126,7 +126,8 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
     private int foundPropertyCount = 0;
 
-    private Consumer<String> linkOpener = (ulr) -> getComposer().getShell().getHostServices().showDocument(ulr);
+    private Consumer<String> linkOpener = (ulr) -> getComposer().getShell().getContext()
+            .getHostServices().showDocument(ulr);
 
     private Element rootNode;
 

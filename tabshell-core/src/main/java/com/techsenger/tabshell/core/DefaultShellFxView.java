@@ -404,9 +404,9 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         super.build();
         var presenter = getPresenter();
         themeApplier = new ThemeApplier(stageController, this.stylesheets,
-                presenter.getSettings().getAppearance());
+                presenter.getContext().getSettings().getAppearance());
         this.fontApplier = new FontApplier(stackPane,
-                presenter.getSettings().getAppearance());
+                presenter.getContext().getSettings().getAppearance());
 
         stageController.contentProperty().set(this.contentBox);
         //we add stackpane behind stage root
