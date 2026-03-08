@@ -25,41 +25,41 @@ import java.util.Map;
  *
  * @author Pavel Castornii
  */
-public class MenuHelpers {
+public class MenuDelegates {
 
-    private final Map<MenuName, MenuHelper> menuHelpersByName = new HashMap<>();
+    private final Map<MenuName, MenuDelegate> menuDelegatesByName = new HashMap<>();
 
-    private final Map<MenuItemName, MenuItemHelper> menuItemHelpersByName = new HashMap<>();
+    private final Map<MenuItemName, MenuItemDelegate> menuItemDelegatesByName = new HashMap<>();
 
-    public void addAll(MenuHelper... menuHelpers) {
-        for (var h : menuHelpers) {
-            this.menuHelpersByName.put(h.getMenuName(), h);
+    public void addAll(MenuDelegate... menuDelegates) {
+        for (var h : menuDelegates) {
+            this.menuDelegatesByName.put(h.getMenuName(), h);
         }
     }
 
     public void removeAll(MenuName... menuNames) {
         for (var k : menuNames) {
-            this.menuHelpersByName.remove(k);
+            this.menuDelegatesByName.remove(k);
         }
     }
 
-    public void addAll(MenuItemHelper... itemHelpers) {
-        for (var h : itemHelpers) {
-            this.menuItemHelpersByName.put(h.getItemName(), h);
+    public void addAll(MenuItemDelegate... itemDelegates) {
+        for (var h : itemDelegates) {
+            this.menuItemDelegatesByName.put(h.getItemName(), h);
         }
     }
 
     public void removeAll(MenuItemName... itemNames) {
         for (var k : itemNames) {
-            this.menuItemHelpersByName.remove(k);
+            this.menuItemDelegatesByName.remove(k);
         }
     }
 
-    public Map<MenuName, MenuHelper> getMenuHelpersByName() {
-        return menuHelpersByName;
+    public Map<MenuName, MenuDelegate> getMenuDelegatesByName() {
+        return menuDelegatesByName;
     }
 
-    public Map<MenuItemName, MenuItemHelper> getMenuItemHelpersByName() {
-        return menuItemHelpersByName;
+    public Map<MenuItemName, MenuItemDelegate> getMenuItemDelegatesByName() {
+        return menuItemDelegatesByName;
     }
 }

@@ -20,10 +20,11 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.MenuAwarePort;
-import com.techsenger.tabshell.core.menu.MenuHelper;
-import com.techsenger.tabshell.core.menu.MenuItemHelper;
-import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
-import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
+import com.techsenger.tabshell.core.menu.MenuDelegate;
+import com.techsenger.tabshell.core.menu.MenuDelegates;
+import com.techsenger.tabshell.core.menu.MenuItemDelegate;
+import com.techsenger.tabshell.core.menu.SimpleMenuDelegate;
+import com.techsenger.tabshell.core.menu.SimpleMenuItemDelegate;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.demo.DemoComponents;
@@ -40,11 +41,10 @@ import java.util.function.Consumer;
 public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabComposer>
         extends AbstractTabPresenter<V, C> implements MenuAwarePort {
 
+    private final MenuDelegates menuDelegates = new MenuDelegates();
+
     public IdeMainTabPresenter(V view) {
         super(view);
-        getMenuHelpers().addAll(
-                new SimpleMenuHelper(ExtraMenu.NAME, true) // extra menu is included
-        );
     }
 
     @Override
@@ -58,13 +58,13 @@ public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabC
     }
 
     @Override
-    public MenuHelper getMenuHelper(MenuName menuName) {
-        return getMenuHelpers().getMenuHelpersByName().get(menuName);
+    public MenuDelegate getMenuDelegate(MenuName menuName) {
+        return this.menuDelegates.getMenuDelegatesByName().get(menuName);
     }
 
     @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-        return getMenuHelpers().getMenuItemHelpersByName().get(menuItemName);
+    public MenuItemDelegate getMenuItemDelegate(MenuItemName menuItemName) {
+        return this.menuDelegates.getMenuItemDelegatesByName().get(menuItemName);
     }
 
     @Override
@@ -81,14 +81,17 @@ public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabC
     protected void postInitialize() {
         super.postInitialize();
         getView().setTitle("Tab");
-        getMenuHelpers().addAll(
-            new SimpleMenuItemHelper(ExtraMenu.FOO_ITEM) {
+        menuDelegates.addAll(
+                new SimpleMenuDelegate(ExtraMenu.NAME, true) // extra menu is included
+        );
+        menuDelegates.addAll(
+            new SimpleMenuItemDelegate(ExtraMenu.FOO_ITEM) {
                 @Override
                 public Boolean getItemValid() {
                     return getView().isFooValid();
                 }
             },
-            new SimpleMenuItemHelper(ExtraMenu.BAR_ITEM) {
+            new SimpleMenuItemDelegate(ExtraMenu.BAR_ITEM) {
                 @Override
                 public Boolean getItemIncluded() {
                     return getView().isBarIncluded();

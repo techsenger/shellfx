@@ -21,9 +21,9 @@ import com.techsenger.patternfx.mvp.AbstractParentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.menu.MenuHelper;
-import com.techsenger.tabshell.core.menu.MenuHelpers;
-import com.techsenger.tabshell.core.menu.MenuItemHelper;
+import com.techsenger.tabshell.core.menu.MenuDelegate;
+import com.techsenger.tabshell.core.menu.MenuDelegates;
+import com.techsenger.tabshell.core.menu.MenuItemDelegate;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemName;
@@ -40,7 +40,7 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
 
     private final ShellContext context;
 
-    private final MenuHelpers menuHelpers = new MenuHelpers();
+    private final MenuDelegates menuDelegates = new MenuDelegates();
 
     private Runnable onClose;
 
@@ -99,8 +99,8 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
-    public MenuHelpers getMenuHelpers() {
-        return menuHelpers;
+    public MenuDelegates getMenuDelegates() {
+        return menuDelegates;
     }
 
     @Override
@@ -179,13 +179,13 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
-    public MenuHelper getMenuHelper(MenuName menuName) {
-        return menuHelpers.getMenuHelpersByName().get(menuName);
+    public MenuDelegate getMenuDelegate(MenuName menuName) {
+        return menuDelegates.getMenuDelegatesByName().get(menuName);
     }
 
     @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-        return menuHelpers.getMenuItemHelpersByName().get(menuItemName);
+    public MenuItemDelegate getMenuItemDelegate(MenuItemName menuItemName) {
+        return menuDelegates.getMenuItemDelegatesByName().get(menuItemName);
     }
 
     @Override

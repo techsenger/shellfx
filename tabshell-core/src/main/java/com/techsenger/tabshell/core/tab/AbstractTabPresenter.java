@@ -19,7 +19,6 @@ package com.techsenger.tabshell.core.tab;
 import com.techsenger.patternfx.mvp.AbstractChildPresenter;
 import com.techsenger.tabshell.core.ShellPort;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.menu.MenuHelpers;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.material.icon.Icon;
 import java.util.List;
@@ -30,8 +29,6 @@ import java.util.List;
  */
 public abstract class AbstractTabPresenter<V extends TabView, C extends TabComposer>
         extends AbstractChildPresenter<V, C> implements TabPresenter<V, C> {
-
-    private final MenuHelpers menuHelpers = new MenuHelpers();
 
     private boolean closable = true;
 
@@ -52,10 +49,6 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
     @Override
     public void onSelected(boolean selected) {
         this.selected = selected;
-    }
-
-    public MenuHelpers getMenuHelpers() {
-        return menuHelpers;
     }
 
     @Override

@@ -24,7 +24,7 @@ import com.techsenger.tabshell.material.menu.NamedMenuItemUpdate;
  *
  * @author Pavel Castornii
  */
-public class SimpleMenuItemHelper implements MenuItemHelper {
+public class SimpleMenuItemDelegate implements MenuItemDelegate {
 
     private final MenuItemName itemName;
 
@@ -32,15 +32,15 @@ public class SimpleMenuItemHelper implements MenuItemHelper {
 
     private final Boolean itemValid;
 
-    public SimpleMenuItemHelper(MenuItemName itemName) {
+    public SimpleMenuItemDelegate(MenuItemName itemName) {
         this(itemName, null, null);
     }
 
-    public SimpleMenuItemHelper(MenuItemName itemName, Boolean itemIncluded) {
+    public SimpleMenuItemDelegate(MenuItemName itemName, Boolean itemIncluded) {
         this(itemName, itemIncluded, null);
     }
 
-    public SimpleMenuItemHelper(MenuItemName itemName, Boolean itemIncluded, Boolean itemValid) {
+    public SimpleMenuItemDelegate(MenuItemName itemName, Boolean itemIncluded, Boolean itemValid) {
         this.itemName = itemName;
         this.itemIncluded = itemIncluded;
         this.itemValid = itemValid;

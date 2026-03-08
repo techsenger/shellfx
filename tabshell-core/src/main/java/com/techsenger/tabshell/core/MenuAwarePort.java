@@ -18,8 +18,8 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.patternfx.mvp.ParentPort;
-import com.techsenger.tabshell.core.menu.MenuHelper;
-import com.techsenger.tabshell.core.menu.MenuItemHelper;
+import com.techsenger.tabshell.core.menu.MenuDelegate;
+import com.techsenger.tabshell.core.menu.MenuItemDelegate;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
 
@@ -33,20 +33,20 @@ public interface MenuAwarePort extends ParentPort {
     Descriptor getDescriptor();
 
     /**
-     * Returns the helper for a specific menu.
+     * Returns the delegate for a specific menu.
      *
      * @param menuName
      * @return
      */
-    MenuHelper getMenuHelper(MenuName menuName);
+    MenuDelegate getMenuDelegate(MenuName menuName);
 
     /**
-     * Returns the helper for a specific menu item.
+     * Returns the delegate for a specific menu item.
      *
      * @param menuItemName
      * @return
      */
-    MenuItemHelper getMenuItemHelper(MenuItemName menuItemName);
+    MenuItemDelegate getMenuItemDelegate(MenuItemName menuItemName);
 
     /**
      * This method is called on showing menu popup.

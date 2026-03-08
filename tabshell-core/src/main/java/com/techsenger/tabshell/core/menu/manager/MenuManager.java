@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p>There are two types of menus - menuBar menus and nested menus (that are inside menuBar menus).
  * For all menus states are configured when they are shown on user action. At the same time, as MenuBar menus
- * are always visible their visibility is configured in two cases: when tab is changed (including no tab cases)
- * and when updateMenuBar is invoked.
+ * are always visible their visibility is configured in two cases: when a focused component changed
+ * (including no tab cases) and when updateMenuBar is invoked.
  *
  * <p>Only {@code initializeMenu(NamedMenu) } and {@code deinitializeMenu(NamedMenu)} methods are recursive.
  *
@@ -225,21 +225,21 @@ public class MenuManager {
             MenuAwarePort menuAware, StringBuilder logMessageBuilder) {
         //supported
         NamedMenuUpdate update = null;
-        var helper = menuAware.getMenuHelper(namedMenu.getName());
-        if (namedMenu.isOptional() && (helper == null || !Boolean.TRUE.equals(helper.getMenuIncluded()))) {
+        var delegate = menuAware.getMenuDelegate(namedMenu.getName());
+        if (namedMenu.isOptional() && (delegate == null || !Boolean.TRUE.equals(delegate.getMenuIncluded()))) {
             namedMenu.setVisible(false);
         } else {
             //this method can be called to update top menu; so, unconfigureMenu won't be used
             namedMenu.setVisible(true);
             //valid
-            if (namedMenu.isValidatable() && (helper == null || !Boolean.TRUE.equals(helper.getMenuValid()))) {
+            if (namedMenu.isValidatable() && (delegate == null || !Boolean.TRUE.equals(delegate.getMenuValid()))) {
                 namedMenu.setDisable(true);
             }
             //update
-            if (namedMenu.isVisible() && namedMenu.isUpdatable() && helper != null) {
+            if (namedMenu.isVisible() && namedMenu.isUpdatable() && delegate != null) {
                 var state = new MenuElementState(namedMenu.isVisible(), namedMenu.isDisable(),
                         namedMenu.getText(), namedMenu.getGraphic());
-                update = helper.updateMenu(state);
+                update = delegate.updateMenu(state);
                 if (update != null) {
                     updateHelper.applyUpdate(namedMenu, state, update);
                 }
@@ -258,19 +258,19 @@ public class MenuManager {
             NamedMenuItem namedItem, StringBuilder logMessageBuilder) {
         //supported
         NamedMenuItemUpdate update = null;
-        var helper = menuAware.getMenuItemHelper(namedItem.getName());
-        if (namedItem.isOptional() && (helper == null || !Boolean.TRUE.equals(helper.getItemIncluded()))) {
+        var delegate = menuAware.getMenuItemDelegate(namedItem.getName());
+        if (namedItem.isOptional() && (delegate == null || !Boolean.TRUE.equals(delegate.getItemIncluded()))) {
             namedItem.setVisible(false);
         } else {
             //valid
-            if (namedItem.isValidatable() && (helper == null || !Boolean.TRUE.equals(helper.getItemValid()))) {
+            if (namedItem.isValidatable() && (delegate == null || !Boolean.TRUE.equals(delegate.getItemValid()))) {
                 namedItem.setDisable(true);
             }
             //update
-            if (namedItem.isVisible() && namedItem.isUpdatable() && helper != null) {
+            if (namedItem.isVisible() && namedItem.isUpdatable() && delegate != null) {
                 var state = new MenuElementState(namedItem.isVisible(), namedItem.isDisable(),
                         namedItem.getText(), namedItem.getGraphic());
-                update = helper.updateItem(state);
+                update = delegate.updateItem(state);
                 if (update != null) {
                     updateHelper.applyUpdate(namedItem, state, update);
                 }

@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentPresenter;
-import com.techsenger.tabshell.core.menu.MenuHelpers;
+import com.techsenger.tabshell.core.menu.MenuDelegates;
 
 /**
  *
@@ -26,7 +26,7 @@ import com.techsenger.tabshell.core.menu.MenuHelpers;
 public interface ShellPresenter<V extends ShellView, C extends ShellComposer> extends ParentPresenter<V, C>,
         CloseAwarePresenter<V, C>, ReadOnlyShell, WriteOnlyShell, ShellPort {
 
-    MenuHelpers getMenuHelpers();
+    MenuDelegates getMenuDelegates();
 
     /**
      * Returns the action to be executed when the shell is closed.

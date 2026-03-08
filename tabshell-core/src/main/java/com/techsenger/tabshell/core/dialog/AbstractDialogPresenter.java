@@ -56,10 +56,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
             this.disabled = disabled;
         }
     }
-    /**
-     * If it is necessary to close a dialog then dialog helper should be used. Default implementation uses window
-     * closer set from view.
-     */
+
     private Runnable closeAction = () -> requestClose();
 
     private Consumer<ResultButtonName> resultAction = (name) -> requestClose();

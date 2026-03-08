@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.core.area;
 
 import com.techsenger.patternfx.mvp.AbstractChildPresenter;
-import com.techsenger.tabshell.core.menu.MenuHelpers;
 
 /**
  *
@@ -26,18 +25,12 @@ import com.techsenger.tabshell.core.menu.MenuHelpers;
 public abstract class AbstractAreaPresenter<V extends AreaView, C extends AreaComposer>
         extends AbstractChildPresenter<V, C> implements AreaPresenter<V, C> {
 
-    private final MenuHelpers menuHelpers = new MenuHelpers();
-
     private double width;
 
     private double height;
 
     public AbstractAreaPresenter(V view) {
         super(view);
-    }
-
-    public MenuHelpers getMenuHelpers() {
-        return menuHelpers;
     }
 
     @Override

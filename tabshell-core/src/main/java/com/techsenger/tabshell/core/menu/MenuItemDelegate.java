@@ -24,10 +24,10 @@ import com.techsenger.tabshell.material.menu.NamedMenuItemUpdate;
  *
  * @author Pavel Castornii
  */
-public interface MenuItemHelper {
+public interface MenuItemDelegate {
 
     /**
-     * Returns the name of the item this helper works with.
+     * Returns the name of the item this delegate works with.
      *
      * @return
      */
@@ -50,10 +50,11 @@ public interface MenuItemHelper {
     Boolean getItemValid();
 
     /**
-     * Updates menu item with specific key. This method will be called only for updatable menu items.
+     * Updates the menu item's text and icon before it is shown. This method is called only for updatable menu items,
+     * allowing the component to adjust the item's appearance based on the current application state.
      *
      * @param itemState the current state of the item
-     * @return update object or null if there are no changes.
+     * @return update object with changes to apply, or null if there are no changes
      */
     NamedMenuItemUpdate updateItem(NamedMenuItemState itemState);
 

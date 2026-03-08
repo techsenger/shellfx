@@ -19,10 +19,11 @@ package com.techsenger.tabshell.demo.browser;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.MenuAwarePort;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.core.menu.MenuHelper;
-import com.techsenger.tabshell.core.menu.MenuItemHelper;
-import com.techsenger.tabshell.core.menu.SimpleMenuHelper;
-import com.techsenger.tabshell.core.menu.SimpleMenuItemHelper;
+import com.techsenger.tabshell.core.menu.MenuDelegate;
+import com.techsenger.tabshell.core.menu.MenuDelegates;
+import com.techsenger.tabshell.core.menu.MenuItemDelegate;
+import com.techsenger.tabshell.core.menu.SimpleMenuDelegate;
+import com.techsenger.tabshell.core.menu.SimpleMenuItemDelegate;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.demo.dialogs.DemoResultButtons;
@@ -37,21 +38,20 @@ import com.techsenger.tabshell.material.menu.MenuName;
 public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaView, MenuAwareAreaComposer>
         implements MenuAwarePort {
 
+    private final MenuDelegates menuDelegates = new MenuDelegates();
+
     public MenuAwareAreaPresenter(MenuAwareAreaView view) {
         super(view);
-        getMenuHelpers().addAll(
-                new SimpleMenuHelper(ExtraMenu.NAME, true) // extra menu is included
-        );
     }
 
     @Override
-    public MenuHelper getMenuHelper(MenuName menuName) {
-        return getMenuHelpers().getMenuHelpersByName().get(menuName);
+    public MenuDelegate getMenuDelegate(MenuName menuName) {
+        return this.menuDelegates.getMenuDelegatesByName().get(menuName);
     }
 
     @Override
-    public MenuItemHelper getMenuItemHelper(MenuItemName menuItemName) {
-        return getMenuHelpers().getMenuItemHelpersByName().get(menuItemName);
+    public MenuItemDelegate getMenuItemDelegate(MenuItemName menuItemName) {
+        return this.menuDelegates.getMenuItemDelegatesByName().get(menuItemName);
     }
 
     @Override
@@ -72,14 +72,17 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getMenuHelpers().addAll(
-            new SimpleMenuItemHelper(ExtraMenu.FOO_ITEM) {
+                this.menuDelegates.addAll(
+            new SimpleMenuDelegate(ExtraMenu.NAME, true) // extra menu is included
+        );
+        this.menuDelegates.addAll(
+            new SimpleMenuItemDelegate(ExtraMenu.FOO_ITEM) {
                 @Override
                 public Boolean getItemValid() {
                     return getView().isFooValid();
                 }
             },
-            new SimpleMenuItemHelper(ExtraMenu.BAR_ITEM) {
+            new SimpleMenuItemDelegate(ExtraMenu.BAR_ITEM) {
                 @Override
                 public Boolean getItemIncluded() {
                     return getView().isBarIncluded();

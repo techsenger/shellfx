@@ -49,17 +49,17 @@ class MenuActionInterceptor implements ActionInterceptor {
     @Override
     public void handle(ActionEvent t) {
         MenuAwarePort menuAware = (MenuAwarePort) shellView.getMenuAware().getPresenter();
-        var helper = menuAware.getMenuHelper(menu.getName());
+        var delegate = menuAware.getMenuDelegate(menu.getName());
         var included = true;
         var valid = false;
         if (menu.isOptional()) {
-            if (helper == null || !Boolean.TRUE.equals(helper.getMenuIncluded())) {
+            if (delegate == null || !Boolean.TRUE.equals(delegate.getMenuIncluded())) {
                 included = false;
             }
         }
         if (included) {
             if (menu.isValidatable()) {
-                if (helper != null && Boolean.TRUE.equals(helper.getMenuValid())) {
+                if (delegate != null && Boolean.TRUE.equals(delegate.getMenuValid())) {
                     valid = true;
                 }
             } else {
