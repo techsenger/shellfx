@@ -19,7 +19,7 @@
 */
 
 .menu-box {
-    -fx-background-color: -color-base-8;
+    -fx-background-color: -color-bg-subtle;
 }
 
 .menu-box > .tree-view {
