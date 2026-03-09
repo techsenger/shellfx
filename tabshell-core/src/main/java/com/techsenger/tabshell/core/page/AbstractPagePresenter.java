@@ -17,9 +17,6 @@
 package com.techsenger.tabshell.core.page;
 
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.material.icon.Icon;
-import java.util.Collections;
-import java.util.List;
 
 /**
  *
@@ -29,10 +26,6 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
         extends AbstractAreaPresenter<V, C> implements PagePresenter<V, C> {
 
     private boolean selected;
-
-    private List<PageBreadcrumb> breadcrumbs;
-
-    private Icon<?> icon;
 
     public AbstractPagePresenter(V view) {
         super(view);
@@ -44,31 +37,9 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
     }
 
     @Override
-    public Icon<?> getIcon() {
-        return icon;
-    }
-
-    @Override
-    public void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs) {
-        this.breadcrumbs = breadcrumbs;
-        getView().setBreadcrumbs(breadcrumbs);
-    }
-
-    @Override
-    public List<PageBreadcrumb> getBreadcrumbs() {
-        return Collections.unmodifiableList(breadcrumbs);
-    }
-
-    @Override
-    public void onSelected(boolean selected) {
+    public void setSelected(boolean selected) {
         this.selected = selected;
         getView().requestFocus();
-    }
-
-    @Override
-    public void setIcon(Icon<?> icon) {
-        this.icon = icon;
-        getView().setIcon(icon);
     }
 
     @Override

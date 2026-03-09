@@ -17,8 +17,6 @@
 package com.techsenger.tabshell.core.page;
 
 import com.techsenger.tabshell.core.area.AreaView;
-import com.techsenger.tabshell.material.icon.Icon;
-import java.util.List;
 
 /**
  *
@@ -26,9 +24,4 @@ import java.util.List;
  */
 public interface PageView extends AreaView {
 
-    void setSelected(boolean selected);
-
-    void setIcon(Icon<?> icon);
-
-    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
 }

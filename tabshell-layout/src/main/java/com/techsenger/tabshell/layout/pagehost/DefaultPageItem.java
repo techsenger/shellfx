@@ -20,6 +20,8 @@ import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.toolkit.core.function.Factory;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,24 +38,23 @@ public class DefaultPageItem implements PageItem {
 
     private Factory<? extends PageFxView<?>> factory;
 
-    private List<PageItem> children;
+    private PageItem parent;
+
+    private final List<PageItem> children = new ArrayList<>();
 
     public DefaultPageItem() {
 
     }
 
-    public DefaultPageItem(String text, ComponentName name, Factory<? extends PageFxView<?>> factory,
-            List<PageItem> children) {
-        this(null, text, name, factory, children);
+    public DefaultPageItem(String text, ComponentName name, Factory<? extends PageFxView<?>> factory) {
+        this(null, text, name, factory);
     }
 
-    public DefaultPageItem(Icon<?> icon, String text, ComponentName name, Factory<? extends PageFxView<?>> factory,
-            List<PageItem> children) {
+    public DefaultPageItem(Icon<?> icon, String text, ComponentName name, Factory<? extends PageFxView<?>> factory) {
         this.icon = icon;
         this.text = text;
         this.name = name;
         this.factory = factory;
-        this.children = children;
     }
 
     @Override
@@ -92,11 +93,22 @@ public class DefaultPageItem implements PageItem {
         this.factory = factory;
     }
 
+    @Override
     public List<PageItem> getChildren() {
-        return children;
+        return Collections.unmodifiableList(children);
     }
 
-    public void setChildren(List<PageItem> children) {
-        this.children = children;
+    @Override
+    public PageItem getParent() {
+        return this.parent;
+    }
+
+    public void addChild(DefaultPageItem item) {
+        this.children.add(item);
+        item.setParent(this);
+    }
+
+    void setParent(PageItem parent) {
+        this.parent = parent;
     }
 }

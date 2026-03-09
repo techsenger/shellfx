@@ -54,7 +54,7 @@ public class PageDialogPresenter extends AbstractDialogPresenter<PageDialogView,
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setTitle("Paged Dialog");
+        getView().setTitle("Page Dialog");
         setResultAction((button) -> requestClose());
         setRightButtons(PageDialogButtons.OK);
         setButtonDefault(PageDialogButtons.OK, true);

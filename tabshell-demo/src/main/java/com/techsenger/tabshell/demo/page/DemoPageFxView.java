@@ -31,11 +31,11 @@ public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implem
 
     private final TextArea textArea = new TextArea();
 
-    private final VBox box = new VBox(getTitleBox(), textArea);
+    private final VBox box = new VBox(textArea);
 
     public DemoPageFxView(Insets padding, int index) {
         this.box.setPadding(padding);
-        this.textArea.setText("Page " + index + " text: " + Text.INSTANCE);
+        this.textArea.setText("Page " + index + ". " + Text.INSTANCE);
     }
 
     @Override

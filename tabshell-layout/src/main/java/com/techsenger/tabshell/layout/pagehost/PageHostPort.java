@@ -18,6 +18,8 @@ package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.page.PageContainerPort;
+import com.techsenger.tabshell.core.page.PagePort;
+import java.util.List;
 
 /**
  *
@@ -25,4 +27,12 @@ import com.techsenger.tabshell.core.page.PageContainerPort;
  */
 public interface PageHostPort extends AreaPort, PageContainerPort {
 
+    /**
+     * Returns an unmodifiable list of breadcrumbs.
+     *
+     * @return
+     */
+    List<PageBreadcrumb> getBreadcrumbs();
+
+    PagePort getSelectedPage();
 }

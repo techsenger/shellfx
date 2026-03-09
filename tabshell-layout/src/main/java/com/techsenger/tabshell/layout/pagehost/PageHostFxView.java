@@ -18,11 +18,11 @@ package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
-import com.techsenger.tabshell.core.page.PageBreadcrumb;
 import com.techsenger.tabshell.core.page.PageContainerFxView;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.core.page.PagePort;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -58,6 +60,35 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         return treeItem;
     }
 
+    private static List<PageBreadcrumb> getBreadcrumbs(TreeItem<PageItem> treeItem) {
+        List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
+        if (treeItem == null) {
+            return breadcrumbs;
+        }
+        TreeItem<PageItem> current = treeItem;
+        while (current != null) {
+            if (current.getValue().getText() != null) { // it can be not shown root
+                breadcrumbs.add(current.getValue());
+            }
+            current = current.getParent();
+        }
+        Collections.reverse(breadcrumbs);
+        return breadcrumbs;
+    }
+
+    private static List<PageBreadcrumb> getBreadcrumbs(PageBreadcrumb breadcrumb) {
+        List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
+        PageBreadcrumb current = breadcrumb;
+        while (current != null) {
+            if (current.getText() != null) { // it can be not shown root
+                breadcrumbs.add(current);
+            }
+            current = current.getParent();
+        }
+        Collections.reverse(breadcrumbs);
+        return breadcrumbs;
+    }
+
     public class Composer extends AbstractAreaFxView<P>.Composer implements PageContainerFxView.Composer,
             PageHostComposer {
 
@@ -70,41 +101,34 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
             var findV = createFindPanel();
             findV.getPresenter().initialize();
             getModifiableChildren().add(findV);
-            view.menuBox.getChildren().add(0, findV.getNode());
+            view.leftBox.getChildren().add(0, findV.getNode());
         }
 
         @Override
         public void selectPage(ComponentName page) {
-            var fxView = view.pages.get(page);
+            var fxView = view.pagesByName.get(page);
+            var treeItem = view.itemRegister.getItem(page);
             if (fxView == null) {
-                var treeItem = view.itemRegister.getItem(page);
-                if (treeItem == null) {
-                    return;
-                }
-                List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
-                TreeItem<PageItem> current = treeItem;
-                while (current != null) {
-                    if (current.getValue().getText() != null) { // it can be not shown root
-                        breadcrumbs.add(current.getValue());
-                    }
-                    current = current.getParent();
-                }
-                Collections.reverse(breadcrumbs);
                 fxView = treeItem.getValue().getFactory().create();
                 fxView.getPresenter().initialize();
-                fxView.setBreadcrumbDivider(SharedIcons.CHEVRON_RIGHT);
-                fxView.getPresenter().setBreadcrumbs(breadcrumbs);
-                VBox.setVgrow(fxView.getNode(), Priority.ALWAYS);
                 getModifiableChildren().add(fxView);
-                view.pages.put(page, fxView);
-                view.pageTreeView.getSelectionModel().select(treeItem);
+                view.pagesByName.put(page, fxView);
             }
+            view.pageTreeView.getSelectionModel().select(treeItem); // it can be selected using breadcrumbs
             view.showPage(fxView);
         }
 
         @Override
         public PagePort getSelectedPage() {
             return view.page == null ? null : view.page.getPresenter();
+        }
+
+        public void setPages(PageItem root, boolean showRoot) {
+            getModifiableChildren().removeAll(view.pagesByName.values());
+            var treeRoot = buildTree(root);
+            view.itemRegister = new TreeItemRegister(treeRoot);
+            pageTreeView.setRoot(treeRoot);
+            pageTreeView.setShowRoot(showRoot);
         }
 
         protected FindPanelFxView<?> createFindPanel() {
@@ -116,30 +140,32 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
     private final TreeView<PageItem> pageTreeView = new TreeView<>();
 
-    private final VBox menuBox = new VBox(pageTreeView);
+    private final VBox leftBox = new VBox(pageTreeView);
+
+    private final HBox breadcrumbsBox = new HBox();
+
+    private final HBox headerBox = new HBox(breadcrumbsBox);
 
     private final VBox contentBox = new VBox();
 
-    private final SplitPane splitPane = new SplitPane(menuBox, contentBox);
+    private final VBox rightBox = new VBox(headerBox, contentBox);
+
+    private final SplitPane splitPane = new SplitPane(leftBox, rightBox);
 
     /**
      * Created and initiliazed pages.
      */
-    private final Map<ComponentName, PageFxView<?>> pages = new HashMap<>();
+    private final Map<ComponentName, PageFxView<?>> pagesByName = new HashMap<>();
 
-    private final TreeItemRegister itemRegister;
+    private TreeItemRegister itemRegister;
 
     private PageFxView<?> page;
 
-    public PageHostFxView(PageItem root, boolean showRoot) {
-        this(root, showRoot, null);
+    public PageHostFxView() {
+        this(null);
     }
 
-    public PageHostFxView(PageItem root, boolean showRoot, Callback<TreeView<PageItem>, TreeCell<PageItem>> clbck) {
-        var treeRoot = buildTree(root);
-        this.itemRegister = new TreeItemRegister(treeRoot);
-        pageTreeView.setRoot(treeRoot);
-        pageTreeView.setShowRoot(showRoot);
+    public PageHostFxView(Callback<TreeView<PageItem>, TreeCell<PageItem>> clbck) {
         if (clbck != null) {
             pageTreeView.setCellFactory(clbck);
         } else {
@@ -192,6 +218,18 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     }
 
     @Override
+    public void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs) {
+        this.breadcrumbsBox.getChildren().clear();
+        for (var i = 0; i < breadcrumbs.size(); i++) {
+            var b = breadcrumbs.get(i);
+            breadcrumbsBox.getChildren().add(createBreadcrumb(b));
+            if (i + 1 < breadcrumbs.size()) {
+                breadcrumbsBox.getChildren().add(createBreadcrumbDivider());
+            }
+        }
+    }
+
+    @Override
     protected Composer createComposer() {
         return new PageHostFxView.Composer();
     }
@@ -199,23 +237,29 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     @Override
     protected void build() {
         super.build();
-        this.menuBox.getStyleClass().add("menu-box");
+        this.leftBox.getStyleClass().add("left-box");
+        SplitPane.setResizableWithParent(leftBox, false);
         pageTreeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
         pageTreeView.setShowRoot(false);
-        // VBox.setVgrow(pageTreeView, Priority.ALWAYS);
-        HBox.setHgrow(contentBox, Priority.ALWAYS);
+        VBox.setVgrow(pageTreeView, Priority.ALWAYS);
+
+        headerBox.getStyleClass().add("header-box");
+        headerBox.setPadding(new Insets(SizeConstants.INSET));
+        breadcrumbsBox.getStyleClass().add("breadcrumbs-box");
+        HBox.setHgrow(breadcrumbsBox, Priority.ALWAYS);
+        VBox.setVgrow(contentBox, Priority.ALWAYS);
         this.contentBox.getStyleClass().add("content-box");
+        this.rightBox.getStyleClass().add("right-box");
 
         var css = PageHostFxView.class.getResource("page-host.css").toExternalForm();
         this.splitPane.getStylesheets().add(css);
-
     }
 
     @Override
     protected void addListeners() {
         super.addListeners();
         pageTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
-            getPresenter().onPageSelected(newV.getValue().getName());
+            getPresenter().onPageRequested(newV.getValue().getName(), getBreadcrumbs(newV));
         });
         splitPane.getDividers().getFirst().positionProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().onDividerPositionChanged(newV.doubleValue()));
@@ -225,22 +269,46 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         return pageTreeView;
     }
 
-    protected VBox getMenuBox() {
-        return menuBox;
+    protected VBox getLeftBox() {
+        return leftBox;
     }
 
     protected VBox getContentBox() {
         return contentBox;
     }
 
+    protected HBox getHeaderBox() {
+        return headerBox;
+    }
+
+    protected HBox getBreadcrumbsBox() {
+        return breadcrumbsBox;
+    }
+
+    protected VBox getRightBox() {
+        return rightBox;
+    }
+
     protected void showPage(PageFxView<?> page) {
-        if (this.page != null) {
-            contentBox.getChildren().remove(0);
-            this.page.setSelected(false);
-        }
+        contentBox.getChildren().clear();
         VBox.setVgrow(page.getNode(), Priority.ALWAYS);
-        contentBox.getChildren().add(0, page.getNode());
+        contentBox.getChildren().add(page.getNode());
         this.page = page;
-        this.page.setSelected(true);
+    }
+
+    protected Node createBreadcrumb(PageBreadcrumb breadcrumb) {
+        var link = new Hyperlink(breadcrumb.getText());
+        if (breadcrumb.getIcon() != null) {
+            link.setGraphic(new IconViewBox(breadcrumb.getIcon()));
+        }
+        link.setOnAction(e -> {
+            var breadcrumbs = getBreadcrumbs(breadcrumb);
+            getPresenter().onPageRequested(breadcrumb.getName(), breadcrumbs);
+        });
+        return link;
+    }
+
+    protected Node createBreadcrumbDivider() {
+        return new IconViewBox(SharedIcons.CHEVRON_RIGHT);
     }
 }

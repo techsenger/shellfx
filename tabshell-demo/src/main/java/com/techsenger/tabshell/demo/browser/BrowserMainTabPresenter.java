@@ -58,7 +58,7 @@ public class BrowserMainTabPresenter extends AbstractTabPresenter<TabView, TabCo
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setTitle("Dock Layout Tab");
+        getView().setTitle("Main Tab");
     }
 
     @Override

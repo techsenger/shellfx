@@ -24,8 +24,6 @@ import com.techsenger.tabshell.layout.pagehost.DefaultPageItem;
 import com.techsenger.tabshell.layout.pagehost.PageItem;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.toolkit.core.function.Factory;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.geometry.Insets;
 
 /**
@@ -55,9 +53,9 @@ final class MenuFactory {
             public PageFxView<?> create() {
                 Insets padding;
                 if (parentType == PageType.DIALOG) {
-                    padding = new Insets(SizeConstants.INSET, SizeConstants.INSET, 0, SizeConstants.INSET);
+                    padding = new Insets(0, SizeConstants.INSET, 0, SizeConstants.INSET);
                 } else {
-                    padding = new Insets(SizeConstants.INSET);
+                    padding = new Insets(0, SizeConstants.INSET, SizeConstants.INSET, SizeConstants.INSET);
                 }
                 var view = new DemoPageFxView(padding, index);
                 var presenter = new DemoPagePresenter(view) {
@@ -72,15 +70,12 @@ final class MenuFactory {
 
         // items for menu
         var root = new DefaultPageItem();
-        var item0 = new DefaultPageItem("Page 0", DemoComponents.PAGE_0,
-                new PageFactoryImpl(DemoComponents.PAGE_0, 0), new ArrayList<>());
-        root.setChildren(List.of(item0));
-        var item1 = new DefaultPageItem("Page 1", DemoComponents.PAGE_1,
-                new PageFactoryImpl(DemoComponents.PAGE_1, 1), new ArrayList<>());
-        item0.getChildren().add(item1);
-        var item2 = new DefaultPageItem("Page 2", DemoComponents.PAGE_2,
-                new PageFactoryImpl(DemoComponents.PAGE_2, 2), new ArrayList<>());
-        item1.getChildren().add(item2);
+        var item0 = new DefaultPageItem("Page 0", DemoComponents.PAGE_0, new PageFactoryImpl(DemoComponents.PAGE_0, 0));
+        root.addChild(item0);
+        var item1 = new DefaultPageItem("Page 1", DemoComponents.PAGE_1, new PageFactoryImpl(DemoComponents.PAGE_1, 1));
+        item0.addChild(item1);
+        var item2 = new DefaultPageItem("Page 2", DemoComponents.PAGE_2, new PageFactoryImpl(DemoComponents.PAGE_2, 2));
+        item1.addChild(item2);
         return root;
     }
 

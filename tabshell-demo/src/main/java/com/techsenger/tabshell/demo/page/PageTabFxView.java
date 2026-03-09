@@ -39,9 +39,10 @@ public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implement
         public void compose() {
             super.compose();
             var rootItem = MenuFactory.create(MenuFactory.PageType.TAB);
-            pageHost = new PageHostFxView<>(rootItem, false);
+            pageHost = new PageHostFxView<>();
             var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());
             hostPresenter.initialize();
+            pageHost.getComposer().setPages(rootItem, false);
 
             getModifiableChildren().add(pageHost);
             getContentBox().getChildren().add(pageHost.getNode());

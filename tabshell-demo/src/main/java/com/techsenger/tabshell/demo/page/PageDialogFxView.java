@@ -37,9 +37,11 @@ public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> 
         public void compose() {
             super.compose();
             var rootItem = MenuFactory.create(MenuFactory.PageType.DIALOG);
-            pageHost = new PageHostFxView<>(rootItem, false);
+            pageHost = new PageHostFxView<>();
             var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());
             hostPresenter.initialize();
+            hostPresenter.setDividerPosition(0.25);
+            pageHost.getComposer().setPages(rootItem, false);
 
             getModifiableChildren().add(pageHost);
             getContentBox().getChildren().add(pageHost.getNode());

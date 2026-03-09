@@ -35,7 +35,7 @@ public interface FileMenu {
 
     MenuItemName MAIN_TAB = new DefaultMenuItemName();
 
-    MenuItemName PAGED_TAB = new DefaultMenuItemName();
+    MenuItemName PAGE_TAB = new DefaultMenuItemName();
 
     MenuItemName DIALOGS = new DefaultMenuItemName();
 

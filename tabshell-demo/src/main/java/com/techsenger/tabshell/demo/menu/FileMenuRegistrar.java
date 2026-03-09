@@ -116,7 +116,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
 
     protected void registerPagedTabItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(FileMenu.PAGED_TAB, "Paged Tab", 200);
+            var item = new NamedMenuItem(FileMenu.PAGE_TAB, "Page Tab", 200);
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
                 var tabView = new PageTabFxView(shell);

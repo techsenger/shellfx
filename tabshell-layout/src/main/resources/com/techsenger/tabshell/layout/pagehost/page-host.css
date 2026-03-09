@@ -18,18 +18,32 @@
     Author: Pavel Castornii
 */
 
-.menu-box {
+.left-box {
     -fx-background-color: -color-bg-subtle;
 }
 
-.menu-box > .tree-view {
+.left-box > .tree-view,
+.left-box > .tree-view .cell {
     -fx-background-color: transparent;
 }
 
-.menu-box > .tree-view .cell {
-    -fx-background-color: transparent;
+.left-box .tree-view > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected {
+  -fx-background-color: -color-cell-border, -color-cell-bg-selected;
 }
 
-.menu-box .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected  {
+.left-box .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected  {
   -fx-background-color: -color-cell-border, -color-cell-bg-selected-focused;
+}
+
+.right-box > .header-box > .breadcrumbs-box {
+    -fx-spacing: 4px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.right-box > .header-box > .breadcrumbs-box > .hyperlink , .title-box > .breadcrumbs-box > .hyperlink:visited {
+    -fx-text-fill: -color-fg-default;
+}
+
+.right-box > .header-box > .breadcrumbs-box .font-icon-view {
+    -fx-font-size: 1.4em;
 }

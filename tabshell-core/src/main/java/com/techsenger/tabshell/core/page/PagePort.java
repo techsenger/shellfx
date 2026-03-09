@@ -17,8 +17,6 @@
 package com.techsenger.tabshell.core.page;
 
 import com.techsenger.tabshell.core.area.AreaPort;
-import com.techsenger.tabshell.material.icon.Icon;
-import java.util.List;
 
 /**
  *
@@ -28,12 +26,5 @@ public interface PagePort extends AreaPort {
 
     boolean isSelected();
 
-    Icon<?> getIcon();
-
-    /**
-     * Returns an unmodifiable list of breadcrumbs.
-     *
-     * @return
-     */
-    List<PageBreadcrumb> getBreadcrumbs();
+    void setSelected(boolean selected);
 }

@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.layout.pagehost;
 
-.title-box > .breadcrumbs-box {
-    -fx-spacing: 4px;
-    -fx-alignment: CENTER_LEFT;
-}
+import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.tabshell.material.icon.Icon;
 
-.title-box > .breadcrumbs-box > .hyperlink , .title-box > .breadcrumbs-box > .hyperlink:visited {
-    -fx-text-fill: -color-fg-default;
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface PageBreadcrumb {
 
-.title-box > .breadcrumbs-box .font-icon-view {
-    -fx-font-size: 1.4em;
+    Icon<?> getIcon();
+
+    String getText();
+
+    ComponentName getName();
+
+    PageBreadcrumb getParent();
 }

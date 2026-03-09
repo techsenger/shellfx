@@ -24,6 +24,8 @@ import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.page.PageContainerPresenter;
 import com.techsenger.tabshell.core.page.PagePort;
 import com.techsenger.tabshell.layout.LayoutComponents;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -31,6 +33,8 @@ import com.techsenger.tabshell.layout.LayoutComponents;
  */
 public class PageHostPresenter<V extends PageHostView, C extends PageHostComposer>
         extends AbstractAreaPresenter<V, C> implements PageContainerPresenter<V, C>, PageHostPort {
+
+    private List<PageBreadcrumb> breadcrumbs;
 
     private double dividerPosition;
 
@@ -64,12 +68,34 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         return this.dividerPosition;
     }
 
+    @Override
+    public List<PageBreadcrumb> getBreadcrumbs() {
+        return Collections.unmodifiableList(breadcrumbs);
+    }
+
     protected void onDividerPositionChanged(double pos) {
         this.dividerPosition = pos;
     }
 
-    protected void onPageSelected(ComponentName pageName) {
+    /**
+     * This method is called when the user clicks on a page menu item.
+     *
+     * @param pageName
+     * @param breadcrumbs a list of breadcrumbs or an empty list
+     */
+    protected void onPageRequested(ComponentName pageName, List<PageBreadcrumb> breadcrumbs) {
+        var currentPage = getComposer().getSelectedPage();
+        if (currentPage != null) {
+            if (currentPage.getDescriptor().getName() == pageName) {
+                return;
+            }
+            currentPage.setSelected(false);
+        }
+        this.breadcrumbs = breadcrumbs;
+        getView().setBreadcrumbs(breadcrumbs);
         getComposer().selectPage(pageName);
+        currentPage = getComposer().getSelectedPage();
+        currentPage.setSelected(true);
     }
 
     @Override
@@ -99,6 +125,4 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
             getView().setDividerPosition(0.2);
         }
     }
-
-
 }
