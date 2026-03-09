@@ -87,7 +87,7 @@ public class Demo extends Application {
         var shellPresenter = new DefaultShellPresenter<>(shellView, context);
         shellPresenter.setOnClose(() -> Platform.exit());
         shellPresenter.initialize();
-        shellView.setTitle("TabShell Full Demo");
+        shellView.setTitle("TabShell Demo");
 
         // creating workspace
         AreaFxView<?> workspace;
