@@ -59,7 +59,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
             }),
             Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
             Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
-            Map.entry(DialogType.PAGED, () -> showPagedDialog())
+            Map.entry(DialogType.PAGE, () -> showPagedDialog())
     );
 
     private final AppearanceSettings settings;

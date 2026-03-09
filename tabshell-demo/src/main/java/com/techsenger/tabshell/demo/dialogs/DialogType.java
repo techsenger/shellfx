@@ -22,5 +22,5 @@ package com.techsenger.tabshell.demo.dialogs;
  */
 enum DialogType {
 
-    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, OPEN_FILE, SAVE_FILE, PAGED
+    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, OPEN_FILE, SAVE_FILE, PAGE
 }
