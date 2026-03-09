@@ -16,12 +16,14 @@
 
 package com.techsenger.tabshell.demo.page;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
+import com.techsenger.tabshell.material.button.DefaultResultButtonName;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PagedDialogView extends DialogView {
+public interface PageDialogButtons {
 
+    ResultButtonName OK = new DefaultResultButtonName();
 }

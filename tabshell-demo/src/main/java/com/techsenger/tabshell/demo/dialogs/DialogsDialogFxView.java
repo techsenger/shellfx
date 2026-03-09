@@ -21,9 +21,9 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.demo.page.PagedDialogFxView;
-import com.techsenger.tabshell.demo.page.PagedDialogHistory;
-import com.techsenger.tabshell.demo.page.PagedDialogPresenter;
+import com.techsenger.tabshell.demo.page.PageDialogFxView;
+import com.techsenger.tabshell.demo.page.PageDialogHistory;
+import com.techsenger.tabshell.demo.page.PageDialogPresenter;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
@@ -87,9 +87,9 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
 
         @Override
         public DialogPort addPagedDialog(HistoryManager hm) {
-            var view = new PagedDialogFxView();
-            var presenter = new PagedDialogPresenter(view,
-                    () -> hm.getOrCreateHistory(PagedDialogHistory.class, PagedDialogHistory::new));
+            var view = new PageDialogFxView();
+            var presenter = new PageDialogPresenter(view,
+                    () -> hm.getOrCreateHistory(PageDialogHistory.class, PageDialogHistory::new));
             presenter.initialize();
             presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);

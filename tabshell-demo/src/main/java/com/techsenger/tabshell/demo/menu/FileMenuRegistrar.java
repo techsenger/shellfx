@@ -30,9 +30,9 @@ import com.techsenger.tabshell.demo.dialogs.DialogsDialogFxView;
 import com.techsenger.tabshell.demo.dialogs.DialogsDialogPresenter;
 import com.techsenger.tabshell.demo.ide.IdeMainTabFxView;
 import com.techsenger.tabshell.demo.ide.IdeMainTabPresenter;
-import com.techsenger.tabshell.demo.page.PagedTabFxView;
-import com.techsenger.tabshell.demo.page.PagedTabHistory;
-import com.techsenger.tabshell.demo.page.PagedTabPresenter;
+import com.techsenger.tabshell.demo.page.PageTabFxView;
+import com.techsenger.tabshell.demo.page.PageTabHistory;
+import com.techsenger.tabshell.demo.page.PageTabPresenter;
 import com.techsenger.tabshell.demo.theme.ThemeDialogFxView;
 import com.techsenger.tabshell.demo.theme.ThemeDialogPresenter;
 import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
@@ -119,10 +119,10 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             var item = new NamedMenuItem(FileMenu.PAGED_TAB, "Paged Tab", 200);
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
-                var tabView = new PagedTabFxView(shell);
+                var tabView = new PageTabFxView(shell);
                 var historyManager = shell.getPresenter().getContext().getHistoryManager();
-                var tabPresenter = new PagedTabPresenter(tabView,
-                        () -> historyManager.getOrCreateHistory(PagedTabHistory.class, PagedTabHistory::new));
+                var tabPresenter = new PageTabPresenter(tabView,
+                        () -> historyManager.getOrCreateHistory(PageTabHistory.class, PageTabHistory::new));
                 tabPresenter.initialize();
                 resolveMainTabContainer().getComposer().addTab(tabView);
                 tabView.requestFocus();

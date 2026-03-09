@@ -30,9 +30,9 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class PagedTabPresenter extends AbstractTabPresenter<PagedTabView, TabComposer> {
+public class PageTabPresenter extends AbstractTabPresenter<PageTabView, TabComposer> {
 
-    public PagedTabPresenter(PagedTabView view, HistoryProvider<PagedTabHistory> historyProvider) {
+    public PageTabPresenter(PageTabView view, HistoryProvider<PageTabHistory> historyProvider) {
         super(view);
         setHistoryProvider(historyProvider);
         setHistoryPolicy(HistoryPolicy.ALL);
@@ -40,7 +40,7 @@ public class PagedTabPresenter extends AbstractTabPresenter<PagedTabView, TabCom
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.PAGED_TAB);
+        return new Descriptor(DemoComponents.PAGE_TAB);
     }
 
     @Override
@@ -54,8 +54,8 @@ public class PagedTabPresenter extends AbstractTabPresenter<PagedTabView, TabCom
     }
 
     @Override
-    protected PagedTabHistory getHistory() {
-        return (PagedTabHistory) super.getHistory();
+    protected PageTabHistory getHistory() {
+        return (PageTabHistory) super.getHistory();
     }
 
     @Override

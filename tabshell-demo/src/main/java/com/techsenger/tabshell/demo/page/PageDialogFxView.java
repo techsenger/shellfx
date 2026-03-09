@@ -29,9 +29,9 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter> implements PagedDialogView {
+public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> implements PageDialogView {
 
-    public class Composer extends AbstractDialogFxView<PagedDialogPresenter>.Composer {
+    public class Composer extends AbstractDialogFxView<PageDialogPresenter>.Composer {
 
         @Override
         public void compose() {
@@ -52,9 +52,9 @@ public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter
 
     private PageHostFxView<?> pageHost;
 
-    private final ResultButton okButton = new ResultButton(PagedDialogButtons.OK, "OK");
+    private final ResultButton okButton = new ResultButton(PageDialogButtons.OK, "OK");
 
-    public PagedDialogFxView() {
+    public PageDialogFxView() {
         super();
     }
 
@@ -70,7 +70,7 @@ public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter
 
     @Override
     protected Composer createComposer() {
-        return new PagedDialogFxView.Composer();
+        return new PageDialogFxView.Composer();
     }
 
     @Override

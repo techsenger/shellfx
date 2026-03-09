@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.demo.page;
 
-import com.techsenger.tabshell.core.dialog.DialogHistory;
+import com.techsenger.tabshell.core.tab.TabHistory;
 import com.techsenger.tabshell.layout.pagehost.PageHostHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class PagedDialogHistory extends DialogHistory {
+public class PageTabHistory extends TabHistory {
 
     private PageHostHistory hostHistory = new PageHostHistory();
 
@@ -34,5 +34,4 @@ public class PagedDialogHistory extends DialogHistory {
     public void setHostHistory(PageHostHistory hostHistory) {
         this.hostHistory = hostHistory;
     }
-
 }

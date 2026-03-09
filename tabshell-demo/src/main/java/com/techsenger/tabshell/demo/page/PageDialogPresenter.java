@@ -29,16 +29,16 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class PagedDialogPresenter extends AbstractDialogPresenter<PagedDialogView, DialogComposer> {
+public class PageDialogPresenter extends AbstractDialogPresenter<PageDialogView, DialogComposer> {
 
-    public PagedDialogPresenter(PagedDialogView view, HistoryProvider<PagedDialogHistory> hp) {
+    public PageDialogPresenter(PageDialogView view, HistoryProvider<PageDialogHistory> hp) {
         super(view);
         setHistoryProvider(hp);
     }
 
     @Override
     protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.PAGED_DIALOG);
+        return new Descriptor(DemoComponents.PAGE_DIALOG);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class PagedDialogPresenter extends AbstractDialogPresenter<PagedDialogVie
         super.postInitialize();
         getView().setTitle("Paged Dialog");
         setResultAction((button) -> requestClose());
-        setRightButtons(PagedDialogButtons.OK);
-        setButtonDefault(PagedDialogButtons.OK, true);
+        setRightButtons(PageDialogButtons.OK);
+        setButtonDefault(PageDialogButtons.OK, true);
     }
 
     @Override
-    protected PagedDialogHistory getHistory() {
-        return (PagedDialogHistory) super.getHistory();
+    protected PageDialogHistory getHistory() {
+        return (PageDialogHistory) super.getHistory();
     }
 }

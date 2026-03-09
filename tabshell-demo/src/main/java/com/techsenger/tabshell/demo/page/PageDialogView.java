@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.demo.page;
 
-import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.core.dialog.DialogView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PagedTabView extends TabView {
+public interface PageDialogView extends DialogView {
 
 }

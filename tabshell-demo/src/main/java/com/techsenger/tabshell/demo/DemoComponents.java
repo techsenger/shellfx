@@ -51,9 +51,9 @@ public final class DemoComponents {
 
     public static final ComponentName PAGE_2 = new DefaultComponentName("Demo.Page2");
 
-    public static final ComponentName PAGED_TAB = new DefaultComponentName("Demo.PagedTab");
+    public static final ComponentName PAGE_TAB = new DefaultComponentName("Demo.PageTab");
 
-    public static final ComponentName PAGED_DIALOG = new DefaultComponentName("Demo.PagedDialog");
+    public static final ComponentName PAGE_DIALOG = new DefaultComponentName("Demo.PageDialog");
 
     private DemoComponents() {
         // empty

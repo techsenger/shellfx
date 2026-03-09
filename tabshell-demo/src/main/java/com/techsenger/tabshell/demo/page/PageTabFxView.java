@@ -31,9 +31,9 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class PagedTabFxView extends AbstractTabFxView<PagedTabPresenter> implements PagedTabView {
+public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implements PageTabView {
 
-    public class Composer extends AbstractTabFxView<PagedTabPresenter>.Composer {
+    public class Composer extends AbstractTabFxView<PageTabPresenter>.Composer {
 
         @Override
         public void compose() {
@@ -54,7 +54,7 @@ public class PagedTabFxView extends AbstractTabFxView<PagedTabPresenter> impleme
 
     private PageHostFxView<?> pageHost;
 
-    public PagedTabFxView(ShellFxView<?> shell) {
+    public PageTabFxView(ShellFxView<?> shell) {
         super(shell);
     }
 
@@ -70,7 +70,7 @@ public class PagedTabFxView extends AbstractTabFxView<PagedTabPresenter> impleme
 
     @Override
     protected Composer createComposer() {
-        return new PagedTabFxView.Composer();
+        return new PageTabFxView.Composer();
     }
 
     @Override
