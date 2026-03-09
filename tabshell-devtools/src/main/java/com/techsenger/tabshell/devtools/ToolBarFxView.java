@@ -56,6 +56,7 @@ public class ToolBarFxView<P extends ToolBarPresenter<?, ?>> extends AbstractFin
         super.build();
         HBox.setHgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
         getFindComboBoxWrapper().setPadding(Insets.EMPTY);
+        getFindComboBox().setMaxWidth(Double.MAX_VALUE);
         getFindComboBox().getStyleClass().add(StyleClasses.EXTRA_DENSE);
         getFindRightBox().getStyleClass().add(StyleClasses.EXTRA_DENSE);
 

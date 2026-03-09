@@ -68,8 +68,8 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         this.dividerPosition = pos;
     }
 
-    protected void onPageSelected(Page page) {
-        getComposer().selectPage(page.getName());
+    protected void onPageSelected(ComponentName pageName) {
+        getComposer().selectPage(pageName);
     }
 
     @Override

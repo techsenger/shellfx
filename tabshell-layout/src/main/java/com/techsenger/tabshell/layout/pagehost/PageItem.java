@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.page;
+package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.area.AreaView;
-import com.techsenger.tabshell.material.icon.Icon;
+import com.techsenger.tabshell.core.page.PageFxView;
+import com.techsenger.toolkit.core.function.Factory;
 import java.util.List;
+import com.techsenger.tabshell.core.page.PageBreadcrumb;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageView extends AreaView {
+public interface PageItem extends PageBreadcrumb {
 
-    void setSelected(boolean selected);
+    Factory<? extends PageFxView<?>> getFactory();
 
-    void setIcon(Icon<?> icon);
-
-    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
+    List<PageItem> getChildren();
 }

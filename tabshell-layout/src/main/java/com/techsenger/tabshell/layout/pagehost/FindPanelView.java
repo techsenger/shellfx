@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.page;
+package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.area.AreaView;
-import com.techsenger.tabshell.material.icon.Icon;
-import java.util.List;
+import com.techsenger.tabshell.shared.find.FindBaseView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageView extends AreaView {
+public interface FindPanelView extends FindBaseView {
 
-    void setSelected(boolean selected);
-
-    void setIcon(Icon<?> icon);
-
-    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
 }

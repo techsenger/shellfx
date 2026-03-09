@@ -19,7 +19,6 @@ package com.techsenger.tabshell.layout.pagehost;
 import com.techsenger.patternfx.core.ComponentName;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.TreeItem;
 
@@ -33,61 +32,54 @@ import javafx.scene.control.TreeItem;
  */
 class TreeItemRegister {
 
-    private final Map<ComponentName, TreeItem<Page>> itemsByComponent = new HashMap<>();
+    private final Map<ComponentName, TreeItem<PageItem>> itemsByComponent = new HashMap<>();
 
-    private final ListChangeListener<TreeItem<Page>> globalListener = this::onChildrenChanged;
+    private final ListChangeListener<TreeItem<PageItem>> globalListener = this::onChildrenChanged;
 
-    TreeItemRegister(TreeItem<Page> rootItem) {
+    TreeItemRegister(TreeItem<PageItem> rootItem) {
         traverseAndAdd(rootItem);
     }
 
-    public TreeItem<Page> getItem(ComponentName component) {
+    public TreeItem<PageItem> getItem(ComponentName component) {
         return itemsByComponent.get(component);
     }
 
-    private void traverseAndAdd(TreeItem<Page> item) {
+    private void traverseAndAdd(TreeItem<PageItem> item) {
         item.getChildren().addListener(globalListener);
-        if (item.getValue() != null) {
-            validatePage(item);
-            itemsByComponent.put(item.getValue().getName(), item);
+        var value = item.getValue();
+        if (value != null) {
+            if (value.getName() != null) {
+                itemsByComponent.put(value.getName(), item);
+            }
         }
-        for (TreeItem<Page> child : item.getChildren()) {
+        for (TreeItem<PageItem> child : item.getChildren()) {
             traverseAndAdd(child);
         }
     }
 
-    private void traverseAndRemove(TreeItem<Page> item) {
+    private void traverseAndRemove(TreeItem<PageItem> item) {
         item.getChildren().removeListener(globalListener);
-        if (item.getValue() != null) {
-            validatePage(item);
-            itemsByComponent.remove(item.getValue().getName());
+        var value = item.getValue();
+        if (value != null) {
+            if (value.getName() != null) {
+                itemsByComponent.remove(value.getName());
+            }
         }
-        for (TreeItem<Page> child : item.getChildren()) {
+        for (TreeItem<PageItem> child : item.getChildren()) {
             traverseAndRemove(child);
         }
     }
 
-    /**
-     * Some nodes can be empty containers, for example, root.
-     *
-     * @param item
-     */
-    private void validatePage(TreeItem<Page> item) {
-        var page = item.getValue();
-        Objects.requireNonNull(page.getName(), "Page name not provided in " + item);
-        Objects.requireNonNull(page.getFactory(), "Factory not provided in " + item);
-    }
-
-    private void onChildrenChanged(ListChangeListener.Change<? extends TreeItem<Page>> change) {
+    private void onChildrenChanged(ListChangeListener.Change<? extends TreeItem<PageItem>> change) {
         while (change.next()) {
             if (change.wasAdded()) {
-                for (TreeItem<Page> added : change.getAddedSubList()) {
+                for (TreeItem<PageItem> added : change.getAddedSubList()) {
                     traverseAndAdd(added);
                 }
             }
 
             if (change.wasRemoved()) {
-                for (TreeItem<Page> removed : change.getRemoved()) {
+                for (TreeItem<PageItem> removed : change.getRemoved()) {
                     traverseAndRemove(removed);
                 }
             }

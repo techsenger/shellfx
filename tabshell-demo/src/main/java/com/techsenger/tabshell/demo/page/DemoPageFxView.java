@@ -29,13 +29,13 @@ import javafx.scene.layout.VBox;
  */
 public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implements DemoPageView {
 
-    private final TextArea textArea = new TextArea(Text.INSTANCE);
+    private final TextArea textArea = new TextArea();
 
     private final VBox box = new VBox(getTitleBox(), textArea);
 
-    public DemoPageFxView(String title, Insets padding) {
-        this.getTitleLabel().setText(title);
+    public DemoPageFxView(Insets padding, int index) {
         this.box.setPadding(padding);
+        this.textArea.setText("Page " + index + " text: " + Text.INSTANCE);
     }
 
     @Override

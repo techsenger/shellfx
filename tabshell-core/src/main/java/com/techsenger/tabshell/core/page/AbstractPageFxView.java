@@ -19,8 +19,11 @@ package com.techsenger.tabshell.core.page;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -36,21 +39,18 @@ public abstract class AbstractPageFxView<P extends AbstractPagePresenter<?, ?>>
 
     }
 
-    private final Label titleLabel = new Label();
-
     private final IconViewBox iconViewBox = new IconViewBox();
 
-    private final HBox titleBox = new HBox(iconViewBox, titleLabel);
+    private Icon<?> breadcrumbDivider;
+
+    private final HBox breadcrumbsBox = new HBox();
+
+    private final HBox titleBox = new HBox(iconViewBox, breadcrumbsBox);
 
     private final BooleanProperty selected = new SimpleBooleanProperty();
 
     public AbstractPageFxView() {
         super();
-    }
-
-    @Override
-    public void setTitle(String title) {
-        titleLabel.setText(title);
     }
 
     @Override
@@ -68,16 +68,41 @@ public abstract class AbstractPageFxView<P extends AbstractPagePresenter<?, ?>>
         return (Composer) super.getComposer();
     }
 
+    @Override
+    public void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs) {
+        this.breadcrumbsBox.getChildren().clear();
+        for (var i = 0; i < breadcrumbs.size(); i++) {
+            var b = breadcrumbs.get(i);
+            var link = new Hyperlink(b.getText());
+            if (b.getIcon() != null) {
+                link.setGraphic(new IconViewBox(b.getIcon()));
+            }
+            breadcrumbsBox.getChildren().add(link);
+            if (i + 1 < breadcrumbs.size()) {
+                breadcrumbsBox.getChildren().add(createBreadcrumbDivider());
+            }
+        }
+    }
+
+    @Override
+    public Icon<?> getBreadcrumbDivider() {
+        return breadcrumbDivider;
+    }
+
+    public void setBreadcrumbDivider(Icon<?> breadcrumbDivider) {
+        this.breadcrumbDivider = breadcrumbDivider;
+    }
+
     protected BooleanProperty selectedProperty() {
         return selected;
     }
 
-    protected Label getTitleLabel() {
-        return titleLabel;
-    }
-
     protected IconViewBox getIconViewBox() {
         return iconViewBox;
+    }
+
+    protected HBox getBreadcrumbsBox() {
+        return breadcrumbsBox;
     }
 
     protected HBox getTitleBox() {
@@ -89,9 +114,20 @@ public abstract class AbstractPageFxView<P extends AbstractPagePresenter<?, ?>>
         return new AbstractPageFxView.Composer();
     }
 
+    protected Node createBreadcrumbDivider() {
+        if (this.breadcrumbDivider == null) {
+            return new Label("/");
+        } else {
+            return new IconViewBox(breadcrumbDivider);
+        }
+    }
+
     @Override
     protected void build() {
         super.build();
-        HBox.setHgrow(titleLabel, Priority.ALWAYS);
+        titleBox.getStylesheets().add(AbstractPageFxView.class.getResource("page-title.css").toExternalForm());
+        titleBox.getStyleClass().add("title-box");
+        breadcrumbsBox.getStyleClass().add("breadcrumbs-box");
+        HBox.setHgrow(breadcrumbsBox, Priority.ALWAYS);
     }
 }

@@ -37,7 +37,7 @@ public class PagedDialogFxView extends AbstractDialogFxView<PagedDialogPresenter
         public void compose() {
             super.compose();
             var rootItem = MenuFactory.create(MenuFactory.PageType.DIALOG);
-            pageHost = new PageHostFxView<>(rootItem);
+            pageHost = new PageHostFxView<>(rootItem, false);
             var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());
             hostPresenter.initialize();
 

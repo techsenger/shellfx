@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.page;
+/*
+    Author: Pavel Castornii
+*/
 
-import com.techsenger.tabshell.core.area.AreaView;
-import com.techsenger.tabshell.material.icon.Icon;
-import java.util.List;
+.title-box > .breadcrumbs-box {
+    -fx-spacing: 4px;
+    -fx-alignment: CENTER_LEFT;
+}
 
-/**
- *
- * @author Pavel Castornii
- */
-public interface PageView extends AreaView {
+.title-box > .breadcrumbs-box > .hyperlink , .title-box > .breadcrumbs-box > .hyperlink:visited {
+    -fx-text-fill: -color-fg-default;
+}
 
-    void setSelected(boolean selected);
-
-    void setIcon(Icon<?> icon);
-
-    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
+.title-box > .breadcrumbs-box .font-icon-view {
+    -fx-font-size: 1.4em;
 }

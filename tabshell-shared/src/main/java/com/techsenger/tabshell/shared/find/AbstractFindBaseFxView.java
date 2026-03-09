@@ -270,10 +270,13 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         return findTrigger;
     }
 
+    /**
+     * Provides minimal visual configuration to avoid imposing styling on subclasses.
+     */
     @Override
     protected void build() {
         super.build();
-        getNode().getStylesheets().add(AbstractFindBaseFxView.class.getResource("find.css").toExternalForm());
+        getNode().getStylesheets().add(AbstractFindBaseFxView.class.getResource("find-base.css").toExternalForm());
         this.findComboBox.setEditable(true);
         this.findComboBox.getStyleClass().addAll(StyleClasses.NO_SELECTED);
         this.matchesLabel.getStyleClass().add("matches");
@@ -286,12 +289,6 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
                 SizeConstants.THIRD_INSET, 0));
         clearButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
         clearButton.setFocusTraversable(false);
-    }
-
-    @Override
-    protected void bind() {
-        super.bind();
-        this.findComboBox.maxWidthProperty().bind(this.findComboBoxWrapper.widthProperty().subtract(1));
     }
 
     @Override

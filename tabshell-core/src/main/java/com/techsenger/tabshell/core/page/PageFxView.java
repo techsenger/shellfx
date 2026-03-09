@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.page;
 
 import com.techsenger.tabshell.core.area.AreaFxView;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
@@ -30,4 +31,8 @@ public interface PageFxView<P extends PagePresenter<?, ?>> extends AreaFxView<P>
 
     @Override
     Composer getComposer();
+
+    void setBreadcrumbDivider(Icon<?> divider);
+
+    Icon<?> getBreadcrumbDivider();
 }

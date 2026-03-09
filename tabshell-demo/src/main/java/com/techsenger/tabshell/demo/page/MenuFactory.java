@@ -20,11 +20,13 @@ import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.demo.DemoComponents;
-import com.techsenger.tabshell.layout.pagehost.Page;
+import com.techsenger.tabshell.layout.pagehost.DefaultPageItem;
+import com.techsenger.tabshell.layout.pagehost.PageItem;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.toolkit.core.function.Factory;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Insets;
-import javafx.scene.control.TreeItem;
 
 /**
  *
@@ -36,37 +38,7 @@ final class MenuFactory {
         DIALOG, TAB
     }
 
-    private static final class PageItem implements Page {
-
-        private final ComponentName name;
-
-        private final String title;
-
-        private final Factory<PageFxView<?>> factory;
-
-        private PageItem(String title, ComponentName name, Factory<PageFxView<?>> factory) {
-            this.name = name;
-            this.title = title;
-            this.factory = factory;
-        }
-
-        @Override
-        public ComponentName getName() {
-            return name;
-        }
-
-        @Override
-        public String toString() {
-            return title;
-        }
-
-        @Override
-        public Factory<? extends PageFxView<?>> getFactory() {
-            return this.factory;
-        }
-    }
-
-    static TreeItem<Page> create(PageType parentType) {
+    static PageItem create(PageType parentType) {
         // for demo one component is used, so this factory is required
         class PageFactoryImpl implements Factory<PageFxView<?>> {
 
@@ -87,7 +59,7 @@ final class MenuFactory {
                 } else {
                     padding = new Insets(SizeConstants.INSET);
                 }
-                var view = new DemoPageFxView("Title " + index, padding);
+                var view = new DemoPageFxView(padding, index);
                 var presenter = new DemoPagePresenter(view) {
                     @Override
                     protected Descriptor createDescriptor() {
@@ -99,17 +71,17 @@ final class MenuFactory {
         }
 
         // items for menu
-        var rootItem = new TreeItem<Page>(null);
-        var item0 = new TreeItem<Page>(new PageItem("Page 0", DemoComponents.PAGE_0,
-                new PageFactoryImpl(DemoComponents.PAGE_0, 0)));
-        var item1 = new TreeItem<Page>(new PageItem("Page 1", DemoComponents.PAGE_1,
-                new PageFactoryImpl(DemoComponents.PAGE_1, 1)));
-        item1.setExpanded(true);
-        var item2 = new TreeItem<Page>(new PageItem("Page 2", DemoComponents.PAGE_2,
-                new PageFactoryImpl(DemoComponents.PAGE_2, 2)));
-        rootItem.getChildren().addAll(item0, item1);
+        var root = new DefaultPageItem();
+        var item0 = new DefaultPageItem("Page 0", DemoComponents.PAGE_0,
+                new PageFactoryImpl(DemoComponents.PAGE_0, 0), new ArrayList<>());
+        root.setChildren(List.of(item0));
+        var item1 = new DefaultPageItem("Page 1", DemoComponents.PAGE_1,
+                new PageFactoryImpl(DemoComponents.PAGE_1, 1), new ArrayList<>());
+        item0.getChildren().add(item1);
+        var item2 = new DefaultPageItem("Page 2", DemoComponents.PAGE_2,
+                new PageFactoryImpl(DemoComponents.PAGE_2, 2), new ArrayList<>());
         item1.getChildren().add(item2);
-        return rootItem;
+        return root;
     }
 
     private MenuFactory() {

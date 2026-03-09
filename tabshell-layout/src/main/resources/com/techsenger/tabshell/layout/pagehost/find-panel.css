@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
+/*
+    Author: Pavel Castornii
+*/
 
-import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.tabshell.core.page.PageFxView;
-import com.techsenger.toolkit.core.function.Factory;
-
-/**
- *
- * @author Pavel Castornii
- */
-public interface Page {
-
-    ComponentName getName();
-
-    Factory<? extends PageFxView<?>> getFactory();
+.find-box {
+    -fx-padding: 6 4 6 4;
 }
+

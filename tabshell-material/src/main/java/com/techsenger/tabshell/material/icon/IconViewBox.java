@@ -29,6 +29,10 @@ public class IconViewBox extends HBox {
     private final ObjectProperty<Icon<?>> icon = new SimpleObjectProperty<>();
 
     public IconViewBox() {
+        this(null);
+    }
+
+    public IconViewBox(Icon<?> i) {
         getStyleClass().add("icon-view-box");
         icon.addListener((ov, oldV, newV) -> {
             getChildren().clear();
@@ -44,6 +48,7 @@ public class IconViewBox extends HBox {
                 }
             }
         });
+        setIcon(i);
     }
 
     public Icon<?> getIcon() {

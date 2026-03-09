@@ -18,12 +18,18 @@ package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
+import com.techsenger.tabshell.core.page.PageBreadcrumb;
 import com.techsenger.tabshell.core.page.PageContainerFxView;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.core.page.PagePort;
+import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javafx.geometry.Insets;
 import javafx.scene.control.SplitPane;
@@ -42,10 +48,30 @@ import javafx.util.Callback;
 public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractAreaFxView<P>
         implements PageContainerFxView<P>, PageHostView {
 
+    private static TreeItem<PageItem> buildTree(PageItem root) {
+        var treeItem = new TreeItem<PageItem>(root);
+        if (root.getChildren() != null && !root.getChildren().isEmpty()) {
+            root.getChildren().stream()
+                .map(child -> buildTree(child))
+                .forEach(treeItem.getChildren()::add);
+        }
+        return treeItem;
+    }
+
     public class Composer extends AbstractAreaFxView<P>.Composer implements PageContainerFxView.Composer,
             PageHostComposer {
 
         private final PageHostFxView<P> view = PageHostFxView.this;
+
+        @Override
+        public void compose() {
+            super.compose();
+
+            var findV = createFindPanel();
+            findV.getPresenter().initialize();
+            getModifiableChildren().add(findV);
+            view.menuBox.getChildren().add(0, findV.getNode());
+        }
 
         @Override
         public void selectPage(ComponentName page) {
@@ -55,8 +81,20 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
                 if (treeItem == null) {
                     return;
                 }
+                List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
+                TreeItem<PageItem> current = treeItem;
+                while (current != null) {
+                    if (current.getValue().getText() != null) { // it can be not shown root
+                        breadcrumbs.add(current.getValue());
+                    }
+                    current = current.getParent();
+                }
+                Collections.reverse(breadcrumbs);
                 fxView = treeItem.getValue().getFactory().create();
                 fxView.getPresenter().initialize();
+                fxView.setBreadcrumbDivider(SharedIcons.CHEVRON_RIGHT);
+                fxView.getPresenter().setBreadcrumbs(breadcrumbs);
+                VBox.setVgrow(fxView.getNode(), Priority.ALWAYS);
                 getModifiableChildren().add(fxView);
                 view.pages.put(page, fxView);
                 view.pageTreeView.getSelectionModel().select(treeItem);
@@ -68,9 +106,15 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         public PagePort getSelectedPage() {
             return view.page == null ? null : view.page.getPresenter();
         }
+
+        protected FindPanelFxView<?> createFindPanel() {
+            var view = new FindPanelFxView<>();
+            var presenter = new FindPanelPresenter<>(view);
+            return view;
+        }
     }
 
-    private final TreeView<Page> pageTreeView = new TreeView<>();
+    private final TreeView<PageItem> pageTreeView = new TreeView<>();
 
     private final VBox menuBox = new VBox(pageTreeView);
 
@@ -87,14 +131,36 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
     private PageFxView<?> page;
 
-    public PageHostFxView(TreeItem<Page> root) {
-        this(root, null);
+    public PageHostFxView(PageItem root, boolean showRoot) {
+        this(root, showRoot, null);
     }
 
-    public PageHostFxView(TreeItem<Page> root, Callback<TreeView<Page>, TreeCell<Page>> clbck) {
-        this.itemRegister = new TreeItemRegister(root);
-        pageTreeView.setRoot(root);
-        pageTreeView.setCellFactory(clbck);
+    public PageHostFxView(PageItem root, boolean showRoot, Callback<TreeView<PageItem>, TreeCell<PageItem>> clbck) {
+        var treeRoot = buildTree(root);
+        this.itemRegister = new TreeItemRegister(treeRoot);
+        pageTreeView.setRoot(treeRoot);
+        pageTreeView.setShowRoot(showRoot);
+        if (clbck != null) {
+            pageTreeView.setCellFactory(clbck);
+        } else {
+            pageTreeView.setCellFactory(tv -> new TreeCell<>() {
+                @Override
+                protected void updateItem(PageItem item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item.getText());
+                        if (item.getIcon() != null) {
+                            setGraphic(new IconViewBox(item.getIcon()));
+                        } else {
+                            setGraphic(null);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -149,13 +215,13 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     protected void addListeners() {
         super.addListeners();
         pageTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
-            getPresenter().onPageSelected(newV.getValue());
+            getPresenter().onPageSelected(newV.getValue().getName());
         });
         splitPane.getDividers().getFirst().positionProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().onDividerPositionChanged(newV.doubleValue()));
     }
 
-    protected TreeView<? extends Page> getPageTreeView() {
+    protected TreeView<? extends PageItem> getPageTreeView() {
         return pageTreeView;
     }
 

@@ -16,19 +16,18 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.area.AreaView;
+import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.material.icon.Icon;
-import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageView extends AreaView {
+public interface PageBreadcrumb {
 
-    void setSelected(boolean selected);
+    Icon<?> getIcon();
 
-    void setIcon(Icon<?> icon);
+    String getText();
 
-    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
+    ComponentName getName();
 }
