@@ -32,19 +32,19 @@ import javafx.scene.control.TreeItem;
  */
 class TreeItemRegister {
 
-    private final Map<ComponentName, TreeItem<PageItem>> itemsByComponent = new HashMap<>();
+    private final Map<ComponentName, TreeItem<PageDescriptor>> itemsByComponent = new HashMap<>();
 
-    private final ListChangeListener<TreeItem<PageItem>> globalListener = this::onChildrenChanged;
+    private final ListChangeListener<TreeItem<PageDescriptor>> globalListener = this::onChildrenChanged;
 
-    TreeItemRegister(TreeItem<PageItem> rootItem) {
+    TreeItemRegister(TreeItem<PageDescriptor> rootItem) {
         traverseAndAdd(rootItem);
     }
 
-    public TreeItem<PageItem> getItem(ComponentName component) {
+    public TreeItem<PageDescriptor> getItem(ComponentName component) {
         return itemsByComponent.get(component);
     }
 
-    private void traverseAndAdd(TreeItem<PageItem> item) {
+    private void traverseAndAdd(TreeItem<PageDescriptor> item) {
         item.getChildren().addListener(globalListener);
         var value = item.getValue();
         if (value != null) {
@@ -52,12 +52,12 @@ class TreeItemRegister {
                 itemsByComponent.put(value.getName(), item);
             }
         }
-        for (TreeItem<PageItem> child : item.getChildren()) {
+        for (TreeItem<PageDescriptor> child : item.getChildren()) {
             traverseAndAdd(child);
         }
     }
 
-    private void traverseAndRemove(TreeItem<PageItem> item) {
+    private void traverseAndRemove(TreeItem<PageDescriptor> item) {
         item.getChildren().removeListener(globalListener);
         var value = item.getValue();
         if (value != null) {
@@ -65,21 +65,21 @@ class TreeItemRegister {
                 itemsByComponent.remove(value.getName());
             }
         }
-        for (TreeItem<PageItem> child : item.getChildren()) {
+        for (TreeItem<PageDescriptor> child : item.getChildren()) {
             traverseAndRemove(child);
         }
     }
 
-    private void onChildrenChanged(ListChangeListener.Change<? extends TreeItem<PageItem>> change) {
+    private void onChildrenChanged(ListChangeListener.Change<? extends TreeItem<PageDescriptor>> change) {
         while (change.next()) {
             if (change.wasAdded()) {
-                for (TreeItem<PageItem> added : change.getAddedSubList()) {
+                for (TreeItem<PageDescriptor> added : change.getAddedSubList()) {
                     traverseAndAdd(added);
                 }
             }
 
             if (change.wasRemoved()) {
-                for (TreeItem<PageItem> removed : change.getRemoved()) {
+                for (TreeItem<PageDescriptor> removed : change.getRemoved()) {
                     traverseAndRemove(removed);
                 }
             }

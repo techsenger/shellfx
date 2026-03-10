@@ -20,8 +20,8 @@ import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.demo.DemoComponents;
-import com.techsenger.tabshell.layout.pagehost.DefaultPageItem;
-import com.techsenger.tabshell.layout.pagehost.PageItem;
+import com.techsenger.tabshell.layout.pagehost.DefaultPageDescriptor;
+import com.techsenger.tabshell.layout.pagehost.PageDescriptor;
 import com.techsenger.tabshell.material.style.SizeConstants;
 import com.techsenger.toolkit.core.function.Factory;
 import javafx.geometry.Insets;
@@ -36,7 +36,7 @@ final class MenuFactory {
         DIALOG, TAB
     }
 
-    static PageItem create(PageType parentType) {
+    static PageDescriptor create(PageType parentType) {
         // for demo one component is used, so this factory is required
         class PageFactoryImpl implements Factory<PageFxView<?>> {
 
@@ -69,12 +69,15 @@ final class MenuFactory {
         }
 
         // items for menu
-        var root = new DefaultPageItem();
-        var item0 = new DefaultPageItem("Page 0", DemoComponents.PAGE_0, new PageFactoryImpl(DemoComponents.PAGE_0, 0));
+        var root = new DefaultPageDescriptor();
+        var item0 = new DefaultPageDescriptor("Page 0", DemoComponents.PAGE_0,
+                new PageFactoryImpl(DemoComponents.PAGE_0, 0));
         root.addChild(item0);
-        var item1 = new DefaultPageItem("Page 1", DemoComponents.PAGE_1, new PageFactoryImpl(DemoComponents.PAGE_1, 1));
+        var item1 = new DefaultPageDescriptor("Page 1", DemoComponents.PAGE_1,
+                new PageFactoryImpl(DemoComponents.PAGE_1, 1));
         item0.addChild(item1);
-        var item2 = new DefaultPageItem("Page 2", DemoComponents.PAGE_2, new PageFactoryImpl(DemoComponents.PAGE_2, 2));
+        var item2 = new DefaultPageDescriptor("Page 2", DemoComponents.PAGE_2,
+                new PageFactoryImpl(DemoComponents.PAGE_2, 2));
         item1.addChild(item2);
         return root;
     }

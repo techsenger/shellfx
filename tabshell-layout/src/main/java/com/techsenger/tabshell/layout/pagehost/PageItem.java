@@ -16,25 +16,20 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.page.PageFxView;
-import com.techsenger.toolkit.core.function.Factory;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageItem extends PageBreadcrumb {
+public interface PageItem<T extends PageItem<T>> extends PageInfo {
 
-    Factory<? extends PageFxView<?>> getFactory();
-
-    @Override
-    PageItem getParent();
+    T getParent();
 
     /**
      * Returns an unmodifiable list of children.
      *
      * @return
      */
-    List<PageItem> getChildren();
+    List<T> getChildren();
 }

@@ -21,67 +21,32 @@ import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.toolkit.core.function.Factory;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageItem implements PageItem {
-
-    private Icon<?> icon;
-
-    private String text;
-
-    private ComponentName name;
+public class DefaultPageDescriptor extends AbstractPageInfo implements PageDescriptor {
 
     private Factory<? extends PageFxView<?>> factory;
 
-    private PageItem parent;
+    private PageDescriptor parent;
 
-    private final List<PageItem> children = new ArrayList<>();
+    private final List<PageDescriptor> children = new ArrayList<>();
 
-    public DefaultPageItem() {
-
+    public DefaultPageDescriptor() {
+        super(null, null, null);
     }
 
-    public DefaultPageItem(String text, ComponentName name, Factory<? extends PageFxView<?>> factory) {
+    public DefaultPageDescriptor(String text, ComponentName name, Factory<? extends PageFxView<?>> factory) {
         this(null, text, name, factory);
     }
 
-    public DefaultPageItem(Icon<?> icon, String text, ComponentName name, Factory<? extends PageFxView<?>> factory) {
-        this.icon = icon;
-        this.text = text;
-        this.name = name;
+    public DefaultPageDescriptor(Icon<?> icon, String text, ComponentName name,
+            Factory<? extends PageFxView<?>> factory) {
+        super(icon, text, name);
         this.factory = factory;
-    }
-
-    @Override
-    public Icon<?> getIcon() {
-        return icon;
-    }
-
-    public void setIcon(Icon<?> icon) {
-        this.icon = icon;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    @Override
-    public ComponentName getName() {
-        return name;
-    }
-
-    public void setName(ComponentName name) {
-        this.name = name;
     }
 
     @Override
@@ -94,21 +59,21 @@ public class DefaultPageItem implements PageItem {
     }
 
     @Override
-    public List<PageItem> getChildren() {
-        return Collections.unmodifiableList(children);
-    }
-
-    @Override
-    public PageItem getParent() {
+    public PageDescriptor getParent() {
         return this.parent;
     }
 
-    public void addChild(DefaultPageItem item) {
+    @Override
+    public List<PageDescriptor> getChildren() {
+        return this.children;
+    }
+
+    public void addChild(DefaultPageDescriptor item) {
         this.children.add(item);
         item.setParent(this);
     }
 
-    void setParent(PageItem parent) {
+    void setParent(DefaultPageDescriptor parent) {
         this.parent = parent;
     }
 }

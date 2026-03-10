@@ -24,6 +24,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.page.PageContainerPresenter;
 import com.techsenger.tabshell.core.page.PagePort;
 import com.techsenger.tabshell.layout.LayoutComponents;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,6 +34,41 @@ import java.util.List;
  */
 public class PageHostPresenter<V extends PageHostView, C extends PageHostComposer>
         extends AbstractAreaPresenter<V, C> implements PageContainerPresenter<V, C>, PageHostPort {
+
+    private static List<PageBreadcrumb> getBreadcrumbs(PageItem<?> treeItem) {
+        List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
+        if (treeItem == null) {
+            return breadcrumbs;
+        }
+        PageItem<?> current = treeItem;
+        DefaultPageBreadcrumb previous = null;
+        while (current != null) {
+            if (current.getText() != null) { // it can be not shown root
+                var breadcrumb = new DefaultPageBreadcrumb(current.getIcon(), current.getText(), current.getName());
+                breadcrumbs.add(breadcrumb);
+                if (previous != null) {
+                    previous.setPrevious(breadcrumb);
+                }
+                previous = breadcrumb;
+            }
+            current = current.getParent();
+        }
+        Collections.reverse(breadcrumbs);
+        return breadcrumbs;
+    }
+
+    private static List<PageBreadcrumb> getBreadcrumbs(PageBreadcrumb breadcrumb) {
+        List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
+        PageBreadcrumb current = breadcrumb;
+        while (current != null) {
+            if (current.getText() != null) { // it can be not shown root
+                breadcrumbs.add(current);
+            }
+            current = current.getPrevious();
+        }
+        Collections.reverse(breadcrumbs);
+        return breadcrumbs;
+    }
 
     private List<PageBreadcrumb> breadcrumbs;
 
@@ -77,25 +113,14 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         this.dividerPosition = pos;
     }
 
-    /**
-     * This method is called when the user clicks on a page menu item.
-     *
-     * @param pageName
-     * @param breadcrumbs a list of breadcrumbs or an empty list
-     */
-    protected void onPageRequested(ComponentName pageName, List<PageBreadcrumb> breadcrumbs) {
-        var currentPage = getComposer().getSelectedPage();
-        if (currentPage != null) {
-            if (currentPage.getDescriptor().getName() == pageName) {
-                return;
-            }
-            currentPage.setSelected(false);
-        }
-        this.breadcrumbs = breadcrumbs;
-        getView().setBreadcrumbs(breadcrumbs);
-        getComposer().selectPage(pageName);
-        currentPage = getComposer().getSelectedPage();
-        currentPage.setSelected(true);
+    protected void onPageRequested(ComponentName pageName, PageItem<?> item) {
+        var breadcrumbs = getBreadcrumbs(item);
+        doOnPageRequested(pageName, breadcrumbs);
+    }
+
+    protected void onPageRequested(ComponentName pageName, PageBreadcrumb breadcrumb) {
+        var breadcrumbs = getBreadcrumbs(breadcrumb);
+        doOnPageRequested(pageName, breadcrumbs);
     }
 
     @Override
@@ -124,5 +149,20 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         if (history.isNew()) {
             getView().setDividerPosition(0.2);
         }
+    }
+
+    private void doOnPageRequested(ComponentName pageName, List<PageBreadcrumb> breadcrumbs) {
+        var currentPage = getComposer().getSelectedPage();
+        if (currentPage != null) {
+            if (currentPage.getDescriptor().getName() == pageName) {
+                return;
+            }
+            currentPage.setSelected(false);
+        }
+        this.breadcrumbs = breadcrumbs;
+        getView().setBreadcrumbs(breadcrumbs);
+        getComposer().selectPage(pageName);
+        currentPage = getComposer().getSelectedPage();
+        currentPage.setSelected(true);
     }
 }

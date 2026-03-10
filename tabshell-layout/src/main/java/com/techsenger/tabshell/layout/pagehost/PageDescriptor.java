@@ -16,11 +16,14 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.tabshell.core.page.PageFxView;
+import com.techsenger.toolkit.core.function.Factory;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageBreadcrumb extends PageInfo {
+public interface PageDescriptor extends PageItem<PageDescriptor> {
 
-    PageBreadcrumb getPrevious();
+    Factory<? extends PageFxView<?>> getFactory();
 }
