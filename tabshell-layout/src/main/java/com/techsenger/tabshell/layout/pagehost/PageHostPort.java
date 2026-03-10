@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.page.PageContainerPort;
 import com.techsenger.tabshell.core.page.PagePort;
@@ -35,4 +36,6 @@ public interface PageHostPort extends AreaPort, PageContainerPort {
     List<PageBreadcrumb> getBreadcrumbs();
 
     PagePort getSelectedPage();
+
+    void selectPage(ComponentName name);
 }

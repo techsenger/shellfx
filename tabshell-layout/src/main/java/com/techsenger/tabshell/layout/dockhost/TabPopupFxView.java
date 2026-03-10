@@ -22,7 +22,7 @@ import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.core.tab.TabPort;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -135,7 +135,7 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
         TabPaneProSkin tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
         var lastArea = tabPaneSkin.getTabHeaderArea().getLastArea();
         lastArea.getChildren().add(closeButton);
-        lastArea.setPadding(new Insets(0, SizeConstants.INSET, 0, 0));
+        lastArea.setPadding(new Insets(0, Spacing.HORIZONTAL, 0, 0));
         closeButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
 
         setInitialSizeAndPosition();

@@ -20,17 +20,21 @@ package com.techsenger.tabshell.material.style;
  *
  * @author Pavel Castornii
  */
-public final class SizeConstants {
+public final class Spacing {
 
-    public static final double INSET = 12.0;
+    public static final double VERTICAL = 10.0;
 
-    public static final double HALF_INSET = 6.0;
+    public static final double VERTICAL_HALF = 5.0;
 
-    public static final double THIRD_INSET = 4.0;
+    public static final double HORIZONTAL = 12.0;
 
-    public static final double SIXTH_INSET = 2.0;
+    public static final double HORIZONTAL_HALF = 6.0;
 
-    private SizeConstants() {
+    public static final double HORIZONTAL_THIRD = 4.0;
+
+    public static final double HORIZONTAL_SIXTH = 2.0;
+
+    private Spacing() {
         //empty
     }
 }

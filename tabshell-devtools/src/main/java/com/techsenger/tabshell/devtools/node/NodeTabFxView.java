@@ -32,7 +32,7 @@ import com.techsenger.tabshell.devtools.ElementUtils;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.FindFeature;
 import java.text.DecimalFormat;
@@ -132,7 +132,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
                 if (propertyItem.getType() == PropertyItemType.PROPERTY) {
                     var valueData = propertyItem.getValueData();
                     Label mainLabel = new Label(item);
-                    HBox box = new HBox(SizeConstants.THIRD_INSET, mainLabel);
+                    HBox box = new HBox(Spacing.HORIZONTAL_THIRD, mainLabel);
                     if (valueData.isDefault()) {
                         mainLabel.getStyleClass().add("default-value");
                     }

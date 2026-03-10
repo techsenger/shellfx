@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.core.area.AreaView;
 import com.techsenger.tabshell.core.page.PageContainerView;
 import java.util.List;
@@ -26,7 +27,13 @@ import java.util.List;
  */
 public interface PageHostView extends AreaView, PageContainerView {
 
+    void showPage(ComponentName page);
+
     void setDividerPosition(double pos);
 
     void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
+
+    void setForwardDisabled(boolean disabled);
+
+    void setBackDisabled(boolean disabled);
 }

@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.shared.find;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.Spacer;
@@ -90,7 +90,7 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
 
         this.findLabel.setMinWidth(Label.USE_PREF_SIZE);
         // 3 = 2(padding) + 1(bg-insetts)
-        this.findLabelWrapper.setPadding(new Insets(2, SizeConstants.INSET, 3, SizeConstants.INSET));
+        this.findLabelWrapper.setPadding(new Insets(2, Spacing.HORIZONTAL, 3, Spacing.HORIZONTAL));
         this.findLabelWrapper.setAlignment(Pos.CENTER_LEFT);
         GridPane.setVgrow(this.findLabelWrapper, Priority.ALWAYS);
         GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
@@ -101,11 +101,11 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
 
         this.toolBox.getChildren().addAll(getFindPreviousButton(), getFindNextButton(), getMatchCaseButton(),
                 getWholeWordButton(), getRegExpButton(), getHighlightButton(),
-                new Spacer(SizeConstants.INSET - SizeConstants.THIRD_INSET * 2), this.closeButton);
+                new Spacer(Spacing.HORIZONTAL - Spacing.HORIZONTAL_THIRD * 2), this.closeButton);
         this.toolBox.getStyleClass().add(Styles.DENSE);
-        this.toolBox.setSpacing(SizeConstants.THIRD_INSET);
+        this.toolBox.setSpacing(Spacing.HORIZONTAL_THIRD);
         this.toolBox.setAlignment(Pos.CENTER_LEFT);
-        this.toolBox.setPadding(new Insets(0, SizeConstants.INSET, 0, SizeConstants.THIRD_INSET));
+        this.toolBox.setPadding(new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL_THIRD));
         GridPane.setVgrow(this.toolBox, Priority.ALWAYS);
 
         gridPane.add(this.findLabelWrapper, 0, 0);

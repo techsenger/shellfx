@@ -70,9 +70,19 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         return breadcrumbs;
     }
 
+    private ItemRegister itemRegister;
+
     private List<PageBreadcrumb> breadcrumbs;
 
     private double dividerPosition;
+
+    private boolean forwardDisabled;
+
+    private boolean backDisabled;
+
+    private final List<ComponentName> pageHistory = new ArrayList<>();
+
+    private int pageHistoryIndex;
 
     public PageHostPresenter(V view, HistoryProvider<PageHostHistory> historyProvider) {
         super(view);
@@ -92,7 +102,14 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
 
     @Override
     public void selectPage(ComponentName page) {
-        getComposer().selectPage(page);
+        if (!isCurrentPage(page)) {
+            var item = this.itemRegister.getItem(page);
+            if (item != null) {
+                var breadcrumbs = getBreadcrumbs(item);
+                selectPage(page, breadcrumbs);
+                addPageHistory(page);
+            }
+        }
     }
 
     public void setDividerPosition(double pos) {
@@ -109,18 +126,80 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         return Collections.unmodifiableList(breadcrumbs);
     }
 
+    public boolean isForwardDisabled() {
+        return forwardDisabled;
+    }
+
+    public boolean isBackDisabled() {
+        return backDisabled;
+    }
+
+    /**
+     * Returns an unmodifiable list of history entries.
+     * @return
+     */
+    public List<ComponentName> getPageHistory() {
+        return Collections.unmodifiableList(pageHistory);
+    }
+
+    public int getPageHistoryIndex() {
+        return pageHistoryIndex;
+    }
+
+    protected ItemRegister getItemRegister() {
+        return itemRegister;
+    }
+
+    protected void setForwardDisabled(boolean forwardDisabled) {
+        this.forwardDisabled = forwardDisabled;
+        getView().setForwardDisabled(forwardDisabled);
+    }
+
+    protected void setBackDisabled(boolean backDisabled) {
+        this.backDisabled = backDisabled;
+        getView().setBackDisabled(backDisabled);
+    }
+
     protected void onDividerPositionChanged(double pos) {
         this.dividerPosition = pos;
     }
 
     protected void onPageRequested(ComponentName pageName, PageItem<?> item) {
-        var breadcrumbs = getBreadcrumbs(item);
-        doOnPageRequested(pageName, breadcrumbs);
+        if (!isCurrentPage(pageName)) {
+            var breadcrumbs = getBreadcrumbs(item);
+            selectPage(pageName, breadcrumbs);
+            addPageHistory(pageName);
+        }
     }
 
     protected void onPageRequested(ComponentName pageName, PageBreadcrumb breadcrumb) {
-        var breadcrumbs = getBreadcrumbs(breadcrumb);
-        doOnPageRequested(pageName, breadcrumbs);
+        if (!isCurrentPage(pageName)) {
+            var breadcrumbs = getBreadcrumbs(breadcrumb);
+            selectPage(pageName, breadcrumbs);
+            addPageHistory(pageName);
+        }
+    }
+
+    protected void onBack() {
+        if (this.pageHistoryIndex > 0) {
+            var newIndex = pageHistoryIndex - 1;
+            navigateHistory(newIndex);
+        }
+    }
+
+    protected void onForward() {
+        if (this.pageHistoryIndex + 1 < this.pageHistory.size()) {
+            var newIndex = pageHistoryIndex + 1;
+            navigateHistory(newIndex);
+        }
+    }
+
+    protected boolean isCurrentPage(ComponentName page) {
+        var currentPage = getComposer().getSelectedPage();
+        if (currentPage != null && currentPage.getDescriptor().getName() == page) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -149,20 +228,46 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         if (history.isNew()) {
             getView().setDividerPosition(0.2);
         }
+        setBackDisabled(true);
+        setForwardDisabled(true);
     }
 
-    private void doOnPageRequested(ComponentName pageName, List<PageBreadcrumb> breadcrumbs) {
+    void setItemRegister(ItemRegister itemRegister) {
+        this.itemRegister = itemRegister;
+    }
+
+    private void navigateHistory(int newIndex) {
+        var page = this.pageHistory.get(newIndex);
+        var item = this.itemRegister.getItem(page);
+        var breadcrumbs = getBreadcrumbs(item);
+        selectPage(page, breadcrumbs);
+        setPageHistoryIndex(newIndex);
+    }
+
+    private void selectPage(ComponentName pageName, List<PageBreadcrumb> breadcrumbs) {
         var currentPage = getComposer().getSelectedPage();
         if (currentPage != null) {
-            if (currentPage.getDescriptor().getName() == pageName) {
-                return;
-            }
             currentPage.setSelected(false);
         }
+        getComposer().providePage(pageName);
         this.breadcrumbs = breadcrumbs;
         getView().setBreadcrumbs(breadcrumbs);
-        getComposer().selectPage(pageName);
+        getView().showPage(pageName);
         currentPage = getComposer().getSelectedPage();
         currentPage.setSelected(true);
+    }
+
+    private void addPageHistory(ComponentName page) {
+        if (this.pageHistoryIndex + 1 < this.pageHistory.size()) {
+            this.pageHistory.subList(this.pageHistoryIndex + 1, this.pageHistory.size()).clear();
+        }
+        this.pageHistory.add(page);
+        setPageHistoryIndex(this.pageHistory.size() - 1);
+    }
+
+    private void setPageHistoryIndex(int index) {
+        this.pageHistoryIndex = index;
+        setBackDisabled(index == 0);
+        setForwardDisabled(index + 1 == this.pageHistory.size());
     }
 }

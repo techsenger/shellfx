@@ -21,7 +21,7 @@ import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.RegionResizer;
@@ -315,7 +315,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         super.getNode().getChildren().add(mainBox);
         mainBox.getStyleClass().add("main-box");
         VBox.setVgrow(getContentBox(), Priority.ALWAYS);
-        getContentBox().setPadding(new Insets(SizeConstants.INSET, SizeConstants.INSET, 0, SizeConstants.INSET));
+        getContentBox().setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL));
         getContentBox().getStyleClass().addAll("content-box", StyleClasses.CORNERS_BOTTOM);
         super.getNode().getStyleClass().addAll("wrapper", StyleClasses.CORNERS_BOTTOM);
         VBox.setVgrow(super.getNode(), Priority.ALWAYS);
@@ -332,11 +332,12 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         this.resizer.initialize(dialogBox);
 
         this.buttonBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
-        this.buttonBox.setPadding(new Insets(SizeConstants.INSET));
-        buttonBox.setSpacing(SizeConstants.INSET);
+        this.buttonBox.setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL,
+                Spacing.VERTICAL, Spacing.HORIZONTAL));
+        buttonBox.setSpacing(Spacing.HORIZONTAL);
 
-        leftButtonBox.setSpacing(SizeConstants.INSET);
-        rightButtonBox.setSpacing(SizeConstants.INSET);
+        leftButtonBox.setSpacing(Spacing.HORIZONTAL);
+        rightButtonBox.setSpacing(Spacing.HORIZONTAL);
     }
 
     @Override

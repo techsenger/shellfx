@@ -30,18 +30,32 @@ import javafx.scene.control.TreeItem;
  *
  * @author Pavel Castornii
  */
-class TreeItemRegister {
+class TreeItemRegister implements ItemRegister {
 
     private final Map<ComponentName, TreeItem<PageDescriptor>> itemsByComponent = new HashMap<>();
 
     private final ListChangeListener<TreeItem<PageDescriptor>> globalListener = this::onChildrenChanged;
 
+    private final TreeItem<PageDescriptor> rootItem;
+
     TreeItemRegister(TreeItem<PageDescriptor> rootItem) {
         traverseAndAdd(rootItem);
+        this.rootItem = rootItem;
     }
 
-    public TreeItem<PageDescriptor> getItem(ComponentName component) {
+    public TreeItem<PageDescriptor> getTreeItem(ComponentName component) {
         return itemsByComponent.get(component);
+    }
+
+    @Override
+    public PageItem<?> getItem(ComponentName name) {
+        var treeItem = itemsByComponent.get(name);
+        return treeItem == null ? null : treeItem.getValue();
+    }
+
+    @Override
+    public PageItem<?> getRoot() {
+        return this.rootItem.getValue();
     }
 
     private void traverseAndAdd(TreeItem<PageDescriptor> item) {

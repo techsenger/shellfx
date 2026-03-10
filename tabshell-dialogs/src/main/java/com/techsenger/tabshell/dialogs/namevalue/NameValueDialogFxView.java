@@ -18,7 +18,7 @@ package com.techsenger.tabshell.dialogs.namevalue;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -101,8 +101,8 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?, ?>>
         GridPane.setHgrow(valueTextArea, Priority.ALWAYS);
         GridPane.setVgrow(valueTextArea, Priority.ALWAYS);
 
-        gridPane.setVgap(SizeConstants.INSET);
-        gridPane.setHgap(SizeConstants.INSET);
+        gridPane.setVgap(Spacing.VERTICAL);
+        gridPane.setHgap(Spacing.HORIZONTAL);
         VBox.setVgrow(gridPane, Priority.ALWAYS);
         getContentBox().getChildren().add(gridPane);
 

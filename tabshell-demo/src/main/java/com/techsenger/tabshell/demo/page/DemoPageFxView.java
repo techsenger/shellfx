@@ -17,7 +17,8 @@
 package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.page.AbstractPageFxView;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
+import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
@@ -40,7 +41,7 @@ public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implem
 
     @Override
     public void requestFocus() {
-
+        NodeUtils.requestFocus(this.textArea);
     }
 
     @Override
@@ -53,6 +54,6 @@ public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implem
         super.build();
         textArea.setWrapText(true);
         VBox.setVgrow(textArea, Priority.ALWAYS);
-        box.setSpacing(SizeConstants.INSET);
+        box.setSpacing(Spacing.VERTICAL);
     }
 }

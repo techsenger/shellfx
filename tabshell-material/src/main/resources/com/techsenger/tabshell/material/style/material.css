@@ -40,27 +40,42 @@
 }
 
 /*
-    Button
+    Button.
+
+    If a font icon is used in a button, there can be a problem with setting equal heights for buttons with icons
+    and buttons with text. This happens because different fonts are used and `-fx-font-size` does not define
+    the final character height. You can observe this behavior by running the following code:
+
+    for (var i = 14; i < 26; i++) {
+        root.getChildren().add(createButtons(i));
+    }
+    ...
+    private HBox createButtons(int fontSize) {
+        var button1 = new Button(null, new FontIcon(MaterialDesignS.SALE));
+        var button2 = new Button("Button " + fontSize);
+        var box = new HBox(button1, button2);
+        box.setStyle("-fx-font-size: " + fontSize);
+        return box;
+    }
+
+    This code shows that for some font sizes, the two buttons have the same height, but in other cases their heights
+    differ.
+
+    Additionally, in Atlantafx, padding for buttons is specified in pixels, while the font size can be changed by the
+    user. Therefore, we cannot set a fixed size. There are two practical solutions:
+    1) generate button styles dynamically via `data:text/css`, or
+    2) use buttons within specially styled containers.
+
+    For now, it is better to avoid placing text buttons and icon-only buttons next to each other.
+
+    Another issue is that in MDI, the width of an icon can differ from its height. That's why it is not possible to
+    rely on padding alone.
+
+    Button styles in the toolbar are defined in the toolbar’s styles, since buttons can be stretched to fill the
+    container there.
 */
-.button.cross {
-   -fx-background-color: -color-fg-default;
-   -fx-shape: "M 0,0 H1 L 4,3 7,0 H8 V1 L 5,4 8,7 V8 H7 L 4,5 1,8 H0 V7 L 3,4 0,1 Z";
-   -fx-scale-shape: false;
-   -fx-min-width: 10 !important;
-   -fx-max-width: 10 !important;
-   -fx-pref-width: 10 !important;
-   -fx-min-height: 10 !important;
-   -fx-max-height: 10 !important;
-   -fx-pref-height: 10 !important;
-   -fx-padding: 10;
-}
 
-.button.cross:hover {
-    -fx-cursor: hand;
-    -fx-scale-x: 1.1;
-    -fx-scale-y: 1.1;
-}
-
+/***************** iconed buttons ******************/
 .button.iconed,
 .toggle-button.iconed {
     -fx-padding: 0;
@@ -78,20 +93,60 @@
     -fx-font-size: 1.4em;
 }
 
-.button.mini-iconed,
-.toggle-button.mini-iconed {
+/***************** dense iconed buttons ******************/
+.button.iconed.dense,
+.toggle-button.iconed.dense {
     -fx-padding: 0;
-    -fx-min-height: 1.4em;
-    -fx-max-height: 1.4em;
-    -fx-pref-height: 1.4em;
-    -fx-min-width: 1.4em;
-    -fx-max-width: 1.4em;
-    -fx-pref-width: 1.4em;
+    -fx-min-height: 1.85em;
+    -fx-max-height: 1.85em;
+    -fx-pref-height: 1.85em;
+    -fx-min-width: 1.85em;
+    -fx-max-width: 1.85em;
+    -fx-pref-width: 1.85em;
 }
 
-.button.mini-iconed .font-icon-view,
-.toggle-button.mini-iconed .font-icon-view {
+.button.dense .font-icon-view,
+.toggle-button.dense .font-icon-view {
+    -fx-font-size: 1.3em;
+}
+
+/***************** extra dense iconed buttons ******************/
+
+.button.iconed.extra-dense,
+.toggle-button.iconed.extra-dense {
+    -fx-padding: 0;
+    -fx-min-height: 1.6em;
+    -fx-max-height: 1.6em;
+    -fx-pref-height: 1.6em;
+    -fx-min-width: 1.6em;
+    -fx-max-width: 1.6em;
+    -fx-pref-width: 1.6em;
+}
+
+.button.extra-dense .font-icon-view,
+.toggle-button.extra-dense .font-icon-view {
     -fx-font-size: 1.2em;
+}
+
+/***************** cross button ******************/
+
+.button.cross {
+   -fx-background-color: -color-fg-default;
+   -fx-shape: "M 0,0 H1 L 4,3 7,0 H8 V1 L 5,4 8,7 V8 H7 L 4,5 1,8 H0 V7 L 3,4 0,1 Z";
+   -fx-scale-shape: false;
+   -fx-min-width: 10 !important;
+   -fx-max-width: 10 !important;
+   -fx-pref-width: 10 !important;
+   -fx-min-height: 10 !important;
+   -fx-max-height: 10 !important;
+   -fx-pref-height: 10 !important;
+   -fx-padding: 10;
+}
+
+.button.cross:hover {
+    -fx-cursor: hand;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 
 /*
@@ -306,10 +361,18 @@
     Font icon
 */
 .font-icon-view {
-    -fx-font-size: 1.2em;
+    -fx-font-size: 1.4em;
     -fx-font-family: 'Material Design Icons';
     -fx-padding: 0;
     -fx-fill: -color-fg-default;
+}
+
+.font-icon-view.dense {
+    -fx-font-size: 1.3em;
+}
+
+.font-icon-view.extra-dense {
+    -fx-font-size: 1.2em;
 }
 
 .font-icon-view.accent,

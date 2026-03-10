@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.layout.pagehost.DefaultPageDescriptor;
 import com.techsenger.tabshell.layout.pagehost.PageDescriptor;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.toolkit.core.function.Factory;
 import javafx.geometry.Insets;
 
@@ -53,9 +53,9 @@ final class MenuFactory {
             public PageFxView<?> create() {
                 Insets padding;
                 if (parentType == PageType.DIALOG) {
-                    padding = new Insets(0, SizeConstants.INSET, 0, SizeConstants.INSET);
+                    padding = new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL);
                 } else {
-                    padding = new Insets(0, SizeConstants.INSET, SizeConstants.INSET, SizeConstants.INSET);
+                    padding = new Insets(0, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL);
                 }
                 var view = new DemoPageFxView(padding, index);
                 var presenter = new DemoPagePresenter(view) {

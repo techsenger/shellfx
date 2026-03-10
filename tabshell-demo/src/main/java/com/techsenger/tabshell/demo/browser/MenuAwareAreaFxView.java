@@ -27,7 +27,7 @@ import com.techsenger.tabshell.demo.dialogs.DemoDialogPresenter;
 import com.techsenger.tabshell.demo.popup.DemoPopupFxView;
 import com.techsenger.tabshell.demo.popup.DemoPopupPresenter;
 import com.techsenger.tabshell.material.Anchors;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -165,9 +165,9 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
         setupButton(shellPopupButton);
         setupButton(tabPopupButton);
         vBox.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        vBox.setSpacing(SizeConstants.INSET);
-        dialogHBox.setSpacing(SizeConstants.INSET);
-        popupHBox.setSpacing(SizeConstants.INSET);
+        vBox.setSpacing(Spacing.VERTICAL);
+        dialogHBox.setSpacing(Spacing.HORIZONTAL);
+        popupHBox.setSpacing(Spacing.HORIZONTAL);
     }
 
     @Override

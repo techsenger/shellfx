@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.layout.pagehost;
 
-.find-box {
-    -fx-padding: 6 4 6 4;
+import com.techsenger.patternfx.core.ComponentName;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface ItemRegister {
+
+    PageItem<?> getItem(ComponentName name);
+
+    PageItem<?> getRoot();
 }
-

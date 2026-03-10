@@ -35,7 +35,7 @@ import com.techsenger.tabshell.core.style.CssAnchor;
 import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
@@ -208,7 +208,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
             var labelHalfWidth = Math.ceil(getTitleLabel().prefWidth(-1) / 2);
             var buttonBoxWidth = Math.ceil(getButtonBox().prefWidth(-1));
             var titleBarWidth = getTitleBar().getWidth();
-            double barHalfWidth = (titleBarWidth - SizeConstants.INSET * 2) / 2;
+            double barHalfWidth = (titleBarWidth - Spacing.HORIZONTAL * 2) / 2;
 
             var leftNodesWidth = iconBox + menuBarWidth + labelHalfWidth;
             var rightNodesWidth = labelHalfWidth + buttonBoxWidth;

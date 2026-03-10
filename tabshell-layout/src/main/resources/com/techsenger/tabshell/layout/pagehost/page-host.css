@@ -35,12 +35,8 @@
   -fx-background-color: -color-cell-border, -color-cell-bg-selected-focused;
 }
 
-.right-box > .header-box > .breadcrumbs-box {
-    -fx-spacing: 4px;
-    -fx-alignment: CENTER_LEFT;
-}
-
-.right-box > .header-box > .breadcrumbs-box > .hyperlink , .title-box > .breadcrumbs-box > .hyperlink:visited {
+.right-box > .header-box > .breadcrumbs-box > .hyperlink ,
+.right-box > .header-box > .breadcrumbs-box > .hyperlink:visited {
     -fx-text-fill: -color-fg-default;
 }
 

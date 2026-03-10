@@ -19,7 +19,7 @@ package com.techsenger.tabshell.shared.find;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
@@ -281,12 +281,12 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.findComboBox.getStyleClass().addAll(StyleClasses.NO_SELECTED);
         this.matchesLabel.getStyleClass().add("matches");
         this.findRightBox.getStyleClass().add("find-right-box");
-        StackPane.setMargin(this.findRightBox, new Insets(0, SizeConstants.INSET * 2, 0, 0));
+        StackPane.setMargin(this.findRightBox, new Insets(0, Spacing.HORIZONTAL * 2, 0, 0));
         this.findComboBoxWrapper.setAlignment(Pos.CENTER_RIGHT);
         this.findRightBox.setMaxWidth(HBox.USE_PREF_SIZE);
         this.findRightBox.setAlignment(Pos.CENTER);
-        this.findComboBoxWrapper.setPadding(new Insets(SizeConstants.THIRD_INSET, 0,
-                SizeConstants.THIRD_INSET, 0));
+        this.findComboBoxWrapper.setPadding(new Insets(Spacing.VERTICAL_HALF, 0,
+                Spacing.VERTICAL_HALF, 0));
         clearButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
         clearButton.setFocusTraversable(false);
     }

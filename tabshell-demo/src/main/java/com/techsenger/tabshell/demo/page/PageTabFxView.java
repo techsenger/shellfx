@@ -48,7 +48,7 @@ public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implement
             getContentBox().getChildren().add(pageHost.getNode());
             VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
 
-            pageHost.getComposer().selectPage(DemoComponents.PAGE_1);
+            pageHost.getPresenter().selectPage(DemoComponents.PAGE_0);
 
         }
     }

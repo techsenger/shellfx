@@ -18,7 +18,7 @@ package com.techsenger.tabshell.demo.dialogs;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -58,8 +58,8 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
     @Override
     protected void build() {
         super.build();
-        gridPane.setHgap(SizeConstants.INSET);
-        gridPane.setVgap(SizeConstants.INSET);
+        gridPane.setHgap(Spacing.HORIZONTAL);
+        gridPane.setVgap(Spacing.VERTICAL);
         gridPane.add(fooLabel, 0, 0);
         gridPane.add(fooTextField, 1, 0);
         fooTextField.setText("No closeRequest for Cancel! See ResultAction!");
@@ -74,7 +74,7 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
         okButton.setDefaultButton(true);
         registerButtons(okButton, cancelButton);
         getContentBox().getChildren().add(gridPane);
-        getContentBox().setSpacing(SizeConstants.INSET);
+        getContentBox().setSpacing(Spacing.VERTICAL);
         getFocusTrap().activate();
     }
 }

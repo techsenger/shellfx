@@ -27,7 +27,7 @@ import com.techsenger.tabshell.core.page.PagePort;
  */
 public interface PageHostComposer extends AreaComposer, PageContainerComposer {
 
-    void selectPage(ComponentName page);
+    PagePort providePage(ComponentName page);
 
     PagePort getSelectedPage();
 }

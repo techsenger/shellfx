@@ -17,12 +17,12 @@
 package com.techsenger.tabshell.layout.pagehost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.shared.find.AbstractFindBaseFxView;
 import com.techsenger.tabshell.shared.find.FindTrigger;
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 
 /**
  *
@@ -38,15 +38,16 @@ public class FindPanelFxView<P extends FindPanelPresenter<?, ?>> extends Abstrac
     }
 
     @Override
-    public Region getNode() {
+    public HBox getNode() {
         return box;
     }
 
     @Override
     protected void build() {
         super.build();
-        box.getStylesheets().add(FindPanelFxView.class.getResource("find-panel.css").toExternalForm());
         box.getStyleClass().add("find-box");
+        box.setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL_HALF,
+                Spacing.VERTICAL, Spacing.HORIZONTAL_HALF));
         HBox.setHgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
         getFindComboBox().setMaxWidth(Double.MAX_VALUE);
         getFindComboBoxWrapper().setMinWidth(100);

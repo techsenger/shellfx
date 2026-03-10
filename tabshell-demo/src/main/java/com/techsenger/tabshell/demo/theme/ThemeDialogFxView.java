@@ -19,7 +19,7 @@ package com.techsenger.tabshell.demo.theme;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -89,7 +89,7 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
         });
         themeComboBox.getStyleClass().add(Styles.DENSE);
         HBox.setHgrow(themeComboBox, Priority.ALWAYS);
-        hBox.setSpacing(SizeConstants.INSET);
+        hBox.setSpacing(Spacing.HORIZONTAL);
         hBox.setAlignment(Pos.CENTER_LEFT);
 
         okButton.setDefaultButton(true);

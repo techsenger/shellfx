@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.dialogs.utils;
 
 import com.techsenger.tabshell.material.icon.IconViewBox;
-import com.techsenger.tabshell.material.style.SizeConstants;
+import com.techsenger.tabshell.material.style.Spacing;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -31,12 +31,12 @@ import javafx.scene.layout.VBox;
 public final class FxViewUtils {
 
     public static void buildIconedMessageBox(IconViewBox messageIconViewBox, Label messageLabel, HBox messageBox) {
-        messageLabel.setPadding(new Insets(SizeConstants.INSET, 0, 0, 0));
+        messageLabel.setPadding(new Insets(Spacing.VERTICAL, 0, 0, 0));
 
         VBox.setVgrow(messageBox, Priority.ALWAYS);
         messageBox.getStyleClass().add("message-box");
-        messageBox.setSpacing(SizeConstants.HALF_INSET);
-        messageBox.setPadding(new Insets(0, SizeConstants.INSET, 0, SizeConstants.HALF_INSET));
+        messageBox.setSpacing(Spacing.HORIZONTAL_HALF);
+        messageBox.setPadding(new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL_HALF));
     }
 
     private FxViewUtils() {
