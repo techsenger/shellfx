@@ -48,7 +48,7 @@ public class FileColumnBuilder {
      */
     public NamedTableColumn<GenericFile, GenericFile> buildTypeColumn(GenericFontIcon<?> dirIcon,
             GenericFontIcon fileIcon) {
-        var typeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.TYPE, ".");
+        var typeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.TYPE, "");
         typeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         typeColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
 
