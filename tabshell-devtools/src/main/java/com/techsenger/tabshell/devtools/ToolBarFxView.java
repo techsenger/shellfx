@@ -60,7 +60,7 @@ public class ToolBarFxView<P extends ToolBarPresenter<?, ?>> extends AbstractFin
         getFindComboBox().getStyleClass().add(StyleClasses.EXTRA_DENSE);
         getFindRightBox().getStyleClass().add(StyleClasses.EXTRA_DENSE);
 
-        this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICONED_BUTTON);
+        this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON);
         this.refreshButton.setTooltip(new Tooltip("Refresh"));
 
         this.toolBar.getStyleClass().add(Styles.DENSE);

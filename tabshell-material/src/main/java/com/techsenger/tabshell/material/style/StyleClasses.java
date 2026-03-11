@@ -87,7 +87,7 @@ public interface StyleClasses {
     /**
      * Button that has only icon and has no text. Iconed button has a square shape.
      */
-    String ICONED_BUTTON = "iconed";
+    String ICON_BUTTON = "iconed";
 
     /**
      * Use this class for TabPanes to hide entire tab-header-area.

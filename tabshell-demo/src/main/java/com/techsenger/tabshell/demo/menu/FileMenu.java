@@ -31,7 +31,7 @@ public interface FileMenu {
 
     MenuName NAME = new DefaultMenuName();
 
-    MenuGroupName DEMO = new DefaultMenuGroupName("Demo");
+    MenuGroupName DEMO_GROUP = new DefaultMenuGroupName("Demo");
 
     MenuItemName MAIN_TAB = new DefaultMenuItemName();
 
@@ -41,11 +41,13 @@ public interface FileMenu {
 
     MenuItemName DEV_TOOLS = new DefaultMenuItemName();
 
-    MenuGroupName SETTINGS = new DefaultMenuGroupName("Settings");
+    MenuGroupName APPEARANCE_GROUP = new DefaultMenuGroupName("Settings");
 
     MenuItemName THEME = new DefaultMenuItemName();
 
-    MenuGroupName LAST = new DefaultMenuGroupName("Exit");
+    MenuItemName STYLES_TAB = new DefaultMenuItemName();
+
+    MenuGroupName LAST_GROUP = new DefaultMenuGroupName("Last");
 
     MenuItemName EXIT = new DefaultMenuItemName();
 }

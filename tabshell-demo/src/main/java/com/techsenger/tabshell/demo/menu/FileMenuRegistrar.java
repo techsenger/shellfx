@@ -33,6 +33,8 @@ import com.techsenger.tabshell.demo.ide.IdeMainTabPresenter;
 import com.techsenger.tabshell.demo.page.PageTabFxView;
 import com.techsenger.tabshell.demo.page.PageTabHistory;
 import com.techsenger.tabshell.demo.page.PageTabPresenter;
+import com.techsenger.tabshell.demo.styles.StylesTabFxView;
+import com.techsenger.tabshell.demo.styles.StylesTabPresenter;
 import com.techsenger.tabshell.demo.theme.ThemeDialogFxView;
 import com.techsenger.tabshell.demo.theme.ThemeDialogPresenter;
 import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
@@ -74,6 +76,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         registerDialogsItem();
         registerDevToolsTabDockItem();
         registerThemeItem();
+        registerStylesTabItem();
         registerExitItem();
     }
 
@@ -85,11 +88,11 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerGroups() {
-        ControlFactory<NamedMenuGroup> f = (v) -> new NamedMenuGroup(FileMenu.DEMO, 100);
+        ControlFactory<NamedMenuGroup> f = (v) -> new NamedMenuGroup(FileMenu.DEMO_GROUP, 100);
         addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, FileMenu.NAME, f));
-        f = (v) -> new NamedMenuGroup(FileMenu.SETTINGS, 200);
+        f = (v) -> new NamedMenuGroup(FileMenu.APPEARANCE_GROUP, 200);
         addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, FileMenu.NAME, f));
-        f = (v) -> new NamedMenuGroup(FileMenu.LAST, 300);
+        f = (v) -> new NamedMenuGroup(FileMenu.LAST_GROUP, 300);
         addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, FileMenu.NAME, f));
     }
 
@@ -111,7 +114,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
     }
 
     protected void registerPagedTabItem() {
@@ -129,7 +132,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
     }
 
     protected void registerDialogsItem() {
@@ -147,7 +150,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
     }
 
     protected void registerDevToolsTabDockItem() {
@@ -178,7 +181,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
     }
 
     protected DevToolsTabDockFxView<?> createDevTools() {
@@ -202,7 +205,23 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             });
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.SETTINGS, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.APPEARANCE_GROUP, f));
+    }
+
+    protected void registerStylesTabItem() {
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var item = new NamedMenuItem(FileMenu.STYLES_TAB, "Styles Tab", 200);
+            item.setOnAction((e) -> {
+                var shell = (ShellFxView<?>) v;
+                var tabView = new StylesTabFxView(shell);
+                var tabPresenter = new StylesTabPresenter(tabView);
+                tabPresenter.initialize();
+                resolveMainTabContainer().getComposer().addTab(tabView);
+                tabView.requestFocus();
+            });
+            return item;
+        };
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.APPEARANCE_GROUP, f));
     }
 
     protected void registerExitItem() {
@@ -213,7 +232,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.LAST, f));
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.LAST_GROUP, f));
     }
 
     private TabContainerFxView<?> resolveMainTabContainer() {

@@ -55,6 +55,8 @@ public final class DemoComponents {
 
     public static final ComponentName PAGE_DIALOG = new DefaultComponentName("Demo.PageDialog");
 
+    public static final ComponentName STYLES_TAB = new DefaultComponentName("Demo.StylesTab");
+
     private DemoComponents() {
         // empty
     }

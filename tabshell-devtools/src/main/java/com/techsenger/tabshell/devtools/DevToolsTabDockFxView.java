@@ -162,7 +162,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
         getNode().setTabDragEnabled(false);
         getNode().setTabDropEnabled(false);
 
-        settingsButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT, StyleClasses.EXTRA_DENSE);
+        settingsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.EXTRA_DENSE);
         settingsButton.setTooltip(new Tooltip("Settings"));
         getTabHeaderLastBox().getChildren().add(0, settingsButton);
     }

@@ -252,9 +252,9 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         breadcrumbsBox.setSpacing(Spacing.HORIZONTAL_THIRD);
         HBox.setHgrow(breadcrumbsBox, Priority.ALWAYS);
 
-        backButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT, StyleClasses.DENSE);
+        backButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.DENSE);
         backButton.setTooltip(new Tooltip("Back"));
-        forwardButton.getStyleClass().addAll(StyleClasses.ICONED_BUTTON, Styles.FLAT, StyleClasses.DENSE);
+        forwardButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.DENSE);
         forwardButton.setTooltip(new Tooltip("Forward"));
 
         historyBox.setSpacing(Spacing.HORIZONTAL);
