@@ -97,6 +97,8 @@
     -fx-background-color: -color-bg-extra;
     -fx-background-insets: 0;
     -fx-padding: 0 12px 0 12px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 6px;
 }
 
 .dialog-box > .title-bar > .icon-view-box {
@@ -111,7 +113,7 @@
 }
 
 .dialog-box > .title-bar > .title-label {
-    -fx-padding: 0 0 0 6px;
+    -fx-padding: 0;
 }
 
 .dialog-box > .title-bar > .button-box > .close-button {
