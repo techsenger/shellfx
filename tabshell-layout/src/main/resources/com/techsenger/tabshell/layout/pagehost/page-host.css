@@ -27,11 +27,15 @@
     -fx-background-color: transparent;
 }
 
-.left-box .tree-view > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected {
+.left-box > .tree-view > .virtual-flow > .clipped-container > .sheet > .tree-cell {
+    -fx-padding: 0.176em 0 0.175em 6px;
+}
+
+.left-box > .tree-view > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected {
   -fx-background-color: -color-cell-border, -color-cell-bg-selected;
 }
 
-.left-box .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected  {
+.left-box > .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected  {
   -fx-background-color: -color-cell-border, -color-cell-bg-selected-focused;
 }
 
