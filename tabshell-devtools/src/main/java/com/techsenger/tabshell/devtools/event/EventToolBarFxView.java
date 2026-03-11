@@ -112,7 +112,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
 
         // selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
-        eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.EXTRA_DENSE);
+        eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.COMPACT);
         var selectAllTypesItem = new MenuItem("Select All Types");
         selectAllTypesItem.setOnAction(e -> {
             for (var item : eventTypesButton.getItems()) {

@@ -70,14 +70,14 @@ public interface StyleClasses {
     String MONOSPACE = "monospace";
 
     /**
-     * Partial support (atlantaFX provides "dense").
-     */
-    String EXTRA_DENSE = "extra-dense";
-
-    /**
-     * The same style class exists in AltantaFX Styles class.
+     * Represents a moderately dense spacing mode. Equivalent to the {@code dense} style class in Atlantafx Styles.
      */
     String DENSE = "dense";
+
+    /**
+     * Represents the most compact spacing mode. Typically used when minimal padding and margins are desired.
+     */
+    String COMPACT = "compact";
 
     /**
      * Class for a cross button.

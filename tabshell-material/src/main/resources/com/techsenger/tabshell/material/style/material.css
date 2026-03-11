@@ -112,8 +112,8 @@
 
 /***************** extra dense iconed buttons ******************/
 
-.button.iconed.extra-dense,
-.toggle-button.iconed.extra-dense {
+.button.iconed.compact,
+.toggle-button.iconed.compact {
     -fx-padding: 0;
     -fx-min-height: 1.6em;
     -fx-max-height: 1.6em;
@@ -123,8 +123,8 @@
     -fx-pref-width: 1.6em;
 }
 
-.button.extra-dense .font-icon-view,
-.toggle-button.extra-dense .font-icon-view {
+.button.compact .font-icon-view,
+.toggle-button.compact .font-icon-view {
     -fx-font-size: 1.2em;
 }
 
@@ -173,33 +173,33 @@
     -fx-fixed-cell-size: 2em;
 }
 
-.table-view.extra-dense .column-header-background .column-header,
-.tree-table-view.extra-dense .column-header-background .column-header {
+.table-view.compact .column-header-background .column-header,
+.tree-table-view.compact .column-header-background .column-header {
     -fx-fixed-cell-size: 2em; /* decimal values (e.g., 2.Xem) may remove the header border */
     -fx-size: 2em;
 }
 
-.table-view.extra-dense .table-row-cell,
-.tree-table-view.extra-dense .tree-table-row-cell {
+.table-view.compact .table-row-cell,
+.tree-table-view.compact .tree-table-row-cell {
     -fx-cell-size: 1.65em;
 }
 
-.tree-table-view.extra-dense .tree-table-row-cell > .tree-disclosure-node {
+.tree-table-view.compact .tree-table-row-cell > .tree-disclosure-node {
   -fx-padding: 0 0.5em 0 0.5em;
 }
 
-.table-view.extra-dense.same-spacing-column .column-header-background .column-header .label,
-.table-view.extra-dense.same-spacing-column .table-row-cell > .table-cell {
+.table-view.compact.same-spacing-column .column-header-background .column-header .label,
+.table-view.compact.same-spacing-column .table-row-cell > .table-cell {
     -fx-padding: 0 0.25em 0 0.25em;
 }
 
-.table-view.extra-dense.same-spacing-column .column-header-background .column-header.first .label,
-.table-view.extra-dense.same-spacing-column .table-row-cell > .table-cell.first {
+.table-view.compact.same-spacing-column .column-header-background .column-header.first .label,
+.table-view.compact.same-spacing-column .table-row-cell > .table-cell.first {
     -fx-padding: 0 0.25em 0 0.5em;
 }
 
-.table-view.extra-dense.same-spacing-column .column-header-background .column-header.last .label,
-.table-view.extra-dense.same-spacing-column .table-row-cell > .table-cell.last {
+.table-view.compact.same-spacing-column .column-header-background .column-header.last .label,
+.table-view.compact.same-spacing-column .table-row-cell > .table-cell.last {
     -fx-padding: 0 0.5em 0 0.25em;
 }
 
@@ -211,7 +211,7 @@
 /*
     TreeView
 */
-.tree-view.extra-dense .tree-cell {
+.tree-view.compact .tree-cell {
   -fx-padding: 0.176em 0 0.175em 0;
 }
 
@@ -255,11 +255,11 @@
     -fx-text-fill: -color-fg-default;
 }
 
-.combo-box.extra-dense > .combo-box {
+.combo-box.compact > .combo-box {
     -fx-padding: 0;
 }
 
-.combo-box.extra-dense > .text-field {
+.combo-box.compact > .text-field {
     -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 }
 
@@ -273,7 +273,7 @@
     -fx-max-height: 2.1em;
 }
 
-.text-field.extra-dense {
+.text-field.compact {
     -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 /*    -fx-min-height: 2.1em;
     -fx-pref-height: 2.1em;
@@ -371,7 +371,7 @@
     -fx-font-size: 1.3em;
 }
 
-.font-icon-view.extra-dense {
+.font-icon-view.compact {
     -fx-font-size: 1.2em;
 }
 
@@ -433,7 +433,7 @@
 /*
     MenuButton
 */
-.menu-button.extra-dense > .label {
+.menu-button.compact > .label {
   -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 }
 

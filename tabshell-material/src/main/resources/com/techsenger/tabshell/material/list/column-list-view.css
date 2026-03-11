@@ -51,30 +51,30 @@
 /*
     Extra dense.
 */
-.column-list-view.extra-dense .column > .cell {
+.column-list-view.compact .column > .cell {
     -fx-pref-height: 1.65em;
     -fx-max-height: 1.65em;
     -fx-min-height: 1.65em;
 }
 
-.column-list-view.extra-dense.same-spacing-column .column > .cell,
-.column-list-view.extra-dense.same-spacing-column .column > .cell > .box {
+.column-list-view.compact.same-spacing-column .column > .cell,
+.column-list-view.compact.same-spacing-column .column > .cell > .box {
     -fx-padding: 0 0 0 0.25em; /* it is considered, that there is a graphic */
 }
 
-.column-list-view.extra-dense.same-spacing-column .column.first > .cell,
-.column-list-view.extra-dense.same-spacing-column .column.first > .cell > .box {
+.column-list-view.compact.same-spacing-column .column.first > .cell,
+.column-list-view.compact.same-spacing-column .column.first > .cell > .box {
     -fx-padding: 0 0 0 0.5em; /* it is considered, that there is a graphic */
 }
 
-.column-list-view.extra-dense.same-spacing-column .column.last > .cell,
-.column-list-view.extra-dense.same-spacing-column .column.last > .cell > .box {
+.column-list-view.compact.same-spacing-column .column.last > .cell,
+.column-list-view.compact.same-spacing-column .column.last > .cell > .box {
     -fx-padding: 0 0 0 0.25em; /* it is considered, that there is a graphic */
 }
 
-.column-list-view.extra-dense.same-spacing-column .column > .cell:editing,
-.column-list-view.extra-dense.same-spacing-column .column.first > .cell:editing,
-.column-list-view.extra-dense.same-spacing-column .column.last > .cell:editing {
+.column-list-view.compact.same-spacing-column .column > .cell:editing,
+.column-list-view.compact.same-spacing-column .column.first > .cell:editing,
+.column-list-view.compact.same-spacing-column .column.last > .cell:editing {
     -fx-padding: 0;
 }
 

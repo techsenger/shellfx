@@ -57,8 +57,8 @@ public class ToolBarFxView<P extends ToolBarPresenter<?, ?>> extends AbstractFin
         HBox.setHgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
         getFindComboBoxWrapper().setPadding(Insets.EMPTY);
         getFindComboBox().setMaxWidth(Double.MAX_VALUE);
-        getFindComboBox().getStyleClass().add(StyleClasses.EXTRA_DENSE);
-        getFindRightBox().getStyleClass().add(StyleClasses.EXTRA_DENSE);
+        getFindComboBox().getStyleClass().add(StyleClasses.COMPACT);
+        getFindRightBox().getStyleClass().add(StyleClasses.COMPACT);
 
         this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON);
         this.refreshButton.setTooltip(new Tooltip("Refresh"));

@@ -81,7 +81,7 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         tabPane.setTabDropEnabled(true);
 
         tabHeaderFirstBox.getStyleClass().add("tab-header-first-box");
-        minimizeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.EXTRA_DENSE);
+        minimizeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
         tabHeaderLastBox.getStyleClass().add("tab-header-last-box");
 
         var css = TabDockFxView.class.getResource("tab-dock.css").toExternalForm();

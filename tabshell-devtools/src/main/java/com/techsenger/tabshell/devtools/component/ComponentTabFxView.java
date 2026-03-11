@@ -330,7 +330,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     @Override
     protected void build() {
         super.build();
-        componentTreeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
+        componentTreeView.getStyleClass().addAll(StyleClasses.COMPACT, StyleClasses.NO_BORDER);
         componentTreeView.setShowRoot(true);
         componentTreeView.setCellFactory(e -> new ComponentTreeCell());
         VBox.setVgrow(componentTreeView, Priority.ALWAYS);
@@ -409,7 +409,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         });
 
         inspectorTableView.getColumns().addAll(propertyColumn, valueColumn);
-        inspectorTableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, Tweaks.NO_HEADER);
+        inspectorTableView.getStyleClass().addAll(StyleClasses.COMPACT, Tweaks.NO_HEADER);
         inspectorTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         inspectorTableView.setShowRoot(false);
         inspectorTableView.setPlaceholder(new Label(""));

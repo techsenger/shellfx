@@ -69,7 +69,7 @@ public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?,
         var b2 = new Button(null, new FontIconView(SharedIcons.DIRECTORY));
         b2.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.DENSE);
         var b3 = new Button(null, new FontIconView(SharedIcons.DIRECTORY));
-        b3.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.EXTRA_DENSE);
+        b3.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
         var buttons = new HBox(b1, b2, b3);
         buttons.setSpacing(Spacing.HORIZONTAL);
         gridPane.addRow(gridPane.getRowCount(), new Label("Icon buttons"), buttons);

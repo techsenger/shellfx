@@ -117,7 +117,7 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
     @Override
     protected void build() {
         super.build();
-        treeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
+        treeView.getStyleClass().addAll(StyleClasses.COMPACT, StyleClasses.NO_BORDER);
         treeView.setShowRoot(true);
         treeView.setCellFactory(e -> new StylesheetTreeCell());
 

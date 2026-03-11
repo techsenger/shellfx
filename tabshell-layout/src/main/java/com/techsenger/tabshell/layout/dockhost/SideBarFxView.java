@@ -285,7 +285,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
     protected Tab createRestoreTab() {
         var tab = new BarRestoreTab();
         var button = new Button(null, new FontIconView(LayoutIcons.RESTORE_WINDOW));
-        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.EXTRA_DENSE, Styles.FLAT);
+        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.COMPACT, Styles.FLAT);
         button.setOnAction(e -> {
             removePopup();
             onRestoreButtonAction(tab);

@@ -140,7 +140,7 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
         });
 
         tableView.getColumns().addAll(propertyColumn, valueColumn);
-        tableView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, "no-header");
+        tableView.getStyleClass().addAll(StyleClasses.COMPACT, "no-header");
         tableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         tableView.setShowRoot(false);
         tableView.setPlaceholder(new Label(""));

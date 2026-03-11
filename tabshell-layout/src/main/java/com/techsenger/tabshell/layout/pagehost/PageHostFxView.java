@@ -241,7 +241,7 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         super.build();
         this.leftBox.getStyleClass().add("left-box");
         SplitPane.setResizableWithParent(leftBox, false);
-        pageTreeView.getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.NO_BORDER);
+        pageTreeView.getStyleClass().addAll(StyleClasses.COMPACT, StyleClasses.NO_BORDER);
         pageTreeView.setShowRoot(false);
         VBox.setVgrow(pageTreeView, Priority.ALWAYS);
 

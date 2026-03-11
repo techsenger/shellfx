@@ -34,6 +34,6 @@
     -fx-padding: 2 8 2 8;
 }
 
-.find-right-box.extra-dense .label.matches {
+.find-right-box.compact .label.matches {
     -fx-padding: 0 4 0 4;
 }

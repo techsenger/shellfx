@@ -34,6 +34,6 @@ class FileListView extends ColumnListView<GenericFile> {
         setItems(files);
         setManualRefresh(true);
         setEditable(true);
-        getStyleClass().addAll(StyleClasses.EXTRA_DENSE, StyleClasses.SAME_SPACING_COLUMN);
+        getStyleClass().addAll(StyleClasses.COMPACT, StyleClasses.SAME_SPACING_COLUMN);
     }
 }
