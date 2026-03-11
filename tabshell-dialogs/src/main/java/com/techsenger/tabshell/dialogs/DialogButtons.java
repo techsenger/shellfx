@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.storage;
+package com.techsenger.tabshell.dialogs;
 
-import com.techsenger.tabshell.material.table.TableColumnName;
+import com.techsenger.tabshell.material.button.ButtonName;
+import com.techsenger.tabshell.material.button.DefaultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum FileColumnNames implements TableColumnName {
+public interface DialogButtons {
 
-    NAME("Name"), SIZE("Size"), TYPE("Type"), LAST_MODIFIED("Last Modified");
+    ButtonName OK = new DefaultButtonName();
 
-    private final String text;
+    ButtonName CANCEL = new DefaultButtonName();
 
-    FileColumnNames(String text) {
-        this.text = text;
-    }
+    ButtonName APPLY = new DefaultButtonName();
 
-    @Override
-    public String getText() {
-        return this.text;
-    }
+    ButtonName YES = new DefaultButtonName();
+
+    ButtonName NO = new DefaultButtonName();
 }

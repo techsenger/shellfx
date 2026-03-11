@@ -35,7 +35,7 @@ import com.techsenger.tabshell.material.table.TableColumnManager;
 import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.storage.FileColumnBuilder;
-import com.techsenger.tabshell.storage.FileColumnNames;
+import com.techsenger.tabshell.storage.FileColumns;
 import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
 import java.util.Map;
@@ -356,7 +356,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
             this.fileListView.edit(index);
         } else {
             this.fileTableView.getSelectionModel().select(index);
-            var column = fileColumnManager.getColumnsByName().get(FileColumnNames.NAME);
+            var column = fileColumnManager.getColumnsByName().get(FileColumns.NAME);
             column.setEditable(true);
             this.fileTableView.edit(index, (TableColumn<GenericFile, Object>) column);
         }
@@ -395,14 +395,14 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         this.fileTableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
         this.fileTableView.setPlaceholder(new Label(""));
         var columnBuilder = new FileColumnBuilder(settings.getRegularFont());
-        this.fileColumnManager.registerColumnFactory(FileColumnNames.TYPE, () -> {
+        this.fileColumnManager.registerColumnFactory(FileColumns.TYPE, () -> {
             var column = columnBuilder.buildTypeColumn(SharedIcons.DIRECTORY, SharedIcons.FILE);
             column.setEditable(false);
             column.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN_FIRST);
             return column;
         });
         var strConverter = new FileStringConverter();
-        this.fileColumnManager.registerColumnFactory(FileColumnNames.NAME, () -> {
+        this.fileColumnManager.registerColumnFactory(FileColumns.NAME, () -> {
             var column = columnBuilder.buildNameColumn();
             column.setEditable(false);
             column.setCellFactory(r -> new TextFieldTableCell<>(strConverter));
@@ -418,12 +418,12 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
             });
             return column;
         });
-        this.fileColumnManager.registerColumnFactory(FileColumnNames.SIZE, () -> {
+        this.fileColumnManager.registerColumnFactory(FileColumns.SIZE, () -> {
             var column = columnBuilder.buildSizeColumn();
             column.setEditable(false);
             return column;
         });
-        this.fileColumnManager.registerColumnFactory(FileColumnNames.LAST_MODIFIED, () -> {
+        this.fileColumnManager.registerColumnFactory(FileColumns.LAST_MODIFIED, () -> {
             var coumn = columnBuilder.buildLastModifiedColumn();
             coumn.setEditable(false);
             coumn.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN_LAST);

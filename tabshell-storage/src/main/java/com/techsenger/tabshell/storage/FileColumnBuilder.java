@@ -48,7 +48,7 @@ public class FileColumnBuilder {
      */
     public NamedTableColumn<GenericFile, GenericFile> buildTypeColumn(GenericFontIcon<?> dirIcon,
             GenericFontIcon fileIcon) {
-        var typeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.TYPE, "");
+        var typeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.TYPE, "");
         typeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         typeColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
 
@@ -86,7 +86,7 @@ public class FileColumnBuilder {
      * @return
      */
     public NamedTableColumn<GenericFile, GenericFile> buildNameColumn() {
-        var nameColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.NAME, "Name");
+        var nameColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         nameColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
 
@@ -111,7 +111,7 @@ public class FileColumnBuilder {
      * @return
      */
     public NamedTableColumn<GenericFile, GenericFile> buildSizeColumn() {
-        var sizeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.SIZE, "Size");
+        var sizeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.SIZE, "Size");
         sizeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         sizeColumn.setCellFactory(callBack -> new TableCell<GenericFile, GenericFile>() {
 
@@ -139,7 +139,7 @@ public class FileColumnBuilder {
      */
     public NamedTableColumn<GenericFile, GenericFile> buildLastModifiedColumn() {
         var lastModifiedColumn =
-                new NamedTableColumn<GenericFile, GenericFile>(FileColumnNames.LAST_MODIFIED, "Modified");
+                new NamedTableColumn<GenericFile, GenericFile>(FileColumns.LAST_MODIFIED, "Modified");
         lastModifiedColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         final DateTimeFormatter currentYearformatter = DateTimeFormatter.ofPattern("MMM dd HH:mm");
         final DateTimeFormatter otherYearformatter = DateTimeFormatter.ofPattern("MMM dd yyyy");

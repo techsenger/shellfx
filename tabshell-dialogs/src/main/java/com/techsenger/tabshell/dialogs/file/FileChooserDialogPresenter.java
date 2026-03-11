@@ -34,7 +34,7 @@ import com.techsenger.tabshell.material.table.TableColumnInfo;
 import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.material.table.TableHistory;
 import com.techsenger.tabshell.shared.style.SharedIcons;
-import com.techsenger.tabshell.storage.FileColumnNames;
+import com.techsenger.tabshell.storage.FileColumns;
 import com.techsenger.tabshell.storage.FileStorage;
 import static com.techsenger.tabshell.storage.FileStorageType.BASE;
 import static com.techsenger.tabshell.storage.FileStorageType.NETWORK;
@@ -639,22 +639,22 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     }
 
     private void createInitialColumns() {
-        var typeColumn = new TableColumnInfo(FileColumnNames.TYPE);
+        var typeColumn = new TableColumnInfo(FileColumns.TYPE);
         typeColumn.setSortIndex(0);
         typeColumn.setSortType(TableColumn.SortType.ASCENDING);
         typeColumn.setIndex(0);
         columns.put(typeColumn.getName(), typeColumn);
 
-        var nameColumn = new TableColumnInfo(FileColumnNames.NAME);
+        var nameColumn = new TableColumnInfo(FileColumns.NAME);
         nameColumn.setIndex(1);
         nameColumn.setSortIndex(1);
         nameColumn.setSortType(TableColumn.SortType.ASCENDING);
         columns.put(nameColumn.getName(), nameColumn);
 
-        var sizeColumn = new TableColumnInfo(FileColumnNames.SIZE);
+        var sizeColumn = new TableColumnInfo(FileColumns.SIZE);
         sizeColumn.setIndex(2);
         columns.put(sizeColumn.getName(), sizeColumn);
-        var modifiedColumn = new TableColumnInfo(FileColumnNames.LAST_MODIFIED);
+        var modifiedColumn = new TableColumnInfo(FileColumns.LAST_MODIFIED);
         modifiedColumn.setIndex(3);
         columns.put(modifiedColumn.getName(), modifiedColumn);
     }
