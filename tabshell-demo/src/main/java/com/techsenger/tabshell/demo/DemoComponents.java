@@ -20,8 +20,7 @@ import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.core.DefaultComponentName;
 
 /**
- * Keys are used to identify components at they are always accessible and are kept in API. Classes cannot
- * be used because they are hidden in the modules impl packages.
+ * Names are used to identify components. They are always accessible and are kept in API.
  *
  * @author Pavel Castornii
  */
