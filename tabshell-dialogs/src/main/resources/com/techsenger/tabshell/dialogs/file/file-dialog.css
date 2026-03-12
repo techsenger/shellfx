@@ -23,6 +23,6 @@
 }
 
 .column-list-view .column > .cell {
-    -fx-graphic-text-gap: 0.5em;
+    -fx-graphic-text-gap: 0.4em;
 }
 
