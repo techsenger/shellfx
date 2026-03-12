@@ -41,6 +41,7 @@ public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implement
             pageHost = new PageHostFxView<>();
             var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());
             hostPresenter.initialize();
+            hostPresenter.setDividerPosition(0.275);
             pageHost.getComposer().setPages(rootItem, false);
 
             getModifiableChildren().add(pageHost);
