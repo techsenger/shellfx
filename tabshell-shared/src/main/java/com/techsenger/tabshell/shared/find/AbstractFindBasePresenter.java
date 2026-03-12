@@ -245,7 +245,7 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView, C extend
     @Override
     public void showFindResultInfo(int totalMatches) {
         setMatchesVisible(true);
-        setMatchesText("[ " + totalMatches + " ]");
+        setMatchesText("[" + totalMatches + "]");
         setNotFound(totalMatches == 0);
     }
 
@@ -265,7 +265,7 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView, C extend
     @Override
     public void showFindResultInfo(int currentMatch, int totalMatches) {
         setMatchesVisible(true);
-        setMatchesText("[ " + currentMatch + " / " + totalMatches + " ]");
+        setMatchesText("[" + currentMatch + " / " + totalMatches + "]");
         setNotFound(totalMatches == 0);
     }
 
