@@ -241,7 +241,7 @@
 }
 
 .combo-box-base.dense:editable > .text-field {
-    -fx-padding: 0.55em 0.85em 0.55em 0.85em;
+    -fx-padding: 0.45em 0.85em 0.45em 0.85em;
 }
 
 .combo-box.dense .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
