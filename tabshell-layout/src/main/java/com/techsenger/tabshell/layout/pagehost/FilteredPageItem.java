@@ -16,28 +16,36 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.area.AreaView;
-import com.techsenger.tabshell.core.page.PageContainerView;
 import com.techsenger.tabshell.core.page.PageItem;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageHostView extends AreaView, PageContainerView {
+public class FilteredPageItem {
 
-    void setMenu(PageItem<?> root, boolean showRoot);
+    private final PageItem<?> original;
 
-    void setMenu(FilteredPageItem root, boolean showRoot);
+    private final List<FilteredPageItem> children = new ArrayList<>();
 
-    void setPage(PageItem<?> item);
+    private final boolean matched;
 
-    void setDividerPosition(double pos);
+    public FilteredPageItem(PageItem<?> original, boolean matched) {
+        this.original = original;
+        this.matched = matched;
+    }
 
-    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
+    public PageItem<?> getOriginal() {
+        return original;
+    }
 
-    void setForwardDisabled(boolean disabled);
+    public List<FilteredPageItem> getChildren() {
+        return children;
+    }
 
-    void setBackDisabled(boolean disabled);
+    public boolean isMatched() {
+        return matched;
+    }
 }

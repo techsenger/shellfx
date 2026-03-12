@@ -29,18 +29,21 @@ import com.techsenger.tabshell.shared.find.FindFeature;
 public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
         extends AbstractFindBasePresenter<V, C> {
 
-    public FindPanelPresenter(V view, FindFeature... features) {
+    private final PageHostFindPort pageHost;
+
+    public FindPanelPresenter(V view, PageHostFindPort pageHost, FindFeature... features) {
         super(view, features);
+        this.pageHost = pageHost;
     }
 
     @Override
     protected void onFind() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        pageHost.onFind(getFindText());
     }
 
     @Override
     protected void onFindCleared() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        pageHost.onFindCleared();
     }
 
     @Override

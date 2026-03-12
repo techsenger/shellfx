@@ -27,6 +27,7 @@ import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.find.ResultFindPort;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.Spacer;
 import java.util.HashMap;
@@ -55,17 +56,33 @@ import javafx.util.Callback;
 public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractAreaFxView<P>
         implements PageContainerFxView<P>, PageHostView {
 
-    private static TreeItem<PageDescriptor> buildTree(PageDescriptor root,
-            Map<PageDescriptor, TreeItem<PageDescriptor>> treeItemsByDescriptor) {
-        var treeItem = new TreeItem<PageDescriptor>(root);
-        treeItemsByDescriptor.put(root, treeItem);
+    private static TreeItem<PageDescriptor> buildTree(PageItem<?> root,
+            Map<PageItem<?>, TreeItem<PageDescriptor>> treeItemsByItems) {
+        var treeItem = new TreeItem<PageDescriptor>((PageDescriptor) root);
+        treeItemsByItems.put(root, treeItem);
         if (root.getChildren() != null && !root.getChildren().isEmpty()) {
             root.getChildren().stream()
-                .map(child -> buildTree(child, treeItemsByDescriptor))
+                .map(child -> buildTree(child, treeItemsByItems))
                 .forEach(treeItem.getChildren()::add);
         }
         return treeItem;
     }
+
+    private static TreeItem<PageDescriptor> buildTree(FilteredPageItem root,
+            Map<PageItem<?>, TreeItem<PageDescriptor>> treeItemsByItems) {
+        var treeItem = new TreeItem<PageDescriptor>((PageDescriptor) root.getOriginal());
+        if (!root.getChildren().isEmpty()) {
+            treeItem.setExpanded(true);
+        }
+        treeItemsByItems.put(root.getOriginal(), treeItem);
+        if (root.getChildren() != null && !root.getChildren().isEmpty()) {
+            root.getChildren().stream()
+                .map(child -> buildTree(child, treeItemsByItems))
+                .forEach(treeItem.getChildren()::add);
+        }
+        return treeItem;
+    }
+
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements PageContainerFxView.Composer,
             PageHostComposer {
@@ -75,18 +92,22 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         @Override
         public void compose() {
             super.compose();
+            view.findPanel = createFindPanel();
+            view.findPanel.getPresenter().initialize();
+            getModifiableChildren().add(view.findPanel);
+            addFindPanel(view.findPanel.getNode());
+        }
 
-            var findV = createFindPanel();
-            findV.getPresenter().initialize();
-            getModifiableChildren().add(findV);
-            addFindPanel(findV.getNode());
+        @Override
+        public ResultFindPort getFindPanel() {
+            return view.findPanel.getPresenter();
         }
 
         @Override
         public PagePort providePage(PageItem<?> item) {
             var fxView = view.pagesByItems.get(item);
             if (fxView == null) {
-                var treeItem = view.treeItemsByDescriptor.get(item);
+                var treeItem = view.treeItemsByItems.get(item);
                 fxView = treeItem.getValue().getFactory().create(item);
                 fxView.getPresenter().initialize();
                 getModifiableChildren().add(fxView);
@@ -103,19 +124,18 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         @Override
         public void setPages(PageDescriptor root, boolean showRoot) {
             getModifiableChildren().removeAll(view.pagesByItems.values());
-            view.treeItemsByDescriptor.clear();
-            var treeRoot = buildTree(root, view.treeItemsByDescriptor);
-            getPresenter().setRootItem(root);
-            pageTreeView.setRoot(treeRoot);
-            pageTreeView.setShowRoot(showRoot);
+            view.pagesByItems.clear();
+            getPresenter().setPages(root, showRoot);
         }
 
         protected FindPanelFxView<?> createFindPanel() {
             var view = new FindPanelFxView<>();
-            var presenter = new FindPanelPresenter<>(view);
+            var presenter = new FindPanelPresenter<>(view, getPresenter());
             return view;
         }
     }
+
+    private FindPanelFxView<?> findPanel;
 
     private final TreeView<PageDescriptor> pageTreeView = new TreeView<>();
 
@@ -140,9 +160,9 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     /**
      * Created and initiliazed pages.
      */
-    private final Map<PageDescriptor, PageFxView<?>> pagesByItems = new HashMap<>();
+    private final Map<PageItem<?>, PageFxView<?>> pagesByItems = new HashMap<>();
 
-    private final Map<PageDescriptor, TreeItem<PageDescriptor>> treeItemsByDescriptor = new HashMap<>();
+    private final Map<PageItem<?>, TreeItem<PageDescriptor>> treeItemsByItems = new HashMap<>();
 
     private PageFxView<?> page;
 
@@ -194,8 +214,26 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         this.splitPane.getDividers().get(0).setPosition(pos);
     }
 
-    public void setShowRoot(boolean value) {
-        this.pageTreeView.setShowRoot(value);
+    @Override
+    public void setMenu(PageItem<?> root, boolean showRoot) {
+        treeItemsByItems.clear();
+        pageTreeView.setRoot(null);
+        pageTreeView.setShowRoot(showRoot);
+        if (root != null) {
+            var treeRoot = buildTree(root, treeItemsByItems);
+            pageTreeView.setRoot(treeRoot);
+        }
+    }
+
+    @Override
+    public void setMenu(FilteredPageItem root, boolean showRoot) {
+        treeItemsByItems.clear();
+        pageTreeView.setRoot(null);
+        pageTreeView.setShowRoot(showRoot);
+        if (root != null) {
+            var treeRoot = buildTree(root, treeItemsByItems);
+            pageTreeView.setRoot(treeRoot);
+        }
     }
 
     public void setContentPadding(Insets padding) {
@@ -203,9 +241,9 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     }
 
     @Override
-    public void showPage(PageItem<?> item) {
+    public void setPage(PageItem<?> item) {
         var fxView = pagesByItems.get(item);
-        var treeItem = treeItemsByDescriptor.get(item);
+        var treeItem = treeItemsByItems.get(item);
         this.page = fxView; // before selecting treeItem
         pageTreeView.getSelectionModel().select(treeItem); // it can be selected using breadcrumbs
         contentBox.getChildren().clear();
@@ -277,7 +315,9 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     protected void addListeners() {
         super.addListeners();
         pageTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
-            getPresenter().onPageRequested(newV.getValue());
+            if (newV != null) {
+                getPresenter().onPageRequested(newV.getValue());
+            }
         });
         splitPane.getDividers().getFirst().positionProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().onDividerPositionChanged(newV.doubleValue()));

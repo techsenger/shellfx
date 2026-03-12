@@ -16,28 +16,13 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.area.AreaView;
-import com.techsenger.tabshell.core.page.PageContainerView;
-import com.techsenger.tabshell.core.page.PageItem;
-import java.util.List;
-
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageHostView extends AreaView, PageContainerView {
+public interface PageHostFindPort {
 
-    void setMenu(PageItem<?> root, boolean showRoot);
+    void onFind(String text);
 
-    void setMenu(FilteredPageItem root, boolean showRoot);
-
-    void setPage(PageItem<?> item);
-
-    void setDividerPosition(double pos);
-
-    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
-
-    void setForwardDisabled(boolean disabled);
-
-    void setBackDisabled(boolean disabled);
+    void onFindCleared();
 }

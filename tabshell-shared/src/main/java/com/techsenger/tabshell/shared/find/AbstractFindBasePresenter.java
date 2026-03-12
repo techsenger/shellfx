@@ -29,7 +29,7 @@ import java.util.Set;
  * @author Pavel Castornii
  */
 public abstract class AbstractFindBasePresenter<V extends FindBaseView, C extends AreaComposer>
-        extends AbstractAreaPresenter<V, C> {
+        extends AbstractAreaPresenter<V, C> implements ResultFindPort {
 
     private final Set<FindFeature> features;
 
@@ -231,6 +231,55 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView, C extend
         getView().setHighlightDisabled(highlightDisabled);
     }
 
+    /**
+     * Shows search result information in the Find component using total match count only.
+     *
+     * <p>This method serves as a primary high-level entry point for presenting search result information. It
+     * allows updating the Find component without interacting with low-level view APIs directly.
+     *
+     * <p>Used when search navigation is not enabled. The Find component displays the total number of matches
+     * (e.g. "[ 10 ]"). If {@code totalMatches} is {@code 0}, the component reflects the "not found" state.</p>
+     *
+     * @param totalMatches the total number of matches found
+     */
+    @Override
+    public void showFindResultInfo(int totalMatches) {
+        setMatchesVisible(true);
+        setMatchesText("[ " + totalMatches + " ]");
+        setNotFound(totalMatches == 0);
+    }
+
+    /**
+     * Shows search result information in the Find component including current position.
+     *
+     * <p>This method serves as a primary high-level entry point for presenting search result information. It
+     * encapsulates all low-level view updates required to display positional match information.</p>
+     *
+     * <p>Used when search navigation is enabled. The Find component displays the current match index and total
+     * number of matches (e.g. "[ 1 / 10 ]"). If {@code totalMatches} is {@code 0}, the component reflects the
+     * "not found" state.</p>
+     *
+     * @param currentMatch the currently selected match (1-based index)
+     * @param totalMatches the total number of matches found
+     */
+    @Override
+    public void showFindResultInfo(int currentMatch, int totalMatches) {
+        setMatchesVisible(true);
+        setMatchesText("[ " + currentMatch + " / " + totalMatches + " ]");
+        setNotFound(totalMatches == 0);
+    }
+
+    /**
+     * Hides search result information in the Find component.
+     *
+     * <p>This method acts as a high-level API for clearing result presentation state without requiring direct access
+     * to low-level view operations.</p>
+     */
+    @Override
+    public void hideFindResultInfo() {
+        setMatchesVisible(false);
+        setNotFound(false);
+    }
 
     protected void onFindNext() {
 
@@ -264,53 +313,6 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView, C extend
         } else {
             setClearVisible(true);
         }
-    }
-
-    /**
-     * Shows search result information in the Find component using total match count only.
-     *
-     * <p>This method serves as a primary high-level entry point for presenting search result information. It
-     * allows updating the Find component without interacting with low-level view APIs directly.
-     *
-     * <p>Used when search navigation is not enabled. The Find component displays the total number of matches
-     * (e.g. "[ 10 ]"). If {@code totalMatches} is {@code 0}, the component reflects the "not found" state.</p>
-     *
-     * @param totalMatches the total number of matches found
-     */
-    protected void showFindResultInfo(int totalMatches) {
-        setMatchesVisible(true);
-        setMatchesText("[ " + totalMatches + " ]");
-        setNotFound(totalMatches == 0);
-    }
-
-    /**
-     * Shows search result information in the Find component including current position.
-     *
-     * <p>This method serves as a primary high-level entry point for presenting search result information. It
-     * encapsulates all low-level view updates required to display positional match information.</p>
-     *
-     * <p>Used when search navigation is enabled. The Find component displays the current match index and total
-     * number of matches (e.g. "[ 1 / 10 ]"). If {@code totalMatches} is {@code 0}, the component reflects the
-     * "not found" state.</p>
-     *
-     * @param currentMatch the currently selected match (1-based index)
-     * @param totalMatches the total number of matches found
-     */
-    protected void showFindResultInfo(int currentMatch, int totalMatches) {
-        setMatchesVisible(true);
-        setMatchesText("[ " + currentMatch + " / " + totalMatches + " ]");
-        setNotFound(totalMatches == 0);
-    }
-
-    /**
-     * Hides search result information in the Find component.
-     *
-     * <p>This method acts as a high-level API for clearing result presentation state without requiring direct access
-     * to low-level view operations.</p>
-     */
-    protected void hideFindResultInfo() {
-        setMatchesVisible(false);
-        setNotFound(false);
     }
 
     @Override

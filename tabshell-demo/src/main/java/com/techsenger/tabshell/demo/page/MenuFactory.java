@@ -80,6 +80,11 @@ final class MenuFactory {
         item0.addChild(item1);
         var item2 = new DefaultPageDescriptor("Page 2", new PageFactoryImpl(parentType, DemoComponents.PAGE_2));
         item1.addChild(item2);
+
+        var item3 = new DefaultPageDescriptor("Page 3", new PageFactoryImpl(parentType, DemoComponents.PAGE_3));
+        root.addChild(item3);
+        var item4 = new DefaultPageDescriptor("Page 4", new PageFactoryImpl(parentType, DemoComponents.PAGE_4));
+        item3.addChild(item4);
         return root;
     }
 

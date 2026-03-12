@@ -28,13 +28,79 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class PageHostPresenter<V extends PageHostView, C extends PageHostComposer>
-        extends AbstractAreaPresenter<V, C> implements PageContainerPresenter<V, C>, PageHostPort {
+        extends AbstractAreaPresenter<V, C> implements PageContainerPresenter<V, C>, PageHostPort, PageHostFindPort {
+
+    static class FindStatistics {
+
+        private int total;
+
+        private int matches;
+
+        public int getTotal() {
+            return total;
+        }
+
+        public void setTotal(int total) {
+            this.total = total;
+        }
+
+        public int getMatches() {
+            return matches;
+        }
+
+        public void setMatches(int matches) {
+            this.matches = matches;
+        }
+    }
+
+    static FilteredPageItem match(PageItem<?> node, Matcher matcher, FindStatistics statistics) {
+        List<FilteredPageItem> matchingChildren = node.getChildren().stream()
+                .map(child -> match(child, matcher, statistics))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        FilteredPageItem filtered = null;
+        statistics.setTotal(statistics.getTotal() + 1);
+        if (node.getText() == null) {
+            if (!matchingChildren.isEmpty()) {
+                filtered = new FilteredPageItem(node, false);
+                filtered.getChildren().addAll(matchingChildren);
+            }
+        } else {
+            boolean matches = matcher.reset(node.getText()).find();
+            if (matches) {
+                statistics.setMatches(statistics.getMatches() + 1);
+            }
+            if (matches || !matchingChildren.isEmpty()) {
+                filtered = new FilteredPageItem(node, matches);
+                filtered.getChildren().addAll(matchingChildren);
+            }
+        }
+        return filtered;
+    }
+
+    private static FilteredPageItem findFirstMatched(FilteredPageItem node) {
+        if (node.isMatched()) {
+            return node;
+        }
+        for (FilteredPageItem child : node.getChildren()) {
+            FilteredPageItem found = findFirstMatched(child);
+            if (found != null) {
+                return found;
+            }
+        }
+
+        return null;
+    }
 
     private static List<PageBreadcrumb> getBreadcrumbs(PageItem<?> item) {
         List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
@@ -73,6 +139,8 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
 
     private PageItem<?> rootItem;
 
+    private boolean showRoot;
+
     private List<PageBreadcrumb> breadcrumbs;
 
     private double dividerPosition;
@@ -84,6 +152,8 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     private final List<PageItem<?>> pageHistory = new ArrayList<>();
 
     private int pageHistoryIndex;
+
+    private boolean findMode = false;
 
     public PageHostPresenter(V view, HistoryProvider<PageHostHistory> historyProvider) {
         super(view);
@@ -108,6 +178,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
             var breadcrumbs = getBreadcrumbs(item);
             selectPage(item, breadcrumbs);
             addPageHistory(item);
+            updateHistoryNavigation();
         }
     }
 
@@ -145,6 +216,45 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         return pageHistoryIndex;
     }
 
+    public boolean isShowRoot() {
+        return showRoot;
+    }
+
+    @Override
+    public void onFind(String text) {
+        setFindMode(true);
+        updateHistoryNavigation();
+        var matcher = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher("");
+        var statistics = new FindStatistics();
+        var matchedItem = match(rootItem, matcher, statistics);
+        var findPanel = getComposer().getFindPanel();
+        findPanel.showFindResultInfo(statistics.getMatches());
+        getView().setMenu(matchedItem, showRoot);
+        if (matchedItem != null) {
+            var item = findFirstMatched(matchedItem).getOriginal();
+            if (!isCurrentPage(item)) {
+                var breadcrumbs = getBreadcrumbs(item);
+                selectPage(item, breadcrumbs);
+            }
+        }
+    }
+
+    @Override
+    public void onFindCleared() {
+        var findPanel = getComposer().getFindPanel();
+        findPanel.hideFindResultInfo();
+        setFindMode(false);
+        addPageHistory(getComposer().getSelectedPage().getItem());
+        updateHistoryNavigation();
+
+        getView().setMenu(rootItem, showRoot);
+        getView().setPage(getComposer().getSelectedPage().getItem()); // just to select item in the menu
+    }
+
+    public boolean isFindMode() {
+        return findMode;
+    }
+
     protected PageItem<?> getRootItem() {
         return rootItem;
     }
@@ -164,10 +274,14 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     protected void onPageRequested(PageItem<?> item) {
+        if (item == null) {
+            return;
+        }
         if (!isCurrentPage(item)) {
             var breadcrumbs = getBreadcrumbs(item);
             selectPage(item, breadcrumbs);
             addPageHistory(item);
+            updateHistoryNavigation();
         }
     }
 
@@ -177,6 +291,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
             var breadcrumbs = getBreadcrumbs(breadcrumb);
             selectPage(item, breadcrumbs);
             addPageHistory(item);
+            updateHistoryNavigation();
         }
     }
 
@@ -229,8 +344,10 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         setForwardDisabled(true);
     }
 
-    void setRootItem(PageItem<?> rootItem) {
+    void setPages(PageItem<?> rootItem, boolean showRoot) {
         this.rootItem = rootItem;
+        this.showRoot = false;
+        getView().setMenu(rootItem, showRoot);
     }
 
     private void navigateHistory(int newIndex) {
@@ -238,6 +355,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         var breadcrumbs = getBreadcrumbs(page);
         selectPage(page, breadcrumbs);
         setPageHistoryIndex(newIndex);
+        updateHistoryNavigation();
     }
 
     private void selectPage(PageItem<?> item, List<PageBreadcrumb> breadcrumbs) {
@@ -248,12 +366,21 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         getComposer().providePage(item);
         this.breadcrumbs = breadcrumbs;
         getView().setBreadcrumbs(breadcrumbs);
-        getView().showPage(item);
+        getView().setPage(item);
         currentPage = getComposer().getSelectedPage();
         currentPage.setSelected(true);
+        if (!isFindMode()) {
+            currentPage.requestFocus();
+        }
     }
 
     private void addPageHistory(PageItem<?> item) {
+        if (this.findMode) {
+            return;
+        }
+        if (!this.pageHistory.isEmpty() && this.pageHistory.getLast().equals(item)) {
+            return;
+        }
         if (this.pageHistoryIndex + 1 < this.pageHistory.size()) {
             this.pageHistory.subList(this.pageHistoryIndex + 1, this.pageHistory.size()).clear();
         }
@@ -263,7 +390,19 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
 
     private void setPageHistoryIndex(int index) {
         this.pageHistoryIndex = index;
-        setBackDisabled(index == 0);
-        setForwardDisabled(index + 1 == this.pageHistory.size());
+    }
+
+    private void setFindMode(boolean findMode) {
+        this.findMode = findMode;
+    }
+
+    private void updateHistoryNavigation() {
+        if (findMode) {
+            setBackDisabled(true);
+            setForwardDisabled(true);
+        } else {
+            setBackDisabled(this.pageHistoryIndex == 0);
+            setForwardDisabled(this.pageHistoryIndex + 1 == this.pageHistory.size());
+        }
     }
 }

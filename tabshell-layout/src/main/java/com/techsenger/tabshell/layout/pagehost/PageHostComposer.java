@@ -20,12 +20,15 @@ import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.core.page.PageContainerComposer;
 import com.techsenger.tabshell.core.page.PageItem;
 import com.techsenger.tabshell.core.page.PagePort;
+import com.techsenger.tabshell.shared.find.ResultFindPort;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface PageHostComposer extends AreaComposer, PageContainerComposer {
+
+    ResultFindPort getFindPanel();
 
     PagePort providePage(PageItem<?> item);
 

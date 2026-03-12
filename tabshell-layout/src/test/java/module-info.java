@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-module com.techsenger.tabshell.layout {
+open module com.techsenger.tabshell.layout {
     requires org.slf4j;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
@@ -29,9 +29,8 @@ module com.techsenger.tabshell.layout {
     requires javafx.controls;
     requires atlantafx.base;
 
-    exports com.techsenger.tabshell.layout;
-    exports com.techsenger.tabshell.layout.dockhost;
-    exports com.techsenger.tabshell.layout.pagehost;
-    exports com.techsenger.tabshell.layout.style;
-    exports com.techsenger.tabshell.layout.tabhost;
+    requires org.junit.jupiter.api;
+    requires org.assertj.core;
+    requires org.mockito;
 }
+

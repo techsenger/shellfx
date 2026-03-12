@@ -42,9 +42,6 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
     @Override
     public void setSelected(boolean selected) {
         this.selected = selected;
-        if (selected) {
-            getView().requestFocus();
-        }
     }
 
     @Override
