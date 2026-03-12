@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.core.area.AreaView;
 import com.techsenger.tabshell.core.page.PageContainerView;
+import com.techsenger.tabshell.core.page.PageItem;
 import java.util.List;
 
 /**
@@ -27,7 +27,7 @@ import java.util.List;
  */
 public interface PageHostView extends AreaView, PageContainerView {
 
-    void showPage(ComponentName page);
+    void showPage(PageItem<?> item);
 
     void setDividerPosition(double pos);
 

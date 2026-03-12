@@ -18,7 +18,6 @@ package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
-import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.layout.pagehost.PageHostFxView;
 import com.techsenger.tabshell.layout.pagehost.PageHostPresenter;
 import com.techsenger.tabshell.material.style.StyleClasses;
@@ -48,7 +47,7 @@ public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implement
             getContentBox().getChildren().add(pageHost.getNode());
             VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
 
-            pageHost.getPresenter().selectPage(DemoComponents.PAGE_0);
+            pageHost.getPresenter().selectPage(rootItem.getChildren().getFirst()); // the root is not shown
 
         }
     }

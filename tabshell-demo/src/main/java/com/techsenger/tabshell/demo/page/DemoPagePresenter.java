@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.page.AbstractPagePresenter;
 import com.techsenger.tabshell.core.page.PageComposer;
+import com.techsenger.tabshell.core.page.PageItem;
 
 /**
  *
@@ -25,7 +26,15 @@ import com.techsenger.tabshell.core.page.PageComposer;
  */
 public abstract class DemoPagePresenter extends AbstractPagePresenter<DemoPageView, PageComposer> {
 
-    public DemoPagePresenter(DemoPageView view) {
-        super(view);
+    public DemoPagePresenter(DemoPageView view, PageItem<?> item) {
+        super(view, item);
     }
+
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        getView().setText(getItem().getText() + " - " + Text.INSTANCE);
+    }
+
+
 }

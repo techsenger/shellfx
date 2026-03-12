@@ -16,11 +16,15 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.tabshell.core.page.PageItem;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageBreadcrumb extends PageInfo {
+public interface PageBreadcrumb {
+
+    PageItem<?> getItem();
 
     PageBreadcrumb getPrevious();
 }

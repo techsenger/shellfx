@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.core.page.PageContainerComposer;
+import com.techsenger.tabshell.core.page.PageItem;
 import com.techsenger.tabshell.core.page.PagePort;
 
 /**
@@ -27,7 +27,7 @@ import com.techsenger.tabshell.core.page.PagePort;
  */
 public interface PageHostComposer extends AreaComposer, PageContainerComposer {
 
-    PagePort providePage(ComponentName page);
+    PagePort providePage(PageItem<?> item);
 
     PagePort getSelectedPage();
 }

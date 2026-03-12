@@ -27,8 +27,11 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
 
     private boolean selected;
 
-    public AbstractPagePresenter(V view) {
+    private final PageItem<?> item;
+
+    public AbstractPagePresenter(V view, PageItem<?> item) {
         super(view);
+        this.item = item;
     }
 
     @Override
@@ -39,11 +42,18 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
     @Override
     public void setSelected(boolean selected) {
         this.selected = selected;
-        getView().requestFocus();
+        if (selected) {
+            getView().requestFocus();
+        }
     }
 
     @Override
     protected PageHistory getHistory() {
         return (PageHistory) super.getHistory();
+    }
+
+    @Override
+    public PageItem<?> getItem() {
+        return item;
     }
 }

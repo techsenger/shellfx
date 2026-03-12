@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
-import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.layout.pagehost.PageHostFxView;
 import com.techsenger.tabshell.layout.pagehost.PageHostPresenter;
 import com.techsenger.tabshell.material.button.ResultButton;
@@ -47,7 +46,7 @@ public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> 
             getContentBox().getChildren().add(pageHost.getNode());
             VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
 
-            pageHost.getPresenter().selectPage(DemoComponents.PAGE_0);
+            pageHost.getPresenter().selectPage(rootItem.getChildren().getFirst()); // the root is not shown
 
         }
     }

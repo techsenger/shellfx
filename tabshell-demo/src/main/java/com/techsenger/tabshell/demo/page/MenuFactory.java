@@ -18,12 +18,13 @@ package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.tabshell.core.page.DefaultPageDescriptor;
+import com.techsenger.tabshell.core.page.PageDescriptor;
+import com.techsenger.tabshell.core.page.PageFactory;
 import com.techsenger.tabshell.core.page.PageFxView;
+import com.techsenger.tabshell.core.page.PageItem;
 import com.techsenger.tabshell.demo.DemoComponents;
-import com.techsenger.tabshell.layout.pagehost.DefaultPageDescriptor;
-import com.techsenger.tabshell.layout.pagehost.PageDescriptor;
 import com.techsenger.tabshell.material.style.Spacing;
-import com.techsenger.toolkit.core.function.Factory;
 import javafx.geometry.Insets;
 
 /**
@@ -36,48 +37,48 @@ final class MenuFactory {
         DIALOG, TAB
     }
 
-    static PageDescriptor create(PageType parentType) {
-        // for demo one component is used, so this factory is required
-        class PageFactoryImpl implements Factory<PageFxView<?>> {
+    /**
+     * For demo one component is used, besides it the page can be shown differently, so this factory is required.
+     */
+    static class PageFactoryImpl implements PageFactory {
 
-            private final ComponentName name;
+        private final PageType parentType;
 
-            private final int index;
+        private final ComponentName name;
 
-            PageFactoryImpl(ComponentName name, int index) {
-                this.name = name;
-                this.index = index;
-            }
-
-            @Override
-            public PageFxView<?> create() {
-                Insets padding;
-                if (parentType == PageType.DIALOG) {
-                    padding = new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL);
-                } else {
-                    padding = new Insets(0, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL);
-                }
-                var view = new DemoPageFxView(padding, index);
-                var presenter = new DemoPagePresenter(view) {
-                    @Override
-                    protected Descriptor createDescriptor() {
-                        return new Descriptor(name);
-                    }
-                };
-                return view;
-            }
+        PageFactoryImpl(PageType parentType, ComponentName name) {
+            this.parentType = parentType;
+            this.name = name;
         }
+
+        @Override
+        public PageFxView<?> create(PageItem<?> item) {
+            Insets padding;
+            if (parentType == PageType.DIALOG) {
+                padding = new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL);
+            } else {
+                padding = new Insets(0, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL);
+            }
+            var view = new DemoPageFxView(padding);
+            var presenter = new DemoPagePresenter(view, item) {
+                @Override
+                protected Descriptor createDescriptor() {
+                    return new Descriptor(name);
+                }
+            };
+            return view;
+        }
+    }
+
+    static PageDescriptor create(PageType parentType) {
 
         // items for menu
         var root = new DefaultPageDescriptor();
-        var item0 = new DefaultPageDescriptor("Page 0", DemoComponents.PAGE_0,
-                new PageFactoryImpl(DemoComponents.PAGE_0, 0));
+        var item0 = new DefaultPageDescriptor("Page 0", new PageFactoryImpl(parentType, DemoComponents.PAGE_0));
         root.addChild(item0);
-        var item1 = new DefaultPageDescriptor("Page 1", DemoComponents.PAGE_1,
-                new PageFactoryImpl(DemoComponents.PAGE_1, 1));
+        var item1 = new DefaultPageDescriptor("Page 1", new PageFactoryImpl(parentType, DemoComponents.PAGE_1));
         item0.addChild(item1);
-        var item2 = new DefaultPageDescriptor("Page 2", DemoComponents.PAGE_2,
-                new PageFactoryImpl(DemoComponents.PAGE_2, 2));
+        var item2 = new DefaultPageDescriptor("Page 2", new PageFactoryImpl(parentType, DemoComponents.PAGE_2));
         item1.addChild(item2);
         return root;
     }

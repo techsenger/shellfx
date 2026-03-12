@@ -16,17 +16,18 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.page.PageContainerPresenter;
+import com.techsenger.tabshell.core.page.PageItem;
 import com.techsenger.tabshell.core.page.PagePort;
 import com.techsenger.tabshell.layout.LayoutComponents;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -35,16 +36,16 @@ import java.util.List;
 public class PageHostPresenter<V extends PageHostView, C extends PageHostComposer>
         extends AbstractAreaPresenter<V, C> implements PageContainerPresenter<V, C>, PageHostPort {
 
-    private static List<PageBreadcrumb> getBreadcrumbs(PageItem<?> treeItem) {
+    private static List<PageBreadcrumb> getBreadcrumbs(PageItem<?> item) {
         List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
-        if (treeItem == null) {
+        if (item == null) {
             return breadcrumbs;
         }
-        PageItem<?> current = treeItem;
+        PageItem<?> current = item;
         DefaultPageBreadcrumb previous = null;
         while (current != null) {
             if (current.getText() != null) { // it can be not shown root
-                var breadcrumb = new DefaultPageBreadcrumb(current.getIcon(), current.getText(), current.getName());
+                var breadcrumb = new DefaultPageBreadcrumb(current);
                 breadcrumbs.add(breadcrumb);
                 if (previous != null) {
                     previous.setPrevious(breadcrumb);
@@ -61,7 +62,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         List<PageBreadcrumb> breadcrumbs = new ArrayList<>();
         PageBreadcrumb current = breadcrumb;
         while (current != null) {
-            if (current.getText() != null) { // it can be not shown root
+            if (current.getItem().getText() != null) { // it can be not shown root
                 breadcrumbs.add(current);
             }
             current = current.getPrevious();
@@ -70,7 +71,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         return breadcrumbs;
     }
 
-    private ItemRegister itemRegister;
+    private PageItem<?> rootItem;
 
     private List<PageBreadcrumb> breadcrumbs;
 
@@ -80,7 +81,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
 
     private boolean backDisabled;
 
-    private final List<ComponentName> pageHistory = new ArrayList<>();
+    private final List<PageItem<?>> pageHistory = new ArrayList<>();
 
     private int pageHistoryIndex;
 
@@ -101,14 +102,12 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     @Override
-    public void selectPage(ComponentName page) {
-        if (!isCurrentPage(page)) {
-            var item = this.itemRegister.getItem(page);
-            if (item != null) {
-                var breadcrumbs = getBreadcrumbs(item);
-                selectPage(page, breadcrumbs);
-                addPageHistory(page);
-            }
+    public void selectPage(PageItem<?> item) {
+        Objects.requireNonNull(item, "Item can't be null");
+        if (!isCurrentPage(item)) {
+            var breadcrumbs = getBreadcrumbs(item);
+            selectPage(item, breadcrumbs);
+            addPageHistory(item);
         }
     }
 
@@ -138,7 +137,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
      * Returns an unmodifiable list of history entries.
      * @return
      */
-    public List<ComponentName> getPageHistory() {
+    public List<PageItem<?>> getPageHistory() {
         return Collections.unmodifiableList(pageHistory);
     }
 
@@ -146,8 +145,8 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         return pageHistoryIndex;
     }
 
-    protected ItemRegister getItemRegister() {
-        return itemRegister;
+    protected PageItem<?> getRootItem() {
+        return rootItem;
     }
 
     protected void setForwardDisabled(boolean forwardDisabled) {
@@ -164,19 +163,20 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         this.dividerPosition = pos;
     }
 
-    protected void onPageRequested(ComponentName pageName, PageItem<?> item) {
-        if (!isCurrentPage(pageName)) {
+    protected void onPageRequested(PageItem<?> item) {
+        if (!isCurrentPage(item)) {
             var breadcrumbs = getBreadcrumbs(item);
-            selectPage(pageName, breadcrumbs);
-            addPageHistory(pageName);
+            selectPage(item, breadcrumbs);
+            addPageHistory(item);
         }
     }
 
-    protected void onPageRequested(ComponentName pageName, PageBreadcrumb breadcrumb) {
-        if (!isCurrentPage(pageName)) {
+    protected void onPageRequested(PageBreadcrumb breadcrumb) {
+        var item = breadcrumb.getItem();
+        if (!isCurrentPage(item)) {
             var breadcrumbs = getBreadcrumbs(breadcrumb);
-            selectPage(pageName, breadcrumbs);
-            addPageHistory(pageName);
+            selectPage(item, breadcrumbs);
+            addPageHistory(item);
         }
     }
 
@@ -194,12 +194,9 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         }
     }
 
-    protected boolean isCurrentPage(ComponentName page) {
+    protected boolean isCurrentPage(PageItem<?> item) {
         var currentPage = getComposer().getSelectedPage();
-        if (currentPage != null && currentPage.getDescriptor().getName() == page) {
-            return true;
-        }
-        return false;
+        return currentPage != null && Objects.equals(currentPage.getItem(), item);
     }
 
     @Override
@@ -232,36 +229,35 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         setForwardDisabled(true);
     }
 
-    void setItemRegister(ItemRegister itemRegister) {
-        this.itemRegister = itemRegister;
+    void setRootItem(PageItem<?> rootItem) {
+        this.rootItem = rootItem;
     }
 
     private void navigateHistory(int newIndex) {
         var page = this.pageHistory.get(newIndex);
-        var item = this.itemRegister.getItem(page);
-        var breadcrumbs = getBreadcrumbs(item);
+        var breadcrumbs = getBreadcrumbs(page);
         selectPage(page, breadcrumbs);
         setPageHistoryIndex(newIndex);
     }
 
-    private void selectPage(ComponentName pageName, List<PageBreadcrumb> breadcrumbs) {
+    private void selectPage(PageItem<?> item, List<PageBreadcrumb> breadcrumbs) {
         var currentPage = getComposer().getSelectedPage();
         if (currentPage != null) {
             currentPage.setSelected(false);
         }
-        getComposer().providePage(pageName);
+        getComposer().providePage(item);
         this.breadcrumbs = breadcrumbs;
         getView().setBreadcrumbs(breadcrumbs);
-        getView().showPage(pageName);
+        getView().showPage(item);
         currentPage = getComposer().getSelectedPage();
         currentPage.setSelected(true);
     }
 
-    private void addPageHistory(ComponentName page) {
+    private void addPageHistory(PageItem<?> item) {
         if (this.pageHistoryIndex + 1 < this.pageHistory.size()) {
             this.pageHistory.subList(this.pageHistoryIndex + 1, this.pageHistory.size()).clear();
         }
-        this.pageHistory.add(page);
+        this.pageHistory.add(item);
         setPageHistoryIndex(this.pageHistory.size() - 1);
     }
 

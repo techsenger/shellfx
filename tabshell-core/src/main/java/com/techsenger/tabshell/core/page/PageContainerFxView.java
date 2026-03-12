@@ -24,6 +24,7 @@ public interface PageContainerFxView<P extends PageContainerPresenter<?, ?>> {
 
     interface Composer extends PageContainerComposer {
 
+        void setPages(PageDescriptor root, boolean showRoot);
     }
 
     Composer getComposer();

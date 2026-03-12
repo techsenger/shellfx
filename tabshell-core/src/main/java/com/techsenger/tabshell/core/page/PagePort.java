@@ -27,4 +27,11 @@ public interface PagePort extends AreaPort {
     boolean isSelected();
 
     void setSelected(boolean selected);
+
+    /**
+     * Returns the item associated with this page.
+     *
+     * @return
+     */
+    PageItem<?> getItem();
 }

@@ -16,20 +16,24 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.tabshell.material.icon.Icon;
+import com.techsenger.tabshell.core.page.PageItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb extends AbstractPageInfo implements PageBreadcrumb {
+public class DefaultPageBreadcrumb implements PageBreadcrumb {
+
+    private final PageItem<?> item;
 
     private PageBreadcrumb previous;
 
-    public DefaultPageBreadcrumb(Icon<?> icon, String text, ComponentName name) {
-        super(icon, text, name);
-        this.previous = previous;
+    public DefaultPageBreadcrumb(PageItem<?> item) {
+        this.item = item;
+    }
+
+    public PageItem<?> getItem() {
+        return item;
     }
 
     @Override

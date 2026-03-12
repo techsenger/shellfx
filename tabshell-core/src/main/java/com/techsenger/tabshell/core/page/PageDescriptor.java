@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
-
-import java.util.List;
+package com.techsenger.tabshell.core.page;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageItem<T extends PageItem<T>> extends PageInfo {
+public interface PageDescriptor extends PageItem<PageDescriptor> {
 
-    T getParent();
-
-    /**
-     * Returns an unmodifiable list of children.
-     *
-     * @return
-     */
-    List<T> getChildren();
+    PageFactory getFactory();
 }

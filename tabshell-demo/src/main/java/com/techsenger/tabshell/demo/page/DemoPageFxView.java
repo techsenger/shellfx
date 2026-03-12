@@ -34,9 +34,8 @@ public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implem
 
     private final VBox box = new VBox(textArea);
 
-    public DemoPageFxView(Insets padding, int index) {
+    public DemoPageFxView(Insets padding) {
         this.box.setPadding(padding);
-        this.textArea.setText("Page " + index + ". " + Text.INSTANCE);
     }
 
     @Override
@@ -47,6 +46,11 @@ public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implem
     @Override
     public VBox getNode() {
         return box;
+    }
+
+    @Override
+    public void setText(String text) {
+        textArea.setText(text);
     }
 
     @Override

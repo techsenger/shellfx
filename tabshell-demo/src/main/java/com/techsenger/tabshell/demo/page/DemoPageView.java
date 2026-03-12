@@ -24,4 +24,5 @@ import com.techsenger.tabshell.core.page.PageView;
  */
 public interface DemoPageView extends PageView {
 
+    void setText(String text);
 }

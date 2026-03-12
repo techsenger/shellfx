@@ -16,8 +16,6 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.patternfx.core.ComponentName;
-
 /**
  *
  * @author Pavel Castornii
@@ -26,5 +24,5 @@ public interface PageContainerPort {
 
     PagePort getSelectedPage();
 
-    void selectPage(ComponentName page);
+    void selectPage(PageItem<?> item);
 }

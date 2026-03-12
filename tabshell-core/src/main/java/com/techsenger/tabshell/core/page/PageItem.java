@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
+package com.techsenger.tabshell.core.page;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.tabshell.material.icon.Icon;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ItemRegister {
+public interface PageItem<T extends PageItem<T>> {
 
-    PageItem<?> getItem(ComponentName name);
+    T getParent();
 
-    PageItem<?> getRoot();
+    /**
+     * Returns an unmodifiable list of children.
+     *
+     * @return
+     */
+    List<T> getChildren();
+
+    Icon<?> getIcon();
+
+    String getText();
 }

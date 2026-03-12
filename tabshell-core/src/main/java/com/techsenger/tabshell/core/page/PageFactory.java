@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
-
-import com.techsenger.tabshell.core.page.PageFxView;
-import com.techsenger.toolkit.core.function.Factory;
+package com.techsenger.tabshell.core.page;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageDescriptor extends PageItem<PageDescriptor> {
+public interface PageFactory {
 
-    Factory<? extends PageFxView<?>> getFactory();
+    PageFxView<?> create(PageItem<?> item);
 }

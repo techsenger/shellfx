@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
+package com.techsenger.tabshell.core.page;
 
-import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.material.icon.Icon;
-import com.techsenger.toolkit.core.function.Factory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,35 +24,35 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class DefaultPageDescriptor extends AbstractPageInfo implements PageDescriptor {
+public class DefaultPageDescriptor implements PageDescriptor {
 
-    private Factory<? extends PageFxView<?>> factory;
+    private final Icon<?> icon;
+
+    private final String text;
+
+    private final PageFactory factory;
 
     private PageDescriptor parent;
 
     private final List<PageDescriptor> children = new ArrayList<>();
 
     public DefaultPageDescriptor() {
-        super(null, null, null);
+        this(null, null, null);
     }
 
-    public DefaultPageDescriptor(String text, ComponentName name, Factory<? extends PageFxView<?>> factory) {
-        this(null, text, name, factory);
+    public DefaultPageDescriptor(String text, PageFactory factory) {
+        this(null, text, factory);
     }
 
-    public DefaultPageDescriptor(Icon<?> icon, String text, ComponentName name,
-            Factory<? extends PageFxView<?>> factory) {
-        super(icon, text, name);
+    public DefaultPageDescriptor(Icon<?> icon, String text, PageFactory factory) {
         this.factory = factory;
+        this.icon = icon;
+        this.text = text;
     }
 
     @Override
-    public Factory<? extends PageFxView<?>> getFactory() {
+    public PageFactory getFactory() {
         return factory;
-    }
-
-    public void setFactory(Factory<? extends PageFxView<?>> factory) {
-        this.factory = factory;
     }
 
     @Override
@@ -71,6 +68,16 @@ public class DefaultPageDescriptor extends AbstractPageInfo implements PageDescr
     public void addChild(DefaultPageDescriptor item) {
         this.children.add(item);
         item.setParent(this);
+    }
+
+    @Override
+    public Icon<?> getIcon() {
+        return icon;
+    }
+
+    @Override
+    public String getText() {
+        return text;
     }
 
     void setParent(DefaultPageDescriptor parent) {
