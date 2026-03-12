@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.annotations.Unmodifiable;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public interface TabContainerPort {
      *
      * @return unmodifiable {@link List} of {@link TabPort} instances
      */
-    List<? extends TabPort> getTabs();
+    @Unmodifiable List<? extends TabPort> getTabs();
 
     /**
      * Closes all tabs except the specified one.

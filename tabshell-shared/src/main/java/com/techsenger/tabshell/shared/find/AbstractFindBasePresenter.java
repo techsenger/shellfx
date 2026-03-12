@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.shared.find;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.core.history.HistoryUtils;
@@ -75,7 +76,7 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView, C extend
      *
      * @return
      */
-    public Set<FindFeature> getFeatures() {
+    public @Unmodifiable Set<FindFeature> getFeatures() {
         return features;
     }
 

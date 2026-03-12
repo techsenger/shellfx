@@ -15,6 +15,7 @@
  */
 
 module com.techsenger.tabshell.core {
+    requires com.techsenger.annotations;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires org.slf4j;

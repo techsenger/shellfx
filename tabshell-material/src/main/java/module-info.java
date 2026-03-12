@@ -15,6 +15,7 @@
  */
 
 module com.techsenger.tabshell.material {
+    requires com.techsenger.annotations;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;

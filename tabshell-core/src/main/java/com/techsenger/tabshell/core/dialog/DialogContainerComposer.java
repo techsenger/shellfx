@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.popup.PopupContainerComposer;
 import java.util.List;
 
@@ -30,5 +31,5 @@ public interface DialogContainerComposer extends PopupContainerComposer {
      *
      * @return
      */
-    List<? extends DialogPort> getDialogs();
+    @Unmodifiable List<? extends DialogPort> getDialogs();
 }

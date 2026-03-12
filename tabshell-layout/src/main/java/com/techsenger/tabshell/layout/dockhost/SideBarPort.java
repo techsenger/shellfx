@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AreaPort;
 import java.util.List;
 
@@ -30,5 +31,5 @@ public interface SideBarPort extends AreaPort {
      *
      * @return
      */
-    List<? extends TabDockPort> getTabDocks();
+    @Unmodifiable List<? extends TabDockPort> getTabDocks();
 }

@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.page.PageContainerPort;
 import java.util.List;
@@ -31,5 +32,5 @@ public interface PageHostPort extends AreaPort, PageContainerPort {
      *
      * @return
      */
-    List<PageBreadcrumb> getBreadcrumbs();
+    @Unmodifiable List<PageBreadcrumb> getBreadcrumbs();
 }

@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.popup.PopupFxView;
 import com.techsenger.tabshell.material.Anchors;
 import java.util.HashSet;
@@ -82,12 +83,12 @@ public class DefaultDialogManager implements DialogManager {
 
     private final ObservableList<DialogFxView<?>> modifiableDialogs = FXCollections.observableArrayList();
 
-    private final ObservableList<DialogFxView<?>> dialogs =
+    private final @Unmodifiable ObservableList<DialogFxView<?>> dialogs =
             FXCollections.unmodifiableObservableList(modifiableDialogs);
 
     private final ObservableList<PopupFxView<?>> modifiablePopups = FXCollections.observableArrayList();
 
-    private final ObservableList<PopupFxView<?>> popups =
+    private final @Unmodifiable ObservableList<PopupFxView<?>> popups =
             FXCollections.unmodifiableObservableList(modifiablePopups);
 
     private final Set<PopupFxView<?>> allModalComponents = new HashSet<>();

@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dockhost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
@@ -147,7 +148,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
          *
          * @return
          */
-        public List<TabDockPort> getTabDocks() {
+        public @Unmodifiable List<TabDockPort> getTabDocks() {
             return view.getTabDocks().stream()
                     .map(t -> (TabDockPort) t.getPresenter())
                     .toList();
@@ -202,7 +203,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
     // todo: do we need this collection?
     private final ObservableList<TabDockFxView<?>> modifiableTabDocks = FXCollections.observableArrayList();
 
-    private final ObservableList<TabDockFxView<?>> tabDocks =
+    private final @Unmodifiable ObservableList<TabDockFxView<?>> tabDocks =
             FXCollections.unmodifiableObservableList(modifiableTabDocks);
 
     private final TabPanePro tabPane = new TabPanePro();

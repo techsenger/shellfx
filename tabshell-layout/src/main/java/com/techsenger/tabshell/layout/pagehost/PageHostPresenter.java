@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
@@ -208,7 +209,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
      * Returns an unmodifiable list of history entries.
      * @return
      */
-    public List<PageItem<?>> getPageHistory() {
+    public @Unmodifiable List<PageItem<?>> getPageHistory() {
         return Collections.unmodifiableList(pageHistory);
     }
 

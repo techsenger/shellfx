@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentComposer;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public interface TabContainerComposer extends ParentComposer {
      *
      * @return
      */
-    List<? extends TabPort> getTabs();
+    @Unmodifiable List<? extends TabPort> getTabs();
 
     TabPort getSelectedTab();
 }

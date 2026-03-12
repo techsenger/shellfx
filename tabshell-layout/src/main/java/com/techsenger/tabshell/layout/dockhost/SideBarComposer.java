@@ -16,8 +16,9 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AreaComposer;
-import javafx.collections.ObservableList;
+import java.util.List;
 
 /**
  *
@@ -30,5 +31,5 @@ public interface SideBarComposer extends AreaComposer {
      *
      * @return
      */
-    ObservableList<? extends TabDockPort> getTabDocks();
+    @Unmodifiable List<? extends TabDockPort> getTabDocks();
 }

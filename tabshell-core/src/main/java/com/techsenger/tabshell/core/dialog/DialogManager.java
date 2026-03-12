@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.popup.PopupManager;
 import javafx.collections.ObservableList;
 
@@ -34,5 +35,5 @@ public interface DialogManager extends PopupManager {
      *
      * @return the list of dialogs. If no dialogs are present, an empty list is returned.
      */
-    ObservableList<DialogFxView<?>> getDialogs();
+    @Unmodifiable ObservableList<DialogFxView<?>> getDialogs();
 }

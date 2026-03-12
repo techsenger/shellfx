@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.page;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.icon.Icon;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public interface PageItem<T extends PageItem<T>> {
      *
      * @return
      */
-    List<T> getChildren();
+    @Unmodifiable List<T> getChildren();
 
     Icon<?> getIcon();
 

@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentComposer;
 import java.util.List;
 
@@ -30,5 +31,5 @@ public interface PopupContainerComposer extends ParentComposer {
      *
      * @return
      */
-    List<? extends PopupPort> getPopups();
+    @Unmodifiable List<? extends PopupPort> getPopups();
 }

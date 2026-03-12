@@ -16,6 +16,7 @@
 
 module com.techsenger.tabshell.storage {
     requires org.slf4j;
+    requires com.techsenger.annotations;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.tabshell.material;
     requires com.techsenger.tabshell.core;

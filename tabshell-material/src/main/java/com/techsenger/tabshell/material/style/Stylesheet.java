@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.material.style;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.net.URL;
 import java.util.Collections;
@@ -71,7 +72,7 @@ public class Stylesheet {
      * @return an unmodifiable set of themes with extended stylesheet versions; may be empty if no theme
      * extensions exist
      */
-   public Set<Theme> getExtendedThemes() {
+   public @Unmodifiable Set<Theme> getExtendedThemes() {
        return extendedThemes;
    }
 

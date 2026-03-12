@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.storage;
 
 import com.sun.jna.platform.win32.Kernel32;
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.toolkit.core.os.OsUtils;
 import java.net.URI;
 import java.nio.file.FileStore;
@@ -87,7 +88,7 @@ public final class FileStorages {
      * @param refresh if true, or it is the first call then existing list is created/refreshed.
      * @return
      */
-    public static synchronized List<FileStorage> getDefault(boolean refresh) {
+    public static synchronized @Unmodifiable List<FileStorage> getDefault(boolean refresh) {
         if (defaultStorages == null || refresh) {
             if (OsUtils.isWindows()) {
                 defaultStorages = getWindowsStorages();
@@ -113,7 +114,7 @@ public final class FileStorages {
      *
      * @return
      */
-    public static List<FileStorage> getAll(boolean refreshDefault) {
+    public static @Unmodifiable List<FileStorage> getAll(boolean refreshDefault) {
         var combinedList = Stream.concat(getDefault(refreshDefault).stream(), customStorages.stream())
                 .collect(Collectors.toList());
         return combinedList;

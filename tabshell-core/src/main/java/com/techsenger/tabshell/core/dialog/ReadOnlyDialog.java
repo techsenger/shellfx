@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.icon.Icon;
 import java.util.List;
@@ -96,14 +97,14 @@ public interface ReadOnlyDialog {
      *
      * @return an unmodifiable list of button names on the left side
      */
-    List<ResultButtonName> getLeftButtons();
+    @Unmodifiable List<ResultButtonName> getLeftButtons();
 
     /**
      * Returns the list of result button names currently displayed on the right side of the dialog's button bar.
      *
      * @return an unmodifiable list of button names on the right side
      */
-    List<ResultButtonName> getRightButtons();
+    @Unmodifiable List<ResultButtonName> getRightButtons();
 
     /**
      * Returns the disabled state of the specified result button.

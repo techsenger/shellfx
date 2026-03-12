@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.Anchors;
 import javafx.collections.ObservableList;
 
@@ -34,5 +35,5 @@ public interface PopupManager {
      *
      * @return the list of popups. If no popups are present, an empty list is returned.
      */
-    ObservableList<PopupFxView<?>> getPopups();
+    @Unmodifiable ObservableList<PopupFxView<?>> getPopups();
 }

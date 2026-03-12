@@ -16,6 +16,7 @@
 
 module com.techsenger.tabshell.shared {
     requires org.slf4j;
+    requires com.techsenger.annotations;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.patternfx.mvp;

@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dockhost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
@@ -93,7 +94,8 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
 
     private final ObservableList<TabFxView<?>> modifiableTabs = FXCollections.observableArrayList();
 
-    private final ObservableList<TabFxView<?>> tabs = FXCollections.unmodifiableObservableList(modifiableTabs);
+    private final @Unmodifiable ObservableList<TabFxView<?>> tabs =
+            FXCollections.unmodifiableObservableList(modifiableTabs);
 
     private final SideBarFxView<?> sideBar;
 

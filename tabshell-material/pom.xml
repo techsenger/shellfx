@@ -19,6 +19,10 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.annotations</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.patternfx</groupId>
             <artifactId>patternfx-core</artifactId>
         </dependency>

@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.material.table;
 
+import com.techsenger.annotations.Unmodifiable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ public final class TableColumnManager extends AbstractTableColumnManager<TableCo
 
     private final Map<TableColumnName, NamedTableColumn<?, ?>> modifiableColumnsByName = new HashMap<>();
 
-    private Map<TableColumnName, NamedTableColumn<?, ?>> columnsByName =
+    private @Unmodifiable Map<TableColumnName, NamedTableColumn<?, ?>> columnsByName =
             Collections.unmodifiableMap(modifiableColumnsByName);
 
     public TableColumnManager(TableView<?> tableView) {
@@ -107,7 +108,7 @@ public final class TableColumnManager extends AbstractTableColumnManager<TableCo
      *
      * @return
      */
-    public Map<TableColumnName, NamedTableColumn<?, ?>> getColumnsByName() {
+    public @Unmodifiable Map<TableColumnName, NamedTableColumn<?, ?>> getColumnsByName() {
         return columnsByName;
     }
 

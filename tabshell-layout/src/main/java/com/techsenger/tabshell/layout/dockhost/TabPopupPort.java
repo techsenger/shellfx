@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.tab.TabPort;
 import java.util.List;
@@ -31,5 +32,5 @@ public interface TabPopupPort extends AreaPort {
      *
      * @return
      */
-    List<? extends TabPort> getTabs();
+    @Unmodifiable List<? extends TabPort> getTabs();
 }
