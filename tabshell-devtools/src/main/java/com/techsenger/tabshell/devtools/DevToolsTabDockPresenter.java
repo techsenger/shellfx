@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.devtools;
 
+import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
@@ -84,6 +85,11 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
     @Override
     public int getWindowUid() {
         return getView().getWindowUid();
+    }
+
+    @Override
+    public Connector getConnector() {
+        return getView().getConnector();
     }
 
     @Override

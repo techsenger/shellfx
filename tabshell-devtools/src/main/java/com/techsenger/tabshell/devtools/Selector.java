@@ -40,9 +40,9 @@ public class Selector {
 
     private boolean selectionVisible;
 
-    private Integer uid;
+    private Integer selectedWindowUid;
 
-    private Element node;
+    private Element selectedNode;;
 
     Selector(Connector connector) {
         this.connector = connector;
@@ -78,19 +78,27 @@ public class Selector {
         connector.clearSelection(uid);
     }
 
+    public Integer getSelectedWindowUid() {
+        return this.selectedWindowUid;
+    }
+
+    public Element getSelectedNode() {
+        return this.selectedNode;
+    }
+
     void setSelectionVisible(boolean selectionVisible) {
         this.selectionVisible = selectionVisible;
         updateHighlightOptions(selectionVisible);
         // this method may be called by connector event handlers at any time
-        if (this.uid != null) {
+        if (this.selectedWindowUid != null) {
             if (selectionVisible) {
-                if (this.node != null) {
-                    selectNode(this.uid, this.node);
+                if (this.selectedNode != null) {
+                    selectNode(this.selectedWindowUid, this.selectedNode);
                 } else {
-                    selectWindow(this.uid);
+                    selectWindow(this.selectedWindowUid);
                 }
             } else {
-                clearSelection(this.uid);
+                clearSelection(this.selectedWindowUid);
             }
         }
     }
@@ -109,14 +117,14 @@ public class Selector {
     }
 
     private void updateSelectedElements(Integer uid, Element node) {
-        if (!Objects.equals(this.uid, uid) || !Objects.equals(this.node, node)) {
-            this.uid = uid;
-            this.node = node;
+        if (!Objects.equals(this.selectedWindowUid, uid) || !Objects.equals(this.selectedNode, node)) {
+            this.selectedWindowUid = uid;
+            this.selectedNode = node;
             notifyListeners();
         }
     }
 
     private void notifyListeners() {
-        this.listeners.stream().forEach(l -> l.accept(this.uid, this.node));
+        this.listeners.stream().forEach(l -> l.accept(this.selectedWindowUid, this.selectedNode));
     }
 }

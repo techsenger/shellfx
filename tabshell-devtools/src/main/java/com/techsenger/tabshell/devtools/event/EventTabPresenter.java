@@ -24,7 +24,7 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
-import com.techsenger.tabshell.devtools.node.NodeTabPort;
+import com.techsenger.tabshell.devtools.Selector;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -126,7 +126,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
     private final Connector connector;
 
-    private final NodeTabPort nodeTab;
+    private final Selector selector;
 
     private final char[] timeArray = new char[12]; // HH:mm:ss.SSS
 
@@ -146,10 +146,10 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
     private int totalEntriesCount;
 
-    public EventTabPresenter(V view, Connector connector, NodeTabPort nodeTab) {
+    public EventTabPresenter(V view, Connector connector, Selector selector) {
         super(view);
         this.connector = connector;
-        this.nodeTab = nodeTab;
+        this.selector = selector;
     }
 
     @Override
@@ -261,7 +261,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
     protected boolean matchesFilter(Filter filter, LogEntry entry) {
         if (filter.isSelectedNodeOnly()) {
-            var selectedNode = nodeTab.getSelectedNode();
+            var selectedNode = selector.getSelectedNode();
             if (!(entry.event() instanceof ElementEvent elementEvent)
                     || !Objects.equals(elementEvent.getElement(), selectedNode)) {
                 return false;

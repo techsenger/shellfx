@@ -325,6 +325,8 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
             if (node != null) {
                 this.selectNode = false;
                 getView().selectComponent(node);
+            } else {
+                getView().selectRootComponent();
             }
         });
     }

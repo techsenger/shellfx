@@ -29,7 +29,6 @@ import com.techsenger.tabshell.devtools.environment.EnvironmentTabPresenter;
 import com.techsenger.tabshell.devtools.event.EventTabFxView;
 import com.techsenger.tabshell.devtools.event.EventTabPresenter;
 import com.techsenger.tabshell.devtools.node.NodeTabFxView;
-import com.techsenger.tabshell.devtools.node.NodeTabPort;
 import com.techsenger.tabshell.devtools.node.NodeTabPresenter;
 import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabFxView;
@@ -58,17 +57,17 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
             var nodeTab = createNodeTab();
             nodeTab.getPresenter().initialize();
-            var componentTab = createComponentTab(nodeTab.getPresenter());
+            var componentTab = createComponentTab();
             componentTab.getPresenter().initialize();
 
             addTab(componentTab);
             addTab(nodeTab);
 
-            var eventTab = createEventTab(nodeTab.getPresenter());
+            var eventTab = createEventTab();
             eventTab.getPresenter().initialize();
             addTab(eventTab);
 
-            var stylesheetTab = createStylesheetTab(nodeTab.getPresenter());
+            var stylesheetTab = createStylesheetTab();
             stylesheetTab.getPresenter().initialize();
             addTab(stylesheetTab);
 
@@ -79,7 +78,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
             selectTab(0);
         }
 
-        protected ComponentTabFxView<?> createComponentTab(NodeTabPort nodeTab) {
+        protected ComponentTabFxView<?> createComponentTab() {
             var view = new ComponentTabFxView<>(shell, dialogContainer.getComposer());
             var presenter = new ComponentTabPresenter<>(view, new JfxComponentService(shell), getPresenter());
             return view;
@@ -87,20 +86,20 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
         protected NodeTabFxView<?> createNodeTab() {
             var view = new NodeTabFxView<>(shell, dialogContainer.getComposer());
-            var presenter = new NodeTabPresenter<>(view, connector, getPresenter());
+            var presenter = new NodeTabPresenter<>(view, getPresenter());
             return view;
         }
 
-        protected EventTabFxView<?> createEventTab(NodeTabPort nodeTab) {
+        protected EventTabFxView<?> createEventTab() {
             var view = new EventTabFxView<>(shell);
-            var presenter = new EventTabPresenter<>(view, connector, nodeTab);
+            var presenter = new EventTabPresenter<>(view, connector, getPresenter().getSelector());
             return view;
         }
 
-        protected StylesheetTabFxView<?> createStylesheetTab(NodeTabPort nodeTab) {
+        protected StylesheetTabFxView<?> createStylesheetTab() {
             var view = new StylesheetTabFxView<>(shell);
             var windowUid = shell.getStage().hashCode();
-            var presenter = new StylesheetTabPresenter<>(view, connector, getPresenter(), nodeTab);
+            var presenter = new StylesheetTabPresenter<>(view, getPresenter());
             return view;
         }
 

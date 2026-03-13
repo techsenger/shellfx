@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools.node;
 
-import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.event.AttributeListEvent;
 import com.techsenger.connectorfx.event.ConnectorEvent;
 import com.techsenger.connectorfx.scenegraph.Element;
@@ -107,8 +106,6 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         }
     }
 
-    private final Connector connector;
-
     private final DevToolsTabDockPort tabDock;
 
     private boolean nodeIndexCreated = false;
@@ -139,9 +136,8 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
     private boolean selectedProgrammatically;
 
-    public NodeTabPresenter(V view, Connector connector, DevToolsTabDockPort tabDock) {
+    public NodeTabPresenter(V view, DevToolsTabDockPort tabDock) {
         super(view);
-        this.connector = connector;
         this.tabDock = tabDock;
     }
 
@@ -172,17 +168,6 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     }
 
     @Override
-    public void selectNode(Element node) {
-        createNodeIndex();
-        getView().selectNode(node);
-    }
-
-    @Override
-    public void selectRoot() {
-        getView().selectRoot();
-    }
-
-    @Override
     public void setLinkOpener(Consumer<String> opener) {
         linkOpener = opener;
     }
@@ -190,6 +175,9 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     @Override
     public void onAdded() {
         tabDock.getSelector().addListener((uid, node) -> {
+            if (node == null && uid != null) {
+                getView().selectRoot();
+            }
             if (Objects.equals(this.selectedNode, node)) {
                 return;
             }
@@ -206,7 +194,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         });
 
         // node selected via API or select button -> AttributeListEvents -> processEvent -> filterAndAdd
-        connector.getEventBus().subscribe(ConnectorEvent.class, event -> {
+        this.tabDock.getConnector().getEventBus().subscribe(ConnectorEvent.class, event -> {
             switch (event) {
                 case AttributeListEvent ale -> {
                     if (Objects.equals(this.selectedNode, ale.element())) {
@@ -256,7 +244,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         String declaringClassName = null;
         var node = selectedNode;
         if (field != null && node != null && node.getClassInfo().module().startsWith("javafx.")) {
-            declaringClassName = this.connector.getDeclaringClass(node.getClassInfo().className(), field);
+            declaringClassName = this.tabDock.getConnector().getDeclaringClass(node.getClassInfo().className(), field);
         }
         getComposer().addPropertyDialog(node, item, declaringClassName, linkOpener);
     }
@@ -277,10 +265,6 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(DevToolsComponents.NODE_TAB);
-    }
-
-    protected Connector getConnector() {
-        return connector;
     }
 
     protected DevToolsTabDockPort getTabDock() {

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools.stylesheet;
 
-import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.connectorfx.scenegraph.WindowProperties;
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.ALERT;
@@ -32,7 +31,6 @@ import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ElementUtils;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
-import com.techsenger.tabshell.devtools.node.NodeTabPort;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -95,17 +93,11 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
         }
     }
 
-    private final Connector connector;
+    private final DevToolsTabDockPort tabDock;
 
-    private final DevToolsTabDockPort dock;
-
-    private final NodeTabPort nodeTab;
-
-    public StylesheetTabPresenter(V view, Connector connector, DevToolsTabDockPort dock, NodeTabPort nodeTab) {
+    public StylesheetTabPresenter(V view, DevToolsTabDockPort dock) {
         super(view);
-        this.connector = connector;
-        this.dock = dock;
-        this.nodeTab = nodeTab;
+        this.tabDock = dock;
     }
 
     @Override
@@ -139,23 +131,20 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
         setClosable(false);
     }
 
-    protected Connector getConnector() {
-        return connector;
-    }
-
     protected void onStylesheetSelected(StylesheetItem s) {
         if (s.type() == StylesheetItemType.APPLICATION || s.type() == StylesheetItemType.STYLESHEET) {
             return;
         }
         if (s.node() != null) {
-            nodeTab.selectNode(s.node());
+            this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), s.node());
         } else {
-            nodeTab.selectRoot();
+            this.tabDock.getSelector().selectWindow(tabDock.getWindowUid());
         }
     }
 
     protected void rebuildTree() {
-        var entry = connector.getStyledElements(dock.getWindowUid());
+        var connector = this.tabDock.getConnector();
+        var entry = connector.getStyledElements(tabDock.getWindowUid());
         Matcher matcher = getComposer().getToolBar().createFindMatcher();
 
         List<StylesheetItem> items = new ArrayList<>();
@@ -163,7 +152,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
                 "Application [" + connector.getUserAgentStylesheet() + "]", true, null);
         items.add(item);
         item = new StylesheetItem(StylesheetItemType.WINDOW,
-                formatWindowType(dock.getWindowUid(), entry.getKey()), true, null);
+                formatWindowType(tabDock.getWindowUid(), entry.getKey()), true, null);
         items.add(item);
 
         var found = 0;

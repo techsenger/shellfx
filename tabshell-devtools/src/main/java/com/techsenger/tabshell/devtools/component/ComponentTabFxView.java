@@ -274,6 +274,12 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     }
 
     @Override
+    public void selectRootComponent() {
+        componentTreeView.getSelectionModel().select(0);
+        componentTreeView.scrollTo(componentTreeView.getSelectionModel().getSelectedIndex());
+    }
+
+    @Override
     public void selectComponent(List<Integer> path) {
         TreeItem<ComponentItem> treeItem = null;
         for (var index : path) {
