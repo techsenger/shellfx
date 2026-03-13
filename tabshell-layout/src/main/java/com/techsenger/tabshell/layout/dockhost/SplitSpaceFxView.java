@@ -69,7 +69,7 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
         void removeChild(int index, boolean deinitialize) {
             var child = removeChildFromView(index);
             if (deinitialize) {
-                child.getPresenter().deinitialize();
+                child.getPresenter().deinitializeTree();
             }
         }
 

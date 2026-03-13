@@ -161,3 +161,11 @@
 .font-icon-view.reload-icon {
     -fx-code-point: 984147; /* reload */
 }
+
+.font-icon-view.close-icon {
+    -fx-code-point: 983382; /* close */
+}
+
+.font-icon-view.dots-vertical-icon {
+    -fx-code-point: 983513; /* dots-vertical */
+}

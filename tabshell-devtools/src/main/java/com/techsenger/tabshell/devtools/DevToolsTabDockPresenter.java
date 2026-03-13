@@ -20,20 +20,24 @@ import com.techsenger.connectorfx.Highlight;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.tabshell.core.CloseAwarePresenter;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
+import com.techsenger.tabshell.layout.dockhost.TabDockComposer;
 import com.techsenger.tabshell.layout.dockhost.TabDockPresenter;
-import com.techsenger.tabshell.layout.tabhost.TabHostComposer;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends TabHostComposer>
-        extends TabDockPresenter<V, C> implements DevToolsTabDockPort {
+public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends TabDockComposer>
+        extends TabDockPresenter<V, C> implements DevToolsTabDockPort, CloseAwarePresenter<V, C> {
 
     private final Settings settings;
 
@@ -60,6 +64,21 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
         this.selectionSelected = selectionSelected;
         getView().setSelectionSelected(selectionSelected);
         this.selector.setSelectionVisible(selectionSelected);
+    }
+
+    @Override
+    public void close() {
+        getComposer().remove();
+    }
+
+    @Override
+    public CloseCheckResult isReadyToClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

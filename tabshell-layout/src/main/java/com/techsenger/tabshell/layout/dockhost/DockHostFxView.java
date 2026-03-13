@@ -860,21 +860,21 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
                     view.getNode().setRight(null);
                     var sideBar = view.getRightBar();
                     rightBar.set(null);
-                    sideBar.getPresenter().deinitialize();
+                    sideBar.getPresenter().deinitializeTree();
                     getModifiableChildren().remove(sideBar);
                 }
                 case BOTTOM -> {
                     view.getNode().setBottom(null);
                     var sideBar = view.getBottomBar();
                     bottomBar.set(null);
-                    sideBar.getPresenter().deinitialize();
+                    sideBar.getPresenter().deinitializeTree();
                     getModifiableChildren().remove(sideBar);
                 }
                 case LEFT -> {
                     view.getNode().setLeft(null);
                     var sideBar = view.getLeftBar();
                     leftBar.set(null);
-                    sideBar.getPresenter().deinitialize();
+                    sideBar.getPresenter().deinitializeTree();
                     getModifiableChildren().remove(sideBar);
                 }
                 default -> throw new AssertionError();
@@ -1000,7 +1000,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             if (popup != null) {
                 view.centerStackPane.getChildren().remove(popup.getNode());
                 getModifiableChildren().remove(popup);
-                popup.getPresenter().deinitialize();
+                popup.getPresenter().deinitializeTree();
                 wrapper.set(null);
             }
         }

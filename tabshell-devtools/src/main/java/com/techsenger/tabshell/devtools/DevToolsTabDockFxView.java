@@ -36,6 +36,7 @@ import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabFxView;
 import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabPresenter;
 import com.techsenger.tabshell.layout.dockhost.TabDockFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.scene.control.Button;
@@ -114,7 +115,9 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
     private final ToggleButton selectionButton = new ToggleButton(null, new FontIconView(DevToolsIcons.SELECTION));
 
-    private final Button settingsButton = new Button(null, new FontIconView(SharedIcons.SETTINGS));
+    private final Button optionsButton = new Button(null, new FontIconView(SharedIcons.DOTS_VERTICAL));
+
+    private final Button closeButton = new Button(null, new FontIconView(SharedIcons.CLOSE));
 
     private final ShellFxView<?> shell;
 
@@ -152,19 +155,24 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
     @Override
     protected void build() {
         super.build();
-        selectButton.getStyleClass().addAll(Styles.FLAT, "dock-button");
+        selectButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
         selectButton.setTooltip(new Tooltip("Select Node"));
-        selectionButton.getStyleClass().addAll(Styles.FLAT, "dock-button");
+        selectionButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
         selectionButton.setTooltip(new Tooltip("Enable/Disable Selection"));
         getTabHeaderFirstBox().getChildren().addAll(selectButton, selectionButton);
+        getTabHeaderFirstBox().setSpacing(Spacing.HORIZONTAL_SIXTH);
         var styles = DevToolsTabDockFxView.class.getResource("devtools-tab-dock.css").toExternalForm();
         getNode().getStylesheets().add(styles);
         getNode().setTabDragEnabled(false);
         getNode().setTabDropEnabled(false);
 
-        settingsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
-        settingsButton.setTooltip(new Tooltip("Settings"));
-        getTabHeaderLastBox().getChildren().add(0, settingsButton);
+        optionsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
+        optionsButton.setTooltip(new Tooltip("Options"));
+        closeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
+        closeButton.setTooltip(new Tooltip("Close"));
+        getTabHeaderLastBox().getChildren().add(0, optionsButton);
+        getTabHeaderLastBox().getChildren().add(closeButton);
+        getTabHeaderLastBox().setSpacing(Spacing.HORIZONTAL_HALF);
     }
 
     @Override
@@ -172,6 +180,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
         super.addHandlers();
         selectButton.setOnAction(e -> getPresenter().onSelect());
         selectionButton.setOnAction(e -> getPresenter().onSelection(selectionButton.isSelected()));
+        closeButton.setOnAction(e -> getPresenter().requestClose());
     }
 
     @Override
@@ -183,7 +192,15 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
         return selectButton;
     }
 
-    protected Button getSettingsButton() {
-        return settingsButton;
+    protected ToggleButton getSelectionButton() {
+        return selectionButton;
+    }
+
+    protected Button getOptionsButton() {
+        return optionsButton;
+    }
+
+    protected Button getCloseButton() {
+        return closeButton;
     }
 }

@@ -18,7 +18,6 @@ package com.techsenger.tabshell.layout.dockhost;
 
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.layout.LayoutComponents;
-import com.techsenger.tabshell.layout.tabhost.TabHostComposer;
 
 /**
  * Placeholder is a temporary component inserted into the layout at the calculated drop position while the dock is
@@ -27,7 +26,7 @@ import com.techsenger.tabshell.layout.tabhost.TabHostComposer;
  *
  * @author Pavel Castornii
  */
-class PlaceholderPresenter extends TabDockPresenter<PlaceholderView, TabHostComposer> {
+class PlaceholderPresenter extends TabDockPresenter<PlaceholderView, TabDockComposer> {
 
     PlaceholderPresenter(PlaceholderView view) {
         super(view);

@@ -41,6 +41,14 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
 
     static final double MIN_SIZE = 100; // temp
 
+    public class Composer extends TabHostFxView<P>.Composer implements TabDockComposer {
+
+        @Override
+        public void remove() {
+            dockHost.getComposer().removeTabDock(TabDockFxView.this);
+        }
+    }
+
     private final FontIconView dragIconView = new FontIconView(LayoutIcons.DRAG_VERTICAL);
 
     private final HBox tabHeaderFirstBox = new HBox();
@@ -69,6 +77,16 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
     }
 
     @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
+    }
+
+    @Override
+    protected Composer createComposer() {
+        return new TabDockFxView.Composer();
+    }
+
+    @Override
     protected List<? extends TabFxView<?>> getDetachedTabs() {
         return super.getDetachedTabs();
     }
@@ -80,6 +98,7 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         tabPane.setTabDragEnabled(true);
         tabPane.setTabDropEnabled(true);
 
+        this.dragIconView.getStyleClass().add(StyleClasses.COMPACT);
         tabHeaderFirstBox.getStyleClass().add("tab-header-first-box");
         minimizeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
         tabHeaderLastBox.getStyleClass().add("tab-header-last-box");

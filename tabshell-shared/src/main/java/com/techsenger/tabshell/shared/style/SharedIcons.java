@@ -93,4 +93,8 @@ public interface SharedIcons {
     StyleFontIcon REFRESH = new StyleFontIcon("refresh-icon");
 
     StyleFontIcon RELOAD = new StyleFontIcon("reload-icon");
+
+    StyleFontIcon CLOSE = new StyleFontIcon("close-icon");
+
+    StyleFontIcon DOTS_VERTICAL = new StyleFontIcon("dots-vertical-icon");
 }

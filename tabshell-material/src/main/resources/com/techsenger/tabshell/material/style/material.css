@@ -106,7 +106,7 @@
 }
 
 .button.dense .font-icon-view,
-.toggle-button.dense .font-icon-view {
+.toggle-button.dense .font-icon-view { /* see .font-icon-view.dense {} */
     -fx-font-size: 1.3em;
 }
 
@@ -124,7 +124,7 @@
 }
 
 .button.compact .font-icon-view,
-.toggle-button.compact .font-icon-view {
+.toggle-button.compact .font-icon-view { /* see .font-icon-view.compact {} */
     -fx-font-size: 1.2em;
 }
 

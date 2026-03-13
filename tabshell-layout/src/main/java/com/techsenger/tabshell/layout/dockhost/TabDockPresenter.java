@@ -18,14 +18,13 @@ package com.techsenger.tabshell.layout.dockhost;
 
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.layout.LayoutComponents;
-import com.techsenger.tabshell.layout.tabhost.TabHostComposer;
 import com.techsenger.tabshell.layout.tabhost.TabHostPresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabDockPresenter<V extends TabDockView, C extends TabHostComposer>
+public class TabDockPresenter<V extends TabDockView, C extends TabDockComposer>
         extends TabHostPresenter<V, C> implements TabDockPort  {
 
     private ComponentPosition minimizedPosition;
