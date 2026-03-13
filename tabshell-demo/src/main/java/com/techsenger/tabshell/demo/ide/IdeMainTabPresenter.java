@@ -80,7 +80,7 @@ public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabC
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setTitle("Tab");
+        getView().setTitle("Main Tab");
         menuDelegates.addAll(
                 new SimpleMenuDelegate(ExtraMenu.NAME, true) // extra menu is included
         );
