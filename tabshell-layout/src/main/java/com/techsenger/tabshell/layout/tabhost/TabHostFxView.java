@@ -111,11 +111,13 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
             }
         }
 
+        @Override
         public void addTab(TabFxView<?> tab) {
             view.tabPane.getTabs().add(tab.getNode());
             view.getModifiableChildren().add(tab);
         }
 
+        @Override
         public void removeTab(TabFxView<?> tab) {
             view.tabPane.getTabs().remove(tab.getNode());
             view.getModifiableChildren().remove(tab);
