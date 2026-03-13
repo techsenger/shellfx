@@ -1,21 +1,27 @@
 # Techsenger TabShell
 
 Techsenger TabShell is a platform for building tab-based applications in JavaFX, where an application is structured as
-a tree of MVP components.
+a tree of MVP components. The platform provides abstract classes for creating the main types of components: tab,
+area, page, dialog, and popup, as well as containers for them.
+
+It also includes ready-to-use implementations of containers (including a docking layout) and dialogs (including a
+universal file chooser). In addition, the platform provides powerful devtools that allow you to inspect both the MVP
+component tree and the underlying JavaFX scene graph. These tools make it easy to understand how the platform works
+and are invaluable during development.
 
 TabShell is built around two core subsystems: the dynamic main menu and the workspace. The main menu is assembled
 at runtime and automatically adapts to the currently focused component. The workspace provides the structural
 foundation of the application and defines how components are arranged and interact visually. The platform supports
 two primary workspace models: browser-like and IDE-like.
 
-In addition, it includes a set of commonly used dialogs (including a universal file chooser) and developer tools that
-allow working with both the MVP component tree and the underlying JavaFX scene graph.
-
 TabShell is built on top of the [PatternFX](https://github.com/techsenger/patternfx) framework.
 
 ## Table of Contents
 * [Demo](#demo)
+    * [Workspaces](#demo-workspaces)
+    * [Pages](#demo-pages)
     * [Dialogs](#demo-dialogs)
+    * [DevTools](#demo-devtools)
 * [Features](#features)
 * [When to Use?](#when-to-use)
 * [Modules](#modules)
@@ -55,9 +61,15 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
 
 ## Demo <a name="demo"></a>
 
+### Workspaces <a name="demo-workspaces"></a>
+
+### Pages <a name="demo-pages"></a>
+
 ### Dialogs <a name="demo-dialogs"></a>
 
 ![TabShell Dialogs](https://github.com/user-attachments/assets/83be533a-08fb-437a-aeb7-38b48ebe2291)
+
+### DevTools <a name="demo-devtools"></a>
 
 ## Features <a name="features"></a>
 
