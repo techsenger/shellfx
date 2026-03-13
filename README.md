@@ -1,8 +1,8 @@
 # Techsenger TabShell
 
-Techsenger TabShell is a platform for building tab-based applications in JavaFX, where an application is structured as
-a tree of MVP components. The platform provides abstract classes for creating the main types of components: tab,
-area, page, dialog, and popup, as well as containers for them.
+Techsenger TabShell is a platform for building tab-based applications in JavaFX, where an application is structured
+as a tree of MVP components, each of which has its own lifecycle, history, etc. The platform provides abstract 
+classes for creating the main types of components: tab, area, page, dialog, and popup, as well as containers for them.
 
 It also includes ready-to-use implementations of containers (including a docking layout) and dialogs (including a
 universal file chooser). In addition, the platform provides powerful devtools that allow you to inspect both the MVP
@@ -63,13 +63,25 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
 
 ### Workspaces <a name="demo-workspaces"></a>
 
+![TabShell Workspace](https://raw.githubusercontent.com/techsenger/demo-media/main/1/1.png)
+
+![TabShell Workspace](https://raw.githubusercontent.com/techsenger/demo-media/main/1/2.png)
+
 ### Pages <a name="demo-pages"></a>
+
+![TabShell Pages](https://raw.githubusercontent.com/techsenger/demo-media/main/1/3.png)
 
 ### Dialogs <a name="demo-dialogs"></a>
 
-![TabShell Dialogs](https://github.com/user-attachments/assets/83be533a-08fb-437a-aeb7-38b48ebe2291)
+![TabShell Pages](https://raw.githubusercontent.com/techsenger/demo-media/main/1/4.png)
 
 ### DevTools <a name="demo-devtools"></a>
+
+![TabShell DevTools Components](https://raw.githubusercontent.com/techsenger/demo-media/main/1/5.png)
+
+![TabShell DevTools Nodes](https://raw.githubusercontent.com/techsenger/demo-media/main/1/6.png)
+
+![TabShell DevTools Events](https://raw.githubusercontent.com/techsenger/demo-media/main/1/7.png)
 
 ## Features <a name="features"></a>
 
