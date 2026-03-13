@@ -73,7 +73,18 @@
 .tab-pane-pro.side-bar > .tab-header-area > .headers-region > .tab.restore > .tab-container {
     -fx-background-color: transparent;
     -fx-border-width: 0;
-    -fx-padding: 0;
+}
+
+.tab-pane-pro.side-bar:right > .tab-header-area > .headers-region > .tab.restore > .tab-container {
+    -fx-padding: 0.25em 0 0 0;
+}
+
+.tab-pane-pro.side-bar:bottom > .tab-header-area > .headers-region > .tab.restore > .tab-container {
+    -fx-padding: 0.10em 0 0 0;
+}
+
+.tab-pane-pro.side-bar:left > .tab-header-area > .headers-region > .tab.restore > .tab-container {
+    -fx-padding: 0.20em 0 0 0;
 }
 
 /*
