@@ -81,14 +81,17 @@ public class Selector {
     void setSelectionVisible(boolean selectionVisible) {
         this.selectionVisible = selectionVisible;
         updateHighlightOptions(selectionVisible);
-        if (selectionVisible) {
-            if (this.node != null) {
-                selectNode(this.uid, this.node);
-            } else if (this.uid != null) {
-                selectWindow(this.uid);
+        // this method may be called by connector event handlers at any time
+        if (this.uid != null) {
+            if (selectionVisible) {
+                if (this.node != null) {
+                    selectNode(this.uid, this.node);
+                } else {
+                    selectWindow(this.uid);
+                }
+            } else {
+                clearSelection(this.uid);
             }
-        } else {
-            clearSelection(this.uid);
         }
     }
 
