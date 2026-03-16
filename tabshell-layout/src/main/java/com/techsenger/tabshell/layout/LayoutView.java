@@ -24,7 +24,7 @@ public interface LayoutView {
 
     /**
      * Returns true if this layout is a workspace.
-     * 
+     *
      * @return
      */
     boolean isWorkspace();
