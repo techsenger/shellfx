@@ -371,7 +371,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         return dockHost;
     }
 
-    protected ObservableList<TabDockFxView<?>> getTabDocks() {
+    protected @Unmodifiable ObservableList<TabDockFxView<?>> getTabDocks() {
         return tabDocks;
     }
 

@@ -57,7 +57,7 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
         private final TabPopupFxView<P> view = TabPopupFxView.this;
 
         @Override
-        public List<? extends TabPort> getTabs() {
+        public @Unmodifiable List<? extends TabPort> getTabs() {
             return view.getTabs().stream().map(v -> v.getPresenter()).toList();
         }
 
@@ -205,7 +205,7 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
         return tabPane;
     }
 
-    ObservableList<TabFxView<?>> getTabs() {
+    @Unmodifiable ObservableList<TabFxView<?>> getTabs() {
         return tabs;
     }
 

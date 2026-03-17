@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.page;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.icon.Icon;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +63,7 @@ public class DefaultPageDescriptor implements PageDescriptor {
     }
 
     @Override
-    public List<PageDescriptor> getChildren() {
+    public @Unmodifiable List<PageDescriptor> getChildren() {
         return Collections.unmodifiableList(this.children);
     }
 

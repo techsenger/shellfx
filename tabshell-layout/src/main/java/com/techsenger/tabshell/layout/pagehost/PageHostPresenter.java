@@ -193,7 +193,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     @Override
-    public List<PageBreadcrumb> getBreadcrumbs() {
+    public @Unmodifiable List<PageBreadcrumb> getBreadcrumbs() {
         return Collections.unmodifiableList(breadcrumbs);
     }
 

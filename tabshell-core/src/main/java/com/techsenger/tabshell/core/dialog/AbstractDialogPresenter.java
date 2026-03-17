@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.icon.Icon;
@@ -198,12 +199,12 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
     }
 
     @Override
-    public List<ResultButtonName> getLeftButtons() {
+    public @Unmodifiable List<ResultButtonName> getLeftButtons() {
         return Collections.unmodifiableList(this.leftButtons);
     }
 
     @Override
-    public List<ResultButtonName> getRightButtons() {
+    public @Unmodifiable List<ResultButtonName> getRightButtons() {
         return Collections.unmodifiableList(this.rightButtons);
     }
 

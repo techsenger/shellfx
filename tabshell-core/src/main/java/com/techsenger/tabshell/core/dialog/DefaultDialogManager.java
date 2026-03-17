@@ -123,7 +123,7 @@ public class DefaultDialogManager implements DialogManager {
     }
 
     @Override
-    public ObservableList<DialogFxView<?>> getDialogs() {
+    public @Unmodifiable ObservableList<DialogFxView<?>> getDialogs() {
         return dialogs;
     }
 
@@ -141,7 +141,7 @@ public class DefaultDialogManager implements DialogManager {
     }
 
     @Override
-    public ObservableList<PopupFxView<?>> getPopups() {
+    public @Unmodifiable ObservableList<PopupFxView<?>> getPopups() {
         return popups;
     }
 
