@@ -28,7 +28,6 @@ module com.techsenger.tabshell.shared {
     requires javafx.controls;
     requires javafx.swing;
     requires atlantafx.base;
-    requires jakarta.xml.bind;
 
     exports com.techsenger.tabshell.shared.find;
     exports com.techsenger.tabshell.shared.style;

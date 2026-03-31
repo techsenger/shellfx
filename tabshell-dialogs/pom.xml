@@ -58,10 +58,6 @@
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.fxmisc.richtext</groupId>
-            <artifactId>richtextfx</artifactId>
-        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

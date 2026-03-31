@@ -25,7 +25,7 @@ import javafx.scene.text.Font;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractAppearanceSettings implements AppearanceSettings {
+public class DefaultAppearanceSettings implements AppearanceSettings {
 
     private final ObjectProperty<Theme> theme = new SimpleObjectProperty<>();
 
@@ -33,11 +33,11 @@ public abstract class AbstractAppearanceSettings implements AppearanceSettings {
 
     private final ObjectProperty<Font> monospaceFont = new SimpleObjectProperty<>();
 
-    public AbstractAppearanceSettings() {
+    public DefaultAppearanceSettings() {
 
     }
 
-    public AbstractAppearanceSettings(Font regularFont, Font monospaceFont) {
+    public DefaultAppearanceSettings(Font regularFont, Font monospaceFont) {
         setRegularFont(regularFont);
         setMonospaceFont(monospaceFont);
     }

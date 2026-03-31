@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demo;
 
+import com.techsenger.tabshell.core.DefaultShellContext;
 import com.techsenger.tabshell.core.DefaultShellFxView;
 import com.techsenger.tabshell.core.DefaultShellPresenter;
 import com.techsenger.tabshell.core.area.AreaFxView;

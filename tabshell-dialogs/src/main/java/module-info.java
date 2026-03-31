@@ -28,7 +28,6 @@ module com.techsenger.tabshell.dialogs {
     requires javafx.controls;
     requires com.techsenger.toolkit.fx;
     requires atlantafx.base;
-    requires org.fxmisc.richtext;
 
     exports com.techsenger.tabshell.dialogs;
     exports com.techsenger.tabshell.dialogs.alert;

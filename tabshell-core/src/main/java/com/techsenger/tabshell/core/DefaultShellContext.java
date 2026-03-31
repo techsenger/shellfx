@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demo;
+package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.core.ShellContext;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.Settings;
 import javafx.application.HostServices;

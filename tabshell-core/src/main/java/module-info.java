@@ -24,7 +24,6 @@ module com.techsenger.tabshell.core {
     requires javafx.controls;
     requires javafx.swing;
     requires atlantafx.base;
-    requires jakarta.xml.bind;
     requires com.techsenger.stagepro.core;
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.patternfx.core;
@@ -40,11 +39,8 @@ module com.techsenger.tabshell.core {
     exports com.techsenger.tabshell.core.popup;
     exports com.techsenger.tabshell.core.registry;
     exports com.techsenger.tabshell.core.settings;
-    exports com.techsenger.tabshell.core.settings.xml;
     exports com.techsenger.tabshell.core.tab;
     exports com.techsenger.tabshell.core.traits;
 
-    opens com.techsenger.tabshell.core.settings.xml to jakarta.xml.bind;
     opens com.techsenger.tabshell.core.style;
-
 }

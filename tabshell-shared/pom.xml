@@ -50,10 +50,6 @@
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
         </dependency>
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
