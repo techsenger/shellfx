@@ -49,7 +49,7 @@ public class ControlRegistry {
     /**
      * Registers a menu in the specified group. Note - there can be only one menu bar in the component.
      *
-     * @param componentName
+     * @param componentName the name of the owner of the menu
      * @param groupName the name of the group that this menu will belong to. Null for root menus in the MenuBar
      * @param factory
      * @return
@@ -68,7 +68,7 @@ public class ControlRegistry {
     /**
      * Registers a menu group.
      *
-     * @param componentName
+     * @param componentName the name of the owner of the menu
      * @param menuName the name of the menu this group will belong to.
      * @param factory
      * @return
@@ -85,7 +85,7 @@ public class ControlRegistry {
     /**
      * Registers a menu item in the specified group.
      *
-     * @param componentName
+     * @param componentName the name of the owner of the menu
      * @param groupName
      * @param factory
      * @return
