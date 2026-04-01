@@ -26,9 +26,9 @@ import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
  */
 public interface ComponentTabComposer extends TabComposer {
 
-    ToolBarPort getComponentToolBar();
+    ToolBarPort getComponentToolBarPort();
 
-    ToolBarPort getInspectorToolBar();
+    ToolBarPort getInspectorToolBarPort();
 
     NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption);
 }

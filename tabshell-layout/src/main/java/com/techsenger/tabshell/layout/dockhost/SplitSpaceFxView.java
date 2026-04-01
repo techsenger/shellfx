@@ -45,14 +45,16 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
 
         private final SplitSpaceFxView<P> view = SplitSpaceFxView.this;
 
+        private DockHostFxView<?> dockHost;
+
         public void addChild(AreaFxView<?> child) {
-            Node container = view.dockHost.createContainer(child);
+            Node container = dockHost.createContainer(child);
             splitPane.getItems().add(container);
             getModifiableChildren().add(child);
         }
 
         public void addChild(int index, AreaFxView<?> child) {
-            Node container = view.dockHost.createContainer(child);
+            Node container = dockHost.createContainer(child);
             splitPane.getItems().add(index, container);
             getModifiableChildren().add(index, child);
         }
@@ -66,6 +68,16 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
             addChild(index, tabDock);
         }
 
+        protected DockHostFxView<?> getDockHost() {
+            return dockHost;
+        }
+
+        protected void setDockHost(DockHostFxView<?> dockHost) {
+            if (this.dockHost == null) {
+                this.dockHost = dockHost;
+            }
+        }
+
         void removeChild(int index, boolean deinitialize) {
             var child = removeChildFromView(index);
             if (deinitialize) {
@@ -75,7 +87,7 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
 
         private AreaFxView<?> removeChildFromView(int index) {
             StackPane container = (StackPane) splitPane.getItems().remove(index);
-            view.dockHost.destroyContainer(container);
+            dockHost.destroyContainer(container);
             var child = (AreaFxView<?>) getModifiableChildren().remove(index);
             return child;
         }
@@ -84,8 +96,6 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
     private static final Logger logger = LoggerFactory.getLogger(SplitSpaceFxView.class);
 
     private final SplitPane splitPane = new SplitPane();
-
-    private DockHostFxView<?> dockHost;
 
     protected SplitSpaceFxView() {
         super();
@@ -142,16 +152,6 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends Abstr
     @Override
     protected Composer createComposer() {
         return new Composer();
-    }
-
-    protected DockHostFxView<?> getDockHost() {
-        return dockHost;
-    }
-
-    protected void setDockHost(DockHostFxView<?> dockHost) {
-        if (this.dockHost == null) {
-            this.dockHost = dockHost;
-        }
     }
 
     void logState(String note) {

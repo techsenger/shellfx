@@ -16,8 +16,10 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.tabshell.core.popup.PopupContainerFxView;
+import java.util.List;
 
 /**
  *
@@ -40,6 +42,12 @@ public interface DialogContainerFxView<P extends ParentPresenter<?, ?>> extends 
          * @param dialog the dialog component to remove
          */
         void removeDialog(DialogFxView<?> dialog);
+
+        /**
+         * Returns an unmodifiable list of dialogs.
+         * @return
+         */
+        @Unmodifiable List<? extends DialogFxView<?>> getDialogs();
 
     }
 

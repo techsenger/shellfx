@@ -61,7 +61,7 @@ public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupCompose
 
     @Override
     public List<? extends TabPort> getTabs() {
-        return getComposer().getTabs();
+        return getComposer().getTabPorts();
     }
 
     @Override

@@ -26,5 +26,5 @@ import com.techsenger.tabshell.core.dialog.DialogContainerComposer;
  */
 public interface ShellComposer extends ParentComposer, DialogContainerComposer {
 
-    AreaPort getWorkspace();
+    AreaPort getWorkspacePort();
 }

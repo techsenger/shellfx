@@ -25,5 +25,5 @@ import com.techsenger.tabshell.devtools.ToolBarPort;
  */
 public interface StylesheetTabComposer extends TabComposer {
 
-    ToolBarPort getToolBar();
+    ToolBarPort getToolBarPort();
 }

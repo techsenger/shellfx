@@ -183,29 +183,33 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
 
         private final ComponentTabFxView<P> view = ComponentTabFxView.this;
 
+        private ToolBarFxView<?> componentToolBar;
+
+        private ToolBarFxView<?> inspectorToolBar;
+
         @Override
         public void compose() {
             super.compose();
 
-            view.componentToolBar = createComponentToolBar();
-            view.componentToolBar.getPresenter().initialize();
-            view.getModifiableChildren().add(view.componentToolBar);
-            view.componentBox.getChildren().add(0, view.componentToolBar.getNode());
+            this.componentToolBar = createComponentToolBar();
+            this.componentToolBar.getPresenter().initialize();
+            view.getModifiableChildren().add(this.componentToolBar);
+            view.componentBox.getChildren().add(0, this.componentToolBar.getNode());
 
-            view.inspectorToolBar = createInspectorToolBar();
-            view.inspectorToolBar.getPresenter().initialize();
-            view.getModifiableChildren().add(view.inspectorToolBar);
-            view.inspectorBox.getChildren().add(0, view.inspectorToolBar.getNode());
+            this.inspectorToolBar = createInspectorToolBar();
+            this.inspectorToolBar.getPresenter().initialize();
+            view.getModifiableChildren().add(inspectorToolBar);
+            view.inspectorBox.getChildren().add(0, inspectorToolBar.getNode());
         }
 
         @Override
-        public ToolBarPort getComponentToolBar() {
-            return view.componentToolBar.getPresenter();
+        public ToolBarPort getComponentToolBarPort() {
+            return this.componentToolBar == null ? null : this.componentToolBar.getPresenter();
         }
 
         @Override
-        public ToolBarPort getInspectorToolBar() {
-            return view.inspectorToolBar.getPresenter();
+        public ToolBarPort getInspectorToolBarPort() {
+            return this.inspectorToolBar == null ? null : this.inspectorToolBar.getPresenter();
         }
 
         @Override
@@ -217,6 +221,14 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
             presenter.setPrefHeight(350);
             view.dialogContainer.addDialog(dialog);
             return presenter;
+        }
+
+        protected ToolBarFxView<?> getComponentToolBar() {
+            return componentToolBar;
+        }
+
+        protected ToolBarFxView<?> getInspectorToolBar() {
+            return inspectorToolBar;
         }
 
         protected ToolBarFxView<?> createComponentToolBar() {
@@ -249,10 +261,6 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     private final VBox inspectorBox = new VBox(inspectorTableView);
 
     private final SplitPane splitPane = new SplitPane(componentBox, inspectorBox);
-
-    private ToolBarFxView<?> componentToolBar;
-
-    private ToolBarFxView<?> inspectorToolBar;
 
     private final Map<ParentFxView<?>, TreeItem<ComponentItem>> treeItemsByComponent = new HashMap<>();
 
@@ -489,14 +497,6 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
 
     protected SplitPane getSplitPane() {
         return splitPane;
-    }
-
-    protected ToolBarFxView<?> getComponentToolBar() {
-        return componentToolBar;
-    }
-
-    protected ToolBarFxView<?> getInspectorToolBar() {
-        return inspectorToolBar;
     }
 
     private void rebuildTree(ComponentItem rootItem) {

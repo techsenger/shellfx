@@ -280,7 +280,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     private void findNode() {
         createNodeIndex();
         clearFindNodeResult();
-        var matcher = getComposer().getNodeToolBar().createFindMatcher();
+        var matcher = getComposer().getNodeToolBarPort().createFindMatcher();
         if (matcher != null) {
             findNode(rootNode, matcher);
             if (!foundNodes.isEmpty()) {
@@ -333,7 +333,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     private void clearFindNodeResult() {
         this.foundNodes.clear();
         this.foundNodeIndex = 0;
-        getComposer().getNodeToolBar().hideFindResultInfo();
+        getComposer().getNodeToolBarPort().hideFindResultInfo();
     }
 
     private void createNodeIndex() {
@@ -349,7 +349,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         if (!this.foundNodes.isEmpty()) {
             current = this.foundNodeIndex + 1;
         }
-        getComposer().getNodeToolBar().showFindResultInfo(current, this.foundNodes.size());
+        getComposer().getNodeToolBarPort().showFindResultInfo(current, this.foundNodes.size());
     }
 
     private void processPropertyEvent(AttributeListEvent event) {
@@ -368,7 +368,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     private void updateProperies() {
         getView().clearProperties();
         clearFindPropertyResult();
-        this.propsMatcher = getComposer().getPropertyToolBar().createFindMatcher();
+        this.propsMatcher = getComposer().getPropertyToolBarPort().createFindMatcher();
         // existing items from the map are filtered
         for (var entry : this.propsByCategory.entrySet()) {
             filterAndAddProperties(entry.getKey(), entry.getValue());
@@ -387,14 +387,14 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
                 getView().addProperties(cat, this.categoryExpansion.get(cat), filteredProps);
                 this.foundPropertyCount += filteredProps.size();
             }
-            getComposer().getPropertyToolBar().showFindResultInfo(foundPropertyCount);
+            getComposer().getPropertyToolBarPort().showFindResultInfo(foundPropertyCount);
         } else {
             getView().addProperties(cat, this.categoryExpansion.get(cat), props);
         }
     }
 
     private void clearFindPropertyResult() {
-        getComposer().getPropertyToolBar().hideFindResultInfo();
+        getComposer().getPropertyToolBarPort().hideFindResultInfo();
         this.foundPropertyCount = 0;
     }
 }

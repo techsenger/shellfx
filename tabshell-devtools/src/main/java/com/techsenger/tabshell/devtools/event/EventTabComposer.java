@@ -24,5 +24,5 @@ import com.techsenger.tabshell.core.tab.TabComposer;
  */
 public interface EventTabComposer extends TabComposer {
 
-    EventToolBarPort getToolBar();
+    EventToolBarPort getToolBarPort();
 }

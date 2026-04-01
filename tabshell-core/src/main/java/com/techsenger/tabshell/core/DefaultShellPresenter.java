@@ -170,12 +170,12 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
 
     @Override
     public List<? extends PopupPort> getPopups() {
-        return getComposer().getPopups();
+        return getComposer().getPopupPorts();
     }
 
     @Override
     public List<? extends DialogPort> getDialogs() {
-        return getComposer().getDialogs();
+        return getComposer().getDialogPorts();
     }
 
     @Override

@@ -31,5 +31,5 @@ public interface PopupContainerComposer extends ParentComposer {
      *
      * @return
      */
-    @Unmodifiable List<? extends PopupPort> getPopups();
+    @Unmodifiable List<? extends PopupPort> getPopupPorts();
 }

@@ -118,12 +118,12 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
 
     @Override
     public List<? extends DialogPort> getDialogs() {
-        return getComposer().getDialogs();
+        return getComposer().getDialogPorts();
     }
 
     @Override
     public List<? extends PopupPort> getPopups() {
-        return getComposer().getPopups();
+        return getComposer().getPopupPorts();
     }
 
     @Override

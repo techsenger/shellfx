@@ -56,23 +56,34 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
 
         private final TabPopupFxView<P> view = TabPopupFxView.this;
 
+        private final ObservableList<TabFxView<?>> modifiableTabs = FXCollections.observableArrayList();
+
+        private final @Unmodifiable ObservableList<TabFxView<?>> tabs =
+                FXCollections.unmodifiableObservableList(modifiableTabs);
+
+        private SideBarFxView<?> sideBar;
+
         @Override
-        public @Unmodifiable List<? extends TabPort> getTabs() {
-            return view.getTabs().stream().map(v -> v.getPresenter()).toList();
+        public @Unmodifiable List<? extends TabPort> getTabPorts() {
+            return tabs.stream().map(v -> v.getPresenter()).toList();
         }
 
         public void addTab(TabFxView<?> tab) {
-            view.modifiableTabs.add(tab);
+            modifiableTabs.add(tab);
             // there can be other children, so index is not used
             view.tabPane.getTabs().add(tab.getNode());
             view.getModifiableChildren().add(tab);
         }
 
         public void removeTab(TabFxView<?> tab) {
-            view.modifiableTabs.remove(tab);
+            modifiableTabs.remove(tab);
             // there can be other children, so index is not used
             view.tabPane.getTabs().remove(tab.getNode());
             view.getModifiableChildren().remove(tab);
+        }
+
+        @Unmodifiable ObservableList<TabFxView<?>> getTabs() {
+            return tabs;
         }
     }
 
@@ -92,18 +103,11 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
 
     private boolean isResizing = false;
 
-    private final ObservableList<TabFxView<?>> modifiableTabs = FXCollections.observableArrayList();
-
-    private final @Unmodifiable ObservableList<TabFxView<?>> tabs =
-            FXCollections.unmodifiableObservableList(modifiableTabs);
-
-    private final SideBarFxView<?> sideBar;
-
     private final Dimension2D centerDimension;
 
     public TabPopupFxView(SideBarFxView<?> sideBar, Dimension2D centerDimension) {
         super();
-        this.sideBar = sideBar;
+        getComposer().sideBar = sideBar;
         this.centerDimension = centerDimension;
     }
 
@@ -149,12 +153,13 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
     protected void addHandlers() {
         super.addHandlers();
         var presenter = getPresenter();
+        var composer = getComposer();
         node.addEventFilter(MouseEvent.MOUSE_EXITED, (e) -> {
-            if (!hasMouseMovedToSideBar(e) && !isResizing && !sideBar.containsSelectedTab()
+            if (!hasMouseMovedToSideBar(e) && !isResizing && !composer.sideBar.containsSelectedTab()
                     && !presenter.isClosing()) {
                 presenter.setClosing(true);
-                sideBar.closeLastTabInPopup();
-                sideBar.getComposer().removePopupFromLayout();
+                composer.sideBar.closeLastTabInPopup();
+                composer.sideBar.getComposer().removePopupFromLayout();
             }
         });
         // resizing
@@ -195,18 +200,14 @@ public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractA
         closeButton.setOnAction(e -> {
             if (!presenter.isClosing()) {
                 presenter.setClosing(true);
-                sideBar.closeLastTabInPopup();
-                sideBar.getComposer().removePopupFromLayout();
+                composer.sideBar.closeLastTabInPopup();
+                composer.sideBar.getComposer().removePopupFromLayout();
             }
         });
     }
 
     protected TabPanePro getTabPane() {
         return tabPane;
-    }
-
-    @Unmodifiable ObservableList<TabFxView<?>> getTabs() {
-        return tabs;
     }
 
     void updateSize(double centerWidth, double centerHeight) {

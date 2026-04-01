@@ -31,7 +31,10 @@ public interface TabContainerComposer extends ParentComposer {
      *
      * @return
      */
-    @Unmodifiable List<? extends TabPort> getTabs();
+    @Unmodifiable List<? extends TabPort> getTabPorts();
 
-    TabPort getSelectedTab();
+    /**
+     * Returns selected tab port.
+     */
+    TabPort getSelectedTabPort();
 }

@@ -102,7 +102,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
                 AbstractTabFxView<?> tabV;
-                if (shell.getWorkspace() instanceof TabHostFxView<?>) {
+                if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?>) {
                     tabV = new BrowserMainTabFxView(shell);
                     var tabP = new BrowserMainTabPresenter(tabV, shell.getPresenter().getContext().getHistoryManager());
                 } else {
@@ -158,8 +158,8 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             var item = new NamedMenuItem(FileMenu.DEV_TOOLS, "DevTools", 400);
             item.setOnAction((e) -> {
                 var shell = (ShellFxView<?>) v;
-                if (shell.getWorkspace() instanceof TabHostFxView<?> tabHost) {
-                    var tab = tabHost.getSelectedTab();
+                if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
+                    var tab = tabHost.getComposer().getSelectedTab();
                     if (tab != null && tab instanceof UtilityDockContainerFxView<?> c) {
                         var devTools = createDevTools();
                         devTools.getPresenter().initialize();
@@ -172,7 +172,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
                         alertPresenter.initialize();
                         shell.getComposer().addDialog(alertView);
                     }
-                } else if (shell.getWorkspace() instanceof DockHostFxView<?> dockHost) {
+                } else if (shell.getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
                     var devTools = createDevTools();
                     devTools.getPresenter().initialize();
                     devTools.getPresenter().setDraggable(true);
@@ -236,17 +236,17 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     }
 
     private TabContainerFxView<?> resolveMainTabContainer() {
-        if (shell.getWorkspace() instanceof TabHostFxView<?> tabHost) {
+        if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
             return tabHost;
-        } else if (shell.getWorkspace() instanceof DockHostFxView<?> dockHost) {
-            return (TabContainerFxView<?>) dockHost.getMain();
+        } else if (shell.getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
+            return (TabContainerFxView<?>) dockHost.getComposer().getMain();
         }
         return null;
     }
 
     private DialogContainerFxView<?> resolveDialogContainer() {
-        if (shell.getWorkspace() instanceof TabHostFxView<?> tabHost) {
-            var tab = tabHost.getSelectedTab();
+        if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
+            var tab = tabHost.getComposer().getSelectedTab();
             return tab;
         } else {
             return shell;

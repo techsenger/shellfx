@@ -26,21 +26,21 @@ import javafx.geometry.Side;
  */
 public interface DockHostComposer extends AreaComposer {
 
-    SplitSpacePort getRoot();
+    SplitSpacePort getRootPort();
 
-    AreaPort getMain();
+    AreaPort getMainPort();
 
-    SideBarPort getRightBar();
+    SideBarPort getRightBarPort();
 
-    SideBarPort getBottomBar();
+    SideBarPort getBottomBarPort();
 
-    SideBarPort getLeftBar();
+    SideBarPort getLeftBarPort();
 
     void addBar(Side side);
 
     void removeBar(Side side);
 
-    SideBarPort getBar(Side side);
+    SideBarPort getBarPort(Side side);
 
     SideBarPolicy getRightBarPolicy();
 
@@ -56,9 +56,9 @@ public interface DockHostComposer extends AreaComposer {
 
     SideBarPolicy getBarPolicy(Side side);
 
-    TabPopupPort getRightPopup();
+    TabPopupPort getRightPopupPort();
 
-    TabPopupPort getBottomPopup();
+    TabPopupPort getBottomPopupPort();
 
-    TabPopupPort getLeftPopup();
+    TabPopupPort getLeftPopupPort();
 }

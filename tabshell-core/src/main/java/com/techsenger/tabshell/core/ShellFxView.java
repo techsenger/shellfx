@@ -32,6 +32,11 @@ public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxVie
 
     interface Composer extends ParentFxView.Composer, DialogContainerFxView.Composer, ShellComposer {
 
+        void addWorkspace(AreaFxView<?> workspace);
+
+        void removeWorkspace();
+
+        AreaFxView<?> getWorkspace();
     }
 
     /**
@@ -69,6 +74,4 @@ public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxVie
      * @return
      */
     ParentFxView<?> getMenuAware();
-
-    AreaFxView<?> getWorkspace();
 }

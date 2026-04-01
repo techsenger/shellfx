@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.tabhost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
@@ -65,16 +66,30 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
         private final TabHostFxView<P> view = TabHostFxView.this;
 
+        private List<? extends TabFxView<?>> detachedTabs = Collections.emptyList();
+
+        private boolean tabsDetached;
+
         @Override
-        public List<? extends TabPort> getTabs() {
+        public @Unmodifiable List<? extends TabPort> getTabPorts() {
             return view.getNode().getTabs().stream()
                     .map(t -> ((ComponentTab) t).getView().getPresenter())
                     .toList();
         }
 
         @Override
-        public TabPort getSelectedTab() {
-            var tab = view.getSelectedTab();
+        public TabFxView<?> getSelectedTab() {
+            var tab = view.tabPane.getSelectionModel().getSelectedItem();
+            if (tab != null) {
+                return ((ComponentTab) tab).getView();
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public TabPort getSelectedTabPort() {
+            var tab = getSelectedTab();
             if (tab != null) {
                 return tab.getPresenter();
             } else {
@@ -84,29 +99,29 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
         @Override
         public boolean areTabsDetached() {
-            return view.tabsDetached;
+            return tabsDetached;
         }
 
         @Override
         public void attachTabs() {
-            if (tabsDetached) {
-                var tabs = view.detachedTabs.stream().map(t -> t.getNode()).collect(Collectors.toList());
+            if (this.tabsDetached) {
+                var tabs = this.detachedTabs.stream().map(t -> t.getNode()).collect(Collectors.toList());
                 view.tabPane.getTabs().addAll(tabs);
                 view.tabPane.getSelectionModel().select(selectedIndex);
-                view.detachedTabs = Collections.emptyList();
-                view.tabsDetached = false;
+                this.detachedTabs = Collections.emptyList();
+                this.tabsDetached = false;
                 logger.debug("{} Attached tabs", getDescriptor().getLogPrefix());
             }
         }
 
         @Override
         public void detachTabs() {
-            if (!tabsDetached) {
+            if (!this.tabsDetached) {
                 view.selectedIndex = view.tabPane.getSelectionModel().getSelectedIndex();
-                view.detachedTabs = view.tabPane.getTabs()
+                this.detachedTabs = view.tabPane.getTabs()
                         .stream().map(t -> ((ComponentTab) t).getView()).collect(Collectors.toList());
                 view.tabPane.getTabs().clear();
-                view.tabsDetached = true;
+                this.tabsDetached = true;
                 logger.debug("{} Detached tabs", getDescriptor().getLogPrefix());
             }
         }
@@ -123,6 +138,11 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
             view.getModifiableChildren().remove(tab);
             tab.getPresenter().deinitializeTree();
         }
+
+        protected @Unmodifiable List<? extends TabFxView<?>> getDetachedTabs() {
+            return detachedTabs;
+        }
+
     }
 
     private static final Logger logger = LoggerFactory.getLogger(TabHostFxView.class);
@@ -130,8 +150,6 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
     private final boolean workspace;
 
     private final TabPanePro tabPane = new TabPanePro();
-
-    private List<? extends TabFxView<?>> detachedTabs = Collections.emptyList();
 
     private int selectedIndex;
 
@@ -142,26 +160,14 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
 
-    private boolean tabsDetached;
-
     public TabHostFxView(boolean workspace) {
         super();
         this.workspace = workspace;
     }
 
     @Override
-    public TabFxView<?> getSelectedTab() {
-        var tab = this.tabPane.getSelectionModel().getSelectedItem();
-        if (tab != null) {
-            return ((ComponentTab) tab).getView();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public void requestFocus() {
-        var tab = this.getSelectedTab();
+        var tab = getComposer().getSelectedTab();
         if (tab != null) {
             tab.requestFocus();
         }
@@ -222,10 +228,6 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     protected BooleanProperty tabHeaderVisibleProperty() {
         return tabHeaderVisible;
-    }
-
-    protected List<? extends TabFxView<?>> getDetachedTabs() {
-        return detachedTabs;
     }
 
     @Override

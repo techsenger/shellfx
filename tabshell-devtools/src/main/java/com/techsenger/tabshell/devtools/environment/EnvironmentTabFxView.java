@@ -50,18 +50,20 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
 
         private final EnvironmentTabFxView<P> view = EnvironmentTabFxView.this;
 
+        private ToolBarFxView<?> toolBar;
+
         @Override
         public void compose() {
             super.compose();
-            view.toolBar = createToolBar();
-            view.toolBar.getPresenter().initialize();
-            getModifiableChildren().add(view.toolBar);
-            getContentBox().getChildren().add(0, view.toolBar.getNode());
+            this.toolBar = createToolBar();
+            this.toolBar.getPresenter().initialize();
+            getModifiableChildren().add(this.toolBar);
+            getContentBox().getChildren().add(0, this.toolBar.getNode());
         }
 
         @Override
-        public ToolBarPort getToolBar() {
-            return view.toolBar.getPresenter();
+        public ToolBarPort getToolBarPort() {
+            return this.toolBar == null ? null : this.toolBar.getPresenter();
         }
 
         @Override
@@ -89,8 +91,6 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> exten
     }
 
     private final TreeTableView<EnvironmentItem> tableView = new TreeTableView<>();
-
-    private ToolBarFxView<?> toolBar;
 
     private final DialogContainerFxView.Composer dialogContainer;
 

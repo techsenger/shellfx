@@ -105,7 +105,7 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView, C extends Env
         super.postInitialize();
         setTitle("Environment");
         setClosable(false);
-        var toolBar = getComposer().getToolBar();
+        var toolBar = getComposer().getToolBarPort();
         refresh();
     }
 
@@ -113,16 +113,16 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView, C extends Env
         var e = this.connector.getEnv();
         var items = new ArrayList<EnvironmentItem>();
         items.add(new DefaultEnvironmentItem(EnvironmentItemType.ROOT, "", null, true));
-        var matcher = getComposer().getToolBar().createFindMatcher();
+        var matcher = getComposer().getToolBarPort().createFindMatcher();
         var savedSize = items.size();
         addItems(items, matcher, EnvironmentCategory.PLATFORM,
                 e.getPlatformPreferences(), e.getOtherPlatformProperties(), e.getConditionalFeatures());
         addItems(items, matcher, EnvironmentCategory.SYSTEM_PROPERTY, e.getSystemProperties());
         addItems(items, matcher, EnvironmentCategory.ENVIRONMENT_VARIABLE, e.getEnvVariables());
         if (matcher != null) {
-            getComposer().getToolBar().showFindResultInfo(items.size() - savedSize - 1); // -1 is the root
+            getComposer().getToolBarPort().showFindResultInfo(items.size() - savedSize - 1); // -1 is the root
         } else {
-            getComposer().getToolBar().hideFindResultInfo();
+            getComposer().getToolBarPort().hideFindResultInfo();
         }
         getView().setItems(items);
     }

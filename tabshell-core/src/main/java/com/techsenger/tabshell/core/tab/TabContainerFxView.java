@@ -29,10 +29,10 @@ public interface TabContainerFxView<P extends TabContainerPresenter<?, ?>> exten
         void addTab(TabFxView<?> tab);
 
         void removeTab(TabFxView<?> tab);
+
+        TabFxView<?> getSelectedTab();
     }
 
     @Override
     Composer getComposer();
-
-    TabFxView<?> getSelectedTab();
 }

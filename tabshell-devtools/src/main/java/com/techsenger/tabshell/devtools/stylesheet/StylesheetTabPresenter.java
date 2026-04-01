@@ -145,7 +145,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
     protected void rebuildTree() {
         var connector = this.tabDock.getConnector();
         var entry = connector.getStyledElements(tabDock.getWindowUid());
-        Matcher matcher = getComposer().getToolBar().createFindMatcher();
+        Matcher matcher = getComposer().getToolBarPort().createFindMatcher();
 
         List<StylesheetItem> items = new ArrayList<>();
         var item = new StylesheetItem(StylesheetItemType.APPLICATION,
@@ -179,9 +179,9 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
             }
         }
         if (matcher != null) {
-            getComposer().getToolBar().showFindResultInfo(found);
+            getComposer().getToolBarPort().showFindResultInfo(found);
         } else {
-            getComposer().getToolBar().hideFindResultInfo();
+            getComposer().getToolBarPort().hideFindResultInfo();
         }
         getView().setItems(items);
     }

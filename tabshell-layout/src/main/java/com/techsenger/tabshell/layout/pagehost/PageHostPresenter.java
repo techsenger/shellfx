@@ -169,7 +169,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
 
     @Override
     public PagePort getSelectedPage() {
-        return getComposer().getSelectedPage();
+        return getComposer().getSelectedPagePort();
     }
 
     @Override
@@ -228,7 +228,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         var matcher = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher("");
         var statistics = new FindStatistics();
         var matchedItem = match(rootItem, matcher, statistics);
-        var findPanel = getComposer().getFindPanel();
+        var findPanel = getComposer().getFindPanelPort();
         findPanel.showFindResultInfo(statistics.getMatches());
         getView().setMenu(matchedItem, showRoot);
         if (matchedItem != null) {
@@ -242,14 +242,14 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
 
     @Override
     public void onFindCleared() {
-        var findPanel = getComposer().getFindPanel();
+        var findPanel = getComposer().getFindPanelPort();
         findPanel.hideFindResultInfo();
         setFindMode(false);
-        addPageHistory(getComposer().getSelectedPage().getItem());
+        addPageHistory(getComposer().getSelectedPagePort().getItem());
         updateHistoryNavigation();
 
         getView().setMenu(rootItem, showRoot);
-        getView().setPage(getComposer().getSelectedPage().getItem()); // just to select item in the menu
+        getView().setPage(getComposer().getSelectedPagePort().getItem()); // just to select item in the menu
     }
 
     public boolean isFindMode() {
@@ -311,7 +311,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     protected boolean isCurrentPage(PageItem<?> item) {
-        var currentPage = getComposer().getSelectedPage();
+        var currentPage = getComposer().getSelectedPagePort();
         return currentPage != null && Objects.equals(currentPage.getItem(), item);
     }
 
@@ -360,15 +360,15 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     private void selectPage(PageItem<?> item, List<PageBreadcrumb> breadcrumbs) {
-        var currentPage = getComposer().getSelectedPage();
+        var currentPage = getComposer().getSelectedPagePort();
         if (currentPage != null) {
             currentPage.setSelected(false);
         }
-        getComposer().providePage(item);
+        getComposer().providePagePort(item);
         this.breadcrumbs = breadcrumbs;
         getView().setBreadcrumbs(breadcrumbs);
         getView().setPage(item);
-        currentPage = getComposer().getSelectedPage();
+        currentPage = getComposer().getSelectedPagePort();
         currentPage.setSelected(true);
         if (!isFindMode()) {
             currentPage.requestFocus();

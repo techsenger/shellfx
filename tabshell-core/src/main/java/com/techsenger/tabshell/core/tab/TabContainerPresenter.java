@@ -36,7 +36,7 @@ public interface TabContainerPresenter<V extends TabContainerView, C extends Tab
 
     @Override
     default void closeOtherTabs(TabPort tab) {
-        var otherTabs = getComposer().getTabs().stream().filter((t) -> t != tab).collect(Collectors.toList());
+        var otherTabs = getComposer().getTabPorts().stream().filter((t) -> t != tab).collect(Collectors.toList());
         closeTabs(otherTabs);
     }
 
@@ -71,12 +71,12 @@ public interface TabContainerPresenter<V extends TabContainerView, C extends Tab
 
     @Override
     default void closeAllTabs() {
-        this.closeTabs(new ArrayList<>(getComposer().getTabs()));
+        this.closeTabs(new ArrayList<>(getComposer().getTabPorts()));
     }
 
     @Override
     default void closeRightTabs(TabPort tab) {
-        var tabs = getComposer().getTabs();
+        var tabs = getComposer().getTabPorts();
         var index = tabs.indexOf(tab);
         if (index == -1 || index + 1 == tabs.size()) {
             return;
@@ -90,7 +90,7 @@ public interface TabContainerPresenter<V extends TabContainerView, C extends Tab
 
     @Override
     default void closeLeftTabs(TabPort tab) {
-        var tabs = getComposer().getTabs();
+        var tabs = getComposer().getTabPorts();
         var index = tabs.indexOf(tab);
         if (index == -1 || index == 0) {
             return;

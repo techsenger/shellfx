@@ -32,5 +32,5 @@ public interface TabPopupComposer extends AreaComposer {
      *
      * @return
      */
-    @Unmodifiable List<? extends TabPort> getTabs();
+    @Unmodifiable List<? extends TabPort> getTabPorts();
 }

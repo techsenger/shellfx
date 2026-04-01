@@ -102,7 +102,7 @@ public class Demo extends Application {
                         .getOrCreateHistory(DockHostHistory.class, DockHostHistory::new));
                 var rightTabDock = dockHost.getComposer().createTabDock();
                 rightTabDock.getPresenter().initialize();
-                dockHost.getRoot().getComposer().addChild(rightTabDock);
+                dockHost.getComposer().getRoot().getComposer().addChild(rightTabDock);
                 dockHost.getComposer().setMain(rightTabDock);
                 workspace = dockHost;
             }

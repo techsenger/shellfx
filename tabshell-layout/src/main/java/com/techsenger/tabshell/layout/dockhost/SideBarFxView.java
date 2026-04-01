@@ -100,7 +100,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
                 if (isReady()) {
                     var barTab = ((BarTab) context.getTab());
                     if (!barTab.isShownInPopup()) {
-                        if (getPopup() == null) {
+                        if (getComposer().getPopup() == null) {
                             getComposer().addPopupToLayout(getPresenter().getSide());
                         }
                         openTabInPopup(barTab);
@@ -109,8 +109,8 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
 
             });
             addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-                var popup = getPopup();
-                if (isReady() && popup != null && popup.getTabs().size() > 1) {
+                var popup = getComposer().getPopup();
+                if (isReady() && popup != null && popup.getComposer().getTabs().size() > 1) {
                     closeLastTabInPopup();
                 }
             });
@@ -121,7 +121,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
                     tabPane.getSelectionModel().selectFirst();
                     e.consume();
                 } else {
-                    if (getPopup() == null) {
+                    if (getComposer().getPopup() == null) {
                         getComposer().addPopupToLayout(getPresenter().getSide());
                         openTabInPopup(barTab);
                     } else {
@@ -143,19 +143,27 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
 
         private final SideBarFxView<P> view = SideBarFxView.this;
 
+        private DockHostFxView<?> dockHost;
+
+        // todo: do we need this collection?
+        private final ObservableList<TabDockFxView<?>> modifiableTabDocks = FXCollections.observableArrayList();
+
+        private final @Unmodifiable ObservableList<TabDockFxView<?>> tabDocks =
+                FXCollections.unmodifiableObservableList(modifiableTabDocks);
+
         /**
          * Returns an unmodifiable list of minimized tab docks.
          *
          * @return
          */
-        public @Unmodifiable List<TabDockPort> getTabDocks() {
-            return view.getTabDocks().stream()
+        public @Unmodifiable List<TabDockPort> getTabDockPorts() {
+            return getTabDocks().stream()
                     .map(t -> (TabDockPort) t.getPresenter())
                     .toList();
         }
 
-        public TabPopupPort getPopup() {
-            var popup = view.getPopup();
+        public TabPopupPort getPopupPort() {
+            var popup = getPopup();
             if (popup != null) {
                 return popup.getPresenter();
             } else {
@@ -163,8 +171,20 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
             }
         }
 
-        public DockHostPort getLayout() {
-            return view.getDockHost().getPresenter();
+        public DockHostPort getLayoutPort() {
+            return this.dockHost == null ? null : this.dockHost.getPresenter();
+        }
+
+        protected DockHostFxView<?> getDockHost() {
+            return dockHost;
+        }
+
+        protected @Unmodifiable ObservableList<TabDockFxView<?>> getTabDocks() {
+            return tabDocks;
+        }
+
+        private TabPopupFxView<?> getPopup() {
+            return dockHost.getPopup(getPresenter().getSide());
         }
 
         void addTabDock(TabDockFxView<?> tabDock) {
@@ -188,28 +208,20 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
             var v = new TabPopupFxView<>(view, dockHost.getCenterDimension());
             var p = new TabPopupPresenter<>(v, side, () -> history.getOrCreatePopup());
             p.initialize();
-            view.getDockHost().getComposer().addTabPopup(v);
+            dockHost.getComposer().addTabPopup(v);
         }
 
         void removePopupFromLayout() {
-            if (getPopup() != null) {
-                view.dockHost.getComposer().removeTabPopup(view.getPresenter().getSide());
+            if (getPopupPort() != null) {
+                dockHost.getComposer().removeTabPopup(view.getPresenter().getSide());
             }
         }
     }
 
-    private final DockHostFxView<?> dockHost;
-
-    // todo: do we need this collection?
-    private final ObservableList<TabDockFxView<?>> modifiableTabDocks = FXCollections.observableArrayList();
-
-    private final @Unmodifiable ObservableList<TabDockFxView<?>> tabDocks =
-            FXCollections.unmodifiableObservableList(modifiableTabDocks);
-
     private final TabPanePro tabPane = new TabPanePro();
 
     public SideBarFxView(DockHostFxView<?> dockHost) {
-        this.dockHost = dockHost;
+        getComposer().dockHost = dockHost;
     }
 
     @Override
@@ -265,7 +277,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
     protected void addHandlers() {
         super.addHandlers();
         tabPane.addEventHandler(MouseEvent.MOUSE_EXITED, (e) -> {
-            if (getComposer().getPopup() != null && !hasMouseMovedToPopup(e) && !containsSelectedTab()) {
+            if (getComposer().getPopupPort() != null && !hasMouseMovedToPopup(e) && !containsSelectedTab()) {
                 removePopup();
             }
         });
@@ -274,7 +286,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
     @Override
     protected void addListeners() {
         super.addListeners();
-        tabDocks.addListener((ListChangeListener<TabDockFxView<?>>) (change) -> {
+        getComposer().tabDocks.addListener((ListChangeListener<TabDockFxView<?>>) (change) -> {
             while (change.next()) {
                 if (change.wasAdded()) {
                     addTabDocks(change.getAddedSubList());
@@ -309,14 +321,16 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         var restoreTabIndex = tabPane.getTabs().indexOf(tab);
         var tabDock = removeTabDock(restoreTabIndex);
         var side = getPresenter().getSide();
-        if (tabDocks.isEmpty() && dockHost.getComposer().getBarPolicy(side) != SideBarPolicy.EXISTS_ALWAYS) {
-            dockHost.getComposer().removeBar(side);
+        var composer = getComposer();
+        if (composer.tabDocks.isEmpty()
+                && composer.dockHost.getComposer().getBarPolicy(side) != SideBarPolicy.EXISTS_ALWAYS) {
+            composer.dockHost.getComposer().removeBar(side);
         }
-        dockHost.getComposer().restoreTabDock(tabDock);
+        composer.dockHost.getComposer().restoreTabDock(tabDock);
     }
 
     protected void removePopup() {
-        if (getComposer().getPopup() != null) {
+        if (getComposer().getPopupPort() != null) {
             getComposer().removePopupFromLayout();
             tabPane.getSelectionModel().selectFirst(); // resetting selection
         }
@@ -326,7 +340,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         barTab.setShownInPopup(true);
         var minimizedTab = barTab.getMinimizedTab();
         minimizedTab.getView().getPresenter().setClosable(false);
-        var popupTabPane = getPopup().getTabPane();
+        var popupTabPane = getComposer().getPopup().getTabPane();
         var tabs = popupTabPane.getTabs();
         if (tabs.size() == 1) {
             var otherBarTab = getBarTab(((ComponentTab) tabs.get(0)));
@@ -341,7 +355,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
     }
 
     protected void closeLastTabInPopup() {
-        var tp = getPopup().getTabPane();
+        var tp = getComposer().getPopup().getTabPane();
         if (!tp.getTabs().isEmpty()) {
             var tab = tp.getTabs().get(tp.getTabs().size() - 1);
             closeTabInPopup((ComponentTab) tab);
@@ -349,7 +363,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
     }
 
     protected void closeOtherTabInPopup(ComponentTab tab) {
-        var tp = getPopup().getTabPane();
+        var tp = getComposer().getPopup().getTabPane();
         if (tp.getTabs().size() > 1) {
             var tab0 = tp.getTabs().get(0);
             if (tab0 != tab) {
@@ -361,18 +375,10 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
     }
 
     protected void closeTabInPopup(ComponentTab tab) {
-        var popupTabPane = getPopup().getTabPane();
+        var popupTabPane = getComposer().getPopup().getTabPane();
         popupTabPane.getTabs().remove(tab);
         var barTab = getBarTab(tab);
         barTab.setShownInPopup(false);
-    }
-
-    protected DockHostFxView<?> getDockHost() {
-        return dockHost;
-    }
-
-    protected @Unmodifiable ObservableList<TabDockFxView<?>> getTabDocks() {
-        return tabDocks;
     }
 
     boolean containsSelectedTab() {
@@ -380,14 +386,10 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         return index > 0;
     }
 
-    private TabPopupFxView<?> getPopup() {
-        return dockHost.getPopup(getPresenter().getSide());
-    }
-
     private void addTabDocks(List<? extends TabDockFxView<?>> tabDocks) {
         for (var tabDock : tabDocks) {
             this.tabPane.getTabs().add(createRestoreTab());
-            for (var tab : tabDock.getDetachedTabs()) {
+            for (var tab : tabDock.getComposer().getDetachedTabs()) {
                 var t = createTab((ComponentTab) tab.getNode());
                 this.tabPane.getTabs().add(t);
             }
@@ -399,7 +401,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
         var tabDock = getComposer().removeTabDock(dockIndex);
         // removing restoreTab and dock tabs from side bar
         var list = tabPane.getTabs().subList(restoreTabIndex,
-                restoreTabIndex + tabDock.getDetachedTabs().size() + 1);
+                restoreTabIndex + tabDock.getComposer().getDetachedTabs().size() + 1);
         for (var i = 1; i < list.size(); i++) { // excluding restore tab
             BarTab barTab = (BarTab) list.get(i);
             barTab.deinit();
@@ -421,13 +423,13 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
      */
     private int findTabDockIndex(int restoreTabIndex) {
         var index = -1;
-        for (var i = 0; i < tabDocks.size(); i++) {
+        for (var i = 0; i < getComposer().tabDocks.size(); i++) {
             index += 1; // restore button
             if (index == restoreTabIndex) {
                 return i;
             }
-            var tabDock = tabDocks.get(i);
-            index += tabDock.getComposer().getTabs().size();
+            var tabDock = getComposer().tabDocks.get(i);
+            index += tabDock.getComposer().getTabPorts().size();
         }
         return -1;
     }

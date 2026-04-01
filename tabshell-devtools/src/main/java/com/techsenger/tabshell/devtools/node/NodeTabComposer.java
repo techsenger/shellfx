@@ -27,9 +27,9 @@ import java.util.function.Consumer;
  */
 public interface NodeTabComposer extends TabComposer {
 
-    ToolBarPort getNodeToolBar();
+    ToolBarPort getNodeToolBarPort();
 
-    ToolBarPort getPropertyToolBar();
+    ToolBarPort getPropertyToolBarPort();
 
     void addPropertyDialog(Element node, PropertyItem item, String declaringClassName, Consumer<String> linkOpener);
 }

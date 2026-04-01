@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dockhost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabFxView;
@@ -46,6 +47,11 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
         @Override
         public void remove() {
             dockHost.getComposer().removeTabDock(TabDockFxView.this);
+        }
+
+        @Override
+        protected @Unmodifiable List<? extends TabFxView<?>> getDetachedTabs() {
+            return super.getDetachedTabs();
         }
     }
 
@@ -84,11 +90,6 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
     @Override
     protected Composer createComposer() {
         return new TabDockFxView.Composer();
-    }
-
-    @Override
-    protected List<? extends TabFxView<?>> getDetachedTabs() {
-        return super.getDetachedTabs();
     }
 
     @Override

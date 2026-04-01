@@ -62,7 +62,7 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
             var textViewer = createTextViewer();
             textViewer.getPresenter().initialize();
             dockHost.getComposer().setMain(textViewer);
-            dockHost.getRoot().getComposer().addChild(textViewer);
+            dockHost.getComposer().getRoot().getComposer().addChild(textViewer);
         }
 
         @Override
@@ -114,7 +114,7 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
 
     private void addLayout() {
         getContentBox().getChildren().add(dockHost.getNode());
-        var lastArea = dockHost.getBottomBar().getLastArea();
+        var lastArea = dockHost.getComposer().getBottomBar().getLastArea();
         var hBox = new HBox(new Label("Label 1"), new Separator(Orientation.VERTICAL),
                 new Label("Label 2"));
         hBox.setRotate(-180);

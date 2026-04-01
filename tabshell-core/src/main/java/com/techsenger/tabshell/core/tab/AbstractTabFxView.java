@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.AbstractChildFxView;
 import com.techsenger.tabshell.core.FxViewUtils;
 import com.techsenger.tabshell.core.ShellFxView;
@@ -63,11 +64,6 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
         }
 
         @Override
-        public List<? extends DialogPort> getDialogs() {
-            return view.dialogManager.getDialogs().stream().map(v -> v.getPresenter()).toList();
-        }
-
-        @Override
         public void addDialog(DialogFxView<?> dialog) {
             view.dialogManager.showDialog(dialog);
             view.getModifiableChildren().add(dialog);
@@ -78,6 +74,16 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
             view.dialogManager.hideDialog(dialog);
             view.getModifiableChildren().remove(dialog);
             dialog.getPresenter().deinitializeTree();
+        }
+
+        @Override
+        public @Unmodifiable List<? extends DialogFxView<?>> getDialogs() {
+            return view.dialogManager.getDialogs();
+        }
+
+        @Override
+        public @Unmodifiable List<? extends DialogPort> getDialogPorts() {
+            return view.dialogManager.getDialogs().stream().map(v -> v.getPresenter()).toList();
         }
 
         @Override
@@ -94,7 +100,12 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
         }
 
         @Override
-        public List<? extends PopupPort> getPopups() {
+        public @Unmodifiable List<? extends PopupFxView<?>> getPopups() {
+            return view.dialogManager.getPopups();
+        }
+
+        @Override
+        public List<? extends PopupPort> getPopupPorts() {
             return view.dialogManager.getPopups().stream().map(v -> v.getPresenter()).toList();
         }
     }

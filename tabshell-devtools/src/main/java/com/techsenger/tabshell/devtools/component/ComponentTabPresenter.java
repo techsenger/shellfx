@@ -385,7 +385,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     }
 
     private void findComponents() {
-        var findMatcher = getComposer().getComponentToolBar().createFindMatcher();
+        var findMatcher = getComposer().getComponentToolBarPort().createFindMatcher();
         if (findMatcher != null) {
             this.componentMatches = findMatches(rootComponent, findMatcher);
             if (!this.componentMatches.isEmpty()) {
@@ -421,16 +421,16 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     private void clearFoundComponents() {
         this.componentMatches = Collections.emptyList();
         this.currentMatchIndex = -1;
-        getComposer().getComponentToolBar().hideFindResultInfo();
+        getComposer().getComponentToolBarPort().hideFindResultInfo();
     }
 
     private void updateFoundComponentInfo() {
-        getComposer().getComponentToolBar().showFindResultInfo(currentMatchIndex + 1, this.componentMatches.size());
+        getComposer().getComponentToolBarPort().showFindResultInfo(currentMatchIndex + 1, this.componentMatches.size());
     }
 
     private void refreshInspector() {
         if (this.componentFxViewClass != null) {
-            var matcher = getComposer().getInspectorToolBar().createFindMatcher();
+            var matcher = getComposer().getInspectorToolBarPort().createFindMatcher();
             var result = matchInspectorItems(
                     this.componentFxViewClass,
                     this.componentFxComposerClass,
@@ -438,13 +438,13 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
                     matcher);
             getView().updateInspector(result.items, expandedByCategory);
             if (matcher != null) {
-                getComposer().getInspectorToolBar().showFindResultInfo(result.totalMatches);
+                getComposer().getInspectorToolBarPort().showFindResultInfo(result.totalMatches);
             } else {
-                getComposer().getInspectorToolBar().hideFindResultInfo();
+                getComposer().getInspectorToolBarPort().hideFindResultInfo();
             }
         } else {
             getView().updateInspector(Collections.emptyList(), expandedByCategory);
-            getComposer().getInspectorToolBar().hideFindResultInfo();
+            getComposer().getInspectorToolBarPort().hideFindResultInfo();
         }
     }
 }

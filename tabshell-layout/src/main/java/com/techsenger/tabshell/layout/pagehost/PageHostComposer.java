@@ -28,9 +28,9 @@ import com.techsenger.tabshell.shared.find.ResultFindPort;
  */
 public interface PageHostComposer extends AreaComposer, PageContainerComposer {
 
-    ResultFindPort getFindPanel();
+    ResultFindPort getFindPanelPort();
 
-    PagePort providePage(PageItem<?> item);
+    PagePort providePagePort(PageItem<?> item);
 
-    PagePort getSelectedPage();
+    PagePort getSelectedPagePort();
 }

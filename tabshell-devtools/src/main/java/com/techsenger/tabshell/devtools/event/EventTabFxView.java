@@ -33,6 +33,8 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
 
     public class Composer extends AbstractTabFxView<P>.Composer implements EventTabComposer {
 
+        private EventToolBarFxView<?> toolBar;
+
         @Override
         public void compose() {
             super.compose();
@@ -43,8 +45,8 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
         }
 
         @Override
-        public EventToolBarPort getToolBar() {
-            return toolBar.getPresenter();
+        public EventToolBarPort getToolBarPort() {
+            return toolBar == null ? null : toolBar.getPresenter();
         }
 
         protected EventToolBarFxView<?> createToolBar() {
@@ -60,8 +62,6 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
     private final InlineCssTextArea textArea = new InlineCssTextArea();
 
     private final VirtualizedScrollPane<InlineCssTextArea> textScrollPane = new VirtualizedScrollPane(textArea);
-
-    private EventToolBarFxView<?> toolBar;
 
     public EventTabFxView(ShellFxView<?> shell) {
         super(shell);

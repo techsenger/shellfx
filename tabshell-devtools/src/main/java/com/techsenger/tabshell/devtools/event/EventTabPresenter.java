@@ -100,12 +100,12 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
         @Override
         public void onEventTypesChanged() {
-            filter.setSelectedEventTypes(getComposer().getToolBar().getSelectedEventTypes());
+            filter.setSelectedEventTypes(getComposer().getToolBarPort().getSelectedEventTypes());
         }
 
         @Override
         public void onMatchCase(boolean selected) {
-            filter.setMatcher(getComposer().getToolBar().createFindMatcher());
+            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
         }
 
         @Override
@@ -115,12 +115,12 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
         @Override
         public void onFind() {
-            filter.setMatcher(getComposer().getToolBar().createFindMatcher());
+            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
         }
 
         @Override
         public void onFindCleared() {
-            filter.setMatcher(getComposer().getToolBar().createFindMatcher());
+            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
         }
     }
 
@@ -172,7 +172,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
         super.postInitialize();
         setTitle("Events");
         setClosable(false);
-        var tb = getComposer().getToolBar();
+        var tb = getComposer().getToolBarPort();
         this.filter.setSelected(tb.isFilterSelected());
         this.filter.setMatcher(tb.createFindMatcher());
         this.filter.setSelectedNodeOnly(tb.isSelectedNodeOnly());
@@ -212,7 +212,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
                         break;
                     }
                     newEntriesCount++;
-                    if (getComposer().getToolBar().isFilterSelected()) {
+                    if (getComposer().getToolBarPort().isFilterSelected()) {
                         if (matchesFilter(filter, entry)) {
                             processedEntries.add(entry);
                         }
@@ -304,7 +304,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
     }
 
     private void updateStatistics() {
-        var tb = getComposer().getToolBar();
+        var tb = getComposer().getToolBarPort();
         tb.setStatistics(matchedEntriesCount + " / " + totalEntriesCount);
     }
 }

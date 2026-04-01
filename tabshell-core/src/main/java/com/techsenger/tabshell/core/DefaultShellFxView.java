@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.AbstractParentFxView;
 import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.ParentFxView;
@@ -88,6 +89,8 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
         private final DefaultShellFxView<P> view = DefaultShellFxView.this;
 
+        private AreaFxView<?> workspace;
+
         @Override
         public void addDialog(DialogFxView<?> dialog) {
             view.dialogManager.showDialog(dialog);
@@ -102,8 +105,13 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         }
 
         @Override
-        public List<? extends DialogPort> getDialogs() {
+        public @Unmodifiable List<? extends DialogPort> getDialogPorts() {
             return view.getDialogManager().getDialogs().stream().map(d -> d.getPresenter()).toList();
+        }
+
+        @Override
+        public @Unmodifiable List<? extends DialogFxView<?>> getDialogs() {
+            return view.getDialogManager().getDialogs();
         }
 
         @Override
@@ -120,20 +128,40 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         }
 
         @Override
-        public List<? extends PopupPort> getPopups() {
+        public @Unmodifiable List<? extends PopupPort> getPopupPorts() {
             return view.getDialogManager().getPopups().stream().map(d -> d.getPresenter()).toList();
         }
 
+        @Override
+        public @Unmodifiable List<? extends PopupFxView<?>> getPopups() {
+            return view.getDialogManager().getPopups();
+        }
+
+        @Override
         public void addWorkspace(AreaFxView<?> workspace) {
-            view.workspace = workspace;
+            this.workspace = workspace;
             view.getModifiableChildren().add(workspace);
             VBox.setVgrow(workspace.getNode(), Priority.ALWAYS);
             view.contentBox.getChildren().add(workspace.getNode());
         }
 
         @Override
-        public AreaPort getWorkspace() {
-            return view.getWorkspace().getPresenter();
+        public void removeWorkspace() {
+            if (this.workspace == null) {
+                return;
+            }
+            view.getModifiableChildren().remove(this.workspace);
+            view.contentBox.getChildren().remove(this.workspace.getNode());
+        }
+
+        @Override
+        public AreaFxView<?> getWorkspace() {
+            return this.workspace;
+        }
+
+        @Override
+        public AreaPort getWorkspacePort() {
+            return this.workspace == null ? null : this.workspace.getPresenter();
         }
     }
 
@@ -231,8 +259,6 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
     private final ObservableList<Stylesheet> stylesheets;
 
-    private AreaFxView<?> workspace;
-
     private final MenuBar menuBar = new MenuBar();
 
     private final MenuManager menuManager;
@@ -281,13 +307,11 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
     }
 
     @Override
-    public AreaFxView<?> getWorkspace() {
-        return this.workspace;
-    }
-
-    @Override
     public void requestFocus() {
-        this.workspace.requestFocus();
+        var workspace = getComposer().getWorkspace();
+        if (workspace != null) {
+            workspace.requestFocus();
+        }
     }
 
     @Override

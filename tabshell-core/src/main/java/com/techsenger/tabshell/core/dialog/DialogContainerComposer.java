@@ -31,5 +31,5 @@ public interface DialogContainerComposer extends PopupContainerComposer {
      *
      * @return
      */
-    @Unmodifiable List<? extends DialogPort> getDialogs();
+    @Unmodifiable List<? extends DialogPort> getDialogPorts();
 }

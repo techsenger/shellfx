@@ -16,9 +16,11 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.tabshell.material.Anchors;
+import java.util.List;
 
 /**
  *
@@ -41,6 +43,11 @@ public interface PopupContainerFxView<P extends ParentPresenter<?, ?>> extends P
          * @param popup the popup component to remove
          */
         void removePopup(PopupFxView<?> popup);
+
+        /**
+         * Returns an an modifiable list of popups.
+         */
+        @Unmodifiable List<? extends PopupFxView<?>> getPopups();
 
     }
 }

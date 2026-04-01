@@ -26,7 +26,7 @@ import com.techsenger.tabshell.devtools.ToolBarPort;
  */
 public interface EnvironmentTabComposer extends TabComposer {
 
-    ToolBarPort getToolBar();
+    ToolBarPort getToolBarPort();
 
     NameValueDialogPort addNameValueDialog();
 }

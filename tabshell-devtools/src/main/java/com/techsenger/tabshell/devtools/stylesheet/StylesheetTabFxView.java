@@ -44,14 +44,16 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
 
         private final StylesheetTabFxView<P> view = StylesheetTabFxView.this;
 
+        private ToolBarFxView<?> toolBar;
+
         @Override
         public void compose() {
             super.compose();
 
-            view.toolBar = createToolBar();
-            view.toolBar.getPresenter().initialize();
-            view.getModifiableChildren().add(view.toolBar);
-            view.getContentBox().getChildren().add(0, view.toolBar.getNode());
+            this.toolBar = createToolBar();
+            this.toolBar.getPresenter().initialize();
+            view.getModifiableChildren().add(this.toolBar);
+            view.getContentBox().getChildren().add(0, this.toolBar.getNode());
         }
 
         protected ToolBarFxView<?> createToolBar() {
@@ -62,8 +64,8 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
         }
 
         @Override
-        public ToolBarPort getToolBar() {
-            return view.toolBar.getPresenter();
+        public ToolBarPort getToolBarPort() {
+            return this.toolBar == null ? null : this.toolBar.getPresenter();
         }
     }
 
@@ -81,8 +83,6 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends
     }
 
     private final TreeView<StylesheetItem> treeView = new TreeView<>();
-
-    private ToolBarFxView<?> toolBar;
 
     public StylesheetTabFxView(ShellFxView<?> shell) {
         super(shell);

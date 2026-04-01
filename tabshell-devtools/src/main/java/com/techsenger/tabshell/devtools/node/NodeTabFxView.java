@@ -280,6 +280,10 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
         private final NodeTabFxView<P> view = NodeTabFxView.this;
 
+        private ToolBarFxView<?> nodeToolBar;
+
+        private ToolBarFxView<?> propertyToolBar;
+
         @Override
         public void compose() {
             super.compose();
@@ -295,14 +299,22 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
             propertyBox.getChildren().add(0, propertyToolBar.getNode());
         }
 
-        @Override
-        public ToolBarPort getNodeToolBar() {
-            return nodeToolBar.getPresenter();
+        public ToolBarFxView<?> getNodeToolBar() {
+            return nodeToolBar;
+        }
+
+        public ToolBarFxView<?> getPropertyToolBar() {
+            return propertyToolBar;
         }
 
         @Override
-        public ToolBarPort getPropertyToolBar() {
-            return propertyToolBar.getPresenter();
+        public ToolBarPort getNodeToolBarPort() {
+            return nodeToolBar == null ? null : nodeToolBar.getPresenter();
+        }
+
+        @Override
+        public ToolBarPort getPropertyToolBarPort() {
+            return propertyToolBar == null ? null : propertyToolBar.getPresenter();
         }
 
         @Override
@@ -338,10 +350,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     }
 
     private final DialogContainerFxView.Composer dialogContainer;
-
-    private ToolBarFxView<?> nodeToolBar;
-
-    private ToolBarFxView<?> propertyToolBar;
 
     private final TreeView<Element> nodeTreeView = new TreeView<>();
 
@@ -518,14 +526,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
     protected SplitPane getSplitPane() {
         return splitPane;
-    }
-
-    protected ToolBarFxView<?> getNodeToolBar() {
-        return nodeToolBar;
-    }
-
-    protected ToolBarFxView<?> getPropertyToolBar() {
-        return propertyToolBar;
     }
 
     private void updateNodeRoot() {

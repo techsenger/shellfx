@@ -89,42 +89,49 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
         private final PageHostFxView<P> view = PageHostFxView.this;
 
+        private FindPanelFxView<?> findPanel;
+
+        /**
+         * Created and initiliazed pages.
+         */
+        private final Map<PageItem<?>, PageFxView<?>> pagesByItems = new HashMap<>();
+
         @Override
         public void compose() {
             super.compose();
-            view.findPanel = createFindPanel();
-            view.findPanel.getPresenter().initialize();
-            getModifiableChildren().add(view.findPanel);
-            addFindPanel(view.findPanel.getNode());
+            this.findPanel = createFindPanel();
+            this.findPanel.getPresenter().initialize();
+            getModifiableChildren().add(this.findPanel);
+            addFindPanel(this.findPanel.getNode());
         }
 
         @Override
-        public ResultFindPort getFindPanel() {
-            return view.findPanel.getPresenter();
+        public ResultFindPort getFindPanelPort() {
+            return this.findPanel.getPresenter();
         }
 
         @Override
-        public PagePort providePage(PageItem<?> item) {
-            var fxView = view.pagesByItems.get(item);
+        public PagePort providePagePort(PageItem<?> item) {
+            var fxView = pagesByItems.get(item);
             if (fxView == null) {
                 var treeItem = view.treeItemsByItems.get(item);
                 fxView = treeItem.getValue().getFactory().create(item);
                 fxView.getPresenter().initialize();
                 getModifiableChildren().add(fxView);
-                view.pagesByItems.put((PageDescriptor) item, fxView);
+                pagesByItems.put((PageDescriptor) item, fxView);
             }
             return fxView.getPresenter();
         }
 
         @Override
-        public PagePort getSelectedPage() {
+        public PagePort getSelectedPagePort() {
             return view.page == null ? null : view.page.getPresenter();
         }
 
         @Override
         public void setPages(PageDescriptor root, boolean showRoot) {
-            getModifiableChildren().removeAll(view.pagesByItems.values());
-            view.pagesByItems.clear();
+            getModifiableChildren().removeAll(pagesByItems.values());
+            pagesByItems.clear();
             getPresenter().setPages(root, showRoot);
         }
 
@@ -134,8 +141,6 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
             return view;
         }
     }
-
-    private FindPanelFxView<?> findPanel;
 
     private final TreeView<PageDescriptor> pageTreeView = new TreeView<>();
 
@@ -157,10 +162,6 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
     private final SplitPane splitPane = new SplitPane(leftBox, rightBox);
 
-    /**
-     * Created and initiliazed pages.
-     */
-    private final Map<PageItem<?>, PageFxView<?>> pagesByItems = new HashMap<>();
 
     private final Map<PageItem<?>, TreeItem<PageDescriptor>> treeItemsByItems = new HashMap<>();
 
@@ -242,7 +243,7 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
     @Override
     public void setPage(PageItem<?> item) {
-        var fxView = pagesByItems.get(item);
+        var fxView = getComposer().pagesByItems.get(item);
         var treeItem = treeItemsByItems.get(item);
         this.page = fxView; // before selecting treeItem
         pageTreeView.getSelectionModel().select(treeItem); // it can be selected using breadcrumbs
