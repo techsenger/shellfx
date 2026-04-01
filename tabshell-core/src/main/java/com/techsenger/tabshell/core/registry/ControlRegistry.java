@@ -113,16 +113,8 @@ public class ControlRegistry {
     }
 
     private Set<AbstractMenuRegistration<?>> getMenusFor(ComponentName componentName) {
-        var regs = this.barMenuRegistrationsByComponentName.get(componentName);
-        if (regs == null) {
-            synchronized (this.barMenuRegistrationsByComponentName) {
-                regs = this.barMenuRegistrationsByComponentName.get(componentName);
-                if (regs == null) {
-                    regs = ConcurrentHashMap.newKeySet();
-                    this.barMenuRegistrationsByComponentName.put(componentName, regs);
-                }
-            }
-        }
-        return regs;
+        return barMenuRegistrationsByComponentName.computeIfAbsent(
+                componentName,
+                k -> ConcurrentHashMap.newKeySet());
     }
 }
