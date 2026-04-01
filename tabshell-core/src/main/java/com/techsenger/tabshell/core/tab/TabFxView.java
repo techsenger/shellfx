@@ -29,6 +29,7 @@ public interface TabFxView<P extends TabPresenter<?, ?>> extends ChildFxView<P>,
 
     interface Composer extends ChildFxView.Composer, TabComposer, DialogContainerFxView.Composer {
 
+        ShellFxView<?> getShell();
     }
 
     @Override
@@ -36,6 +37,4 @@ public interface TabFxView<P extends TabPresenter<?, ?>> extends ChildFxView<P>,
 
     @Override
     Composer getComposer();
-
-    ShellFxView<?> getShell();
 }

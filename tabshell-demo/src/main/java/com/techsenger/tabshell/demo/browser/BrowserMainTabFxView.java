@@ -51,9 +51,9 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
         @Override
         public void compose() {
             super.compose();
-            var historyManager = view.getShell().getPresenter().getContext().getHistoryManager();
+            var historyManager = getShell().getPresenter().getContext().getHistoryManager();
             var dockHost = HostFactory
-                    .createDockHost(view.getShell(),
+                    .createDockHost(getShell(),
                             () -> historyManager.getHistory(BrowserMainTabHistory.class).getDockHost());
             view.getModifiableChildren().add(dockHost);
             view.dockHost = dockHost;

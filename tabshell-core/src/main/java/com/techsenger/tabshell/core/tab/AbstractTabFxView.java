@@ -50,17 +50,24 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
 
         private final AbstractTabFxView<P> view = AbstractTabFxView.this;
 
+        private ShellFxView<?> shell;
+
+        @Override
+        public ShellFxView<?> getShell() {
+            return shell;
+        }
+
+        @Override
+        public ShellPort getShellPort() {
+            return shell == null ? null : shell.getPresenter();
+        }
+
         @Override
         public void remove() {
             var parent = view.getParent();
             if (parent != null) {
                 ((TabContainerFxView.Composer) parent.getComposer()).removeTab(view);
             }
-        }
-
-        @Override
-        public ShellPort getShell() {
-            return view.getShell().getPresenter();
         }
 
         @Override
@@ -108,9 +115,11 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
         public List<? extends PopupPort> getPopupPorts() {
             return view.dialogManager.getPopups().stream().map(v -> v.getPresenter()).toList();
         }
-    }
 
-    private final ShellFxView<?> shell;
+        private void setShell(ShellFxView<?> shell) {
+            this.shell = shell;
+        }
+    }
 
     private final ComponentTab root = new ComponentTab(this);
 
@@ -128,7 +137,7 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
 
     public AbstractTabFxView(ShellFxView<?> shell) {
         super();
-        this.shell = shell;
+        getComposer().setShell(shell);
     }
 
     @Override
@@ -185,11 +194,6 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
     @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
-    }
-
-    @Override
-    public ShellFxView<?> getShell() {
-        return shell;
     }
 
     protected DialogManager getDialogManager() {

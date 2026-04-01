@@ -48,6 +48,8 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
 
         private final MenuAwareAreaFxView view = MenuAwareAreaFxView.this;
 
+        private TabFxView<?> mainTab;
+
         @Override
         public DialogPort addDemoDialog(OverlayScope scope, boolean resizable) {
             var v = new DemoDialogFxView();
@@ -55,7 +57,8 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
             p.initialize();
             p.setResizable(resizable);
             if (scope == OverlayScope.SHELL) {
-                mainTab.getShell().getComposer().addDialog(v);
+                var shell = mainTab.getComposer().getShell();
+                shell.getComposer().addDialog(v);
             } else {
                 mainTab.getComposer().addDialog(v);
             }
@@ -68,11 +71,16 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
             var p = new DemoPopupPresenter(v, false);
             p.initialize();
             if (scope == OverlayScope.SHELL) {
-                mainTab.getShell().getComposer().addPopup(v, Anchors.topRight(40, 20));
+                var shell = mainTab.getComposer().getShell();
+                shell.getComposer().addPopup(v, Anchors.topRight(40, 20));
             } else {
                 mainTab.getComposer().addPopup(v, Anchors.bottomRight(20, 20));
             }
             return p;
+        }
+
+        private void setMainTab(TabFxView<?> mainTab) {
+            this.mainTab = mainTab;
         }
     }
 
@@ -99,11 +107,9 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
 
     private final StackPane stackPane = new StackPane(vBox);
 
-    private final TabFxView<?> mainTab;
-
     public MenuAwareAreaFxView(TabFxView<?> mainTab) {
         super();
-        this.mainTab = mainTab;
+        getComposer().setMainTab(mainTab);
     }
 
     @Override

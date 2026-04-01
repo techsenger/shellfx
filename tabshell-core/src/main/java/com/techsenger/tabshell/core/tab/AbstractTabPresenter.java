@@ -128,7 +128,7 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
 
     @Override
     public ShellPort getShell() {
-        return getComposer().getShell();
+        return getComposer().getShellPort();
     }
 
     @Override

@@ -342,7 +342,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
 
         protected PropertyDialogFxView<?> createPropertyDialog(Element element, PropertyItem item,
                 String declaringClassName, Consumer<String> linkOpener) {
-            var view = new PropertyDialogFxView<>(this.view.getShell());
+            var view = new PropertyDialogFxView<>(getShell());
             var presenter = new PropertyDialogPresenter<>(view, element, item, declaringClassName,
                     linkOpener);
             return view;
@@ -529,7 +529,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
     }
 
     private void updateNodeRoot() {
-        var stage = getShell().getStage();
+        var stage = getComposer().getShell().getStage();
         var root = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
         var rootItem = createNodeItem(root);
         nodeTreeView.setRoot(rootItem);

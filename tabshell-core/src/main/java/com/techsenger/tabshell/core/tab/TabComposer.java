@@ -26,7 +26,7 @@ import com.techsenger.tabshell.core.dialog.DialogContainerComposer;
  */
 public interface TabComposer extends ChildComposer,  DialogContainerComposer {
 
-    void remove();
+    ShellPort getShellPort();
 
-    ShellPort getShell();
+    void remove();
 }

@@ -57,7 +57,7 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?, ?>> extends Abstr
             var p = new DemoDialogPresenter(v);
             p.initialize();
             p.setResizable(resizable);
-            view.getShell().getComposer().addDialog(v);
+            getShell().getComposer().addDialog(v);
             return p;
         }
 
@@ -67,9 +67,9 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?, ?>> extends Abstr
             var p = new DemoPopupPresenter(v, false);
             p.initialize();
             if (scope == OverlayScope.SHELL) {
-                view.getShell().getComposer().addPopup(v, Anchors.topRight(40, 20));
+                getShell().getComposer().addPopup(v, Anchors.topRight(40, 20));
             } else {
-                view.getComposer().addPopup(v, Anchors.bottomRight(20, 20));
+                addPopup(v, Anchors.bottomRight(20, 20));
             }
             return p;
         }
