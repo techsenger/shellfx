@@ -40,7 +40,7 @@ public class JfxComponentItem implements ComponentItem {
 
     @Override
     public String getText() {
-        return getName() + " shortUuid=\"" + getShortUuid() + "\"";
+        return getName().getText() + " shortUuid=\"" + getShortUuid() + "\"";
     }
 
     @Override

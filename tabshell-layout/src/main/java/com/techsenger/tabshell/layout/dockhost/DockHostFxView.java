@@ -2361,7 +2361,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
             }
             builder.append("\n");
             builder.append("    ".repeat(iterator.getDepth()));
-            builder.append(view.getDescriptor().getName());
+            builder.append(view.getDescriptor().getName().getText());
             builder.append(" [");
             if (uuid != null) {
                 builder.append("shortUuid: ");
