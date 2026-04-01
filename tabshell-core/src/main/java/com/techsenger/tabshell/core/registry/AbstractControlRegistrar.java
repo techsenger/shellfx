@@ -27,7 +27,7 @@ public abstract class AbstractControlRegistrar implements ControlRegistrar {
 
     private final ControlRegistry registry;
 
-    private final List<ControlRegistry.Registration> registations = new ArrayList<>();
+    private final List<ControlRegistry.Registration> registrations = new ArrayList<>();
 
     public AbstractControlRegistrar(ControlRegistry registry) {
         this.registry = registry;
@@ -35,18 +35,18 @@ public abstract class AbstractControlRegistrar implements ControlRegistrar {
 
     @Override
     public void unregister() {
-        registations.forEach(r -> r.unregister());
+        registrations.forEach(r -> r.unregister());
     }
 
     protected ControlRegistry getRegistry() {
         return registry;
     }
 
-    protected List<ControlRegistry.Registration> getRegistations() {
-        return registations;
+    protected List<ControlRegistry.Registration> getRegistrations() {
+        return registrations;
     }
 
     protected void addRegistration(ControlRegistry.Registration reg) {
-        this.registations.add(reg);
+        this.registrations.add(reg);
     }
 }
