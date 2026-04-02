@@ -18,6 +18,7 @@ package com.techsenger.tabshell.layout.dockhost;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.tabpanepro.core.TabEvent;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabFxView;
@@ -140,9 +141,19 @@ public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxVi
             getPresenter().onMinimized();
         });
         var tabPane = getNode();
-        tabPane.addTabDragHandler(tab -> dockHost.onTabDrag((ComponentTab) tab));
+        tabPane.addEventHandler(TabEvent.TAB_DRAG_STARTED, (e) -> {
+            if (e.getTarget() == getNode()) {
+                dockHost.onTabDrag((ComponentTab) e.getTab());
+                e.consume();
+            }
+        });
         // this handler is called when mouse is over TabHeaderArea
-        tabPane.addTabDropHandler((tab, s) -> dockHost.onTabDrop((ComponentTab) tab));
+        tabPane.addEventHandler(TabEvent.TAB_DROPPED, (e) -> {
+            if (e.getTarget() == getNode()) {
+                dockHost.onTabDrop((ComponentTab) e.getTab());
+                e.consume();
+            }
+        });
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
                 e -> dockHost.onTabHeaderAreaMouseDragOver(tabPane, e));

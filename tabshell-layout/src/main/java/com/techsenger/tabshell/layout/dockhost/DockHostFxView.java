@@ -27,6 +27,7 @@ import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_HALF;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_THIRD;
+import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.core.Pair;
@@ -1162,8 +1163,14 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
 
     private final DragAndDropContext dragAndDropContext = new DragAndDropContext();
 
+    /**
+     * The tab is being dragged.
+     */
     private ComponentTab dragTab;
 
+    /**
+     * The dock that is being dragged.
+     */
     private TabDockFxView<?> dragDock;
 
     private Popup dragDockPopup;
@@ -1609,6 +1616,8 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
     }
 
     private void processDropInsideTabHeaderArea() {
+        // in this case moving the tab from one component to another
+        // is handled by TabPanePro and TabHostFxView handlers.
         updateDragInProgress(false, DraggableType.TAB);
         logger.debug("{} Processed drop inside TabHeaderArea", getDescriptor().getLogPrefix());
     }
@@ -2312,8 +2321,10 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
     private void moveTab(TabDockFxView<?> newTabDock) {
         TabPaneProSkin skin = (TabPaneProSkin) this.dragTab.getTabPane().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = skin.getTabHeaderArea();
-        this.dragTab.getTabPane().getTabs().remove(this.dragTab);
-        newTabDock.getNode().getTabs().add(this.dragTab);
+        // we don't know if it is a tab dock
+        TabHostFxView<?> oldTabHost = (TabHostFxView<?>) this.dragTab.getView().getParent();
+        oldTabHost.getComposer().removeTab(this.dragTab.getView());
+        newTabDock.getComposer().addTab(this.dragTab.getView());
         this.dragTab = null;
         tabHeaderArea.cleanupAfterDrop();
     }

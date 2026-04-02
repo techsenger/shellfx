@@ -18,8 +18,10 @@ package com.techsenger.tabshell.layout.tabhost;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.tabpanepro.core.TabEvent;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
+import com.techsenger.tabshell.core.FxViewUtils;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerFxView;
@@ -292,6 +294,33 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
                         t.setContextMenu(null);
                     }
                 }
+            }
+        });
+    }
+
+    @Override
+    protected void addHandlers() {
+        super.addHandlers();
+        // this handler is called when mouse is over TabHeaderArea
+        tabPane.addEventHandler(TabEvent.TAB_DRAG_FINISHED, (e) -> {
+            if (e.getTarget() == this.tabPane) {
+                if (e.getTab().getTabPane() != this.tabPane) { // If tab droped in another tabpane
+                    // Moving a tab from one pane to another is handled by TabPanePro.
+                    // Here we only need to synchronize the component lists.
+                    var tabView = ((ComponentTab) e.getTab()).getView();
+                    getModifiableChildren().remove(tabView);
+                    TabHostFxView<?> newTabHost = (TabHostFxView<?>) FxViewUtils.getComponent(e.getTab().getTabPane());
+                    if (newTabHost != null) {
+                        newTabHost.getModifiableChildren().add(tabView);
+                        logger.debug("{} Tab {} was moved from {} to {}",
+                                getDescriptor().getLogPrefix(), tabView.getDescriptor().getFullName(),
+                                getDescriptor().getFullName(), newTabHost.getDescriptor().getFullName());
+                    } else {
+                        logger.debug("{} Tab {} was moved to a TabPane that is outside of TabHost",
+                                getDescriptor().getLogPrefix(), tabView.getDescriptor().getFullName());
+                    }
+                }
+                e.consume();
             }
         });
     }
