@@ -471,66 +471,13 @@
 }
 
 /*
-    RichTextFX see https://github.com/FXMisc/RichTextFX/wiki/RichTextFX-CSS-Reference-Guide
-
-    Important for font family and size stylesheet is created dynamically on the base of settings.
-*/
-.styled-text-area {
-    -fx-font-size: 1em;
-    -fx-padding: 0;
-    -fx-border-width: 0;
-    -fx-background-color: -color-bg-default;
+    RichTextArea, see https://openjfx.io/javadoc/26/javafx.graphics/javafx/scene/doc-files/cssref.html#richtextarea
+ */
+.rich-text-area {
+    -fx-content-padding: 0 4 0 4;
 }
 
-.styled-text-area .text {
-    -fx-fill: -color-fg-default;
-}
-
-.styled-text-area .paragraph-text {
-    -fx-padding: 0 0 0 5;
-}
-
-.styled-text-area .main-selection {
+.rich-text-area .selection-highlight {
     -fx-fill: -color-bg-selection;
+    -fx-stroke: transparent;
 }
-
-.styled-text-area .found {
-    -fx-fill: -color-fg-found;
-    -rtfx-background-color: -color-bg-found;
-}
-
-.styled-text-area .caret {
-    -fx-stroke: -color-fg-default;
-}
-
-/* In .lineno and .lineno .text we need to set same font not to get extra pixels on focus. */
-.styled-text-area .lineno {
-    -fx-background-color: -color-bg-inset;
-    -fx-font-size: 1em;
-    -fx-padding: 0 6 0 6;/* SizeConstants.HALF_INSET */
-}
-
-.styled-text-area .lineno .text {
-    -fx-font-size: 1em;
-    -fx-fill: -color-fg-muted;
-}
-
-/* there is one more label in .lineno for fold graphics, we need to hide it not to add extra pixels on focus */
-.styled-text-area .lineno .label {
-    -fx-max-width: 0;
-    -fx-min-width: 0;
-    -fx-pref-width: 0;
-}
-
-.styled-text-area-tab2 .paragraph-text {
-    -fx-tab-size: 2;
-}
-
-.styled-text-area-tab4 .paragraph-text {
-    -fx-tab-size: 4;
-}
-
-.styled-text-area-tab8 .paragraph-text {
-    -fx-tab-size: 8;
-}
-

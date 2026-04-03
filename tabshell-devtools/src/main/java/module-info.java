@@ -29,7 +29,7 @@ module com.techsenger.tabshell.devtools {
     requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
-    requires org.fxmisc.richtext;
+    requires jfx.incubator.richtext;
     requires atlantafx.base;
 
     exports com.techsenger.tabshell.devtools;

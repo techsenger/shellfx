@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demo;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.DefaultShellContext;
 import com.techsenger.tabshell.core.DefaultShellFxView;
 import com.techsenger.tabshell.core.DefaultShellPresenter;
@@ -55,6 +56,7 @@ public class Demo extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        typeListView.getStyleClass().add(Styles.DENSE);
         typeListView.setCellFactory(lv -> {
             ListCell<WorkspaceType> cell = new ListCell<>() {
                 @Override

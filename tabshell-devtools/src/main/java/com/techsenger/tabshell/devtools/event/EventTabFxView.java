@@ -22,8 +22,7 @@ import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.application.Platform;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.fxmisc.flowless.VirtualizedScrollPane;
-import org.fxmisc.richtext.InlineCssTextArea;
+import jfx.incubator.scene.control.richtext.RichTextArea;
 
 /**
  *
@@ -59,9 +58,7 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
     /**
      * JFX RichTextArea and JFX ListView generates too many events (NodeAdd, NodeRemove), so we use RTFX text area.
      */
-    private final InlineCssTextArea textArea = new InlineCssTextArea();
-
-    private final VirtualizedScrollPane<InlineCssTextArea> textScrollPane = new VirtualizedScrollPane(textArea);
+    private final RichTextArea textArea = new RichTextArea();
 
     public EventTabFxView(ShellFxView<?> shell) {
         super(shell);
@@ -103,7 +100,7 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
         super.build();
         textArea.setEditable(false);
         textArea.getStyleClass().add(StyleClasses.MONOSPACE);
-        VBox.setVgrow(textScrollPane, Priority.ALWAYS);
-        getContentBox().getChildren().add(textScrollPane);
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+        getContentBox().getChildren().add(textArea);
     }
 }
