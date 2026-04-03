@@ -44,7 +44,7 @@
     <properties>
         <publishing.plugin.exclusions>tabshell-demo</publishing.plugin.exclusions>
         <maven.compiler.release>25</maven.compiler.release>
-        <javafx.version>26-ea+6</javafx.version>
+        <javafx.version>26</javafx.version>
     </properties>
 
     <repositories>
