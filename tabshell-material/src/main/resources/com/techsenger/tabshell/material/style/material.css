@@ -474,7 +474,11 @@
     RichTextArea, see https://openjfx.io/javadoc/26/javafx.graphics/javafx/scene/doc-files/cssref.html#richtextarea
  */
 .rich-text-area {
-    -fx-content-padding: 0 4 0 4;
+    -fx-content-padding: 0 2 0 2;
+}
+
+.rich-text-area .caret {
+    -fx-stroke: -color-fg-default;
 }
 
 .rich-text-area .selection-highlight {
