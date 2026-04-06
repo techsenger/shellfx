@@ -25,6 +25,7 @@ import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
+import com.techsenger.tabshell.material.theme.Theme;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
 public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogView, DialogComposer> {
 
     private final AppearanceSettings settings;
+
+    private Theme theme;
 
     public ThemeDialogPresenter(ThemeDialogView view, AppearanceSettings settings) {
         super(view);
@@ -70,9 +73,13 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
         setButtonDefault(ThemeDialogButtons.OK, true);
         setResultAction((buttonName) -> {
             if (buttonName == ThemeDialogButtons.OK) {
-                settings.setTheme(getView().getTheme());
+                settings.setTheme(this.theme);
             }
             requestClose();
         });
+    }
+
+    void onThemeSelected(Theme theme) {
+        this.theme = theme;
     }
 }

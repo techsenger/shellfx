@@ -29,6 +29,4 @@ public interface ThemeDialogView extends DialogView {
     void setThemes(List<Theme> themes);
 
     void setTheme(Theme theme);
-
-    Theme getTheme();
 }

@@ -67,11 +67,6 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
     }
 
     @Override
-    public Theme getTheme() {
-        return themeComboBox.getValue();
-    }
-
-    @Override
     protected void build() {
         super.build();
         themeLabel.setMinWidth(Region.USE_PREF_SIZE);
@@ -96,4 +91,12 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
         registerButtons(cancelButton, okButton);
         getContentBox().getChildren().add(hBox);
     }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        themeComboBox.valueProperty().addListener((ov, oldV, newV) -> getPresenter().onThemeSelected(newV));
+    }
+
+
 }
