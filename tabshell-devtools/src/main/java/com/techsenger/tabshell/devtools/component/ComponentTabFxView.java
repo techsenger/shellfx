@@ -37,6 +37,7 @@ import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPresenter;
 import com.techsenger.tabshell.material.layout.LabelHContainer;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.FindFeature;
+import com.techsenger.toolkit.fx.utils.TreeViewUtils;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -284,7 +285,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
     @Override
     public void selectRootComponent() {
         componentTreeView.getSelectionModel().select(0);
-        componentTreeView.scrollTo(componentTreeView.getSelectionModel().getSelectedIndex());
+        TreeViewUtils.scrollToIfNeeded(componentTreeView, componentTreeView.getSelectionModel().getSelectedIndex());
     }
 
     @Override
@@ -299,7 +300,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
             treeItem.setExpanded(true);
         }
         componentTreeView.getSelectionModel().select(treeItem);
-        componentTreeView.scrollTo(componentTreeView.getSelectionModel().getSelectedIndex());
+        TreeViewUtils.scrollToIfNeeded(componentTreeView, componentTreeView.getSelectionModel().getSelectedIndex());
     }
 
     @Override
@@ -310,7 +311,8 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
             var treeItem = this.treeItemsByComponent.get(component);
             if (treeItem != null) {
                 componentTreeView.getSelectionModel().select(treeItem);
-                componentTreeView.scrollTo(componentTreeView.getSelectionModel().getSelectedIndex());
+                TreeViewUtils.scrollToIfNeeded(componentTreeView,
+                        componentTreeView.getSelectionModel().getSelectedIndex());
             }
         }
     }

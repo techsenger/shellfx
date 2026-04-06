@@ -35,6 +35,7 @@ import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.FindFeature;
+import com.techsenger.toolkit.fx.utils.TreeViewUtils;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -383,14 +384,14 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         var treeItem = this.treeItemsByNode.get(node);
         if (treeItem != null) {
             nodeTreeView.getSelectionModel().select(treeItem);
-            nodeTreeView.scrollTo(nodeTreeView.getSelectionModel().getSelectedIndex());
+            TreeViewUtils.scrollToIfNeeded(nodeTreeView, nodeTreeView.getSelectionModel().getSelectedIndex());
         }
     }
 
     @Override
     public void selectRoot() {
         nodeTreeView.getSelectionModel().select(0);
-        nodeTreeView.scrollTo(nodeTreeView.getSelectionModel().getSelectedIndex());
+        TreeViewUtils.scrollToIfNeeded(nodeTreeView, nodeTreeView.getSelectionModel().getSelectedIndex());
     }
 
     @Override
