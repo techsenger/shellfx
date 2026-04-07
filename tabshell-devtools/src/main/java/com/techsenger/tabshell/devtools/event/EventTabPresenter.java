@@ -22,6 +22,7 @@ import com.techsenger.connectorfx.event.ElementEvent;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.UiExecutor;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.Selector;
@@ -85,7 +86,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
         @Override
         public void onClear() {
-            clear();
+            UiExecutor.execute(() -> clear());
         }
 
         @Override
@@ -226,7 +227,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
                 totalEntriesCount = totalEntriesCount + newEntriesCount;
                 matchedEntriesCount = matchedEntriesCount + processedEntries.size();
                 sendText(processedEntries);
-                updateStatistics();
+                UiExecutor.execute(() -> updateStatistics());
                 processedEntries.clear();
 
                 try {
@@ -247,7 +248,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
         textBuilder.setLength(0);
         entries.forEach(e -> textBuilder.append(e.zonedTime()).append(" ").append(e.message()).append("\n"));
         var text = textBuilder.toString();
-        getView().appendText(text);
+        UiExecutor.execute(() -> getView().appendText(text));
     }
 
     protected void stopAndDestroyProcessor() {

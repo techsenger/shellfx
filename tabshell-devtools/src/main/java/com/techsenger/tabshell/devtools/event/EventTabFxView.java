@@ -19,7 +19,6 @@ package com.techsenger.tabshell.devtools.event;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import javafx.application.Platform;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import jfx.incubator.scene.control.richtext.RichTextArea;
@@ -76,18 +75,12 @@ public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractT
 
     @Override
     public void appendText(String text) {
-        // called from non-JavaFX thread
-        Platform.runLater(() -> {
-            this.textArea.appendText(text);
-        });
+        this.textArea.appendText(text);
     }
 
     @Override
     public void clearText() {
-        // called from non-JavaFX thread
-        Platform.runLater(() -> {
-            this.textArea.clear();
-        });
+        this.textArea.clear();
     }
 
     @Override

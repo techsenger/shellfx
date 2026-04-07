@@ -28,7 +28,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
@@ -70,8 +69,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
 
     @Override
     public void setStatistics(String text) {
-        // can be called from non-JavaFX thread
-        Platform.runLater(() -> statisticsDataLabel.setText(text));
+         statisticsDataLabel.setText(text);
     }
 
     @Override
