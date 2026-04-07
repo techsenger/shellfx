@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.icons;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
 
@@ -62,11 +63,11 @@ public final class IconStylesheetFactory {
     }
 
     /**
-     * Creates and returns the stylesheet with icons for the all modules.
+     * Creates and returns an unmodifiable list with icon stylesheet for the all modules.
      *
      * @return
      */
-    public static List<Stylesheet> forAll() {
+    public static @Unmodifiable List<Stylesheet> forAll() {
         return List.of(forShared(),
                 forLayout(),
                 forDialogs(),
