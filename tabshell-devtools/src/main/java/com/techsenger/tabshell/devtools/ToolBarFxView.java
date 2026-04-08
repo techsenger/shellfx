@@ -17,12 +17,12 @@
 package com.techsenger.tabshell.devtools;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.AbstractFindBaseFxView;
 import com.techsenger.tabshell.shared.find.FindFeature;
 import com.techsenger.tabshell.shared.find.FindTrigger;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
@@ -37,7 +37,7 @@ import javafx.scene.layout.Priority;
 public class ToolBarFxView<P extends ToolBarPresenter<?, ?>> extends AbstractFindBaseFxView<P>
         implements ToolBarView {
 
-    private final Button refreshButton = new Button(null, new FontIconView(SharedIcons.REFRESH));
+    private final Button refreshButton = new Button(null, new FontIconView(DevToolsIcons.REFRESH));
 
     private final ToolBar toolBar = new ToolBar();
 

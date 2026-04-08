@@ -37,7 +37,6 @@ import com.techsenger.tabshell.layout.dockhost.TabDockFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
@@ -114,9 +113,9 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> ext
 
     private final ToggleButton selectionButton = new ToggleButton(null, new FontIconView(DevToolsIcons.SELECTION));
 
-    private final Button optionsButton = new Button(null, new FontIconView(SharedIcons.DOTS_VERTICAL));
+    private final Button optionsButton = new Button(null, new FontIconView(DevToolsIcons.DOTS_VERTICAL));
 
-    private final Button closeButton = new Button(null, new FontIconView(SharedIcons.CLOSE));
+    private final Button closeButton = new Button(null, new FontIconView(DevToolsIcons.CLOSE));
 
     private final ShellFxView<?> shell;
 

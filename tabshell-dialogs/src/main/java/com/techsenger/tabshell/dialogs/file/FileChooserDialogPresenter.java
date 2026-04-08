@@ -33,7 +33,6 @@ import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import com.techsenger.tabshell.material.table.TableColumnInfo;
 import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.material.table.TableHistory;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.storage.FileColumns;
 import com.techsenger.tabshell.storage.FileStorage;
 import static com.techsenger.tabshell.storage.FileStorageType.BASE;
@@ -297,12 +296,12 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
         switch (type) {
             case OPEN -> {
                 setTitle("Open");
-                setIcon(SharedIcons.OPEN);
+                setIcon(DialogIcons.OPEN);
                 getView().setLocationCaption("Look In");
             }
             case SAVE_AS -> {
                 setTitle("Save As");
-                setIcon(SharedIcons.SAVE_AS);
+                setIcon(DialogIcons.SAVE_AS);
                 getView().setLocationCaption("Save In");
             }
             default -> throw new AssertionError();
@@ -355,7 +354,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
                     var segment = segments.get(i);
                     var segmentUri = UriUtils.resolvePath(previousUri, segment);
                     var directoryLocation = new Location(
-                            SharedIcons.DIRECTORY,
+                            DialogIcons.DIRECTORY,
                             segment,
                             i + 1,
                             storage,
@@ -597,7 +596,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
             location = createLocation(storage);
         } else {
             location = new Location(
-                    SharedIcons.DIRECTORY,
+                    DialogIcons.DIRECTORY,
                     segments.get(segments.size() - 1),
                     segments.size(),
                     storage,

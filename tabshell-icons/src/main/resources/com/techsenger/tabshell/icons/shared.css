@@ -22,100 +22,12 @@
     src: url('font/materialdesignicons-webfont.ttf');
 }
 
-.font-icon-view.open-icon {
-    -fx-code-point: 986575; /* folder-open-outline */
-}
-
-.font-icon-view.open-in-new-icon {
-    -fx-code-point: 984012; /* open-in-new */
-}
-
-.font-icon-view.save-icon {
-    -fx-code-point: 985112; /* content-save-outline */
-}
-
-.font-icon-view.save-as-icon {
-    -fx-code-point: 986364; /* content-save-edit-outline */
-}
-
-.font-icon-view.settings-icon {
-    -fx-code-point: 985275; /* cog-outline */
-}
-
-.font-icon-view.exit-icon {
-    -fx-code-point: 983875; /* logout */
-}
-
-.font-icon-view.undo-icon {
-    -fx-code-point: 984396; /* undo */
-}
-
-.font-icon-view.redo-icon {
-    -fx-code-point: 984142; /* redo */
-}
-
-.font-icon-view.help-icon {
-    -fx-code-point: 986022; /* help-rhombus-outline */
-}
-
-.font-icon-view.process-icon {
-    -fx-code-point: 985302; /* cogs */
-}
-
-.font-icon-view.add-icon {
-    -fx-code-point: 984085; /* plus */
-}
-
-.font-icon-view.remove-icon {
-    -fx-code-point: 983924; /* minus */
-}
-
 .font-icon-view.chevron-up-icon {
     -fx-code-point: 983363; /* chevron-up */
 }
 
-.font-icon-view.chevron-double-up-icon {
-    -fx-code-point: 983359; /* chevron-double-up */
-}
-
 .font-icon-view.chevron-down-icon {
     -fx-code-point: 983360; /* chevron-down */
-}
-
-.font-icon-view.chevron-double-down-icon {
-    -fx-code-point: 983356; /* chevron-double-down */
-}
-
-.font-icon-view.chevron-right-icon {
-    -fx-code-point: 983362; /* chevron-right */
-}
-
-.font-icon-view.chevron-double-right-icon {
-    -fx-code-point: 983358; /* chevron-double-right */
-}
-
-.font-icon-view.chevron-left-icon {
-    -fx-code-point: 983361; /* chevron-left */
-}
-
-.font-icon-view.chevron-double-left-icon {
-    -fx-code-point: 983357; /* chevron-double-left */
-}
-
-.font-icon-view.cut-icon {
-    -fx-code-point: 983440; /* content-cut */
-}
-
-.font-icon-view.copy-icon {
-    -fx-code-point: 983439; /* content-copy */
-}
-
-.font-icon-view.paste-icon {
-    -fx-code-point: 983442; /* content-paste */
-}
-
-.font-icon-view.clear-icon {
-    -fx-code-point: 983266; /* broom */
 }
 
 .font-icon-view.match-case-icon {
@@ -132,40 +44,4 @@
 
 .font-icon-view.highlight-icon {
     -fx-code-point: 984658; /* marker */
-}
-
-.font-icon-view.find-icon {
-    -fx-code-point: 983881; /* magnify */
-}
-
-.font-icon-view.replace-icon {
-    -fx-code-point: 984788; /* find-replace */
-}
-
-.font-icon-view.select-all-icon {
-    -fx-code-point: 984198; /* select all */
-}
-
-.font-icon-view.directory-icon {
-    -fx-code-point: 983627; /* folder */
-}
-
-.font-icon-view.file-icon {
-    -fx-code-point: 983588; /* file-outline */
-}
-
-.font-icon-view.refresh-icon {
-    -fx-code-point: 984144; /* refresh */
-}
-
-.font-icon-view.reload-icon {
-    -fx-code-point: 984147; /* reload */
-}
-
-.font-icon-view.close-icon {
-    -fx-code-point: 983382; /* close */
-}
-
-.font-icon-view.dots-vertical-icon {
-    -fx-code-point: 983513; /* dots-vertical */
 }

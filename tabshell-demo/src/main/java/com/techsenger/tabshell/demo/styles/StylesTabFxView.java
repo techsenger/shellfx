@@ -20,10 +20,10 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabPresenter;
+import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -64,11 +64,11 @@ public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?,
     }
 
     protected void buildIconedButtons() {
-        var b1 = new Button(null, new FontIconView(SharedIcons.DIRECTORY));
+        var b1 = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
         b1.getStyleClass().add(StyleClasses.ICON_BUTTON);
-        var b2 = new Button(null, new FontIconView(SharedIcons.DIRECTORY));
+        var b2 = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
         b2.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.DENSE);
-        var b3 = new Button(null, new FontIconView(SharedIcons.DIRECTORY));
+        var b3 = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
         b3.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
         var buttons = new HBox(b1, b2, b3);
         buttons.setSpacing(Spacing.HORIZONTAL);

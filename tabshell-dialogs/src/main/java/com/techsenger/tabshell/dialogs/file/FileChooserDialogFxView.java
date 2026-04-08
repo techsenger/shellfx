@@ -33,7 +33,6 @@ import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.table.TableColumnInfo;
 import com.techsenger.tabshell.material.table.TableColumnManager;
 import com.techsenger.tabshell.material.table.TableColumnName;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.tabshell.storage.FileColumnBuilder;
 import com.techsenger.tabshell.storage.FileColumns;
 import com.techsenger.tabshell.storage.GenericFile;
@@ -189,9 +188,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
             } else {
                 if (item.getType() != null) {
                     if (item.isDirectory()) {
-                        setGraphic(new FontIconView(SharedIcons.DIRECTORY));
+                        setGraphic(new FontIconView(DialogIcons.DIRECTORY));
                     } else {
-                        setGraphic(new FontIconView(SharedIcons.FILE));
+                        setGraphic(new FontIconView(DialogIcons.FILE));
                     }
                 } else {
                     setGraphic(null);
@@ -396,7 +395,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         this.fileTableView.setPlaceholder(new Label(""));
         var columnBuilder = new FileColumnBuilder(settings.getRegularFont());
         this.fileColumnManager.registerColumnFactory(FileColumns.TYPE, () -> {
-            var column = columnBuilder.buildTypeColumn(SharedIcons.DIRECTORY, SharedIcons.FILE);
+            var column = columnBuilder.buildTypeColumn(DialogIcons.DIRECTORY, DialogIcons.FILE);
             column.setEditable(false);
             column.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN_FIRST);
             return column;

@@ -46,3 +46,23 @@
     -fx-code-point: 984198; /* select-all */
 }
 
+.font-icon-view.open-in-new-icon {
+    -fx-code-point: 984012; /* open-in-new */
+}
+
+.font-icon-view.close-icon {
+    -fx-code-point: 983382; /* close */
+}
+
+.font-icon-view.dots-vertical-icon {
+    -fx-code-point: 983513; /* dots-vertical */
+}
+
+.font-icon-view.clear-icon {
+    -fx-code-point: 983266; /* broom */
+}
+
+.font-icon-view.refresh-icon {
+    -fx-code-point: 984144; /* refresh */
+}
+

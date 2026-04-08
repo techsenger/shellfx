@@ -74,3 +74,19 @@
 .font-icon-view.network-disk-icon {
     -fx-code-point: 990361; /* server-network-outline */
 }
+
+.font-icon-view.open-icon {
+    -fx-code-point: 986575; /* folder-open-outline */
+}
+
+.font-icon-view.save-as-icon {
+    -fx-code-point: 986364; /* content-save-edit-outline */
+}
+
+.font-icon-view.directory-icon {
+    -fx-code-point: 983627; /* folder */
+}
+
+.font-icon-view.file-icon {
+    -fx-code-point: 983588; /* file-outline */
+}

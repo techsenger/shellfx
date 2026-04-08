@@ -50,6 +50,14 @@ public interface DialogIcons {
 
     StyleFontIcon NETWORK_DISK = new StyleFontIcon("network-disk-icon");
 
+    StyleFontIcon OPEN = new StyleFontIcon("open-icon");
+
+    StyleFontIcon SAVE_AS = new StyleFontIcon("save-as-icon");
+
+    StyleFontIcon DIRECTORY = new StyleFontIcon("directory-icon");
+
+    StyleFontIcon FILE = new StyleFontIcon("file-icon");
+
 }
 
 

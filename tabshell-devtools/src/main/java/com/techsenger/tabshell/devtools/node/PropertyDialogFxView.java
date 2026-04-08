@@ -18,10 +18,10 @@ package com.techsenger.tabshell.devtools.node;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
+import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.Spacing;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Hyperlink;
@@ -79,7 +79,7 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
 
     @Override
     public void addNameUrl(String url) {
-        var link = new Hyperlink(null, new FontIconView(SharedIcons.OPEN_IN_NEW));
+        var link = new Hyperlink(null, new FontIconView(DevToolsIcons.OPEN_IN_NEW));
         link.setTooltip(new Tooltip(url));
         nameBox.getChildren().add(link);
         nameBox.setSpacing(Spacing.HORIZONTAL_THIRD);
@@ -100,7 +100,7 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  exte
 
     @Override
     public void addCssUrl(String url) {
-        var link = new Hyperlink(null, new FontIconView(SharedIcons.OPEN_IN_NEW));
+        var link = new Hyperlink(null, new FontIconView(DevToolsIcons.OPEN_IN_NEW));
         link.setTooltip(new Tooltip(url));
         cssBox.getChildren().add(link);
         cssBox.setSpacing(Spacing.HORIZONTAL_THIRD);

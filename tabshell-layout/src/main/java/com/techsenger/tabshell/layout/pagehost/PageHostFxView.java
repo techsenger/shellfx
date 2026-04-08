@@ -23,12 +23,12 @@ import com.techsenger.tabshell.core.page.PageDescriptor;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.core.page.PageItem;
 import com.techsenger.tabshell.core.page.PagePort;
+import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.ResultFindPort;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.Spacer;
 import java.util.HashMap;
 import java.util.List;
@@ -148,9 +148,9 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
     private final HBox breadcrumbsBox = new HBox();
 
-    private final Button backButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_LEFT));
+    private final Button backButton = new Button(null, new FontIconView(LayoutIcons.CHEVRON_LEFT));
 
-    private final Button forwardButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_RIGHT));
+    private final Button forwardButton = new Button(null, new FontIconView(LayoutIcons.CHEVRON_RIGHT));
 
     private final HBox historyBox = new HBox(backButton, forwardButton);
 
@@ -384,7 +384,7 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     }
 
     protected Node createBreadcrumbDivider() {
-        var node = new FontIconView(SharedIcons.CHEVRON_RIGHT);
+        var node = new FontIconView(LayoutIcons.CHEVRON_RIGHT);
         node.getStyleClass().add(Styles.DENSE);
         return node;
     }

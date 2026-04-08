@@ -23,9 +23,9 @@ import com.techsenger.tabshell.demo.main.TestInterface;
 import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
 import com.techsenger.tabshell.layout.dockhost.TabDockFxView;
 import com.techsenger.tabshell.layout.dockhost.UtilityDockContainerFxView;
+import com.techsenger.tabshell.material.icon.FontIcon;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -101,8 +101,8 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
     @Override
     protected void build() {
         super.build();
-        var removeButton = new Button(null, new FontIconView(SharedIcons.REMOVE));
-        var addButton = new Button(null, new FontIconView(SharedIcons.ADD));
+        var removeButton = new Button(null, new FontIconView(new FontIcon(983924)));
+        var addButton = new Button(null, new FontIconView(new FontIcon(984085)));
         addButton.setOnAction((e) -> {
             removeButton.setVisible(!removeButton.isVisible());
         });

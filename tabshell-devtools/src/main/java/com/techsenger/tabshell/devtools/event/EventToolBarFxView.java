@@ -22,7 +22,6 @@ import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.style.SharedIcons;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -50,7 +49,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends T
 
     private final ToggleButton recordButton = new ToggleButton(null, recordIconView);
 
-    private final Button clearButton = new Button(null, new FontIconView(SharedIcons.CLEAR));
+    private final Button clearButton = new Button(null, new FontIconView(DevToolsIcons.CLEAR));
 
     private final ToggleButton filterButton = new ToggleButton(null, new FontIconView(DevToolsIcons.FILTER));
 
