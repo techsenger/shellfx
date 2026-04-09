@@ -125,7 +125,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     public void setMinWidth(double minWidth) {
         this.minWidth = minWidth;
-        getView().setMinWidth(maxWidth);
+        getView().setMinWidth(minWidth);
     }
 
     @Override
@@ -135,7 +135,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     public void setMinHeight(double minHeight) {
         this.minHeight = minHeight;
-        getView().setMinHeight(maxWidth);
+        getView().setMinHeight(minHeight);
     }
 
     @Override
@@ -175,7 +175,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     public void setResizable(boolean resizable) {
         this.resizable = resizable;
-        getView().setResizable(active);
+        getView().setResizable(resizable);
     }
 
     @Override
@@ -185,7 +185,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     public void setButtonWidthEqual(boolean buttonWidthEqual) {
         this.buttonWidthEqual = buttonWidthEqual;
-        getView().setButtonWidthEqual(active);
+        getView().setButtonWidthEqual(buttonWidthEqual);
     }
 
     @Override
@@ -195,7 +195,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     public void setCloseDisabled(boolean closeDisabled) {
         this.closeDisabled = closeDisabled;
-        getView().setCloseDisabled(active);
+        getView().setCloseDisabled(closeDisabled);
     }
 
     @Override
