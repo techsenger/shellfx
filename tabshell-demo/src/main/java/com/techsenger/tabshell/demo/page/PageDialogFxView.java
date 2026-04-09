@@ -32,6 +32,8 @@ public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> 
 
     public class Composer extends AbstractDialogFxView<PageDialogPresenter>.Composer {
 
+        private PageHostFxView<?> pageHost;
+
         @Override
         public void compose() {
             super.compose();
@@ -47,11 +49,8 @@ public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> 
             VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
 
             pageHost.getPresenter().selectPage(rootItem.getChildren().getFirst()); // the root is not shown
-
         }
     }
-
-    private PageHostFxView<?> pageHost;
 
     private final ResultButton okButton = new ResultButton(PageDialogButtons.OK, "OK");
 
@@ -61,7 +60,7 @@ public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> 
 
     @Override
     public void requestFocus() {
-        pageHost.requestFocus();
+        getComposer().pageHost.requestFocus();
     }
 
     @Override

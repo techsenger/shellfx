@@ -338,7 +338,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     protected void postInitialize() {
         super.postInitialize();
         var history = getHistory();
-        if (history.isNew()) {
+        if (history == null || history.isNew()) {
             getView().setDividerPosition(0.2);
         }
         setBackDisabled(true);

@@ -38,7 +38,7 @@ final class MenuFactory {
     }
 
     /**
-     * For demo one component is used, besides it the page can be shown differently, so this factory is required.
+     * For demo one component is used, besides the page can be shown differently, so this factory is required.
      */
     static class PageFactoryImpl implements PageFactory {
 
@@ -52,7 +52,7 @@ final class MenuFactory {
         }
 
         @Override
-        public PageFxView<?> create(PageItem<?> item) {
+        public PageFxView<?> createAndInitialize(PageItem<?> item) {
             Insets padding;
             if (parentType == PageType.DIALOG) {
                 padding = new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL);
@@ -66,6 +66,7 @@ final class MenuFactory {
                     return new Descriptor(name);
                 }
             };
+            presenter.initialize();
             return view;
         }
     }

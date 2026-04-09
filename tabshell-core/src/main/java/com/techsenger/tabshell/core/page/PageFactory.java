@@ -22,5 +22,11 @@ package com.techsenger.tabshell.core.page;
  */
 public interface PageFactory {
 
-    PageFxView<?> create(PageItem<?> item);
+    /**
+     * Returns an initialized page.
+     *
+     * @param item
+     * @return
+     */
+    PageFxView<?> createAndInitialize(PageItem<?> item);
 }

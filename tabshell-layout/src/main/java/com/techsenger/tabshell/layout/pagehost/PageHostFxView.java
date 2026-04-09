@@ -114,9 +114,8 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
         public PagePort providePagePort(PageItem<?> item) {
             var fxView = pagesByItems.get(item);
             if (fxView == null) {
-                var treeItem = view.treeItemsByItems.get(item);
-                fxView = treeItem.getValue().getFactory().create(item);
-                fxView.getPresenter().initialize();
+                var treeItem = view.treeItemsByPageItem.get(item);
+                fxView = treeItem.getValue().getFactory().createAndInitialize(item);
                 getModifiableChildren().add(fxView);
                 pagesByItems.put((PageDescriptor) item, fxView);
             }
@@ -163,7 +162,7 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     private final SplitPane splitPane = new SplitPane(leftBox, rightBox);
 
 
-    private final Map<PageItem<?>, TreeItem<PageDescriptor>> treeItemsByItems = new HashMap<>();
+    private final Map<PageItem<?>, TreeItem<PageDescriptor>> treeItemsByPageItem = new HashMap<>();
 
     private PageFxView<?> page;
 
@@ -217,22 +216,22 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
 
     @Override
     public void setMenu(PageItem<?> root, boolean showRoot) {
-        treeItemsByItems.clear();
+        treeItemsByPageItem.clear();
         pageTreeView.setRoot(null);
         pageTreeView.setShowRoot(showRoot);
         if (root != null) {
-            var treeRoot = buildTree(root, treeItemsByItems);
+            var treeRoot = buildTree(root, treeItemsByPageItem);
             pageTreeView.setRoot(treeRoot);
         }
     }
 
     @Override
     public void setMenu(FilteredPageItem root, boolean showRoot) {
-        treeItemsByItems.clear();
+        treeItemsByPageItem.clear();
         pageTreeView.setRoot(null);
         pageTreeView.setShowRoot(showRoot);
         if (root != null) {
-            var treeRoot = buildTree(root, treeItemsByItems);
+            var treeRoot = buildTree(root, treeItemsByPageItem);
             pageTreeView.setRoot(treeRoot);
         }
     }
@@ -244,7 +243,7 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractA
     @Override
     public void setPage(PageItem<?> item) {
         var fxView = getComposer().pagesByItems.get(item);
-        var treeItem = treeItemsByItems.get(item);
+        var treeItem = treeItemsByPageItem.get(item);
         this.page = fxView; // before selecting treeItem
         pageTreeView.getSelectionModel().select(treeItem); // it can be selected using breadcrumbs
         contentBox.getChildren().clear();
