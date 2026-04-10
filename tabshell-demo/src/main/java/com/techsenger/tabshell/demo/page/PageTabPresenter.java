@@ -22,7 +22,6 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
-import com.techsenger.tabshell.core.tab.TabComposer;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
 
@@ -30,12 +29,13 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class PageTabPresenter extends AbstractTabPresenter<PageTabView, TabComposer> {
+public class PageTabPresenter extends AbstractTabPresenter<PageTabView, PageTabComposer> {
 
-    public PageTabPresenter(PageTabView view, HistoryProvider<PageTabHistory> historyProvider) {
+    public PageTabPresenter(PageTabView view, HistoryProvider<PageTabHistory> historyProvider, PageMenuType menuType) {
         super(view);
         setHistoryProvider(historyProvider);
         setHistoryPolicy(HistoryPolicy.ALL);
+        getComposer().setMenuType(menuType);
     }
 
     @Override

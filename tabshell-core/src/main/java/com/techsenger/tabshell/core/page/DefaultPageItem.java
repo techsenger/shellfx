@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
+package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.page.TreePageItem;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb implements PageBreadcrumb {
+public class DefaultPageItem implements PageItem {
 
-    private final TreePageItem item;
+    private final Icon<?> icon;
 
-    private PageBreadcrumb previous;
+    private final String text;
 
-    public DefaultPageBreadcrumb(TreePageItem item) {
-        this.item = item;
-    }
-
-    public TreePageItem getItem() {
-        return item;
+    public DefaultPageItem(Icon<?> icon, String text) {
+        this.icon = icon;
+        this.text = text;
     }
 
     @Override
-    public PageBreadcrumb getPrevious() {
-        return previous;
+    public Icon<?> getIcon() {
+        return icon;
     }
 
-    void setPrevious(PageBreadcrumb previous) {
-        this.previous = previous;
+    @Override
+    public String getText() {
+        return text;
     }
+
 }

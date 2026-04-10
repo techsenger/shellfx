@@ -16,32 +16,37 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.page.TreePageItem;
-
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb implements PageBreadcrumb {
+public class FindStatistics {
 
-    private final TreePageItem item;
+    private int total;
 
-    private PageBreadcrumb previous;
+    private int matches;
 
-    public DefaultPageBreadcrumb(TreePageItem item) {
-        this.item = item;
+    public int getTotal() {
+        return total;
     }
 
-    public TreePageItem getItem() {
-        return item;
+    public void setTotal(int total) {
+        this.total = total;
     }
 
-    @Override
-    public PageBreadcrumb getPrevious() {
-        return previous;
+    public int getMatches() {
+        return matches;
     }
 
-    void setPrevious(PageBreadcrumb previous) {
-        this.previous = previous;
+    public void setMatches(int matches) {
+        this.matches = matches;
+    }
+
+    public void incrementTotal() {
+        total++;
+    }
+
+    public void incrementMatches() {
+        matches++;
     }
 }

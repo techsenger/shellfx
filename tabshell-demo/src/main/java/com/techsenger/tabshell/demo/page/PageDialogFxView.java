@@ -17,8 +17,11 @@
 package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
+import com.techsenger.tabshell.layout.pagehost.AbstractPageHostFxView;
 import com.techsenger.tabshell.layout.pagehost.PageHostFxView;
 import com.techsenger.tabshell.layout.pagehost.PageHostPresenter;
+import com.techsenger.tabshell.layout.pagehost.TreePageHostFxView;
+import com.techsenger.tabshell.layout.pagehost.TreePageHostPresenter;
 import com.techsenger.tabshell.material.button.ResultButton;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
@@ -30,25 +33,51 @@ import javafx.scene.layout.VBox;
  */
 public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> implements PageDialogView {
 
-    public class Composer extends AbstractDialogFxView<PageDialogPresenter>.Composer {
+    public class Composer extends AbstractDialogFxView<PageDialogPresenter>.Composer implements PageDialogComposer {
 
-        private PageHostFxView<?> pageHost;
+        private AbstractPageHostFxView<?> pageHost;
+
+        private PageMenuType menuType;
+
+        @Override
+        public void setMenuType(PageMenuType menuType) {
+            this.menuType = menuType;
+        }
 
         @Override
         public void compose() {
             super.compose();
-            var rootItem = MenuFactory.create(MenuFactory.PageType.DIALOG);
-            pageHost = new PageHostFxView<>();
-            var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());
-            hostPresenter.initialize();
-            hostPresenter.setDividerPosition(0.275);
-            pageHost.getComposer().setPages(rootItem, false);
+            if (menuType == PageMenuType.FLAT) {
+                var pages = MenuFactory.createMenu(PageHostParent.TAB);
+                var pageHost = new PageHostFxView<>();
+                var hostPresenter = new PageHostPresenter<>(pageHost,
+                        () -> getPresenter().getHistory().getHostHistory());
+                hostPresenter.initialize();
+                hostPresenter.setDividerPosition(0.275);
+                pageHost.getComposer().setPages(pages);
+                getModifiableChildren().add(pageHost);
+                getContentBox().getChildren().add(pageHost.getNode());
+                VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
+                pageHost.getPresenter().selectPage(0);
+                this.pageHost = pageHost;
+            } else {
+                var rootItem = MenuFactory.createTreeMenu(PageHostParent.TAB);
+                var pageHost = new TreePageHostFxView<>();
+                var hostPresenter = new TreePageHostPresenter<>(pageHost,
+                        () -> getPresenter().getHistory().getHostHistory());
+                hostPresenter.initialize();
+                hostPresenter.setDividerPosition(0.275);
+                pageHost.getComposer().setPages(rootItem, false);
+                getModifiableChildren().add(pageHost);
+                getContentBox().getChildren().add(pageHost.getNode());
+                VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
+                pageHost.getPresenter().selectPage(rootItem.getChildren().getFirst()); // the root is not shown
+                this.pageHost = pageHost;
+            }
+        }
 
-            getModifiableChildren().add(pageHost);
-            getContentBox().getChildren().add(pageHost.getNode());
-            VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
-
-            pageHost.getPresenter().selectPage(rootItem.getChildren().getFirst()); // the root is not shown
+        private AbstractPageHostFxView<?> getPageHost() {
+            return pageHost;
         }
     }
 
@@ -60,7 +89,7 @@ public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> 
 
     @Override
     public void requestFocus() {
-        getComposer().pageHost.requestFocus();
+        getComposer().getPageHost().requestFocus();
     }
 
     @Override

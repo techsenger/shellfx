@@ -1,7 +1,7 @@
 # Techsenger TabShell
 
 Techsenger TabShell is a platform for building tab-based applications in JavaFX, where an application is structured
-as a tree of MVP components, each of which has its own lifecycle, history, etc. The platform provides abstract 
+as a tree of MVP components, each of which has its own lifecycle, history, etc. The platform provides abstract
 classes for creating the main types of components: tab, area, page, dialog, and popup, as well as containers for them.
 
 It also includes ready-to-use implementations of containers (including a docking layout) and dialogs (including a
@@ -36,6 +36,7 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
     * [TabHost](#layout-tab-host)
     * [DockHost](#layout-dock-host)
     * [PageHost](#layout-page-host)
+    * [TreePageHost](#layout-tree-page-host)
 * [Shared Components](#shared)
     * [FindBase](#shared-find-base)
     * [FindPanel](#shared-find-panel)
@@ -324,10 +325,12 @@ to which all other components are positioned. The main component can be an `Area
 ### PageHost <a name="layout-page-host"></a>
 
 `PageHost` is a simple component that displays `Page` components and performs their lazy initialization.
+It can be used to display navigable pages with a flat menu-like structure in diffent components - tabs, dialogs etc.
 
-It can be used to display navigable pages with a menu-like structure (similar to a website layout). Additionally,
-it is commonly used in dialogs with a navigation tree on the left and a content page on the right. A classic example
-is a settings dialog.
+### TreePageHost <a name="layout-tree-page-host"></a>
+
+`TreePageHost` is almost identical to `PageHost`, except for the menu structure: `PageHost` uses a flat menu
+(`ListView`), whereas `TreePageHost` uses a hierarchical menu (`TreeView`).
 
 ## Shared Components <a name="shared"></a>
 

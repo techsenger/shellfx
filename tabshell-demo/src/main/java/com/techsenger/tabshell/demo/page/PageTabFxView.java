@@ -18,8 +18,11 @@ package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.layout.pagehost.AbstractPageHostFxView;
 import com.techsenger.tabshell.layout.pagehost.PageHostFxView;
 import com.techsenger.tabshell.layout.pagehost.PageHostPresenter;
+import com.techsenger.tabshell.layout.pagehost.TreePageHostFxView;
+import com.techsenger.tabshell.layout.pagehost.TreePageHostPresenter;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
@@ -32,28 +35,53 @@ import javafx.scene.layout.VBox;
  */
 public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implements PageTabView {
 
-    public class Composer extends AbstractTabFxView<PageTabPresenter>.Composer {
+    public class Composer extends AbstractTabFxView<PageTabPresenter>.Composer implements PageTabComposer {
+
+        private PageMenuType menuType;
+
+        private AbstractPageHostFxView<?> pageHost;
+
+        @Override
+        public void setMenuType(PageMenuType menuType) {
+            this.menuType = menuType;
+        }
 
         @Override
         public void compose() {
             super.compose();
-            var rootItem = MenuFactory.create(MenuFactory.PageType.TAB);
-            pageHost = new PageHostFxView<>();
-            var hostPresenter = new PageHostPresenter<>(pageHost, () -> getPresenter().getHistory().getHostHistory());
-            hostPresenter.initialize();
-            hostPresenter.setDividerPosition(0.275);
-            pageHost.getComposer().setPages(rootItem, false);
+            if (menuType == PageMenuType.FLAT) {
+                var pages = MenuFactory.createMenu(PageHostParent.TAB);
+                var pageHost = new PageHostFxView<>();
+                var hostPresenter = new PageHostPresenter<>(pageHost,
+                        () -> getPresenter().getHistory().getHostHistory());
+                hostPresenter.initialize();
+                hostPresenter.setDividerPosition(0.275);
+                pageHost.getComposer().setPages(pages);
+                getModifiableChildren().add(pageHost);
+                getContentBox().getChildren().add(pageHost.getNode());
+                VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
+                pageHost.getPresenter().selectPage(0);
+                this.pageHost = pageHost;
+            } else {
+                var rootItem = MenuFactory.createTreeMenu(PageHostParent.TAB);
+                var pageHost = new TreePageHostFxView<>();
+                var hostPresenter = new TreePageHostPresenter<>(pageHost,
+                        () -> getPresenter().getHistory().getHostHistory());
+                hostPresenter.initialize();
+                hostPresenter.setDividerPosition(0.275);
+                pageHost.getComposer().setPages(rootItem, false);
+                getModifiableChildren().add(pageHost);
+                getContentBox().getChildren().add(pageHost.getNode());
+                VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
+                pageHost.getPresenter().selectPage(rootItem.getChildren().getFirst()); // the root is not shown
+                this.pageHost = pageHost;
+            }
+        }
 
-            getModifiableChildren().add(pageHost);
-            getContentBox().getChildren().add(pageHost.getNode());
-            VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
-
-            pageHost.getPresenter().selectPage(rootItem.getChildren().getFirst()); // the root is not shown
-
+        private AbstractPageHostFxView<?> getPageHost() {
+            return pageHost;
         }
     }
-
-    private PageHostFxView<?> pageHost;
 
     public PageTabFxView(ShellFxView<?> shell) {
         super(shell);
@@ -61,7 +89,7 @@ public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implement
 
     @Override
     public void requestFocus() {
-        pageHost.requestFocus();
+         getComposer().getPageHost().requestFocus();
     }
 
     @Override

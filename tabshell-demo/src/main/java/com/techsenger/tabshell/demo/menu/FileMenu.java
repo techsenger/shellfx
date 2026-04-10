@@ -37,6 +37,8 @@ public interface FileMenu {
 
     MenuItemName PAGE_TAB = new DefaultMenuItemName();
 
+    MenuItemName TREE_PAGE_TAB = new DefaultMenuItemName();
+
     MenuItemName DIALOGS = new DefaultMenuItemName();
 
     MenuItemName DEV_TOOLS = new DefaultMenuItemName();

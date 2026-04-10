@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
-
-import com.techsenger.tabshell.core.area.AreaHistory;
+package com.techsenger.tabshell.core.page;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class PageHostHistory extends AreaHistory {
+public interface TreePageContainerPort {
 
-    private double dividerPosition;
+    PagePort getSelectedPage();
 
-    public double getDividerPosition() {
-        return dividerPosition;
-    }
-
-    public void setDividerPosition(double dividerPosition) {
-        this.dividerPosition = dividerPosition;
-    }
+    void selectPage(TreePageItem item);
 }

@@ -16,15 +16,17 @@
 
 package com.techsenger.tabshell.core.page;
 
+import java.util.List;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerFxView<P extends PageContainerPresenter<?, ?>> {
+public interface PageContainerFxView<P extends PageContainerPresenter<?, ?>> extends PageContainerView {
 
     interface Composer extends PageContainerComposer {
 
-        void setPages(PageDescriptor root, boolean showRoot);
+        void setPages(List<PageDescriptor> pages);
     }
 
     Composer getComposer();

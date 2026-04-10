@@ -16,32 +16,21 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.tabshell.core.page.TreePageContainerView;
 import com.techsenger.tabshell.core.page.TreePageItem;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb implements PageBreadcrumb {
+public interface TreePageHostView extends BasePageHostView, TreePageContainerView {
 
-    private final TreePageItem item;
+    void setMenu(TreePageItem root, boolean showRoot);
 
-    private PageBreadcrumb previous;
+    void setMenu(FilteredTreePageItem root, boolean showRoot);
 
-    public DefaultPageBreadcrumb(TreePageItem item) {
-        this.item = item;
-    }
+    void setPage(TreePageItem item);
 
-    public TreePageItem getItem() {
-        return item;
-    }
-
-    @Override
-    public PageBreadcrumb getPrevious() {
-        return previous;
-    }
-
-    void setPrevious(PageBreadcrumb previous) {
-        this.previous = previous;
-    }
+    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
 }

@@ -54,6 +54,8 @@ public final class DemoComponents {
 
     public static final ComponentName PAGE_4 = new DefaultComponentName("Demo.Page4");
 
+    public static final ComponentName PAGE_5 = new DefaultComponentName("Demo.Page5");
+
     public static final ComponentName PAGE_TAB = new DefaultComponentName("Demo.PageTab");
 
     public static final ComponentName PAGE_DIALOG = new DefaultComponentName("Demo.PageDialog");

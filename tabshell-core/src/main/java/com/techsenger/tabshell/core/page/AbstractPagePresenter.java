@@ -27,9 +27,9 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
 
     private boolean selected;
 
-    private final PageItem<?> item;
+    private final PageItem item;
 
-    public AbstractPagePresenter(V view, PageItem<?> item) {
+    public AbstractPagePresenter(V view, PageItem item) {
         super(view);
         this.item = item;
     }
@@ -50,7 +50,7 @@ public abstract class AbstractPagePresenter<V extends PageView, C extends PageCo
     }
 
     @Override
-    public PageItem<?> getItem() {
+    public PageItem getItem() {
         return item;
     }
 }

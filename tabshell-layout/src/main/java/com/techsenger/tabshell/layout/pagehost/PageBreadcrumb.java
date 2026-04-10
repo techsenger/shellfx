@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.page.PageItem;
+import com.techsenger.tabshell.core.page.TreePageItem;
 
 /**
  *
@@ -24,7 +24,7 @@ import com.techsenger.tabshell.core.page.PageItem;
  */
 public interface PageBreadcrumb {
 
-    PageItem<?> getItem();
+    TreePageItem getItem();
 
     PageBreadcrumb getPrevious();
 }

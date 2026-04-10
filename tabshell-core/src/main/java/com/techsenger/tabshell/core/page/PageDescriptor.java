@@ -20,7 +20,7 @@ package com.techsenger.tabshell.core.page;
  *
  * @author Pavel Castornii
  */
-public interface PageDescriptor extends PageItem<PageDescriptor> {
+public interface PageDescriptor extends PageItem {
 
-    PageFactory getFactory();
+    PageFactory<PageItem> getFactory();
 }

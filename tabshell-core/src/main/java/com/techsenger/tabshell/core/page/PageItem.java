@@ -16,24 +16,13 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.icon.Icon;
-import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageItem<T extends PageItem<T>> {
-
-    T getParent();
-
-    /**
-     * Returns an unmodifiable list of children.
-     *
-     * @return
-     */
-    @Unmodifiable List<T> getChildren();
+public interface PageItem {
 
     Icon<?> getIcon();
 

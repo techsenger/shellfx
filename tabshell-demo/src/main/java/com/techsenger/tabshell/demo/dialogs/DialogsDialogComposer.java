@@ -20,6 +20,7 @@ import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.demo.page.PageMenuType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogPort;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
@@ -38,5 +39,5 @@ public interface DialogsDialogComposer extends DialogComposer {
     FileChooserDialogPort addFileChooserDialog(FileChooserType type, AppearanceSettings settings,
             HistoryManager manager);
 
-    DialogPort addPagedDialog(HistoryManager manager);
+    DialogPort addPagedDialog(HistoryManager manager, PageMenuType menuType);
 }

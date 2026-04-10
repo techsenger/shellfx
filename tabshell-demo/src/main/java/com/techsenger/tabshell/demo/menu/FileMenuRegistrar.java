@@ -30,6 +30,7 @@ import com.techsenger.tabshell.demo.dialogs.DialogsDialogFxView;
 import com.techsenger.tabshell.demo.dialogs.DialogsDialogPresenter;
 import com.techsenger.tabshell.demo.ide.IdeMainTabFxView;
 import com.techsenger.tabshell.demo.ide.IdeMainTabPresenter;
+import com.techsenger.tabshell.demo.page.PageMenuType;
 import com.techsenger.tabshell.demo.page.PageTabFxView;
 import com.techsenger.tabshell.demo.page.PageTabHistory;
 import com.techsenger.tabshell.demo.page.PageTabPresenter;
@@ -46,6 +47,7 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
 import com.techsenger.tabshell.layout.dockhost.UtilityDockContainerFxView;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
+import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.NamedMenu;
 import com.techsenger.tabshell.material.menu.NamedMenuGroup;
 import com.techsenger.tabshell.material.menu.NamedMenuItem;
@@ -72,7 +74,8 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         registerMenu();
         registerGroups();
         registerMainTabItem();
-        registerPagedTabItem();
+        registerPageTabItem();
+        registerTreePageTabItem();
         registerDialogsItem();
         registerDevToolsTabDockItem();
         registerThemeItem();
@@ -117,22 +120,38 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
     }
 
-    protected void registerPagedTabItem() {
+    protected void registerPageTabItem() {
         ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(FileMenu.PAGE_TAB, "Page Tab", 200);
-            item.setOnAction((e) -> {
-                var shell = (ShellFxView<?>) v;
-                var tabView = new PageTabFxView(shell);
-                var historyManager = shell.getPresenter().getContext().getHistoryManager();
-                var tabPresenter = new PageTabPresenter(tabView,
-                        () -> historyManager.getOrCreateHistory(PageTabHistory.class, PageTabHistory::new));
-                tabPresenter.initialize();
-                resolveMainTabContainer().getComposer().addTab(tabView);
-                tabView.requestFocus();
-            });
+            var shell = (ShellFxView<?>) v;
+            var item = createPageMenuItem(shell, FileMenu.PAGE_TAB, "Page Tab", 200, PageMenuType.FLAT);
             return item;
         };
         addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
+    }
+
+    protected void registerTreePageTabItem() {
+        ControlFactory<NamedMenuItem> f = (v) -> {
+            var shell = (ShellFxView<?>) v;
+            var item = createPageMenuItem(shell, FileMenu.TREE_PAGE_TAB, "Tree Page Tab", 250, PageMenuType.TREE);
+            return item;
+        };
+        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
+    }
+
+    protected NamedMenuItem createPageMenuItem(ShellFxView<?> shell, MenuItemName name, String text,
+            int position, PageMenuType menuType) {
+        var item = new NamedMenuItem(name, text, position);
+        item.setOnAction((e) -> {
+
+            var tabView = new PageTabFxView(shell);
+            var historyManager = shell.getPresenter().getContext().getHistoryManager();
+            var tabPresenter = new PageTabPresenter(tabView,
+                    () -> historyManager.getOrCreateHistory(PageTabHistory.class, PageTabHistory::new), menuType);
+            tabPresenter.initialize();
+            resolveMainTabContainer().getComposer().addTab(tabView);
+            tabView.requestFocus();
+        });
+        return item;
     }
 
     protected void registerDialogsItem() {

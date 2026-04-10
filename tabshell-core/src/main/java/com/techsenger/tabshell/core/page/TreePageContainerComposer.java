@@ -14,34 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
-
-import com.techsenger.tabshell.core.page.TreePageItem;
+package com.techsenger.tabshell.core.page;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb implements PageBreadcrumb {
+public interface TreePageContainerComposer {
 
-    private final TreePageItem item;
-
-    private PageBreadcrumb previous;
-
-    public DefaultPageBreadcrumb(TreePageItem item) {
-        this.item = item;
-    }
-
-    public TreePageItem getItem() {
-        return item;
-    }
-
-    @Override
-    public PageBreadcrumb getPrevious() {
-        return previous;
-    }
-
-    void setPrevious(PageBreadcrumb previous) {
-        this.previous = previous;
-    }
 }

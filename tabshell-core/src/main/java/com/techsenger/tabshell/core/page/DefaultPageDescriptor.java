@@ -16,73 +16,27 @@
 
 package com.techsenger.tabshell.core.page;
 
-import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.icon.Icon;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageDescriptor implements PageDescriptor {
+public class DefaultPageDescriptor extends DefaultPageItem implements PageDescriptor {
 
-    private final Icon<?> icon;
+    private final PageFactory<PageItem> factory;
 
-    private final String text;
-
-    private final PageFactory factory;
-
-    private PageDescriptor parent;
-
-    private final List<PageDescriptor> children = new ArrayList<>();
-
-    public DefaultPageDescriptor() {
-        this(null, null, null);
-    }
-
-    public DefaultPageDescriptor(String text, PageFactory factory) {
+    public DefaultPageDescriptor(String text, PageFactory<PageItem> factory) {
         this(null, text, factory);
     }
 
-    public DefaultPageDescriptor(Icon<?> icon, String text, PageFactory factory) {
+    public DefaultPageDescriptor(Icon<?> icon, String text, PageFactory<PageItem> factory) {
+        super(icon, text);
         this.factory = factory;
-        this.icon = icon;
-        this.text = text;
     }
 
     @Override
-    public PageFactory getFactory() {
+    public PageFactory<PageItem> getFactory() {
         return factory;
-    }
-
-    @Override
-    public PageDescriptor getParent() {
-        return this.parent;
-    }
-
-    @Override
-    public @Unmodifiable List<PageDescriptor> getChildren() {
-        return Collections.unmodifiableList(this.children);
-    }
-
-    public void addChild(DefaultPageDescriptor item) {
-        this.children.add(item);
-        item.setParent(this);
-    }
-
-    @Override
-    public Icon<?> getIcon() {
-        return icon;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
-
-    void setParent(DefaultPageDescriptor parent) {
-        this.parent = parent;
     }
 }

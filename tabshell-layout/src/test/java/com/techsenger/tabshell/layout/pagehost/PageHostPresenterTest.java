@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.page.PageItem;
+import com.techsenger.tabshell.core.page.TreePageItem;
 import com.techsenger.tabshell.material.icon.Icon;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,18 +65,18 @@ public class PageHostPresenterTest {
         return Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher("");
     }
 
-    static PageHostPresenter.FindStatistics newStats() {
-        return new PageHostPresenter.FindStatistics();
+    static FindStatistics newStats() {
+        return new FindStatistics();
     }
 
-    static FilteredPageItem childByText(FilteredPageItem parent, String text) {
+    static FilteredTreePageItem childByText(FilteredTreePageItem parent, String text) {
         return parent.getChildren().stream()
             .filter(c -> c.getOriginal().getText().equals(text))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Child not found: " + text));
     }
 
-    static class TestPageItem implements PageItem<TestPageItem> {
+    static class TestPageItem implements TreePageItem {
 
         private final String text;
         private final List<TestPageItem> children;
@@ -91,11 +91,13 @@ public class PageHostPresenterTest {
             }
         }
 
-        @Override public TestPageItem getParent() {
+        @Override
+        public TestPageItem getParent() {
             return parent;
         }
 
-        @Override public List<TestPageItem> getChildren() {
+        @Override
+        public List<TestPageItem> getChildren() {
             return children;
         }
 
@@ -113,7 +115,7 @@ public class PageHostPresenterTest {
         var node = new TestPageItem("Hello");
         var stats = newStats();
 
-        var result = PageHostPresenter.match(node, matcher("Hello"), stats);
+        var result = TreePageHostPresenter.match(node, matcher("Hello"), stats);
 
         assertThat(result).isNotNull();
         assertThat(result.getOriginal()).isSameAs(node);
@@ -128,7 +130,7 @@ public class PageHostPresenterTest {
         var node = new TestPageItem("Hello");
         var stats = newStats();
 
-        var result = PageHostPresenter.match(node, matcher("xyz"), stats);
+        var result = TreePageHostPresenter.match(node, matcher("xyz"), stats);
 
         assertThat(result).isNull();
 
@@ -141,7 +143,7 @@ public class PageHostPresenterTest {
         var node = new TestPageItem("Hello");
         var stats = newStats();
 
-        var result = PageHostPresenter.match(node, matcher("hello"), stats);
+        var result = TreePageHostPresenter.match(node, matcher("hello"), stats);
 
         assertThat(result).isNotNull();
         assertThat(result.getOriginal()).isSameAs(node);
@@ -155,7 +157,7 @@ public class PageHostPresenterTest {
         var node = new TestPageItem("HelloWorld");
         var stats = newStats();
 
-        var result = PageHostPresenter.match(node, matcher("World"), stats);
+        var result = TreePageHostPresenter.match(node, matcher("World"), stats);
 
         assertThat(result).isNotNull();
         assertThat(result.getOriginal()).isSameAs(node);
@@ -169,7 +171,7 @@ public class PageHostPresenterTest {
         var root = buildTree();
         var stats = newStats();
 
-        var result = PageHostPresenter.match(root, matcher("xyz"), stats);
+        var result = TreePageHostPresenter.match(root, matcher("xyz"), stats);
 
         assertThat(result).isNull();
 
@@ -182,7 +184,7 @@ public class PageHostPresenterTest {
         var root = buildTree();
         var stats = newStats();
 
-        var result = PageHostPresenter.match(root, matcher("profile"), stats);
+        var result = TreePageHostPresenter.match(root, matcher("profile"), stats);
 
         assertThat(result.getOriginal().getText()).isEqualTo("root");
 
@@ -207,7 +209,7 @@ public class PageHostPresenterTest {
         var root = buildTree();
         var stats = newStats();
 
-        var result = PageHostPresenter.match(root, matcher("profile"), stats);
+        var result = TreePageHostPresenter.match(root, matcher("profile"), stats);
 
         var settings = childByText(result, "settings");
 
@@ -224,7 +226,7 @@ public class PageHostPresenterTest {
         var root = buildTree();
         var stats = newStats();
 
-        var result = PageHostPresenter.match(root, matcher("profile"), stats);
+        var result = TreePageHostPresenter.match(root, matcher("profile"), stats);
 
         assertThat(result.getChildren())
             .extracting(f -> f.getOriginal().getText())
@@ -239,7 +241,7 @@ public class PageHostPresenterTest {
         var root = buildTree();
         var stats = newStats();
 
-        var result = PageHostPresenter.match(root, matcher("users"), stats);
+        var result = TreePageHostPresenter.match(root, matcher("users"), stats);
 
         var users = childByText(result, "users");
 
@@ -254,7 +256,7 @@ public class PageHostPresenterTest {
         var root = buildTree();
         var stats = newStats();
 
-        var result = PageHostPresenter.match(root, matcher("root"), stats);
+        var result = TreePageHostPresenter.match(root, matcher("root"), stats);
 
         assertThat(result.getOriginal().getText()).isEqualTo("root");
         assertThat(result.getChildren()).isEmpty();
@@ -268,7 +270,7 @@ public class PageHostPresenterTest {
         var root = buildTree();
         var stats = newStats();
 
-        var result = PageHostPresenter.match(root, matcher("s"), stats);
+        var result = TreePageHostPresenter.match(root, matcher("s"), stats);
 
         assertThat(result).isNotNull();
         assertThat(result.getOriginal().getText()).isEqualTo("root");

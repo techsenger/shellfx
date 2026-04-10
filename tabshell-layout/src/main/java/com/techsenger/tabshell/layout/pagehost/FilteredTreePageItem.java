@@ -17,31 +17,35 @@
 package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.tabshell.core.page.TreePageItem;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb implements PageBreadcrumb {
+public class FilteredTreePageItem {
 
-    private final TreePageItem item;
+    private final TreePageItem original;
 
-    private PageBreadcrumb previous;
+    private final List<FilteredTreePageItem> children = new ArrayList<>();
 
-    public DefaultPageBreadcrumb(TreePageItem item) {
-        this.item = item;
+    private final boolean matched;
+
+    public FilteredTreePageItem(TreePageItem original, boolean matched) {
+        this.original = original;
+        this.matched = matched;
     }
 
-    public TreePageItem getItem() {
-        return item;
+    public TreePageItem getOriginal() {
+        return original;
     }
 
-    @Override
-    public PageBreadcrumb getPrevious() {
-        return previous;
+    public List<FilteredTreePageItem> getChildren() {
+        return children;
     }
 
-    void setPrevious(PageBreadcrumb previous) {
-        this.previous = previous;
+    public boolean isMatched() {
+        return matched;
     }
 }

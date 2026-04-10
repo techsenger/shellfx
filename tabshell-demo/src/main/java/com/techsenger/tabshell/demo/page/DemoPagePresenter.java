@@ -26,7 +26,7 @@ import com.techsenger.tabshell.core.page.PageItem;
  */
 public abstract class DemoPagePresenter extends AbstractPagePresenter<DemoPageView, PageComposer> {
 
-    public DemoPagePresenter(DemoPageView view, PageItem<?> item) {
+    public DemoPagePresenter(DemoPageView view, PageItem item) {
         super(view, item);
     }
 
@@ -35,6 +35,4 @@ public abstract class DemoPagePresenter extends AbstractPagePresenter<DemoPageVi
         super.postInitialize();
         getView().setText(getItem().getText() + " - " + Text.INSTANCE);
     }
-
-
 }

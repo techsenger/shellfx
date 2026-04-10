@@ -24,5 +24,7 @@ public interface PageContainerPort {
 
     PagePort getSelectedPage();
 
-    void selectPage(PageItem<?> item);
+    void selectPage(PageItem item);
+
+    void selectPage(int index);
 }

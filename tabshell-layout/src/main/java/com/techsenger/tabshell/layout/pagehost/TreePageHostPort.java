@@ -16,36 +16,21 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.page.PageItem;
-import java.util.ArrayList;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.page.TreePageContainerPort;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FilteredPageItem {
+public interface TreePageHostPort extends AreaPort, TreePageContainerPort {
 
-    private final PageItem<?> original;
-
-    private final List<FilteredPageItem> children = new ArrayList<>();
-
-    private final boolean matched;
-
-    public FilteredPageItem(PageItem<?> original, boolean matched) {
-        this.original = original;
-        this.matched = matched;
-    }
-
-    public PageItem<?> getOriginal() {
-        return original;
-    }
-
-    public List<FilteredPageItem> getChildren() {
-        return children;
-    }
-
-    public boolean isMatched() {
-        return matched;
-    }
+    /**
+     * Returns an unmodifiable list of breadcrumbs.
+     *
+     * @return
+     */
+    @Unmodifiable List<PageBreadcrumb> getBreadcrumbs();
 }

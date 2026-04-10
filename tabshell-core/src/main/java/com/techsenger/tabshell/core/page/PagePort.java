@@ -29,9 +29,10 @@ public interface PagePort extends AreaPort {
     void setSelected(boolean selected);
 
     /**
-     * Returns the item associated with this page.
+     * Returns the item associated with this page. The returned value can be cast to {@link TreePageItem} if tree
+     * page container is used. Note, that the same page can be used both in flat and tree containers.
      *
      * @return
      */
-    PageItem<?> getItem();
+    PageItem getItem();
 }

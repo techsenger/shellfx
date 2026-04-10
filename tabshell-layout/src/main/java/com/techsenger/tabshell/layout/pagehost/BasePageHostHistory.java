@@ -16,32 +16,21 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.page.TreePageItem;
+import com.techsenger.tabshell.core.area.AreaHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb implements PageBreadcrumb {
+public class BasePageHostHistory extends AreaHistory {
 
-    private final TreePageItem item;
+    private double dividerPosition;
 
-    private PageBreadcrumb previous;
-
-    public DefaultPageBreadcrumb(TreePageItem item) {
-        this.item = item;
+    public double getDividerPosition() {
+        return dividerPosition;
     }
 
-    public TreePageItem getItem() {
-        return item;
-    }
-
-    @Override
-    public PageBreadcrumb getPrevious() {
-        return previous;
-    }
-
-    void setPrevious(PageBreadcrumb previous) {
-        this.previous = previous;
+    public void setDividerPosition(double dividerPosition) {
+        this.dividerPosition = dividerPosition;
     }
 }

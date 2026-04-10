@@ -16,32 +16,17 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.tabshell.core.page.TreePageItem;
+import com.techsenger.tabshell.core.area.AreaComposer;
+import com.techsenger.tabshell.core.page.PagePort;
+import com.techsenger.tabshell.shared.find.ResultFindPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb implements PageBreadcrumb {
+public interface BasePageHostComposer extends AreaComposer {
 
-    private final TreePageItem item;
+    ResultFindPort getFindPanelPort();
 
-    private PageBreadcrumb previous;
-
-    public DefaultPageBreadcrumb(TreePageItem item) {
-        this.item = item;
-    }
-
-    public TreePageItem getItem() {
-        return item;
-    }
-
-    @Override
-    public PageBreadcrumb getPrevious() {
-        return previous;
-    }
-
-    void setPrevious(PageBreadcrumb previous) {
-        this.previous = previous;
-    }
+    PagePort getSelectedPagePort();
 }

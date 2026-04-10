@@ -41,6 +41,8 @@ public final class LayoutComponents {
 
     public static final ComponentName PAGE_HOST = new DefaultComponentName("Layout.PageHost");
 
+    public static final ComponentName TREE_PAGE_HOST = new DefaultComponentName("Layout.TreePageHost");
+
     public static final ComponentName PAGE_FIND_PANEL = new DefaultComponentName("Layout.PageFindPanel");
 
     private LayoutComponents() {

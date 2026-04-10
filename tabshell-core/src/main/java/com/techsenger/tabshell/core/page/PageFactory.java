@@ -20,7 +20,7 @@ package com.techsenger.tabshell.core.page;
  *
  * @author Pavel Castornii
  */
-public interface PageFactory {
+public interface PageFactory<T extends PageItem> {
 
     /**
      * Returns an initialized page.
@@ -28,5 +28,5 @@ public interface PageFactory {
      * @param item
      * @return
      */
-    PageFxView<?> createAndInitialize(PageItem<?> item);
+    PageFxView<?> createAndInitialize(T item);
 }

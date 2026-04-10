@@ -22,19 +22,25 @@
     -fx-background-color: -color-bg-subtle;
 }
 
-.left-box > .tree-view,
-.left-box > .tree-view .cell {
+.left-box > .list-view, .left-box > .list-view .cell,
+.left-box > .tree-view, .left-box > .tree-view .cell {
     -fx-background-color: transparent;
 }
 
-.left-box > .tree-view > .virtual-flow > .clipped-container > .sheet > .tree-cell {
-    -fx-padding: 0.176em 0 0.175em 6px;
+.left-box > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-padding: 0 0.5em 0 0.65em;
 }
 
+.left-box > .tree-view > .virtual-flow > .clipped-container > .sheet > .tree-cell > .tree-disclosure-node {
+  -fx-padding: 0.3em 0.5em 0 0.65em;
+}
+
+.left-box > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected,
 .left-box > .tree-view > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected {
   -fx-background-color: -color-cell-border, -color-cell-bg-selected;
 }
 
+.left-box > .list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected,
 .left-box > .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected  {
   -fx-background-color: -color-cell-border, -color-cell-bg-selected-focused;
 }

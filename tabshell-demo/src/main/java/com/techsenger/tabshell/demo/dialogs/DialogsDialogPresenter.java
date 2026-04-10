@@ -23,6 +23,7 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.DemoComponents;
+import com.techsenger.tabshell.demo.page.PageMenuType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.file.FileChooserButtons;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
@@ -59,7 +60,8 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
             }),
             Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
             Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
-            Map.entry(DialogType.PAGE, () -> showPagedDialog())
+            Map.entry(DialogType.PAGE, () -> showPagedDialog(PageMenuType.FLAT)),
+            Map.entry(DialogType.TREE_PAGE, () -> showPagedDialog(PageMenuType.TREE))
     );
 
     private final AppearanceSettings settings;
@@ -121,7 +123,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         });
     }
 
-    private void showPagedDialog() {
-        getComposer().addPagedDialog(historyManager);
+    private void showPagedDialog(PageMenuType menuType) {
+        getComposer().addPagedDialog(historyManager, menuType);
     }
 }

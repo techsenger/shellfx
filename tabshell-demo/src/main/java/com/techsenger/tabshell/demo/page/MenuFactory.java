@@ -19,12 +19,15 @@ package com.techsenger.tabshell.demo.page;
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.page.DefaultPageDescriptor;
+import com.techsenger.tabshell.core.page.DefaultTreePageDescriptor;
 import com.techsenger.tabshell.core.page.PageDescriptor;
 import com.techsenger.tabshell.core.page.PageFactory;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.core.page.PageItem;
+import com.techsenger.tabshell.core.page.TreePageDescriptor;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.material.style.Spacing;
+import java.util.List;
 import javafx.geometry.Insets;
 
 /**
@@ -33,28 +36,25 @@ import javafx.geometry.Insets;
  */
 final class MenuFactory {
 
-    enum PageType {
-        DIALOG, TAB
-    }
-
     /**
-     * For demo one component is used, besides the page can be shown differently, so this factory is required.
+     * For demo one component is used both for tab and dialog. Besides the page can be shown differently, so this
+     * factory is required.
      */
-    static class PageFactoryImpl implements PageFactory {
+    private static class PageFactoryImpl implements PageFactory {
 
-        private final PageType parentType;
+        private final PageHostParent pageHostParent;
 
         private final ComponentName name;
 
-        PageFactoryImpl(PageType parentType, ComponentName name) {
-            this.parentType = parentType;
+        PageFactoryImpl(PageHostParent pageHostParent, ComponentName name) {
+            this.pageHostParent = pageHostParent;
             this.name = name;
         }
 
         @Override
-        public PageFxView<?> createAndInitialize(PageItem<?> item) {
+        public PageFxView<?> createAndInitialize(PageItem item) {
             Insets padding;
-            if (parentType == PageType.DIALOG) {
+            if (pageHostParent == PageHostParent.DIALOG) {
                 padding = new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL);
             } else {
                 padding = new Insets(0, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL);
@@ -71,21 +71,33 @@ final class MenuFactory {
         }
     }
 
-    static PageDescriptor create(PageType parentType) {
+    static List<PageDescriptor> createMenu(PageHostParent parentType) {
+        return List.of(
+                new DefaultPageDescriptor("Page 0", new PageFactoryImpl(parentType, DemoComponents.PAGE_0)),
+                new DefaultPageDescriptor("Page 1", new PageFactoryImpl(parentType, DemoComponents.PAGE_1)),
+                new DefaultPageDescriptor("Page 2", new PageFactoryImpl(parentType, DemoComponents.PAGE_2)),
+                new DefaultPageDescriptor("Page 3", new PageFactoryImpl(parentType, DemoComponents.PAGE_3)),
+                new DefaultPageDescriptor("Page 4", new PageFactoryImpl(parentType, DemoComponents.PAGE_4)),
+                new DefaultPageDescriptor("Page 5", new PageFactoryImpl(parentType, DemoComponents.PAGE_5))
+        );
+    }
 
-        // items for menu
-        var root = new DefaultPageDescriptor();
-        var item0 = new DefaultPageDescriptor("Page 0", new PageFactoryImpl(parentType, DemoComponents.PAGE_0));
+    static TreePageDescriptor createTreeMenu(PageHostParent parentType) {
+        var root = new DefaultTreePageDescriptor();
+        var item0 = new DefaultTreePageDescriptor("Page 0", new PageFactoryImpl(parentType, DemoComponents.PAGE_0));
         root.addChild(item0);
-        var item1 = new DefaultPageDescriptor("Page 1", new PageFactoryImpl(parentType, DemoComponents.PAGE_1));
+        var item1 = new DefaultTreePageDescriptor("Page 1", new PageFactoryImpl(parentType, DemoComponents.PAGE_1));
         item0.addChild(item1);
-        var item2 = new DefaultPageDescriptor("Page 2", new PageFactoryImpl(parentType, DemoComponents.PAGE_2));
+        var item2 = new DefaultTreePageDescriptor("Page 2", new PageFactoryImpl(parentType, DemoComponents.PAGE_2));
         item1.addChild(item2);
 
-        var item3 = new DefaultPageDescriptor("Page 3", new PageFactoryImpl(parentType, DemoComponents.PAGE_3));
+        var item3 = new DefaultTreePageDescriptor("Page 3", new PageFactoryImpl(parentType, DemoComponents.PAGE_3));
         root.addChild(item3);
-        var item4 = new DefaultPageDescriptor("Page 4", new PageFactoryImpl(parentType, DemoComponents.PAGE_4));
+        var item4 = new DefaultTreePageDescriptor("Page 4", new PageFactoryImpl(parentType, DemoComponents.PAGE_4));
         item3.addChild(item4);
+
+        var item5 = new DefaultTreePageDescriptor("Page 5", new PageFactoryImpl(parentType, DemoComponents.PAGE_5));
+        root.addChild(item5);
         return root;
     }
 

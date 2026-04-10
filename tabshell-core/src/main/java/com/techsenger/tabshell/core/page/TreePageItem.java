@@ -14,34 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
+package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.page.TreePageItem;
+import com.techsenger.annotations.Unmodifiable;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultPageBreadcrumb implements PageBreadcrumb {
+public interface TreePageItem extends PageItem {
 
-    private final TreePageItem item;
+    TreePageItem getParent();
 
-    private PageBreadcrumb previous;
-
-    public DefaultPageBreadcrumb(TreePageItem item) {
-        this.item = item;
-    }
-
-    public TreePageItem getItem() {
-        return item;
-    }
-
-    @Override
-    public PageBreadcrumb getPrevious() {
-        return previous;
-    }
-
-    void setPrevious(PageBreadcrumb previous) {
-        this.previous = previous;
-    }
+    /**
+     * Returns an unmodifiable list of children.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends TreePageItem> getChildren();
 }
