@@ -433,10 +433,18 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         }
     }
 
+    /**
+     * Returns a button box that can contain both result and additional buttons. In other words, it is safe to
+     * add custom buttons to this box.
+     */
     protected HBox getLeftButtonBox() {
         return leftButtonBox;
     }
 
+    /**
+     * Returns a button box that can contain both result and additional buttons. In other words, it is safe to
+     * add custom buttons to this box.
+     */
     protected HBox getRightButtonBox() {
         return rightButtonBox;
     }
