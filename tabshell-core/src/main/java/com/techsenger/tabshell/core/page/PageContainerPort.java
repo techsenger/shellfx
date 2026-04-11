@@ -16,13 +16,16 @@
 
 package com.techsenger.tabshell.core.page;
 
+import com.techsenger.patternfx.mvp.ParentPort;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerPort {
+public interface PageContainerPort extends ParentPort {
 
-    PagePort getSelectedPage();
+    @Override
+    PageContainerComposerBase getComposer();
 
     void selectPage(PageItem item);
 

@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface TreePageHostView extends BasePageHostView, TreePageContainerView {
+public interface TreePageHostView extends PageHostViewBase, TreePageContainerView {
 
     void setMenu(TreePageItem root, boolean showRoot);
 

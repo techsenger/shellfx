@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.pagehost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.core.page.PagePort;
 import com.techsenger.tabshell.core.page.TreePageContainerFxView;
@@ -96,6 +97,11 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?, ?>> extends A
                 pagesByItems.put((TreePageDescriptor) item, fxView);
             }
             return fxView.getPresenter();
+        }
+
+        @Override
+        public @Unmodifiable List<? extends PagePort> getPagePorts() {
+            return pagesByItems.values().stream().map(c -> c.getPresenter()).toList();
         }
 
         @Override

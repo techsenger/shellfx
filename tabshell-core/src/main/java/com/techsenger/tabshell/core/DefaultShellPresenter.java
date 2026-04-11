@@ -20,15 +20,12 @@ import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.AbstractParentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.patternfx.mvp.Presenter;
-import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.menu.MenuDelegate;
 import com.techsenger.tabshell.core.menu.MenuDelegates;
 import com.techsenger.tabshell.core.menu.MenuItemDelegate;
-import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -166,16 +163,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     public void setMaximized(boolean maximized) {
         this.maximized = maximized;
         getView().setMaximized(maximized);
-    }
-
-    @Override
-    public List<? extends PopupPort> getPopups() {
-        return getComposer().getPopupPorts();
-    }
-
-    @Override
-    public List<? extends DialogPort> getDialogs() {
-        return getComposer().getDialogPorts();
     }
 
     @Override

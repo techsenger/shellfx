@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.tab;
+package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.tabshell.core.area.AreaHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerComposer extends TabContainerComposerBase, ParentComposer {
+public class PageHostHistoryBase extends AreaHistory {
 
+    private double dividerPosition;
+
+    public double getDividerPosition() {
+        return dividerPosition;
+    }
+
+    public void setDividerPosition(double dividerPosition) {
+        this.dividerPosition = dividerPosition;
+    }
 }

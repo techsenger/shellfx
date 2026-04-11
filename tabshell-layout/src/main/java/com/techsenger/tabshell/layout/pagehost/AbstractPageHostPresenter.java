@@ -28,7 +28,7 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageHostPresenter<V extends BasePageHostView, C extends BasePageHostComposer>
+public abstract class AbstractPageHostPresenter<V extends PageHostViewBase, C extends PageHostComposerBase>
         extends AbstractAreaPresenter<V, C> implements PageHostFindPort {
 
     private double dividerPosition;
@@ -132,8 +132,8 @@ public abstract class AbstractPageHostPresenter<V extends BasePageHostView, C ex
     }
 
     @Override
-    protected BasePageHostHistory getHistory() {
-        return (BasePageHostHistory) super.getHistory();
+    protected PageHostHistoryBase getHistory() {
+        return (PageHostHistoryBase) super.getHistory();
     }
 
     @Override

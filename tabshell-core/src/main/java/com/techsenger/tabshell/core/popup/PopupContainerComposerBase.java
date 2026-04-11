@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.tab;
+package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvp.ComposerBase;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerComposer extends TabContainerComposerBase, ParentComposer {
+public interface PopupContainerComposerBase extends ComposerBase {
 
+    /**
+     * Returns an unmodifiable list of ports. A new list instance is created on each call.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends PopupPort> getPopupPorts();
 }

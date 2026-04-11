@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
+package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.core.page.PagePort;
-import com.techsenger.tabshell.shared.find.ResultFindPort;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvp.ComposerBase;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface BasePageHostComposer extends AreaComposer {
+public interface PageContainerComposerBase extends ComposerBase {
 
-    ResultFindPort getFindPanelPort();
+    /**
+     * Returns a list of created and initialized pages.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends PagePort> getPagePorts();
 
     PagePort getSelectedPagePort();
 }

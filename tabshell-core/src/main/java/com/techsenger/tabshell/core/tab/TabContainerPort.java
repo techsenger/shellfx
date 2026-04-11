@@ -16,21 +16,17 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvp.ParentPort;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerPort {
+public interface TabContainerPort extends ParentPort {
 
-    /**
-     * Returns the currently selected tab.
-     *
-     * @return the selected {@link TabPort}, or {@code null} if no tab is selected
-     */
-    TabPort getSelectedTab();
+    @Override
+    TabContainerComposerBase getComposer();
 
     /**
      * Returns the index of the currently selected tab.
@@ -46,13 +42,6 @@ public interface TabContainerPort {
      * @throws IndexOutOfBoundsException if the index is out of range
      */
     void selectTab(int tabIndex);
-
-    /**
-     * Returns an unmodifiable list of all tabs in this container.
-     *
-     * @return unmodifiable {@link List} of {@link TabPort} instances
-     */
-    @Unmodifiable List<? extends TabPort> getTabs();
 
     /**
      * Closes all tabs except the specified one.

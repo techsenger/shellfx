@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.tab;
+package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.tabshell.core.popup.PopupContainerComposerBase;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerComposer extends TabContainerComposerBase, ParentComposer {
+public interface DialogContainerComposerBase extends PopupContainerComposerBase {
 
+    /**
+     * Returns an unmodifiable list of dialogs. A new list instance is created on each call.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends DialogPort> getDialogPorts();
 }

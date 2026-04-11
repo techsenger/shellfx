@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.dialog.DialogHistory;
-import com.techsenger.tabshell.layout.pagehost.BasePageHostHistory;
+import com.techsenger.tabshell.layout.pagehost.PageHostHistoryBase;
 
 /**
  *
@@ -25,13 +25,13 @@ import com.techsenger.tabshell.layout.pagehost.BasePageHostHistory;
  */
 public class PageDialogHistory extends DialogHistory {
 
-    private BasePageHostHistory hostHistory = new BasePageHostHistory();
+    private PageHostHistoryBase hostHistory = new PageHostHistoryBase();
 
-    public BasePageHostHistory getHostHistory() {
+    public PageHostHistoryBase getHostHistory() {
         return hostHistory;
     }
 
-    public void setHostHistory(BasePageHostHistory hostHistory) {
+    public void setHostHistory(PageHostHistoryBase hostHistory) {
         this.hostHistory = hostHistory;
     }
 

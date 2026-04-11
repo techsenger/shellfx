@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface PageHostView extends BasePageHostView, PageContainerView {
+public interface PageHostView extends PageHostViewBase, PageContainerView {
 
     void setMenu(List<PageItem> items);
 

@@ -23,7 +23,7 @@ import com.techsenger.tabshell.core.page.PagePort;
  *
  * @author Pavel Castornii
  */
-public interface PageHostComposer extends BasePageHostComposer, PageContainerComposer {
+public interface PageHostComposer extends PageHostComposerBase, PageContainerComposer {
 
     PagePort providePagePort(int index);
 }

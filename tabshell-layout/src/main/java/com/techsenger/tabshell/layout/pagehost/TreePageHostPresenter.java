@@ -20,7 +20,6 @@ import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.tabshell.core.page.PagePort;
 import com.techsenger.tabshell.core.page.TreePageContainerPresenter;
 import com.techsenger.tabshell.core.page.TreePageItem;
 import com.techsenger.tabshell.layout.LayoutComponents;
@@ -120,7 +119,7 @@ public class TreePageHostPresenter<V extends TreePageHostView, C extends TreePag
 
     private List<PageBreadcrumb> breadcrumbs;
 
-    public TreePageHostPresenter(V view, HistoryProvider<BasePageHostHistory> historyProvider) {
+    public TreePageHostPresenter(V view, HistoryProvider<PageHostHistoryBase> historyProvider) {
         super(view);
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(historyProvider);
@@ -129,11 +128,6 @@ public class TreePageHostPresenter<V extends TreePageHostView, C extends TreePag
     @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(LayoutComponents.TREE_PAGE_HOST);
-    }
-
-    @Override
-    public PagePort getSelectedPage() {
-        return getComposer().getSelectedPagePort();
     }
 
     @Override
@@ -240,8 +234,5 @@ public class TreePageHostPresenter<V extends TreePageHostView, C extends TreePag
         getView().setPage(item);
         currentPage = getComposer().getSelectedPagePort();
         currentPage.setSelected(true);
-        if (!isFindMode()) {
-            currentPage.requestFocus();
-        }
     }
 }

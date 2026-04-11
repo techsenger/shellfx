@@ -21,7 +21,6 @@ import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.page.PageContainerPresenter;
 import com.techsenger.tabshell.core.page.PageItem;
-import com.techsenger.tabshell.core.page.PagePort;
 import com.techsenger.tabshell.layout.LayoutComponents;
 import java.util.List;
 import java.util.Objects;
@@ -50,8 +49,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
 
     private List<PageItem> matchedItems;
 
-
-    public PageHostPresenter(V view, HistoryProvider<BasePageHostHistory> historyProvider) {
+    public PageHostPresenter(V view, HistoryProvider<PageHostHistoryBase> historyProvider) {
         super(view);
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(historyProvider);
@@ -60,11 +58,6 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     @Override
     protected Descriptor createDescriptor() {
         return new Descriptor(LayoutComponents.PAGE_HOST);
-    }
-
-    @Override
-    public PagePort getSelectedPage() {
-        return getComposer().getSelectedPagePort();
     }
 
     @Override
@@ -171,8 +164,5 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         getView().setPage(index);
         currentPage = getComposer().getSelectedPagePort();
         currentPage.setSelected(true);
-        if (!isFindMode()) {
-            currentPage.requestFocus();
-        }
     }
 }

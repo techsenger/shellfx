@@ -16,10 +16,12 @@
 
 package com.techsenger.tabshell.core.page;
 
+import com.techsenger.patternfx.mvp.ParentComposer;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface TreePageContainerComposer {
+public interface TreePageContainerComposer extends TreePageContainerComposerBase, ParentComposer {
 
 }

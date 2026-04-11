@@ -41,9 +41,9 @@ import javafx.scene.layout.VBox;
  * @author Pavel Castornii
  */
 public abstract class AbstractPageHostFxView<P extends AbstractPageHostPresenter<?, ?>>
-        extends AbstractAreaFxView<P> implements BasePageHostView {
+        extends AbstractAreaFxView<P> implements PageHostViewBase {
 
-    public class Composer extends AbstractAreaFxView<P>.Composer implements BasePageHostComposer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements PageHostComposerBase {
 
         private final AbstractPageHostFxView<P> view = AbstractPageHostFxView.this;
 

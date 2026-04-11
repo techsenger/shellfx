@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.tab;
+package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.tabshell.core.area.AreaComposer;
+import com.techsenger.tabshell.core.page.PagePort;
+import com.techsenger.tabshell.shared.find.ResultFindPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerComposer extends TabContainerComposerBase, ParentComposer {
+public interface PageHostComposerBase extends AreaComposer {
 
+    ResultFindPort getFindPanelPort();
+
+    PagePort getSelectedPagePort();
 }

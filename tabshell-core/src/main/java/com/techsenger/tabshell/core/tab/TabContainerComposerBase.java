@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
+package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.tabshell.core.area.AreaHistory;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvp.ComposerBase;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class BasePageHostHistory extends AreaHistory {
+public interface TabContainerComposerBase extends ComposerBase {
 
-    private double dividerPosition;
+    /**
+     * Returns an unmodifiable list of tabs. A new list instance is created on each call.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends TabPort> getTabPorts();
 
-    public double getDividerPosition() {
-        return dividerPosition;
-    }
-
-    public void setDividerPosition(double dividerPosition) {
-        this.dividerPosition = dividerPosition;
-    }
+    /**
+     * Returns selected tab port.
+     */
+    TabPort getSelectedTabPort();
 }

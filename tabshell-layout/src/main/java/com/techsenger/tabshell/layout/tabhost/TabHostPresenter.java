@@ -69,11 +69,6 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
     }
 
     @Override
-    public TabPort getSelectedTab() {
-        return getComposer().getSelectedTabPort();
-    }
-
-    @Override
     public int getSelectedTabIndex() {
         return this.selectedTabIndex;
     }
@@ -81,11 +76,6 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
     @Override
     public void selectTab(int tabIndex) {
         getView().selectTab(tabIndex);
-    }
-
-    @Override
-    public List<? extends TabPort> getTabs() {
-        return getComposer().getTabPorts();
     }
 
     protected void onCloseOtherTabs(TabPort tab) {

@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.pagehost;
+package com.techsenger.tabshell.core.page;
 
-import com.techsenger.tabshell.core.area.AreaView;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvp.ComposerBase;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface BasePageHostView extends AreaView {
+public interface TreePageContainerComposerBase extends ComposerBase {
 
-    void setDividerPosition(double pos);
+    /**
+     * Returns a list of created and initialized pages.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends PagePort> getPagePorts();
 
-    void setForwardDisabled(boolean disabled);
-
-    void setBackDisabled(boolean disabled);
+    PagePort getSelectedPagePort();
 }

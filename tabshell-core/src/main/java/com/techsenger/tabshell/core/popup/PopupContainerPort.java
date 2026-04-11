@@ -16,18 +16,14 @@
 
 package com.techsenger.tabshell.core.popup;
 
-import java.util.List;
+import com.techsenger.patternfx.mvp.ParentPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerPort {
+public interface PopupContainerPort extends ParentPort {
 
-    /**
-     * Returns the list of the all popups.
-     *
-     * @return
-     */
-    List<? extends PopupPort> getPopups();
+    @Override
+    PopupContainerComposerBase getComposer();
 }

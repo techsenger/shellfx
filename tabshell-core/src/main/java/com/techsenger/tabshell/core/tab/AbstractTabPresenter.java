@@ -18,10 +18,7 @@ package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.AbstractChildPresenter;
 import com.techsenger.tabshell.core.ShellPort;
-import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.material.icon.Icon;
-import java.util.List;
 
 /**
  *
@@ -114,16 +111,6 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
     public void setIcon(Icon<?> icon) {
         this.icon = icon;
         getView().setIcon(icon);
-    }
-
-    @Override
-    public List<? extends DialogPort> getDialogs() {
-        return getComposer().getDialogPorts();
-    }
-
-    @Override
-    public List<? extends PopupPort> getPopups() {
-        return getComposer().getPopupPorts();
     }
 
     @Override

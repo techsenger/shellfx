@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.tab;
+package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.tabshell.core.area.AreaView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerComposer extends TabContainerComposerBase, ParentComposer {
+public interface PageHostViewBase extends AreaView {
 
+    void setDividerPosition(double pos);
+
+    void setForwardDisabled(boolean disabled);
+
+    void setBackDisabled(boolean disabled);
 }

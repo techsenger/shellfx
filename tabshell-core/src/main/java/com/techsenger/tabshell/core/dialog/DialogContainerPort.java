@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.popup.PopupContainerPort;
-import java.util.List;
 
 /**
  *
@@ -25,10 +24,6 @@ import java.util.List;
  */
 public interface DialogContainerPort extends PopupContainerPort {
 
-    /**
-     * Returns the list of open dialogs.
-     *
-     * @return
-     */
-    List<? extends DialogPort> getDialogs();
+    @Override
+    DialogContainerComposerBase getComposer();
 }

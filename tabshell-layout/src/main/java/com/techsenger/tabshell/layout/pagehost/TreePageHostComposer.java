@@ -24,7 +24,7 @@ import com.techsenger.tabshell.core.page.TreePageItem;
  *
  * @author Pavel Castornii
  */
-public interface TreePageHostComposer extends BasePageHostComposer, TreePageContainerComposer {
+public interface TreePageHostComposer extends PageHostComposerBase, TreePageContainerComposer {
 
     PagePort providePagePort(TreePageItem item);
 }

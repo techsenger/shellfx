@@ -16,10 +16,12 @@
 
 package com.techsenger.tabshell.core.page;
 
+import com.techsenger.patternfx.mvp.ParentComposer;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerComposer {
+public interface PageContainerComposer extends PageContainerComposerBase, ParentComposer {
 
 }

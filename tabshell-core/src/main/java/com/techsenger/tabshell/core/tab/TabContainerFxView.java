@@ -24,7 +24,7 @@ import com.techsenger.patternfx.mvp.ParentFxView;
  */
 public interface TabContainerFxView<P extends TabContainerPresenter<?, ?>> extends ParentFxView<P> {
 
-     interface Composer extends ParentFxView.Composer {
+     interface Composer extends ParentFxView.Composer, TabContainerComposer {
 
         void addTab(TabFxView<?> tab);
 

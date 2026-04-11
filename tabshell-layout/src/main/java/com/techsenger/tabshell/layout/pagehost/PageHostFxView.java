@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.page.PageContainerFxView;
 import com.techsenger.tabshell.core.page.PageDescriptor;
 import com.techsenger.tabshell.core.page.PageFxView;
@@ -70,6 +71,11 @@ public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractP
             getModifiableChildren().removeAll(pagesByItems.values());
             pagesByItems.clear();
             getPresenter().setPages((List<PageItem>) (List<?>) pages);
+        }
+
+        @Override
+        public @Unmodifiable List<? extends PagePort> getPagePorts() {
+            return pagesByItems.values().stream().map(c -> c.getPresenter()).toList();
         }
     }
 
