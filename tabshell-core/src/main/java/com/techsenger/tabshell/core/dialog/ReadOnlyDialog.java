@@ -79,13 +79,6 @@ public interface ReadOnlyDialog {
     boolean isResizable();
 
     /**
-     * Returns whether equal button width rendering is enabled.
-     *
-     * @return {@code true} if buttons should have equal width, {@code false} otherwise
-     */
-    boolean isButtonWidthEqual();
-
-    /**
      * Returns whether the close button in the top right corner of the dialog is disabled.
      *
      * @return {@code true} if the close button is disabled, {@code false} otherwise

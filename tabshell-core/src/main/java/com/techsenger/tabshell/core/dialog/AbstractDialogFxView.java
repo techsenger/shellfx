@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.popup.AbstractPopupFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
@@ -27,13 +28,14 @@ import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.RegionResizer;
 import com.techsenger.toolkit.fx.Spacer;
 import com.techsenger.toolkit.fx.pulse.LayoutPhase;
-import com.techsenger.toolkit.fx.pulse.LayoutPulseListener;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -44,7 +46,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -116,8 +117,6 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
     private final BooleanProperty resizable = new SimpleBooleanProperty();
 
-    private final BooleanProperty buttonWidthEqual = new SimpleBooleanProperty(false);
-
     private final DoubleProperty minWidth = new SimpleDoubleProperty();
 
     private final DoubleProperty minHeight = new SimpleDoubleProperty();
@@ -127,14 +126,6 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     private final DoubleProperty maxHeight = new SimpleDoubleProperty();
 
     private final Map<ResultButtonName, Button> buttonsByName = new HashMap<>();
-
-    private boolean buttonWidthListenerAdded = false;
-
-    private final LayoutPulseListener buttonWidthListener = () -> {
-        makeResultButtonsEqual();
-        buttonWidthListenerAdded = false;
-        return false;
-    };
 
     /**
      * While dragging we need the difference. So, we keep in this variable previous value.
@@ -220,11 +211,6 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     @Override
-    public void setButtonWidthEqual(boolean value) {
-        this.buttonWidthEqual.set(value);
-    }
-
-    @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
     }
@@ -274,20 +260,12 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         return resizable.get();
     }
 
-    public boolean isButtonWidthEqual() {
-        return buttonWidthEqual.get();
-    }
-
     protected BooleanProperty activeProperty() {
         return resizable;
     }
 
     protected BooleanProperty resizableProperty() {
         return resizable;
-    }
-
-    protected BooleanProperty buttonWidthEqualProperty() {
-        return buttonWidthEqual;
     }
 
     protected BooleanProperty outOfBoundsAllowedProperty() {
@@ -358,11 +336,6 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     @Override
     protected void addListeners() {
         super.addListeners();
-        ValueUtils.callAndAddListener(this.buttonWidthEqual, (ov, oldV, newV) -> {
-            if (newV) {
-                updateButtonsEqual();
-            }
-        });
         ValueUtils.callAndAddListener(this.active, (ov, oldV, newV) -> {
             dialogBox.pseudoClassStateChanged(INACTIVE_PSEUDO_CLASS, !newV);
         });
@@ -382,27 +355,34 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     }
 
     /**
-     * Makes all buttons in left and right boxes equal.
+     * Makes the specified buttons equal in width.
      */
-    protected void makeResultButtonsEqual() {
-        var buttons = getResultButtons();
-        ButtonUtils.makeEqualWidthBySize(buttons, true);
+    protected void makeEqualWidth(Button... buttons) {
+        makeEqualWidth(Arrays.asList(buttons));
     }
 
     /**
-     * Returns added buttons from the left and right boxes.
-     *
-     * @return list of all added buttons or empty collection
+     * Makes the specified buttons equal in width.
      */
-    protected List<ResultButton> getResultButtons() {
-        Stream<Node> allChildren = Stream.concat(
-            leftButtonBox.getChildren().stream(),
-            rightButtonBox.getChildren().stream()
-        );
-        return allChildren
-                .filter(ResultButton.class::isInstance)
-                .map(ResultButton.class::cast)
-                .toList();
+    protected void makeEqualWidth(List<Button> buttons) {
+        // To avoid flickering, both button boxes are hidden for one pulse:
+        // [Before Pulse N] hide buttons, register POST-layout listener
+        // [Pulse N | Layout] calculate sizes of invisible buttons
+        // [Pulse N | POST] equalize button widths, schedule setVisible(true) via runLater
+        // [Pulse N | Render] nothing visible, nothing rendered
+        // [Between N and N+1] runLater executes → buttons marked visible + dirty
+        // [Pulse N+1 | Layout] recalculate layout with correct minWidth
+        // [Pulse N+1 | Render] buttons appear on screen with correct size
+        rightButtonBox.setVisible(false);
+        leftButtonBox.setVisible(false);
+        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
+            ButtonUtils.makeEqualWidthBySize(buttons, true);
+            Platform.runLater(() -> {
+                rightButtonBox.setVisible(true);
+                leftButtonBox.setVisible(true);
+            });
+            return false;
+        });
     }
 
     /**
@@ -431,6 +411,43 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
             button.setOnAction(null);
             getPresenter().onButtonUnregistered(button.getName());
         }
+    }
+
+    /**
+     * Returns an unmodifiable list of buttons located in the left button container.
+     *
+     * @param resultButtonsOnly if {@code true}, only buttons of type {@link ResultButton}
+     *                          are returned; otherwise all {@link Button} instances are included
+     * @return unmodifiable list of buttons from the left {@code HBox}
+     */
+    protected @Unmodifiable List<Button> getLeftButtons(boolean resultButtonsOnly) {
+        return getButtons(leftButtonBox, resultButtonsOnly);
+    }
+
+    /**
+     * Returns an unmodifiable list of buttons located in the right button container.
+     *
+     * @param resultButtonsOnly if {@code true}, only buttons of type {@link ResultButton}
+     *                          are returned; otherwise all {@link Button} instances are included
+     * @return unmodifiable list of buttons from the right {@code HBox}
+     */
+    protected @Unmodifiable List<Button> getRightButtons(boolean resultButtonsOnly) {
+        return getButtons(rightButtonBox, resultButtonsOnly);
+    }
+
+    /**
+     * Returns an unmodifiable combined list of buttons from both left and right button containers.
+     *
+     * <p>If {@code resultButtonsOnly} is {@code true}, only {@link ResultButton} instances are included.</p>
+     *
+     * @param resultButtonsOnly filter flag for selecting only result buttons
+     * @return unmodifiable list of all matching buttons from both sides
+     */
+    protected @Unmodifiable List<Button> getButtons(boolean resultButtonsOnly) {
+        return Stream.concat(
+                getLeftButtons(resultButtonsOnly).stream(),
+                getRightButtons(resultButtonsOnly).stream())
+                .toList();
     }
 
     /**
@@ -510,7 +527,6 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
                 box.getChildren().add(button);
             }
         }
-        updateButtonsEqual();
         updateTrap();
     }
 
@@ -520,24 +536,31 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
         );
     }
 
-    private List<ResultButtonName> getButtons(HBox box) {
-        return box.getChildren().stream()
-                .filter(ResultButton.class::isInstance)
-                .map(ResultButton.class::cast)
-                .map(b -> b.getName())
+    /**
+     * Extracts buttons from the given {@link HBox} container with optional filtering by type.
+     *
+     * <p>If {@code resultButtonsOnly} is {@code true}, only instances of {@link ResultButton}
+     * are included; otherwise all {@link Button} instances are returned.</p>
+     *
+     * @param buttonBox the container holding button nodes
+     * @param resultButtonsOnly whether to include only {@link ResultButton} instances
+     * @return unmodifiable list of buttons contained in the specified box
+     */
+    private @Unmodifiable List<Button> getButtons(HBox buttonBox, boolean resultButtonsOnly) {
+        Class<? extends Button> filterClass = Button.class;
+        if (resultButtonsOnly) {
+            filterClass = ResultButton.class;
+        }
+
+        return buttonBox.getChildren().stream()
+                .filter(filterClass::isInstance)
+                .map(Button.class::cast)
                 .toList();
     }
 
     private void updateTrap() {
         if (this.focusTrap.isActivated()) {
             this.focusTrap.update();
-        }
-    }
-
-    private void updateButtonsEqual() {
-        if (!this.buttonWidthListenerAdded) {
-            getPulseListenerManager().addListener(LayoutPhase.POST, buttonWidthListener);
-            buttonWidthListenerAdded = true;
         }
     }
 }

@@ -76,8 +76,6 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
 
     private boolean resizable;
 
-    private boolean buttonWidthEqual;
-
     private boolean closeDisabled;
 
     private String title;
@@ -176,16 +174,6 @@ public abstract class AbstractDialogPresenter<V extends DialogView, C extends Di
     public void setResizable(boolean resizable) {
         this.resizable = resizable;
         getView().setResizable(resizable);
-    }
-
-    @Override
-    public boolean isButtonWidthEqual() {
-        return buttonWidthEqual;
-    }
-
-    public void setButtonWidthEqual(boolean buttonWidthEqual) {
-        this.buttonWidthEqual = buttonWidthEqual;
-        getView().setButtonWidthEqual(buttonWidthEqual);
     }
 
     @Override

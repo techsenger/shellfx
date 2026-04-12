@@ -118,6 +118,5 @@ public class AlertDialogPresenter<V extends AlertDialogView, C extends DialogCom
         setResultAction((result) -> requestClose());
         setPrefWidth(600);
         setMessage(message);
-        setButtonWidthEqual(true);
     }
 }

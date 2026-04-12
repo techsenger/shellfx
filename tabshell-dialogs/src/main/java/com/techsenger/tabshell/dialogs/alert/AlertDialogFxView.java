@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
 import com.techsenger.tabshell.dialogs.utils.FxViewUtils;
 import com.techsenger.tabshell.material.button.ResultButton;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
@@ -65,6 +66,16 @@ public class AlertDialogFxView<P extends AlertDialogPresenter<?, ?>> extends Abs
     @Override
     public void requestFocus() {
         NodeUtils.requestFocus(getNode());
+    }
+
+    @Override
+    public void setRightButtons(ResultButtonName... names) {
+        super.setRightButtons(names);
+        makeButtonsEqualWidth();
+    }
+
+    protected void makeButtonsEqualWidth() {
+        makeEqualWidth(getRightButtons(true));
     }
 
     @Override

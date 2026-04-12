@@ -55,7 +55,6 @@ public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView,
         setResizable(true);
         setPrefWidth(500);
         setTitle("Demo Dialog");
-        setButtonWidthEqual(true); //cancel button width will be equal to ok button width
         setRightButtons(DemoResultButtons.CANCEL, DemoResultButtons.OK);
     }
 }

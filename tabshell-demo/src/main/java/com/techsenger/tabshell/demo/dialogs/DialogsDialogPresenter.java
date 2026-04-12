@@ -97,7 +97,6 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         setPrefWidth(600);
         setPrefHeight(300);
         setTitle("Dialogs");
-        setButtonWidthEqual(true);
         view.setDialogTypes(Arrays.asList(DialogType.values()));
         setResultAction((result) -> {
             requestClose();

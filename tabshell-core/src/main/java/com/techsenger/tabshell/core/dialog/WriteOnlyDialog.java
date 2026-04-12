@@ -82,16 +82,6 @@ public interface WriteOnlyDialog {
     void setResizable(boolean value);
 
     /**
-     * Enables or disables equal button width rendering.
-     * <p>
-     * When set to {@code true}, the view may re-evaluate button sizes and adjust their widths according to the
-     * current layout.
-     *
-     * @param value {@code true} to enable equal button widths, {@code false} to disable
-     */
-    void setButtonWidthEqual(boolean value);
-
-    /**
      * Sets the disabled state for the close button in the top right corner of the dialog.
      *
      * @param value {@code true} to disable the close button, {@code false} to enable it

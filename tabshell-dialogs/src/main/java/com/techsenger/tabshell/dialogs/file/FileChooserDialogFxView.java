@@ -26,6 +26,7 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.button.ResultButton;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.list.TextFieldColumnListCell;
 import com.techsenger.tabshell.material.style.Spacing;
@@ -379,6 +380,16 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
     @Override
     public void setExtensionFilter(ExtensionFilter filter) {
         this.filterComboBox.getSelectionModel().select(filter);
+    }
+
+    @Override
+    public void setRightButtons(ResultButtonName... names) {
+        super.setRightButtons(names);
+        makeButtonsEqualWidth();
+    }
+
+    protected void makeButtonsEqualWidth() {
+        makeEqualWidth(getRightButtons(true));
     }
 
     @Override

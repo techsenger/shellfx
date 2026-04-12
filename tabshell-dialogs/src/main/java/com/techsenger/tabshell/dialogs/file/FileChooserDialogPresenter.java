@@ -290,7 +290,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        setButtonWidthEqual(true);
         setPrefWidth(800);
         setPrefHeight(500);
         switch (type) {

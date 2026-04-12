@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demo.dialogs;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.style.Spacing;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -53,6 +54,12 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
     public void requestFocus() {
         fooTextField.requestFocus();
         fooTextField.deselect();
+    }
+
+    @Override
+    public void setRightButtons(ResultButtonName... names) {
+        super.setRightButtons(names);
+        makeEqualWidth(getRightButtons(true));
     }
 
     @Override
