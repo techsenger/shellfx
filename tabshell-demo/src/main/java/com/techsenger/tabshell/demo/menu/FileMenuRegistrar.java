@@ -39,7 +39,6 @@ import com.techsenger.tabshell.demo.styles.StylesTabPresenter;
 import com.techsenger.tabshell.demo.theme.ThemeDialogFxView;
 import com.techsenger.tabshell.demo.theme.ThemeDialogPresenter;
 import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
-import com.techsenger.tabshell.devtools.DevToolsTabDockHistory;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPresenter;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
@@ -207,7 +206,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         var view = new DevToolsTabDockFxView<>(shell, resolveDialogContainer());
         var hm = shell.getPresenter().getContext().getHistoryManager();
         var presenter = new DevToolsTabDockPresenter<>(view, shell.getPresenter().getContext().getSettings(),
-                () -> hm.getOrCreateHistory(DevToolsTabDockHistory.class, DevToolsTabDockHistory::new));
+                shell.getPresenter().getContext().getHistoryManager());
         return view;
     }
 

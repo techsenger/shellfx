@@ -19,11 +19,11 @@ package com.techsenger.tabshell.devtools;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
 import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseAwarePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.layout.dockhost.TabDockComposer;
@@ -48,12 +48,13 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
 
     private final Selector selector;
 
-    public DevToolsTabDockPresenter(V view, Settings settings, HistoryProvider<DevToolsTabDockHistory> hp) {
+    public DevToolsTabDockPresenter(V view, Settings settings, HistoryManager historyManager) {
         super(view);
         this.settings = settings;
         themeSubscription = settings.getAppearance().onThemeChanged((oldV, newV) -> updateHighlight(newV));
         this.selector = new Selector(view.getConnector());
-        this.setHistoryProvider(hp);
+        this.setHistoryProvider(() -> historyManager
+                .getOrCreateHistory(DevToolsTabDockHistory.class, DevToolsTabDockHistory::new));
         this.setHistoryPolicy(HistoryPolicy.APPEARANCE);
     }
 
