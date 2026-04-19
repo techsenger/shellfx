@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentFxView;
+import java.util.List;
 
 /**
  *
@@ -29,6 +31,13 @@ public interface TabContainerFxView<P extends TabContainerPresenter<?, ?>> exten
         void addTab(TabFxView<?> tab);
 
         void removeTab(TabFxView<?> tab);
+
+        /**
+         * Returns an unmodifiable list of tabs.
+         *
+         * @return
+         */
+        @Unmodifiable List<? extends TabFxView<?>> getTabs();
 
         TabFxView<?> getSelectedTab();
     }

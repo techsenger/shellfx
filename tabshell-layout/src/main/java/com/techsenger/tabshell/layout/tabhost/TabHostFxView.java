@@ -90,6 +90,11 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         }
 
         @Override
+        public List<? extends TabFxView<?>> getTabs() {
+            return view.tabPane.getTabs().stream().map(t -> (ComponentTab) t).map(t -> t.getView()).toList();
+        }
+
+        @Override
         public TabPort getSelectedTabPort() {
             var tab = getSelectedTab();
             if (tab != null) {
