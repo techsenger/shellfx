@@ -209,7 +209,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
             HBox.setHgrow(leftSpacer, Priority.ALWAYS);
             HBox.setHgrow(rightSpacer, Priority.ALWAYS);
             getButtonBox().getChildren().addAll(getMinimizeButton(), getMaximizeButton(), getCloseButton());
-            getCloseButton().setOnAction(e -> getPresenter().close());
+            getCloseButton().setOnAction(e -> getPresenter().requestClose());
             getTitleBar().getChildren().addAll(iconViewBox, menuBar, leftSpacer, getTitleLabel(), rightSpacer,
                     getButtonBox());
             getTitleBar().widthProperty().addListener((ov, oldV, newV) -> updateSpacers());
