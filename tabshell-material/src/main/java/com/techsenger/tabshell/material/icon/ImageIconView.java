@@ -34,7 +34,7 @@ public class ImageIconView extends ImageView {
     }
 
     public ImageIconView() {
-        getStyleClass().add("image-icon-view");
+        getStyleClass().addAll("image-icon-view", "icon-view");
         this.icon.addListener((ov, oldV, newV) -> {
             if (oldV != null) {
                 if (oldV instanceof StyleImageIcon) {

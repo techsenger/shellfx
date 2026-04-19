@@ -65,7 +65,7 @@ public class FontIconView extends Text {
     }
 
     public FontIconView() {
-        getStyleClass().add("font-icon-view");
+        getStyleClass().addAll("font-icon-view", "icon-view");
         codePoint.addListener((ov, oldV, newV) -> {
             if (newV != null && newV.intValue() != 0) {
                 var iconStr = new String(Character.toChars(newV.intValue()));
