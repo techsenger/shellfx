@@ -1,0 +1,86 @@
+/*
+ * Copyright 2024-2026 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.tabshell.core.history;
+
+import com.techsenger.patternfx.core.ComponentHistory;
+import com.techsenger.toolkit.core.function.Factory;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+/**
+ * This is a simple history map that is not saved to a file. It can be used for tests, demo etc.
+ * Always on the JavaFX thread.
+ *
+ * @author Pavel Castornii
+ */
+public class InMemoryHistoryManager implements HistoryManager {
+
+    private final Map<Class<? extends ComponentHistory>, ComponentHistory> historiesByClass = new HashMap<>();
+
+    private final Map<UUID, ComponentHistory> historiesByUuid = new HashMap<>();
+
+    @Override
+    public <T extends ComponentHistory> T getHistory(Class<T> historyClass) {
+        return (T) this.historiesByClass.get(historyClass);
+    }
+
+    @Override
+    public <T extends ComponentHistory> T getOrCreateHistory(Class<T> historyClass, Factory<T> factory) {
+        var history = getHistory(historyClass);
+        if (history == null) {
+            history = factory.create();
+            putHistory(historyClass, history);
+        }
+        return history;
+    }
+
+    @Override
+    public <T extends ComponentHistory> void putHistory(Class<T> historyClass, T history) {
+        this.historiesByClass.put(historyClass, history);
+    }
+
+    @Override
+    public ComponentHistory getHistory(UUID uuid) {
+        return this.historiesByUuid.get(uuid);
+    }
+
+    @Override
+    public ComponentHistory getOrCreateHistory(UUID uuid, Factory<? extends ComponentHistory> factory) {
+        var history = getHistory(uuid);
+        if (history == null) {
+            history = factory.create();
+            putHistory(uuid, history);
+        }
+        return history;
+    }
+
+    @Override
+    public void putHistory(UUID uuid, ComponentHistory history) {
+        this.historiesByUuid.put(uuid, history);
+    }
+
+    @Override
+    public <T extends ComponentHistory> T removeHistory(Class<T> historyClass) {
+        return (T) this.historiesByClass.remove(historyClass);
+    }
+
+    @Override
+    public ComponentHistory removeHistory(UUID uuid) {
+        return this.historiesByUuid.remove(uuid);
+    }
+}
