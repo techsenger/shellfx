@@ -33,7 +33,6 @@ import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 import java.util.List;
 import javafx.scene.Cursor;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -172,13 +171,7 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
 
     @Override
     public void setIcon(Icon<?> icon) {
-        if (icon != null) {
-            this.root.setGraphic(iconViewBox);
-            iconViewBox.setIcon(icon);
-        } else {
-            this.root.setGraphic(new Label());
-            iconViewBox.setIcon(null);
-        }
+        iconViewBox.setIcon(icon);
     }
 
     @Override
@@ -215,7 +208,7 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
     @Override
     protected void build() {
         super.build();
-        this.root.setGraphic(new Label());
+        this.root.setGraphic(iconViewBox);
         this.root.setContent(wrapperPane);
     }
 

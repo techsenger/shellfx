@@ -18,6 +18,9 @@ package com.techsenger.tabshell.material.icon;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
+import javafx.css.PseudoClass;
+import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 
 /**
@@ -26,6 +29,8 @@ import javafx.scene.layout.HBox;
  */
 public class IconViewBox extends HBox {
 
+    private static final PseudoClass EMPTY_PSEUDO_CLASS = PseudoClass.getPseudoClass("empty");
+
     private final ObjectProperty<Icon<?>> icon = new SimpleObjectProperty<>();
 
     public IconViewBox() {
@@ -33,6 +38,10 @@ public class IconViewBox extends HBox {
     }
 
     public IconViewBox(Icon<?> i) {
+        getChildren().addListener((ListChangeListener<Node>) change -> {
+            pseudoClassStateChanged(EMPTY_PSEUDO_CLASS, getChildren().isEmpty());
+        });
+        pseudoClassStateChanged(EMPTY_PSEUDO_CLASS, true);
         getStyleClass().add("icon-view-box");
         icon.addListener((ov, oldV, newV) -> {
             getChildren().clear();

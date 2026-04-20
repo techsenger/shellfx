@@ -89,7 +89,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
     private final HBox titleButtonBox = new HBox(closeButton);
 
-    private final HBox titleBar = new HBox(titleLabel, spacePane, titleButtonBox);
+    private final HBox titleBar = new HBox(iconViewBox, titleLabel, spacePane, titleButtonBox);
 
     private final VBox dialogBox = new VBox(titleBar, super.getNode());
 
@@ -199,15 +199,6 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
     @Override
     public void setIcon(Icon<?> icon) {
         iconViewBox.setIcon(icon);
-        if (icon == null) {
-            if (iconViewBox.getParent() != null) {
-                this.titleBar.getChildren().remove(iconViewBox);
-            }
-        } else {
-            if (iconViewBox.getParent() == null) {
-                this.titleBar.getChildren().add(0, iconViewBox);
-            }
-        }
     }
 
     @Override

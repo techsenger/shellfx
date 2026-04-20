@@ -61,6 +61,11 @@
 
 .stage-box > .title-bar > .left-box > .icon-view-box {
     -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 4 0 0;
+}
+
+.stage-box > .title-bar > .left-box > .icon-view-box:empty {
+    -fx-padding: 0;
 }
 
 .stage-box > .title-bar > .left-box > .icon-view-box > .image-icon-view { }
@@ -131,18 +136,21 @@
     -fx-background-insets: 0;
     -fx-padding: 0 12px 0 12px;
     -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 6px;
 }
 
 .dialog-box > .title-bar > .icon-view-box {
     -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 4 0 0;
+}
+
+.dialog-box > .title-bar > .icon-view-box:empty {
+    -fx-padding: 0;
 }
 
 .dialog-box > .title-bar > .icon-view-box > .image-icon-view { }
 
 .dialog-box > .title-bar > .icon-view-box > .font-icon-view {
     -fx-text-fill: -color-fg-default;
-    -fx-padding: 0 4 0 0;
 }
 
 .dialog-box > .title-bar > .title-label {
