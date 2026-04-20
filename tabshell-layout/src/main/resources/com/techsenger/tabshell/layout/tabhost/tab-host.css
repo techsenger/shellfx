@@ -18,47 +18,47 @@
     Author: Pavel Castornii
 */
 
-.workspace-tab-pane > .tab-header-area > .tab-header-background {
+.tab-pane.workspace > .tab-header-area > .tab-header-background {
   -fx-background-insets: 0 0 0 0, 0 0 1px 0;
 }
 
-.workspace-tab-pane > .tab-header-area > .headers-region > .tab .font-icon-view {
+.tab-pane.workspace > .tab-header-area > .headers-region > .tab .font-icon-view {
     -fx-font-size: 1.6em;
     -fx-padding: 0;
 }
 
-.workspace-tab-pane > .tab-header-area > .headers-region > .tab .image-icon-view {
+.tab-pane.workspace > .tab-header-area > .headers-region > .tab .image-icon-view {
     -fx-fit-width: 1.6em;
     -fx-fit-height: 1.6em;
 }
 
-.workspace-tab-pane > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+.tab-pane.workspace > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
     -fx-pref-width: -1;
     -fx-pref-height: 2.4em;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0.4em 12px 0.4em 0.4em;
 }
 
-.workspace-tab-pane > .tab-header-area > .headers-region > .tab {
+.tab-pane.workspace > .tab-header-area > .headers-region > .tab {
     -fx-background-color: transparent, ladder(-color-bg-default, derive(-color-bg-inset, 20%) 49%, -color-base-1 50%);
     -fx-background-insets: 0 0 0 0, 0 0 1px 0;
 }
 
-.workspace-tab-pane > .tab-header-area > .headers-region > .tab:hover {
+.tab-pane.workspace > .tab-header-area > .headers-region > .tab:hover {
   -fx-background-color: -color-border-default, -color-bg-subtle;
 }
 
-.workspace-tab-pane > .tab-header-area > .headers-region > .tab:selected {
+.tab-pane.workspace > .tab-header-area > .headers-region > .tab:selected {
   -fx-background-color: -color-border-default, -color-tab-bg-selected;
   -fx-background-insets: 0 0 0 0, 0 0 0 0;
 }
 
-.workspace-tab-pane > .tab-header-area > .headers-region > .tab > .border-path {
+.tab-pane.workspace > .tab-header-area > .headers-region > .tab > .border-path {
     -fx-stroke: -color-border-default;
     -fx-stroke-width: 2px;
 }
 
-.workspace-tab-pane > .tab-header-area > .headers-region > .tab > .selected-path {
+.tab-pane.workspace > .tab-header-area > .headers-region > .tab > .selected-path {
     -fx-stroke: -color-accent-5;
     -fx-stroke-width: 2px;
 }

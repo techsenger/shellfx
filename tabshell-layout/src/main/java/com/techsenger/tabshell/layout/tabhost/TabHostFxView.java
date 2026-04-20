@@ -250,7 +250,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
 
     protected void buildWorkspace() {
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
-        tabPane.getStyleClass().addAll("workspace-tab-pane", Styles.DENSE);
+        tabPane.getStyleClass().addAll("workspace", Styles.DENSE);
         var tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
         tabHeaderArea.setTabGap(-10.0);
