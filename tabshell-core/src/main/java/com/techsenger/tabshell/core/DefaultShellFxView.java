@@ -16,11 +16,11 @@
 
 package com.techsenger.tabshell.core;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.AbstractParentFxView;
 import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
@@ -32,8 +32,10 @@ import com.techsenger.tabshell.core.popup.PopupFxView;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.CssAnchor;
 import com.techsenger.tabshell.material.Anchors;
+import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.style.Spacing;
@@ -51,7 +53,6 @@ import java.util.stream.Stream;
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -59,16 +60,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.HeaderBar;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +87,8 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         extends AbstractParentFxView<P> implements ShellFxView<P> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultShellFxView.class);
+
+    private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
 
     private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");
 
@@ -167,89 +174,27 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
     private class ShellDialogManager extends DefaultDialogManager {
 
-        private final ShellStageController controller;
+//        private final ShellStageController controller;
 
-        ShellDialogManager(ShellStageController controller, StackPane stackPane, VBox mainPane) {
+        ShellDialogManager(StackPane stackPane, VBox mainPane) {
             super(stackPane, mainPane);
-            this.controller = controller;
+//            this.controller = controller;
         }
 
         @Override
         public void hideDialog(DialogFxView<?> dialog) {
             super.hideDialog(dialog);
-            if (getDialogCount() == 0) {
-                controller.setUnfocused(false);
-            }
+//            if (getDialogCount() == 0) {
+//                controller.setUnfocused(false);
+//            }
         }
 
         @Override
         public void showDialog(DialogFxView<?> dialog) {
-            if (getDialogCount() == 0) {
-                controller.setUnfocused(true);
-            }
+//            if (getDialogCount() == 0) {
+//                controller.setUnfocused(true);
+//            }
             super.showDialog(dialog);
-        }
-    }
-
-    private class ShellStageController extends StandardStageController {
-
-        private final Region leftSpacer = new Region();
-
-        private final Region rightSpacer = new Region();
-
-        private final IconViewBox iconViewBox = new IconViewBox();
-
-        /**
-         * Alignment of the title bar to the center both vertically and horizontally ((-fx-alignment: center;)
-         * will lead to layout issues, similar to those in the TabPane or individual Tab. For example, tabs might not
-         * fully expand during animations, and their content could be clipped.
-         */
-        ShellStageController(Stage stage, double width, double height, ReadOnlyIntegerProperty dialogCount) {
-            super(stage, width, height, false);
-            HBox.setHgrow(leftSpacer, Priority.ALWAYS);
-            HBox.setHgrow(rightSpacer, Priority.ALWAYS);
-            getButtonBox().getChildren().addAll(getMinimizeButton(), getMaximizeButton(), getCloseButton());
-            getCloseButton().setOnAction(e -> getPresenter().requestClose());
-            getTitleBar().getChildren().addAll(iconViewBox, menuBar, leftSpacer, getTitleLabel(), rightSpacer,
-                    getButtonBox());
-            getTitleBar().widthProperty().addListener((ov, oldV, newV) -> updateSpacers());
-            iconViewBox.widthProperty().addListener((ov, oldV, newV) -> updateSpacers());
-            menuBar.widthProperty().addListener((ov, oldV, newV) -> updateSpacers());
-            getTitleLabel().widthProperty().addListener((ov, oldV, newV) -> updateSpacers());
-            getButtonBox().widthProperty().addListener((ov, oldV, newV) -> updateSpacers());
-            getResizer().disabledProperty().unbind();
-            getResizer().disabledProperty().bind(getStage().maximizedProperty()
-                    .or(Bindings.not(getStage().resizableProperty()))
-                    .or(dialogCount.greaterThan(0)));
-            FxViewUtils.setComponent(getStageBox(), DefaultShellFxView.this);
-        }
-
-        void setUnfocused(boolean unfocused) {
-            getStageBox().pseudoClassStateChanged(UNFOCUSED_PSEUDO_CLASS, unfocused);
-        }
-
-        private void updateSpacers() {
-            var iconBox = iconViewBox.getWidth();
-            //prefWidth returns the preferred width of the node, calculated based on its
-            //content and styles, without considering the constraints of the container
-            var menuBarWidth = Math.ceil(menuBar.prefWidth(-1));
-            var labelHalfWidth = Math.ceil(getTitleLabel().prefWidth(-1) / 2);
-            var buttonBoxWidth = Math.ceil(getButtonBox().prefWidth(-1));
-            var titleBarWidth = getTitleBar().getWidth();
-            double barHalfWidth = (titleBarWidth - Spacing.HORIZONTAL * 2) / 2;
-
-            var leftNodesWidth = iconBox + menuBarWidth + labelHalfWidth;
-            var rightNodesWidth = labelHalfWidth + buttonBoxWidth;
-
-            double leftSpacerWidth = barHalfWidth - leftNodesWidth;
-            double rightSpacerWidth = barHalfWidth - rightNodesWidth;
-            //setting pref width can lead to all nodes widths recalculation
-            leftSpacer.setMaxWidth(leftSpacerWidth);
-            rightSpacer.setMaxWidth(rightSpacerWidth);
-
-//            logger.trace("Title centered. TitleBar: {}, iconBox: {}, menuBar: {}, leftSpacer: {}, label: {}, "
-//                    + "rightSpacer: {}, buttonBox: {}", titleBarWidth, iconBox,
-//                    menuBarWidth, leftSpacerWidth, labelHalfWidth * 2, rightSpacerWidth, buttonBoxWidth);
         }
     }
 
@@ -259,15 +204,33 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
     private final ObservableList<Stylesheet> stylesheets;
 
+    private final IconViewBox iconViewBox = new IconViewBox();
+
     private final MenuBar menuBar = new MenuBar();
 
-    private final MenuManager menuManager;
+    private final HBox leftBox = new HBox(iconViewBox, menuBar);
+
+    private final Label titleLabel = new Label();
+
+    private final Button minimizeButton = new Button(null, new FontIconView(CoreIcons.WINDOW_MINIMIZE));
+
+    private final FontIconView maximizeIconView = new FontIconView(CoreIcons.WINDOW_MAXIMIZE);
+
+    private final Button maximizeButton = new Button(null, maximizeIconView);
+
+    private final Button closeButton = new Button(null, new FontIconView(CoreIcons.WINDOW_CLOSE));
+
+    private final HBox rightBox = new HBox(minimizeButton, maximizeButton, closeButton);
+
+    private HeaderBar titleBar = new HeaderBar(leftBox, titleLabel, rightBox);
 
     private final VBox contentBox = new VBox();
 
-    private final StackPane stackPane = new StackPane();
+    private final VBox stageBox = new VBox(titleBar, contentBox);
 
-    private final ShellStageController stageController;
+    private final StackPane stackPane = new StackPane(stageBox);
+
+    private final MenuManager menuManager;
 
     private final DialogManager dialogManager;
 
@@ -300,9 +263,9 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
             this.stylesheets.addAll(stylesheets);
         }
         var dialogCount = new SimpleIntegerProperty();
-        stageController = new ShellStageController(stage, DEFAULT_WIDTH, DEFAULT_HEIGHT, dialogCount);
+//        stageController = new ShellStageController(stage, DEFAULT_WIDTH, DEFAULT_HEIGHT, dialogCount);
         this.menuManager = new MenuManager(this, this.menuBar);
-        this.dialogManager = new ShellDialogManager(stageController, stackPane, contentBox);
+        this.dialogManager = new ShellDialogManager(stackPane, contentBox);
         dialogCount.bind(Bindings.size(this.dialogManager.getDialogs()));
     }
 
@@ -367,12 +330,12 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
     @Override
     public void setIcon(Icon<?> icon) {
-        this.stageController.iconViewBox.setIcon(icon);
+        iconViewBox.setIcon(icon);
     }
 
     @Override
     public void setTitle(String title) {
-        this.stage.setTitle(title);
+        this.titleLabel.setText(title);
     }
 
     @Override
@@ -426,23 +389,42 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
     @Override
     protected void build() {
         super.build();
-        var presenter = getPresenter();
-        themeApplier = new ThemeApplier(stageController, this.stylesheets,
-                presenter.getContext().getSettings().getAppearance());
-        this.fontApplier = new FontApplier(stackPane,
-                presenter.getContext().getSettings().getAppearance());
-
-        stageController.contentProperty().set(this.contentBox);
+        this.closeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+//        this.closeButton.getGraphic().getStyleClass().add("icon");
+        this.minimizeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+//        this.minimizeButton.getGraphic().getStyleClass().add("icon");
+        this.maximizeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+//        this.maximizeButton.getGraphic().getStyleClass().add("icon");
+        this.stageBox.getStyleClass().add("stage-box");
+        this.leftBox.getStyleClass().add("left-box");
+        this.titleBar.getStyleClass().add("title-bar");
+        this.rightBox.getStyleClass().add("right-box");
+        this.rightBox.setSpacing(Spacing.HORIZONTAL + Spacing.HORIZONTAL_THIRD);
+        VBox.setVgrow(contentBox, Priority.ALWAYS);
+        this.contentBox.getStyleClass().add("content-box");
+        HeaderBar.setPrefButtonHeight(stage, 0); // to hide default buttons
+        stage.initStyle(StageStyle.EXTENDED);
+        var scene = new Scene(stackPane, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        stage.setScene(scene);
         //we add stackpane behind stage root
-        stackPane.getChildren().add(stage.getScene().getRoot());
         stackPane.getStyleClass().add("root-stack-pane");
-        stage.getScene().setRoot(stackPane);
+        var presenter = getPresenter();
+        themeApplier = new ThemeApplier(scene, this.stylesheets, presenter.getContext().getSettings().getAppearance());
+        this.fontApplier = new FontApplier(stackPane, presenter.getContext().getSettings().getAppearance());
         stage.show();
     }
 
     @Override
     protected void addListeners() {
         super.addListeners();
+        this.stage.maximizedProperty().addListener((ov, oldV, newV) -> {
+            this.stageBox.pseudoClassStateChanged(MAXIMIZED_PSEUDO_CLASS, newV);
+            if (newV) {
+                this.maximizeIconView.setIcon(CoreIcons.WINDOW_RESTORE);
+            } else {
+                this.maximizeIconView.setIcon(CoreIcons.WINDOW_MAXIMIZE);
+            }
+        });
         this.stage.getScene().focusOwnerProperty().addListener((ov, oldV, newV) -> {
             this.focusDebouncePause.stop();
             this.focusDebouncePause.playFromStart();
@@ -459,11 +441,17 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         this.stage.widthProperty().addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue()));
         this.stage.heightProperty().addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
         this.stage.maximizedProperty().addListener((ov, oldV, newV) -> getPresenter().onMaximized(newV));
+        this.closeButton.getStyleClass().add("close-button");
+        this.minimizeButton.getStyleClass().add("minimize-button");
+        this.maximizeButton.getStyleClass().add("maximize-button");
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
+        this.closeButton.setOnAction(e -> getPresenter().requestClose());
+        this.maximizeButton.setOnAction(e -> stage.setMaximized(!stage.isMaximized()));
+        this.minimizeButton.setOnAction(e -> stage.setIconified(true));
         this.stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::fixAcceleratorKeyPressed);
         this.focusDebouncePause.setOnFinished((e) -> onFocusPauseFinished());
 //        var viewModel = getViewModel();
@@ -473,10 +461,6 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 //                viewModel.setDefaultHeight(stage.getHeight());
 //            }
 //        });
-    }
-
-    protected ShellStageController getStageController() {
-        return stageController;
     }
 
     /**

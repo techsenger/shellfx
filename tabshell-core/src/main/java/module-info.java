@@ -24,7 +24,6 @@ module com.techsenger.tabshell.core {
     requires javafx.controls;
     requires javafx.swing;
     requires atlantafx.base;
-    requires com.techsenger.stagepro.core;
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.patternfx.mvp;

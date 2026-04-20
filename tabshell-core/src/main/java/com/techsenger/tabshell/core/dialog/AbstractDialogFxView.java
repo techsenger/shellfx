@@ -16,10 +16,13 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.popup.AbstractPopupFxView;
+import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
+import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.style.Spacing;
@@ -52,7 +55,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
@@ -83,9 +85,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
     private final Pane spacePane = new Pane();
 
-    private final StackPane closeIcon = new StackPane();
-
-    private final Button closeButton = new Button();
+    private final Button closeButton = new Button(null, new FontIconView(CoreIcons.WINDOW_CLOSE));
 
     private final HBox titleButtonBox = new HBox(closeButton);
 
@@ -294,9 +294,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, 
 
         this.titleButtonBox.getStyleClass().add("button-box");
         this.titleButtonBox.setAlignment(Pos.CENTER);
-        closeIcon.getStyleClass().add("icon");
-        closeButton.setGraphic(closeIcon);
-        closeButton.getStyleClass().addAll("close-button");
+        closeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
 
         super.getNode().getChildren().clear();
         super.getNode().getChildren().add(mainBox);

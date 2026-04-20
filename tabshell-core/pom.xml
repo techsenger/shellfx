@@ -23,10 +23,6 @@
             <artifactId>patternfx-mvp</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.techsenger.stagepro</groupId>
-            <artifactId>stagepro-core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.techsenger.tabpanepro</groupId>
             <artifactId>tabpanepro-core</artifactId>
         </dependency>

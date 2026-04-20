@@ -26,51 +26,84 @@
     Stage
 */
 .stage-box {
-    -fx-background-color: ladder(-color-bg-default, -color-base-9 49%, -color-base-4 50%), -color-bg-default;
+    /* if the stage is not maximized it is necessary to add 1px border */
+    -fx-background-color: ladder(-color-bg-default, -color-border-default 49%, -color-base-4 50%), -color-bg-default;
+    -fx-background-insets: 0, 1;
+/*    -fx-background-radius: 5 5 0 0, 4 4 0 0;*/
+    -fx-padding: 1px;
+}
+
+.stage-box:maximized {
+    -fx-background-color: -color-bg-default;
+    -fx-background-insets: 0;
+}
+
+.stage-box:maximized {
+    -fx-background-radius: 0, 0;
 }
 
 .stage-box > .title-bar {
     -fx-background-color: -color-bg-extra;
     -fx-background-insets: 0;
+    -fx-pref-height: 38;
+    -fx-min-height: 38;
 }
 
-.stage-box > .title-bar {
-    -fx-background-color: -color-bg-extra;
-    -fx-background-insets: 0;
-    -fx-padding: 0 12px 0 12px;
+.stage-box > .title-bar > .left-box {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 0 0 12px;
+/*    -fx-background-radius: 4 0 0 0;*/
 }
 
-.stage-box > .title-bar > .icon-view-box {
+.stage-box:maximized > .title-bar > .left-box {
+    -fx-background-radius: 0;
+}
+
+.stage-box > .title-bar > .left-box > .icon-view-box {
     -fx-alignment: CENTER_LEFT;
 }
 
-.stage-box > .title-bar > .icon-view-box > .image-icon-view { }
+.stage-box > .title-bar > .left-box > .icon-view-box > .image-icon-view { }
 
-.stage-box > .title-bar > .icon-view-box > .font-icon-view {
+.stage-box > .title-bar > .left-box > .icon-view-box > .font-icon-view {
     -fx-text-fill: -color-fg-default;
 }
 
-.stage-box > .title-bar > .menu-bar {
+.stage-box > .title-bar > .left-box > .menu-bar {
     -fx-background-color: -color-bg-extra;
 }
 
-.stage-box > .title-bar > .menu-bar >.container {
+.stage-box > .title-bar > .left-box > .menu-bar >.container {
     -fx-padding: 0;
 }
 
-.stage-box > .title-bar > .button-box > .button > .icon {
-    -fx-background-color: -color-fg-default;
+.stage-box > .title-bar > .right-box {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 12px 0 0;
+/*    -fx-background-radius: 0 4 0 0;*/
+}
+
+.stage-box:maximized > .title-bar > .right-box {
+    -fx-background-radius: 0;
+}
+
+.stage-box > .title-bar > .right-box > .button {
+    -fx-focus-traversable: false;
 }
 
 .stage-box:unfocused > .title-bar {
     -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
 }
 
-.stage-box:unfocused > .title-bar > .menu-bar {
+.stage-box:unfocused > .title-bar > .left-box > .menu-bar {
     -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
 }
 
-.stage-box > .content-area {
+.stage-box > .title-bar > .icon-view-box > .font-icon-view {
+    -fx-font-size: 1.6em;
+}
+
+.stage-box > .content-box {
     -fx-background-color: -color-bg-default;
 }
 
@@ -120,23 +153,8 @@
     -fx-padding: 10px;
 }
 
-.dialog-box > .title-bar > .button-box > .close-button > .icon {
-    -fx-background-color: -color-button-fg;
-    -fx-shape: "M 0,0 H1 L 4,3 7,0 H8 V1 L 5,4 8,7 V8 H7 L 4,5 1,8 H0 V7 L 3,4 0,1 Z";
-    -fx-scale-shape: false;
-    -fx-scale-x: 1.1;
-    -fx-scale-y: 1.1;
-    -fx-min-width: 20px;
-    -fx-min-height: 20px;
-    -fx-padding: 10px;
-}
-
-.dialog-box > .title-bar > .button-box > .close-button:hover > .icon {
-    -fx-background-color: -color-button-fg-hover;
-}
-
-.dialog-box > .title-bar > .button-box > .close-button:pressed > .icon {
-    -fx-background-color: -color-button-fg-pressed;
+.dialog-box > .title-bar > .icon-view-box > .font-icon-view {
+    -fx-font-size: 1.6em;
 }
 
 .dialog-box:inactive > .title-bar {
@@ -146,25 +164,3 @@
 .dialog-box > .wrapper > .main-box > .content-box {
     -fx-background-color: -color-bg-default;
 }
-
-.stage-box > .title-bar > .button-box > .button,
-.dialog-box > .title-bar > .button-box > .button {
-    /* if we change bg color it is necessary to set colors for all pseudo classes and setting insets of the first
-    bg color to 0 leaves some pixels around the button. So, we decrease button size and increase insets for the
-    second bg color */
-    -fx-background-insets: 0, -1; /* default 0, 1 */;
-    -fx-min-width: 18px;
-    -fx-min-height: 18px;
-    -fx-max-width: 18px;
-    -fx-max-height: 18px;
-    -fx-background-radius: 20;
-}
-
-.stage-box > .title-bar > .icon-view-box > .font-icon-view {
-    -fx-font-size: 1.6em;
-}
-
-.dialog-box > .title-bar > .icon-view-box > .font-icon-view {
-    -fx-font-size: 1.6em;
-}
-

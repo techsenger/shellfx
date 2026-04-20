@@ -27,9 +27,14 @@ import java.util.List;
 public final class IconStylesheetFactory {
 
     /**
+     * Creates and returns the stylesheet with icons for the 'core' module.
+     */
+    public static Stylesheet forCore() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("core.css"));
+    }
+
+    /**
      * Creates and returns the stylesheet with icons for the 'shared' module.
-     *
-     * @return
      */
     public static Stylesheet forShared() {
         return new Stylesheet(IconStylesheetFactory.class.getResource("shared.css"));
@@ -37,8 +42,6 @@ public final class IconStylesheetFactory {
 
     /**
      * Creates and returns the stylesheet with icons for the 'layout' module.
-     *
-     * @return
      */
     public static Stylesheet forLayout() {
         return new Stylesheet(IconStylesheetFactory.class.getResource("layout.css"));
@@ -46,8 +49,6 @@ public final class IconStylesheetFactory {
 
     /**
      * Creates and returns the stylesheet with icons for the 'dialogs' module.
-     *
-     * @return
      */
     public static Stylesheet forDialogs() {
         return new Stylesheet(IconStylesheetFactory.class.getResource("dialogs.css"));
@@ -55,8 +56,6 @@ public final class IconStylesheetFactory {
 
     /**
      * Creates and returns the stylesheet with icons for the 'devtools' module.
-     *
-     * @return
      */
     public static Stylesheet forDevTools() {
         return new Stylesheet(IconStylesheetFactory.class.getResource("devtools.css"));
@@ -64,11 +63,11 @@ public final class IconStylesheetFactory {
 
     /**
      * Creates and returns an unmodifiable list with icon stylesheet for the all modules.
-     *
-     * @return
      */
     public static @Unmodifiable List<Stylesheet> forAll() {
-        return List.of(forShared(),
+        return List.of(
+                forCore(),
+                forShared(),
                 forLayout(),
                 forDialogs(),
                 forDevTools());

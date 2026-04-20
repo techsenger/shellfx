@@ -110,6 +110,7 @@
                         <option>-Xrunjdwp:transport=dt_socket,address=7700,server=y,suspend=n</option>
                         <!--<option>-Xmx50m</option>-->
                         <option>-Dlog4j.configurationFile=src/main/resources/log4j2.xml</option>
+                        <option>-Djavafx.enablePreview=true</option>
                     </options>
                 </configuration>
             </plugin>

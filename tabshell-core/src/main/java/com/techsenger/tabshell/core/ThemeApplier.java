@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.stagepro.core.StandardStageController;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.material.style.Stylesheet;
@@ -58,18 +57,15 @@ class ThemeApplier {
      * @param root the root of the scene. We can't get the root from stage.getScene().getRoot() because of custom stage.
      * @param theme
      */
-    ThemeApplier(StandardStageController controller, ObservableList<Stylesheet> stylesheets,
+    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets,
             AppearanceSettings settings) {
         this.stylesheets = stylesheets;
-        this.scene = controller.getStage().getScene();
+        this.scene = scene;
         addTheme(settings.getTheme(), false);
         logSceneStylesheets();
         themeSubscription = settings.onThemeChanged((oldV, newV) -> {
             removeTheme(oldV);
             addTheme(newV, true);
-            //without applying css and layout title bar spacers are not updated
-            controller.getTitleBar().applyCss();
-            controller.getTitleBar().layout();
             logSceneStylesheets();
         });
         this.stylesheets.addListener((ListChangeListener<Stylesheet>) change -> {
