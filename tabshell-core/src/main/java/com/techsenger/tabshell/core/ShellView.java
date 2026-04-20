@@ -69,4 +69,9 @@ public interface ShellView extends ParentView, WriteOnlyShell {
      * @param sheets
      */
     void removeStylesheets(List<Stylesheet> sheets);
+
+    /**
+     * Closes shell main window.
+     */
+    void closeWindow();
 }

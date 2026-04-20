@@ -90,6 +90,7 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         }
         // the shell is deinitilized at the end
         deinitialize();
+        getView().closeWindow();
         if (this.onClose != null) {
             this.onClose.run();
         }

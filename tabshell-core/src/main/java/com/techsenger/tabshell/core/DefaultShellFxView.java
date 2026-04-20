@@ -363,6 +363,11 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         return this.menuAware.get();
     }
 
+    @Override
+    public void closeWindow() {
+        this.stage.close();
+    }
+
     protected void setFocused(ParentFxView<?> focused) {
         this.focused.set(focused);
     }
@@ -461,6 +466,10 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 //                viewModel.setDefaultHeight(stage.getHeight());
 //            }
 //        });
+        stage.setOnCloseRequest(event -> {
+            event.consume();
+            getPresenter().requestClose();
+        });
     }
 
     /**

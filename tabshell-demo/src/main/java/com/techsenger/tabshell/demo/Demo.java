@@ -29,7 +29,6 @@ import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.layout.dockhost.DockHostHistory;
 import com.techsenger.tabshell.material.style.Spacing;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -88,7 +87,6 @@ public class Demo extends Application {
         var context = new DefaultShellContext(DemoSettings.createSettings(),
                 new DemoHistoryManager(), getHostServices());
         var shellPresenter = new DefaultShellPresenter<>(shellView, context);
-        shellPresenter.setOnClose(() -> Platform.exit());
         shellPresenter.initialize();
         shellView.setTitle("TabShell Demo");
 
