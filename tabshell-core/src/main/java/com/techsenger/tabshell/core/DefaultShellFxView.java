@@ -328,7 +328,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
     private final HBox rightBox = new HBox(minimizeButton, maximizeButton, closeButton);
 
-    private HeaderBar titleBar = new HeaderBar(leftBox, titleLabel, rightBox);
+    private final HeaderBar titleBar = new HeaderBar(leftBox, titleLabel, rightBox);
 
     private final VBox contentBox = new VBox();
 
