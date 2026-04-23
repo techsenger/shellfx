@@ -17,9 +17,9 @@
 package com.techsenger.tabshell.devtools.component;
 
 import com.techsenger.connectorfx.scenegraph.Element;
+import com.techsenger.patternfx.mvp.ComponentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.patternfx.mvp.ParentComposer;
-import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.patternfx.mvp.View;
 import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
@@ -112,7 +112,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     private record InspectorMatchResult(List<InspectorItem> items, int totalMatches) { }
 
     private static InspectorMatchResult matchInspectorItems(Class<? extends View> fxViewClass,
-            Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Matcher matcher) {
+            Class<? extends ParentComposer> fxComposerClass, ComponentPresenter<?> presenter, Matcher matcher) {
         var descriptor = presenter.getDescriptor();
         var totalMatches = 0;
         var items = new ArrayList<InspectorItem>();
@@ -284,7 +284,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
 
     private Class<? extends ParentComposer> componentFxComposerClass;
 
-    private Presenter<?> componentPresenter;
+    private ComponentPresenter<?> componentPresenter;
 
     private ComponentItem selectedComponent;
 
@@ -337,7 +337,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     }
 
     protected void onComponentSelected(ComponentItem component, Class<? extends View> fxViewClass,
-            Class<? extends ParentComposer> fxComposerClass, Presenter<?> presenter, Element componentNode) {
+            Class<? extends ParentComposer> fxComposerClass, ComponentPresenter<?> presenter, Element componentNode) {
         this.selectedComponent = component;
         if (componentNode != null && this.selectNode) {
             this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), componentNode);

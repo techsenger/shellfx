@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.menu;
+package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.tabshell.material.icon.Icon;
+import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface NamedMenuItemState {
+public abstract class AbstractMenuItemHandler<T extends ParentFxView<?>> extends AbstractHandler<T>
+        implements MenuItemHandler<T> {
 
-    String getText();
+    private final ManagedMenuItem item;
 
-    Icon<?> getIcon();
+    public AbstractMenuItemHandler(ManagedMenuItem item, T component) {
+        super(component);
+        this.item = item;
+    }
 
-    boolean isVisible();
-
-    boolean isDisabled();
+    protected ManagedMenuItem getItem() {
+        return item;
+    }
 }

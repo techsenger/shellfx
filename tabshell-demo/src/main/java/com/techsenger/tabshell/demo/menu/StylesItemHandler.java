@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.registry;
+package com.techsenger.tabshell.demo.menu;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.tabshell.material.menu.MenuGroupName;
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.demo.styles.StylesTabFxView;
+import com.techsenger.tabshell.demo.styles.StylesTabPresenter;
 import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuItemRegistration<T extends ParentFxView<?>> extends AbstractMenuRegistration<T, ManagedMenuItem> {
+public class StylesItemHandler extends AbstractContainerItemHandler {
 
-    private final MenuGroupName groupKey;
-
-    MenuItemRegistration(MenuGroupName groupKey, ControlFactory<T, ManagedMenuItem> factory) {
-        super(MenuElementType.ITEM, factory);
-        this.groupKey = groupKey;
+    public StylesItemHandler(ManagedMenuItem item, ShellFxView<?> component) {
+        super(item, component);
     }
 
-    public MenuGroupName getGroupKey() {
-        return groupKey;
+    @Override
+    public void onAction() {
+        var shell = getComponent();
+        var tabView = new StylesTabFxView(shell);
+        var tabPresenter = new StylesTabPresenter(tabView);
+        tabPresenter.initialize();
+        resolveMainTabContainer().getComposer().addTab(tabView);
+        tabView.requestFocus();
     }
+
 }

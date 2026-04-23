@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.menu.manager;
+package com.techsenger.tabshell.core.menu;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
 
 /**
- * This interface is a wrapper for menu/menu item actions. We need it because when menu items are not shown to user
- * they are NOT disabled and their actions can be called using accelerator keys. So, it intercepts the event and
- * decides to call origin action or not.
  *
  * @author Pavel Castornii
  */
-public interface ActionInterceptor extends EventHandler<ActionEvent> {
+public abstract class AbstractMenuHandler<T extends ParentFxView<?>> extends AbstractHandler<T>
+        implements MenuHandler<T> {
 
-    EventHandler<ActionEvent> getAction();
+    private final ManagedMenu menu;
+
+    public AbstractMenuHandler(ManagedMenu menu, T component) {
+        super(component);
+        this.menu = menu;
+    }
+
+    protected ManagedMenu getMenu() {
+        return menu;
+    }
 }

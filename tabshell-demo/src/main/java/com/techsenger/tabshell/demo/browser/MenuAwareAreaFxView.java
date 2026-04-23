@@ -84,11 +84,11 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
         }
     }
 
-    private final CheckBox fooValidCheckBox = new CheckBox("Foo Item Valid");
+    private final CheckBox fooDisabledCheckBox = new CheckBox("Foo Item Disabled");
 
     private final CheckBox barIncludedCheckBox = new CheckBox("Bar Item Included");
 
-    private final CheckBox barValidCheckBox = new CheckBox("Bar Item Valid");
+    private final CheckBox barDisabledCheckBox = new CheckBox("Bar Item Disabled");
 
     private final Button shellDialogButton = new Button("Shell");
 
@@ -102,8 +102,8 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
 
     private final HBox popupHBox = new HBox(shellPopupButton, tabPopupButton);
 
-    private final VBox vBox = new VBox(new Label("Main Menu -> Extra:"), fooValidCheckBox, barIncludedCheckBox,
-            barValidCheckBox, new Label("Dialogs:"), dialogHBox, new Label("Popups:"), popupHBox);
+    private final VBox vBox = new VBox(new Label("Main Menu -> Extra:"), fooDisabledCheckBox, barIncludedCheckBox,
+            barDisabledCheckBox, new Label("Dialogs:"), dialogHBox, new Label("Popups:"), popupHBox);
 
     private final StackPane stackPane = new StackPane(vBox);
 
@@ -120,36 +120,6 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
     @Override
     public Region getNode() {
         return stackPane;
-    }
-
-    @Override
-    public boolean isFooValid() {
-        return this.fooValidCheckBox.isSelected();
-    }
-
-    @Override
-    public void setFooValid(boolean value) {
-        this.fooValidCheckBox.setSelected(value);
-    }
-
-    @Override
-    public boolean isBarIncluded() {
-        return this.barIncludedCheckBox.isSelected();
-    }
-
-    @Override
-    public void setBarIncluded(boolean value) {
-        this.barIncludedCheckBox.setSelected(value);
-    }
-
-    @Override
-    public boolean isBarValid() {
-        return this.barValidCheckBox.isSelected();
-    }
-
-    @Override
-    public void setBarValid(boolean value) {
-        this.barValidCheckBox.setSelected(value);
     }
 
     @Override
@@ -174,6 +144,17 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
         vBox.setSpacing(Spacing.VERTICAL);
         dialogHBox.setSpacing(Spacing.HORIZONTAL);
         popupHBox.setSpacing(Spacing.HORIZONTAL);
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        this.fooDisabledCheckBox.selectedProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onFooDisabledSelected(newV));
+        this.barDisabledCheckBox.selectedProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onBarDisabledSelected(newV));
+        this.barIncludedCheckBox.selectedProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onBarIncludedSelected(newV));
     }
 
     @Override

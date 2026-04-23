@@ -19,49 +19,41 @@ package com.techsenger.tabshell.demo.browser;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.MenuAwarePort;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.core.menu.MenuDelegate;
-import com.techsenger.tabshell.core.menu.MenuDelegates;
-import com.techsenger.tabshell.core.menu.MenuItemDelegate;
-import com.techsenger.tabshell.core.menu.SimpleMenuDelegate;
-import com.techsenger.tabshell.core.menu.SimpleMenuItemDelegate;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.demo.dialogs.DemoResultButtons;
-import com.techsenger.tabshell.demo.menu.ExtraMenu;
-import com.techsenger.tabshell.material.menu.MenuItemName;
-import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.demo.main.DemoMenuAwarePort;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaView, MenuAwareAreaComposer>
-        implements MenuAwarePort {
+        implements MenuAwarePort, DemoMenuAwarePort {
 
-    private final MenuDelegates menuDelegates = new MenuDelegates();
+    private boolean fooDisabled;
+
+    private boolean barIncluded;
+
+    private boolean barDisabled;
 
     public MenuAwareAreaPresenter(MenuAwareAreaView view) {
         super(view);
     }
 
     @Override
-    public MenuDelegate getMenuDelegate(MenuName menuName) {
-        return this.menuDelegates.getMenuDelegatesByName().get(menuName);
+    public boolean isFooDisabled() {
+        return fooDisabled;
     }
 
     @Override
-    public MenuItemDelegate getMenuItemDelegate(MenuItemName menuItemName) {
-        return this.menuDelegates.getMenuItemDelegatesByName().get(menuItemName);
+    public boolean isBarIncluded() {
+        return barIncluded;
     }
 
     @Override
-    public void onMenuShowing(MenuName menuName) {
-
-    }
-
-    @Override
-    public void onMenuHiding(MenuName menuName) {
-
+    public boolean isBarDisabled() {
+        return barDisabled;
     }
 
     @Override
@@ -69,31 +61,16 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
         return new Descriptor(DemoComponents.MENU_AWARE_AREA);
     }
 
-    @Override
-    protected void postInitialize() {
-        super.postInitialize();
-                this.menuDelegates.addAll(
-            new SimpleMenuDelegate(ExtraMenu.NAME, true) // extra menu is included
-        );
-        this.menuDelegates.addAll(
-            new SimpleMenuItemDelegate(ExtraMenu.FOO_ITEM) {
-                @Override
-                public Boolean getItemValid() {
-                    return getView().isFooValid();
-                }
-            },
-            new SimpleMenuItemDelegate(ExtraMenu.BAR_ITEM) {
-                @Override
-                public Boolean getItemIncluded() {
-                    return getView().isBarIncluded();
-                }
+    protected void onFooDisabledSelected(boolean value) {
+        this.fooDisabled = value;
+    }
 
-                @Override
-                public Boolean getItemValid() {
-                    return getView().isBarValid();
-                }
-            }
-        );
+    protected void onBarDisabledSelected(boolean value) {
+        this.barDisabled = value;
+    }
+
+    protected void onBarIncludedSelected(boolean value) {
+        this.barIncluded = value;
     }
 
     protected void onDialogOpen(OverlayScope scope) {

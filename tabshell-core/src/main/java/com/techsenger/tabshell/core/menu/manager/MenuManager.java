@@ -18,14 +18,11 @@ package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.DefaultShellFxView;
 import com.techsenger.tabshell.core.MenuAwarePort;
-import com.techsenger.tabshell.material.menu.MenuName;
-import com.techsenger.tabshell.material.menu.NamedMenu;
-import com.techsenger.tabshell.material.menu.NamedMenuItem;
-import com.techsenger.tabshell.material.menu.NamedMenuItemUpdate;
-import com.techsenger.tabshell.material.menu.NamedMenuUpdate;
-import com.techsenger.toolkit.core.StringUtils;
-import java.util.HashMap;
-import java.util.Map;
+import com.techsenger.tabshell.core.menu.Handler;
+import com.techsenger.tabshell.core.menu.MenuHandler;
+import com.techsenger.tabshell.core.menu.MenuItemHandler;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
+import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -42,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * are always visible their visibility is configured in two cases: when a focused component changed
  * (including no tab cases) and when updateMenuBar is invoked.
  *
- * <p>Only {@code initializeMenu(NamedMenu) } and {@code deinitializeMenu(NamedMenu)} methods are recursive.
+ * <p>Only {@code initializeMenu(ManagedMenu) } and {@code deinitializeMenu(ManagedMenu)} methods are recursive.
  *
  * @author Pavel Castornii
  */
@@ -54,10 +51,12 @@ public class MenuManager {
 
     private final MenuBar menuBar;
 
-    private final Map<MenuName, MenuUpdateHelper> updateHelpersByMenuName = new HashMap<>();
-
     private final ListChangeListener<MenuItem> menuItemsListener =
             (ListChangeListener.Change<? extends MenuItem> c) -> processMenuListChange(c);
+
+    private long lastKeyPressedTime;
+
+    private long lastMouseClickTime;
 
     public MenuManager(DefaultShellFxView<?> shellView, MenuBar menuBar) {
         this.shellView = shellView;
@@ -74,27 +73,38 @@ public class MenuManager {
             logMessageBuilder = new StringBuilder();
         }
         for (var m : this.menuBar.getMenus()) {
-            if (m instanceof NamedMenu) {
-                var namedMenu = (NamedMenu) m;
-                var updateHelper = this.updateHelpersByMenuName.get(namedMenu.getName());
-                this.configureMenu(namedMenu, updateHelper, menuAware, logMessageBuilder);
+            if (m instanceof ManagedMenu managedMenu) {
+                var handler = MenuHandler.getHandler(managedMenu);
+                if (handler != null) {
+                    handler.onHiding();
+                    handler.onShowing();
+                    handler.onUpdate();
+                }
             }
         }
         MenuLogger.logComponentMenuMessage("Main", menuAware, logMessageBuilder);
+    }
+
+    public void setLastKeyPressedTime(long lastKeyPressedTime) {
+        this.lastKeyPressedTime = lastKeyPressedTime;
+    }
+
+    public void setLastMouseClickTime(long lastMouseClickTime) {
+        this.lastMouseClickTime = lastMouseClickTime;
     }
 
     private <T extends MenuItem> void processMenuListChange(ListChangeListener.Change<T> c) {
         while (c.next()) {
             if (c.wasAdded()) {
                 for (var m : c.getAddedSubList()) {
-                    if (m instanceof NamedMenu) {
-                        this.initializeMenu((NamedMenu) m);
+                    if (m instanceof ManagedMenu) {
+                        this.initializeMenu((ManagedMenu) m);
                     }
                 }
             } else if (c.wasRemoved()) {
                 for (var m : c.getRemoved()) {
-                    if (m instanceof NamedMenu) {
-                        this.deinitializeMenu((NamedMenu) m);
+                    if (m instanceof ManagedMenu) {
+                        this.deinitializeMenu((ManagedMenu) m);
                     }
                 }
             }
@@ -107,59 +117,67 @@ public class MenuManager {
      * Recursively initializes all menus.
      * @param menu
      */
-    private void initializeMenu(NamedMenu namedMenu) {
-        final var updateHelper = new MenuUpdateHelper();
-        var previous = this.updateHelpersByMenuName.put(namedMenu.getName(), updateHelper);
-        if (previous != null) {
-            throw new RuntimeException(StringUtils.format("Menu {} has a non-unique name", getMenuText(namedMenu)));
-        }
+    private void initializeMenu(ManagedMenu managedMenu) {
         //listener if menu/items are added/removed dinamically to/from menu(!)
-        namedMenu.getItems().addListener(menuItemsListener);
-        namedMenu.setOnShowing((e) -> this.onMenuShowing(namedMenu, updateHelper));
-        namedMenu.setOnHiding((e) -> this.onMenuHiding(namedMenu, updateHelper));
-        namedMenu.setOnAction(new MenuActionInterceptor(this.shellView, namedMenu));
-        for (var m : namedMenu.getItems()) {
-            if (m instanceof NamedMenu) {
-                this.initializeMenu((NamedMenu) m);
-            }  else if (m instanceof NamedMenuItem) {
-                var item = (NamedMenuItem) m;
-                item.setOnAction(new MenuItemActionInterceptor(this.shellView, namedMenu, item));
+        managedMenu.getItems().addListener(menuItemsListener);
+        managedMenu.setOnShowing((e) -> this.onMenuShowing(managedMenu));
+        managedMenu.setOnHiding((e) -> this.onMenuHiding(managedMenu));
+        //managedMenu.setOnAction();
+        for (var m : managedMenu.getItems()) {
+            if (m instanceof ManagedMenu menu) {
+                this.initializeMenu(menu);
+            }  else if (m instanceof ManagedMenuItem item) {
+                var handler = MenuItemHandler.getHandler(item);
+                if (handler != null) {
+                    item.setOnAction(e -> {
+                        if (lastMouseClickTime > lastKeyPressedTime) {
+                            handler.onAction();
+                        } else {
+                            handler.onUpdate();
+                            if (!item.isDisable() && item.isVisible()) {
+                                handler.onAction();
+                                if (logger.isDebugEnabled()) {
+                                    logger.debug("Event for '{}' accelerator was dispatched", getMenuText(item));
+                                }
+                            } else {
+                                if (logger.isDebugEnabled()) {
+                                    logger.debug("Event for '{}' accelerator ignored; disabled: {}, visible: {}",
+                                        getMenuText(item), item.isDisable(), item.isVisible());
+                                }
+                            }
+                        }
+                    });
+                }
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Menu {} initialized", getMenuText(namedMenu));
+            logger.debug("Menu {} initialized", getMenuText(managedMenu));
         }
     }
 
     /**
      * Recursively deinitializes menu and all nested menus.
-     * @param namedMenu
+     * @param managedMenu
      */
-    private void deinitializeMenu(NamedMenu namedMenu) {
-        var updateHelper = this.updateHelpersByMenuName.remove(namedMenu.getName());
-        if (updateHelper == null) {
-            throw new RuntimeException(StringUtils.format("Menu {} is not initialized", getMenuText(namedMenu)));
-        }
-        namedMenu.getItems().removeListener(menuItemsListener);
-        namedMenu.setOnShowing(null);
-        namedMenu.setOnHiding(null);
-        namedMenu.setOnAction(((ActionInterceptor) namedMenu.getOnAction()).getAction());
-        for (var m : namedMenu.getItems()) {
-            if (m instanceof NamedMenu) {
-                this.deinitializeMenu((NamedMenu) m);
-            } else if (m instanceof NamedMenuItem) {
-                NamedMenuItem item = (NamedMenuItem) m;
-                item.setOnAction(((ActionInterceptor) item.getOnAction()).getAction());
+    private void deinitializeMenu(ManagedMenu managedMenu) {
+        managedMenu.getItems().removeListener(menuItemsListener);
+        managedMenu.setOnShowing(null);
+        managedMenu.setOnHiding(null);
+        managedMenu.setOnAction(null);
+        for (var m : managedMenu.getItems()) {
+            if (m instanceof ManagedMenu menu) {
+                this.deinitializeMenu(menu);
+            } else if (m instanceof ManagedMenuItem item) {
+                item.setOnAction(null);
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Menu {} deinitialized", getMenuText(namedMenu));
+            logger.debug("Menu {} deinitialized", getMenuText(managedMenu));
         }
     }
 
-    private void onMenuShowing(NamedMenu menu, MenuUpdateHelper updateHelper) {
-        MenuAwarePort menuAware = (MenuAwarePort) this.shellView.getMenuAware().getPresenter();
-        menuAware.onMenuShowing(menu.getName());
+    private void onMenuShowing(ManagedMenu menu) {
+        MenuAwarePort menuAware = (MenuAwarePort) this.shellView.getComposer().getMenuAware().getPresenter();
         StringBuilder logMessageBuilder = null;
         if (logger.isEnabledForLevel(MenuLogger.CONFIGURED_MENU_LOG_LEVEL)) {
             logMessageBuilder = new StringBuilder();
@@ -167,16 +185,22 @@ public class MenuManager {
         boolean visibleItemsPresent = false;
         SeparatorMenuItem previousVisibleSeparator = null;
         for (var item : menu.getItems()) {
-            if (item instanceof NamedMenu) {
-                var namedMenu = (NamedMenu) item;
-                this.configureMenu(namedMenu, updateHelper, menuAware, logMessageBuilder);
-                if (namedMenu.isVisible()) {
+            if (item instanceof ManagedMenu managedMenu) {
+                var handler =  MenuHandler.getHandler(managedMenu);
+                if (handler != null) {
+                    handler.onShowing();
+                    handler.onUpdate();
+                }
+                if (managedMenu.isVisible()) {
                     visibleItemsPresent = true;
                 }
-            } else if (item instanceof NamedMenuItem)  {
-                var keyedItem = (NamedMenuItem) item;
-                this.configureMenuItem(menu, updateHelper, menuAware, keyedItem, logMessageBuilder);
-                if (keyedItem.isVisible()) {
+            } else if (item instanceof ManagedMenuItem managedItem)  {
+                var handler = MenuItemHandler.getHandler(managedItem);
+                if (handler != null) {
+                    handler.onShowing();
+                    handler.onUpdate();
+                }
+                if (managedItem.isVisible()) {
                     visibleItemsPresent = true;
                 }
             } else if (item instanceof SeparatorMenuItem) {
@@ -209,82 +233,22 @@ public class MenuManager {
         MenuLogger.logComponentMenuMessage(menu.getText(), menuAware, logMessageBuilder);
     }
 
-    private void onMenuHiding(NamedMenu menu, MenuUpdateHelper updateHelper) {
-        var menuAware = (MenuAwarePort) this.shellView.getMenuAware().getPresenter();
-        menuAware.onMenuHiding(menu.getName());
+    private void onMenuHiding(ManagedMenu menu) {
+        var menuAware = (MenuAwarePort) this.shellView.getComposer().getMenuAware().getPresenter();
         for (var item : menu.getItems()) {
-            if (item instanceof NamedMenu) {
-                unconfigureMenu(menu, updateHelper);
-            } else if (item instanceof NamedMenuItem)  {
-                unconfigureMenuItem(menu, (NamedMenuItem) item);
+            Handler handler = null;
+            if (item instanceof ManagedMenu managedMenu) {
+                handler =  MenuHandler.getHandler(managedMenu);
+            } else if (item instanceof ManagedMenuItem managedItem)  {
+                handler = MenuItemHandler.getHandler(managedItem);
+            }
+            if (handler != null) {
+                handler.onHiding();
             }
         }
     }
 
-    private void configureMenu(NamedMenu namedMenu, MenuUpdateHelper updateHelper,
-            MenuAwarePort menuAware, StringBuilder logMessageBuilder) {
-        //supported
-        NamedMenuUpdate update = null;
-        var delegate = menuAware.getMenuDelegate(namedMenu.getName());
-        if (namedMenu.isOptional() && (delegate == null || !Boolean.TRUE.equals(delegate.getMenuIncluded()))) {
-            namedMenu.setVisible(false);
-        } else {
-            //this method can be called to update top menu; so, unconfigureMenu won't be used
-            namedMenu.setVisible(true);
-            //valid
-            if (namedMenu.isValidatable() && (delegate == null || !Boolean.TRUE.equals(delegate.getMenuValid()))) {
-                namedMenu.setDisable(true);
-            }
-            //update
-            if (namedMenu.isVisible() && namedMenu.isUpdatable() && delegate != null) {
-                var state = new MenuElementState(namedMenu.isVisible(), namedMenu.isDisable(),
-                        namedMenu.getText(), IconUtils.getIcon(namedMenu));
-                update = delegate.updateMenu(state);
-                if (update != null) {
-                    updateHelper.applyUpdate(namedMenu, state, update);
-                }
-            }
-        }
-        MenuLogger.buildComponentMenuMessage(namedMenu, update, logMessageBuilder);
-    }
-
-    private void unconfigureMenu(NamedMenu namedMenu, MenuUpdateHelper updateHelper) {
-        updateHelper.removeUpdates();
-        namedMenu.setVisible(true);
-        namedMenu.setDisable(false);
-    }
-
-    private void configureMenuItem(NamedMenu namedMenu, MenuUpdateHelper updateHelper, MenuAwarePort menuAware,
-            NamedMenuItem namedItem, StringBuilder logMessageBuilder) {
-        //supported
-        NamedMenuItemUpdate update = null;
-        var delegate = menuAware.getMenuItemDelegate(namedItem.getName());
-        if (namedItem.isOptional() && (delegate == null || !Boolean.TRUE.equals(delegate.getItemIncluded()))) {
-            namedItem.setVisible(false);
-        } else {
-            //valid
-            if (namedItem.isValidatable() && (delegate == null || !Boolean.TRUE.equals(delegate.getItemValid()))) {
-                namedItem.setDisable(true);
-            }
-            //update
-            if (namedItem.isVisible() && namedItem.isUpdatable() && delegate != null) {
-                var state = new MenuElementState(namedItem.isVisible(), namedItem.isDisable(),
-                        namedItem.getText(), IconUtils.getIcon(namedItem));
-                update = delegate.updateItem(state);
-                if (update != null) {
-                    updateHelper.applyUpdate(namedItem, state, update);
-                }
-            }
-        }
-        MenuLogger.buildComponentMenuMessage(namedItem, update, logMessageBuilder);
-    }
-
-    private void unconfigureMenuItem(NamedMenu namedMenu, NamedMenuItem namedItem) {
-        namedItem.setVisible(true);
-        namedItem.setDisable(false);
-    }
-
-    private String getMenuText(NamedMenu keyedMenu) {
+    private String getMenuText(MenuItem keyedMenu) {
         return keyedMenu.getText().replace("_", "");
     }
 }

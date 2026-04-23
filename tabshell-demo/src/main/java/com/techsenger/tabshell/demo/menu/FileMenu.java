@@ -17,10 +17,8 @@
 package com.techsenger.tabshell.demo.menu;
 
 import com.techsenger.tabshell.material.menu.DefaultMenuGroupName;
-import com.techsenger.tabshell.material.menu.DefaultMenuItemName;
 import com.techsenger.tabshell.material.menu.DefaultMenuName;
 import com.techsenger.tabshell.material.menu.MenuGroupName;
-import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
 
 /**
@@ -33,23 +31,7 @@ public interface FileMenu {
 
     MenuGroupName DEMO_GROUP = new DefaultMenuGroupName("Demo");
 
-    MenuItemName MAIN_TAB = new DefaultMenuItemName();
-
-    MenuItemName PAGE_TAB = new DefaultMenuItemName();
-
-    MenuItemName TREE_PAGE_TAB = new DefaultMenuItemName();
-
-    MenuItemName DIALOGS = new DefaultMenuItemName();
-
-    MenuItemName DEV_TOOLS = new DefaultMenuItemName();
-
     MenuGroupName APPEARANCE_GROUP = new DefaultMenuGroupName("Settings");
 
-    MenuItemName THEME = new DefaultMenuItemName();
-
-    MenuItemName STYLES_TAB = new DefaultMenuItemName();
-
     MenuGroupName LAST_GROUP = new DefaultMenuGroupName("Last");
-
-    MenuItemName EXIT = new DefaultMenuItemName();
 }

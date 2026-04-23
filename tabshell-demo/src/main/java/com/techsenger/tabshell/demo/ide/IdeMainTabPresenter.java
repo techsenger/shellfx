@@ -20,18 +20,11 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.MenuAwarePort;
-import com.techsenger.tabshell.core.menu.MenuDelegate;
-import com.techsenger.tabshell.core.menu.MenuDelegates;
-import com.techsenger.tabshell.core.menu.MenuItemDelegate;
-import com.techsenger.tabshell.core.menu.SimpleMenuDelegate;
-import com.techsenger.tabshell.core.menu.SimpleMenuItemDelegate;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.demo.dialogs.DemoResultButtons;
-import com.techsenger.tabshell.demo.menu.ExtraMenu;
-import com.techsenger.tabshell.material.menu.MenuItemName;
-import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.demo.main.DemoMenuAwarePort;
 import java.util.function.Consumer;
 
 /**
@@ -39,9 +32,13 @@ import java.util.function.Consumer;
  * @author Pavel Castornii
  */
 public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabComposer>
-        extends AbstractTabPresenter<V, C> implements MenuAwarePort {
+        extends AbstractTabPresenter<V, C> implements MenuAwarePort, DemoMenuAwarePort {
 
-    private final MenuDelegates menuDelegates = new MenuDelegates();
+    private boolean fooDisabled;
+
+    private boolean barIncluded;
+
+    private boolean barDisabled;
 
     public IdeMainTabPresenter(V view) {
         super(view);
@@ -58,51 +55,58 @@ public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabC
     }
 
     @Override
-    public MenuDelegate getMenuDelegate(MenuName menuName) {
-        return this.menuDelegates.getMenuDelegatesByName().get(menuName);
+    public boolean isFooDisabled() {
+        return fooDisabled;
     }
 
     @Override
-    public MenuItemDelegate getMenuItemDelegate(MenuItemName menuItemName) {
-        return this.menuDelegates.getMenuItemDelegatesByName().get(menuItemName);
+    public boolean isBarIncluded() {
+        return barIncluded;
     }
 
     @Override
-    public void onMenuShowing(MenuName menuName) {
-        // empty
+    public boolean isBarDisabled() {
+        return barDisabled;
     }
 
-    @Override
-    public void onMenuHiding(MenuName menuName) {
-        // empty
+    protected void onFooDisabledSelected(boolean value) {
+        this.fooDisabled = value;
+    }
+
+    protected void onBarDisabledSelected(boolean value) {
+        this.barDisabled = value;
+    }
+
+    protected void onBarIncludedSelected(boolean value) {
+        this.barIncluded = value;
     }
 
     @Override
     protected void postInitialize() {
         super.postInitialize();
         getView().setTitle("Main Tab");
-        menuDelegates.addAll(
-                new SimpleMenuDelegate(ExtraMenu.NAME, true) // extra menu is included
-        );
-        menuDelegates.addAll(
-            new SimpleMenuItemDelegate(ExtraMenu.FOO_ITEM) {
-                @Override
-                public Boolean getItemValid() {
-                    return getView().isFooValid();
-                }
-            },
-            new SimpleMenuItemDelegate(ExtraMenu.BAR_ITEM) {
-                @Override
-                public Boolean getItemIncluded() {
-                    return getView().isBarIncluded();
-                }
-
-                @Override
-                public Boolean getItemValid() {
-                    return getView().isBarValid();
-                }
-            }
-        );
+//        menuDelegates.addAll(
+//                new SimpleMenuDelegate(ExtraMenu.NAME, true) // extra menu is included
+//        );
+//        menuDelegates.addAll(
+//            new SimpleMenuItemDelegate(ExtraMenu.FOO_ITEM) {
+//                @Override
+//                public Boolean getItemValid() {
+//                    return getView().isFooValid();
+//                }
+//            },
+//            new SimpleMenuItemDelegate(ExtraMenu.BAR_ITEM) {
+//                @Override
+//                public Boolean getItemIncluded() {
+//                    return getView().isBarIncluded();
+//                }
+//
+//                @Override
+//                public Boolean getItemValid() {
+//                    return getView().isBarValid();
+//                }
+//            }
+//        );
     }
 
     @Override

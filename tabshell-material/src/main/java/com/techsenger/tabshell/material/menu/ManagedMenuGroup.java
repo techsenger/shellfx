@@ -27,7 +27,7 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public class NamedMenuGroup implements Named, Positioned {
+public class ManagedMenuGroup implements Named, Positioned {
 
     private final MenuGroupName name;
 
@@ -40,7 +40,7 @@ public class NamedMenuGroup implements Named, Positioned {
      *
      * @param name
      */
-    public NamedMenuGroup(MenuGroupName name, int position) {
+    public ManagedMenuGroup(MenuGroupName name, int position) {
         this.name = name;
         this.position = position;
     }

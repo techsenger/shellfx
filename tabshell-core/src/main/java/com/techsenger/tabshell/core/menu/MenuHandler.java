@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.menu;
+package com.techsenger.tabshell.core.menu;
 
-import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface MenuItemName extends Name {
+public interface MenuHandler<T extends ParentFxView<?>> extends Handler {
 
+    static void setHandler(ManagedMenu menu, MenuHandler<?> handler) {
+       menu.getProperties().put(key(), handler);
+    }
+
+    static MenuHandler<?> getHandler(ManagedMenu menu) {
+        return (MenuHandler<?>) menu.getProperties().get(key());
+    }
+
+    private static Object key() {
+        class KeyHolder {
+            private static final Object KEY = new Object();
+        }
+        return KeyHolder.KEY;
+    }
 }

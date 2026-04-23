@@ -16,41 +16,15 @@
 
 package com.techsenger.tabshell.demo.menu;
 
-import com.techsenger.tabshell.core.CoreComponents;
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
+import com.techsenger.tabshell.core.menu.MenuItemHandler;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.tab.AbstractTabFxView;
-import com.techsenger.tabshell.core.tab.TabContainerFxView;
-import com.techsenger.tabshell.demo.browser.BrowserMainTabFxView;
-import com.techsenger.tabshell.demo.browser.BrowserMainTabPresenter;
-import com.techsenger.tabshell.demo.dialogs.DialogsDialogFxView;
-import com.techsenger.tabshell.demo.dialogs.DialogsDialogPresenter;
-import com.techsenger.tabshell.demo.ide.IdeMainTabFxView;
-import com.techsenger.tabshell.demo.ide.IdeMainTabPresenter;
 import com.techsenger.tabshell.demo.page.PageMenuType;
-import com.techsenger.tabshell.demo.page.PageTabFxView;
-import com.techsenger.tabshell.demo.page.PageTabHistory;
-import com.techsenger.tabshell.demo.page.PageTabPresenter;
-import com.techsenger.tabshell.demo.styles.StylesTabFxView;
-import com.techsenger.tabshell.demo.styles.StylesTabPresenter;
-import com.techsenger.tabshell.demo.theme.ThemeDialogFxView;
-import com.techsenger.tabshell.demo.theme.ThemeDialogPresenter;
-import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
-import com.techsenger.tabshell.devtools.DevToolsTabDockPresenter;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
-import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
-import com.techsenger.tabshell.layout.dockhost.UtilityDockContainerFxView;
-import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
-import com.techsenger.tabshell.material.menu.MenuItemName;
-import com.techsenger.tabshell.material.menu.NamedMenu;
-import com.techsenger.tabshell.material.menu.NamedMenuGroup;
-import com.techsenger.tabshell.material.menu.NamedMenuItem;
-import javafx.geometry.Side;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
+import com.techsenger.tabshell.material.menu.ManagedMenuGroup;
+import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -83,191 +57,95 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerMenu() {
-        ControlFactory<NamedMenu> f = (v) -> {
-            return new NamedMenu(FileMenu.NAME, "_File", 0);
+        ControlFactory<ShellFxView<?>, ManagedMenu> f = (v) -> {
+            var menu = new ManagedMenu(FileMenu.NAME, "_File", 0);
+            return menu;
         };
-        addRegistration(getRegistry().registerMenu(CoreComponents.SHELL, null, f));
+        addRegistration(getRegistry().mainMenu().registerMenu(null, f));
     }
 
     protected void registerGroups() {
-        ControlFactory<NamedMenuGroup> f = (v) -> new NamedMenuGroup(FileMenu.DEMO_GROUP, 100);
-        addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, FileMenu.NAME, f));
-        f = (v) -> new NamedMenuGroup(FileMenu.APPEARANCE_GROUP, 200);
-        addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, FileMenu.NAME, f));
-        f = (v) -> new NamedMenuGroup(FileMenu.LAST_GROUP, 300);
-        addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, FileMenu.NAME, f));
+        ControlFactory<ShellFxView<?>, ManagedMenuGroup> f = (v) -> {
+            return new ManagedMenuGroup(FileMenu.DEMO_GROUP, 100);
+        };
+        addRegistration(getRegistry().mainMenu().registerMenuGroup(FileMenu.NAME, f));
+        f = (v) -> new ManagedMenuGroup(FileMenu.APPEARANCE_GROUP, 200);
+        addRegistration(getRegistry().mainMenu().registerMenuGroup(FileMenu.NAME, f));
+        f = (v) -> new ManagedMenuGroup(FileMenu.LAST_GROUP, 300);
+        addRegistration(getRegistry().mainMenu().registerMenuGroup(FileMenu.NAME, f));
     }
 
     protected void registerMainTabItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(FileMenu.MAIN_TAB, "Main Tab", 100);
-            item.setOnAction((e) -> {
-                var shell = (ShellFxView<?>) v;
-                AbstractTabFxView<?> tabV;
-                if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?>) {
-                    tabV = new BrowserMainTabFxView(shell);
-                    var tabP = new BrowserMainTabPresenter(tabV, shell.getPresenter().getContext().getHistoryManager());
-                } else {
-                    tabV = new IdeMainTabFxView<>(shell);
-                    var tabP = new IdeMainTabPresenter<>((IdeMainTabFxView<?>) tabV);
-                }
-                tabV.getPresenter().initialize();
-                resolveMainTabContainer().getComposer().addTab(tabV);
-            });
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("Main Tab", 100);
+            MenuItemHandler.setHandler(item, new MainTabItemHandler(item, shell));
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
+        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
     }
 
     protected void registerPageTabItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var shell = (ShellFxView<?>) v;
-            var item = createPageMenuItem(shell, FileMenu.PAGE_TAB, "Page Tab", 200, PageMenuType.FLAT);
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("Page Tab", 200);
+            MenuItemHandler.setHandler(item, new PageItemHandler(item, shell, PageMenuType.FLAT));
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
+        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
     }
 
     protected void registerTreePageTabItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var shell = (ShellFxView<?>) v;
-            var item = createPageMenuItem(shell, FileMenu.TREE_PAGE_TAB, "Tree Page Tab", 250, PageMenuType.TREE);
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("Tree Page Tab", 250);
+            MenuItemHandler.setHandler(item, new PageItemHandler(item, shell, PageMenuType.TREE));
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
-    }
-
-    protected NamedMenuItem createPageMenuItem(ShellFxView<?> shell, MenuItemName name, String text,
-            int position, PageMenuType menuType) {
-        var item = new NamedMenuItem(name, text, position);
-        item.setOnAction((e) -> {
-
-            var tabView = new PageTabFxView(shell);
-            var historyManager = shell.getPresenter().getContext().getHistoryManager();
-            var tabPresenter = new PageTabPresenter(tabView,
-                    () -> historyManager.getOrCreateHistory(PageTabHistory.class, PageTabHistory::new), menuType);
-            tabPresenter.initialize();
-            resolveMainTabContainer().getComposer().addTab(tabView);
-            tabView.requestFocus();
-        });
-        return item;
+        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
     }
 
     protected void registerDialogsItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(FileMenu.DIALOGS, "Dialogs", 300);
-            item.setOnAction((e) -> {
-                var shellV = (ShellFxView<?>) v;
-                var shellP = shellV.getPresenter();
-                var dialogView = new DialogsDialogFxView();
-                var dialogPresenter = new DialogsDialogPresenter(dialogView,
-                        shellP.getContext().getSettings().getAppearance(),
-                        shellP.getContext().getHistoryManager());
-                dialogPresenter.initialize();
-                shellV.getComposer().addDialog(dialogView);
-            });
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("Dialogs", 300);
+            MenuItemHandler.setHandler(item, new DialogsItemHandler(item, shell));
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
+        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
     }
 
     protected void registerDevToolsTabDockItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(FileMenu.DEV_TOOLS, "DevTools", 400);
-            item.setOnAction((e) -> {
-                var shell = (ShellFxView<?>) v;
-                if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
-                    var tab = tabHost.getComposer().getSelectedTab();
-                    if (tab != null && tab instanceof UtilityDockContainerFxView<?> c) {
-                        var devTools = createDevTools();
-                        devTools.getPresenter().initialize();
-                        devTools.getPresenter().setDraggable(true);
-                        c.getComposer().addUtilityDock(devTools);
-                    } else {
-                        var alertView = new AlertDialogFxView<>();
-                        var alertPresenter = new AlertDialogPresenter<>(alertView, AlertDialogType.ERROR,
-                                "DevTools can only be opened in the main tab");
-                        alertPresenter.initialize();
-                        shell.getComposer().addDialog(alertView);
-                    }
-                } else if (shell.getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
-                    var devTools = createDevTools();
-                    devTools.getPresenter().initialize();
-                    devTools.getPresenter().setDraggable(true);
-                    dockHost.getComposer().addTabDock(devTools, Side.BOTTOM, 250);
-                }
-            });
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("DevTools", 400);
+            MenuItemHandler.setHandler(item, new DevToolsItemHandler(item, shell));
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.DEMO_GROUP, f));
-    }
-
-    protected DevToolsTabDockFxView<?> createDevTools() {
-        var view = new DevToolsTabDockFxView<>(shell, resolveDialogContainer());
-        var hm = shell.getPresenter().getContext().getHistoryManager();
-        var presenter = new DevToolsTabDockPresenter<>(view, shell.getPresenter().getContext().getSettings(),
-                shell.getPresenter().getContext().getHistoryManager());
-        return view;
+        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
     }
 
     protected void registerThemeItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(FileMenu.THEME, "_Theme", 100);
-            item.setOnAction((e) -> {
-                var shell = (ShellFxView<?>) v;
-                var appearance = shell.getPresenter().getContext().getSettings().getAppearance();
-                var view = new ThemeDialogFxView();
-                var presenter = new ThemeDialogPresenter(view, appearance);
-                presenter.initialize();
-                shell.getComposer().addDialog(view);
-            });
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("_Theme", 100);
+            MenuItemHandler.setHandler(item, new ThemeItemHandler(item, shell));
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.APPEARANCE_GROUP, f));
+        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.APPEARANCE_GROUP, f));
     }
 
     protected void registerStylesTabItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(FileMenu.STYLES_TAB, "Styles Tab", 200);
-            item.setOnAction((e) -> {
-                var shell = (ShellFxView<?>) v;
-                var tabView = new StylesTabFxView(shell);
-                var tabPresenter = new StylesTabPresenter(tabView);
-                tabPresenter.initialize();
-                resolveMainTabContainer().getComposer().addTab(tabView);
-                tabView.requestFocus();
-            });
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("Styles Tab", 200);
+            MenuItemHandler.setHandler(item, new StylesItemHandler(item, shell));
             return item;
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.APPEARANCE_GROUP, f));
+        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.APPEARANCE_GROUP, f));
     }
 
     protected void registerExitItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(FileMenu.EXIT, false, false, false, "E_xit", 100);
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("E_xit", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> ((ShellFxView<?>) v).getPresenter().close());
+            MenuItemHandler.setHandler(item, new ExitItemHandler(item, shell));
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, FileMenu.LAST_GROUP, f));
-    }
-
-    private TabContainerFxView<?> resolveMainTabContainer() {
-        if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
-            return tabHost;
-        } else if (shell.getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
-            return (TabContainerFxView<?>) dockHost.getComposer().getMain();
-        }
-        return null;
-    }
-
-    private DialogContainerFxView<?> resolveDialogContainer() {
-        if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
-            var tab = tabHost.getComposer().getSelectedTab();
-            return tab;
-        } else {
-            return shell;
-        }
+        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.LAST_GROUP, f));
     }
 }

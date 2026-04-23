@@ -16,18 +16,19 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.tabshell.material.menu.NamedMenu;
+import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.material.menu.MenuGroupName;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuRegistration extends AbstractMenuRegistration<NamedMenu> {
+class MenuRegistration<T extends ParentFxView<?>> extends AbstractMenuRegistration<T, ManagedMenu> {
 
     private final MenuGroupName groupName;
 
-    MenuRegistration(MenuGroupName groupKey, ControlFactory<NamedMenu> factory) {
+    MenuRegistration(MenuGroupName groupKey, ControlFactory<T, ManagedMenu> factory) {
         super(MenuElementType.MENU, factory);
         this.groupName = groupKey;
     }

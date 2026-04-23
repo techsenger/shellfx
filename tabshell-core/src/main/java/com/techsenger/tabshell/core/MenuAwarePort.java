@@ -16,12 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.patternfx.mvp.ParentPort;
-import com.techsenger.tabshell.core.menu.MenuDelegate;
-import com.techsenger.tabshell.core.menu.MenuItemDelegate;
-import com.techsenger.tabshell.material.menu.MenuItemName;
-import com.techsenger.tabshell.material.menu.MenuName;
 
 /**
  * Interface for the port the menu interacts with.
@@ -30,37 +25,4 @@ import com.techsenger.tabshell.material.menu.MenuName;
  */
 public interface MenuAwarePort extends ParentPort {
 
-    Descriptor getDescriptor();
-
-    /**
-     * Returns the delegate for a specific menu.
-     *
-     * @param menuName
-     * @return
-     */
-    MenuDelegate getMenuDelegate(MenuName menuName);
-
-    /**
-     * Returns the delegate for a specific menu item.
-     *
-     * @param menuItemName
-     * @return
-     */
-    MenuItemDelegate getMenuItemDelegate(MenuItemName menuItemName);
-
-    /**
-     * This method is called on showing menu popup.
-     *
-     * @param menuName
-     */
-    void onMenuShowing(MenuName menuName);
-
-    /**
-     * This method is called on hiding menu popup.
-     *
-     * <p>Important. This method is called before the action of the MenuItem, as this way it is implemented in JavaFX.
-     *
-     * @param menuName
-     */
-    void onMenuHiding(MenuName menuName);
 }

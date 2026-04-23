@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.menu;
+package com.techsenger.tabshell.demo.menu;
+
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
+import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface NamedMenuState extends NamedMenuItemState {
+public class ExitItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> {
+
+    public ExitItemHandler(ManagedMenuItem item, ShellFxView<?> component) {
+        super(item, component);
+    }
+
+    @Override
+    public void onAction() {
+        getComponent().getPresenter().requestClose();
+    }
 
 }

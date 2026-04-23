@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.core.area;
 
-import com.techsenger.patternfx.mvp.AbstractHistory;
+import com.techsenger.patternfx.mvp.AbstractComponentHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class AreaHistory extends AbstractHistory {
+public class AreaHistory extends AbstractComponentHistory {
 
     private double width;
 

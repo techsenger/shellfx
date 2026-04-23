@@ -18,14 +18,9 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.AbstractParentPresenter;
+import com.techsenger.patternfx.mvp.ComponentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.patternfx.mvp.Presenter;
-import com.techsenger.tabshell.core.menu.MenuDelegate;
-import com.techsenger.tabshell.core.menu.MenuDelegates;
-import com.techsenger.tabshell.core.menu.MenuItemDelegate;
 import com.techsenger.tabshell.material.icon.Icon;
-import com.techsenger.tabshell.material.menu.MenuItemName;
-import com.techsenger.tabshell.material.menu.MenuName;
 import java.util.function.Consumer;
 
 /**
@@ -36,8 +31,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         extends AbstractParentPresenter<V, C> implements ShellPresenter<V, C> {
 
     private final ShellContext context;
-
-    private final MenuDelegates menuDelegates = new MenuDelegates();
 
     private Runnable onClose;
 
@@ -85,7 +78,7 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         while (iterator.hasNext()) {
             var c = iterator.next();
             if (iterator.getDepth() > 0) {
-                ((Presenter<?>) c).deinitialize();
+                ((ComponentPresenter<?>) c).deinitialize();
             }
         }
         // the shell is deinitilized at the end
@@ -94,11 +87,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
         if (this.onClose != null) {
             this.onClose.run();
         }
-    }
-
-    @Override
-    public MenuDelegates getMenuDelegates() {
-        return menuDelegates;
     }
 
     @Override
@@ -164,26 +152,6 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     public void setMaximized(boolean maximized) {
         this.maximized = maximized;
         getView().setMaximized(maximized);
-    }
-
-    @Override
-    public MenuDelegate getMenuDelegate(MenuName menuName) {
-        return menuDelegates.getMenuDelegatesByName().get(menuName);
-    }
-
-    @Override
-    public MenuItemDelegate getMenuItemDelegate(MenuItemName menuItemName) {
-        return menuDelegates.getMenuItemDelegatesByName().get(menuItemName);
-    }
-
-    @Override
-    public void onMenuShowing(MenuName menuName) {
-        // empty
-    }
-
-    @Override
-    public void onMenuHiding(MenuName menuName) {
-        // empty
     }
 
     @Override

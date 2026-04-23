@@ -17,12 +17,11 @@
 package com.techsenger.tabshell.demo.browser;
 
 import com.techsenger.tabshell.core.area.AreaView;
-import com.techsenger.tabshell.demo.main.MainView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface MenuAwareAreaView extends AreaView, MainView {
+public interface MenuAwareAreaView extends AreaView {
 
 }

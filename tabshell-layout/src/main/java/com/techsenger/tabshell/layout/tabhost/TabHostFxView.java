@@ -18,10 +18,10 @@ package com.techsenger.tabshell.layout.tabhost;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.tabpanepro.core.TabEvent;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import com.techsenger.tabshell.core.FxViewUtils;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerFxView;
@@ -314,7 +314,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
                     // Here we only need to synchronize the component lists.
                     var tabView = ((ComponentTab) e.getTab()).getView();
                     getModifiableChildren().remove(tabView);
-                    TabHostFxView<?> newTabHost = (TabHostFxView<?>) FxViewUtils.getComponent(e.getTab().getTabPane());
+                    TabHostFxView<?> newTabHost = (TabHostFxView<?>) FxViewUtils.findComponent(e.getTab().getTabPane());
                     if (newTabHost != null) {
                         newTabHost.getModifiableChildren().add(tabView);
                         logger.debug("{} Tab {} was moved from {} to {}",

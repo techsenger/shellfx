@@ -37,6 +37,32 @@ public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxVie
         void removeWorkspace();
 
         AreaFxView<?> getWorkspace();
+
+        /**
+         * Defines the component that currently has the focus.
+         *
+         * @return
+         */
+        ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty();
+
+        /**
+         * Returns the value of {@link #focusedProperty()}.
+         *
+         * @return
+         */
+        ParentFxView<?> getFocused();
+
+        /**
+         * Defines the component that is currently forms the menu in the Shell.
+         * @return
+         */
+        ReadOnlyObjectProperty<ParentFxView<?>> menuAwareProperty();
+
+        /**
+         * Returns the value of {@link #menuAwareProperty()}.
+         * @return
+         */
+        ParentFxView<?> getMenuAware();
     }
 
     /**
@@ -48,30 +74,4 @@ public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxVie
 
     @Override
     Composer getComposer();
-
-    /**
-     * Defines the component that currently has the focus.
-     *
-     * @return
-     */
-    ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty();
-
-    /**
-     * Returns the value of {@link #focusedProperty()}.
-     *
-     * @return
-     */
-    ParentFxView<?> getFocused();
-
-    /**
-     * Defines the component that is currently forms the menu in the Shell.
-     * @return
-     */
-    ReadOnlyObjectProperty<ParentFxView<?>> menuAwareProperty();
-
-    /**
-     * Returns the value of {@link #menuAwareProperty()}.
-     * @return
-     */
-    ParentFxView<?> getMenuAware();
 }

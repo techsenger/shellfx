@@ -20,17 +20,11 @@ package com.techsenger.tabshell.demo.main;
  *
  * @author Pavel Castornii
  */
-public interface MainView {
+public interface DemoMenuAwarePort {
 
-    boolean isFooValid();
-
-    void setFooValid(boolean value);
+    boolean isFooDisabled();
 
     boolean isBarIncluded();
 
-    void setBarIncluded(boolean value);
-
-    boolean isBarValid();
-
-    void setBarValid(boolean value);
+    boolean isBarDisabled();
 }

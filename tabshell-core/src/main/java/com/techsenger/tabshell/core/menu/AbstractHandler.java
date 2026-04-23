@@ -14,22 +14,39 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.menu;
+package com.techsenger.tabshell.core.menu;
+
+import com.techsenger.patternfx.mvp.ParentFxView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public final class NamedMenuUpdate extends NamedMenuItemUpdate {
+public class AbstractHandler<T extends ParentFxView<?>> implements Handler {
 
-    public static class Builder extends AbstractChangeBuilder<NamedMenuUpdate, Builder> {
+    private final T component;
 
-        public Builder() {
-            super(new NamedMenuUpdate());
-        }
+    public AbstractHandler(T component) {
+        this.component = component;
     }
 
-    private NamedMenuUpdate() {
-
+    @Override
+    public void onUpdate() {
+        // empty
     }
+
+    @Override
+    public void onShowing() {
+        // empty
+    }
+
+    @Override
+    public void onHiding() {
+        // empty
+    }
+
+    protected T getComponent() {
+        return component;
+    }
+
 }

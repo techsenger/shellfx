@@ -106,36 +106,6 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?, ?>> extends Abstr
     }
 
     @Override
-    public boolean isFooValid() {
-        return this.fooValidCheckBox.isSelected();
-    }
-
-    @Override
-    public void setFooValid(boolean value) {
-        this.fooValidCheckBox.setSelected(value);
-    }
-
-    @Override
-    public boolean isBarIncluded() {
-        return this.barIncludedCheckBox.isSelected();
-    }
-
-    @Override
-    public void setBarIncluded(boolean value) {
-        this.barIncludedCheckBox.setSelected(value);
-    }
-
-    @Override
-    public boolean isBarValid() {
-        return this.barValidCheckBox.isSelected();
-    }
-
-    @Override
-    public void setBarValid(boolean value) {
-        this.barValidCheckBox.setSelected(value);
-    }
-
-    @Override
     protected void build() {
         super.build();
         StackPane.setAlignment(vBox, Pos.CENTER);

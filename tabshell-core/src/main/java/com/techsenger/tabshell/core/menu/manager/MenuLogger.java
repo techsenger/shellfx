@@ -17,10 +17,9 @@
 package com.techsenger.tabshell.core.menu.manager;
 
 import com.techsenger.tabshell.core.MenuAwarePort;
-import com.techsenger.tabshell.material.menu.NamedMenu;
-import com.techsenger.tabshell.material.menu.NamedMenuGroup;
-import com.techsenger.tabshell.material.menu.NamedMenuItem;
-import com.techsenger.tabshell.material.menu.NamedMenuItemUpdate;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
+import com.techsenger.tabshell.material.menu.ManagedMenuGroup;
+import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -38,8 +37,7 @@ final class MenuLogger {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuLogger.class);
 
-    public static void buildComponentMenuMessage(MenuItem menuOrItem, NamedMenuItemUpdate update,
-            StringBuilder logMessageBuilder) {
+    public static void buildComponentMenuMessage(MenuItem menuOrItem, StringBuilder logMessageBuilder) {
         if (logMessageBuilder != null) {
             logMessageBuilder.append(System.lineSeparator());
             logMessageBuilder.append("    ");
@@ -53,8 +51,6 @@ final class MenuLogger {
             logMessageBuilder.append(menuOrItem.isVisible());
             logMessageBuilder.append(", valid: ");
             logMessageBuilder.append(!menuOrItem.isDisable());
-            logMessageBuilder.append(", update: ");
-            logMessageBuilder.append(update);
         }
     }
 
@@ -71,7 +67,7 @@ final class MenuLogger {
         if (logger.isDebugEnabled()) {
             var builder = new StringBuilder();
             for (var menu : menus) {
-                logMenu((NamedMenu) menu, 0, builder);
+                logMenu((ManagedMenu) menu, 0, builder);
             }
             if (afterChange) {
                 logger.debug("Shell Menus after change: {}", builder.toString());
@@ -81,58 +77,45 @@ final class MenuLogger {
         }
     }
 
-    private static void logMenu(NamedMenu menu, int depth, StringBuilder builder) {
+    private static void logMenu(ManagedMenu menu, int depth, StringBuilder builder) {
         builder.append(System.lineSeparator());
         var tab = "    ";
         builder.append(tab.repeat(depth));
         builder.append("Menu: ");
         builder.append(menu.getText().replace("_", ""));
-        builder.append(", optional: ");
-        builder.append(menu.isOptional());
-        builder.append(", validatable: ");
-        builder.append(menu.isValidatable());
-        builder.append(", updatable: ");
-        builder.append(menu.isUpdatable());
         builder.append(", position: ");
         builder.append(menu.getPosition());
         var tab1 = tab.repeat(depth + 1);
         var tab2 = tab.repeat(depth + 2);
-        NamedMenuGroup group = null;
+        ManagedMenuGroup group = null;
         for (var m : menu.getItems()) {
-            if (m instanceof NamedMenu) {
-                var namedMenu = (NamedMenu) m;
+            if (m instanceof ManagedMenu) {
+                var namedMenu = (ManagedMenu) m;
                 if (namedMenu.getGroup() != group) {
                     group = namedMenu.getGroup();
                     logGroup(group, builder, tab);
                 }
                 logMenu(namedMenu, depth + 2, builder);
-            } else if (m instanceof NamedMenuItem) {
-                var namedItem = (NamedMenuItem) m;
-                if (namedItem.getGroup() != group) {
-                    group = namedItem.getGroup();
+            } else if (m instanceof ManagedMenuItem item) {
+                if (item.getGroup() != group) {
+                    group = item.getGroup();
                     logGroup(group, builder, tab);
                 }
                 builder.append(System.lineSeparator());
                 builder.append(tab2);
                 builder.append("MenuItem: ");
-                builder.append(namedItem.getText().replace("_", ""));
-                builder.append(", optional: ");
-                builder.append(namedItem.isOptional());
-                builder.append(", validatable: ");
-                builder.append(namedItem.isValidatable());
-                builder.append(", updatable: ");
-                builder.append(namedItem.isUpdatable());
+                builder.append(item.getText().replace("_", ""));
                 builder.append(", position: ");
-                builder.append(namedItem.getPosition());
-                if (namedItem.getAccelerator() != null) {
+                builder.append(item.getPosition());
+                if (item.getAccelerator() != null) {
                     builder.append(", hotkey: ");
-                    builder.append(namedItem.getAccelerator());
+                    builder.append(item.getAccelerator());
                 }
             }
         }
     }
 
-    private static void logGroup(NamedMenuGroup group, StringBuilder builder, String tab) {
+    private static void logGroup(ManagedMenuGroup group, StringBuilder builder, String tab) {
         if (group == null) {
             return;
         }

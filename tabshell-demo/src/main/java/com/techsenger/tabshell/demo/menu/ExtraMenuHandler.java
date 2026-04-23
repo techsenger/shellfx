@@ -16,22 +16,25 @@
 
 package com.techsenger.tabshell.demo.menu;
 
-import com.techsenger.tabshell.material.menu.DefaultMenuGroupName;
-import com.techsenger.tabshell.material.menu.DefaultMenuName;
-import com.techsenger.tabshell.material.menu.MenuGroupName;
-import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.menu.AbstractMenuHandler;
+import com.techsenger.tabshell.demo.main.DemoMenuAwarePort;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
 
 /**
- * Every menu, menu item, menu group has its own name  which allows it to be distinguished from other menus,
- * for example, during validation in a tab.
  *
  * @author Pavel Castornii
  */
-public interface ExtraMenu {
+public class ExtraMenuHandler extends AbstractMenuHandler<ShellFxView<?>> {
 
-    MenuName NAME = new DefaultMenuName();
+    public ExtraMenuHandler(ManagedMenu menu, ShellFxView<?> component) {
+        super(menu, component);
+    }
 
-    MenuGroupName FOO_GROUP = new DefaultMenuGroupName("Foo");
-
-    MenuGroupName BAR_GROUP = new DefaultMenuGroupName("Bar");
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+        var menuAware = getComponent().getComposer().getMenuAware();
+        getMenu().setVisible(menuAware.getPresenter() instanceof DemoMenuAwarePort);
+    }
 }

@@ -16,23 +16,24 @@
 
 package com.techsenger.tabshell.core.registry;
 
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
+import com.techsenger.tabshell.material.menu.ManagedMenuGroup;
+import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 import com.techsenger.tabshell.material.menu.MenuGroupName;
-import com.techsenger.tabshell.material.menu.MenuItemName;
 import com.techsenger.tabshell.material.menu.MenuName;
-import com.techsenger.tabshell.material.menu.NamedMenu;
-import com.techsenger.tabshell.material.menu.NamedMenuGroup;
-import com.techsenger.tabshell.material.menu.NamedMenuItem;
 import com.techsenger.toolkit.core.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import com.techsenger.patternfx.mvp.FxView;
 
 /**
  *
@@ -44,9 +45,9 @@ public class ControlBuilder {
 
         private final MenuGroupName groupName;
 
-        private final NamedMenu menu;
+        private final ManagedMenu menu;
 
-        MenuDescriptor(MenuGroupName groupName, NamedMenu menu) {
+        MenuDescriptor(MenuGroupName groupName, ManagedMenu menu) {
             this.groupName = groupName;
             this.menu = menu;
         }
@@ -56,53 +57,40 @@ public class ControlBuilder {
 
         private final MenuName menuName;
 
-        private final NamedMenuGroup group;
+        private final ManagedMenuGroup group;
 
-        GroupDescriptor(MenuName menuName, NamedMenuGroup group) {
+        GroupDescriptor(MenuName menuName, ManagedMenuGroup group) {
             this.menuName = menuName;
             this.group = group;
         }
     }
 
-    private static class ItemDescriptor {
-
-        private final MenuGroupName groupName;
-
-        private final NamedMenuItem item;
-
-        ItemDescriptor(MenuGroupName groupName, NamedMenuItem item) {
-            this.groupName = groupName;
-            this.item = item;
-        }
-    }
-
     private final ControlRegistry registry;
 
-    private final Map<MenuName, MenuDescriptor> barMenusByName = new HashMap<>();
+    private final Map<MenuName, MenuDescriptor> mainMenusByName = new HashMap<>();
 
-    private final Map<MenuGroupName, GroupDescriptor> barGroupsByName = new HashMap<>();
+    private final Map<MenuGroupName, GroupDescriptor> mainGroupsByName = new HashMap<>();
 
-    private final Map<MenuItemName, ItemDescriptor> barItemsByName = new HashMap<>();
+    private final Map<MenuGroupName, Set<ManagedMenuItem>> mainItemsByGroup = new HashMap<>();
 
     public ControlBuilder(ControlRegistry registry) {
         this.registry = registry;
     }
 
-    public List<Menu> buildMenuBarElements(FxView view) {
-        var componentName = view.getPresenter().getDescriptor().getName();
+    public List<Menu> buildMainMenus(ShellFxView<?> shell) {
         //we clone collections because there can not be changes during building
-        var registrations = new ArrayList<>(registry.getBarMenuRegistrations(componentName));
-        buildBarElements(view, registrations);
-        List<NamedMenu> topMenus = new ArrayList<>();
-        Map<MenuName, Pair<NamedMenu, List<GroupDescriptor>>> menusAndGroupsByMenuName = new HashMap<>();
+        var registrations = new ArrayList<>(registry.mainMenu().getRegistrations());
+        buildMainMenus(shell, registrations);
+        List<ManagedMenu> topMenus = new ArrayList<>();
+        Map<MenuName, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroupsByMenuName = new HashMap<>();
         //0. adding menus to menu bar or to groups
-        for (var entry : this.barMenusByName.entrySet()) {
+        for (var entry : this.mainMenusByName.entrySet()) {
             var key = entry.getKey();
             var menuDescriptor = entry.getValue();
             if (menuDescriptor.groupName == null) {
                 topMenus.add(menuDescriptor.menu);
             } else {
-                var groupDescriptor = this.barGroupsByName.get(menuDescriptor.groupName);
+                var groupDescriptor = this.mainGroupsByName.get(menuDescriptor.groupName);
                 if (groupDescriptor != null) {
                     groupDescriptor.group.getItems().add(menuDescriptor.menu);
                     menuDescriptor.menu.setGroup(groupDescriptor.group);
@@ -111,17 +99,19 @@ public class ControlBuilder {
             menusAndGroupsByMenuName.put(key, new Pair<>(menuDescriptor.menu, new ArrayList<>()));
         }
         //1. adding items to groups
-        for (var entry : this.barItemsByName.entrySet()) {
-            var key = entry.getKey();
-            var itemDescriptor = entry.getValue();
-            var groupDescriptor = this.barGroupsByName.get(itemDescriptor.groupName);
+        for (var entry : this.mainItemsByGroup.entrySet()) {
+            var group = entry.getKey();
+            var items = entry.getValue();
+            var groupDescriptor = this.mainGroupsByName.get(group);
             if (groupDescriptor != null) {
-                groupDescriptor.group.getItems().add(itemDescriptor.item);
-                itemDescriptor.item.setGroup(groupDescriptor.group);
+                for (var item : items) {
+                    groupDescriptor.group.getItems().add(item);
+                    item.setGroup(groupDescriptor.group);
+                }
             }
         }
         //2. adding groups to menu content
-        for (var entry : this.barGroupsByName.entrySet()) {
+        for (var entry : this.mainGroupsByName.entrySet()) {
             var groupDescriptor = entry.getValue();
             var menusAndGroups = menusAndGroupsByMenuName.get(groupDescriptor.menuName);
             if (menusAndGroups != null) {
@@ -162,26 +152,27 @@ public class ControlBuilder {
      * @param view
      * @param regs
      */
-    private void buildBarElements(FxView view, List<AbstractMenuRegistration<?>> regs) {
+    private void buildMainMenus(ShellFxView<?> view, List<AbstractMenuRegistration<?, ?>> regs) {
         for (var r : regs) {
             switch (r.getType()) {
                 case MENU:
-                    var mr = (MenuRegistration) r;
+                    var mr = (MenuRegistration<ShellFxView<?>>) r;
                     var menu = mr.getFactory().create(view);
                     var md = new MenuDescriptor(mr.getGroupName(), menu);
-                    barMenusByName.put(menu.getName(), md);
+                    mainMenusByName.put(menu.getName(), md);
                     break;
                 case GROUP:
-                    var gr = (MenuGroupRegistration) r;
+                    var gr = (MenuGroupRegistration<ShellFxView<?>>) r;
                     var group = gr.getFactory().create(view);
                     var gd = new GroupDescriptor(gr.getMenuName(), group);
-                    barGroupsByName.put(group.getName(), gd);
+                    mainGroupsByName.put(group.getName(), gd);
                     break;
                 case ITEM:
-                    var ir = (MenuItemRegistration) r;
+                    var ir = (MenuItemRegistration<ShellFxView<?>>) r;
                     var item = ir.getFactory().create(view);
-                    var id = new ItemDescriptor(ir.getGroupKey(), item);
-                    barItemsByName.put(item.getName(), id);
+                    mainItemsByGroup
+                            .computeIfAbsent(ir.getGroupKey(), k -> new HashSet<>())
+                            .add(item);
                     break;
                 default:
                     throw new AssertionError();
@@ -189,8 +180,8 @@ public class ControlBuilder {
         }
     }
 
-    private void removeEmptyMenus(List<NamedMenu> menus) {
-        for (Iterator<NamedMenu> iterator = menus.iterator(); iterator.hasNext();) {
+    private void removeEmptyMenus(List<ManagedMenu> menus) {
+        for (Iterator<ManagedMenu> iterator = menus.iterator(); iterator.hasNext();) {
             Menu menu = iterator.next();
             if (removeEmptyMenus(menu)) {
                 iterator.remove();

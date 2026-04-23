@@ -16,19 +16,21 @@
 
 package com.techsenger.tabshell.core.registry;
 
+import com.techsenger.patternfx.mvp.ParentFxView;
+
 /**
  *
  * @author Pavel Castornii
  */
-abstract class AbstractMenuRegistration<T> implements ControlRegistry.Registration {
+abstract class AbstractMenuRegistration<T extends ParentFxView<?>, R> implements ControlRegistry.Registration {
 
     private final MenuElementType type;
 
-    private final ControlFactory<T> factory;
+    private final ControlFactory<T, R> factory;
 
     private Runnable unregister;
 
-    AbstractMenuRegistration(MenuElementType type, ControlFactory<T> factory) {
+    AbstractMenuRegistration(MenuElementType type, ControlFactory<T, R> factory) {
         this.type = type;
         this.factory = factory;
     }
@@ -42,7 +44,7 @@ abstract class AbstractMenuRegistration<T> implements ControlRegistry.Registrati
         return type;
     }
 
-    public ControlFactory<T> getFactory() {
+    public ControlFactory<T, R> getFactory() {
         return factory;
     }
 

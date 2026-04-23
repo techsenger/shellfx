@@ -18,7 +18,7 @@ package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.AbstractChildFxView;
-import com.techsenger.tabshell.core.FxViewUtils;
+import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.ShellPort;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
@@ -197,7 +197,7 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
     protected void initialize() {
         this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
                 () -> getContentBox().sceneProperty());
-        FxViewUtils.setComponent(wrapperPane, this);
+        FxViewUtils.setView(wrapperPane, this);
         super.initialize();
     }
 

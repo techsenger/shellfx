@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.registry;
+package com.techsenger.tabshell.core.menu;
 
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.tabshell.material.menu.MenuGroupName;
 import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuItemRegistration<T extends ParentFxView<?>> extends AbstractMenuRegistration<T, ManagedMenuItem> {
+public interface MenuItemHandler<T extends ParentFxView<?>> extends Handler {
 
-    private final MenuGroupName groupKey;
-
-    MenuItemRegistration(MenuGroupName groupKey, ControlFactory<T, ManagedMenuItem> factory) {
-        super(MenuElementType.ITEM, factory);
-        this.groupKey = groupKey;
+    static void setHandler(ManagedMenuItem item, MenuItemHandler<?> handler) {
+       item.getProperties().put(key(), handler);
     }
 
-    public MenuGroupName getGroupKey() {
-        return groupKey;
+    static MenuItemHandler<?> getHandler(ManagedMenuItem item) {
+        return (MenuItemHandler<?>) item.getProperties().get(key());
     }
+
+    private static Object key() {
+        class KeyHolder {
+            private static final Object KEY = new Object();
+        }
+        return KeyHolder.KEY;
+    }
+
+    void onAction();
 }

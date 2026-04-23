@@ -22,7 +22,7 @@ import com.techsenger.connectorfx.event.EventSource;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvp.ParentComposer;
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.tabshell.core.FxViewUtils;
+import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;

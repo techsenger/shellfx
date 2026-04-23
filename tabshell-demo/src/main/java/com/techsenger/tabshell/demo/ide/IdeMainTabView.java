@@ -17,12 +17,11 @@
 package com.techsenger.tabshell.demo.ide;
 
 import com.techsenger.tabshell.core.tab.TabView;
-import com.techsenger.tabshell.demo.main.MainView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface IdeMainTabView extends TabView, MainView {
+public interface IdeMainTabView extends TabView {
 
 }

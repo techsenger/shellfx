@@ -16,13 +16,15 @@
 
 package com.techsenger.tabshell.demo.menu;
 
-import com.techsenger.tabshell.core.CoreComponents;
+import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.menu.MenuHandler;
+import com.techsenger.tabshell.core.menu.MenuItemHandler;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.material.menu.NamedMenu;
-import com.techsenger.tabshell.material.menu.NamedMenuGroup;
-import com.techsenger.tabshell.material.menu.NamedMenuItem;
+import com.techsenger.tabshell.material.menu.ManagedMenu;
+import com.techsenger.tabshell.material.menu.ManagedMenuGroup;
+import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -48,52 +50,52 @@ public class ExtraMenuRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerExtraMenu() {
-        ControlFactory<NamedMenu> f = (v) -> {
-            // this menu is optional!
-            return new NamedMenu(ExtraMenu.NAME, true, false, false, "_Extra", 100);
+        ControlFactory<ShellFxView<?>, ManagedMenu> f = (v) -> {
+            var menu = new ManagedMenu(ExtraMenu.NAME, "_Extra", 100);
+            MenuHandler.setHandler(menu, new ExtraMenuHandler(menu, v));
+            return menu;
         };
-        addRegistration(getRegistry().registerMenu(CoreComponents.SHELL, null, f));
+        addRegistration(getRegistry().mainMenu().registerMenu(null, f));
     }
 
     protected void registerFooGroup() {
-        ControlFactory<NamedMenuGroup> f = (v) -> {
-            return new NamedMenuGroup(ExtraMenu.FOO_GROUP, 100);
+        ControlFactory<ShellFxView<?>, ManagedMenuGroup> f = (v) -> {
+            return new ManagedMenuGroup(ExtraMenu.FOO_GROUP, 100);
         };
-        addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, ExtraMenu.NAME, f));
+        addRegistration(getRegistry().mainMenu().registerMenuGroup(ExtraMenu.NAME, f));
     }
 
     protected void registerBarGroup() {
-        ControlFactory<NamedMenuGroup> f = (v) -> {
-            return new NamedMenuGroup(ExtraMenu.BAR_GROUP, 200);
+        ControlFactory<ShellFxView<?>, ManagedMenuGroup> f = (v) -> {
+            return new ManagedMenuGroup(ExtraMenu.BAR_GROUP, 200);
         };
-        addRegistration(getRegistry().registerMenuGroup(CoreComponents.SHELL, ExtraMenu.NAME, f));
+        addRegistration(getRegistry().mainMenu().registerMenuGroup(ExtraMenu.NAME, f));
     }
 
     /**
-     * Foo item will be in the foo group. It is not optional but is validatable.
+     * Foo item will be in the foo group.
      */
     protected void registerFooItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(ExtraMenu.FOO_ITEM, false, true, false, "_Foo", 100);
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("_Foo", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> System.out.println("Foo Item"));
+            MenuItemHandler.setHandler(item, new FooItemHandler(item, v));
             return item;
 
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, ExtraMenu.FOO_GROUP, f));
+        addRegistration(getRegistry().mainMenu().registerMenuItem(ExtraMenu.FOO_GROUP, f));
     }
 
     /**
-     * Bar item will be in the bar group. It is optional and validatable.
+     * Bar item will be in the bar group.
      */
     protected void registerBarItem() {
-        ControlFactory<NamedMenuItem> f = (v) -> {
-            var item = new NamedMenuItem(ExtraMenu.BAR_ITEM, true, true, false, "_Bar", 100);
+        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+            var item = new ManagedMenuItem("_Bar", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
-            item.setOnAction((e) -> System.out.println("Bar Item"));
+            MenuItemHandler.setHandler(item, new BarItemHandler(item, v));
             return item;
-
         };
-        addRegistration(getRegistry().registerMenuItem(CoreComponents.SHELL, ExtraMenu.BAR_GROUP, f));
+        addRegistration(getRegistry().mainMenu().registerMenuItem(ExtraMenu.BAR_GROUP, f));
     }
 }

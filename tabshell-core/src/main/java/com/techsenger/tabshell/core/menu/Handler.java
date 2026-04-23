@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.material.menu;
-
-import com.techsenger.patternfx.core.AbstractName;
+package com.techsenger.tabshell.core.menu;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultMenuItemName extends AbstractName implements MenuItemName {
+public interface Handler {
 
-    public DefaultMenuItemName() {
-        super(null);
-    }
+    /**
+     * Called when a menu or menu item needs to update its state (visibility, enabled/disabled state, etc.). This
+     * may occur when the menu is shown or when an accelerator key is pressed.
+     */
+    void onUpdate();
 
+    /**
+     * Called on menu showing.
+     */
+    void onShowing();
+
+    /**
+     * Called on menu hiding.
+     */
+    void onHiding();
 }

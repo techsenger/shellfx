@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.AbstractParentFxView;
 import com.techsenger.patternfx.mvp.ChildFxView;
+import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.area.AreaPort;
@@ -67,6 +68,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HeaderBar;
 import javafx.scene.layout.Priority;
@@ -94,9 +96,18 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
     public class Composer extends AbstractParentFxView<P>.Composer implements ShellFxView.Composer {
 
+        private final ReadOnlyObjectWrapper<ParentFxView<?>> focused = new ReadOnlyObjectWrapper<>();
+
+        private final ReadOnlyObjectWrapper<ParentFxView<?>> menuAware = new ReadOnlyObjectWrapper<>();
+
         private final DefaultShellFxView<P> view = DefaultShellFxView.this;
 
         private AreaFxView<?> workspace;
+
+        /**
+         * PauseTransition used to implement debounce on the JavaFX thread with duration.
+         */
+        private PauseTransition focusDebouncePause = new PauseTransition(Duration.millis(250));
 
         @Override
         public void addDialog(DialogFxView<?> dialog) {
@@ -170,6 +181,101 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         public AreaPort getWorkspacePort() {
             return this.workspace == null ? null : this.workspace.getPresenter();
         }
+
+        @Override
+        public ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty() {
+            return this.focused.getReadOnlyProperty();
+        }
+
+        @Override
+        public ParentFxView<?> getFocused() {
+            return this.focused.get();
+        }
+
+        @Override
+        public ReadOnlyObjectProperty<ParentFxView<?>> menuAwareProperty() {
+            return this.menuAware.getReadOnlyProperty();
+        }
+
+        @Override
+        public ParentFxView<?> getMenuAware() {
+            return this.menuAware.get();
+        }
+
+        private void init() {
+            this.focused.addListener((ov, oldV, newV) -> {
+                logger.debug("{} Focused component: {}", getDescriptor().getLogPrefix(),
+                        (newV == null) ? null : newV.getDescriptor().getFullName());
+            });
+            this.menuAware.addListener((ov, oldV, newV) -> {
+                logger.debug("{} Menu aware component: {}", getDescriptor().getLogPrefix(),
+                        (newV == null) ? null : newV.getDescriptor().getFullName());
+                updateMenuBar();
+            });
+            view.stage.getScene().focusOwnerProperty().addListener((ov, oldV, newV) -> {
+                this.focusDebouncePause.stop();
+                this.focusDebouncePause.playFromStart();
+            });
+            this.focusDebouncePause.setOnFinished((e) -> onFocusPauseFinished());
+        }
+
+        private void setFocused(ParentFxView<?> focused) {
+            this.focused.set(focused);
+        }
+
+        private void setMenuAware(ParentFxView<?> menuAware) {
+            this.menuAware.set(menuAware);
+        }
+
+        private void onFocusPauseFinished() {
+            var newNode = view.stage.getScene().getFocusOwner();
+            if (newNode == null) {
+                setFocused(null);
+                setMenuAware(view);
+                return;
+            }
+            Node currentNode = newNode;
+            while (currentNode != null) {
+                var view = FxViewUtils.getView(currentNode);
+                if (view instanceof ParentFxView<?> component) {
+                    setFocused(component);
+                    break;
+                }
+                currentNode = currentNode.getParent();
+            }
+            resolvedMenuAware(currentNode);
+        }
+
+        private void resolvedMenuAware(Node node) {
+            ParentFxView<?> focused = getFocused();
+            if (focused == null) {
+                setMenuAware(view);
+                return;
+            }
+            if (focused == this) { // when user clicks on shell main menu, the previous  menu aware is used
+                return;
+            }
+            ParentFxView<?> currentComponent = focused;
+            while (true) {
+                var port = currentComponent.getPresenter();
+                if (port instanceof MenuAwarePort menuAware) {
+                    setMenuAware(currentComponent);
+                    return;
+                }
+                if (currentComponent instanceof ChildFxView<?> child) {
+                    currentComponent = child.getParent();
+                    if (currentComponent == null) {
+                        logger.warn("{} Child {} has no parent", getDescriptor().getLogPrefix(),
+                                child.getDescriptor().getFullName());
+                        setMenuAware(view);
+                        return;
+                    }
+                } else {
+                    setMenuAware(view);
+                    return;
+                }
+            }
+        }
     }
 
     private class ShellDialogManager extends DefaultDialogManager {
@@ -236,15 +342,6 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
     private final ControlRegistry controlRegistry = new ControlRegistry();
 
-    private final ReadOnlyObjectWrapper<ParentFxView<?>> focused = new ReadOnlyObjectWrapper<>();
-
-    private final ReadOnlyObjectWrapper<ParentFxView<?>> menuAware = new ReadOnlyObjectWrapper<>();
-
-    /**
-     * PauseTransition used to implement debounce on the JavaFX thread with duration.
-     */
-    private PauseTransition focusDebouncePause = new PauseTransition(Duration.millis(250));
-
     private ThemeApplier themeApplier;
 
     private FontApplier fontApplier;
@@ -286,7 +383,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
     public void upgradeMenuBar() {
         this.menuBar.getMenus().clear();
         var builder = new ControlBuilder(controlRegistry);
-        var menus = builder.buildMenuBarElements(this);
+        var menus = builder.buildMainMenus(this);
         this.menuBar.getMenus().addAll(menus);
         logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());
         updateMenuBar();
@@ -294,7 +391,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
 
     @Override
     public void updateMenuBar() {
-        this.menuManager.updateMenuBar((MenuAwarePort) getMenuAware().getPresenter());
+        this.menuManager.updateMenuBar((MenuAwarePort) getComposer().getMenuAware().getPresenter());
         logger.debug("{} Menu bar updated", getDescriptor().getLogPrefix());
     }
 
@@ -344,36 +441,8 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
     }
 
     @Override
-    public ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty() {
-        return this.focused.getReadOnlyProperty();
-    }
-
-    @Override
-    public ParentFxView<?> getFocused() {
-        return this.focused.get();
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<ParentFxView<?>> menuAwareProperty() {
-        return this.menuAware.getReadOnlyProperty();
-    }
-
-    @Override
-    public ParentFxView<?> getMenuAware() {
-        return this.menuAware.get();
-    }
-
-    @Override
     public void closeWindow() {
         this.stage.close();
-    }
-
-    protected void setFocused(ParentFxView<?> focused) {
-        this.focused.set(focused);
-    }
-
-    protected void setMenuAware(ParentFxView<?> menuAware) {
-        this.menuAware.set(menuAware);
     }
 
     @Override
@@ -388,7 +457,8 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
     @Override
     protected void initialize() {
         super.initialize();
-        setMenuAware(this);
+        getComposer().init();
+        getComposer().setMenuAware(this);
     }
 
     @Override
@@ -430,19 +500,6 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
                 this.maximizeIconView.setIcon(CoreIcons.WINDOW_MAXIMIZE);
             }
         });
-        this.stage.getScene().focusOwnerProperty().addListener((ov, oldV, newV) -> {
-            this.focusDebouncePause.stop();
-            this.focusDebouncePause.playFromStart();
-        });
-        this.focused.addListener((ov, oldV, newV) -> {
-            logger.debug("{} Focused component: {}", getDescriptor().getLogPrefix(),
-                    (newV == null) ? null : newV.getDescriptor().getFullName());
-        });
-        this.menuAware.addListener((ov, oldV, newV) -> {
-            logger.debug("{} Menu aware component: {}", getDescriptor().getLogPrefix(),
-                    (newV == null) ? null : newV.getDescriptor().getFullName());
-            updateMenuBar();
-        });
         this.stage.widthProperty().addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue()));
         this.stage.heightProperty().addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
         this.stage.maximizedProperty().addListener((ov, oldV, newV) -> getPresenter().onMaximized(newV));
@@ -458,7 +515,8 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         this.maximizeButton.setOnAction(e -> stage.setMaximized(!stage.isMaximized()));
         this.minimizeButton.setOnAction(e -> stage.setIconified(true));
         this.stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::fixAcceleratorKeyPressed);
-        this.focusDebouncePause.setOnFinished((e) -> onFocusPauseFinished());
+        this.stage.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
+                e -> menuManager.setLastMouseClickTime(System.nanoTime()));
 //        var viewModel = getViewModel();
 //        stage.addEventHandler(StageResizeEvent.STAGE_RESIZE_FINISHED, e -> {
 //            if (!stage.isMaximized()) {
@@ -479,6 +537,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
      * @param e
      */
     private void fixAcceleratorKeyPressed(KeyEvent e) {
+        menuManager.setLastKeyPressedTime(System.nanoTime());
         Node focusedNode = stage.getScene().getFocusOwner();
         if (focusedNode != null && focusedNode instanceof Control) {
             Control c = (Control) focusedNode;
@@ -501,55 +560,5 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
         return List.of(
                 new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
                 new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
-    }
-
-    private void onFocusPauseFinished() {
-        var newNode = this.stage.getScene().getFocusOwner();
-        if (newNode == null) {
-            setFocused(null);
-            setMenuAware(this);
-            return;
-        }
-        Node currentNode = newNode;
-        while (currentNode != null) {
-            var component = FxViewUtils.getComponent(currentNode);
-            if (component != null) {
-                setFocused(component);
-                break;
-            }
-            currentNode = currentNode.getParent();
-        }
-        resolvedMenuAware(currentNode);
-    }
-
-    private void resolvedMenuAware(Node node) {
-        ParentFxView<?> focused = getFocused();
-        if (focused == null) {
-            setMenuAware(this);
-            return;
-        }
-        if (focused == this) { // when user clicks on shell main menu, the previous  menu aware is used
-            return;
-        }
-        ParentFxView<?> currentComponent = focused;
-        while (true) {
-            var port = currentComponent.getPresenter();
-            if (port instanceof MenuAwarePort menuAware) {
-                setMenuAware(currentComponent);
-                return;
-            }
-            if (currentComponent instanceof ChildFxView<?> child) {
-                currentComponent = child.getParent();
-                if (currentComponent == null) {
-                    logger.warn("{} Child {} has no parent", getDescriptor().getLogPrefix(),
-                            child.getDescriptor().getFullName());
-                    setMenuAware(this);
-                    return;
-                }
-            } else {
-                setMenuAware(this);
-                return;
-            }
-        }
     }
 }
