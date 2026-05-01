@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class EventTabPresenter<V extends EventTabView, C extends EventTabComposer> extends AbstractTabPresenter<V, C> {
+public class EventTabPresenter<V extends EventTabView> extends AbstractTabPresenter<V> {
 
     private static final long ZONE_OFFSET_MILLIS = ZoneId.systemDefault().getRules().getOffset(Instant.now())
             .getTotalSeconds() * 1000L;
@@ -101,12 +101,12 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
         @Override
         public void onEventTypesChanged() {
-            filter.setSelectedEventTypes(getComposer().getToolBarPort().getSelectedEventTypes());
+            filter.setSelectedEventTypes(getView().getComposer().getToolBarPort().getSelectedEventTypes());
         }
 
         @Override
         public void onMatchCase(boolean selected) {
-            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
+            filter.setMatcher(getView().getComposer().getToolBarPort().createFindMatcher());
         }
 
         @Override
@@ -116,12 +116,12 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
 
         @Override
         public void onFind() {
-            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
+            filter.setMatcher(getView().getComposer().getToolBarPort().createFindMatcher());
         }
 
         @Override
         public void onFindCleared() {
-            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
+            filter.setMatcher(getView().getComposer().getToolBarPort().createFindMatcher());
         }
     }
 
@@ -173,7 +173,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
         super.postInitialize();
         setTitle("Events");
         setClosable(false);
-        var tb = getComposer().getToolBarPort();
+        var tb = getView().getComposer().getToolBarPort();
         this.filter.setSelected(tb.isFilterSelected());
         this.filter.setMatcher(tb.createFindMatcher());
         this.filter.setSelectedNodeOnly(tb.isSelectedNodeOnly());
@@ -213,7 +213,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
                         break;
                     }
                     newEntriesCount++;
-                    if (getComposer().getToolBarPort().isFilterSelected()) {
+                    if (getView().getComposer().getToolBarPort().isFilterSelected()) {
                         if (matchesFilter(filter, entry)) {
                             processedEntries.add(entry);
                         }
@@ -305,7 +305,7 @@ public class EventTabPresenter<V extends EventTabView, C extends EventTabCompose
     }
 
     private void updateStatistics() {
-        var tb = getComposer().getToolBarPort();
+        var tb = getView().getComposer().getToolBarPort();
         tb.setStatistics(matchedEntriesCount + " / " + totalEntriesCount);
     }
 }

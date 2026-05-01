@@ -44,7 +44,8 @@ import javafx.scene.layout.VBox;
  */
 public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresenter> implements MenuAwareAreaView {
 
-    public class Composer extends AbstractAreaFxView<MenuAwareAreaPresenter>.Composer implements MenuAwareAreaComposer {
+    public class Composer extends AbstractAreaFxView<MenuAwareAreaPresenter>.Composer
+            implements MenuAwareAreaView.Composer {
 
         private final MenuAwareAreaFxView view = MenuAwareAreaFxView.this;
 

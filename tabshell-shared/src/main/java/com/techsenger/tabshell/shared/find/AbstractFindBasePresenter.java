@@ -18,7 +18,6 @@ package com.techsenger.tabshell.shared.find;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +28,8 @@ import java.util.Set;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindBasePresenter<V extends FindBaseView, C extends AreaComposer>
-        extends AbstractAreaPresenter<V, C> implements ResultFindPort {
+public abstract class AbstractFindBasePresenter<V extends FindBaseView>
+        extends AbstractAreaPresenter<V> implements ResultFindPort {
 
     private final Set<FindFeature> features;
 

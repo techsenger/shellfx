@@ -26,8 +26,7 @@ import javafx.geometry.Side;
  *
  * @author Pavel Castornii
  */
-public class SideBarPresenter<V extends SideBarView, C extends SideBarComposer>
-        extends AbstractAreaPresenter<V, C> implements SideBarPort {
+public class SideBarPresenter<V extends SideBarView> extends AbstractAreaPresenter<V> implements SideBarPort {
 
     private final SideBarHistory history;
 
@@ -49,7 +48,7 @@ public class SideBarPresenter<V extends SideBarView, C extends SideBarComposer>
 
     @Override
     public List<? extends TabDockPort> getTabDocks() {
-        return getComposer().getTabDocks();
+        return getView().getComposer().getTabDockPorts();
     }
 
     @Override

@@ -27,8 +27,8 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
-        extends AbstractParentPresenter<V, C> implements ShellPresenter<V, C> {
+public class DefaultShellPresenter<V extends ShellView>
+        extends AbstractParentPresenter<V> implements ShellPresenter<V> {
 
     private final ShellContext context;
 
@@ -53,6 +53,11 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
     }
 
     @Override
+    public Composer getComposer() {
+        return getView().getComposer();
+    }
+
+    @Override
     public ShellContext getContext() {
         return this.context;
     }
@@ -74,7 +79,7 @@ public class DefaultShellPresenter<V extends ShellView, C extends ShellComposer>
 
     @Override
     public void close() {
-        var iterator = getComposer().breadthFirstIterator();
+        var iterator = getView().getComposer().breadthFirstIterator();
         while (iterator.hasNext()) {
             var c = iterator.next();
             if (iterator.getDepth() > 0) {

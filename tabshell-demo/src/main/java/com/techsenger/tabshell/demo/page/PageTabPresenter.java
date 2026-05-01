@@ -29,13 +29,13 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class PageTabPresenter extends AbstractTabPresenter<PageTabView, PageTabComposer> {
+public class PageTabPresenter extends AbstractTabPresenter<PageTabView> {
 
     public PageTabPresenter(PageTabView view, HistoryProvider<PageTabHistory> historyProvider, PageMenuType menuType) {
         super(view);
         setHistoryProvider(historyProvider);
         setHistoryPolicy(HistoryPolicy.ALL);
-        getComposer().setMenuType(menuType);
+        getView().getComposer().setMenuType(menuType);
     }
 
     @Override

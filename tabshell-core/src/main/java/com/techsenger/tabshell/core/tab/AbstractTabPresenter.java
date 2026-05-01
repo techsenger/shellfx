@@ -24,8 +24,8 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractTabPresenter<V extends TabView, C extends TabComposer>
-        extends AbstractChildPresenter<V, C> implements TabPresenter<V, C> {
+public abstract class AbstractTabPresenter<V extends TabView>
+        extends AbstractChildPresenter<V> implements TabPresenter<V> {
 
     private boolean closable = true;
 
@@ -44,13 +44,18 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
     }
 
     @Override
+    public Composer getComposer() {
+        return getView().getComposer();
+    }
+
+    @Override
     public void onSelected(boolean selected) {
         this.selected = selected;
     }
 
     @Override
     public void close() {
-        getComposer().remove();
+        getView().getComposer().remove();
     }
 
     @Override
@@ -115,7 +120,7 @@ public abstract class AbstractTabPresenter<V extends TabView, C extends TabCompo
 
     @Override
     public ShellPort getShell() {
-        return getComposer().getShellPort();
+        return getView().getComposer().getShellPort();
     }
 
     @Override

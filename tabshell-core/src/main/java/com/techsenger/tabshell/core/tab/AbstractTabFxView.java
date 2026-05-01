@@ -42,8 +42,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractTabFxView<P extends TabPresenter<?, ?>>
-        extends AbstractChildFxView<P> implements TabFxView<P> {
+public abstract class AbstractTabFxView<P extends TabPresenter<?>> extends AbstractChildFxView<P>
+        implements TabFxView<P> {
 
     public class Composer extends AbstractChildFxView<P>.Composer implements TabFxView.Composer {
 

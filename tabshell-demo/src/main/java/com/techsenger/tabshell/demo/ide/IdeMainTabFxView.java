@@ -44,10 +44,10 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class IdeMainTabFxView<P extends IdeMainTabPresenter<?, ?>> extends AbstractTabFxView<P> implements
+public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends AbstractTabFxView<P> implements
         IdeMainTabView {
 
-    public class Composer extends AbstractTabFxView<P>.Composer implements IdeMainTabComposer, TestInterface {
+    public class Composer extends AbstractTabFxView<P>.Composer implements IdeMainTabView.Composer, TestInterface {
 
         private final IdeMainTabFxView<P> view = IdeMainTabFxView.this;
 
@@ -98,6 +98,11 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?, ?>> extends Abstr
 
     public IdeMainTabFxView(ShellFxView<?> shell) {
         super(shell);
+    }
+
+    @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
     }
 
     @Override

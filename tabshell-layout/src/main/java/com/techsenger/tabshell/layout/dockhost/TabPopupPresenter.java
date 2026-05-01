@@ -29,8 +29,7 @@ import javafx.geometry.Side;
  *
  * @author Pavel Castornii
  */
-public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupComposer> extends AbstractAreaPresenter<V, C>
-        implements TabPopupPort {
+public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPresenter<V> implements TabPopupPort {
 
     private double oldWidth = 250;
 
@@ -61,7 +60,7 @@ public class TabPopupPresenter<V extends TabPopupView, C extends TabPopupCompose
 
     @Override
     public List<? extends TabPort> getTabs() {
-        return getComposer().getTabPorts();
+        return getView().getComposer().getTabPorts();
     }
 
     @Override

@@ -28,7 +28,7 @@ import com.techsenger.patternfx.mvp.ParentPresenter;
  *
  * @author Pavel Castornii
  */
-public interface UtilityDockContainerFxView<P extends ParentPresenter<?, ?>> extends ParentFxView<P> {
+public interface UtilityDockContainerFxView<P extends ParentPresenter<?>> extends ParentFxView<P> {
 
     interface Composer extends ParentFxView.Composer {
 

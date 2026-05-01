@@ -35,7 +35,7 @@ import javafx.scene.layout.VBox;
  */
 public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implements PageTabView {
 
-    public class Composer extends AbstractTabFxView<PageTabPresenter>.Composer implements PageTabComposer {
+    public class Composer extends AbstractTabFxView<PageTabPresenter>.Composer implements PageTabView.Composer {
 
         private PageMenuType menuType;
 

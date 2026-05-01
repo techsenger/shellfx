@@ -32,8 +32,8 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogPresenter<V extends DialogView, C extends DialogComposer>
-        extends AbstractPopupPresenter<V, C> implements DialogPresenter<V, C> {
+public abstract class AbstractDialogPresenter<V extends DialogView>
+        extends AbstractPopupPresenter<V> implements DialogPresenter<V> {
 
     private static final class ButtonModel {
 

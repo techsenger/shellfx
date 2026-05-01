@@ -22,8 +22,8 @@ import com.techsenger.patternfx.mvp.AbstractChildPresenter;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractAreaPresenter<V extends AreaView, C extends AreaComposer>
-        extends AbstractChildPresenter<V, C> implements AreaPresenter<V, C> {
+public abstract class AbstractAreaPresenter<V extends AreaView>
+        extends AbstractChildPresenter<V> implements AreaPresenter<V> {
 
     private double width;
 

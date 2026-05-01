@@ -22,9 +22,9 @@ import com.techsenger.tabshell.core.area.AreaFxView;
  *
  * @author Pavel Castornii
  */
-public interface PageFxView<P extends PagePresenter<?, ?>> extends AreaFxView<P>, PageView {
+public interface PageFxView<P extends PagePresenter<?>> extends AreaFxView<P>, PageView {
 
-    interface Composer extends AreaFxView.Composer, PageComposer {
+    interface Composer extends AreaFxView.Composer, PageView.Composer {
 
     }
 

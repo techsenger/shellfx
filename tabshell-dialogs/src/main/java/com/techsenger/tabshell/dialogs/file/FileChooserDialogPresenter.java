@@ -58,8 +58,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogPresenter<V extends FileChooserDialogView, C extends FileChooserDialogComposer>
-        extends AbstractDialogPresenter<V, C> implements FileChooserDialogPort {
+public class FileChooserDialogPresenter<V extends FileChooserDialogView>
+        extends AbstractDialogPresenter<V> implements FileChooserDialogPort {
 
     private static final Logger logger = LoggerFactory.getLogger(FileChooserDialogPresenter.class);
 
@@ -569,7 +569,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView, C exten
     }
 
     private void showWarning(String text) {
-        getComposer().addAlertDialog(AlertDialogType.WARNING, text);
+        getView().getComposer().addAlertDialog(AlertDialogType.WARNING, text);
     }
 
     private void setDefaultStorageAndDirectory() {

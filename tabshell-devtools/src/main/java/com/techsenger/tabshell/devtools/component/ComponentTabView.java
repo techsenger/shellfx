@@ -18,6 +18,8 @@ package com.techsenger.tabshell.devtools.component;
 
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.devtools.ToolBarPort;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,18 @@ import java.util.Map;
  * @author Pavel Castornii
  */
 public interface ComponentTabView extends TabView {
+
+    interface Composer extends TabView.Composer {
+
+        ToolBarPort getComponentToolBarPort();
+
+        ToolBarPort getInspectorToolBarPort();
+
+        NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption);
+    }
+
+    @Override
+    Composer getComposer();
 
     void setRootComponent(ComponentItem item);
 

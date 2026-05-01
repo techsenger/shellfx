@@ -19,13 +19,27 @@ package com.techsenger.tabshell.devtools.node;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
 import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.devtools.ToolBarPort;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface NodeTabView extends TabView {
+
+    interface Composer extends TabView.Composer {
+
+        ToolBarPort getNodeToolBarPort();
+
+        ToolBarPort getPropertyToolBarPort();
+
+        void addPropertyDialog(Element node, PropertyItem item, String declaringClassName, Consumer<String> linkOpener);
+    }
+
+    @Override
+    Composer getComposer();
 
     void selectRoot();
 

@@ -20,12 +20,13 @@ package com.techsenger.tabshell.core.page;
  *
  * @author Pavel Castornii
  */
-public interface TreePageContainerFxView<P extends TreePageContainerPresenter<?, ?>> extends TreePageContainerView {
+public interface TreePageContainerFxView<P extends TreePageContainerPresenter<?>> extends TreePageContainerView {
 
-    interface Composer extends TreePageContainerComposer {
+    interface Composer extends TreePageContainerView.Composer {
 
         void setPages(TreePageDescriptor root, boolean showRoot);
     }
 
+    @Override
     Composer getComposer();
 }

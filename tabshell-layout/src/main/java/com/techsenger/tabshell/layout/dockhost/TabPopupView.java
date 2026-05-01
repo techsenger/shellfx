@@ -16,7 +16,10 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AreaView;
+import com.techsenger.tabshell.core.tab.TabPort;
+import java.util.List;
 
 /**
  *
@@ -24,4 +27,16 @@ import com.techsenger.tabshell.core.area.AreaView;
  */
 public interface TabPopupView extends AreaView {
 
+    interface Composer extends AreaView.Composer {
+
+        /**
+         * Returns un unmodifiable list of tabs. A list instance is created on each method call.
+         *
+         * @return
+         */
+        @Unmodifiable List<? extends TabPort> getTabPorts();
+    }
+
+    @Override
+    Composer getComposer();
 }

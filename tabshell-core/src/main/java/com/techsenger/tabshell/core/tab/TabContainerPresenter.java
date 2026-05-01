@@ -27,16 +27,14 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerPresenter<V extends TabContainerView, C extends TabContainerComposer>
-        extends ParentPresenter<V, C>, TabContainerPort {
-
-    C getComposer();
+public interface TabContainerPresenter<V extends TabContainerView> extends ParentPresenter<V>, TabContainerPort {
 
     void onSelectedTabChanged(int index);
 
     @Override
     default void closeOtherTabs(TabPort tab) {
-        var otherTabs = getComposer().getTabPorts().stream().filter((t) -> t != tab).collect(Collectors.toList());
+        var otherTabs = getView().getComposer().getTabPorts().stream().filter((t) -> t != tab)
+                .collect(Collectors.toList());
         closeTabs(otherTabs);
     }
 
@@ -71,12 +69,12 @@ public interface TabContainerPresenter<V extends TabContainerView, C extends Tab
 
     @Override
     default void closeAllTabs() {
-        this.closeTabs(new ArrayList<>(getComposer().getTabPorts()));
+        this.closeTabs(new ArrayList<>(getView().getComposer().getTabPorts()));
     }
 
     @Override
     default void closeRightTabs(TabPort tab) {
-        var tabs = getComposer().getTabPorts();
+        var tabs = getView().getComposer().getTabPorts();
         var index = tabs.indexOf(tab);
         if (index == -1 || index + 1 == tabs.size()) {
             return;
@@ -90,7 +88,7 @@ public interface TabContainerPresenter<V extends TabContainerView, C extends Tab
 
     @Override
     default void closeLeftTabs(TabPort tab) {
-        var tabs = getComposer().getTabPorts();
+        var tabs = getView().getComposer().getTabPorts();
         var index = tabs.indexOf(tab);
         if (index == -1 || index == 0) {
             return;

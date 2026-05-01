@@ -38,7 +38,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogFxView<P extends PropertyDialogPresenter<?, ?>>  extends AbstractDialogFxView<P>
+public class PropertyDialogFxView<P extends PropertyDialogPresenter<?>>  extends AbstractDialogFxView<P>
         implements PropertyDialogView {
 
     private final GridPane gridPane = new GridPane();

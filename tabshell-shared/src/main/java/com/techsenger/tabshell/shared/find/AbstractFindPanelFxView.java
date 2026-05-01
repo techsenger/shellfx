@@ -36,7 +36,7 @@ import javafx.scene.layout.Priority;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresenter<?, ?>>
+public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresenter<?>>
         extends AbstractFindBaseFxView<P> implements FindPanelView {
 
     protected static final String FOUND_STYLE_CLASS = "found";

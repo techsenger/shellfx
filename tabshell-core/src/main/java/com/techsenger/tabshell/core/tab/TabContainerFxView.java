@@ -24,9 +24,9 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerFxView<P extends TabContainerPresenter<?, ?>> extends ParentFxView<P> {
+public interface TabContainerFxView<P extends TabContainerPresenter<?>> extends ParentFxView<P> {
 
-     interface Composer extends ParentFxView.Composer, TabContainerComposer {
+     interface Composer extends ParentFxView.Composer, TabContainerView.Composer {
 
         void addTab(TabFxView<?> tab);
 

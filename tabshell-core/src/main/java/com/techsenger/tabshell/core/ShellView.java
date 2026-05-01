@@ -17,6 +17,8 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentView;
+import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.dialog.DialogContainerView;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
@@ -25,7 +27,15 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface ShellView extends ParentView, WriteOnlyShell {
+public interface ShellView extends ParentView, WriteOnlyShell, DialogContainerView {
+
+    interface Composer extends ParentView.Composer, DialogContainerView.Composer {
+
+        AreaPort getWorkspacePort();
+    }
+
+    @Override
+    Composer getComposer();
 
     /**
      * The width of the stage if the stage is not maximized.

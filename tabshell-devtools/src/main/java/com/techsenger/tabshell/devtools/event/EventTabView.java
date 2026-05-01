@@ -24,6 +24,14 @@ import com.techsenger.tabshell.core.tab.TabView;
  */
 public interface EventTabView extends TabView {
 
+    interface Composer extends TabView.Composer {
+
+        EventToolBarPort getToolBarPort();
+    }
+
+    @Override
+    Composer getComposer();
+
     void appendText(String text);
 
     void clearText();

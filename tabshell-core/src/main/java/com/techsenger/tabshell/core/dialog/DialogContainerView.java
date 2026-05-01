@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.dockhost;
+package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabshell.core.area.AreaComposer;
-import com.techsenger.tabshell.core.tab.TabPort;
-import java.util.List;
+import com.techsenger.tabshell.core.popup.PopupContainerView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabPopupComposer extends AreaComposer {
+public interface DialogContainerView extends PopupContainerView {
 
-    /**
-     * Returns un unmodifiable list of tabs. A list instance is created on each method call.
-     *
-     * @return
-     */
-    @Unmodifiable List<? extends TabPort> getTabPorts();
+    interface Composer extends PopupContainerView.Composer, DialogContainerPort.Composer {
+
+    }
+
+    @Override
+    Composer getComposer();
 }

@@ -31,7 +31,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class NameValueDialogFxView<P extends NameValueDialogPresenter<?, ?>>
+public class NameValueDialogFxView<P extends NameValueDialogPresenter<?>>
         extends AbstractDialogFxView<P> implements NameValueDialogView {
 
     private final Label nameLabel = new Label("Name");

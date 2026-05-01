@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.patternfx.mvp.ParentView;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -28,9 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public interface CloseAwarePresenter<V extends ParentView, C extends ParentComposer> extends CloseAwarePort {
-
-    C getComposer();
+public interface CloseAwarePresenter<V extends ParentView> extends ParentPresenter<V>, CloseAwarePort {
 
     Descriptor getDescriptor();
 
@@ -46,7 +44,7 @@ public interface CloseAwarePresenter<V extends ParentView, C extends ParentCompo
                 CloseCheckResult checkResult = null;
                 CloseAwarePort notReadyComponent = null;
                 CloseAwarePort prepRequiredComponent = null;
-                var iterator = getComposer().breadthFirstIterator();
+                var iterator = getView().getComposer().breadthFirstIterator();
                 while (iterator.hasNext()) {
                     var parent = iterator.next();
                     if (parent instanceof CloseAwarePort closeable) {
@@ -64,7 +62,7 @@ public interface CloseAwarePresenter<V extends ParentView, C extends ParentCompo
                 if (checkResult != CloseCheckResult.READY && logger().isDebugEnabled()) {
                     final var finalCanClose = checkResult;
                     final var finalSavedCloseable = notReadyComponent;
-                    var tree = getComposer().toTreeString((c, b) -> {
+                    var tree = getView().getComposer().toTreeString((c, b) -> {
                         b.append(c.getDescriptor().getFullName());
                         if (c == finalSavedCloseable) {
                             b.append(" <-- ");

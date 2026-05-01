@@ -32,7 +32,7 @@ import javafx.scene.layout.HBox;
  *
  * @author Pavel Castornii
  */
-public class AlertDialogFxView<P extends AlertDialogPresenter<?, ?>> extends AbstractDialogFxView<P>
+public class AlertDialogFxView<P extends AlertDialogPresenter<?>> extends AbstractDialogFxView<P>
         implements AlertDialogView {
 
     private final IconViewBox messageIconViewBox = new IconViewBox();

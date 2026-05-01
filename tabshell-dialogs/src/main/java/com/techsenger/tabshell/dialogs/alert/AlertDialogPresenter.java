@@ -20,7 +20,6 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.INFO;
@@ -33,8 +32,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class AlertDialogPresenter<V extends AlertDialogView, C extends DialogComposer>
-        extends AbstractDialogPresenter<V, C> {
+public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDialogPresenter<V> {
 
     private final AlertDialogType dialogType;
 

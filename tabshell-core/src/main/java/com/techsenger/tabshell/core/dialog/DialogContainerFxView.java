@@ -25,9 +25,9 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface DialogContainerFxView<P extends ParentPresenter<?, ?>> extends PopupContainerFxView<P> {
+public interface DialogContainerFxView<P extends ParentPresenter<?>> extends PopupContainerFxView<P> {
 
-    interface Composer extends PopupContainerFxView.Composer, DialogContainerComposer {
+    interface Composer extends PopupContainerFxView.Composer, DialogContainerView.Composer {
 
         /**
          * Adds the specified dialog component to the component tree.

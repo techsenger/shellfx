@@ -30,7 +30,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?, ?>>
+public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
         extends AbstractAreaFxView<P> implements PopupFxView<P> {
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements PopupFxView.Composer {

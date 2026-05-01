@@ -18,6 +18,7 @@ package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.tabshell.core.page.PageContainerView;
 import com.techsenger.tabshell.core.page.PageItem;
+import com.techsenger.tabshell.core.page.PagePort;
 import java.util.List;
 
 /**
@@ -25,6 +26,14 @@ import java.util.List;
  * @author Pavel Castornii
  */
 public interface PageHostView extends PageHostViewBase, PageContainerView {
+
+    interface Composer extends PageHostViewBase.Composer, PageContainerView.Composer {
+
+        PagePort providePagePort(int index);
+    }
+
+    @Override
+    Composer getComposer();
 
     void setMenu(List<PageItem> items);
 

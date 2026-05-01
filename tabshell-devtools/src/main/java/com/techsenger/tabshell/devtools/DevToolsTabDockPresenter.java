@@ -26,7 +26,6 @@ import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
-import com.techsenger.tabshell.layout.dockhost.TabDockComposer;
 import com.techsenger.tabshell.layout.dockhost.TabDockPresenter;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.color.ColorUtils;
@@ -37,8 +36,8 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends TabDockComposer>
-        extends TabDockPresenter<V, C> implements DevToolsTabDockPort, CloseAwarePresenter<V, C> {
+public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
+        extends TabDockPresenter<V> implements DevToolsTabDockPort, CloseAwarePresenter<V> {
 
     private final Settings settings;
 
@@ -70,7 +69,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView, C extends T
 
     @Override
     public void close() {
-        getComposer().remove();
+        getView().getComposer().remove();
     }
 
     @Override

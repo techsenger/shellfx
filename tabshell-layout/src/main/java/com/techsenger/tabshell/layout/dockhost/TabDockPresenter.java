@@ -24,8 +24,7 @@ import com.techsenger.tabshell.layout.tabhost.TabHostPresenter;
  *
  * @author Pavel Castornii
  */
-public class TabDockPresenter<V extends TabDockView, C extends TabDockComposer>
-        extends TabHostPresenter<V, C> implements TabDockPort  {
+public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V> implements TabDockPort  {
 
     private ComponentPosition minimizedPosition;
 

@@ -17,6 +17,8 @@
 package com.techsenger.tabshell.devtools.environment;
 
 import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.devtools.ToolBarPort;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import java.util.List;
 
 /**
@@ -24,6 +26,16 @@ import java.util.List;
  * @author Pavel Castornii
  */
 public interface EnvironmentTabView extends TabView {
+
+    interface Composer extends TabView.Composer {
+
+        ToolBarPort getToolBarPort();
+
+        NameValueDialogPort addNameValueDialog();
+    }
+
+    @Override
+    Composer getComposer();
 
     /**
      * Flat list of items representing a tree structure. The hierarchy is encoded via

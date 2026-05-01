@@ -26,6 +26,32 @@ import javafx.scene.text.Font;
  */
 public interface TabHostView extends AreaView, TabContainerView {
 
+    interface Composer extends AreaView.Composer, TabContainerView.Composer {
+
+        /**
+         * Checks if tabs are detached.
+         *
+         * @return
+         */
+        boolean areTabsDetached();
+
+        /**
+         * Attaches the detached tabs to the {@link TabPane}. The process involves several iteration loops, so it may be
+         * relatively costly.
+         */
+        void attachTabs();
+
+        /**
+         * Detaches the tabs from the {@link TabPane}. This operation is required when the tabs need to be temporarily
+         * added to other {@link TabPane}s. The process involves several iteration loops, so it may be relatively
+         * costly.
+         */
+        void detachTabs();
+    }
+
+    @Override
+    Composer getComposer();
+
     void setTabHeaderAutoHide(boolean value);
 
     void setTabHeaderVisible(boolean value);

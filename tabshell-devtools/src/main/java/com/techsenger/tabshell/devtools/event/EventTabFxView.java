@@ -27,9 +27,9 @@ import jfx.incubator.scene.control.richtext.RichTextArea;
  *
  * @author Pavel Castornii
  */
-public class EventTabFxView<P extends EventTabPresenter<?, ?>> extends AbstractTabFxView<P> implements EventTabView {
+public class EventTabFxView<P extends EventTabPresenter<?>> extends AbstractTabFxView<P> implements EventTabView {
 
-    public class Composer extends AbstractTabFxView<P>.Composer implements EventTabComposer {
+    public class Composer extends AbstractTabFxView<P>.Composer implements EventTabView.Composer {
 
         private EventToolBarFxView<?> toolBar;
 

@@ -24,6 +24,14 @@ import com.techsenger.tabshell.core.area.AreaView;
  */
 public interface PopupView extends AreaView {
 
+    interface Composer extends AreaView.Composer {
+
+        void remove();
+    }
+
+    @Override
+    Composer getComposer();
+
     void setPrefWidth(double value);
 
     void setPrefHeight(double value);

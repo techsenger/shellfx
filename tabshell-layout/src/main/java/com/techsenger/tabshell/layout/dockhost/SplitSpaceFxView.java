@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class SplitSpaceFxView<P extends SplitSpacePresenter<?, ?>> extends AbstractAreaFxView<P>
+public class SplitSpaceFxView<P extends SplitSpacePresenter<?>> extends AbstractAreaFxView<P>
         implements SplitSpaceView {
 
     public class Composer extends AbstractAreaFxView<P>.Composer {

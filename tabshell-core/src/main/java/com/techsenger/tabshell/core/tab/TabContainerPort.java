@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentPort;
 import java.util.List;
 
@@ -24,6 +25,23 @@ import java.util.List;
  * @author Pavel Castornii
  */
 public interface TabContainerPort extends ParentPort {
+
+    interface Composer {
+
+        /**
+         * Returns an unmodifiable list of tabs. A new list instance is created on each call.
+         *
+         * @return
+         */
+        @Unmodifiable List<? extends TabPort> getTabPorts();
+
+        /**
+         * Returns selected tab port.
+         */
+        TabPort getSelectedTabPort();
+    }
+
+    Composer getComposer();
 
     /**
      * Returns the index of the currently selected tab.

@@ -32,9 +32,8 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public class PageHostPresenter<V extends PageHostView, C extends PageHostComposer>
-        extends AbstractPageHostPresenter<V, C> implements PageContainerPresenter<V, C>,
-        PageHostPort {
+public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostPresenter<V>
+        implements PageContainerPresenter<V>, PageHostPort {
 
     static List<PageItem> match(List<PageItem> items, Matcher matcher, FindStatistics statistics) {
         List<PageItem> matchedItems = items.stream()
@@ -56,8 +55,8 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.PAGE_HOST);
+    public Composer getComposer() {
+        return getView().getComposer();
     }
 
     @Override
@@ -91,7 +90,7 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
         var matcher = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher("");
         var statistics = new FindStatistics();
         this.matchedItems = match(items, matcher, statistics);
-        var findPanel = getComposer().getFindPanelPort();
+        var findPanel = getView().getComposer().getFindPanelPort();
         findPanel.showFindResultInfo(statistics.getMatches());
         getView().setMenu(matchedItems);
         if (!matchedItems.isEmpty()) {
@@ -103,15 +102,20 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
 
     @Override
     public void onFindCleared() {
-        var findPanel = getComposer().getFindPanelPort();
+        var findPanel = getView().getComposer().getFindPanelPort();
         findPanel.hideFindResultInfo();
         setFindMode(false);
-        var item = getComposer().getSelectedPagePort().getItem();
+        var item = getView().getComposer().getSelectedPagePort().getItem();
         addPageHistory(item);
         updateHistoryNavigation();
 
         getView().setMenu(items);
         getView().setPage(this.items.indexOf(item)); // just to select item in the menu
+    }
+
+    @Override
+    protected Descriptor createDescriptor() {
+        return new Descriptor(LayoutComponents.PAGE_HOST);
     }
 
     protected List<PageItem> getItems() {
@@ -156,13 +160,13 @@ public class PageHostPresenter<V extends PageHostView, C extends PageHostCompose
     }
 
     private void doSelectPage(int index) {
-        var currentPage = getComposer().getSelectedPagePort();
+        var currentPage = getView().getComposer().getSelectedPagePort();
         if (currentPage != null) {
             currentPage.setSelected(false);
         }
-        getComposer().providePagePort(index);
+        getView().getComposer().providePagePort(index);
         getView().setPage(index);
-        currentPage = getComposer().getSelectedPagePort();
+        currentPage = getView().getComposer().getSelectedPagePort();
         currentPage.setSelected(true);
     }
 }

@@ -16,14 +16,12 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.tabshell.core.area.AreaComposer;
-
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
-        extends AbstractFindBasePresenter<V, C> {
+public abstract class AbstractFindPanelPresenter<V extends FindPanelView>
+        extends AbstractFindBasePresenter<V> {
 
     public AbstractFindPanelPresenter(V view) {
         super(view, FindFeature.values());

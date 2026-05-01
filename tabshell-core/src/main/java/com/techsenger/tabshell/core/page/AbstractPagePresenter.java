@@ -22,8 +22,8 @@ import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPagePresenter<V extends PageView, C extends PageComposer>
-        extends AbstractAreaPresenter<V, C> implements PagePresenter<V, C> {
+public abstract class AbstractPagePresenter<V extends PageView> extends AbstractAreaPresenter<V>
+        implements PagePresenter<V> {
 
     private boolean selected;
 

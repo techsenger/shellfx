@@ -41,11 +41,11 @@ import javafx.util.Callback;
  *
  * @author Pavel Castornii
  */
-public class PageHostFxView<P extends PageHostPresenter<?, ?>> extends AbstractPageHostFxView<P>
+public class PageHostFxView<P extends PageHostPresenter<?>> extends AbstractPageHostFxView<P>
         implements PageContainerFxView<P>, PageHostView {
 
     public class Composer extends AbstractPageHostFxView<P>.Composer implements PageContainerFxView.Composer,
-            PageHostComposer {
+            PageHostView.Composer {
 
         private final PageHostFxView<P> view = PageHostFxView.this;
 

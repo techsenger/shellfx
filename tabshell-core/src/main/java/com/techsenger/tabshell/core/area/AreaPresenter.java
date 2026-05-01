@@ -22,6 +22,6 @@ import com.techsenger.patternfx.mvp.ChildPresenter;
  *
  * @author Pavel Castornii
  */
-public interface AreaPresenter<V extends AreaView, C extends AreaComposer> extends ChildPresenter<V, C>, AreaPort {
+public interface AreaPresenter<V extends AreaView> extends ChildPresenter<V>, AreaPort {
 
 }

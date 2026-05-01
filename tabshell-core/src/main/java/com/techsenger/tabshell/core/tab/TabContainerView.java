@@ -24,6 +24,13 @@ import com.techsenger.patternfx.mvp.ParentView;
  */
 public interface TabContainerView extends ParentView {
 
+    interface Composer extends ParentView.Composer, TabContainerPort.Composer {
+
+    }
+
+    @Override
+    Composer getComposer();
+
     /**
      * Makes tab with specified index selected.
      *

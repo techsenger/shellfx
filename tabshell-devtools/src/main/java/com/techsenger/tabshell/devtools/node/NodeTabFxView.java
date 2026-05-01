@@ -64,7 +64,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTabFxView<P> implements NodeTabView {
+public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxView<P> implements NodeTabView {
 
     private static final class NodeCell extends TreeCell<Element> {
 
@@ -277,7 +277,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?, ?>> extends AbstractTab
         return Math.abs(v) < 1e-10;
     }
 
-    public class Composer extends AbstractTabFxView<P>.Composer implements NodeTabComposer {
+    public class Composer extends AbstractTabFxView<P>.Composer implements NodeTabView.Composer {
 
         private final NodeTabFxView<P> view = NodeTabFxView.this;
 

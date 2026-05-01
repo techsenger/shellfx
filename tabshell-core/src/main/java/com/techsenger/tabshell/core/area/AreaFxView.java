@@ -23,9 +23,9 @@ import javafx.scene.layout.Region;
  *
  * @author Pavel Castornii
  */
-public interface AreaFxView<P extends AreaPresenter<?, ?>> extends ChildFxView<P>, AreaView {
+public interface AreaFxView<P extends AreaPresenter<?>> extends ChildFxView<P>, AreaView {
 
-    interface Composer extends ChildFxView.Composer, AreaComposer {
+    interface Composer extends ChildFxView.Composer, AreaView.Composer {
 
     }
 

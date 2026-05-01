@@ -21,7 +21,6 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.UrlUtils;
 import java.util.function.Consumer;
@@ -30,8 +29,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogPresenter<V extends PropertyDialogView, C extends DialogComposer>
-        extends AbstractDialogPresenter<V, C> {
+public class PropertyDialogPresenter<V extends PropertyDialogView>  extends AbstractDialogPresenter<V> {
 
     private final Element node;
 

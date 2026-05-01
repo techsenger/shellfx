@@ -100,7 +100,7 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
+public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         extends AbstractDialogFxView<P> implements FileChooserDialogView {
 
     private static class LocationCell extends ListCell<Location> {
@@ -138,7 +138,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, ?>>
         }
     }
 
-    public class Composer extends AbstractDialogFxView<P>.Composer implements FileChooserDialogComposer {
+    public class Composer extends AbstractDialogFxView<P>.Composer implements FileChooserDialogView.Composer {
 
         @Override
         public DialogPort addAlertDialog(AlertDialogType type, String message) {

@@ -36,23 +36,25 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialogView, DialogsDialogComposer> {
+public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialogView> {
 
     private final Map<DialogType, Runnable> dialogActionsByType = Map.ofEntries(
             Map.entry(DialogType.INFO, () -> {
-                var dialog = getComposer().addAlertDialog(AlertDialogType.INFO, "All done! Time for coffee.");
+                var dialog = getView().getComposer().addAlertDialog(AlertDialogType.INFO, "All done! Time for coffee.");
             }),
             Map.entry(DialogType.WARNING, () -> {
-                var dialog = getComposer().addAlertDialog(AlertDialogType.WARNING, "Attention! You shouldn't do it!");
+                var dialog = getView().getComposer()
+                        .addAlertDialog(AlertDialogType.WARNING, "Attention! You shouldn't do it!");
             }),
             Map.entry(DialogType.ERROR, () -> {
-                var dialog = getComposer().addAlertDialog(AlertDialogType.ERROR, "Oops! That didn’t work.");
+                var dialog = getView().getComposer().addAlertDialog(AlertDialogType.ERROR, "Oops! That didn’t work.");
             }),
             Map.entry(DialogType.YES_NO, () -> {
-                var dialog = getComposer().addAlertDialog(AlertDialogType.CONFIRMATION, "Are you really sure?");
+                var dialog = getView().getComposer()
+                        .addAlertDialog(AlertDialogType.CONFIRMATION, "Are you really sure?");
             }),
             Map.entry(DialogType.NAME_VALUE, () -> {
-                var dialog = getComposer().addNameValueDialog();
+                var dialog = getView().getComposer().addNameValueDialog();
                 dialog.setTitle("Name & Value");
                 dialog.setName("Some Name");
                 dialog.setValue("Some Value");
@@ -110,7 +112,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     }
 
     private void showFileChooserDialog(FileChooserType type) {
-        var port = getComposer().addFileChooserDialog(type, settings, historyManager);
+        var port = getView().getComposer().addFileChooserDialog(type, settings, historyManager);
         port.setResultAction((buttonName) -> {
             if (buttonName == FileChooserButtons.OK) {
                 var result = port.getResult();
@@ -123,6 +125,6 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     }
 
     private void showPagedDialog(PageMenuType menuType) {
-        getComposer().addPagedDialog(historyManager, menuType);
+        getView().getComposer().addPagedDialog(historyManager, menuType);
     }
 }

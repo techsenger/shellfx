@@ -61,7 +61,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?, ?>>
+public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         extends AbstractPopupFxView<P> implements DialogFxView<P> {
 
     private static final PseudoClass INACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("inactive");

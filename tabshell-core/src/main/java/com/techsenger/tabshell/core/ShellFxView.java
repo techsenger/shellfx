@@ -27,10 +27,10 @@ import javafx.stage.Stage;
  *
  * @author Pavel Castornii
  */
-public interface ShellFxView<P extends ShellPresenter<?, ?>> extends ParentFxView<P>,
+public interface ShellFxView<P extends ShellPresenter<?>> extends ParentFxView<P>,
         DialogContainerFxView<P>, ShellView {
 
-    interface Composer extends ParentFxView.Composer, DialogContainerFxView.Composer, ShellComposer {
+    interface Composer extends ParentFxView.Composer, DialogContainerFxView.Composer, ShellView.Composer {
 
         void addWorkspace(AreaFxView<?> workspace);
 

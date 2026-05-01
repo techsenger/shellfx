@@ -20,7 +20,6 @@ package com.techsenger.tabshell.core.page;
  *
  * @author Pavel Castornii
  */
-public interface TreePageContainerPresenter<V extends TreePageContainerView, C extends TreePageContainerComposer>
-        extends TreePageContainerPort {
+public interface TreePageContainerPresenter<V extends TreePageContainerView> extends TreePageContainerPort {
 
 }

@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public class TreePageHostPresenter<V extends TreePageHostView, C extends TreePageHostComposer>
-        extends AbstractPageHostPresenter<V, C> implements TreePageContainerPresenter<V, C>, TreePageHostPort {
+public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractPageHostPresenter<V>
+        implements TreePageContainerPresenter<V>, TreePageHostPort {
 
     static FilteredTreePageItem match(TreePageItem node, Matcher matcher, FindStatistics statistics) {
         List<FilteredTreePageItem> matchingChildren = node.getChildren().stream()
@@ -126,8 +126,8 @@ public class TreePageHostPresenter<V extends TreePageHostView, C extends TreePag
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.TREE_PAGE_HOST);
+    public Composer getComposer() {
+        return getView().getComposer();
     }
 
     @Override
@@ -157,7 +157,7 @@ public class TreePageHostPresenter<V extends TreePageHostView, C extends TreePag
         var matcher = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher("");
         var statistics = new FindStatistics();
         var matchedItem = match(rootItem, matcher, statistics);
-        var findPanel = getComposer().getFindPanelPort();
+        var findPanel = getView().getComposer().getFindPanelPort();
         findPanel.showFindResultInfo(statistics.getMatches());
         getView().setMenu(matchedItem, showRoot);
         if (matchedItem != null) {
@@ -171,15 +171,20 @@ public class TreePageHostPresenter<V extends TreePageHostView, C extends TreePag
 
     @Override
     public void onFindCleared() {
-        var findPanel = getComposer().getFindPanelPort();
+        var findPanel = getView().getComposer().getFindPanelPort();
         findPanel.hideFindResultInfo();
         setFindMode(false);
-        var pageItem = (TreePageItem) getComposer().getSelectedPagePort().getItem();
+        var pageItem = (TreePageItem) getView().getComposer().getSelectedPagePort().getItem();
         addPageHistory(pageItem);
         updateHistoryNavigation();
 
         getView().setMenu(rootItem, showRoot);
         getView().setPage(pageItem); // just to select item in the menu
+    }
+
+    @Override
+    protected Descriptor createDescriptor() {
+        return new Descriptor(LayoutComponents.TREE_PAGE_HOST);
     }
 
     protected TreePageItem getRootItem() {
@@ -224,15 +229,16 @@ public class TreePageHostPresenter<V extends TreePageHostView, C extends TreePag
     }
 
     private void selectPage(TreePageItem item, List<PageBreadcrumb> breadcrumbs) {
-        var currentPage = getComposer().getSelectedPagePort();
+        var composer = getView().getComposer();
+        var currentPage = composer.getSelectedPagePort();
         if (currentPage != null) {
             currentPage.setSelected(false);
         }
-        getComposer().providePagePort(item);
+        composer.providePagePort(item);
         this.breadcrumbs = breadcrumbs;
         getView().setBreadcrumbs(breadcrumbs);
         getView().setPage(item);
-        currentPage = getComposer().getSelectedPagePort();
+        currentPage = composer.getSelectedPagePort();
         currentPage.setSelected(true);
     }
 }

@@ -19,7 +19,7 @@ package com.techsenger.tabshell.devtools.component;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvp.ComponentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.patternfx.mvp.ParentComposer;
+import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.patternfx.mvp.View;
 import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
@@ -47,8 +47,8 @@ import java.util.regex.Matcher;
  *
  * @author Pavel Castornii
  */
-public class ComponentTabPresenter<V extends ComponentTabView, C extends ComponentTabComposer>
-        extends AbstractTabPresenter<V, C> implements AddablePresenter {
+public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractTabPresenter<V>
+        implements AddablePresenter {
 
     private record FindMatch(ComponentItem item, List<Integer> path) { }
 
@@ -112,7 +112,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     private record InspectorMatchResult(List<InspectorItem> items, int totalMatches) { }
 
     private static InspectorMatchResult matchInspectorItems(Class<? extends View> fxViewClass,
-            Class<? extends ParentComposer> fxComposerClass, ComponentPresenter<?> presenter, Matcher matcher) {
+            Class<? extends ParentView.Composer> fxComposerClass, ComponentPresenter<?> presenter, Matcher matcher) {
         var descriptor = presenter.getDescriptor();
         var totalMatches = 0;
         var items = new ArrayList<InspectorItem>();
@@ -282,7 +282,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
 
     private Class<? extends View> componentFxViewClass;
 
-    private Class<? extends ParentComposer> componentFxComposerClass;
+    private Class<? extends ParentView.Composer> componentFxComposerClass;
 
     private ComponentPresenter<?> componentPresenter;
 
@@ -337,7 +337,8 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     }
 
     protected void onComponentSelected(ComponentItem component, Class<? extends View> fxViewClass,
-            Class<? extends ParentComposer> fxComposerClass, ComponentPresenter<?> presenter, Element componentNode) {
+            Class<? extends ParentView.Composer> fxComposerClass, ComponentPresenter<?> presenter,
+            Element componentNode) {
         this.selectedComponent = component;
         if (componentNode != null && this.selectNode) {
             this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), componentNode);
@@ -355,9 +356,9 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
         }
         NameValueDialogPort dialog;
         if (parent.category() == InspectorCategory.PROPERTY) {
-            dialog = getComposer().addNameValueDialog("Property", "Value");
+            dialog = getView().getComposer().addNameValueDialog("Property", "Value");
         } else {
-            dialog = getComposer().addNameValueDialog("Class", "Interfaces");
+            dialog = getView().getComposer().addNameValueDialog("Class", "Interfaces");
         }
         dialog.setRightButtons(NameValueButtons.OK);
         dialog.setTitle("Inspector Dialog");
@@ -385,7 +386,7 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     }
 
     private void findComponents() {
-        var findMatcher = getComposer().getComponentToolBarPort().createFindMatcher();
+        var findMatcher = getView().getComposer().getComponentToolBarPort().createFindMatcher();
         if (findMatcher != null) {
             this.componentMatches = findMatches(rootComponent, findMatcher);
             if (!this.componentMatches.isEmpty()) {
@@ -421,16 +422,18 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
     private void clearFoundComponents() {
         this.componentMatches = Collections.emptyList();
         this.currentMatchIndex = -1;
-        getComposer().getComponentToolBarPort().hideFindResultInfo();
+        getView().getComposer().getComponentToolBarPort().hideFindResultInfo();
     }
 
     private void updateFoundComponentInfo() {
-        getComposer().getComponentToolBarPort().showFindResultInfo(currentMatchIndex + 1, this.componentMatches.size());
+        getView().getComposer().getComponentToolBarPort()
+                .showFindResultInfo(currentMatchIndex + 1, this.componentMatches.size());
     }
 
     private void refreshInspector() {
+        var composer = getView().getComposer();
         if (this.componentFxViewClass != null) {
-            var matcher = getComposer().getInspectorToolBarPort().createFindMatcher();
+            var matcher = composer.getInspectorToolBarPort().createFindMatcher();
             var result = matchInspectorItems(
                     this.componentFxViewClass,
                     this.componentFxComposerClass,
@@ -438,13 +441,13 @@ public class ComponentTabPresenter<V extends ComponentTabView, C extends Compone
                     matcher);
             getView().updateInspector(result.items, expandedByCategory);
             if (matcher != null) {
-                getComposer().getInspectorToolBarPort().showFindResultInfo(result.totalMatches);
+                composer.getInspectorToolBarPort().showFindResultInfo(result.totalMatches);
             } else {
-                getComposer().getInspectorToolBarPort().hideFindResultInfo();
+                composer.getInspectorToolBarPort().hideFindResultInfo();
             }
         } else {
             getView().updateInspector(Collections.emptyList(), expandedByCategory);
-            getComposer().getInspectorToolBarPort().hideFindResultInfo();
+            composer.getInspectorToolBarPort().hideFindResultInfo();
         }
     }
 }

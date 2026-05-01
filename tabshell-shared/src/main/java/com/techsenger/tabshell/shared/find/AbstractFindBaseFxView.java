@@ -43,7 +43,7 @@ import javafx.util.Duration;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter<?, ?>>
+public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter<?>>
         extends AbstractAreaFxView<P> implements FindBaseView {
 
     private final FindTrigger findTrigger;

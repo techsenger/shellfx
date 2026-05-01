@@ -16,7 +16,15 @@
 
 package com.techsenger.tabshell.demo.dialogs;
 
+import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.dialog.DialogView;
+import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.demo.page.PageMenuType;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogPort;
+import com.techsenger.tabshell.dialogs.file.FileChooserType;
+import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import java.util.List;
 
 /**
@@ -24,6 +32,21 @@ import java.util.List;
  * @author Pavel Castornii
  */
 public interface DialogsDialogView extends DialogView {
+
+    interface Composer extends DialogView.Composer {
+
+        DialogPort addAlertDialog(AlertDialogType type, String message);
+
+        NameValueDialogPort addNameValueDialog();
+
+        FileChooserDialogPort addFileChooserDialog(FileChooserType type, AppearanceSettings settings,
+                HistoryManager manager);
+
+        DialogPort addPagedDialog(HistoryManager manager, PageMenuType menuType);
+    }
+
+    @Override
+    Composer getComposer();
 
     void setDialogTypes(List<DialogType> types);
 }

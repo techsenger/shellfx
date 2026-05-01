@@ -20,7 +20,6 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import java.util.function.Consumer;
 
@@ -28,8 +27,8 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class NameValueDialogPresenter<V extends NameValueDialogView, C extends DialogComposer>
-        extends AbstractDialogPresenter<V, C> implements NameValueDialogPort {
+public class NameValueDialogPresenter<V extends NameValueDialogView> extends AbstractDialogPresenter<V>
+        implements NameValueDialogPort {
 
     private String name;
 

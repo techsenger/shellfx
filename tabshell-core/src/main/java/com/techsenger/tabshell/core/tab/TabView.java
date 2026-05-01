@@ -17,13 +17,25 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.tabshell.core.ShellPort;
+import com.techsenger.tabshell.core.dialog.DialogContainerView;
 import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabView extends ChildView {
+public interface TabView extends ChildView, DialogContainerView {
+
+    interface Composer extends ChildView.Composer,  DialogContainerView.Composer {
+
+        ShellPort getShellPort();
+
+        void remove();
+    }
+
+    @Override
+    Composer getComposer();
 
     /**
      * Sets whether the component can be closed.

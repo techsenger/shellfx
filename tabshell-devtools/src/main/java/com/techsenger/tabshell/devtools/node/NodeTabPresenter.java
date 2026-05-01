@@ -44,7 +44,7 @@ import java.util.regex.Matcher;
  *
  * @author Pavel Castornii
  */
-public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> extends AbstractTabPresenter<V, C>
+public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresenter<V>
         implements AddablePresenter, NodeTabPort {
 
     protected class NodeToolBarAwarePort implements ToolBarAwarePort, FindNavigationAwarePort {
@@ -123,7 +123,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
 
     private int foundPropertyCount = 0;
 
-    private Consumer<String> linkOpener = (ulr) -> getComposer().getShellPort().getContext()
+    private Consumer<String> linkOpener = (ulr) -> getView().getComposer().getShellPort().getContext()
             .getHostServices().showDocument(ulr);
 
     private Element rootNode;
@@ -246,7 +246,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         if (field != null && node != null && node.getClassInfo().module().startsWith("javafx.")) {
             declaringClassName = this.tabDock.getConnector().getDeclaringClass(node.getClassInfo().className(), field);
         }
-        getComposer().addPropertyDialog(node, item, declaringClassName, linkOpener);
+        getView().getComposer().addPropertyDialog(node, item, declaringClassName, linkOpener);
     }
 
     @Override
@@ -280,7 +280,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     private void findNode() {
         createNodeIndex();
         clearFindNodeResult();
-        var matcher = getComposer().getNodeToolBarPort().createFindMatcher();
+        var matcher = getView().getComposer().getNodeToolBarPort().createFindMatcher();
         if (matcher != null) {
             findNode(rootNode, matcher);
             if (!foundNodes.isEmpty()) {
@@ -333,7 +333,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     private void clearFindNodeResult() {
         this.foundNodes.clear();
         this.foundNodeIndex = 0;
-        getComposer().getNodeToolBarPort().hideFindResultInfo();
+        getView().getComposer().getNodeToolBarPort().hideFindResultInfo();
     }
 
     private void createNodeIndex() {
@@ -349,7 +349,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
         if (!this.foundNodes.isEmpty()) {
             current = this.foundNodeIndex + 1;
         }
-        getComposer().getNodeToolBarPort().showFindResultInfo(current, this.foundNodes.size());
+        getView().getComposer().getNodeToolBarPort().showFindResultInfo(current, this.foundNodes.size());
     }
 
     private void processPropertyEvent(AttributeListEvent event) {
@@ -368,7 +368,7 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
     private void updateProperies() {
         getView().clearProperties();
         clearFindPropertyResult();
-        this.propsMatcher = getComposer().getPropertyToolBarPort().createFindMatcher();
+        this.propsMatcher = getView().getComposer().getPropertyToolBarPort().createFindMatcher();
         // existing items from the map are filtered
         for (var entry : this.propsByCategory.entrySet()) {
             filterAndAddProperties(entry.getKey(), entry.getValue());
@@ -387,14 +387,14 @@ public class NodeTabPresenter<V extends NodeTabView, C extends NodeTabComposer> 
                 getView().addProperties(cat, this.categoryExpansion.get(cat), filteredProps);
                 this.foundPropertyCount += filteredProps.size();
             }
-            getComposer().getPropertyToolBarPort().showFindResultInfo(foundPropertyCount);
+            getView().getComposer().getPropertyToolBarPort().showFindResultInfo(foundPropertyCount);
         } else {
             getView().addProperties(cat, this.categoryExpansion.get(cat), props);
         }
     }
 
     private void clearFindPropertyResult() {
-        getComposer().getPropertyToolBarPort().hideFindResultInfo();
+        getView().getComposer().getPropertyToolBarPort().hideFindResultInfo();
         this.foundPropertyCount = 0;
     }
 }

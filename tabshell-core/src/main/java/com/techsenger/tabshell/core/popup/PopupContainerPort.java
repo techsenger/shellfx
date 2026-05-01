@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentPort;
+import java.util.List;
 
 /**
  *
@@ -24,4 +26,15 @@ import com.techsenger.patternfx.mvp.ParentPort;
  */
 public interface PopupContainerPort extends ParentPort {
 
+    interface Composer {
+
+        /**
+         * Returns an unmodifiable list of ports. A new list instance is created on each call.
+         *
+         * @return
+         */
+        @Unmodifiable List<? extends PopupPort> getPopupPorts();
+    }
+
+    Composer getComposer();
 }

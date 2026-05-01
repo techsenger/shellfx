@@ -39,8 +39,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @author Pavel Castornii
  */
-public class EnvironmentTabPresenter<V extends EnvironmentTabView, C extends EnvironmentTabComposer>
-        extends AbstractTabPresenter<V, C> {
+public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends AbstractTabPresenter<V> {
 
     protected static String getText(EnvironmentCategory cat) {
         return switch (cat) {
@@ -105,31 +104,32 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView, C extends Env
         super.postInitialize();
         setTitle("Environment");
         setClosable(false);
-        var toolBar = getComposer().getToolBarPort();
+        var toolBar = getView().getComposer().getToolBarPort();
         refresh();
     }
 
     protected void refresh() {
+        var composer = getView().getComposer();
         var e = this.connector.getEnv();
         var items = new ArrayList<EnvironmentItem>();
         items.add(new DefaultEnvironmentItem(EnvironmentItemType.ROOT, "", null, true));
-        var matcher = getComposer().getToolBarPort().createFindMatcher();
+        var matcher = composer.getToolBarPort().createFindMatcher();
         var savedSize = items.size();
         addItems(items, matcher, EnvironmentCategory.PLATFORM,
                 e.getPlatformPreferences(), e.getOtherPlatformProperties(), e.getConditionalFeatures());
         addItems(items, matcher, EnvironmentCategory.SYSTEM_PROPERTY, e.getSystemProperties());
         addItems(items, matcher, EnvironmentCategory.ENVIRONMENT_VARIABLE, e.getEnvVariables());
         if (matcher != null) {
-            getComposer().getToolBarPort().showFindResultInfo(items.size() - savedSize - 1); // -1 is the root
+            composer.getToolBarPort().showFindResultInfo(items.size() - savedSize - 1); // -1 is the root
         } else {
-            getComposer().getToolBarPort().hideFindResultInfo();
+            composer.getToolBarPort().hideFindResultInfo();
         }
         getView().setItems(items);
     }
 
     protected void onItemRequested(EnvironmentItem i) {
         if (i.getType() == EnvironmentItemType.PROPERTY) {
-            var dialog = getComposer().addNameValueDialog();
+            var dialog = getView().getComposer().addNameValueDialog();
             dialog.setTitle("Property Dialog");
             dialog.setName(i.getName());
             dialog.setValue(i.getValue());

@@ -17,12 +17,24 @@
 package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.tabshell.core.area.AreaView;
+import com.techsenger.tabshell.core.page.PagePort;
+import com.techsenger.tabshell.shared.find.ResultFindPort;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface PageHostViewBase extends AreaView {
+
+    interface Composer extends AreaView.Composer {
+
+        ResultFindPort getFindPanelPort();
+
+        PagePort getSelectedPagePort();
+    }
+
+    @Override
+    Composer getComposer();
 
     void setDividerPosition(double pos);
 

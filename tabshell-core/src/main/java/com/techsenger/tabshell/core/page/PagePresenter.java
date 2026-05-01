@@ -22,7 +22,6 @@ import com.techsenger.tabshell.core.area.AreaPresenter;
  *
  * @author Pavel Castornii
  */
-public interface PagePresenter<V extends PageView, C extends PageComposer>
-        extends AreaPresenter<V, C>, PagePort {
+public interface PagePresenter<V extends PageView> extends AreaPresenter<V>, PagePort {
 
 }

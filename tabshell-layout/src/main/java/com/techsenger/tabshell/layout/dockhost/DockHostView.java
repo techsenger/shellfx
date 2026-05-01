@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
+import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.area.AreaView;
+import javafx.geometry.Side;
 
 /**
  *
@@ -24,4 +26,45 @@ import com.techsenger.tabshell.core.area.AreaView;
  */
 public interface DockHostView extends AreaView {
 
+    interface Composer extends AreaView.Composer {
+
+        SplitSpacePort getRootPort();
+
+        AreaPort getMainPort();
+
+        SideBarPort getRightBarPort();
+
+        SideBarPort getBottomBarPort();
+
+        SideBarPort getLeftBarPort();
+
+        void addBar(Side side);
+
+        void removeBar(Side side);
+
+        SideBarPort getBarPort(Side side);
+
+        SideBarPolicy getRightBarPolicy();
+
+        void setRightBarPolicy(SideBarPolicy policy);
+
+        SideBarPolicy getBottomBarPolicy();
+
+        void setBottomBarPolicy(SideBarPolicy policy);
+
+        SideBarPolicy getLeftBarPolicy();
+
+        void setLeftBarPolicy(SideBarPolicy policy);
+
+        SideBarPolicy getBarPolicy(Side side);
+
+        TabPopupPort getRightPopupPort();
+
+        TabPopupPort getBottomPopupPort();
+
+        TabPopupPort getLeftPopupPort();
+    }
+
+    @Override
+    Composer getComposer();
 }

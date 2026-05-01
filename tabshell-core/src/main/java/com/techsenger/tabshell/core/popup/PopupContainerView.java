@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.dockhost;
+package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.layout.tabhost.TabHostComposer;
+import com.techsenger.patternfx.mvp.ParentView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabDockComposer extends TabHostComposer {
+public interface PopupContainerView extends ParentView {
 
-    void remove();
+    interface Composer extends ParentView.Composer, PopupContainerPort.Composer {
+
+    }
+
+    @Override
+    Composer getComposer();
 }

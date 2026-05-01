@@ -22,12 +22,13 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface PageContainerFxView<P extends PageContainerPresenter<?, ?>> extends PageContainerView {
+public interface PageContainerFxView<P extends PageContainerPresenter<?>> extends PageContainerView {
 
-    interface Composer extends PageContainerComposer {
+    interface Composer extends PageContainerView.Composer {
 
         void setPages(List<PageDescriptor> pages);
     }
 
+    @Override
     Composer getComposer();
 }

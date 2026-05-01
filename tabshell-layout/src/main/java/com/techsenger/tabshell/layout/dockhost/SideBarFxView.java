@@ -43,7 +43,7 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAreaFxView<P> implements SideBarView {
+public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFxView<P> implements SideBarView {
 
     private static final class BarRestoreTab extends Tab {
 
@@ -139,7 +139,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
 
     private static final Object BAR_TAB_KEY = new Object();
 
-    public class Composer extends AbstractAreaFxView<P>.Composer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements SideBarView.Composer {
 
         private final SideBarFxView<P> view = SideBarFxView.this;
 
@@ -156,6 +156,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
          *
          * @return
          */
+        @Override
         public @Unmodifiable List<TabDockPort> getTabDockPorts() {
             return getTabDocks().stream()
                     .map(t -> (TabDockPort) t.getPresenter())
@@ -179,7 +180,7 @@ public class SideBarFxView<P extends SideBarPresenter<?, ?>> extends AbstractAre
             return dockHost;
         }
 
-        protected @Unmodifiable ObservableList<TabDockFxView<?>> getTabDocks() {
+        public @Unmodifiable ObservableList<TabDockFxView<?>> getTabDocks() {
             return tabDocks;
         }
 

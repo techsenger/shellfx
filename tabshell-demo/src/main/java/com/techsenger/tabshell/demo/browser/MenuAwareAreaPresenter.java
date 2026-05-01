@@ -28,7 +28,7 @@ import com.techsenger.tabshell.demo.main.DemoMenuAwarePort;
  *
  * @author Pavel Castornii
  */
-public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaView, MenuAwareAreaComposer>
+public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaView>
         implements MenuAwarePort, DemoMenuAwarePort {
 
     private boolean fooDisabled;
@@ -74,7 +74,7 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     }
 
     protected void onDialogOpen(OverlayScope scope) {
-        var dialog = getComposer().addDemoDialog(scope, true);
+        var dialog = getView().getComposer().addDemoDialog(scope, true);
         dialog.setResultAction((name) -> {
             if (name == DemoResultButtons.OK) {
                 dialog.requestClose();
@@ -83,6 +83,6 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     }
 
     protected void onPopupOpen(OverlayScope scope) {
-        getComposer().addDemoPopup(scope);
+        getView().getComposer().addDemoPopup(scope);
     }
 }

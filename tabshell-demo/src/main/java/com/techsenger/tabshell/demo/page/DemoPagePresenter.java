@@ -17,14 +17,13 @@
 package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.page.AbstractPagePresenter;
-import com.techsenger.tabshell.core.page.PageComposer;
 import com.techsenger.tabshell.core.page.PageItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class DemoPagePresenter extends AbstractPagePresenter<DemoPageView, PageComposer> {
+public abstract class DemoPagePresenter extends AbstractPagePresenter<DemoPageView> {
 
     public DemoPagePresenter(DemoPageView view, PageItem item) {
         super(view, item);

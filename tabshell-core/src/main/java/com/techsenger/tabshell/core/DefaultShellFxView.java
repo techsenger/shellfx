@@ -85,7 +85,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellFxView<P extends DefaultShellPresenter<?, ?>>
+public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
         extends AbstractParentFxView<P> implements ShellFxView<P> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultShellFxView.class);

@@ -18,7 +18,6 @@ package com.techsenger.tabshell.layout.dockhost;
 
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.layout.LayoutComponents;
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +28,7 @@ import javafx.geometry.Orientation;
  *
  * @author Pavel Castornii
  */
-public class SplitSpacePresenter<V extends SplitSpaceView, C extends AreaComposer>
-        extends AbstractAreaPresenter<V, C> implements SplitSpacePort {
+public class SplitSpacePresenter<V extends SplitSpaceView> extends AbstractAreaPresenter<V> implements SplitSpacePort {
 
     private Orientation orientation = Orientation.HORIZONTAL;
 

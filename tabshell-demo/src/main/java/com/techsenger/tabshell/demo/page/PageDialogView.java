@@ -24,4 +24,11 @@ import com.techsenger.tabshell.core.dialog.DialogView;
  */
 public interface PageDialogView extends DialogView {
 
+    interface Composer extends DialogView.Composer {
+
+        void setMenuType(PageMenuType menuType);
+    }
+
+    @Override
+    Composer getComposer();
 }

@@ -37,10 +37,10 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class StylesheetTabFxView<P extends StylesheetTabPresenter<?, ?>> extends AbstractTabFxView<P>
+public class StylesheetTabFxView<P extends StylesheetTabPresenter<?>> extends AbstractTabFxView<P>
         implements StylesheetTabView {
 
-    public class Composer extends AbstractTabFxView<P>.Composer implements StylesheetTabComposer {
+    public class Composer extends AbstractTabFxView<P>.Composer implements StylesheetTabView.Composer {
 
         private final StylesheetTabFxView<P> view = StylesheetTabFxView.this;
 

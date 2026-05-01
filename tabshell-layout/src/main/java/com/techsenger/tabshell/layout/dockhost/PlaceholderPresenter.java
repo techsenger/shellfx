@@ -26,7 +26,7 @@ import com.techsenger.tabshell.layout.LayoutComponents;
  *
  * @author Pavel Castornii
  */
-class PlaceholderPresenter extends TabDockPresenter<PlaceholderView, TabDockComposer> {
+class PlaceholderPresenter extends TabDockPresenter<PlaceholderView> {
 
     PlaceholderPresenter(PlaceholderView view) {
         super(view);

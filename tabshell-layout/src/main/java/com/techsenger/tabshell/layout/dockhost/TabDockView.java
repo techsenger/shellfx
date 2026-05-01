@@ -24,6 +24,14 @@ import com.techsenger.tabshell.layout.tabhost.TabHostView;
  */
 public interface TabDockView extends TabHostView {
 
+    interface Composer extends TabHostView.Composer {
+
+        void remove();
+    }
+
+    @Override
+    Composer getComposer();
+
     /**
      * Sets the value that defines whether this component can be dragged by the user.
      *

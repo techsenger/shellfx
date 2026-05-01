@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AbstractAreaFxView;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageFxView<P extends AbstractPagePresenter<?, ?>>
+public abstract class AbstractPageFxView<P extends AbstractPagePresenter<?>>
         extends AbstractAreaFxView<P> implements PageFxView<P> {
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements PageFxView.Composer {

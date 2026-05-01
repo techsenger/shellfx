@@ -28,13 +28,13 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class PageDialogPresenter extends AbstractDialogPresenter<PageDialogView, PageDialogComposer> {
+public class PageDialogPresenter extends AbstractDialogPresenter<PageDialogView> {
 
     public PageDialogPresenter(PageDialogView view, HistoryProvider<PageDialogHistory> hp,
             PageMenuType menuType) {
         super(view);
         setHistoryProvider(hp);
-        getComposer().setMenuType(menuType);
+        getView().getComposer().setMenuType(menuType);
     }
 
     @Override

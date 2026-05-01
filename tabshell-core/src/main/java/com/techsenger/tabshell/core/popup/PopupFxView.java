@@ -23,9 +23,9 @@ import javafx.scene.layout.Pane;
  *
  * @author Pavel Castornii
  */
-public interface PopupFxView<P extends PopupPresenter<?, ?>> extends AreaFxView<P>, PopupView {
+public interface PopupFxView<P extends PopupPresenter<?>> extends AreaFxView<P>, PopupView {
 
-    interface Composer extends AreaFxView.Composer, PopupComposer {
+    interface Composer extends AreaFxView.Composer, PopupView.Composer {
 
         void remove();
     }

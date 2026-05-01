@@ -16,14 +16,13 @@
 
 package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.area.AreaPresenter;
 import com.techsenger.tabshell.core.CloseAwarePresenter;
+import com.techsenger.tabshell.core.area.AreaPresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupPresenter<V extends PopupView, C extends PopupComposer> extends AreaPresenter<V, C>,
-        CloseAwarePresenter<V, C>, PopupPort {
+public interface PopupPresenter<V extends PopupView> extends AreaPresenter<V>, CloseAwarePresenter<V>, PopupPort {
 
 }

@@ -17,10 +17,10 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.ChildPresenter;
-import com.techsenger.tabshell.core.traits.Closable;
 import com.techsenger.tabshell.core.CloseAwarePresenter;
-import com.techsenger.tabshell.core.traits.Iconed;
 import com.techsenger.tabshell.core.SelectablePresenter;
+import com.techsenger.tabshell.core.traits.Closable;
+import com.techsenger.tabshell.core.traits.Iconed;
 import com.techsenger.tabshell.core.traits.Titled;
 import com.techsenger.tabshell.core.traits.Tooltiped;
 import com.techsenger.tabshell.core.traits.Waitable;
@@ -29,7 +29,7 @@ import com.techsenger.tabshell.core.traits.Waitable;
  *
  * @author Pavel Castornii
  */
-public interface TabPresenter<V extends TabView, C extends TabComposer> extends ChildPresenter<V, C>,
-        CloseAwarePresenter<V, C>, SelectablePresenter, Closable, Waitable, Iconed, Titled, Tooltiped, TabPort {
+public interface TabPresenter<V extends TabView> extends ChildPresenter<V>, CloseAwarePresenter<V>,
+        SelectablePresenter, Closable, Waitable, Iconed, Titled, Tooltiped, TabPort {
 
 }

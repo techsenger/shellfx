@@ -38,11 +38,11 @@ import javafx.scene.layout.HBox;
  *
  * @author Pavel Castornii
  */
-public class TabDockFxView<P extends TabDockPresenter<?, ?>> extends TabHostFxView<P> implements TabDockView {
+public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<P> implements TabDockView {
 
     static final double MIN_SIZE = 100; // temp
 
-    public class Composer extends TabHostFxView<P>.Composer implements TabDockComposer {
+    public class Composer extends TabHostFxView<P>.Composer implements TabDockView.Composer {
 
         @Override
         public void remove() {

@@ -16,10 +16,19 @@
 
 package com.techsenger.tabshell.core.page;
 
+import com.techsenger.patternfx.mvp.ParentView;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerView {
+public interface PageContainerView extends ParentView {
+
+    interface Composer extends ParentView.Composer, PageContainerPort.Composer {
+
+    }
+
+    @Override
+    Composer getComposer();
 
 }

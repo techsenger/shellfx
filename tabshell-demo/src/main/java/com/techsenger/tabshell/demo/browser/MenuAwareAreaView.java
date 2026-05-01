@@ -17,6 +17,9 @@
 package com.techsenger.tabshell.demo.browser;
 
 import com.techsenger.tabshell.core.area.AreaView;
+import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupPort;
 
 /**
  *
@@ -24,4 +27,13 @@ import com.techsenger.tabshell.core.area.AreaView;
  */
 public interface MenuAwareAreaView extends AreaView {
 
+    interface Composer extends AreaView.Composer {
+
+        DialogPort addDemoDialog(OverlayScope scope, boolean resizable);
+
+        PopupPort addDemoPopup(OverlayScope scope);
+    }
+
+    @Override
+    Composer getComposer();
 }

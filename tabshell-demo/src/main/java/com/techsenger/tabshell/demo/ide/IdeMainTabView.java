@@ -16,6 +16,9 @@
 
 package com.techsenger.tabshell.demo.ide;
 
+import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.TabView;
 
 /**
@@ -24,4 +27,13 @@ import com.techsenger.tabshell.core.tab.TabView;
  */
 public interface IdeMainTabView extends TabView {
 
+    interface Composer extends TabView.Composer {
+
+        DialogPort addDemoDialog(boolean resizable);
+
+        PopupPort addDemoPopup(OverlayScope scope);
+    }
+
+    @Override
+    Composer getComposer();
 }

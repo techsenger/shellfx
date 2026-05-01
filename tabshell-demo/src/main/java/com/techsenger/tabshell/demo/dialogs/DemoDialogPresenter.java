@@ -20,7 +20,6 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
 
@@ -28,7 +27,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView, DialogComposer> {
+public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView> {
 
     public DemoDialogPresenter(DemoDialogView view) {
         super(view);

@@ -31,8 +31,8 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabComposer>
-        extends AbstractTabPresenter<V, C> implements MenuAwarePort, DemoMenuAwarePort {
+public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPresenter<V>
+        implements MenuAwarePort, DemoMenuAwarePort {
 
     private boolean fooDisabled;
 
@@ -115,7 +115,7 @@ public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabC
     }
 
     protected void onDialogOpen() {
-        var dialog = getComposer().addDemoDialog(true);
+        var dialog = getView().getComposer().addDemoDialog(true);
         dialog.setResultAction((name) -> {
             if (name == DemoResultButtons.OK) {
                 dialog.requestClose();
@@ -124,6 +124,6 @@ public class IdeMainTabPresenter<V extends IdeMainTabView, C extends IdeMainTabC
     }
 
     protected void onPopupOpen(OverlayScope scope) {
-        getComposer().addDemoPopup(scope);
+        getView().getComposer().addDemoPopup(scope);
     }
 }

@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
+import com.techsenger.tabshell.core.page.PagePort;
 import com.techsenger.tabshell.core.page.TreePageContainerView;
 import com.techsenger.tabshell.core.page.TreePageItem;
 import java.util.List;
@@ -25,6 +26,14 @@ import java.util.List;
  * @author Pavel Castornii
  */
 public interface TreePageHostView extends PageHostViewBase, TreePageContainerView {
+
+    interface Composer extends PageHostViewBase.Composer, TreePageContainerView.Composer {
+
+       PagePort providePagePort(TreePageItem item);
+    }
+
+    @Override
+    Composer getComposer();
 
     void setMenu(TreePageItem root, boolean showRoot);
 

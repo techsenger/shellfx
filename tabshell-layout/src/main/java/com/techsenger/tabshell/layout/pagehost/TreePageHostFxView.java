@@ -46,7 +46,7 @@ import javafx.util.Callback;
  *
  * @author Pavel Castornii
  */
-public class TreePageHostFxView<P extends TreePageHostPresenter<?, ?>> extends AbstractPageHostFxView<P>
+public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends AbstractPageHostFxView<P>
         implements TreePageContainerFxView<P>, TreePageHostView {
 
     private static TreeItem<TreePageDescriptor> buildTree(TreePageItem root,
@@ -78,7 +78,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?, ?>> extends A
 
 
     public class Composer extends AbstractPageHostFxView<P>.Composer implements TreePageContainerFxView.Composer,
-            TreePageHostComposer {
+            TreePageHostView.Composer {
 
         private final TreePageHostFxView<P> view = TreePageHostFxView.this;
 

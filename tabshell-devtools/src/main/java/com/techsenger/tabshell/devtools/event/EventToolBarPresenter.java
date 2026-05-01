@@ -31,7 +31,6 @@ import com.techsenger.connectorfx.event.RootChangedEvent;
 import com.techsenger.connectorfx.event.WindowClosedEvent;
 import com.techsenger.connectorfx.event.WindowPropertiesEvent;
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.shared.find.FindFeature;
@@ -44,8 +43,7 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public class EventToolBarPresenter<V extends EventToolBarView, C extends AreaComposer>
-        extends ToolBarPresenter<V, C> implements EventToolBarPort {
+public class EventToolBarPresenter<V extends EventToolBarView> extends ToolBarPresenter<V> implements EventToolBarPort {
 
     private final Map<Class<? extends ConnectorEvent>, AtomicBoolean> eventTypesByClass = Map.ofEntries(
             Map.entry(AttributeListEvent.class, new AtomicBoolean(true)),

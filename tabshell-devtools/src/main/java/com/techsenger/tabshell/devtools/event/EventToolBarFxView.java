@@ -42,7 +42,7 @@ import javafx.scene.control.Tooltip;
  *
  * @author Pavel Castornii
  */
-public class EventToolBarFxView<P extends EventToolBarPresenter<?, ?>> extends ToolBarFxView<P>
+public class EventToolBarFxView<P extends EventToolBarPresenter<?>> extends ToolBarFxView<P>
         implements EventToolBarView {
 
     private final FontIconView recordIconView = new FontIconView(DevToolsIcons.RECORD_START);

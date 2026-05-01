@@ -43,10 +43,10 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?, ?>> extends AbstractTabFxView<P> implements
+public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends AbstractTabFxView<P> implements
         EnvironmentTabView {
 
-    public class Composer extends AbstractTabFxView<P>.Composer implements EnvironmentTabComposer {
+    public class Composer extends AbstractTabFxView<P>.Composer implements EnvironmentTabView.Composer {
 
         private final EnvironmentTabFxView<P> view = EnvironmentTabFxView.this;
 

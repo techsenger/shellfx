@@ -40,8 +40,8 @@ import java.util.regex.Matcher;
  *
  * @author Pavel Castornii
  */
-public class StylesheetTabPresenter<V extends StylesheetTabView, C extends StylesheetTabComposer>
-        extends AbstractTabPresenter<V, C> implements AddablePresenter {
+public class StylesheetTabPresenter<V extends StylesheetTabView> extends AbstractTabPresenter<V>
+        implements AddablePresenter {
 
     private static String formatWindowType(int uid, WindowProperties props) {
         String text;
@@ -145,7 +145,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
     protected void rebuildTree() {
         var connector = this.tabDock.getConnector();
         var entry = connector.getStyledElements(tabDock.getWindowUid());
-        Matcher matcher = getComposer().getToolBarPort().createFindMatcher();
+        Matcher matcher = getView().getComposer().getToolBarPort().createFindMatcher();
 
         List<StylesheetItem> items = new ArrayList<>();
         var item = new StylesheetItem(StylesheetItemType.APPLICATION,
@@ -179,9 +179,9 @@ public class StylesheetTabPresenter<V extends StylesheetTabView, C extends Style
             }
         }
         if (matcher != null) {
-            getComposer().getToolBarPort().showFindResultInfo(found);
+            getView().getComposer().getToolBarPort().showFindResultInfo(found);
         } else {
-            getComposer().getToolBarPort().hideFindResultInfo();
+            getView().getComposer().getToolBarPort().hideFindResultInfo();
         }
         getView().setItems(items);
     }

@@ -48,11 +48,11 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class TabPopupFxView<P extends TabPopupPresenter<?, ?>> extends AbstractAreaFxView<P> implements TabPopupView {
+public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractAreaFxView<P> implements TabPopupView {
 
     private static final double RESIZE_MARGIN = 2.0;
 
-    public class Composer extends AbstractAreaFxView<P>.Composer implements TabPopupComposer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements TabPopupView.Composer {
 
         private final TabPopupFxView<P> view = TabPopupFxView.this;
 

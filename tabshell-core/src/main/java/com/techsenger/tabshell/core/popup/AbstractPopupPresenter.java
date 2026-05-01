@@ -22,8 +22,8 @@ import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPopupPresenter<V extends PopupView, C extends PopupComposer>
-        extends AbstractAreaPresenter<V, C> implements PopupPresenter<V, C> {
+public abstract class AbstractPopupPresenter<V extends PopupView> extends AbstractAreaPresenter<V>
+        implements PopupPresenter<V> {
 
     private final boolean modal;
 
@@ -43,7 +43,7 @@ public abstract class AbstractPopupPresenter<V extends PopupView, C extends Popu
 
     @Override
     public void close() {
-        getComposer().remove();
+        getView().getComposer().remove();
     }
 
     @Override

@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.devtools.stylesheet;
 
 import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.devtools.ToolBarPort;
 import java.util.List;
 
 /**
@@ -24,6 +25,14 @@ import java.util.List;
  * @author Pavel Castornii
  */
 public interface StylesheetTabView extends TabView {
+
+    interface Composer extends TabView.Composer {
+
+       ToolBarPort getToolBarPort();
+    }
+
+    @Override
+    Composer getComposer();
 
     /**
      * Flat list of items representing a tree structure. The hierarchy is encoded via

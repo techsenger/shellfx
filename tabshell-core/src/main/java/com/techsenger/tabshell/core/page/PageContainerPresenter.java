@@ -20,7 +20,6 @@ package com.techsenger.tabshell.core.page;
  *
  * @author Pavel Castornii
  */
-public interface PageContainerPresenter<V extends PageContainerView, C extends PageContainerComposer>
-        extends PageContainerPort {
+public interface PageContainerPresenter<V extends PageContainerView> extends PageContainerPort {
 
 }

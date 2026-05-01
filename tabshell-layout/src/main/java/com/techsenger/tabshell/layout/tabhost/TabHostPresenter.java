@@ -27,8 +27,8 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> extends AbstractAreaPresenter<V, C>
-        implements TabContainerPresenter<V, C>, TabHostPort {
+public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresenter<V>
+        implements TabContainerPresenter<V>, TabHostPort {
 
     private boolean tabHeaderAutoHide;
 
@@ -41,8 +41,8 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.TAB_HOST);
+    public Composer getComposer() {
+        return getView().getComposer();
     }
 
     @Override
@@ -76,6 +76,11 @@ public class TabHostPresenter<V extends TabHostView, C extends TabHostComposer> 
     @Override
     public void selectTab(int tabIndex) {
         getView().selectTab(tabIndex);
+    }
+
+    @Override
+    protected Descriptor createDescriptor() {
+        return new Descriptor(LayoutComponents.TAB_HOST);
     }
 
     protected void onCloseOtherTabs(TabPort tab) {

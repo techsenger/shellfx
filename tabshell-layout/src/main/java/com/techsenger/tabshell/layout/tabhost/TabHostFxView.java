@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAreaFxView<P>
+public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFxView<P>
         implements TabContainerFxView<P>, TabHostView, LayoutView {
 
     private static final Object TAB_KEY = new Object();
@@ -63,7 +63,7 @@ public class TabHostFxView<P extends TabHostPresenter<?, ?>> extends AbstractAre
         return ref.get();
     }
 
-    public class Composer extends AbstractAreaFxView<P>.Composer implements TabHostComposer,
+    public class Composer extends AbstractAreaFxView<P>.Composer implements TabHostView.Composer,
             TabContainerFxView.Composer {
 
         private final TabHostFxView<P> view = TabHostFxView.this;

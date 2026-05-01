@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.tabshell.core.area.AreaComposer;
 import com.techsenger.tabshell.layout.LayoutComponents;
 import com.techsenger.tabshell.shared.find.AbstractFindBasePresenter;
 import com.techsenger.tabshell.shared.find.FindFeature;
@@ -26,8 +25,7 @@ import com.techsenger.tabshell.shared.find.FindFeature;
  *
  * @author Pavel Castornii
  */
-public class FindPanelPresenter<V extends FindPanelView, C extends AreaComposer>
-        extends AbstractFindBasePresenter<V, C> {
+public class FindPanelPresenter<V extends FindPanelView> extends AbstractFindBasePresenter<V> {
 
     private final PageHostFindPort pageHost;
 

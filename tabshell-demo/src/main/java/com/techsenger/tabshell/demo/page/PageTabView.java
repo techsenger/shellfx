@@ -24,4 +24,11 @@ import com.techsenger.tabshell.core.tab.TabView;
  */
 public interface PageTabView extends TabView {
 
+    interface Composer extends TabView.Composer {
+
+        void setMenuType(PageMenuType menuType);
+    }
+
+    @Override
+    Composer getComposer();
 }

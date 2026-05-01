@@ -25,8 +25,7 @@ import com.techsenger.tabshell.layout.LayoutComponents;
  *
  * @author Pavel Castornii
  */
-public class DockHostPresenter<V extends DockHostView, C extends DockHostComposer>
-        extends AbstractAreaPresenter<V, C> implements DockHostPort {
+public class DockHostPresenter<V extends DockHostView> extends AbstractAreaPresenter<V> implements DockHostPort {
 
     public DockHostPresenter(V view, HistoryProvider<? extends DockHostHistory> history) {
         super(view);

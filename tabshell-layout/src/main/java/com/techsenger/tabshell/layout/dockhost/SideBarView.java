@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AreaView;
+import java.util.List;
 
 /**
  *
@@ -24,4 +26,16 @@ import com.techsenger.tabshell.core.area.AreaView;
  */
 public interface SideBarView extends AreaView {
 
+    interface Composer extends AreaView.Composer {
+
+        /**
+         * Returns an unmodifiable list of minimized tab docks.
+         *
+         * @return
+         */
+        @Unmodifiable List<? extends TabDockPort> getTabDockPorts();
+    }
+
+    @Override
+    Composer getComposer();
 }

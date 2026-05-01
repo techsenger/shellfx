@@ -20,7 +20,6 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.dialog.DialogComposer;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.material.icon.FontIcon;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogView, DialogComposer> {
+public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogView> {
 
     private final AppearanceSettings settings;
 

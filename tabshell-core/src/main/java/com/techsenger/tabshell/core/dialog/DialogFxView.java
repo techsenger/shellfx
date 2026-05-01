@@ -23,9 +23,9 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public interface DialogFxView<P extends DialogPresenter<?, ?>> extends PopupFxView<P>, DialogView {
+public interface DialogFxView<P extends DialogPresenter<?>> extends PopupFxView<P>, DialogView {
 
-    interface Composer extends PopupFxView.Composer, DialogComposer {
+    interface Composer extends PopupFxView.Composer, DialogView.Composer {
 
     }
 

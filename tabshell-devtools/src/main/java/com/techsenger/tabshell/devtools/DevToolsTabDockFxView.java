@@ -45,7 +45,7 @@ import javafx.scene.control.Tooltip;
  *
  * @author Pavel Castornii
  */
-public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?, ?>> extends TabDockFxView<P>
+public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extends TabDockFxView<P>
         implements DevToolsTabDockView {
 
     public class Composer extends TabDockFxView<P>.Composer {

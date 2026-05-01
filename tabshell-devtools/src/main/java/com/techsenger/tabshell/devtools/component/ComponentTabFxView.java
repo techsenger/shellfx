@@ -20,9 +20,9 @@ import atlantafx.base.theme.Tweaks;
 import com.techsenger.connectorfx.LocalElement;
 import com.techsenger.connectorfx.event.EventSource;
 import com.techsenger.connectorfx.scenegraph.Element;
-import com.techsenger.patternfx.mvp.ParentComposer;
-import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
+import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends AbstractTabFxView<P>
+public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends AbstractTabFxView<P>
         implements ComponentTabView {
 
     private static final Logger logger = LoggerFactory.getLogger(ComponentTabFxView.class);
@@ -153,7 +153,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         treeItemsByComponent.put(parentFxView, treeItem);
     }
 
-    private static TreeItem<InspectorItem> createRootItem(List<InspectorItem> items, ComponentTabPresenter<?, ?> p,
+    private static TreeItem<InspectorItem> createRootItem(List<InspectorItem> items, ComponentTabPresenter<?> p,
             Map<InspectorCategory, Boolean> expandedByCat) {
         var root = new TreeItem<InspectorItem>();
         TreeItem<InspectorItem> category = null;
@@ -168,7 +168,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         return root;
     }
 
-    private static TreeItem<InspectorItem> createCategoryItem(InspectorItem item, ComponentTabPresenter<?, ?> p,
+    private static TreeItem<InspectorItem> createCategoryItem(InspectorItem item, ComponentTabPresenter<?> p,
             Map<InspectorCategory, Boolean> expandedByCategory) {
         var treeItem = new TreeItem<>(item);
         if (item.category() != null) {
@@ -180,7 +180,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
         return treeItem;
     }
 
-    public class Composer extends AbstractTabFxView<P>.Composer implements ComponentTabComposer {
+    public class Composer extends AbstractTabFxView<P>.Composer implements ComponentTabView.Composer {
 
         private final ComponentTabFxView<P> view = ComponentTabFxView.this;
 
@@ -469,7 +469,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?, ?>> extends A
                 } else {
                     throw new AssertionError("Unknown type of the component");
                 }
-                Class<? extends ParentComposer> fxComposerClass = null;
+                Class<? extends ParentView.Composer> fxComposerClass = null;
                 if (fxView instanceof ParentFxView<?> pfxv) {
                     fxComposerClass = pfxv.getComposer().getClass();
                 }

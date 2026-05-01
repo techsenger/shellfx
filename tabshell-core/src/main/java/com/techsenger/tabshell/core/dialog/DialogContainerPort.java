@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.core.dialog;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.popup.PopupContainerPort;
+import java.util.List;
 
 /**
  *
@@ -24,4 +26,16 @@ import com.techsenger.tabshell.core.popup.PopupContainerPort;
  */
 public interface DialogContainerPort extends PopupContainerPort {
 
+    interface Composer extends PopupContainerPort.Composer {
+
+        /**
+         * Returns an unmodifiable list of dialogs. A new list instance is created on each call.
+         *
+         * @return
+         */
+        @Unmodifiable List<? extends DialogPort> getDialogPorts();
+    }
+
+    @Override
+    Composer getComposer();
 }

@@ -26,9 +26,9 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerFxView<P extends ParentPresenter<?, ?>> extends ParentFxView<P> {
+public interface PopupContainerFxView<P extends ParentPresenter<?>> extends ParentFxView<P>, PopupContainerView {
 
-    interface Composer extends ParentFxView.Composer, PopupContainerComposer {
+    interface Composer extends ParentFxView.Composer, PopupContainerView.Composer {
 
         /**
          * Adds the specified popup component to the component tree.
@@ -50,4 +50,7 @@ public interface PopupContainerFxView<P extends ParentPresenter<?, ?>> extends P
         @Unmodifiable List<? extends PopupFxView<?>> getPopups();
 
     }
+
+    @Override
+    Composer getComposer();
 }

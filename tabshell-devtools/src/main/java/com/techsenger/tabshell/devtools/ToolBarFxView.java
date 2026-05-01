@@ -34,7 +34,7 @@ import javafx.scene.layout.Priority;
  *
  * @author Pavel Castornii
  */
-public class ToolBarFxView<P extends ToolBarPresenter<?, ?>> extends AbstractFindBaseFxView<P>
+public class ToolBarFxView<P extends ToolBarPresenter<?>> extends AbstractFindBaseFxView<P>
         implements ToolBarView {
 
     private final Button refreshButton = new Button(null, new FontIconView(DevToolsIcons.REFRESH));

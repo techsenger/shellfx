@@ -28,7 +28,7 @@ import javafx.scene.layout.Priority;
  *
  * @author Pavel Castornii
  */
-public class FindPanelFxView<P extends FindPanelPresenter<?, ?>> extends AbstractFindBaseFxView<P>
+public class FindPanelFxView<P extends FindPanelPresenter<?>> extends AbstractFindBaseFxView<P>
         implements FindPanelView {
 
     private final HBox box = new HBox(getFindComboBoxWrapper());

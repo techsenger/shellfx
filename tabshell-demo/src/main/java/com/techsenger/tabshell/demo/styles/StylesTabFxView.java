@@ -36,7 +36,7 @@ import javafx.scene.layout.StackPane;
  *
  * @author Pavel Castornii
  */
-public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?, ?>> implements StylesTabView {
+public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?>> implements StylesTabView {
 
     private final GridPane gridPane = new GridPane();
 

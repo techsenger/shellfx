@@ -40,10 +40,10 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageHostFxView<P extends AbstractPageHostPresenter<?, ?>>
+public abstract class AbstractPageHostFxView<P extends AbstractPageHostPresenter<?>>
         extends AbstractAreaFxView<P> implements PageHostViewBase {
 
-    public class Composer extends AbstractAreaFxView<P>.Composer implements PageHostComposerBase {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements PageHostViewBase.Composer {
 
         private final AbstractPageHostFxView<P> view = AbstractPageHostFxView.this;
 
@@ -124,6 +124,11 @@ public abstract class AbstractPageHostFxView<P extends AbstractPageHostPresenter
     @Override
     public void setBackDisabled(boolean disabled) {
         this.backButton.setDisable(disabled);
+    }
+
+    @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
     }
 
     @Override

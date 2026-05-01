@@ -28,8 +28,8 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractPageHostPresenter<V extends PageHostViewBase, C extends PageHostComposerBase>
-        extends AbstractAreaPresenter<V, C> implements PageHostFindPort {
+public abstract class AbstractPageHostPresenter<V extends PageHostViewBase>
+        extends AbstractAreaPresenter<V> implements PageHostFindPort {
 
     private double dividerPosition;
 
@@ -113,7 +113,7 @@ public abstract class AbstractPageHostPresenter<V extends PageHostViewBase, C ex
     }
 
     protected boolean isCurrentPage(PageItem item) {
-        var currentPage = getComposer().getSelectedPagePort();
+        var currentPage = getView().getComposer().getSelectedPagePort();
         return currentPage != null && Objects.equals(currentPage.getItem(), item);
     }
 

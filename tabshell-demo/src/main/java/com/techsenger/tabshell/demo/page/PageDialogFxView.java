@@ -33,7 +33,8 @@ import javafx.scene.layout.VBox;
  */
 public class PageDialogFxView extends AbstractDialogFxView<PageDialogPresenter> implements PageDialogView {
 
-    public class Composer extends AbstractDialogFxView<PageDialogPresenter>.Composer implements PageDialogComposer {
+    public class Composer extends AbstractDialogFxView<PageDialogPresenter>.Composer
+            implements PageDialogView.Composer {
 
         private AbstractPageHostFxView<?> pageHost;
 

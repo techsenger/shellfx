@@ -22,8 +22,8 @@ import com.techsenger.patternfx.mvp.ParentPresenter;
  *
  * @author Pavel Castornii
  */
-public interface ShellPresenter<V extends ShellView, C extends ShellComposer> extends ParentPresenter<V, C>,
-        CloseAwarePresenter<V, C>, ReadOnlyShell, WriteOnlyShell, ShellPort {
+public interface ShellPresenter<V extends ShellView> extends ParentPresenter<V>,
+        CloseAwarePresenter<V>, ReadOnlyShell, WriteOnlyShell, ShellPort {
 
     /**
      * Returns the action to be executed when the shell is closed.

@@ -22,7 +22,6 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
-import com.techsenger.tabshell.core.tab.TabComposer;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
@@ -31,7 +30,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class BrowserMainTabPresenter extends AbstractTabPresenter<TabView, TabComposer> {
+public class BrowserMainTabPresenter extends AbstractTabPresenter<TabView> {
 
     public BrowserMainTabPresenter(TabView view, HistoryManager historyManager) {
         super(view);

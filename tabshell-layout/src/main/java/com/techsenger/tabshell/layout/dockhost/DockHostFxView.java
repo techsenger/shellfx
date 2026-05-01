@@ -133,8 +133,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractAreaFxView<P>
-        implements DockHostView {
+public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractAreaFxView<P> implements DockHostView {
 
     /**
      * Represents the type of draggable object in the docking system.
@@ -747,7 +746,7 @@ public class DockHostFxView<P extends DockHostPresenter<?, ?>> extends AbstractA
 
     private static final Double DRAG_REGION_MAX_WIDTH = 200.0;
 
-    public class Composer extends AbstractAreaFxView<P>.Composer implements DockHostComposer {
+    public class Composer extends AbstractAreaFxView<P>.Composer implements DockHostView.Composer {
 
         private final DockHostFxView<P> view = DockHostFxView.this;
 
