@@ -24,9 +24,6 @@ import com.techsenger.patternfx.mvp.ParentPort;
  */
 public interface PageContainerPort extends ParentPort {
 
-    @Override
-    PageContainerComposerBase getComposer();
-
     void selectPage(PageItem item);
 
     void selectPage(int index);

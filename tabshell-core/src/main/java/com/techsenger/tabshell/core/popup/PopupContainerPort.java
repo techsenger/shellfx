@@ -24,6 +24,4 @@ import com.techsenger.patternfx.mvp.ParentPort;
  */
 public interface PopupContainerPort extends ParentPort {
 
-    @Override
-    PopupContainerComposerBase getComposer();
 }

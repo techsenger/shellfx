@@ -25,9 +25,6 @@ import java.util.List;
  */
 public interface TabContainerPort extends ParentPort {
 
-    @Override
-    TabContainerComposerBase getComposer();
-
     /**
      * Returns the index of the currently selected tab.
      *

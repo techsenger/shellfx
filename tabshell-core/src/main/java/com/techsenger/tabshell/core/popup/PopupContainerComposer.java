@@ -16,12 +16,20 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentComposer;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerComposer extends PopupContainerComposerBase, ParentComposer {
+public interface PopupContainerComposer extends ParentComposer {
 
+    /**
+     * Returns an unmodifiable list of ports. A new list instance is created on each call.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends PopupPort> getPopupPorts();
 }

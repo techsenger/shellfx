@@ -24,6 +24,4 @@ import com.techsenger.tabshell.core.popup.PopupContainerPort;
  */
 public interface DialogContainerPort extends PopupContainerPort {
 
-    @Override
-    DialogContainerComposerBase getComposer();
 }

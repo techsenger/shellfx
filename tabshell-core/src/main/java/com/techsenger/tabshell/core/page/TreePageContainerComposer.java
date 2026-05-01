@@ -16,12 +16,22 @@
 
 package com.techsenger.tabshell.core.page;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentComposer;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TreePageContainerComposer extends TreePageContainerComposerBase, ParentComposer {
+public interface TreePageContainerComposer extends ParentComposer {
 
+    /**
+     * Returns a list of created and initialized pages.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends PagePort> getPagePorts();
+
+    PagePort getSelectedPagePort();
 }

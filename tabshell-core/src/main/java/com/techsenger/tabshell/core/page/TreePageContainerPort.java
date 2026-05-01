@@ -24,8 +24,5 @@ import com.techsenger.patternfx.mvp.ParentPort;
  */
 public interface TreePageContainerPort extends ParentPort {
 
-    @Override
-    TreePageContainerComposerBase getComposer();
-
     void selectPage(TreePageItem item);
 }

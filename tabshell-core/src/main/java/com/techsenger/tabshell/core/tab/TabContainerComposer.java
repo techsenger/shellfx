@@ -16,12 +16,25 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentComposer;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerComposer extends TabContainerComposerBase, ParentComposer {
+public interface TabContainerComposer extends ParentComposer {
 
+    /**
+     * Returns an unmodifiable list of tabs. A new list instance is created on each call.
+     *
+     * @return
+     */
+    @Unmodifiable List<? extends TabPort> getTabPorts();
+
+    /**
+     * Returns selected tab port.
+     */
+    TabPort getSelectedTabPort();
 }
