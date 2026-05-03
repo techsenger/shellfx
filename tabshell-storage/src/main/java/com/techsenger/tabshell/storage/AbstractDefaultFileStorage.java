@@ -54,13 +54,14 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
         checkIfExists(path);
         GenericFile.Builder builder = new GenericFile.Builder();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
-            for (Path entry : stream) {
+            for (Path filePath : stream) {
                 try {
-                    var file = entry.toFile();
-                    var createdFile = GenericFile.createFile(builder, file, file.toURI(), this);
+                    var createdFile = GenericFile.createFile(builder, filePath, filePath.toUri(), this);
                     result.add(createdFile);
                 } catch (InvalidFileException ex) {
-                    logger.error("Couldn't create GenericFile from {}", entry, ex);
+                    logger.error("Couldn't create GenericFile from {}", filePath, ex);
+                } finally {
+                    builder.reset();
                 }
             }
         } catch (SecurityException | AccessDeniedException e) {
@@ -74,9 +75,8 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
             IOException {
         var path = toPath(uri);
         checkIfExists(path);
-        var file = path.toFile();
         var builder = new GenericFile.Builder();
-        var genFile = GenericFile.createFile(builder, file, uri, this);
+        var genFile = GenericFile.createFile(builder, path, uri, this);
         return genFile;
     }
 

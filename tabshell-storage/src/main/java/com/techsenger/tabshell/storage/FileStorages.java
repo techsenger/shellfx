@@ -42,9 +42,10 @@ import org.slf4j.LoggerFactory;
  */
 public final class FileStorages {
 
+    @FunctionalInterface
     public interface StorageFactory {
 
-        FileStorage createFactory(FileStorageType type, String displayName, URI rootUri);
+        FileStorage create(FileStorageType type, String displayName, URI rootUri);
     }
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorages.class);
@@ -53,7 +54,7 @@ public final class FileStorages {
 
     private static final List<FileStorage> customStorages = new CopyOnWriteArrayList<>();
 
-    private static final Map<String, FileStorage> storagesByUri = new HashMap<>();
+    private static volatile Map<String, FileStorage> storagesByUri = Map.of();
 
     private static volatile StorageFactory storageFactory = (FileStorageType type, String displayName, URI rootUri) -> {
         if (OsUtils.isWindows()) {
@@ -177,7 +178,7 @@ public final class FileStorages {
                 default:
                     type = FileStorageType.BASE;
             }
-            var storage = storageFactory.createFactory(type, fsv.getSystemDisplayName(file), rootPath.toUri());
+            var storage = storageFactory.create(type, fsv.getSystemDisplayName(file), rootPath.toUri());
             var resultStorage = selectOldOrNew(storage);
             result.add(resultStorage);
         }
@@ -193,7 +194,7 @@ public final class FileStorages {
         for (var rootPath : rootPaths) {
             var file = rootPath.toFile();
             var storage = storageFactory
-                    .createFactory(FileStorageType.BASE, fsv.getSystemDisplayName(file), rootPath.toUri());
+                    .create(FileStorageType.BASE, fsv.getSystemDisplayName(file), rootPath.toUri());
             var resultStorage = selectOldOrNew(storage);
             result.add(resultStorage);
         }
@@ -202,19 +203,20 @@ public final class FileStorages {
     }
 
     private static void updateStoragesByUri(List<AbstractFileStorage> storages) {
-        storagesByUri.clear();
+        Map<String, FileStorage> newMap = new HashMap<>(storages.size() * 2);
         for (var s : storages) {
-            storagesByUri.put(s.getRootUri().toString(), s);
+            newMap.put(s.getRootUri().toString(), s);
         }
+        storagesByUri = Collections.unmodifiableMap(newMap);
     }
 
     private static FileStorage selectOldOrNew(FileStorage newStorage) {
-        var oldStorage = storagesByUri.get(newStorage.getRootUri().toString());
+        var snapshot = storagesByUri;
+        var oldStorage = snapshot.get(newStorage.getRootUri().toString());
         if (oldStorage != null && oldStorage.equals(newStorage)) {
             return oldStorage;
-        } else {
-            return newStorage;
         }
+        return newStorage;
     }
 
     private static boolean isOptical(Path p) {

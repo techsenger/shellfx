@@ -19,7 +19,9 @@ package com.techsenger.tabshell.storage;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,97 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public final class GenericFile {
+
+    /**
+     * A reusable builder.
+     */
+    public static class Builder {
+
+        private FileStorage storage;
+
+        private FileType type;
+
+        private URI uri;
+
+        private Long size;
+
+        private String name;
+
+        private Long lastModified;
+
+        private boolean virtual;
+
+        public Builder() {
+
+        }
+
+        public Builder storage(FileStorage storage) {
+            this.storage = storage;
+            return this;
+        }
+
+        public Builder type(FileType type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder uri(URI uri) {
+            this.uri = uri;
+            return this;
+        }
+
+        public Builder size(Long size) {
+            this.size = size;
+            return this;
+        }
+
+        public Builder lastModified(Long lastModified) {
+            this.lastModified = lastModified;
+            return this;
+        }
+
+        public Builder virtual(boolean virtual) {
+            this.virtual = virtual;
+            return this;
+        }
+
+        public GenericFile build() {
+            var file = new GenericFile(this);
+            return file;
+        }
+
+        /**
+         * Use this method to create a copy with or without modifications.
+         *
+         * @param file
+         */
+        public Builder setAllFrom(GenericFile file) {
+            this.storage = file.storage;
+            this.type = file.type;
+            this.uri = file.uri;
+            this.size = file.size;
+            this.name = file.name;
+            this.lastModified = file.lastModified;
+            this.virtual = file.virtual;
+            return this;
+        }
+
+        public Builder reset() {
+            this.storage = null;
+            this.type = null;
+            this.uri = null;
+            this.size = null;
+            this.name = null;
+            this.lastModified = null;
+            this.virtual = false;
+            return this;
+        }
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(GenericFile.class);
 
@@ -112,125 +205,34 @@ public final class GenericFile {
      * @return
      */
     public static GenericFile convert(File file, List<FileStorage> storages) throws InvalidFileException {
-        var uri = file.toURI();
+        var path = file.toPath();
+        var uri = path.toUri(); // it is faster than file.toURI.
         var storage = FileStorages.findByUri(storages, uri);
         if (storage == null) {
             throw new IllegalArgumentException("Couldn't find storage for " + uri);
         }
         var builder = new Builder();
-        var result = createFile(builder, file, uri, storage);
+        var result = createFile(builder, path, uri, storage);
         return result;
     }
 
-    /**
-     * A reusable builder.
-     */
-    public static class Builder {
-
-        private FileStorage storage;
-
-        private FileType type;
-
-        private URI uri;
-
-        private Long size;
-
-        private String name;
-
-        private Long lastModified;
-
-        private boolean virtual;
-
-        public Builder() {
-
-        }
-
-        public Builder storage(FileStorage storage) {
-            this.storage = storage;
-            return this;
-        }
-
-        public Builder type(FileType type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder uri(URI uri) {
-            this.uri = uri;
-            return this;
-        }
-
-        public Builder size(Long size) {
-            this.size = size;
-            return this;
-        }
-
-        public Builder lastModified(Long lastModified) {
-            this.lastModified = lastModified;
-            return this;
-        }
-
-        public Builder virtual(boolean virtual) {
-            this.virtual = virtual;
-            return this;
-        }
-
-        public GenericFile build() {
-            var file = new GenericFile(this);
-            reset();
-            return file;
-        }
-
-        /**
-         * Use this method to create a copy with or without modifications.
-         *
-         * @param file
-         */
-        public Builder setAllFrom(GenericFile file) {
-            this.storage = file.storage;
-            this.type = file.type;
-            this.uri = file.uri;
-            this.size = file.size;
-            this.name = file.name;
-            this.lastModified = file.lastModified;
-            this.virtual = file.virtual;
-            return this;
-        }
-
-        public Builder reset() {
-            this.storage = null;
-            this.type = null;
-            this.uri = null;
-            this.size = null;
-            this.name = null;
-            this.lastModified = null;
-            this.virtual = false;
-            return this;
-        }
-    }
-
-    static GenericFile createFile(GenericFile.Builder builder, File file, URI uri, FileStorage storage)
+    static GenericFile createFile(GenericFile.Builder builder, Path path, URI uri, FileStorage storage)
             throws InvalidFileException {
         try {
-            var filePath = file.toPath();
+            var attrs = Files.readAttributes(path, BasicFileAttributes.class);
             builder.storage(storage);
-            builder.name(file.getName());
+            builder.name(path.getFileName().toString());
             builder.uri(uri);
-            builder.lastModified(file.lastModified());
-            if (file.isDirectory()) {
+            builder.lastModified(attrs.lastModifiedTime().toMillis());
+            if (attrs.isDirectory()) {
                 builder.type(FileType.DIRECTORY);
             } else {
                 var fileType = FileType.FILE;
-                if (Files.isSymbolicLink(filePath)) {
+                if (attrs.isSymbolicLink()) {
                     fileType = FileType.SYMBOLIC_LINK;
                 }
                 builder.type(fileType);
-                builder.size(file.length());
+                builder.size(attrs.size());
             }
             builder.virtual(false);
             return builder.build();
