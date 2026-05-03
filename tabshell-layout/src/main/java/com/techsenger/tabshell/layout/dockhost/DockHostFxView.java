@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.layout.dockhost;
 
 import com.techsenger.patternfx.mvp.ChildFxView;
+import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
@@ -24,7 +25,7 @@ import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.area.AreaPort;
-import com.techsenger.tabshell.core.tab.ComponentTab;
+import com.techsenger.tabshell.core.tab.TabFxView;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_HALF;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_THIRD;
 import com.techsenger.tabshell.layout.style.LayoutIcons;
@@ -61,6 +62,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseDragEvent;
@@ -1165,7 +1167,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     /**
      * The tab is being dragged.
      */
-    private ComponentTab dragTab;
+    private Tab dragTab;
 
     /**
      * The dock that is being dragged.
@@ -1349,17 +1351,17 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         container.getChildren().clear();
     }
 
-    void onTabDragDetected(ComponentTab tab) {
+    void onTabDragDetected(Tab tab) {
         this.dragTab = tab;
         updateDragInProgress(true, DraggableType.TAB);
     }
 
-    void onTabDrag(ComponentTab tab) {
+    void onTabDrag(Tab tab) {
         this.dragTab = tab;
         updateDragInProgress(true, DraggableType.TAB);
     }
 
-    void onTabDrop(ComponentTab tab) {
+    void onTabDrop(Tab tab) {
         try {
             processDropInsideTabHeaderArea();
         } finally {
@@ -2321,9 +2323,10 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         TabPaneProSkin skin = (TabPaneProSkin) this.dragTab.getTabPane().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = skin.getTabHeaderArea();
         // we don't know if it is a tab dock
-        TabHostFxView<?> oldTabHost = (TabHostFxView<?>) this.dragTab.getView().getParent();
-        oldTabHost.getComposer().removeTab(this.dragTab.getView());
-        newTabDock.getComposer().addTab(this.dragTab.getView());
+        TabFxView<?> tabFxView = (TabFxView<?>) FxViewUtils.getView(this.dragTab);
+        TabHostFxView<?> oldTabHost = (TabHostFxView<?>) tabFxView.getParent();
+        oldTabHost.getComposer().removeTab(tabFxView);
+        newTabDock.getComposer().addTab(tabFxView);
         this.dragTab = null;
         tabHeaderArea.cleanupAfterDrop();
     }

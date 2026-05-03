@@ -20,7 +20,6 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabpanepro.core.TabEvent;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
-import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
@@ -142,14 +141,14 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         var tabPane = getNode();
         tabPane.addEventHandler(TabEvent.TAB_DRAG_STARTED, (e) -> {
             if (e.getTarget() == getNode()) {
-                dockHost.onTabDrag((ComponentTab) e.getTab());
+                dockHost.onTabDrag(e.getTab());
                 e.consume();
             }
         });
         // this handler is called when mouse is over TabHeaderArea
         tabPane.addEventHandler(TabEvent.TAB_DROPPED, (e) -> {
             if (e.getTarget() == getNode()) {
-                dockHost.onTabDrop((ComponentTab) e.getTab());
+                dockHost.onTabDrop(e.getTab());
                 e.consume();
             }
         });

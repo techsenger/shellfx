@@ -18,11 +18,12 @@ package com.techsenger.tabshell.layout.dockhost;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
-import com.techsenger.tabshell.core.tab.ComponentTab;
+import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
@@ -51,19 +52,19 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
 
     private static final class BarTab extends Tab {
 
-        private final ComponentTab minimizedTab;
+        private final Tab minimizedTab;
 
         private final boolean minimizedTabClosable;
 
         private boolean shownInPopup;
 
-        BarTab(ComponentTab minimizedTab) {
+        BarTab(Tab minimizedTab) {
             this.minimizedTab = minimizedTab;
             this.minimizedTabClosable = this.minimizedTab.isClosable();
             this.minimizedTab.getProperties().put(BAR_TAB_KEY, this);
         }
 
-        public ComponentTab getMinimizedTab() {
+        public Tab getMinimizedTab() {
             return minimizedTab;
         }
 
@@ -80,7 +81,8 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
         }
 
         public void deinit() {
-            this.minimizedTab.getView().getPresenter().setClosable(this.minimizedTabClosable);
+            TabFxView<?> tabFxView = (TabFxView<?>) FxViewUtils.getView(this.minimizedTab);
+            tabFxView.getPresenter().setClosable(this.minimizedTabClosable);
             this.minimizedTab.getProperties().remove(BAR_TAB_KEY);
         }
     }
@@ -310,7 +312,7 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
         return tab;
     }
 
-    protected BarTab createTab(ComponentTab tab) {
+    protected BarTab createTab(Tab tab) {
         var t = new BarTab(tab);
         t.setText(tab.getText());
         t.setGraphic(tab.getGraphic());
@@ -340,16 +342,17 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
     protected void openTabInPopup(BarTab barTab) {
         barTab.setShownInPopup(true);
         var minimizedTab = barTab.getMinimizedTab();
-        minimizedTab.getView().getPresenter().setClosable(false);
+        TabFxView<?> tabFxView = (TabFxView<?>) FxViewUtils.getView(minimizedTab);
+        tabFxView.getPresenter().setClosable(false);
         var popupTabPane = getComposer().getPopup().getTabPane();
         var tabs = popupTabPane.getTabs();
         if (tabs.size() == 1) {
-            var otherBarTab = getBarTab(((ComponentTab) tabs.get(0)));
+            var otherBarTab = getBarTab((tabs.get(0)));
             if (!otherBarTab.isSelected()) {
                 closeTabInPopup(otherBarTab.getMinimizedTab());
             }
         } else if (tabs.size() == 2) {
-            closeTabInPopup((ComponentTab) tabs.get(1));
+            closeTabInPopup(tabs.get(1));
         }
         tabs.add(minimizedTab);
         popupTabPane.getSelectionModel().select(tabs.size() - 1);
@@ -359,23 +362,23 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
         var tp = getComposer().getPopup().getTabPane();
         if (!tp.getTabs().isEmpty()) {
             var tab = tp.getTabs().get(tp.getTabs().size() - 1);
-            closeTabInPopup((ComponentTab) tab);
+            closeTabInPopup(tab);
         }
     }
 
-    protected void closeOtherTabInPopup(ComponentTab tab) {
+    protected void closeOtherTabInPopup(Tab tab) {
         var tp = getComposer().getPopup().getTabPane();
         if (tp.getTabs().size() > 1) {
             var tab0 = tp.getTabs().get(0);
             if (tab0 != tab) {
-                closeTabInPopup((ComponentTab) tab0);
+                closeTabInPopup(tab0);
             } else {
-                closeTabInPopup((ComponentTab) tp.getTabs().get(1));
+                closeTabInPopup(tp.getTabs().get(1));
             }
         }
     }
 
-    protected void closeTabInPopup(ComponentTab tab) {
+    protected void closeTabInPopup(Tab tab) {
         var popupTabPane = getComposer().getPopup().getTabPane();
         popupTabPane.getTabs().remove(tab);
         var barTab = getBarTab(tab);
@@ -391,7 +394,7 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
         for (var tabDock : tabDocks) {
             this.tabPane.getTabs().add(createRestoreTab());
             for (var tab : tabDock.getComposer().getDetachedTabs()) {
-                var t = createTab((ComponentTab) tab.getNode());
+                var t = createTab(tab.getNode());
                 this.tabPane.getTabs().add(t);
             }
         }
@@ -411,7 +414,7 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
         return tabDock;
     }
 
-    private BarTab getBarTab(ComponentTab minimizedTab) {
+    private BarTab getBarTab(Tab minimizedTab) {
         BarTab barTab = (BarTab) minimizedTab.getProperties().get(BAR_TAB_KEY);
         return barTab;
     }

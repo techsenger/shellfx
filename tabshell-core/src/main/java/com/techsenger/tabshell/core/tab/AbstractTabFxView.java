@@ -33,6 +33,7 @@ import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 import java.util.List;
 import javafx.scene.Cursor;
+import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -120,7 +121,7 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?>> extends Abstr
         }
     }
 
-    private final ComponentTab root = new ComponentTab(this);
+    private final Tab root = new Tab();
 
     private final VBox contentBox = new VBox();
 
@@ -136,11 +137,13 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?>> extends Abstr
 
     public AbstractTabFxView(ShellFxView<?> shell) {
         super();
+        FxViewUtils.setView(root, this);
+        FxViewUtils.setView(wrapperPane, this);
         getComposer().setShell(shell);
     }
 
     @Override
-    public ComponentTab getNode() {
+    public Tab getNode() {
         return root;
     }
 
@@ -197,7 +200,6 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?>> extends Abstr
     protected void initialize() {
         this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(),
                 () -> getContentBox().sceneProperty());
-        FxViewUtils.setView(wrapperPane, this);
         super.initialize();
     }
 

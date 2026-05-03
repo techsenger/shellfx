@@ -23,7 +23,6 @@ import com.techsenger.tabpanepro.core.TabEvent;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
-import com.techsenger.tabshell.core.tab.ComponentTab;
 import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.core.tab.TabPort;
@@ -58,8 +57,8 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
     private static final Object TAB_KEY = new Object();
 
-    private static ComponentTab getTab(ContextMenu menu) {
-        WeakReference<ComponentTab> ref = (WeakReference<ComponentTab>) menu.getProperties().get(TAB_KEY);
+    private static Tab getTab(ContextMenu menu) {
+        WeakReference<Tab> ref = (WeakReference<Tab>) menu.getProperties().get(TAB_KEY);
         return ref.get();
     }
 
@@ -75,7 +74,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         @Override
         public @Unmodifiable List<? extends TabPort> getTabPorts() {
             return view.getNode().getTabs().stream()
-                    .map(t -> ((ComponentTab) t).getView().getPresenter())
+                    .map(t -> ((TabFxView<?>) FxViewUtils.getView(t)).getPresenter())
                     .toList();
         }
 
@@ -83,7 +82,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         public TabFxView<?> getSelectedTab() {
             var tab = view.tabPane.getSelectionModel().getSelectedItem();
             if (tab != null) {
-                return ((ComponentTab) tab).getView();
+                return (TabFxView<?>) FxViewUtils.getView(tab);
             } else {
                 return null;
             }
@@ -91,7 +90,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
         @Override
         public List<? extends TabFxView<?>> getTabs() {
-            return view.tabPane.getTabs().stream().map(t -> (ComponentTab) t).map(t -> t.getView()).toList();
+            return view.tabPane.getTabs().stream().map(t -> (TabFxView<?>) FxViewUtils.getView(t)).toList();
         }
 
         @Override
@@ -126,7 +125,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
             if (!this.tabsDetached) {
                 view.selectedIndex = view.tabPane.getSelectionModel().getSelectedIndex();
                 this.detachedTabs = view.tabPane.getTabs()
-                        .stream().map(t -> ((ComponentTab) t).getView()).collect(Collectors.toList());
+                        .stream().map(t -> (TabFxView<?>) FxViewUtils.getView(t)).collect(Collectors.toList());
                 view.tabPane.getTabs().clear();
                 this.tabsDetached = true;
                 logger.debug("{} Detached tabs", getDescriptor().getLogPrefix());
@@ -283,14 +282,14 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
             resolveTabHeaderVisibility();
             while (change.next()) {
                 if (change.wasAdded()) {
-                    for (var t : change.getAddedSubList()) {
-                        ComponentTab tab = (ComponentTab) t;
+                    for (var tab : change.getAddedSubList()) {
                         tab.setOnCloseRequest((e) -> {
-                            getPresenter().onCloseTab(tab.getView().getPresenter());
+                            var fxView = (TabFxView<?>) FxViewUtils.getView(tab);
+                            getPresenter().onCloseTab(fxView.getPresenter());
                             e.consume();
                         });
                         //tabs can be added only by one
-                        tabPane.getSelectionModel().select(t);
+                        tabPane.getSelectionModel().select(tab);
                         tab.setContextMenu(createTabContextMenu((ObservableList) tabPane.getTabs(), tab));
                     }
                 } else if (change.wasRemoved()) {
@@ -312,7 +311,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
                 if (e.getTab().getTabPane() != this.tabPane) { // If tab droped in another tabpane
                     // Moving a tab from one pane to another is handled by TabPanePro.
                     // Here we only need to synchronize the component lists.
-                    var tabView = ((ComponentTab) e.getTab()).getView();
+                    var tabView = (TabFxView<?>) FxViewUtils.getView(e.getTab());
                     getModifiableChildren().remove(tabView);
                     TabHostFxView<?> newTabHost = (TabHostFxView<?>) FxViewUtils.findComponent(e.getTab().getTabPane());
                     if (newTabHost != null) {
@@ -349,16 +348,17 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
     }
 
-    protected ContextMenu createTabContextMenu(ObservableList<ComponentTab> tabs, ComponentTab tab) {
+    protected ContextMenu createTabContextMenu(ObservableList<Tab> tabs, Tab tab) {
         ContextMenu contextMenu = new ContextMenu();
         // we use a weak reference as a workaround for JDK-8283449
-        contextMenu.getProperties().put(TAB_KEY, new WeakReference<ComponentTab>(tab));
+        contextMenu.getProperties().put(TAB_KEY, new WeakReference<Tab>(tab));
 
         MenuItem close = new MenuItem("Close", new Label(" "));
         close.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                getPresenter().onCloseTab(t.getView().getPresenter());
+                var tabFxView = (TabFxView<?>) FxViewUtils.getView(t);
+                getPresenter().onCloseTab(tabFxView.getPresenter());
             }
         });
         MenuItem closeAll = new MenuItem("Close All");
@@ -369,21 +369,24 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         closeOther.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                getPresenter().onCloseOtherTabs(t.getView().getPresenter());
+                var tabFxView = (TabFxView<?>) FxViewUtils.getView(t);
+                getPresenter().onCloseOtherTabs(tabFxView.getPresenter());
             }
         });
         MenuItem closeRight = new MenuItem("Close to the Right");
         closeRight.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                getPresenter().onCloseRightTabs(t.getView().getPresenter());
+                var tabFxView = (TabFxView<?>) FxViewUtils.getView(t);
+                getPresenter().onCloseRightTabs(tabFxView.getPresenter());
             }
         });
         MenuItem closeLeft = new MenuItem("Close to the Left");
         closeLeft.setOnAction((e) -> {
             var t = getTab(contextMenu);
             if (t != null) {
-                getPresenter().onCloseLeftTabs(t.getView().getPresenter());
+                var tabFxView = (TabFxView<?>) FxViewUtils.getView(t);
+                getPresenter().onCloseLeftTabs(tabFxView.getPresenter());
             }
         });
 

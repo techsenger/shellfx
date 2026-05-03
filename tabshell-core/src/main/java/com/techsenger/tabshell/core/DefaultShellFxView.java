@@ -480,6 +480,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
         HeaderBar.setPrefButtonHeight(stage, 0); // to hide default buttons
         stage.initStyle(StageStyle.EXTENDED);
         var scene = new Scene(stackPane, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        FxViewUtils.setView(scene, this);
         stage.setScene(scene);
         //we add stackpane behind stage root
         stackPane.getStyleClass().add("root-stack-pane");
