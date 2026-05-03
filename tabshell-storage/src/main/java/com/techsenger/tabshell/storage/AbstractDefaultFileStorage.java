@@ -25,11 +25,14 @@ import java.nio.charset.Charset;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -65,6 +68,59 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
                 }
             }
         } catch (SecurityException | AccessDeniedException e) {
+            throw new AccessDeniedException("No access to directory: " + path);
+        }
+        return result;
+    }
+
+    @Override
+    public List<GenericFile> getFilesRecursively(URI uri) throws NoSuchFileException, AccessDeniedException,
+            IOException {
+        var result = new ArrayList<GenericFile>();
+        var path = toPath(uri);
+        checkIfExists(path);
+        GenericFile.Builder builder = new GenericFile.Builder();
+        try {
+            Files.walkFileTree(path, new SimpleFileVisitor<>() {
+
+                // Root directory is not included in the result list
+                private boolean root = true;
+
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    if (root) {
+                        root = false;
+                        return FileVisitResult.CONTINUE;
+                    }
+                    try {
+                        var createdFile = GenericFile.createFile(builder, dir, attrs, dir.toUri(),
+                                AbstractDefaultFileStorage.this);
+                        result.add(createdFile);
+                    } finally {
+                        builder.reset();
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    try {
+                        var createdFile = GenericFile.createFile(builder, file, attrs, file.toUri(),
+                                AbstractDefaultFileStorage.this);
+                        result.add(createdFile);
+                    } finally {
+                        builder.reset();
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                    logger.error("Couldn't visit file {}", file, exc);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (SecurityException e) {
             throw new AccessDeniedException("No access to directory: " + path);
         }
         return result;

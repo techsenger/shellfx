@@ -220,25 +220,30 @@ public final class GenericFile {
             throws InvalidFileException {
         try {
             var attrs = Files.readAttributes(path, BasicFileAttributes.class);
-            builder.storage(storage);
-            builder.name(path.getFileName().toString());
-            builder.uri(uri);
-            builder.lastModified(attrs.lastModifiedTime().toMillis());
-            if (attrs.isDirectory()) {
-                builder.type(FileType.DIRECTORY);
-            } else {
-                var fileType = FileType.FILE;
-                if (attrs.isSymbolicLink()) {
-                    fileType = FileType.SYMBOLIC_LINK;
-                }
-                builder.type(fileType);
-                builder.size(attrs.size());
-            }
-            builder.virtual(false);
-            return builder.build();
+            return createFile(builder, path, attrs, uri, storage);
         } catch (Exception ex) {
             throw new InvalidFileException(ex);
         }
+    }
+
+    static GenericFile createFile(GenericFile.Builder builder, Path path, BasicFileAttributes attrs,
+            URI uri, FileStorage storage) {
+        builder.storage(storage);
+        builder.name(path.getFileName().toString());
+        builder.uri(uri);
+        builder.lastModified(attrs.lastModifiedTime().toMillis());
+        if (attrs.isDirectory()) {
+            builder.type(FileType.DIRECTORY);
+        } else {
+            var fileType = FileType.FILE;
+            if (attrs.isSymbolicLink()) {
+                fileType = FileType.SYMBOLIC_LINK;
+            }
+            builder.type(fileType);
+            builder.size(attrs.size());
+        }
+        builder.virtual(false);
+        return builder.build();
     }
 
     private final FileStorage storage;

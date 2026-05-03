@@ -69,6 +69,18 @@ public interface FileStorage {
     List<GenericFile> getFiles(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
+     * Returns list of files recursively, including all subdirectories and their contents. The order is guaranteed: a
+     * directory always appears before its contents. The root directory itself is not included in the result list.
+     *
+     * @param uri
+     * @return
+     * @throws NoSuchFileException
+     * @throws AccessDeniedException
+     * @throws IOException
+     */
+    List<GenericFile> getFilesRecursively(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+
+    /**
      * Returns concrete file.
      *
      * @param uri
