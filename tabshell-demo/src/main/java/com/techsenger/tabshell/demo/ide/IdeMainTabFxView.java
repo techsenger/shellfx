@@ -75,11 +75,11 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
         }
     }
 
-    private final CheckBox fooValidCheckBox = new CheckBox("Foo Item Valid");
+    private final CheckBox fooDisabledCheckBox = new CheckBox("Foo Item Disabled");
 
     private final CheckBox barIncludedCheckBox = new CheckBox("Bar Item Included");
 
-    private final CheckBox barValidCheckBox = new CheckBox("Bar Item Valid");
+    private final CheckBox barDisabledCheckBox = new CheckBox("Bar Item Disabled");
 
     private final Button shellDialogButton = new Button("Shell");
 
@@ -91,8 +91,8 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
 
     private final HBox popupHBox = new HBox(shellPopupButton, tabPopupButton);
 
-    private final VBox vBox = new VBox(new Label("Main Menu -> Extra:"), fooValidCheckBox, barIncludedCheckBox,
-            barValidCheckBox, new Label("Dialogs:"), dialogHBox, new Label("Popups:"), popupHBox);
+    private final VBox vBox = new VBox(new Label("Main Menu -> Extra:"), fooDisabledCheckBox, barIncludedCheckBox,
+            barDisabledCheckBox, new Label("Dialogs:"), dialogHBox, new Label("Popups:"), popupHBox);
 
     private final StackPane stackPane = new StackPane(vBox);
 
@@ -126,6 +126,17 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
     }
 
     @Override
+    protected void addListeners() {
+        super.addListeners();
+        this.fooDisabledCheckBox.selectedProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onFooDisabledSelected(newV));
+        this.barDisabledCheckBox.selectedProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onBarDisabledSelected(newV));
+        this.barIncludedCheckBox.selectedProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onBarIncludedSelected(newV));
+    }
+
+    @Override
     protected void addHandlers() {
         super.addHandlers();
         // when a Pane inside a Tab requests focus, it receives it, but immediately loses it because
@@ -136,14 +147,14 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
         this.tabPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.TAB));
     }
 
+    @Override
+    protected Composer createComposer() {
+        return new IdeMainTabFxView.Composer();
+    }
+
     private void setupButton(Button button) {
         button.getStyleClass().add(Styles.DENSE);
         HBox.setHgrow(button, Priority.ALWAYS);
         button.setMaxWidth(Double.MAX_VALUE);
-    }
-
-    @Override
-    protected Composer createComposer() {
-        return new IdeMainTabFxView.Composer();
     }
 }

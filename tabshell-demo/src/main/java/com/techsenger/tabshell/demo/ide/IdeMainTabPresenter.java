@@ -85,28 +85,6 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
     protected void postInitialize() {
         super.postInitialize();
         getView().setTitle("Main Tab");
-//        menuDelegates.addAll(
-//                new SimpleMenuDelegate(ExtraMenu.NAME, true) // extra menu is included
-//        );
-//        menuDelegates.addAll(
-//            new SimpleMenuItemDelegate(ExtraMenu.FOO_ITEM) {
-//                @Override
-//                public Boolean getItemValid() {
-//                    return getView().isFooValid();
-//                }
-//            },
-//            new SimpleMenuItemDelegate(ExtraMenu.BAR_ITEM) {
-//                @Override
-//                public Boolean getItemIncluded() {
-//                    return getView().isBarIncluded();
-//                }
-//
-//                @Override
-//                public Boolean getItemValid() {
-//                    return getView().isBarValid();
-//                }
-//            }
-//        );
     }
 
     @Override
