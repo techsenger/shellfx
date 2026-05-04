@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.core;
 
-.window-box .menu-item:focused {
-  -fx-background-color: -color-accent-emphasis, -color-accent-emphasis;
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class ShellHistory extends WindowHistory {
 
-.shadow {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 8px, 0.6, 0, 2);
 }

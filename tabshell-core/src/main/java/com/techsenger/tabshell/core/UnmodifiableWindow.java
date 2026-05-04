@@ -14,14 +14,32 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.core;
 
-.window-box .menu-item:focused {
-  -fx-background-color: -color-accent-emphasis, -color-accent-emphasis;
-}
+import com.techsenger.tabshell.material.icon.Icon;
 
-.shadow {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 8px, 0.6, 0, 2);
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface UnmodifiableWindow {
+
+    /**
+     * Returns the title of the component.
+     *
+     * @return
+     */
+    String getTitle();
+
+    /**
+     * Returns the icon of the component.
+     * @return
+     */
+    Icon<?> getIcon();
+
+    boolean isMaximized();
+
+    double getWidth();
+
+    double getHeight();
 }

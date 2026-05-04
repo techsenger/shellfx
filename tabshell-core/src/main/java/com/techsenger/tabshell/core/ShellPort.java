@@ -16,15 +16,13 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.mvp.ParentPort;
-import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellPort extends ParentPort, DialogContainerPort, CloseAwarePort, MenuAwarePort, ReadOnlyShell {
+public interface ShellPort extends MenuAwarePort, WindowPort {
 
     /**
      * Returns the context of the shell.

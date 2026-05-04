@@ -66,7 +66,7 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
             var v = new DemoPopupFxView();
             var p = new DemoPopupPresenter(v, false);
             p.initialize();
-            if (scope == OverlayScope.SHELL) {
+            if (scope == OverlayScope.WINDOW) {
                 getShell().getComposer().addPopup(v, Anchors.topRight(40, 20));
             } else {
                 addPopup(v, Anchors.bottomRight(20, 20));
@@ -132,7 +132,7 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
         // TabPane captures the focus. To fix it we request focus on next pulse.
         this.stackPane.setOnMouseClicked(e -> Platform.runLater(() -> this.stackPane.requestFocus()));
         this.shellDialogButton.setOnAction(e -> getPresenter().onDialogOpen());
-        this.shellPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.SHELL));
+        this.shellPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.WINDOW));
         this.tabPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.TAB));
     }
 

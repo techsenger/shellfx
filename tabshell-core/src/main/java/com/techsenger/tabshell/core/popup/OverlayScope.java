@@ -22,5 +22,5 @@ package com.techsenger.tabshell.core.popup;
  */
 public enum OverlayScope {
 
-    SHELL, TAB
+    WINDOW, TAB
 }

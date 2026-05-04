@@ -22,7 +22,7 @@ import com.techsenger.patternfx.mvp.AbstractComponentHistory;
  *
  * @author Pavel Castornii
  */
-public class DefaultShellHistory extends AbstractComponentHistory {
+public class WindowHistory extends AbstractComponentHistory {
 
     private double width;
 
@@ -30,7 +30,7 @@ public class DefaultShellHistory extends AbstractComponentHistory {
 
     private boolean maximized;
 
-    public DefaultShellHistory() {
+    public WindowHistory() {
 
     }
 

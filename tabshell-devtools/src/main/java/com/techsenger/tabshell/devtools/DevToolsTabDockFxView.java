@@ -97,7 +97,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
 
         protected StylesheetTabFxView<?> createStylesheetTab() {
             var view = new StylesheetTabFxView<>(shell);
-            var windowUid = shell.getStage().hashCode();
+            var windowUid = shell.getWindow().hashCode();
             var presenter = new StylesheetTabPresenter<>(view, getPresenter());
             return view;
         }
@@ -127,7 +127,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
         super();
         this.shell = shell;
         this.dialogContainer = dialogContainer;
-        this.connector = new LocalConnector(shell.getStage(), null);
+        this.connector = new LocalConnector(shell.getWindow(), null);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
 
     @Override
     public int getWindowUid() {
-        return shell.getStage().hashCode();
+        return shell.getWindow().hashCode();
     }
 
     @Override

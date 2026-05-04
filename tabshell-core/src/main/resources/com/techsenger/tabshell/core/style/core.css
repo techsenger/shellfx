@@ -23,100 +23,100 @@
 }
 
 /*
-    Stage
+    Window
 */
-.stage-box {
-    /* if the stage is not maximized it is necessary to add 1px border */
+.window-box {
+    /* if the window is not maximized it is necessary to add 1px border */
     -fx-background-color: ladder(-color-bg-default, -color-border-default 49%, -color-base-4 50%), -color-bg-default;
     -fx-background-insets: 0, 1;
 /*    -fx-background-radius: 5 5 0 0, 4 4 0 0;*/
     -fx-padding: 1px;
 }
 
-.stage-box:maximized {
+.window-box:maximized {
     -fx-background-color: -color-bg-default;
     -fx-background-insets: 0;
 }
 
-.stage-box:maximized {
+.window-box:maximized {
     -fx-background-radius: 0, 0;
 }
 
-.stage-box > .title-bar {
+.window-box > .title-bar {
     -fx-background-color: -color-bg-extra;
     -fx-background-insets: 0;
     -fx-pref-height: 38;
     -fx-min-height: 38;
 }
 
-.stage-box > .title-bar > .left-box {
+.window-box > .title-bar > .left-box {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 0 0 12px;
 /*    -fx-background-radius: 4 0 0 0;*/
 }
 
-.stage-box:maximized > .title-bar > .left-box {
+.window-box:maximized > .title-bar > .left-box {
     -fx-background-radius: 0;
 }
 
-.stage-box > .title-bar > .left-box > .icon-view-box {
+.window-box > .title-bar > .left-box > .icon-view-box {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 4 0 0;
 }
 
-.stage-box > .title-bar > .left-box > .icon-view-box:empty {
+.window-box > .title-bar > .left-box > .icon-view-box:empty {
     -fx-padding: 0;
 }
 
-.stage-box > .title-bar > .left-box > .icon-view-box > .image-icon-view { }
+.window-box > .title-bar > .left-box > .icon-view-box > .image-icon-view { }
 
-.stage-box > .title-bar > .left-box > .icon-view-box > .font-icon-view {
+.window-box > .title-bar > .left-box > .icon-view-box > .font-icon-view {
     -fx-text-fill: -color-fg-default;
 }
 
-.stage-box > .title-bar > .left-box > .menu-bar {
+.window-box > .title-bar > .left-box > .menu-bar {
     -fx-background-color: -color-bg-extra;
 }
 
-.stage-box > .title-bar > .left-box > .menu-bar >.container {
+.window-box > .title-bar > .left-box > .menu-bar >.container {
     -fx-padding: 0;
 }
 
-.stage-box > .title-bar > .right-box {
+.window-box > .title-bar > .right-box {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 12px 0 0;
 /*    -fx-background-radius: 0 4 0 0;*/
 }
 
-.stage-box:maximized > .title-bar > .right-box {
+.window-box:maximized > .title-bar > .right-box {
     -fx-background-radius: 0;
 }
 
-.stage-box > .title-bar > .right-box > .button {
+.window-box > .title-bar > .right-box > .button {
     -fx-focus-traversable: false;
 }
 
-.stage-box:unfocused > .title-bar {
+.window-box:unfocused > .title-bar {
     -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
 }
 
-.stage-box:unfocused > .title-bar > .left-box > .menu-bar {
+.window-box:unfocused > .title-bar > .left-box > .menu-bar {
     -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
 }
 
-.stage-box > .title-bar > .icon-view-box > .font-icon-view {
+.window-box > .title-bar > .icon-view-box > .font-icon-view {
     -fx-font-size: 1.6em;
 }
 
-.stage-box > .content-box {
+.window-box > .content-box {
     -fx-background-color: -color-bg-default;
 }
 
-.stage-box .menu-item {
+.window-box .menu-item {
     -fx-background-color: ladder(-color-bg-default, -color-bg-extra 49%, -color-bg-default 50%);
 }
 
-.stage-box .context-menu {
+.window-box .context-menu {
     -fx-background-color:  -color-border-muted, ladder(-color-bg-default, -color-bg-extra 49%, -color-bg-default 50%);
 }
 

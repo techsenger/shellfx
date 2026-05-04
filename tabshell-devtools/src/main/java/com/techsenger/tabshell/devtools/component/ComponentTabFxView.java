@@ -306,7 +306,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
     @Override
     public void selectComponent(Element n) {
         var node = ((LocalElement) n).unwrap();
-        var component = FxViewUtils.findComponent(node);
+        var component = FxViewUtils.findView(node, ParentFxView.class);
         if (component != null) {
             var treeItem = this.treeItemsByComponent.get(component);
             if (treeItem != null) {
@@ -460,7 +460,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
                 var fxView = jfxComponent.getView();
                 Element element;
                 if (fxView instanceof ShellFxView<?> shell) {
-                    var stage = shell.getStage();
+                    var stage = shell.getWindow();
                     element = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
                 } else if (fxView instanceof TabFxView<?> tab) {
                     element = LocalElement.of(tab.getNode().getContent());

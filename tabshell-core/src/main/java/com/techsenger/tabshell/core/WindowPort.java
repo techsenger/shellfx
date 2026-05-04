@@ -16,31 +16,13 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.material.icon.Icon;
+import com.techsenger.patternfx.mvp.ParentPort;
+import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WriteOnlyShell {
+public interface WindowPort extends ParentPort, UnmodifiableWindow, DialogContainerPort, CloseAwarePort {
 
-    /**
-     * Sets the title of the component.
-     *
-     * @param title
-     */
-    void setTitle(String title);
-
-    /**
-     * Sets the icon of the component.
-     *
-     * @param icon
-     */
-    void setIcon(Icon<?> icon);
-
-    void setMaximized(boolean value);
-
-    void setWidth(double value);
-
-    void setHeight(double value);
 }

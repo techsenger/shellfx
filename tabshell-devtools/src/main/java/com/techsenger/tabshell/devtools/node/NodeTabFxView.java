@@ -530,7 +530,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
     }
 
     private void updateNodeRoot() {
-        var stage = getComposer().getShell().getStage();
+        var stage = getComposer().getShell().getWindow();
         var root = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
         var rootItem = createNodeItem(root);
         nodeTreeView.setRoot(rootItem);

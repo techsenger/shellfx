@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.material.style.StyleUtils;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 
@@ -29,11 +29,11 @@ public class FontApplier {
 
     private String monoStylesheet;
 
-    public FontApplier(Pane root, AppearanceSettings settings) {
-        updateRegularFont(root, settings.getRegularFont());
-        settings.onRegularFontChanged((oldV, newV) -> updateRegularFont(root, newV));
-        updateMonospaceFont(root, settings.getMonospaceFont());
-        settings.onMonospaceFontChanged((oldV, newV) -> updateMonospaceFont(root, newV));
+    public FontApplier(Pane root, ObjectProperty<Font> regularFont, ObjectProperty<Font> monospaceFont) {
+        updateRegularFont(root, regularFont.get());
+        regularFont.addListener((ov, oldV, newV) -> updateRegularFont(root, newV));
+        updateMonospaceFont(root, monospaceFont.get());
+        monospaceFont.addListener((ov, oldV, newV) -> updateMonospaceFont(root, newV));
     }
 
     private void updateRegularFont(Pane root, Font font) {

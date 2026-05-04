@@ -17,44 +17,23 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.mvp.AbstractParentPresenter;
-import com.techsenger.patternfx.mvp.ComponentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.tabshell.material.icon.Icon;
-import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultShellPresenter<V extends ShellView>
-        extends AbstractParentPresenter<V> implements ShellPresenter<V> {
+public class DefaultShellPresenter<V extends ShellView> extends DefaultWindowPresenter<V> implements ShellPresenter<V> {
 
     private final ShellContext context;
 
     private Runnable onClose;
 
-    private double width;
-
-    private double height;
-
-    private String title;
-
-    private boolean maximized;
-
-    private Icon<?> icon;
-
     public DefaultShellPresenter(V view, ShellContext context) {
-        super(view);
+        super(view, context.getSettings().getAppearance());
         this.context = context;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> context.getHistoryManager()
-                .getOrCreateHistory(DefaultShellHistory.class, DefaultShellHistory::new));
-    }
-
-    @Override
-    public Composer getComposer() {
-        return getView().getComposer();
+        setHistoryProvider(() -> context.getHistoryManager().getOrCreateHistory(ShellHistory.class, ShellHistory::new));
     }
 
     @Override
@@ -68,27 +47,8 @@ public class DefaultShellPresenter<V extends ShellView>
     }
 
     @Override
-    public CloseCheckResult isReadyToClose() {
-        return CloseCheckResult.READY;
-    }
-
-    @Override
-    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void close() {
-        var iterator = getView().getComposer().breadthFirstIterator();
-        while (iterator.hasNext()) {
-            var c = iterator.next();
-            if (iterator.getDepth() > 0) {
-                ((ComponentPresenter<?>) c).deinitialize();
-            }
-        }
-        // the shell is deinitilized at the end
-        deinitialize();
-        getView().closeWindow();
+        super.close();
         if (this.onClose != null) {
             this.onClose.run();
         }
@@ -105,101 +65,8 @@ public class DefaultShellPresenter<V extends ShellView>
     }
 
     @Override
-    public double getWidth() {
-        return width;
-    }
-
-    @Override
-    public void setWidth(double width) {
-        this.width = width;
-        getView().setWidth(width);
-    }
-
-    @Override
-    public double getHeight() {
-        return height;
-    }
-
-    @Override
-    public void setHeight(double height) {
-        this.height = height;
-        getView().setHeight(height);
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
-    }
-
-    @Override
-    public void setTitle(String title) {
-        this.title = title;
-        getView().setTitle(title);
-    }
-
-    @Override
-    public Icon<?> getIcon() {
-        return icon;
-    }
-
-    @Override
-    public void setIcon(Icon<?> icon) {
-        this.icon = icon;
-        getView().setIcon(icon);
-    }
-
-    @Override
-    public boolean isMaximized() {
-        return maximized;
-    }
-
-    @Override
-    public void setMaximized(boolean maximized) {
-        this.maximized = maximized;
-        getView().setMaximized(maximized);
-    }
-
-    @Override
-    protected DefaultShellHistory getHistory() {
-        return (DefaultShellHistory) super.getHistory();
-    }
-
-    protected void onWidthChanged(double width) {
-        this.width = width;
-    }
-
-    protected void onHeightChanged(double height) {
-        this.height = height;
-    }
-
-    protected void onMaximized(boolean maximized) {
-        this.maximized = maximized;
-    }
-
-    @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
-        var h = getHistory();
-        if (!h.isNew()) {
-            if (h.isMaximized()) {
-                setMaximized(true);
-            } else {
-                setHeight(h.getHeight());
-                setWidth(h.getWidth());
-            }
-        } else {
-            setHeight(ShellView.DEFAULT_HEIGHT);
-            setWidth(ShellView.DEFAULT_WIDTH);
-        }
-    }
-
-    @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
-        var h = getHistory();
-        h.setWidth(getWidth());
-        h.setHeight(getHeight());
-        h.setMaximized(isMaximized());
+    protected ShellHistory getHistory() {
+        return (ShellHistory) super.getHistory();
     }
 
     @Override

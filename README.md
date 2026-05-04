@@ -26,6 +26,7 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
 * [When to Use?](#when-to-use)
 * [Modules](#modules)
 * [Core Components](#core)
+    * [Window](#core-window)
     * [Shell](#core-shell)
     * [Tab](#core-tab)
     * [Area](#core-area)
@@ -95,7 +96,7 @@ Key features of TabShell include:
 * Support for different layouts, including a docking layout.
 * Set of devtools for inspecting the application at both the component layer and the JavaFX scene graph layer.
 * Ability to preserve component history.
-* Support for inline dialogs with two scopes — shell and tab.
+* Support for inline popups and dialogs with two scopes — window and tab.
 * Window styling that matches the theme.
 * Support for 7 themes (4 dark and 3 light).
 * API for working with all colors in the palettes of all themes
@@ -171,16 +172,34 @@ Therefore, any addition or removal of a component must be reflected in both stru
 from the node tree without removing it from the component tree will result in a memory leak. DevTools provide the ability
 to inspect and monitor both hierarchies.
 
-### Shell <a name="core-shell"></a>
+### Window <a name="core-window"></a>
 
-`Shell` is the main and top-level component and is the only fully ready-to-use component in the core module. It is
-responsible for the following tasks:
+`Window` is the top-level component that represents an application window and serves as the root of a component tree.
+Each `Window` corresponds to a JavaFX `Stage` and defines an isolated environment in which all child components operate.
+
+It is responsible for the following tasks:
 
 * Window management.
-* Dynamic menu management.
-* Shell-scoped dialog management.
 * Theme management.
+* Font management.
+* Stylesheet management
+* Window-scoped popup management.
+* Window-scoped dialog management.
+
+Multiple `Window` instances may exist within a single application, each backed by its own JavaFX `Stage`,
+maintaining an independent component tree and visual context.
+
+### Shell <a name="core-shell"></a>
+
+`Shell` is the main and top-level component. It extends the `Window` component and inherits its responsibilities for
+managing the JavaFX `Stage` and window-level infrastructure. In addition, `Shell` defines the primary application
+structure and user experience layer.
+
+It is responsible for the following tasks:
+
+* Dynamic menu management.
 * Workspace management.
+* Context management.
 
 The Shell core does not contain any business logic. It is only a shell for other components that contain logic.
 
@@ -257,12 +276,12 @@ of the existing content. They are contextually tied to a specific section (e.g.,
 create a separate OS-level window. In contrast, modal window `Popup`s (or native `Popup`s) open as standalone
 OS-managed windows with their own frames and system controls, completely independent of the parent UI.
 
-There are two types of scope: `Shell` and `Tab`. `Popup`s in the `Tab` scope are bound to a specific tab and are visible
-only while that tab is open. `Popup`s in the `Shell` scope are global to the shell and remain visible even when all
+There are two types of scope: `Window` and `Tab`. `Popup`s in the `Tab` scope are bound to a specific tab and are visible
+only while that tab is open. `Popup`s in the `Window` scope are global to the `Window` and remain visible even when all
 tabs are closed.
 
 `Popup` can be added to any component that implements the `PopupContainer` interface. The platform provides two
-components that implement this interface: `Tab` and `Shell`.
+components that implement this interface: `Tab` and `Window`.
 
 ### Dialog <a name="core-dialog"></a>
 
@@ -278,13 +297,13 @@ asynchronous `Dialog`s prioritize responsiveness, deferring action until the use
 synchronous ones enforce immediate resolution. Modern UI design increasingly favors async approaches for scalability
 and user experience.
 
-There are two types of scope: `Shell` and `Tab`. If a `Dialog` has a `Shell` scope, the user will not be able to do
-anything in `Shell` while this `Dialog` is displayed until it is closed. If a `Dialog` has a `Tab` scope, only the
+There are two types of scope: `Window` and `Tab`. If a `Dialog` has a `Window` scope, the user will not be able to do
+anything in `Window` while this `Dialog` is displayed until it is closed. If a `Dialog` has a `Tab` scope, only the
 tab that triggered the `Dialog` will be blocked when it is displayed. All other tabs, the main menu, etc., will be
 available to the user.
 
 `Dialog` can be added to any component that implements the `DialogContainer` interface. The platform provides two
-components that implement this interface: `Tab` and `Shell`.
+components that implement this interface: `Tab` and `Window`.
 
 ## Layout Components <a name="layout"></a>
 

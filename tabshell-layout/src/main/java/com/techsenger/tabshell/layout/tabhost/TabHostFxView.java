@@ -313,7 +313,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
                     // Here we only need to synchronize the component lists.
                     var tabView = (TabFxView<?>) FxViewUtils.getView(e.getTab());
                     getModifiableChildren().remove(tabView);
-                    TabHostFxView<?> newTabHost = (TabHostFxView<?>) FxViewUtils.findComponent(e.getTab().getTabPane());
+                    TabHostFxView<?> newTabHost = FxViewUtils.findView(e.getTab().getTabPane(), TabHostFxView.class);
                     if (newTabHost != null) {
                         newTabHost.getModifiableChildren().add(tabView);
                         logger.debug("{} Tab {} was moved from {} to {}",

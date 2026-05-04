@@ -16,12 +16,11 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.List;
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -49,21 +48,18 @@ class ThemeApplier {
 
     private final ObservableList<Stylesheet> stylesheets;
 
-    private final SettingsSubscription themeSubscription;
-
     /**
      * Constructor.
      *
      * @param root the root of the scene. We can't get the root from stage.getScene().getRoot() because of custom stage.
      * @param theme
      */
-    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets,
-            AppearanceSettings settings) {
+    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets, ObjectProperty<Theme> theme) {
         this.stylesheets = stylesheets;
         this.scene = scene;
-        addTheme(settings.getTheme(), false);
+        addTheme(theme.get(), false);
         logSceneStylesheets();
-        themeSubscription = settings.onThemeChanged((oldV, newV) -> {
+        theme.addListener((ov, oldV, newV) -> {
             removeTheme(oldV);
             addTheme(newV, true);
             logSceneStylesheets();
@@ -71,10 +67,10 @@ class ThemeApplier {
         this.stylesheets.addListener((ListChangeListener<Stylesheet>) change -> {
             while (change.next()) {
                 if (change.wasAdded()) {
-                    addStylesheets(settings.getTheme(), change.getAddedSubList());
+                    addStylesheets(theme.get(), change.getAddedSubList());
                 }
                 if (change.wasRemoved()) {
-                    removeStylesheets(settings.getTheme(), change.getRemoved());
+                    removeStylesheets(theme.get(), change.getRemoved());
                 }
             }
             logSceneStylesheets();

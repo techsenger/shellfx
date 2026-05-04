@@ -57,7 +57,7 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
             var p = new DemoDialogPresenter(v);
             p.initialize();
             p.setResizable(resizable);
-            if (scope == OverlayScope.SHELL) {
+            if (scope == OverlayScope.WINDOW) {
                 var shell = mainTab.getComposer().getShell();
                 shell.getComposer().addDialog(v);
             } else {
@@ -71,7 +71,7 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
             var v = new DemoPopupFxView();
             var p = new DemoPopupPresenter(v, false);
             p.initialize();
-            if (scope == OverlayScope.SHELL) {
+            if (scope == OverlayScope.WINDOW) {
                 var shell = mainTab.getComposer().getShell();
                 shell.getComposer().addPopup(v, Anchors.topRight(40, 20));
             } else {
@@ -164,9 +164,9 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
         // in order for the shell to determine the focused component, you need to manually set focus
         // on the container when the user clicks on it with the mouse.
         stackPane.setOnMouseClicked(e -> stackPane.requestFocus());
-        this.shellDialogButton.setOnAction(e -> getPresenter().onDialogOpen(OverlayScope.SHELL));
+        this.shellDialogButton.setOnAction(e -> getPresenter().onDialogOpen(OverlayScope.WINDOW));
         this.tabDialogButton.setOnAction(e -> getPresenter().onDialogOpen(OverlayScope.TAB));
-        this.shellPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.SHELL));
+        this.shellPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.WINDOW));
         this.tabPopupButton.setOnAction(e -> getPresenter().onPopupOpen(OverlayScope.TAB));
     }
 

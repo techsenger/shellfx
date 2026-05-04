@@ -17,37 +17,36 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.tabshell.core.area.AreaFxView;
+import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.stage.Stage;
 
 /**
- * There can be only one instance of Shell in VirtualMachine.
  *
  * @author Pavel Castornii
  */
-public interface ShellFxView<P extends ShellPresenter<?>> extends WindowFxView<P>, ShellView {
+public interface WindowFxView<P extends WindowPresenter<?>> extends ParentFxView<P>, DialogContainerFxView<P>,
+        WindowView {
 
-    interface Composer extends WindowFxView.Composer, ShellView.Composer {
-
-        void addWorkspace(AreaFxView<?> workspace);
-
-        void removeWorkspace();
-
-        AreaFxView<?> getWorkspace();
+    interface Composer extends ParentFxView.Composer, DialogContainerFxView.Composer, WindowView.Composer {
 
         /**
-         * Defines the component that is currently forms the menu in the Shell.
+         * Defines the component that currently has the focus.
+         *
          * @return
          */
-        ReadOnlyObjectProperty<ParentFxView<?>> menuAwareProperty();
+        ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty();
 
         /**
-         * Returns the value of {@link #menuAwareProperty()}.
+         * Returns the value of {@link #focusedProperty()}.
+         *
          * @return
          */
-        ParentFxView<?> getMenuAware();
+        ParentFxView<?> getFocused();
     }
 
     @Override
     Composer getComposer();
+
+    Stage getWindow();
 }

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
+package com.techsenger.tabshell.core;
 
-.window-box .menu-item:focused {
-  -fx-background-color: -color-accent-emphasis, -color-accent-emphasis;
-}
+import com.techsenger.patternfx.mvp.ParentPresenter;
 
-.shadow {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 8px, 0.6, 0, 2);
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface WindowPresenter<V extends WindowView> extends ParentPresenter<V>, CloseAwarePresenter<V>,
+        ModifiableWindow, WindowPort {
+
 }

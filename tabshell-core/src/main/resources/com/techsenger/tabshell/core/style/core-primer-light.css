@@ -18,7 +18,7 @@
     Author: Pavel Castornii
 */
 
-.stage-box .menu-item:focused {
+.window-box .menu-item:focused {
   -fx-background-color: -color-base-1, -color-base-1;
 }
 

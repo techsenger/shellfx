@@ -16,36 +16,22 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.tabshell.core.area.AreaPort;
-import com.techsenger.tabshell.core.dialog.DialogContainerView;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.material.style.Stylesheet;
-import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellView extends ParentView, WriteOnlyShell, DialogContainerView {
+public interface ShellView extends WindowView {
 
-    interface Composer extends ParentView.Composer, DialogContainerView.Composer {
+    interface Composer extends WindowView.Composer {
 
         AreaPort getWorkspacePort();
     }
 
     @Override
     Composer getComposer();
-
-    /**
-     * The width of the stage if the stage is not maximized.
-     */
-    double DEFAULT_WIDTH = 1200;
-
-    /**
-     * The height of the stage if the stage is not maximized.
-     */
-    double DEFAULT_HEIGHT = 800;
 
     /**
      * Returns the control registry. There can be only one registry in the application.
@@ -65,23 +51,4 @@ public interface ShellView extends ParentView, WriteOnlyShell, DialogContainerVi
      * Forces shell to update the visibility of the elements in menu bar.
      */
     void updateMenuBar();
-
-    /**
-     * Adds stylesheets to TabShell.
-     *
-     * @param sheets
-     */
-    void addStylesheets(List<Stylesheet> sheets);
-
-    /**
-     * Removes stylesheets from Shell.
-     *
-     * @param sheets
-     */
-    void removeStylesheets(List<Stylesheet> sheets);
-
-    /**
-     * Closes shell main window.
-     */
-    void closeWindow();
 }
