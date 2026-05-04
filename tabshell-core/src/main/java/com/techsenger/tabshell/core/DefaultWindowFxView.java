@@ -83,33 +83,11 @@ import org.slf4j.LoggerFactory;
 public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends AbstractParentFxView<P>
         implements WindowFxView<P> {
 
-    private static class WindowDialogManager extends DefaultDialogManager {
-
-//        private final ShellStageController controller;
-
-        WindowDialogManager(StackPane stackPane, VBox mainPane) {
-            super(stackPane, mainPane);
-//            this.controller = controller;
-        }
-
-        @Override
-        public void hideDialog(DialogFxView<?> dialog) {
-            super.hideDialog(dialog);
-//            if (getDialogCount() == 0) {
-//                controller.setUnfocused(false);
-//            }
-        }
-
-        @Override
-        public void showDialog(DialogFxView<?> dialog) {
-//            if (getDialogCount() == 0) {
-//                controller.setUnfocused(true);
-//            }
-            super.showDialog(dialog);
-        }
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(DefaultWindowFxView.class);
+
+    private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
+
+    private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");
 
     public class Composer extends AbstractParentFxView<P>.Composer implements WindowFxView.Composer {
 
@@ -205,9 +183,28 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
         }
     }
 
-    private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
+    private class WindowDialogManager extends DefaultDialogManager {
 
-    private static final PseudoClass UNFOCUSED_PSEUDO_CLASS = PseudoClass.getPseudoClass("unfocused");
+        WindowDialogManager(StackPane stackPane, VBox mainPane) {
+            super(stackPane, mainPane);
+        }
+
+        @Override
+        public void hideDialog(DialogFxView<?> dialog) {
+            super.hideDialog(dialog);
+            if (getDialogCount() == 0) {
+                windowBox.pseudoClassStateChanged(UNFOCUSED_PSEUDO_CLASS, false);
+            }
+        }
+
+        @Override
+        public void showDialog(DialogFxView<?> dialog) {
+            if (getDialogCount() == 0) {
+                windowBox.pseudoClassStateChanged(UNFOCUSED_PSEUDO_CLASS, true);
+            }
+            super.showDialog(dialog);
+        }
+    }
 
     private final Stage window;
 
