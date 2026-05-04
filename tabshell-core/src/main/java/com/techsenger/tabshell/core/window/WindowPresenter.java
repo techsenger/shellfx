@@ -14,33 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.window;
 
-import com.techsenger.tabshell.material.icon.Icon;
+import com.techsenger.patternfx.mvp.ParentPresenter;
+import com.techsenger.tabshell.core.CloseAwarePresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ModifiableWindow {
+public interface WindowPresenter<V extends WindowView> extends ParentPresenter<V>, CloseAwarePresenter<V>,
+        ModifiableWindow, WindowPort {
 
-    /**
-     * Sets the title of the component.
-     *
-     * @param title
-     */
-    void setTitle(String title);
-
-    /**
-     * Sets the icon of the component.
-     *
-     * @param icon
-     */
-    void setIcon(Icon<?> icon);
-
-    void setMaximized(boolean value);
-
-    void setWidth(double value);
-
-    void setHeight(double value);
 }

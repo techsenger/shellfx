@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.tabshell.core.window.WindowHistory;
+
 /**
  *
  * @author Pavel Castornii

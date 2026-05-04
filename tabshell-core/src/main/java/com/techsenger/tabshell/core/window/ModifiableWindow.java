@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.window;
 
 import com.techsenger.tabshell.material.icon.Icon;
 
@@ -22,24 +22,25 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public interface UnmodifiableWindow {
+public interface ModifiableWindow {
 
     /**
-     * Returns the title of the component.
+     * Sets the title of the component.
      *
-     * @return
+     * @param title
      */
-    String getTitle();
+    void setTitle(String title);
 
     /**
-     * Returns the icon of the component.
-     * @return
+     * Sets the icon of the component.
+     *
+     * @param icon
      */
-    Icon<?> getIcon();
+    void setIcon(Icon<?> icon);
 
-    boolean isMaximized();
+    void setMaximized(boolean value);
 
-    double getWidth();
+    void setWidth(double value);
 
-    double getHeight();
+    void setHeight(double value);
 }

@@ -40,6 +40,7 @@ module com.techsenger.tabshell.core {
     exports com.techsenger.tabshell.core.settings;
     exports com.techsenger.tabshell.core.tab;
     exports com.techsenger.tabshell.core.traits;
+    exports com.techsenger.tabshell.core.window;
 
     opens com.techsenger.tabshell.core.style;
 }

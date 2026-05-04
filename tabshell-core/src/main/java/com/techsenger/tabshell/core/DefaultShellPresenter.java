@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.tabshell.core.window.DefaultWindowPresenter;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.Descriptor;
 

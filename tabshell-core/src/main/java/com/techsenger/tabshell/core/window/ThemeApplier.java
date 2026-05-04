@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.window;
 
 import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.material.theme.Theme;

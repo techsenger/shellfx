@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.tabshell.core.window.WindowView;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 

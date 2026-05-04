@@ -14,15 +14,32 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.window;
 
-import com.techsenger.patternfx.mvp.ParentPort;
-import com.techsenger.tabshell.core.dialog.DialogContainerPort;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowPort extends ParentPort, UnmodifiableWindow, DialogContainerPort, CloseAwarePort {
+public interface UnmodifiableWindow {
 
+    /**
+     * Returns the title of the component.
+     *
+     * @return
+     */
+    String getTitle();
+
+    /**
+     * Returns the icon of the component.
+     * @return
+     */
+    Icon<?> getIcon();
+
+    boolean isMaximized();
+
+    double getWidth();
+
+    double getHeight();
 }

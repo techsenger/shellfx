@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.window;
 
 import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.tabshell.core.dialog.DialogContainerView;

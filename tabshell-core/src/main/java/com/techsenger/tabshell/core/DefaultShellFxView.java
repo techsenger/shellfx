@@ -23,6 +23,7 @@ import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.core.window.DefaultWindowFxView;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
 import java.util.Objects;
@@ -55,6 +56,14 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
         private final DefaultShellFxView<P> view = DefaultShellFxView.this;
 
         private AreaFxView<?> workspace;
+
+        public Composer() {
+            this.menuAware.addListener((ov, oldV, newV) -> {
+                logger.debug("{} Menu aware component: {}", getDescriptor().getLogPrefix(),
+                        (newV == null) ? null : newV.getDescriptor().getFullName());
+                updateMenuBar();
+            });
+        }
 
         @Override
         public void addWorkspace(AreaFxView<?> workspace) {
@@ -93,21 +102,8 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
             return this.menuAware.get();
         }
 
-        void init() {
-            super.init();
-            this.menuAware.addListener((ov, oldV, newV) -> {
-                logger.debug("{} Menu aware component: {}", getDescriptor().getLogPrefix(),
-                        (newV == null) ? null : newV.getDescriptor().getFullName());
-                updateMenuBar();
-            });
-        }
-
-        private void setMenuAware(ParentFxView<?> menuAware) {
-            this.menuAware.set(menuAware);
-        }
-
         @Override
-        void onFocusPauseFinished() {
+        protected void onFocusPauseFinished() {
             super.onFocusPauseFinished();
             var newNode = view.getWindow().getScene().getFocusOwner();
             if (newNode == null) {
@@ -115,6 +111,10 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
                 return;
             }
             resolvedMenuAware();
+        }
+
+        private void setMenuAware(ParentFxView<?> menuAware) {
+            this.menuAware.set(menuAware);
         }
 
         private void resolvedMenuAware() {
@@ -227,7 +227,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     }
 
     @Override
-    void fixAcceleratorKeyPressed(KeyEvent e) {
+    protected void fixAcceleratorKeyPressed(KeyEvent e) {
         menuManager.setLastKeyPressedTime(System.nanoTime());
         super.fixAcceleratorKeyPressed(e);
     }

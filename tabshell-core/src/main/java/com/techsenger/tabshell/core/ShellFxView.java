@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.tabshell.core.window.WindowFxView;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import javafx.beans.property.ReadOnlyObjectProperty;

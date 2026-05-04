@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.window;
 
 import com.techsenger.patternfx.mvp.AbstractParentPresenter;
 import com.techsenger.patternfx.mvp.ComponentPresenter;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.CoreComponents;
+import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.material.icon.Icon;

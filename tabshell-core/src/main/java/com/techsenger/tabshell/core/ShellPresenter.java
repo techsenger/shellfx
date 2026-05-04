@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.tabshell.core.window.WindowPresenter;
 import com.techsenger.patternfx.mvp.ParentPresenter;
 
 /**

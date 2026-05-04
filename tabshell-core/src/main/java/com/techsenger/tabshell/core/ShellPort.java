@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.tabshell.core.window.WindowPort;
 import com.techsenger.tabshell.material.icon.Icon;
 
 /**

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.window;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.AbstractParentFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.patternfx.mvp.ParentFxView;
-import static com.techsenger.tabshell.core.WindowView.DEFAULT_HEIGHT;
-import static com.techsenger.tabshell.core.WindowView.DEFAULT_WIDTH;
 import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
 import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogManager;
@@ -31,6 +29,8 @@ import com.techsenger.tabshell.core.popup.PopupFxView;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.CssAnchor;
+import static com.techsenger.tabshell.core.window.WindowView.DEFAULT_HEIGHT;
+import static com.techsenger.tabshell.core.window.WindowView.DEFAULT_WIDTH;
 import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.icon.Icon;
@@ -100,6 +100,24 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
          */
         private PauseTransition focusDebouncePause = new PauseTransition(Duration.millis(250));
 
+        public Composer() {
+
+        }
+
+        @Override
+        public void compose() {
+            super.compose();
+            this.focused.addListener((ov, oldV, newV) -> {
+                logger.debug("{} Focused component: {}", getDescriptor().getLogPrefix(),
+                        (newV == null) ? null : newV.getDescriptor().getFullName());
+            });
+            view.window.getScene().focusOwnerProperty().addListener((ov, oldV, newV) -> {
+                this.focusDebouncePause.stop();
+                this.focusDebouncePause.playFromStart();
+            });
+            this.focusDebouncePause.setOnFinished((e) -> onFocusPauseFinished());
+        }
+
         @Override
         public void addDialog(DialogFxView<?> dialog) {
             view.dialogManager.showDialog(dialog);
@@ -156,7 +174,7 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
             return this.focused.get();
         }
 
-        void onFocusPauseFinished() {
+        protected void onFocusPauseFinished() {
             var newNode = view.window.getScene().getFocusOwner();
             if (newNode == null) {
                 setFocused(null);
@@ -164,18 +182,6 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
             }
             var component = FxViewUtils.findView(newNode, ParentFxView.class);
             setFocused(component);
-        }
-
-        void init() {
-            this.focused.addListener((ov, oldV, newV) -> {
-                logger.debug("{} Focused component: {}", getDescriptor().getLogPrefix(),
-                        (newV == null) ? null : newV.getDescriptor().getFullName());
-            });
-            view.window.getScene().focusOwnerProperty().addListener((ov, oldV, newV) -> {
-                this.focusDebouncePause.stop();
-                this.focusDebouncePause.playFromStart();
-            });
-            this.focusDebouncePause.setOnFinished((e) -> onFocusPauseFinished());
         }
 
         private void setFocused(ParentFxView<?> focused) {
@@ -363,12 +369,6 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
     }
 
     @Override
-    protected void initialize() {
-        super.initialize();
-        getComposer().init();
-    }
-
-    @Override
     protected void build() {
         super.build();
         this.closeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
@@ -491,7 +491,7 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
      *
      * @param e
      */
-    void fixAcceleratorKeyPressed(KeyEvent e) {
+    protected void fixAcceleratorKeyPressed(KeyEvent e) {
         Node focusedNode = window.getScene().getFocusOwner();
         if (focusedNode != null && focusedNode instanceof Control) {
             Control c = (Control) focusedNode;
@@ -515,5 +515,4 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
                 new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
                 new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
     }
-
 }

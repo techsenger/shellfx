@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.core.window;
 
-import com.techsenger.patternfx.mvp.ParentPresenter;
+import com.techsenger.patternfx.mvp.ParentPort;
+import com.techsenger.tabshell.core.CloseAwarePort;
+import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowPresenter<V extends WindowView> extends ParentPresenter<V>, CloseAwarePresenter<V>,
-        ModifiableWindow, WindowPort {
+public interface WindowPort extends ParentPort, UnmodifiableWindow, DialogContainerPort, CloseAwarePort {
 
 }
