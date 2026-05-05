@@ -23,7 +23,7 @@ import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.core.window.DefaultWindowFxView;
+import com.techsenger.tabshell.core.window.AbstractWindowFxView;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
 import java.util.Objects;
@@ -45,11 +45,11 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
-        extends DefaultWindowFxView<P> implements ShellFxView<P> {
+        extends AbstractWindowFxView<P> implements ShellFxView<P> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultShellFxView.class);
 
-    public class Composer extends DefaultWindowFxView<P>.Composer implements ShellFxView.Composer {
+    public class Composer extends AbstractWindowFxView<P>.Composer implements ShellFxView.Composer {
 
         private final ReadOnlyObjectWrapper<ParentFxView<?>> menuAware = new ReadOnlyObjectWrapper<>();
 
@@ -217,6 +217,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     protected void build() {
         super.build();
         getLeftBox().getChildren().add(menuBar);
+        getWindow().show();
     }
 
     @Override

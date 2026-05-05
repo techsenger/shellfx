@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.window;
 
+import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.List;
@@ -48,15 +49,19 @@ class ThemeApplier {
 
     private final ObservableList<Stylesheet> stylesheets;
 
+    private final Descriptor descriptor;
+
     /**
      * Constructor.
      *
      * @param root the root of the scene. We can't get the root from stage.getScene().getRoot() because of custom stage.
      * @param theme
      */
-    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets, ObjectProperty<Theme> theme) {
+    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets, ObjectProperty<Theme> theme,
+            Descriptor descriptor) {
         this.stylesheets = stylesheets;
         this.scene = scene;
+        this.descriptor = descriptor;
         addTheme(theme.get(), false);
         logSceneStylesheets();
         theme.addListener((ov, oldV, newV) -> {
@@ -117,13 +122,13 @@ class ThemeApplier {
     private void logSceneStylesheets() {
         if (logger.isDebugEnabled()) {
             var sb = new StringBuilder();
-            sb.append("Scene stylesheets updated. Current stylesheets:");
+            sb.append("{} Scene stylesheets updated. Current stylesheets:");
             for (var s : this.scene.getStylesheets()) {
                 sb.append(System.lineSeparator());
                 sb.append("    ");
                 sb.append(s);
             }
-            logger.debug(sb.toString());
+            logger.debug(sb.toString(), descriptor.getLogPrefix());
         }
     }
 }

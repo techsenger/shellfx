@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core;
+package com.techsenger.tabshell.devtools;
 
-import com.techsenger.patternfx.mvp.ParentPresenter;
-import com.techsenger.tabshell.core.dialog.DialogContainerPort;
-import com.techsenger.tabshell.core.window.WindowPresenter;
+import com.techsenger.tabshell.core.ShellContext;
+import com.techsenger.tabshell.core.window.WindowView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellPresenter<V extends ShellView> extends ParentPresenter<V>,
-        ShellPort, WindowPresenter<V>, DialogContainerPort {
+public interface DevToolsWindowView extends WindowView {
 
-    /**
-     * Returns the action to be executed when the shell is closed.
-     *
-     * @return
-     */
-    Runnable getOnClose();
+    interface Composer extends WindowView.Composer {
 
-    /**
-     * Sets the action to be executed when the shell is closed.
-     * @param onClose
-     */
-    void setOnClose(Runnable onClose);
+        void addTabDock(ShellContext context);
+    }
+
+    @Override
+    Composer getComposer();
 }

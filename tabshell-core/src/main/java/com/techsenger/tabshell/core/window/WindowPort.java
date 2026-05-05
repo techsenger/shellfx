@@ -18,12 +18,11 @@ package com.techsenger.tabshell.core.window;
 
 import com.techsenger.patternfx.mvp.ParentPort;
 import com.techsenger.tabshell.core.CloseAwarePort;
-import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowPort extends ParentPort, UnmodifiableWindow, DialogContainerPort, CloseAwarePort {
+public interface WindowPort extends ParentPort, UnmodifiableWindow, CloseAwarePort {
 
 }

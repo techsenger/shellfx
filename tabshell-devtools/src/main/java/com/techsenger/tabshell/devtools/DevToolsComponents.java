@@ -25,6 +25,8 @@ import com.techsenger.patternfx.core.DefaultComponentName;
  */
 public final class DevToolsComponents {
 
+    public static final ComponentName WINDOW = new DefaultComponentName("DevTools.Window");
+
     public static final ComponentName TAB_DOCK = new DefaultComponentName("DevTools.TabDock");
 
     public static final ComponentName TOOL_BAR = new DefaultComponentName("DevTools.ToolBar");

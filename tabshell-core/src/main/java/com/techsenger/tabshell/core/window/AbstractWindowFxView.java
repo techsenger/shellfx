@@ -42,8 +42,8 @@ import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import com.techsenger.tabshell.material.theme.JavaFxTheme;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,10 +80,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends AbstractParentFxView<P>
+public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>> extends AbstractParentFxView<P>
         implements WindowFxView<P> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultWindowFxView.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractWindowFxView.class);
 
     private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
 
@@ -93,7 +93,7 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
 
         private final ReadOnlyObjectWrapper<ParentFxView<?>> focused = new ReadOnlyObjectWrapper<>();
 
-        private final DefaultWindowFxView<P> view = DefaultWindowFxView.this;
+        private final AbstractWindowFxView<P> view = AbstractWindowFxView.this;
 
         /**
          * PauseTransition used to implement debounce on the JavaFX thread with duration.
@@ -252,8 +252,22 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
 
     private FontApplier fontApplier;
 
-    public DefaultWindowFxView(Stage stage, List<Stylesheet> stylesheets) {
-        Objects.requireNonNull(stage, "Stage can't be null");
+    public AbstractWindowFxView() {
+        this(null, null);
+    }
+
+    public AbstractWindowFxView(Stage stage) {
+        this(stage, null);
+    }
+
+    public AbstractWindowFxView(List<Stylesheet> stylesheets) {
+        this(null, stylesheets);
+    }
+
+    public AbstractWindowFxView(Stage stage, List<Stylesheet> stylesheets) {
+        if (stage == null) {
+            stage = new Stage();
+        }
         this.window = stage;
         this.stylesheets = FXCollections.observableArrayList(createDefaultStylesheets());
         if (stylesheets != null) {
@@ -313,6 +327,11 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
     @Override
     public void removeStylesheets(List<Stylesheet> sheets) {
         this.stylesheets.removeAll(sheets);
+    }
+
+    @Override
+    public @Unmodifiable List<Stylesheet> getStylesheets() {
+        return Collections.unmodifiableList(stylesheets);
     }
 
     @Override
@@ -388,9 +407,8 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
         window.setScene(scene);
         //we add stackpane behind stage root
         stackPane.getStyleClass().add("root-stack-pane");
-        themeApplier = new ThemeApplier(scene, this.stylesheets, theme);
+        themeApplier = new ThemeApplier(scene, this.stylesheets, theme, getDescriptor());
         this.fontApplier = new FontApplier(stackPane, regularFont, monospaceFont);
-        window.show();
     }
 
     @Override
@@ -431,10 +449,6 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
             event.consume();
             getPresenter().requestClose();
         });
-    }
-
-    protected ObservableList<Stylesheet> getStylesheets() {
-        return stylesheets;
     }
 
     protected IconViewBox getIconViewBox() {
@@ -506,7 +520,7 @@ public class DefaultWindowFxView<P extends DefaultWindowPresenter<?>> extends Ab
         }
     }
 
-    private List<Stylesheet> createDefaultStylesheets() {
+    protected List<Stylesheet> createDefaultStylesheets() {
         Set<Theme> allThemes = Stream.concat(
                 Arrays.stream(AtlantaFxTheme.values()),
                 Arrays.stream(JavaFxTheme.values()))

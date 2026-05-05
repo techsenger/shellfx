@@ -21,9 +21,9 @@ import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
 import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPresenter;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
+import com.techsenger.tabshell.devtools.DevToolsWindowFxView;
+import com.techsenger.tabshell.devtools.DevToolsWindowPresenter;
+import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
 import com.techsenger.tabshell.layout.dockhost.UtilityDockContainerFxView;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
@@ -46,31 +46,34 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
         if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
             var tab = tabHost.getComposer().getSelectedTab();
             if (tab != null && tab instanceof UtilityDockContainerFxView<?> c) {
-                var devTools = createDevTools();
+                var devTools = createDevToolsDock();
                 devTools.getPresenter().initialize();
                 devTools.getPresenter().setDraggable(true);
                 c.getComposer().addUtilityDock(devTools);
             } else {
-                var alertView = new AlertDialogFxView<>();
-                var alertPresenter = new AlertDialogPresenter<>(alertView, AlertDialogType.ERROR,
-                        "DevTools can only be opened in the main tab");
-                alertPresenter.initialize();
-                shell.getComposer().addDialog(alertView);
+                var devTools = createDevToolsWindow();
+                devTools.getPresenter().initialize();
+                devTools.getWindow().show();
             }
         } else if (shell.getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
-            var devTools = createDevTools();
+            var devTools = createDevToolsDock();
             devTools.getPresenter().initialize();
             devTools.getPresenter().setDraggable(true);
             dockHost.getComposer().addTabDock(devTools, Side.BOTTOM, 250);
         }
     }
 
-    protected DevToolsTabDockFxView<?> createDevTools() {
+    protected DevToolsTabDockFxView<?> createDevToolsDock() {
         var shell = getComponent();
         var view = new DevToolsTabDockFxView<>(shell, resolveDialogContainer());
-        var hm = shell.getPresenter().getContext().getHistoryManager();
-        var presenter = new DevToolsTabDockPresenter<>(view, shell.getPresenter().getContext().getSettings(),
-                shell.getPresenter().getContext().getHistoryManager());
+        var context = shell.getPresenter().getContext();
+        var presenter = new DevToolsTabDockPresenter<>(view, context.getSettings(), context.getHistoryManager());
+        return view;
+    }
+
+    protected DevToolsWindowFxView<?> createDevToolsWindow() {
+        var view = new DevToolsWindowFxView<>(getComponent(), IconStylesheetFactory.forAll());
+        var presenter = new DevToolsWindowPresenter<>(view, getComponent().getPresenter().getContext());
         return view;
     }
 

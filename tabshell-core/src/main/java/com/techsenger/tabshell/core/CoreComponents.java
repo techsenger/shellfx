@@ -25,8 +25,6 @@ import com.techsenger.patternfx.core.DefaultComponentName;
  */
 public final class CoreComponents {
 
-    public static final ComponentName WINDOW = new DefaultComponentName("Core.Window");
-
     public static final ComponentName SHELL = new DefaultComponentName("Core.Shell");
 
     private CoreComponents() {

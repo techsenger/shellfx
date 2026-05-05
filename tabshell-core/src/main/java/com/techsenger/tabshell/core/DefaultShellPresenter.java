@@ -16,15 +16,16 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.core.window.DefaultWindowPresenter;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.tabshell.core.window.AbstractWindowPresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultShellPresenter<V extends ShellView> extends DefaultWindowPresenter<V> implements ShellPresenter<V> {
+public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPresenter<V>
+        implements ShellPresenter<V> {
 
     private final ShellContext context;
 
@@ -63,6 +64,11 @@ public class DefaultShellPresenter<V extends ShellView> extends DefaultWindowPre
     @Override
     public void setOnClose(Runnable onClose) {
         this.onClose = onClose;
+    }
+
+    @Override
+    public Composer getComposer() {
+        return getView().getComposer();
     }
 
     @Override

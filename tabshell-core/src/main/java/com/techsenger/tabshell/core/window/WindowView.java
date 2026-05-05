@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.window;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.tabshell.core.dialog.DialogContainerView;
 import com.techsenger.tabshell.material.style.Stylesheet;
@@ -59,6 +60,11 @@ public interface WindowView extends ParentView, ModifiableWindow {
      * @param sheets
      */
     void removeStylesheets(List<Stylesheet> sheets);
+
+    /**
+     * Returns an unmodifiable list of stylesheets.
+     */
+    @Unmodifiable List<Stylesheet> getStylesheets();
 
     /**
      * Closes shell main window.

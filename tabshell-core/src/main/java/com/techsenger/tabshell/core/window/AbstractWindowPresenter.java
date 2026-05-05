@@ -18,10 +18,8 @@ package com.techsenger.tabshell.core.window;
 
 import com.techsenger.patternfx.mvp.AbstractParentPresenter;
 import com.techsenger.patternfx.mvp.ComponentPresenter;
-import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.CoreComponents;
 import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
@@ -32,7 +30,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class DefaultWindowPresenter<T extends WindowView> extends AbstractParentPresenter<T>
+public abstract class AbstractWindowPresenter<T extends WindowView> extends AbstractParentPresenter<T>
         implements WindowPresenter<T> {
 
     private double width;
@@ -53,7 +51,7 @@ public class DefaultWindowPresenter<T extends WindowView> extends AbstractParent
 
     private SettingsSubscription monospaceFontSubscription;
 
-    public DefaultWindowPresenter(T view, AppearanceSettings setting) {
+    public AbstractWindowPresenter(T view, AppearanceSettings setting) {
         super(view);
         this.setting = setting;
     }
@@ -114,11 +112,6 @@ public class DefaultWindowPresenter<T extends WindowView> extends AbstractParent
     }
 
     @Override
-    public Composer getComposer() {
-        return getView().getComposer();
-    }
-
-    @Override
     public CloseCheckResult isReadyToClose() {
         return CloseCheckResult.READY;
     }
@@ -140,11 +133,6 @@ public class DefaultWindowPresenter<T extends WindowView> extends AbstractParent
         // the window is deinitilized at the end
         deinitialize();
         getView().closeWindow();
-    }
-
-    @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(CoreComponents.WINDOW);
     }
 
     @Override
