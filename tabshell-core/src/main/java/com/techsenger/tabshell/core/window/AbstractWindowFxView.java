@@ -276,6 +276,41 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
+    public void setMaximizable(boolean maximizable) {
+        if (maximizable) {
+            if (this.maximizeButton.getParent() == null) {
+                rightBox.getChildren().add(getMaximizeButtonIndex(), this.maximizeButton);
+            }
+        } else {
+            if (this.maximizeButton.getParent() != null) {
+                rightBox.getChildren().remove(this.maximizeButton);
+            }
+        }
+    }
+
+    @Override
+    public void setMinimized(boolean minimized) {
+        this.window.setIconified(minimized);
+    }
+
+    @Override
+    public void setMinimizable(boolean minimizable) {
+        if (minimizable) {
+            if (this.minimizeButton.getParent() == null) {
+                rightBox.getChildren().add(getMinimizeButtonIndex(), this.minimizeButton);
+            }
+        } else {
+            if (this.minimizeButton.getParent() != null) {
+                rightBox.getChildren().remove(this.minimizeButton);
+            }
+        }
+    }
+
+    @Override
+    public void setClosable(boolean closable) {
+        this.closeButton.setDisable(!closable);
+    }
+    @Override
     public void setWidth(double value) {
         this.window.setWidth(value);
     }
@@ -430,8 +465,23 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         return closeButton;
     }
 
+    protected int getCloseButtonIndex() {
+        return rightBox.getChildren().size();
+    }
+
     protected Button getMinimizeButton() {
         return minimizeButton;
+    }
+
+    protected int getMinimizeButtonIndex() {
+        var index = rightBox.getChildren().size();
+        if (this.maximizeButton.getParent() != null) {
+            index--;
+        }
+        if (this.closeButton.getParent() != null) {
+            index--;
+        }
+        return index;
     }
 
     protected FontIconView getMaximizeIconView() {
@@ -440,6 +490,14 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     protected Button getMaximizeButton() {
         return maximizeButton;
+    }
+
+    protected int getMaximizeButtonIndex() {
+        var index = rightBox.getChildren().size();
+        if (this.closeButton.getParent() != null) {
+            index--;
+        }
+        return index;
     }
 
     protected HBox getRightBox() {

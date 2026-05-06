@@ -54,6 +54,7 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
             } else {
                 var devTools = createDevToolsWindow();
                 devTools.getPresenter().initialize();
+                devTools.getPresenter().setMaximizable(false);
                 devTools.getComposer().addTabDock();
                 devTools.getWindow().show();
             }

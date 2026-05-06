@@ -38,7 +38,15 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     private String title;
 
-    private boolean maximized;
+    private boolean maximized = false;
+
+    private boolean maximizable = true;
+
+    private boolean minimized = false;
+
+    private boolean minimizable = true;
+
+    private boolean closable = true;
 
     private Icon<?> icon;
 
@@ -108,6 +116,50 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     public void setMaximized(boolean maximized) {
         this.maximized = maximized;
         getView().setMaximized(maximized);
+    }
+
+    @Override
+    public boolean isMaximizable() {
+        return maximizable;
+    }
+
+    @Override
+    public void setMaximizable(boolean maximizable) {
+        this.maximizable = maximizable;
+        getView().setMaximizable(maximizable);
+    }
+
+    @Override
+    public boolean isMinimized() {
+        return minimized;
+    }
+
+    @Override
+    public void setMinimized(boolean minimized) {
+        this.minimized = minimized;
+        getView().setMinimized(minimized);
+    }
+
+    @Override
+    public boolean isMinimizable() {
+        return minimizable;
+    }
+
+    @Override
+    public void setMinimizable(boolean minimizable) {
+        this.minimizable = minimizable;
+        getView().setMinimizable(minimizable);
+    }
+
+    @Override
+    public boolean isClosable() {
+        return closable;
+    }
+
+    @Override
+    public void setClosable(boolean closable) {
+        this.closable = closable;
+        getView().setClosable(closable);
     }
 
     @Override

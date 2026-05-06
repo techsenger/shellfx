@@ -39,6 +39,14 @@ public interface UnmodifiableWindow {
 
     boolean isMaximized();
 
+    boolean isMaximizable();
+
+    boolean isMinimized();
+
+    boolean isMinimizable();
+
+    boolean isClosable();
+
     double getWidth();
 
     double getHeight();

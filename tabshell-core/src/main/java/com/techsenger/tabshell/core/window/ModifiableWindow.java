@@ -38,9 +38,17 @@ public interface ModifiableWindow {
      */
     void setIcon(Icon<?> icon);
 
-    void setMaximized(boolean value);
-
     void setWidth(double value);
 
     void setHeight(double value);
+
+    void setMaximized(boolean value);
+
+    void setMaximizable(boolean maximizable);
+
+    void setMinimized(boolean minimized);
+
+    void setMinimizable(boolean minimizable);
+
+    void setClosable(boolean closable);
 }
