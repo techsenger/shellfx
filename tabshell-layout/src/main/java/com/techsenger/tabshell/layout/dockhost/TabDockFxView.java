@@ -70,7 +70,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     public void setDraggable(boolean value) {
         if (value) {
             if (dragIconView.getParent() == null) {
-                getTabHeaderFirstBox().getChildren().add(0, dragIconView);
+                getTabHeaderFirstBox().getChildren().add(getDragIconViewIndex(), dragIconView);
             }
         } else {
             if (dragIconView.getParent() != null) {
@@ -83,12 +83,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     public void setMinimizable(boolean minimizable) {
         if (minimizable) {
             if (this.minimizeButton.getParent() == null) {
-                if (this.closeButton.getParent() == null) {
-                    getTabHeaderLastBox().getChildren().add(this.minimizeButton);
-                } else {
-                    var size = getTabHeaderLastBox().getChildren().size();
-                    getTabHeaderLastBox().getChildren().add(size - 1, this.minimizeButton);
-                }
+                getTabHeaderLastBox().getChildren().add(getMinimizeButtonIndex(), this.minimizeButton);
             }
         } else {
             if (this.minimizeButton.getParent() != null) {
@@ -101,7 +96,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     public void setClosable(boolean closable) {
         if (closable) {
             if (this.closeButton.getParent() == null) {
-                getTabHeaderLastBox().getChildren().add(this.closeButton);
+                getTabHeaderLastBox().getChildren().add(getCloseButtonIndex(), this.closeButton);
             }
         } else {
             if (this.closeButton.getParent() != null) {
@@ -190,12 +185,29 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         return minimizeButton;
     }
 
+    protected int getMinimizeButtonIndex() {
+        var size = getTabHeaderLastBox().getChildren().size();
+        if (this.closeButton.getParent() == null) {
+            return size;
+        } else {
+            return size - 1;
+        }
+    }
+
     protected Button getCloseButton() {
         return closeButton;
     }
 
+    protected int getCloseButtonIndex() {
+        return getTabHeaderLastBox().getChildren().size();
+    }
+
     protected FontIconView getDragIconView() {
         return dragIconView;
+    }
+
+    protected int getDragIconViewIndex() {
+        return 0;
     }
 
     protected DockHostFxView<?> getDockHost() {
