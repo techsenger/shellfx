@@ -194,17 +194,13 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         @Override
         public void hideDialog(DialogFxView<?> dialog) {
             super.hideDialog(dialog);
-            if (getDialogCount() == 0) {
-                windowBox.pseudoClassStateChanged(UNFOCUSED_PSEUDO_CLASS, false);
-            }
+            updateUnfocused();
         }
 
         @Override
         public void showDialog(DialogFxView<?> dialog) {
-            if (getDialogCount() == 0) {
-                windowBox.pseudoClassStateChanged(UNFOCUSED_PSEUDO_CLASS, true);
-            }
             super.showDialog(dialog);
+            updateUnfocused();
         }
     }
 
@@ -392,6 +388,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         this.window.heightProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
         this.window.maximizedProperty().addListener((ov, oldV, newV) -> getPresenter().onMaximized(newV));
+        this.window.focusedProperty().addListener((ov, oldV, newV) -> updateUnfocused());
         this.closeButton.getStyleClass().add("close-button");
         this.minimizeButton.getStyleClass().add("minimize-button");
         this.maximizeButton.getStyleClass().add("maximize-button");
@@ -494,5 +491,14 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         return List.of(
                 new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
                 new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
+    }
+
+    private void updateUnfocused() {
+        if (this.window.isFocused()) {
+            var unfocused = this.dialogManager.getDialogs().size() > 0;
+            windowBox.pseudoClassStateChanged(UNFOCUSED_PSEUDO_CLASS, unfocused);
+        } else {
+            windowBox.pseudoClassStateChanged(UNFOCUSED_PSEUDO_CLASS, true);
+        }
     }
 }

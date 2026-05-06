@@ -145,10 +145,6 @@ public class DefaultDialogManager implements DialogManager {
         return popups;
     }
 
-    protected int getDialogCount() {
-        return modifiableDialogs.size();
-    }
-
     private void doShow(PopupFxView<?> view, Anchors anchors) {
         var node = view.getNode();
         // node.setMouseTransparent(false);
