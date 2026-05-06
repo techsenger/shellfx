@@ -20,7 +20,6 @@ import com.techsenger.patternfx.mvp.AbstractParentPresenter;
 import com.techsenger.patternfx.mvp.ComponentPresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.ShellView;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.material.icon.Icon;
@@ -174,20 +173,19 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     }
 
     @Override
+    protected void applyAppearance() {
+        super.applyAppearance();
+        setHeight(getDefaultHeight());
+        setWidth(getDefaultWidth());
+    }
+
+    @Override
     protected void restoreAppearance() {
         super.restoreAppearance();
         var h = getHistory();
-        if (!h.isNew()) {
-            if (h.isMaximized()) {
-                setMaximized(true);
-            } else {
-                setHeight(h.getHeight());
-                setWidth(h.getWidth());
-            }
-        } else {
-            setHeight(ShellView.DEFAULT_HEIGHT);
-            setWidth(ShellView.DEFAULT_WIDTH);
-        }
+        setMaximized(h.isMaximized());
+        setHeight(h.getHeight());
+        setWidth(h.getWidth());
     }
 
     @Override
@@ -198,4 +196,8 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         h.setHeight(getHeight());
         h.setMaximized(isMaximized());
     }
+
+    protected abstract double getDefaultWidth();
+
+    protected abstract double getDefaultHeight();
 }

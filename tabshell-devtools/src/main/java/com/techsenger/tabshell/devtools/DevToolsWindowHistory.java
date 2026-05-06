@@ -16,14 +16,12 @@
 
 package com.techsenger.tabshell.devtools;
 
-import com.techsenger.tabshell.core.window.WindowView;
+import com.techsenger.tabshell.core.window.WindowHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DevToolsWindowView extends WindowView {
+public class DevToolsWindowHistory extends WindowHistory {
 
-    @Override
-    Composer getComposer();
 }

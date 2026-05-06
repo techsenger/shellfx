@@ -210,6 +210,14 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         });
     }
 
+    @Override
+    protected void applyAppearance() {
+        super.applyAppearance();
+        var catExpansion = new HashMap<AttributeCategory, Boolean>();
+        Arrays.stream(AttributeCategory.values()).forEach(c -> catExpansion.put(c, Boolean.FALSE));
+        setCategoryExpansion(catExpansion);
+    }
+
     protected void onNodeSelected(Element node) {
         if (Objects.equals(this.selectedNode, node)) { // equals!
             return;
@@ -254,12 +262,6 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         super.postInitialize();
         setTitle("Nodes");
         setClosable(false);
-        var history = getHistory();
-        if (history == null || history.isNew()) {
-            var catExpansion = new HashMap<AttributeCategory, Boolean>();
-            Arrays.stream(AttributeCategory.values()).forEach(c -> catExpansion.put(c, Boolean.FALSE));
-            setCategoryExpansion(catExpansion);
-        }
     }
 
     @Override

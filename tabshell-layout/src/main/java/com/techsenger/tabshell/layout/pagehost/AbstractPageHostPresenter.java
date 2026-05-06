@@ -118,6 +118,12 @@ public abstract class AbstractPageHostPresenter<V extends PageHostViewBase>
     }
 
     @Override
+    protected void applyAppearance() {
+        super.applyAppearance();
+        getView().setDividerPosition(0.2);
+    }
+
+    @Override
     protected void saveAppearance() {
         super.saveAppearance();
         var history = getHistory();
@@ -139,10 +145,6 @@ public abstract class AbstractPageHostPresenter<V extends PageHostViewBase>
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        var history = getHistory();
-        if (history == null || history.isNew()) {
-            getView().setDividerPosition(0.2);
-        }
         setBackDisabled(true);
         setForwardDisabled(true);
     }

@@ -50,7 +50,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         registerPageTabItem();
         registerTreePageTabItem();
         registerDialogsItem();
-        registerDevToolsTabDockItem();
+        registerDevToolsItem();
         registerThemeItem();
         registerStylesTabItem();
         registerExitItem();
@@ -111,7 +111,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
     }
 
-    protected void registerDevToolsTabDockItem() {
+    protected void registerDevToolsItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("DevTools", 400);
             MenuItemHandler.setHandler(item, new DevToolsItemHandler(item, shell));

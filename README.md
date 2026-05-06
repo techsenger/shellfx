@@ -26,8 +26,8 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
 * [When to Use?](#when-to-use)
 * [Modules](#modules)
 * [Core Components](#core)
-    * [Window](#core-window)
     * [Shell](#core-shell)
+    * [Window](#core-window)
     * [Tab](#core-tab)
     * [Area](#core-area)
     * [Page](#core-page)
@@ -172,23 +172,6 @@ Therefore, any addition or removal of a component must be reflected in both stru
 from the node tree without removing it from the component tree will result in a memory leak. DevTools provide the ability
 to inspect and monitor both hierarchies.
 
-### Window <a name="core-window"></a>
-
-`Window` is the top-level component that represents an application window and serves as the root of a component tree.
-Each `Window` corresponds to a JavaFX `Stage` and defines an isolated environment in which all child components operate.
-
-It is responsible for the following tasks:
-
-* Window management.
-* Theme management.
-* Font management.
-* Stylesheet management
-* Window-scoped popup management.
-* Window-scoped dialog management.
-
-Multiple `Window` instances may exist within a single application, each backed by its own JavaFX `Stage`,
-maintaining an independent component tree and visual context.
-
 ### Shell <a name="core-shell"></a>
 
 `Shell` is the main and top-level component. It extends the `Window` component and inherits its responsibilities for
@@ -244,6 +227,23 @@ two primary workspace types:
 1. Browser-like. This workspace is created using the `TabHost` component with a flag indicating that it is a workspace.
 Additionally, the tabs added to this `TabHost` contain a docking layout created with the `DockHost` component.
 2. IDE-like. This workspace is a straightforward docking layout created with the `DockHost` component.
+
+### Window <a name="core-window"></a>
+
+`Window` is the top-level component that represents an application window and serves as the root of a component tree.
+Each `Window` corresponds to a JavaFX `Stage` and defines an isolated environment in which all child components operate.
+
+It is responsible for the following tasks:
+
+* Window management.
+* Theme management.
+* Font management.
+* Stylesheet management
+* Window-scoped popup management.
+* Window-scoped dialog management.
+
+Multiple `Window` instances may exist within a single application, each backed by its own JavaFX `Stage`,
+maintaining an independent component tree and visual context.
 
 ### Tab <a name="core-tab"></a>
 

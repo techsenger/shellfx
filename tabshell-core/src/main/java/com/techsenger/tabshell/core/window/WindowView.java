@@ -38,16 +38,6 @@ public interface WindowView extends ParentView, ModifiableWindow {
     Composer getComposer();
 
     /**
-     * The width of the window if it is not maximized.
-     */
-    double DEFAULT_WIDTH = 1200;
-
-    /**
-     * The height of the window if it is not maximized.
-     */
-    double DEFAULT_HEIGHT = 800;
-
-    /**
      * Adds stylesheets to TabShell.
      *
      * @param sheets
@@ -67,7 +57,7 @@ public interface WindowView extends ParentView, ModifiableWindow {
     @Unmodifiable List<Stylesheet> getStylesheets();
 
     /**
-     * Closes shell main window.
+     * Closes the window.
      */
     void closeWindow();
 

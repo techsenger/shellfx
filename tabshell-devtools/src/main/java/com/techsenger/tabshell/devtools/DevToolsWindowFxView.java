@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools;
 
-import com.techsenger.tabshell.core.ShellContext;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.window.AbstractWindowFxView;
 import com.techsenger.tabshell.material.style.Stylesheet;
@@ -35,16 +34,24 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
 
         private final DevToolsWindowFxView<P> view = DevToolsWindowFxView.this;
 
-        @Override
-        public void addTabDock(ShellContext context) {
-            var tabDock = createDevToolsDock(context);
+        private DevToolsTabDockFxView<?> tabDock;
+
+        public void addTabDock() {
+            var tabDock = createTabDock();
             tabDock.getPresenter().initialize();
+            addTabDock(tabDock);
+        }
+
+        public void addTabDock(DevToolsTabDockFxView<?> tabDock) {
+            this.tabDock = tabDock;
+            getModifiableChildren().add(tabDock);
             VBox.setVgrow(tabDock.getNode(), Priority.ALWAYS);
             getContentBox().getChildren().add(tabDock.getNode());
         }
 
-        protected DevToolsTabDockFxView<?> createDevToolsDock(ShellContext context) {
+        protected DevToolsTabDockFxView<?> createTabDock() {
             var view = new DevToolsTabDockFxView<>(this.view.shell, this.view);
+            var context = this.view.shell.getPresenter().getContext();
             var presenter = new DevToolsTabDockPresenter<>(view, context.getSettings(), context.getHistoryManager());
             return view;
         }
@@ -72,6 +79,4 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
         super.build();
         getWindow().setAlwaysOnTop(true);
     }
-
-
 }

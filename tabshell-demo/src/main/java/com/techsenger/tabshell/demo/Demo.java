@@ -82,8 +82,7 @@ public class Demo extends Application {
 
     private void createShell(WorkspaceType workspaceType) {
         //creating shell
-        var stage = new Stage();
-        var shellView = new DefaultShellFxView<>(this, stage, IconStylesheetFactory.forAll());
+        var shellView = new DefaultShellFxView<>(this, IconStylesheetFactory.forAll());
         var context = new DefaultShellContext(DemoSettings.createSettings(),
                 new DemoHistoryManager(), getHostServices());
         var shellPresenter = new DefaultShellPresenter<>(shellView, context);
@@ -110,12 +109,15 @@ public class Demo extends Application {
         }
         shellView.getComposer().addWorkspace(workspace);
 
-        //adding menu
+        // adding menu
         var controlRegistry = shellView.getControlRegistry();
         var fmr = new FileMenuRegistrar(controlRegistry, shellView);
         fmr.register();
         var dmr = new ExtraMenuRegistrar(controlRegistry);
         dmr.register();
         shellView.upgradeMenuBar();
+
+        // showing the window
+        shellView.getWindow().show();
     }
 }

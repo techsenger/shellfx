@@ -266,6 +266,13 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     @Override
+    protected void applyAppearance() {
+        super.applyAppearance();
+        createInitialColumns();
+        getView().addColumns(columns);
+    }
+
+    @Override
     protected void saveAppearance() {
         super.saveAppearance();
         var history = getHistory();
@@ -304,10 +311,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
                 getView().setLocationCaption("Save In");
             }
             default -> throw new AssertionError();
-        }
-        if (getHistory().isNew()) {
-            createInitialColumns();
-            getView().addColumns(columns);
         }
         updateFiles(null);
         setRightButtons(FileChooserButtons.CANCEL, FileChooserButtons.OK);

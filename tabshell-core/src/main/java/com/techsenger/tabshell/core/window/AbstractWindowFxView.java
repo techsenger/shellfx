@@ -29,8 +29,6 @@ import com.techsenger.tabshell.core.popup.PopupFxView;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.CssAnchor;
-import static com.techsenger.tabshell.core.window.WindowView.DEFAULT_HEIGHT;
-import static com.techsenger.tabshell.core.window.WindowView.DEFAULT_WIDTH;
 import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.icon.Icon;
@@ -402,7 +400,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         this.contentBox.getStyleClass().add("content-box");
         HeaderBar.setPrefButtonHeight(window, 0); // to hide default buttons
         window.initStyle(StageStyle.EXTENDED);
-        var scene = new Scene(stackPane, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        var scene = new Scene(stackPane);
         FxViewUtils.setView(scene, this);
         window.setScene(scene);
         //we add stackpane behind stage root

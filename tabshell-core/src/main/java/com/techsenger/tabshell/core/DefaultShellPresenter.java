@@ -80,4 +80,14 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
     protected Descriptor createDescriptor() {
         return new Descriptor(CoreComponents.SHELL);
     }
+
+    @Override
+    protected double getDefaultWidth() {
+        return 1200.0;
+    }
+
+    @Override
+    protected double getDefaultHeight() {
+        return 800;
+    }
 }

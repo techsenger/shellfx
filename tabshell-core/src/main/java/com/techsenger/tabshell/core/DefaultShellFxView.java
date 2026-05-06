@@ -217,7 +217,6 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     protected void build() {
         super.build();
         getLeftBox().getChildren().add(menuBar);
-        getWindow().show();
     }
 
     @Override

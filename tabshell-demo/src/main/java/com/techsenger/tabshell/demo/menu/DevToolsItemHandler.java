@@ -53,6 +53,7 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
             } else {
                 var devTools = createDevToolsWindow();
                 devTools.getPresenter().initialize();
+                devTools.getComposer().addTabDock();
                 devTools.getWindow().show();
             }
         } else if (shell.getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
