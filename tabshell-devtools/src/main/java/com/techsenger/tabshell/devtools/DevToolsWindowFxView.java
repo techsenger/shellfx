@@ -39,21 +39,27 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
         public void addTabDock() {
             var tabDock = createTabDock();
             tabDock.getPresenter().initialize();
-            addTabDock(tabDock);
+            doAddTabDock(tabDock);
         }
 
         public void addTabDock(DevToolsTabDockFxView<?> tabDock) {
-            this.tabDock = tabDock;
-            getModifiableChildren().add(tabDock);
-            VBox.setVgrow(tabDock.getNode(), Priority.ALWAYS);
-            getContentBox().getChildren().add(tabDock.getNode());
+            doAddTabDock(tabDock);
+            tabDock.getPresenter().setHostType(DevToolsHostType.WINDOW);
         }
 
         protected DevToolsTabDockFxView<?> createTabDock() {
             var view = new DevToolsTabDockFxView<>(this.view.shell, this.view);
             var context = this.view.shell.getPresenter().getContext();
-            var presenter = new DevToolsTabDockPresenter<>(view, context.getSettings(), context.getHistoryManager());
+            var presenter = new DevToolsTabDockPresenter<>(view, DevToolsHostType.WINDOW,
+                    context.getSettings(), context.getHistoryManager());
             return view;
+        }
+
+        private void doAddTabDock(DevToolsTabDockFxView<?> tabDock) {
+            this.tabDock = tabDock;
+            getModifiableChildren().add(tabDock);
+            VBox.setVgrow(tabDock.getNode(), Priority.ALWAYS);
+            getContentBox().getChildren().add(tabDock.getNode());
         }
     }
 

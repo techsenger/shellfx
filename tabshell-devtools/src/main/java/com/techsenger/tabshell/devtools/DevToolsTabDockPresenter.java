@@ -20,24 +20,21 @@ import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.tabshell.core.CloseAwarePresenter;
-import com.techsenger.tabshell.core.CloseCheckResult;
-import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
+import static com.techsenger.tabshell.devtools.DevToolsHostType.WINDOW;
 import com.techsenger.tabshell.layout.dockhost.TabDockPresenter;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
-        extends TabDockPresenter<V> implements DevToolsTabDockPort, CloseAwarePresenter<V> {
+        extends TabDockPresenter<V> implements DevToolsTabDockPort {
 
     private final Settings settings;
 
@@ -47,8 +44,12 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
 
     private final Selector selector;
 
-    public DevToolsTabDockPresenter(V view, Settings settings, HistoryManager historyManager) {
+    private DevToolsHostType hostType;
+
+    public DevToolsTabDockPresenter(V view, DevToolsHostType hostType, Settings settings,
+            HistoryManager historyManager) {
         super(view);
+        this.hostType = hostType;
         this.settings = settings;
         themeSubscription = settings.getAppearance().onThemeChanged((oldV, newV) -> updateHighlight(newV));
         this.selector = new Selector(view.getConnector());
@@ -68,21 +69,6 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
     }
 
     @Override
-    public void close() {
-        getView().getComposer().remove();
-    }
-
-    @Override
-    public CloseCheckResult isReadyToClose() {
-        return CloseCheckResult.READY;
-    }
-
-    @Override
-    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public int getWindowUid() {
         return getView().getWindowUid();
     }
@@ -95,6 +81,29 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
     @Override
     public Selector getSelector() {
         return this.selector;
+    }
+
+    public DevToolsHostType getHostType() {
+        return hostType;
+    }
+
+    public void setHostType(DevToolsHostType hostType) {
+        this.hostType = hostType;
+        switch (hostType) {
+            case SPLIT_SPACE -> {
+                setClosable(true);
+                setMinimizable(true);
+            }
+            case WINDOW -> {
+                setClosable(false);
+                setMinimizable(false);
+            }
+            case OTHER -> {
+                setClosable(true);
+                setMinimizable(false);
+            }
+            default -> throw new AssertionError();
+        }
     }
 
     @Override
@@ -122,6 +131,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
     @Override
     protected void postInitialize() {
         super.postInitialize();
+        setHostType(hostType);
         var connector = getView().getConnector();
         connector.start();
         updateHighlight(this.settings.getAppearance().getTheme());

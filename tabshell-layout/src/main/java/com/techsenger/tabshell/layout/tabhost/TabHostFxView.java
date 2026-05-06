@@ -41,6 +41,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -166,6 +167,10 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
     private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
 
+    private final HBox tabHeaderFirstBox = new HBox();
+
+    private final HBox tabHeaderLastBox = new HBox();
+
     public TabHostFxView(boolean workspace) {
         super();
         this.workspace = workspace;
@@ -236,11 +241,23 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         return tabHeaderVisible;
     }
 
+    protected HBox getTabHeaderFirstBox() {
+        return tabHeaderFirstBox;
+    }
+
+    protected HBox getTabHeaderLastBox() {
+        return tabHeaderLastBox;
+    }
+
     @Override
     protected void build() {
         super.build();
+        tabHeaderFirstBox.getStyleClass().add("tab-header-first-box");
+        tabHeaderLastBox.getStyleClass().add("tab-header-last-box");
         this.tabPane.getStylesheets().add(TabHostFxView.class.getResource("tab-host.css").toExternalForm());
         this.tabPane.getStyleClass().add(Styles.DENSE);
+        getTabHeaderArea().getFirstArea().getChildren().add(tabHeaderFirstBox);
+        getTabHeaderArea().getLastArea().getChildren().add(tabHeaderLastBox);
         VBox.setVgrow(this.tabPane, Priority.ALWAYS);
         if (this.workspace) {
             buildWorkspace();
@@ -330,8 +347,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
     }
 
     protected TabPaneProSkin.TabHeaderArea getTabHeaderArea() {
-        var tabPane = getNode();
-        TabPaneProSkin sourceSkin = (TabPaneProSkin) tabPane.getSkin();
+        TabPaneProSkin sourceSkin = (TabPaneProSkin) getNode().getSkin();
         TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
         return tabHeaderArea;
     }

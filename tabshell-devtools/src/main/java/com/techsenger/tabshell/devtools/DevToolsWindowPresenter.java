@@ -47,7 +47,7 @@ public class DevToolsWindowPresenter<V extends DevToolsWindowView> extends Abstr
 
     @Override
     protected double getDefaultWidth() {
-        return 800;
+        return 1000;
     }
 
     @Override

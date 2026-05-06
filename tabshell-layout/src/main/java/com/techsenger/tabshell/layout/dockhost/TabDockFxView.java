@@ -30,8 +30,8 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseDragEvent;
-import javafx.scene.layout.HBox;
 
 /**
  *
@@ -56,11 +56,9 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
 
     private final FontIconView dragIconView = new FontIconView(LayoutIcons.DRAG_VERTICAL);
 
-    private final HBox tabHeaderFirstBox = new HBox();
-
     private final Button minimizeButton = new Button(null, new FontIconView(LayoutIcons.REMOVE));
 
-    private final HBox tabHeaderLastBox = new HBox(minimizeButton);
+    private final Button closeButton = new Button(null, new FontIconView(LayoutIcons.CLOSE));
 
     private DockHostFxView<?> dockHost;
 
@@ -72,11 +70,42 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     public void setDraggable(boolean value) {
         if (value) {
             if (dragIconView.getParent() == null) {
-            tabHeaderFirstBox.getChildren().add(0, dragIconView);
+                getTabHeaderFirstBox().getChildren().add(0, dragIconView);
             }
         } else {
             if (dragIconView.getParent() != null) {
-                tabHeaderFirstBox.getChildren().remove(dragIconView);
+                getTabHeaderLastBox().getChildren().remove(dragIconView);
+            }
+        }
+    }
+
+    @Override
+    public void setMinimizable(boolean minimizable) {
+        if (minimizable) {
+            if (this.minimizeButton.getParent() == null) {
+                if (this.closeButton.getParent() == null) {
+                    getTabHeaderLastBox().getChildren().add(this.minimizeButton);
+                } else {
+                    var size = getTabHeaderLastBox().getChildren().size();
+                    getTabHeaderLastBox().getChildren().add(size - 1, this.minimizeButton);
+                }
+            }
+        } else {
+            if (this.minimizeButton.getParent() != null) {
+                getTabHeaderLastBox().getChildren().remove(this.minimizeButton);
+            }
+        }
+    }
+
+    @Override
+    public void setClosable(boolean closable) {
+        if (closable) {
+            if (this.closeButton.getParent() == null) {
+                getTabHeaderLastBox().getChildren().add(this.closeButton);
+            }
+        } else {
+            if (this.closeButton.getParent() != null) {
+                getTabHeaderLastBox().getChildren().remove(this.closeButton);
             }
         }
     }
@@ -99,20 +128,18 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         tabPane.setTabDropEnabled(true);
 
         this.dragIconView.getStyleClass().add(StyleClasses.COMPACT);
-        tabHeaderFirstBox.getStyleClass().add("tab-header-first-box");
         minimizeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
-        tabHeaderLastBox.getStyleClass().add("tab-header-last-box");
+        minimizeButton.setTooltip(new Tooltip("Minimize"));
+        closeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
+        closeButton.setTooltip(new Tooltip("Close"));
 
-        var css = TabDockFxView.class.getResource("tab-dock.css").toExternalForm();
-        this.getNode().getStylesheets().add(css);
         this.getNode().getStyleClass().add("tab-dock");
 
         var tabHeaderArea = getTabHeaderArea();
-        tabHeaderArea.getFirstArea().getChildren().add(tabHeaderFirstBox);
-        tabHeaderArea.getLastArea().getChildren().add(tabHeaderLastBox);
         tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
         tabHeaderArea.setTabDragContentFactory((s) -> dockHost.createTabDragContent(s));
         tabHeaderArea.setTabDragScrollStep(10.0);
+
     }
 
     @Override
@@ -138,6 +165,8 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
             dockHost.getComposer().minimizeTabDock(this);
             getPresenter().onMinimized();
         });
+        closeButton.setOnAction(e -> getPresenter().requestClose());
+
         var tabPane = getNode();
         tabPane.addEventHandler(TabEvent.TAB_DRAG_STARTED, (e) -> {
             if (e.getTarget() == getNode()) {
@@ -161,16 +190,12 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         return minimizeButton;
     }
 
+    protected Button getCloseButton() {
+        return closeButton;
+    }
+
     protected FontIconView getDragIconView() {
         return dragIconView;
-    }
-
-    protected HBox getTabHeaderFirstBox() {
-        return tabHeaderFirstBox;
-    }
-
-    protected HBox getTabHeaderLastBox() {
-        return tabHeaderLastBox;
     }
 
     protected DockHostFxView<?> getDockHost() {

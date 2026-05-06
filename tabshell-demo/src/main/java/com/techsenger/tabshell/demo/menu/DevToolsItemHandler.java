@@ -19,6 +19,7 @@ package com.techsenger.tabshell.demo.menu;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
+import com.techsenger.tabshell.devtools.DevToolsHostType;
 import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPresenter;
 import com.techsenger.tabshell.devtools.DevToolsWindowFxView;
@@ -68,7 +69,8 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
         var shell = getComponent();
         var view = new DevToolsTabDockFxView<>(shell, resolveDialogContainer());
         var context = shell.getPresenter().getContext();
-        var presenter = new DevToolsTabDockPresenter<>(view, context.getSettings(), context.getHistoryManager());
+        var presenter = new DevToolsTabDockPresenter<>(view, DevToolsHostType.SPLIT_SPACE,
+                context.getSettings(), context.getHistoryManager());
         return view;
     }
 

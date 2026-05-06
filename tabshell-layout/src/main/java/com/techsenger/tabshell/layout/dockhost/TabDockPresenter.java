@@ -17,14 +17,19 @@
 package com.techsenger.tabshell.layout.dockhost;
 
 import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.tabshell.core.CloseAwarePresenter;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.layout.LayoutComponents;
 import com.techsenger.tabshell.layout.tabhost.TabHostPresenter;
+import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V> implements TabDockPort  {
+public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
+        implements TabDockPort, CloseAwarePresenter<V>  {
 
     private ComponentPosition minimizedPosition;
 
@@ -33,6 +38,10 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
     private TabDockTransitionState transitionState;
 
     private boolean draggable;
+
+    private boolean minimizable;
+
+    private boolean closable;
 
     public TabDockPresenter(V view) {
         super(view);
@@ -55,6 +64,39 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
     public void setDraggable(boolean draggable) {
         this.draggable = draggable;
         getView().setDraggable(draggable);
+    }
+
+    public boolean isMinimizable() {
+        return minimizable;
+    }
+
+    public void setMinimizable(boolean minimizable) {
+        this.minimizable = minimizable;
+        getView().setMinimizable(minimizable);
+    }
+
+    public boolean isClosable() {
+        return closable;
+    }
+
+    public void setClosable(boolean closable) {
+        this.closable = closable;
+        getView().setClosable(closable);
+    }
+
+    @Override
+    public void close() {
+        getView().getComposer().remove();
+    }
+
+    @Override
+    public CloseCheckResult isReadyToClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     protected void setMinimizedPosition(ComponentPosition position) {

@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-/*
-    Author: Pavel Castornii
-*/
-.tab-dock.tab-pane-pro > .tab-header-area > .first-area {
-    -fx-padding: 0 0 2px 0px; /* bottom 2px is the line under tab headers */
-}
+package com.techsenger.tabshell.devtools;
 
-.tab-dock.tab-pane-pro > .tab-header-area > .first-area > .tab-header-first-box {
-    -fx-alignment: CENTER_LEFT;
-}
+/**
+ *
+ * @author Pavel Castornii
+ */
+public enum DevToolsHostType {
 
-.tab-dock.tab-pane-pro > .tab-header-area > .last-area {
-    -fx-padding: 0 0 2px 0; /* bottom 2px is the line under tab headers */
-}
+    /**
+     * If it is inside dock host.
+     */
+    SPLIT_SPACE,
 
-.tab-dock.tab-pane-pro > .tab-header-area > .last-area > .tab-header-last-box {
-    -fx-padding: 0 4px 0 12px;
-    -fx-alignment: CENTER_LEFT;
+    /**
+     * If it has a separate window.
+     */
+    WINDOW,
+
+    /**
+     * All other cases.
+     */
+    OTHER
 }

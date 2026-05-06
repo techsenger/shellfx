@@ -45,3 +45,7 @@
 .font-icon-view.chevron-left-icon {
     -fx-code-point: 983361; /* chevron-left */
 }
+
+.font-icon-view.close-icon {
+    -fx-code-point: 983382; /* close */
+}

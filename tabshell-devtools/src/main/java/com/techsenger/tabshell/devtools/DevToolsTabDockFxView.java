@@ -115,8 +115,6 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
 
     private final Button optionsButton = new Button(null, new FontIconView(DevToolsIcons.DOTS_VERTICAL));
 
-    private final Button closeButton = new Button(null, new FontIconView(DevToolsIcons.CLOSE));
-
     private final ShellFxView<?> shell;
 
     private final DialogContainerFxView dialogContainer;
@@ -166,10 +164,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
 
         optionsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
         optionsButton.setTooltip(new Tooltip("Options"));
-        closeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
-        closeButton.setTooltip(new Tooltip("Close"));
         getTabHeaderLastBox().getChildren().add(0, optionsButton);
-        getTabHeaderLastBox().getChildren().add(closeButton);
         getTabHeaderLastBox().setSpacing(Spacing.HORIZONTAL_THIRD);
     }
 
@@ -178,7 +173,6 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
         super.addHandlers();
         selectButton.setOnAction(e -> getPresenter().onSelect());
         selectionButton.setOnAction(e -> getPresenter().onSelection(selectionButton.isSelected()));
-        closeButton.setOnAction(e -> getPresenter().requestClose());
     }
 
     @Override
@@ -196,9 +190,5 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
 
     protected Button getOptionsButton() {
         return optionsButton;
-    }
-
-    protected Button getCloseButton() {
-        return closeButton;
     }
 }

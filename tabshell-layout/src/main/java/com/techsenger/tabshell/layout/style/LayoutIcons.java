@@ -35,4 +35,6 @@ public interface LayoutIcons {
     StyleFontIcon CHEVRON_RIGHT = new StyleFontIcon("chevron-right-icon");
 
     StyleFontIcon CHEVRON_LEFT = new StyleFontIcon("chevron-left-icon");
+
+    StyleFontIcon CLOSE = new StyleFontIcon("close-icon");
 }

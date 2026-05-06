@@ -38,8 +38,6 @@ public interface DevToolsIcons {
 
     StyleFontIcon OPEN_IN_NEW = new StyleFontIcon("open-in-new-icon");
 
-    StyleFontIcon CLOSE = new StyleFontIcon("close-icon");
-
     StyleFontIcon DOTS_VERTICAL = new StyleFontIcon("dots-vertical-icon");
 
     StyleFontIcon CLEAR = new StyleFontIcon("clear-icon");

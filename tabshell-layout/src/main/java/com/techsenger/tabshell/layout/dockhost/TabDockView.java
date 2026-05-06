@@ -33,9 +33,26 @@ public interface TabDockView extends TabHostView {
     Composer getComposer();
 
     /**
-     * Sets the value that defines whether this component can be dragged by the user.
+     * Controls the visibility of the drag handle used to move this component.
+     * <p>
+     * When enabled, a visual drag indicator (e.g., an icon or handle) is shown, allowing the user to initiate drag
+     * operations. When disabled, the drag indicator is hidden.
      *
-     * @param value the new draggable state for this component
+     * @param value {@code true} to show the drag handle, {@code false} to hide it
      */
     void setDraggable(boolean value);
+
+    /**
+     * Controls the presence of the minimize button in the component's UI.
+     *
+     * @param minimizable {@code true} to show the minimize button, {@code false} to remove it
+     */
+    void setMinimizable(boolean minimizable);
+
+    /**
+     * Controls the presence of the close button in the component's UI.
+     *
+     * @param closable {@code true} to show the close button, {@code false} to remove it
+     */
+    void setClosable(boolean closable);
 }

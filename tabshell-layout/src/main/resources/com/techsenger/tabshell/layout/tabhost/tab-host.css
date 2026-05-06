@@ -18,47 +18,64 @@
     Author: Pavel Castornii
 */
 
-.tab-pane.workspace > .tab-header-area > .tab-header-background {
+.tab-pane-pro.workspace > .tab-header-area > .tab-header-background {
   -fx-background-insets: 0 0 0 0, 0 0 1px 0;
 }
 
-.tab-pane.workspace > .tab-header-area > .headers-region > .tab .font-icon-view {
+.tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab .font-icon-view {
     -fx-font-size: 1.6em;
     -fx-padding: 0;
 }
 
-.tab-pane.workspace > .tab-header-area > .headers-region > .tab .image-icon-view {
+.tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab .image-icon-view {
     -fx-fit-width: 1.6em;
     -fx-fit-height: 1.6em;
 }
 
-.tab-pane.workspace > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
+.tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab > .tab-container > .tab-label {
     -fx-pref-width: -1;
     -fx-pref-height: 2.4em;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0.4em 12px 0.4em 0.4em;
 }
 
-.tab-pane.workspace > .tab-header-area > .headers-region > .tab {
+.tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab {
     -fx-background-color: transparent, ladder(-color-bg-default, derive(-color-bg-inset, 20%) 49%, -color-base-1 50%);
     -fx-background-insets: 0 0 0 0, 0 0 1px 0;
 }
 
-.tab-pane.workspace > .tab-header-area > .headers-region > .tab:hover {
+.tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab:hover {
   -fx-background-color: -color-border-default, -color-bg-subtle;
 }
 
-.tab-pane.workspace > .tab-header-area > .headers-region > .tab:selected {
+.tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab:selected {
   -fx-background-color: -color-border-default, -color-tab-bg-selected;
   -fx-background-insets: 0 0 0 0, 0 0 0 0;
 }
 
-.tab-pane.workspace > .tab-header-area > .headers-region > .tab > .border-path {
+.tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab > .border-path {
     -fx-stroke: -color-border-default;
     -fx-stroke-width: 2px;
 }
 
-.tab-pane.workspace > .tab-header-area > .headers-region > .tab > .selected-path {
+.tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab > .selected-path {
     -fx-stroke: -color-accent-5;
     -fx-stroke-width: 2px;
+}
+
+.tab-pane-pro > .tab-header-area > .first-area {
+    -fx-padding: 0 0 2px 0px; /* bottom 2px is the line under tab headers */
+}
+
+.tab-pane-pro > .tab-header-area > .first-area > .tab-header-first-box {
+    -fx-alignment: CENTER_LEFT;
+}
+
+.tab-pane-pro > .tab-header-area > .last-area {
+    -fx-padding: 0 0 2px 0; /* bottom 2px is the line under tab headers */
+}
+
+.tab-pane-pro > .tab-header-area > .last-area > .tab-header-last-box {
+    -fx-padding: 0 4px 0 12px;
+    -fx-alignment: CENTER_LEFT;
 }
