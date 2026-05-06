@@ -21,7 +21,6 @@ import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.List;
 import javafx.application.Application;
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
@@ -51,35 +50,39 @@ class ThemeApplier {
 
     private final Descriptor descriptor;
 
+    private Theme theme;
+
     /**
      * Constructor.
      *
      * @param root the root of the scene. We can't get the root from stage.getScene().getRoot() because of custom stage.
      * @param theme
      */
-    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets, ObjectProperty<Theme> theme,
-            Descriptor descriptor) {
+    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets, Descriptor descriptor) {
         this.stylesheets = stylesheets;
         this.scene = scene;
         this.descriptor = descriptor;
-        addTheme(theme.get(), false);
-        logSceneStylesheets();
-        theme.addListener((ov, oldV, newV) -> {
-            removeTheme(oldV);
-            addTheme(newV, true);
-            logSceneStylesheets();
-        });
         this.stylesheets.addListener((ListChangeListener<Stylesheet>) change -> {
             while (change.next()) {
-                if (change.wasAdded()) {
-                    addStylesheets(theme.get(), change.getAddedSubList());
+                if (this.theme != null && change.wasAdded()) {
+                    addStylesheets(theme, change.getAddedSubList());
                 }
-                if (change.wasRemoved()) {
-                    removeStylesheets(theme.get(), change.getRemoved());
+                if (this.theme != null && change.wasRemoved()) {
+                    removeStylesheets(theme, change.getRemoved());
                 }
             }
             logSceneStylesheets();
         });
+    }
+
+    public void setTheme(Theme theme) {
+        logSceneStylesheets();
+        if (this.theme != null) {
+            removeTheme(this.theme);
+        }
+        this.theme = theme;
+        addTheme(this.theme, true);
+        logSceneStylesheets();
     }
 
     private void addTheme(Theme theme, boolean setStageColors) {

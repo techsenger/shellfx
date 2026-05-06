@@ -47,11 +47,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.PauseTransition;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -240,12 +238,6 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private final DialogManager dialogManager;
 
-    private final ObjectProperty<Theme> theme = new SimpleObjectProperty<>();
-
-    private final ObjectProperty<Font> regularFont = new SimpleObjectProperty<>();
-
-    private final ObjectProperty<Font> monospaceFont = new SimpleObjectProperty<>();
-
     private ThemeApplier themeApplier;
 
     private FontApplier fontApplier;
@@ -334,41 +326,17 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     @Override
     public void setTheme(Theme theme) {
-        this.theme.set(theme);
-    }
-
-    public ObjectProperty<Theme> themeProperty() {
-        return theme;
-    }
-
-    public Theme getTheme() {
-        return theme.get();
+        this.themeApplier.setTheme(theme);
     }
 
     @Override
     public void setRegularFont(Font font) {
-        this.regularFont.set(font);
-    }
-
-    public ObjectProperty<Font> regularFontProperty() {
-        return regularFont;
-    }
-
-    public Font getRegularFont() {
-        return regularFont.get();
+        this.fontApplier.setRegularFont(font);
     }
 
     @Override
     public void setMonospaceFont(Font font) {
-        this.monospaceFont.set(font);
-    }
-
-    public ObjectProperty<Font> monospaceFontProperty() {
-        return monospaceFont;
-    }
-
-    public Font getMonospaceFont() {
-        return monospaceFont.get();
+        this.fontApplier.setMonospaceFont(font);
     }
 
     @Override
@@ -405,8 +373,8 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         window.setScene(scene);
         //we add stackpane behind stage root
         stackPane.getStyleClass().add("root-stack-pane");
-        themeApplier = new ThemeApplier(scene, this.stylesheets, theme, getDescriptor());
-        this.fontApplier = new FontApplier(stackPane, regularFont, monospaceFont);
+        themeApplier = new ThemeApplier(scene, this.stylesheets, getDescriptor());
+        this.fontApplier = new FontApplier(stackPane);
     }
 
     @Override
