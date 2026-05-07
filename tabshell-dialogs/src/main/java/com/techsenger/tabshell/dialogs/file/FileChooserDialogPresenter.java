@@ -268,6 +268,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     @Override
     protected void applyAppearance() {
         super.applyAppearance();
+        setPrefWidth(800);
+        setPrefHeight(500);
         createInitialColumns();
         getView().addColumns(columns);
     }
@@ -297,8 +299,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        setPrefWidth(800);
-        setPrefHeight(500);
         switch (type) {
             case OPEN -> {
                 setTitle("Open");
@@ -535,9 +535,10 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
             return;
         }
         updateLocation();
-        List<GenericFile> filteredFiles = new ArrayList<>();
         var extFilter = getExtensionFilter();
+        List<GenericFile> filteredFiles = null;
         if (extFilter != null && !extFilter.matchesAllFiles()) {
+            filteredFiles = new ArrayList<>();
             for (var f : storageFiles) {
                 if (f.isDirectory()) {
                     filteredFiles.add(f);
@@ -547,15 +548,16 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
                     }
                 }
             }
-            setFiles(filteredFiles);
-        } else {
-            setFiles(storageFiles);
         }
-        getView().sortFiles();
+        var files = storageFiles;
+        if (filteredFiles != null) {
+            files = filteredFiles;
+        }
+        files.sort(getView().getFileComparator());
+        setFiles(files);
         //only after sorting we can find the selected file index
         var selectedFileIndex = -1;
         if (selectedFile != null) {
-            var files = getFiles();
             for (int i = 0; i < files.size(); i++) {
                 var file = files.get(i);
                 if (file.getType() == selectedFile.getType() && file.getName() != null

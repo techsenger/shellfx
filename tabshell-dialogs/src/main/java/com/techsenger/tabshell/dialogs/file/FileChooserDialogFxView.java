@@ -37,6 +37,7 @@ import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.storage.FileColumnBuilder;
 import com.techsenger.tabshell.storage.FileColumns;
 import com.techsenger.tabshell.storage.GenericFile;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -363,11 +364,8 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     }
 
     @Override
-    public void sortFiles() {
-        this.fileTableView.sort();
-        if (this.listButton.isSelected()) {
-            this.fileListView.refresh();
-        }
+    public Comparator<GenericFile> getFileComparator() {
+        return this.fileTableView.getComparator();
     }
 
     @Override

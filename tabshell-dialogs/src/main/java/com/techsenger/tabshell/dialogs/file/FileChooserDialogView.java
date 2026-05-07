@@ -23,6 +23,7 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.material.table.TableColumnInfo;
 import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.storage.GenericFile;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public interface FileChooserDialogView extends DialogView {
 
     void editFile(int index);
 
-    void sortFiles();
+    Comparator<GenericFile> getFileComparator();
 
     void setFileName(String fileName);
 
