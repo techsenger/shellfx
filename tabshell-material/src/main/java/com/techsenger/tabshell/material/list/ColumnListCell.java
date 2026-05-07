@@ -62,6 +62,16 @@ public class ColumnListCell<T> extends IndexedCell<T> {
 
     @Override
     public void startEdit() {
+        // See the constructor of Cell (the link is split into two parts):
+        // https://github.com/openjdk/jfx/blob/277aec13d0879718a9ac2231402e19eed6f70d20/modules
+        // /javafx.controls/src/main/java/javafx/scene/control/Cell.java#L361
+        //
+        // When a cell has focus and loses it while editing, the edit is cancelled. To prevent this, we transfer
+        // focus to the list view before calling super.startEdit(). This way the cell is already unfocused when editing
+        // begins, so the listener in Cell cannot trigger cancelEdit(). Focus will then move naturally to the
+        // TextField once it is created. It is important to note, if a TextField is created on this pulse, it will get
+        // focus on the next one, so we can't use it now, before super.startEdit().
+        listView.requestFocus();
         super.startEdit();
         pseudoClassStateChanged(EDITING, true);
     }

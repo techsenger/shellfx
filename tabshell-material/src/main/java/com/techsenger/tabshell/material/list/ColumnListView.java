@@ -16,7 +16,9 @@
 
 package com.techsenger.tabshell.material.list;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -97,6 +99,8 @@ public class ColumnListView<T> extends Region {
 
         private ColumnListCell<T> selectedCell;
 
+        private boolean dirty = true;
+
         ColumnListViewColumn(final ColumnListView<T> listView) {
             this.listView = listView;
             node.getStyleClass().add("column");
@@ -120,12 +124,16 @@ public class ColumnListView<T> extends Region {
 
         @Override
         public void updateItem(Integer item, boolean empty) {
+            if (item != null && item.equals(getItem()) && !empty && !dirty) {
+                return;
+            }
             super.updateItem(item, empty);
             node.getChildren().clear();
             clearSelection();
             if (item != null) {
                 if (listView.rowHeight.get() > 0) {
                     updateCells();
+                    dirty = false;
                 } else {
                     addRowHeightCell();
                 }
@@ -222,6 +230,10 @@ public class ColumnListView<T> extends Region {
             };
             cell.heightProperty().addListener(listener);
             this.node.getChildren().add(cell);
+        }
+
+        private void markDirty() {
+            this.dirty = true;
         }
     }
 
@@ -336,6 +348,8 @@ public class ColumnListView<T> extends Region {
         }
     };
 
+    private final List<WeakReference<ColumnListViewColumn<?>>> columns = new LinkedList<>();
+
     public ColumnListView() {
         getStylesheets().add(ColumnListView.class.getResource("column-list-view.css").toExternalForm());
         getStyleClass().add("column-list-view");
@@ -359,6 +373,10 @@ public class ColumnListView<T> extends Region {
                 .addListener((ov, oldV, newV) -> savePositionAndRefreshView(RefreshTrigger.VIRTUAL_FLOW_HEIGHT));
         virtualFlow.setCellFactory(vf -> new ColumnListViewColumn<>(this) {
 
+            {
+                columns.add(new WeakReference<>(this));
+            }
+
             @Override
             public void updateIndex(int index) {
                 super.updateIndex(index);
@@ -369,6 +387,7 @@ public class ColumnListView<T> extends Region {
                 }
             }
         });
+
         setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.UP) {
                 selectUp();
@@ -580,6 +599,7 @@ public class ColumnListView<T> extends Region {
             }
         }
         if (column != null) {
+            column.markDirty();
             column.requestLayout();
         }
     }
@@ -726,6 +746,17 @@ public class ColumnListView<T> extends Region {
             prepareRowHeightResolving();
             return;
         }
+        var iterator = this.columns.iterator();
+        while (iterator.hasNext()) {
+            var ref = iterator.next();
+            var column = ref.get();
+            if (column == null) {
+                iterator.remove();
+            } else {
+                column.markDirty();
+            }
+        }
+
         var rowCount = (int) (this.virtualFlow.getViewportHeight() / rowHeight.get());
         if (refreshTrigger == RefreshTrigger.ITEMS) {
             if (getSelectionModel().getSelectedIndex() != -1) {
