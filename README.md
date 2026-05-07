@@ -29,10 +29,10 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
     * [Shell](#core-shell)
     * [Window](#core-window)
     * [Tab](#core-tab)
-    * [Area](#core-area)
     * [Page](#core-page)
-    * [Popup](#core-popup)
     * [Dialog](#core-dialog)
+    * [Popup](#core-popup)
+    * [Area](#core-area)
 * [Layout Components](#layout)
     * [TabHost](#layout-tab-host)
     * [DockHost](#layout-dock-host)
@@ -253,11 +253,6 @@ platform components, since the primary application functionality is delivered th
 `Tab` can be added to any component that implements the `TabContainer` interface. The platform
 provides two components that implement this interface: `TabHost` and `TabDock`, where `TabDock` extends `TabHost`.
 
-### Area <a name="core-area"></a>
-
-`Area` is an abstract base component that represents a rectangular region. Naturally, `AreaFxView#getNode()` returns a
-`Region`.
-
 ### Page <a name="core-page"></a>
 
 `Page` is a component that represents a titled, selectable element. A key feature of this component is its lazy
@@ -266,22 +261,6 @@ view will be initialized.
 
 `Page` can be added to any component that implements the `PageContainer` interface. The default implementation of
 this interface is `PageHost`.
-
-### Popup <a name="core-popup"></a>
-
-All `Popup`s in TabShell are inline and have a scope that affects what will be blocked when the `Popup` is open.
-
-Inline `Popup`s are components that appear embedded within the current application window, typically overlaid on top
-of the existing content. They are contextually tied to a specific section (e.g., a `Shell` or `Tab`) and do not
-create a separate OS-level window. In contrast, modal window `Popup`s (or native `Popup`s) open as standalone
-OS-managed windows with their own frames and system controls, completely independent of the parent UI.
-
-There are two types of scope: `Window` and `Tab`. `Popup`s in the `Tab` scope are bound to a specific tab and are visible
-only while that tab is open. `Popup`s in the `Window` scope are global to the `Window` and remain visible even when all
-tabs are closed.
-
-`Popup` can be added to any component that implements the `PopupContainer` interface. The platform provides two
-components that implement this interface: `Tab` and `Window`.
 
 ### Dialog <a name="core-dialog"></a>
 
@@ -304,6 +283,27 @@ available to the user.
 
 `Dialog` can be added to any component that implements the `DialogContainer` interface. The platform provides two
 components that implement this interface: `Tab` and `Window`.
+
+### Popup <a name="core-popup"></a>
+
+All `Popup`s in TabShell are inline and have a scope that affects what will be blocked when the `Popup` is open.
+
+Inline `Popup`s are components that appear embedded within the current application window, typically overlaid on top
+of the existing content. They are contextually tied to a specific section (e.g., a `Shell` or `Tab`) and do not
+create a separate OS-level window. In contrast, modal window `Popup`s (or native `Popup`s) open as standalone
+OS-managed windows with their own frames and system controls, completely independent of the parent UI.
+
+There are two types of scope: `Window` and `Tab`. `Popup`s in the `Tab` scope are bound to a specific tab and are visible
+only while that tab is open. `Popup`s in the `Window` scope are global to the `Window` and remain visible even when all
+tabs are closed.
+
+`Popup` can be added to any component that implements the `PopupContainer` interface. The platform provides two
+components that implement this interface: `Tab` and `Window`.
+
+### Area <a name="core-area"></a>
+
+`Area` is an abstract base component that represents a rectangular region. Naturally, `AreaFxView#getNode()` returns a
+`Region`.
 
 ## Layout Components <a name="layout"></a>
 
