@@ -365,6 +365,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     @Override
     public void sortFiles() {
         this.fileTableView.sort();
+        if (this.listButton.isSelected()) {
+            this.fileListView.refresh();
+        }
     }
 
     @Override
