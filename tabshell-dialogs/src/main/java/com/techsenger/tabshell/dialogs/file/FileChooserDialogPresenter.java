@@ -77,7 +77,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     private List<GenericFile> files;
 
-    private GenericFile selectedFile;
+    private int selectedFileIndex;
 
     private ExtensionFilter extensionFilter;
 
@@ -215,7 +215,15 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     public GenericFile getSelectedFile() {
-        return selectedFile;
+        if (this.selectedFileIndex >= 0) {
+            return this.files.get(selectedFileIndex);
+        } else {
+            return null;
+        }
+    }
+
+    public int getSelectedFileIndex() {
+        return selectedFileIndex;
     }
 
     public ExtensionFilter getExtensionFilter() {
@@ -465,13 +473,21 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     protected void onList(boolean selected) {
         setListSelected(selected);
+        if (this.selectedFileIndex >= 0) {
+            getView().scrollToFile(selectedFileIndex);
+        }
     }
 
     protected void onDetails(boolean selected) {
         setDetailsSelected(selected);
+        if (this.selectedFileIndex >= 0) {
+            getView().scrollToFile(selectedFileIndex);
+        }
     }
 
-    protected void onFileSelected(GenericFile file) {
+    protected void onFileSelected(int index) {
+        this.selectedFileIndex = index;
+        var file = getSelectedFile();
         if (file != null && !file.isDirectory()) {
             setFileName(file.getName());
         } else {
@@ -556,7 +572,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         files.sort(getView().getFileComparator());
         setFiles(files);
         //only after sorting we can find the selected file index
-        var selectedFileIndex = -1;
+        this.selectedFileIndex = -1;
         if (selectedFile != null) {
             for (int i = 0; i < files.size(); i++) {
                 var file = files.get(i);
