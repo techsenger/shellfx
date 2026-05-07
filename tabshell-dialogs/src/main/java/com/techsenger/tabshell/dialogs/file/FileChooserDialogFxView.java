@@ -536,6 +536,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
 
     @Override
     protected void addListeners() {
+        super.addListeners();
         this.fileListView.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) -> {
             if (this.listButton.isSelected()) {
                 getPresenter().onFileSelected(newV.intValue());
