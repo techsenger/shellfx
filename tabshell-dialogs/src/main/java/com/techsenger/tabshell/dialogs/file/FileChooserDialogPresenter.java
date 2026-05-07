@@ -46,6 +46,7 @@ import com.techsenger.toolkit.core.file.FileUtils;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +107,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     private EditType editType;
 
     private final Map<TableColumnName, TableColumnInfo> columns = new HashMap<>();
+
+    private Comparator<GenericFile> fileComparator;
 
     public FileChooserDialogPresenter(V view, FileChooserType type, AppearanceSettings settings,
             HistoryManager historyManager) {
@@ -524,6 +527,14 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         info.setSortIndex(index);
     }
 
+    protected void onFileComparatorChanged(Comparator<GenericFile> comparator) {
+        this.fileComparator = comparator;
+    }
+
+    protected Comparator<GenericFile> getFileComparator() {
+        return fileComparator;
+    }
+
     private void navigateTo(FileStorage storage, URI uri) {
         this.storage = storage;
         this.directory = uri;
@@ -569,7 +580,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         if (filteredFiles != null) {
             files = filteredFiles;
         }
-        files.sort(getView().getFileComparator());
+        files.sort(this.fileComparator);
         setFiles(files);
         //only after sorting we can find the selected file index
         this.selectedFileIndex = -1;

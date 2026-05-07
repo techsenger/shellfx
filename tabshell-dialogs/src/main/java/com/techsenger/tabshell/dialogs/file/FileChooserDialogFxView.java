@@ -37,7 +37,7 @@ import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.storage.FileColumnBuilder;
 import com.techsenger.tabshell.storage.FileColumns;
 import com.techsenger.tabshell.storage.GenericFile;
-import java.util.Comparator;
+import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -364,11 +364,6 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     }
 
     @Override
-    public Comparator<GenericFile> getFileComparator() {
-        return this.fileTableView.getComparator();
-    }
-
-    @Override
     public void setFileName(String fileName) {
         this.fileNameTextField.setText(fileName);
     }
@@ -547,6 +542,8 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
                 getPresenter().onFileSelected(newV.intValue());
             }
         });
+        ValueUtils.callAndAddListener(this.fileTableView.comparatorProperty(), (ov, oldV, newV) ->
+                getPresenter().onFileComparatorChanged(newV));
         this.filterComboBox.getSelectionModel().selectedItemProperty().addListener((ov, odlV, newV) -> {
             getPresenter().onFilterSelected(newV);
         });
