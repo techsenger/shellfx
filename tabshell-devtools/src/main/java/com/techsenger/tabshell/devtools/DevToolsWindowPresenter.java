@@ -46,12 +46,9 @@ public class DevToolsWindowPresenter<V extends DevToolsWindowView> extends Abstr
     }
 
     @Override
-    protected double getDefaultWidth() {
-        return 1000;
-    }
-
-    @Override
-    protected double getDefaultHeight() {
-        return 400;
+    protected void applyAppearance() {
+        super.applyAppearance();
+        setWidth(1000);
+        setHeight(400);
     }
 }

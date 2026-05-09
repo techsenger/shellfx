@@ -227,8 +227,8 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     @Override
     protected void applyAppearance() {
         super.applyAppearance();
-        setHeight(getDefaultHeight());
-        setWidth(getDefaultWidth());
+        setWidth(1200);
+        setHeight(800);
     }
 
     @Override
@@ -248,8 +248,4 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         h.setHeight(getHeight());
         h.setMaximized(isMaximized());
     }
-
-    protected abstract double getDefaultWidth();
-
-    protected abstract double getDefaultHeight();
 }
