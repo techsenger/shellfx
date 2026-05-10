@@ -2,7 +2,8 @@
 
 Techsenger TabShell is a platform for building tab-based applications in JavaFX, where an application is structured
 as a tree of MVP components, each of which has its own lifecycle, history, etc. The platform provides abstract
-classes for creating the main types of components: tab, area, page, dialog, and popup, as well as containers for them.
+classes for creating the main types of components: window, tab, area, page, dialog, and popup, as well as containers
+for some of them.
 
 It also includes ready-to-use implementations of containers (including a docking layout) and dialogs (including a
 universal file chooser). In addition, the platform provides powerful devtools that allow you to inspect both the MVP
