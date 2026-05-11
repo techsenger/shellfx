@@ -21,7 +21,7 @@ import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
-import com.techsenger.tabshell.core.registry.ControlBuilder;
+import com.techsenger.tabshell.core.registry.MenuBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.window.AbstractWindowFxView;
 import com.techsenger.tabshell.material.style.Stylesheet;
@@ -184,7 +184,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     @Override
     public void upgradeMenuBar() {
         this.menuBar.getMenus().clear();
-        var builder = new ControlBuilder(controlRegistry);
+        var builder = new MenuBuilder(controlRegistry);
         var menus = builder.buildMainMenus(this);
         this.menuBar.getMenus().addAll(menus);
         logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());

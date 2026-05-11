@@ -61,7 +61,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
             var menu = new ManagedMenu(FileMenu.NAME, "_File", 0);
             return menu;
         };
-        addRegistration(getRegistry().mainMenu().registerMenu(null, f));
+        addRegistration(getRegistry().mainMenu().registerMenu(f));
     }
 
     protected void registerGroups() {

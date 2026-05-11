@@ -55,7 +55,7 @@ public class ExtraMenuRegistrar extends AbstractControlRegistrar {
             MenuHandler.setHandler(menu, new ExtraMenuHandler(menu, v));
             return menu;
         };
-        addRegistration(getRegistry().mainMenu().registerMenu(null, f));
+        addRegistration(getRegistry().mainMenu().registerMenu(f));
     }
 
     protected void registerFooGroup() {

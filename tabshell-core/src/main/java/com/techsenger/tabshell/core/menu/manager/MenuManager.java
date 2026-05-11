@@ -68,10 +68,6 @@ public class MenuManager {
     }
 
     public void updateMenuBar(MenuAwarePort menuAware) {
-        StringBuilder logMessageBuilder = null;
-        if (logger.isDebugEnabled()) {
-            logMessageBuilder = new StringBuilder();
-        }
         for (var m : this.menuBar.getMenus()) {
             if (m instanceof ManagedMenu managedMenu) {
                 var handler = MenuHandler.getHandler(managedMenu);
@@ -82,7 +78,6 @@ public class MenuManager {
                 }
             }
         }
-        MenuLogger.logComponentMenuMessage("Main", menuAware, logMessageBuilder);
     }
 
     public void setLastKeyPressedTime(long lastKeyPressedTime) {
@@ -178,10 +173,6 @@ public class MenuManager {
 
     private void onMenuShowing(ManagedMenu menu) {
         MenuAwarePort menuAware = (MenuAwarePort) this.shellView.getComposer().getMenuAware().getPresenter();
-        StringBuilder logMessageBuilder = null;
-        if (logger.isEnabledForLevel(MenuLogger.CONFIGURED_MENU_LOG_LEVEL)) {
-            logMessageBuilder = new StringBuilder();
-        }
         boolean visibleItemsPresent = false;
         SeparatorMenuItem previousVisibleSeparator = null;
         for (var item : menu.getItems()) {
@@ -230,7 +221,6 @@ public class MenuManager {
         if (previousVisibleSeparator != null && !visibleItemsPresent) {
             previousVisibleSeparator.setVisible(false);
         }
-        MenuLogger.logComponentMenuMessage(menu.getText(), menuAware, logMessageBuilder);
     }
 
     private void onMenuHiding(ManagedMenu menu) {

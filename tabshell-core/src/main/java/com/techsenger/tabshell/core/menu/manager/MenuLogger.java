@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.core.menu.manager;
 
-import com.techsenger.tabshell.core.MenuAwarePort;
 import com.techsenger.tabshell.material.menu.ManagedMenu;
 import com.techsenger.tabshell.material.menu.ManagedMenuGroup;
 import com.techsenger.tabshell.material.menu.ManagedMenuItem;
@@ -54,15 +53,6 @@ final class MenuLogger {
         }
     }
 
-    public static void logComponentMenuMessage(String menuName, MenuAwarePort menuAware,
-            StringBuilder logMessageBuilder) {
-        if (logMessageBuilder != null) {
-            logger.atLevel(CONFIGURED_MENU_LOG_LEVEL).log("{} Configuration of '{}' menu: {}",
-                menuAware.getDescriptor().getLogPrefix(), menuName.replace("_", ""),
-                logMessageBuilder.toString());
-        }
-    }
-
     public static void logMenus(ObservableList<Menu> menus, boolean afterChange) {
         if (logger.isDebugEnabled()) {
             var builder = new StringBuilder();
@@ -93,13 +83,13 @@ final class MenuLogger {
                 var namedMenu = (ManagedMenu) m;
                 if (namedMenu.getGroup() != group) {
                     group = namedMenu.getGroup();
-                    logGroup(group, builder, tab);
+                    logGroup(group, depth + 1, builder, tab);
                 }
                 logMenu(namedMenu, depth + 2, builder);
             } else if (m instanceof ManagedMenuItem item) {
                 if (item.getGroup() != group) {
                     group = item.getGroup();
-                    logGroup(group, builder, tab);
+                    logGroup(group, depth + 1, builder, tab);
                 }
                 builder.append(System.lineSeparator());
                 builder.append(tab2);
@@ -115,14 +105,14 @@ final class MenuLogger {
         }
     }
 
-    private static void logGroup(ManagedMenuGroup group, StringBuilder builder, String tab) {
+    private static void logGroup(ManagedMenuGroup group, int depth, StringBuilder builder, String tab) {
         if (group == null) {
             return;
         }
         builder.append(System.lineSeparator());
-        builder.append(tab);
+        builder.append(tab.repeat(depth));
         builder.append("Group: ");
-        builder.append(group.getName());
+        builder.append(group.getName().getText());
     }
 
     private MenuLogger() {

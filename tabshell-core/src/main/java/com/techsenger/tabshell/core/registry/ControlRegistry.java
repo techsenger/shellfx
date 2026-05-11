@@ -16,168 +16,193 @@
 
 package com.techsenger.tabshell.core.registry;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.Name;
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.material.menu.MenuGroupName;
-import com.techsenger.tabshell.material.menu.MenuName;
+import com.techsenger.tabshell.core.CoreComponents;
+import com.techsenger.tabshell.core.menu.MainMenu;
 import com.techsenger.tabshell.material.menu.ManagedMenu;
 import com.techsenger.tabshell.material.menu.ManagedMenuGroup;
 import com.techsenger.tabshell.material.menu.ManagedMenuItem;
+import com.techsenger.tabshell.material.menu.MenuGroupName;
+import com.techsenger.tabshell.material.menu.MenuName;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
- * This registry is used if component has a MenuBar/ToolBar/ContextMenu that can contain items that are added by other
- * components. It is supposed that elements can be added in any order (children before parents and vice versa).
- *
- * <p>MenuBar -> Menu -> Group -> Item
- * MenuBar -> Menu -> Group -> Menu -> Group ...
+ * Registry for UI controls such as menus, toolbars, context menus, etc. Allows components to contribute UI
+ * elements to other components' slots. Each registration returns a {@link Registration} that can be used to undo
+ * the extension.
  *
  * @author Pavel Castornii
  */
-public class ControlRegistry {
+public class ControlRegistry implements ExtensionRegistry {
 
+    /**
+     * Represents a handle for a registered contribution. The holder of this handle is the only one who can undo
+     * the registration.
+     */
     public interface Registration {
 
+        /**
+         * Removes this registration from the registry.
+         */
         void unregister();
     }
 
-    public static class MainMenuRegistry {
+    /**
+     * Provides access to menu registrations for a specific component slot. Instances are lightweight — a new
+     * instance is created on each call to {@link ControlRegistry#component(ComponentName)}.
+     */
+    public class ComponentMenuRegistry {
 
-        private final Set<AbstractMenuRegistration<?, ?>> registrations = ConcurrentHashMap.newKeySet();
+        private final ComponentName componentName;
+
+        private ComponentMenuRegistry(ComponentName componentName) {
+            this.componentName = componentName;
+        }
 
         /**
-         * Registers a menu in the specified group. Note - there can be only one menu bar in the component.
+         * Registers a menu in the specified group.
          *
-         * @param groupName the name of the group that this menu will belong to. Null for root menus in the MenuBar
-         * @param factory
-         * @return
+         * @param groupName the name of the group this menu will belong to, never {@code null}.
+         * @param factory   the factory used to create the menu
+         * @return a {@link Registration} that can be used to unregister this contribution
          */
-        public Registration registerMenu(MenuGroupName groupName, ControlFactory<ShellFxView<?>, ManagedMenu> factory) {
+        public Registration registerMenu(MenuGroupName groupName,
+                ControlFactory<? extends ParentFxView<?>, ManagedMenu> factory) {
+            Objects.requireNonNull(groupName, "Group can't be null");
+            var menus = getMenusFor(componentName);
             var reg = new MenuRegistration<>(groupName, factory);
-            registrations.add(reg);
-            reg.setUnregister(() -> {
-                registrations.remove(reg);
-            });
+            menus.add(reg);
+            reg.setUnregister(() -> menus.remove(reg));
             return reg;
         }
 
         /**
-         * Registers a menu group.
+         * Registers a menu as a root menu, without a group.
          *
-         * @param menuName the name of the menu this group will belong to.
-         * @param factory
-         * @return
+         * @param factory the factory used to create the menu
+         * @return a {@link Registration} that can be used to unregister this contribution
+         */
+        public Registration registerMenu(ControlFactory<? extends ParentFxView<?>, ManagedMenu> factory) {
+            var menus = getMenusFor(componentName);
+            var reg = new MenuRegistration<>(null, factory);
+            menus.add(reg);
+            reg.setUnregister(() -> menus.remove(reg));
+            return reg;
+        }
+
+        /**
+         * Registers a menu group in the specified menu.
+         *
+         * @param menuName the name of the menu this group will belong to
+         * @param factory  the factory used to create the menu group
+         * @return a {@link Registration} that can be used to unregister this contribution
          */
         public Registration registerMenuGroup(MenuName menuName,
-                ControlFactory<ShellFxView<?>, ManagedMenuGroup> factory) {
+                ControlFactory<? extends ParentFxView<?>, ManagedMenuGroup> factory) {
+            var menus = getMenusFor(componentName);
             var reg = new MenuGroupRegistration<>(menuName, factory);
-            registrations.add(reg);
-            reg.setUnregister(() -> registrations.remove(reg));
+            menus.add(reg);
+            reg.setUnregister(() -> menus.remove(reg));
             return reg;
         }
 
         /**
          * Registers a menu item in the specified group.
          *
-         * @param groupName
-         * @param factory
-         * @return
+         * @param groupName the name of the group this item will belong to
+         * @param factory   the factory used to create the menu item
+         * @return a {@link Registration} that can be used to unregister this contribution
          */
         public Registration registerMenuItem(MenuGroupName groupName,
-                ControlFactory<ShellFxView<?>, ManagedMenuItem> factory) {
+                ControlFactory<? extends ParentFxView<?>, ManagedMenuItem> factory) {
+            var menus = getMenusFor(componentName);
             var reg = new MenuItemRegistration<>(groupName, factory);
-            registrations.add(reg);
-            reg.setUnregister(() -> registrations.remove(reg));
+            menus.add(reg);
+            reg.setUnregister(() -> menus.remove(reg));
             return reg;
         }
+    }
 
-        Set<AbstractMenuRegistration<?, ?>> getRegistrations() {
-            return registrations;
+    /**
+     * Provides convenient access to the application main menu registrations. This is an alias for
+     * {@code component(CoreComponents.SHELL)} that scopes registrations to {@link MainMenu#GROUP} by
+     * default.
+     */
+    public final class MainMenuRegistry extends ComponentMenuRegistry {
+
+        private MainMenuRegistry() {
+            super(CoreComponents.SHELL);
+        }
+
+        /**
+         * Registers a menu in {@link MainMenu#GROUP}.
+         *
+         * @param factory the factory used to create the menu
+         * @return a {@link Registration} that can be used to unregister this contribution
+         */
+        @Override
+        public Registration registerMenu(ControlFactory<? extends ParentFxView<?>, ManagedMenu> factory) {
+            return registerMenu(MainMenu.GROUP, factory);
         }
     }
 
     private final MainMenuRegistry mainMenu = new MainMenuRegistry();
 
-    private final Map<ComponentName, Set<AbstractMenuRegistration<?, ?>>> registrationsByComponentName =
+    private final Map<ComponentName, Set<AbstractMenuRegistration<?, ?>>> menuRegistrationsByComponent =
             new ConcurrentHashMap<>();
 
+    /**
+     * Returns the registry scoped to the application main menu. Equivalent to calling
+     * {@code component(CoreComponents.SHELL)} but with {@link MainMenu#GROUP} as the default group for
+     * {@link ComponentMenuRegistry#registerMenu(ControlFactory)}.
+     *
+     * @return the main menu registry
+     */
     public MainMenuRegistry mainMenu() {
         return mainMenu;
     }
 
     /**
-     * Registers a menu in the specified group. Note - there can be only one menu bar in the component.
+     * Returns a registry view scoped to the component with the given name. Each call returns a new lightweight
+     * instance that delegates to the shared internal state of this registry.
      *
-     * @param componentName the name of the owner of the menu
-     * @param groupName the name of the group that this menu will belong to. Null for root menus in the MenuBar
-     * @param factory
-     * @return
+     * @param componentName the name of the target component
+     * @return a registry scoped to the specified component
      */
-    public Registration registerMenu(ComponentName componentName, MenuGroupName groupName,
-            ControlFactory<ParentFxView<?>, ManagedMenu> factory) {
-        var menus = getMenusFor(componentName);
-        var reg = new MenuRegistration<>(groupName, factory);
-        menus.add(reg);
-        reg.setUnregister(() -> {
-            menus.remove(reg);
-        });
-        return reg;
+    public ComponentMenuRegistry component(ComponentName componentName) {
+        return new ComponentMenuRegistry(componentName);
     }
 
     /**
-     * Registers a menu group.
+     * Returns an unmodifiable snapshot of all registrations grouped by component name. Neither the map nor its value
+     * sets can be modified through the returned view.
      *
-     * @param componentName the name of the owner of the menu
-     * @param menuName the name of the menu this group will belong to.
-     * @param factory
-     * @return
-     */
-    public Registration registerMenuGroup(ComponentName componentName, MenuName menuName,
-            ControlFactory<ParentFxView<?>, ManagedMenuGroup> factory) {
-        var menus = getMenusFor(componentName);
-        var reg = new MenuGroupRegistration<>(menuName, factory);
-        menus.add(reg);
-        reg.setUnregister(() -> menus.remove(reg));
-        return reg;
-    }
-
-    /**
-     * Registers a menu item in the specified group.
+     * <p><b>Note:</b> This method creates a new map on every call and should not be invoked frequently or in
+     * performance-sensitive code paths.
      *
-     * @param componentName the name of the owner of the menu
-     * @param groupName
-     * @param factory
-     * @return
+     * @return an unmodifiable map of component names to their sets of registrations
      */
-    public Registration registerMenuItem(ComponentName componentName,
-            MenuGroupName groupName, ControlFactory<? extends ParentFxView<?>, ManagedMenuItem> factory) {
-        var menus = getMenusFor(componentName);
-        var reg = new MenuItemRegistration<>(groupName, factory);
-        menus.add(reg);
-        reg.setUnregister(() -> menus.remove(reg));
-        return reg;
-    }
-
-    /**
-     * Removes all registrations for specific component.
-     *
-     * @param componentKey
-     */
-    public void removeRegistrations(ComponentName componentKey) {
-        this.registrationsByComponentName.remove(componentKey);
-    }
-
-    Set<AbstractMenuRegistration<?, ?>> getBarMenuRegistrations(Name name) {
-        return registrationsByComponentName.get(name);
+    public @Unmodifiable Map<ComponentName, Set<AbstractMenuRegistration<?, ?>>> getMenuRegistrations() {
+        return Collections.unmodifiableMap(
+            menuRegistrationsByComponent.entrySet().stream()
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    e -> Collections.unmodifiableSet(e.getValue()),
+                    (a, b) -> a,
+                    LinkedHashMap::new
+                ))
+        );
     }
 
     private Set<AbstractMenuRegistration<?, ?>> getMenusFor(ComponentName componentName) {
-        return registrationsByComponentName.computeIfAbsent(
-                componentName,
-                k -> ConcurrentHashMap.newKeySet());
+        return menuRegistrationsByComponent.computeIfAbsent(componentName, k -> ConcurrentHashMap.newKeySet());
     }
 }
