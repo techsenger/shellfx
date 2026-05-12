@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.DefaultShellContext;
 import com.techsenger.tabshell.core.DefaultShellFxView;
 import com.techsenger.tabshell.core.DefaultShellPresenter;
 import com.techsenger.tabshell.core.area.AreaFxView;
+import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.demo.history.DemoHistoryManager;
 import com.techsenger.tabshell.demo.menu.ExtraMenuRegistrar;
 import com.techsenger.tabshell.demo.menu.FileMenuRegistrar;
@@ -82,7 +83,7 @@ public class Demo extends Application {
 
     private void createShell(WorkspaceType workspaceType) {
         //creating shell
-        var shellView = new DefaultShellFxView<>(this, IconStylesheetFactory.forAll());
+        var shellView = new DefaultShellFxView<>(this, IconStylesheetFactory.forAll(), new ControlRegistry());
         var context = new DefaultShellContext(DemoSettings.createSettings(),
                 new DemoHistoryManager(), getHostServices());
         var shellPresenter = new DefaultShellPresenter<>(shellView, context);

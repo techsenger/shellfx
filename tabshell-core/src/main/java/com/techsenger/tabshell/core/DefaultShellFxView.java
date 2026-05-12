@@ -21,8 +21,8 @@ import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
-import com.techsenger.tabshell.core.registry.MenuBuilder;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.core.registry.MenuBuilder;
 import com.techsenger.tabshell.core.window.AbstractWindowFxView;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
@@ -155,17 +155,19 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
 
     private final MenuManager menuManager;
 
-    private final ControlRegistry controlRegistry = new ControlRegistry();
+    private final ControlRegistry controlRegistry;
 
-    public DefaultShellFxView(Application application, List<Stylesheet> stylesheets) {
-        this(application, new Stage(), stylesheets);
+    public DefaultShellFxView(Application application, List<Stylesheet> stylesheets, ControlRegistry controlRegistry) {
+        this(application, new Stage(), stylesheets, controlRegistry);
     }
 
-    public DefaultShellFxView(Application application, Stage stage, List<Stylesheet> stylesheets) {
+    public DefaultShellFxView(Application application, Stage stage, List<Stylesheet> stylesheets,
+            ControlRegistry controlRegistry) {
         super(stage, stylesheets);
         Objects.requireNonNull(application, "Application can't be null");
         this.application = application;
         this.menuManager = new MenuManager(this, this.menuBar);
+        this.controlRegistry = controlRegistry;
     }
 
     @Override
