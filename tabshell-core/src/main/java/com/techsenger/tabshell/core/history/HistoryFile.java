@@ -18,7 +18,9 @@ package com.techsenger.tabshell.core.history;
 
 import com.techsenger.patternfx.core.ComponentHistory;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -74,7 +76,7 @@ public class HistoryFile {
         this.path = path;
     }
 
-    public void read() {
+    public void read() throws FileNotFoundException, IOException, ClassNotFoundException {
         var file = path.toFile();
         if (!file.exists()) {
             logger.info("No history data file at {}", path);
@@ -87,18 +89,14 @@ public class HistoryFile {
             ObjectInputStream s = new ObjectInputStream(f)) {
             this.data = (HistoryData) s.readObject();
             logger.debug("Read from {} history data: {}", path, this.data);
-        } catch (Exception ex) {
-            logger.error("Error reading history data from {}", path, ex);
         }
     }
 
-    public void write() {
+    public void write() throws FileNotFoundException, IOException {
         try (FileOutputStream f = new FileOutputStream(path.toFile());
              ObjectOutputStream s = new ObjectOutputStream(f)) {
             s.writeObject(this.data);
             logger.debug("Wrote to {} history data: {}", path, this.data);
-        } catch (Exception ex) {
-            logger.error("Error writing history data to {}", path, ex);
         }
     }
 
