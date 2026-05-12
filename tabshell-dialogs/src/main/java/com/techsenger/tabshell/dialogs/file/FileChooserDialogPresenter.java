@@ -326,6 +326,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         updateFiles(null);
         setRightButtons(FileChooserButtons.CANCEL, FileChooserButtons.OK);
         setButtonDefault(FileChooserButtons.OK, true);
+        setMinWidth(600);
+        setMinHeight(400);
     }
 
     protected URI getDirectory() {

@@ -59,6 +59,8 @@ public class PageDialogPresenter extends AbstractDialogPresenter<PageDialogView>
         setResultAction((button) -> requestClose());
         setRightButtons(PageDialogButtons.OK);
         setButtonDefault(PageDialogButtons.OK, true);
+        setMinWidth(500);
+        setMinHeight(400);
     }
 
     @Override

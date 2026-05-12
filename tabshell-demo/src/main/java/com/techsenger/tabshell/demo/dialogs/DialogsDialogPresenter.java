@@ -96,14 +96,21 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         super.postInitialize();
         var view = getView();
         setResizable(true);
-        setPrefWidth(600);
-        setPrefHeight(300);
         setTitle("Dialogs");
         view.setDialogTypes(Arrays.asList(DialogType.values()));
         setResultAction((result) -> {
             requestClose();
         });
         setRightButtons(DialogsDialogButtons.CLOSE);
+        setMinWidth(400);
+        setMinHeight(200);
+    }
+
+    @Override
+    protected void applyAppearance() {
+        super.applyAppearance();
+        setPrefWidth(600);
+        setPrefHeight(300);
     }
 
     protected void onDialogClick(DialogType type) {

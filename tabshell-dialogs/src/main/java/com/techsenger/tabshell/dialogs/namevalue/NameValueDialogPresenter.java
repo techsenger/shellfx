@@ -105,5 +105,7 @@ public class NameValueDialogPresenter<V extends NameValueDialogView> extends Abs
     protected void postInitialize() {
         super.postInitialize();
         setRightButtons(NameValueButtons.CANCEL, NameValueButtons.OK);
+        setMinWidth(400);
+        setMinHeight(250);
     }
 }
