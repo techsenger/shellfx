@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Map;
@@ -70,10 +71,13 @@ public class HistoryFile {
 
     private final Path path;
 
+    private final ClassLoader classLoader;
+
     private HistoryData data;
 
-    public HistoryFile(Path path) {
+    public HistoryFile(Path path, ClassLoader classLoader) {
         this.path = path;
+        this.classLoader = classLoader;
     }
 
     public void read() throws FileNotFoundException, IOException, ClassNotFoundException {
@@ -86,7 +90,13 @@ public class HistoryFile {
             return;
         }
         try (FileInputStream f = new FileInputStream(file);
-            ObjectInputStream s = new ObjectInputStream(f)) {
+            ObjectInputStream s = new ObjectInputStream(f) {
+            @Override
+            protected Class<?> resolveClass(ObjectStreamClass desc)
+                    throws IOException, ClassNotFoundException {
+                return Class.forName(desc.getName(), false, classLoader);
+            }
+        }) {
             this.data = (HistoryData) s.readObject();
             logger.debug("Read from {} history data: {}", path, this.data);
         }
