@@ -20,7 +20,7 @@ package com.techsenger.tabshell.core.settings;
  *
  * @author Pavel Castornii
  */
-public interface Settings {
+public interface ShellSettings {
 
     AppearanceSettings getAppearance();
 }

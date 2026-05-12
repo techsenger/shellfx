@@ -21,8 +21,8 @@ import com.techsenger.connectorfx.Highlight;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.Settings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
+import com.techsenger.tabshell.core.settings.ShellSettings;
 import static com.techsenger.tabshell.devtools.DevToolsHostType.WINDOW;
 import com.techsenger.tabshell.layout.dockhost.TabDockPresenter;
 import com.techsenger.tabshell.material.theme.Theme;
@@ -36,7 +36,7 @@ import java.util.List;
 public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
         extends TabDockPresenter<V> implements DevToolsTabDockPort {
 
-    private final Settings settings;
+    private final ShellSettings settings;
 
     private final SettingsSubscription themeSubscription;
 
@@ -46,7 +46,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
 
     private DevToolsHostType hostType;
 
-    public DevToolsTabDockPresenter(V view, DevToolsHostType hostType, Settings settings,
+    public DevToolsTabDockPresenter(V view, DevToolsHostType hostType, ShellSettings settings,
             HistoryManager historyManager) {
         super(view);
         this.hostType = hostType;

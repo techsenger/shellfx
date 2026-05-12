@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.Settings;
 import javafx.application.HostServices;
+import com.techsenger.tabshell.core.settings.ShellSettings;
 
 /**
  *
@@ -26,20 +26,20 @@ import javafx.application.HostServices;
  */
 public class DefaultShellContext implements ShellContext {
 
-    private final Settings settings;
+    private final ShellSettings settings;
 
     private final HistoryManager historyManager;
 
     private final HostServices hostServices;
 
-    public DefaultShellContext(Settings settings, HistoryManager historyManager, HostServices hostServices) {
+    public DefaultShellContext(ShellSettings settings, HistoryManager historyManager, HostServices hostServices) {
         this.settings = settings;
         this.historyManager = historyManager;
         this.hostServices = hostServices;
     }
 
     @Override
-    public Settings getSettings() {
+    public ShellSettings getSettings() {
         return settings;
     }
 
