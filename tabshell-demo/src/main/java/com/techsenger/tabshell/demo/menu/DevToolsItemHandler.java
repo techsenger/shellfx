@@ -77,7 +77,8 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
 
     protected DevToolsWindowFxView<?> createDevToolsWindow() {
         var view = new DevToolsWindowFxView<>(getComponent(), IconStylesheetFactory.forAll());
-        var presenter = new DevToolsWindowPresenter<>(view, getComponent().getPresenter().getContext());
+        var context = getComponent().getPresenter().getContext();
+        var presenter = new DevToolsWindowPresenter<>(view, context.getSettings(), context.getHistoryManager());
         return view;
     }
 

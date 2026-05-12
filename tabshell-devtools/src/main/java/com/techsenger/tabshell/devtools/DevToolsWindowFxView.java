@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.devtools;
 
 import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.window.AbstractWindowFxView;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
@@ -36,6 +37,8 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
 
         private DevToolsTabDockFxView<?> tabDock;
 
+        private HistoryManager historyManager;
+
         public void addTabDock() {
             var tabDock = createTabDock();
             tabDock.getPresenter().initialize();
@@ -47,11 +50,16 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
             tabDock.getPresenter().setHostType(DevToolsHostType.WINDOW);
         }
 
+        @Override
+        public void setHistoryManager(HistoryManager historyManager) {
+            this.historyManager = historyManager;
+        }
+
         protected DevToolsTabDockFxView<?> createTabDock() {
             var view = new DevToolsTabDockFxView<>(this.view.shell, this.view);
             var context = this.view.shell.getPresenter().getContext();
             var presenter = new DevToolsTabDockPresenter<>(view, DevToolsHostType.WINDOW,
-                    context.getSettings(), context.getHistoryManager());
+                    context.getSettings(), historyManager);
             return view;
         }
 

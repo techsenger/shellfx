@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.devtools;
 
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.window.WindowView;
 
 /**
@@ -23,6 +24,11 @@ import com.techsenger.tabshell.core.window.WindowView;
  * @author Pavel Castornii
  */
 public interface DevToolsWindowView extends WindowView {
+
+    interface Composer extends WindowView.Composer {
+
+        void setHistoryManager(HistoryManager historyManager);
+    }
 
     @Override
     Composer getComposer();
