@@ -105,4 +105,8 @@ public class HistoryFile {
     public HistoryData getData() {
         return data;
     }
+
+    public Path getPath() {
+        return path;
+    }
 }
