@@ -43,4 +43,6 @@ public interface DevToolsIcons {
     StyleFontIcon CLEAR = new StyleFontIcon("clear-icon");
 
     StyleFontIcon REFRESH = new StyleFontIcon("refresh-icon");
+
+    StyleFontIcon TOOLS = new StyleFontIcon("tools-icon");
 }

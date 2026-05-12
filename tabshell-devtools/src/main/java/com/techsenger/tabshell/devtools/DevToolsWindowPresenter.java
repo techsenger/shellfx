@@ -21,6 +21,7 @@ import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.ShellSettings;
 import com.techsenger.tabshell.core.window.AbstractWindowPresenter;
+import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 
 /**
  *
@@ -45,6 +46,7 @@ public class DevToolsWindowPresenter<V extends DevToolsWindowView> extends Abstr
     protected void postInitialize() {
         super.postInitialize();
         setTitle("DevTools");
+        setIcon(DevToolsIcons.TOOLS);
     }
 
     @Override
