@@ -24,4 +24,10 @@ import com.techsenger.tabshell.core.popup.PopupView;
  */
 public interface DialogView extends PopupView, WriteOnlyDialog {
 
+    interface Composer extends PopupView.Composer {
+
+    }
+
+    @Override
+    Composer getComposer();
 }
