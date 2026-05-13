@@ -222,7 +222,7 @@
 }
 
 /*
-    Menu item.
+    Menu item
 */
 .menu-item {
     -fx-padding: 0.3em;
@@ -234,7 +234,6 @@
 .menu-button.compact > .label {
   -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 }
-
 
 /*
     TextField

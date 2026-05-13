@@ -126,4 +126,10 @@ public interface StyleClasses {
      * This style class is used in atlantafx.
      */
     String NO_BORDER = "edge-to-edge";
+
+    /**
+     * This class adds readonly styles for controls that fully or partially do not support this property
+     * (e.g. CheckBox).
+     */
+    String READ_ONLY = "read-only";
 }
