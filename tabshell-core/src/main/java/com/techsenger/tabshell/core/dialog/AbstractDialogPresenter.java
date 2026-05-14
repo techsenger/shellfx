@@ -111,6 +111,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         return active;
     }
 
+    @Override
     public void setActive(boolean active) {
         this.active = active;
         getView().setActive(active);
@@ -121,6 +122,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         return minWidth;
     }
 
+    @Override
     public void setMinWidth(double minWidth) {
         this.minWidth = minWidth;
         getView().setMinWidth(minWidth);
@@ -131,6 +133,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         return minHeight;
     }
 
+    @Override
     public void setMinHeight(double minHeight) {
         this.minHeight = minHeight;
         getView().setMinHeight(minHeight);
@@ -141,6 +144,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         return maxWidth;
     }
 
+    @Override
     public void setMaxWidth(double maxWidth) {
         this.maxWidth = maxWidth;
         getView().setMaxWidth(maxWidth);
@@ -151,6 +155,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         return maxHeight;
     }
 
+    @Override
     public void setMaxHeight(double maxHeight) {
         this.maxHeight = maxHeight;
         getView().setMaxHeight(maxHeight);
@@ -161,6 +166,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         return outOfBoundsAllowed;
     }
 
+    @Override
     public void setOutOfBoundsAllowed(boolean outOfBoundsAllowed) {
         this.outOfBoundsAllowed = outOfBoundsAllowed;
         getView().setOutOfBoundsAllowed(outOfBoundsAllowed);
@@ -171,6 +177,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         return resizable;
     }
 
+    @Override
     public void setResizable(boolean resizable) {
         this.resizable = resizable;
         getView().setResizable(resizable);

@@ -55,6 +55,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 /**
@@ -296,6 +297,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         super.getNode().getStyleClass().addAll("wrapper", StyleClasses.CORNERS_BOTTOM);
         VBox.setVgrow(super.getNode(), Priority.ALWAYS);
         this.dialogBox.getStyleClass().addAll("dialog-box", StyleClasses.CORNERS_ALL, StyleClasses.SHADOW);
+        dialogBox.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         this.resizer = new RegionResizer(minWidth, minHeight, maxWidth, maxHeight,
                 (e) -> {
                     var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_STARTED, e);

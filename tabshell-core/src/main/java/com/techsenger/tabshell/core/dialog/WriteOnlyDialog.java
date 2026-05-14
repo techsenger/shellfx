@@ -64,6 +64,24 @@ public interface WriteOnlyDialog {
     void setMaxHeight(double value);
 
     /**
+     * Sets the pref width of the dialog. This is optional — by default, {@code dialogBox} and {@code contentBox}
+     * have {@code minSize} set to {@link Region#USE_PREF_SIZE}, so the dialog will size itself based on its content
+     * automatically.
+     *
+     * @param value the pref width in pixels
+     */
+    void setPrefWidth(double value);
+
+    /**
+     * Sets the pref height of the dialog. This is optional — by default, {@code dialogBox} and {@code contentBox}
+     * have {@code minSize} set to {@link Region#USE_PREF_SIZE}, so the dialog will size itself based on its content
+     * automatically.
+     *
+     * @param value the pref height in pixels
+     */
+    void setPrefHeight(double value);
+
+    /**
      * Enables or disables the ability to move the dialog outside the bounds of its parent container.
      * <p>
      * When enabled, only a minimum top constraint may be applied.

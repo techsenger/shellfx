@@ -23,6 +23,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Cursor;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -104,6 +105,7 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
         waitingPane.setMouseTransparent(false);
         waitingPane.setCursor(Cursor.WAIT);
 
+        contentBox.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         VBox.setVgrow(contentBox, Priority.ALWAYS);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
     }
