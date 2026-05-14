@@ -31,8 +31,6 @@ public interface FindBaseView extends AreaView {
 
     void setNotFound(boolean value);
 
-    void setupMatchCase();
-
     void setMatchCaseSelected(boolean value);
 
     void setMatchCaseDisabled(boolean value);
@@ -43,27 +41,17 @@ public interface FindBaseView extends AreaView {
 
     void setClearVisible(boolean visible);
 
-    void setupFindNext();
-
     void setFindNextDisabled(boolean value);
 
-    void setupFindPrevious();
-
     void setFindPreviousDisabled(boolean value);
-
-    void setupWholeWord();
 
     void setWholeWordSelected(boolean value);
 
     void setWholeWordDisabled(boolean value);
 
-    void setupRegExp();
-
     void setRegExpSelected(boolean value);
 
     void setRegExpDisabled(boolean value);
-
-    void setupHighlight();
 
     void setHighlightSelected(boolean value);
 

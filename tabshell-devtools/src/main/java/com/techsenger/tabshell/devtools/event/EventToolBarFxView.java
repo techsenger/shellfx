@@ -63,7 +63,7 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?>> extends Tool
     private final Label statisticsDataLabel = new Label();
 
     public EventToolBarFxView() {
-        super("Message");
+        super("Message", false);
     }
 
     @Override
@@ -99,13 +99,13 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?>> extends Tool
     @Override
     protected void build() {
         super.build();
-        this.recordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON);
+        this.recordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
         this.recordButton.setTooltip(new Tooltip("Start/Stop"));
-        this.clearButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON);
+        this.clearButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
         this.clearButton.setTooltip(new Tooltip("Clear"));
-        this.filterButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON);
+        this.filterButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
         this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
-        this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON);
+        this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
 
         // selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());

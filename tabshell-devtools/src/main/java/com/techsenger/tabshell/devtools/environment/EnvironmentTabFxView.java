@@ -26,7 +26,6 @@ import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogFxView;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPresenter;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.find.FindFeature;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,9 +76,8 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
         }
 
         protected ToolBarFxView<?> createToolBar() {
-            var view = new ToolBarFxView<>("Property");
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new ToolBarAwarePortImpl(),
-                    FindFeature.MATCH_CASE);
+            var view = new ToolBarFxView<>("Property", false);
+            var presenter = new ToolBarPresenter<>(view, getPresenter().new ToolBarAwarePortImpl());
             return view;
         }
 

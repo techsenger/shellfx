@@ -34,7 +34,6 @@ import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.find.FindFeature;
 import com.techsenger.toolkit.fx.utils.TreeViewUtils;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -328,16 +327,14 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         }
 
         protected ToolBarFxView<?> createNodeToolBar() {
-            var view = new ToolBarFxView<>("NodeClass / StyleClass / ID");
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new NodeToolBarAwarePort(),
-                    FindFeature.FIND_NEXT, FindFeature.FIND_PREVIOUS, FindFeature.MATCH_CASE);
+            var view = new ToolBarFxView<>("NodeClass / StyleClass / ID", true);
+            var presenter = new ToolBarPresenter<>(view, getPresenter().new NodeToolBarAwarePort());
             return view;
         }
 
         protected ToolBarFxView<?> createPropertyToolBar() {
-            var view = new ToolBarFxView<>("Property");
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new PropertyToolBarAwarePort(),
-                    FindFeature.MATCH_CASE);
+            var view = new ToolBarFxView<>("Property", false);
+            var presenter = new ToolBarPresenter<>(view, getPresenter().new PropertyToolBarAwarePort());
             return view;
         }
 

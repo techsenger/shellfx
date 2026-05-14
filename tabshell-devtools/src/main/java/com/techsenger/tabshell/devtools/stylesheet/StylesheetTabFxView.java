@@ -22,7 +22,6 @@ import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.find.FindFeature;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,9 +56,8 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?>> extends Ab
         }
 
         protected ToolBarFxView<?> createToolBar() {
-            var view = new ToolBarFxView<>("NodeClass / StyleClass / ID");
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new ToolBarAwarePortImpl(),
-                    FindFeature.MATCH_CASE);
+            var view = new ToolBarFxView<>("NodeClass / StyleClass / ID", false);
+            var presenter = new ToolBarPresenter<>(view, getPresenter().new ToolBarAwarePortImpl());
             return view;
         }
 

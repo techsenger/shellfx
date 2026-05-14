@@ -21,7 +21,6 @@ import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.shared.find.AbstractFindBaseFxView;
-import com.techsenger.tabshell.shared.find.FindFeature;
 import com.techsenger.tabshell.shared.find.FindTrigger;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -41,9 +40,12 @@ public class ToolBarFxView<P extends ToolBarPresenter<?>> extends AbstractFindBa
 
     private final ToolBar toolBar = new ToolBar();
 
-    public ToolBarFxView(String prompt) {
+    private final boolean findNavigation;
+
+    public ToolBarFxView(String prompt, boolean findNavigation) {
         super(FindTrigger.ON_TYPE);
         getFindComboBox().setPromptText(prompt);
+        this.findNavigation = findNavigation;
     }
 
     @Override
@@ -60,12 +62,15 @@ public class ToolBarFxView<P extends ToolBarPresenter<?>> extends AbstractFindBa
         getFindComboBox().getStyleClass().add(StyleClasses.COMPACT);
         getFindRightBox().getStyleClass().add(StyleClasses.COMPACT);
 
-        this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON);
+        getFindNextButton().getStyleClass().add(StyleClasses.COMPACT);
+        getFindPreviousButton().getStyleClass().add(StyleClasses.COMPACT);
+        getMatchCaseButton().getStyleClass().add(StyleClasses.COMPACT);
+        this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
         this.refreshButton.setTooltip(new Tooltip("Refresh"));
 
-        this.toolBar.getStyleClass().add(Styles.DENSE);
+        this.toolBar.getStyleClass().add(StyleClasses.COMPACT);
         this.toolBar.getItems().addAll(getFindComboBoxWrapper());
-        if (getPresenter().getFeatures().contains(FindFeature.FIND_PREVIOUS)) {
+        if (this.findNavigation) {
             this.toolBar.getItems().addAll(getFindPreviousButton(), getFindNextButton());
         }
         this.toolBar.getItems().addAll(getMatchCaseButton(), refreshButton);

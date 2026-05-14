@@ -70,6 +70,18 @@ public interface StyleClasses {
     String MONOSPACE = "monospace";
 
     /**
+     * Represents a larger spacing mode with increased padding and margins. Typically used to improve emphasis,
+     * readability, or touch accessibility.
+     */
+    String LARGE = "large";
+
+    /**
+     * Represents the largest spacing mode with maximum padding and margins. Typically used for highly prominent or
+     * touch-focused UI elements.
+     */
+    String HUGE = "huge";
+
+    /**
      * Represents a moderately dense spacing mode. Equivalent to the {@code dense} style class in Atlantafx Styles.
      */
     String DENSE = "dense";

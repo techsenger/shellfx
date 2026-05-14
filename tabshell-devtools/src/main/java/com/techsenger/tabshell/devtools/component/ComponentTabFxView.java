@@ -36,7 +36,6 @@ import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPresenter;
 import com.techsenger.tabshell.material.layout.LabelHContainer;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.shared.find.FindFeature;
 import com.techsenger.toolkit.fx.utils.TreeViewUtils;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -233,16 +232,14 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
         }
 
         protected ToolBarFxView<?> createComponentToolBar() {
-            var view = new ToolBarFxView<>("Name / UUID");
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new ComponentToolBarAwarePort(),
-                    FindFeature.MATCH_CASE, FindFeature.FIND_NEXT, FindFeature.FIND_PREVIOUS);
+            var view = new ToolBarFxView<>("Name / UUID", true);
+            var presenter = new ToolBarPresenter<>(view, getPresenter().new ComponentToolBarAwarePort());
             return view;
         }
 
         protected ToolBarFxView<?> createInspectorToolBar() {
-            var view = new ToolBarFxView<>("Property / Class / Interface");
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new InspectorToolBarAwarePort(),
-                    FindFeature.MATCH_CASE);
+            var view = new ToolBarFxView<>("Property / Class / Interface", false);
+            var presenter = new ToolBarPresenter<>(view, getPresenter().new InspectorToolBarAwarePort());
             return view;
         }
 

@@ -67,7 +67,44 @@
     container there.
 */
 
-/***************** iconed buttons ******************/
+/***************** huge iconed buttons ******************/
+.button.iconed.huge,
+.toggle-button.iconed.huge {
+    -fx-padding: 0;
+    -fx-min-height: 2.6em;
+    -fx-max-height: 2.6em;
+    -fx-pref-height: 2.6em;
+    -fx-min-width: 2.6em;
+    -fx-max-width: 2.6em;
+    -fx-pref-width: 2.6em;
+}
+
+.button.huge .font-icon-view,
+.toggle-button.huge .font-icon-view {
+    -fx-padding: 0;
+    -fx-font-size: 2em;
+}
+
+/***************** large iconed buttons ******************/
+.button.iconed.large,
+.toggle-button.iconed.large {
+    -fx-padding: 0;
+    -fx-min-height: 2.35em;
+    -fx-max-height: 2.35em;
+    -fx-pref-height: 2.35em;
+    -fx-min-width: 2.35em;
+    -fx-max-width: 2.35em;
+    -fx-pref-width: 2.35em;
+    -fx-font-size: 1em; /* atltantafx also has large  style class */
+}
+
+.button.large .font-icon-view,
+.toggle-button.large .font-icon-view {
+    -fx-padding: 0;
+    -fx-font-size: 1.7em;
+}
+
+/***************** default iconed buttons ******************/
 .button.iconed,
 .toggle-button.iconed {
     -fx-padding: 0;
@@ -99,10 +136,11 @@
 
 .button.dense .font-icon-view,
 .toggle-button.dense .font-icon-view { /* see .font-icon-view.dense {} */
+    -fx-padding: 0;
     -fx-font-size: 1.3em;
 }
 
-/***************** extra dense iconed buttons ******************/
+/***************** compact iconed buttons ******************/
 
 .button.iconed.compact,
 .toggle-button.iconed.compact {
@@ -117,7 +155,8 @@
 
 .button.compact .font-icon-view,
 .toggle-button.compact .font-icon-view { /* see .font-icon-view.compact {} */
-    -fx-font-size: 1.2em;
+    -fx-padding: 0;
+    -fx-font-size: 1.25em;
 }
 
 /***************** cross button ******************/
@@ -287,54 +326,14 @@
     -fx-spacing: 6px;
 }
 
-.tool-bar .button,
-.tool-bar .toggle-button {
-    -fx-focus-traversable: false;
-    -fx-padding: 0 0.65em 0 0.65em;
-    -fx-max-height: 2.1em;
-    -fx-min-height: 2.1em;
-    -fx-pref-height: 2.1em;
-}
-
-.tool-bar .button.iconed,
-.tool-bar .toggle-button.iconed {
-    -fx-padding: 0;
-    -fx-max-width: 2.1em;
-    -fx-min-width: 2.1em;
-    -fx-pref-width: 2.1em;
-}
-
-.tool-bar .button .font-icon-view,
-.tool-bar .toggle-button .font-icon-view {
-    -fx-padding: 0;
-    -fx-font-size: 1.65em;
-}
-
 .tool-bar .separator:vertical {
     -fx-padding: 2;
 }
 
-.tool-bar.dense {
+.tool-bar.compact {
     -fx-min-height: -1;
     -fx-max-height: -1;
     -fx-padding: 1 4 2 4; /* 3 = 2(padding) + 1(bg-insetts) */
-}
-
-.tool-bar.dense .button.iconed,
-.tool-bar.dense .toggle-button.iconed {
-    -fx-padding: 0;
-    -fx-max-width: 1.5em;
-    -fx-min-width: 1.5em;
-    -fx-pref-width: 1.5em;
-    -fx-max-height: 1.5em;
-    -fx-min-height: 1.5em;
-    -fx-pref-height: 1.5em;
-}
-
-.tool-bar.dense .button .font-icon-view,
-.tool-bar.dense .toggle-button .font-icon-view {
-    -fx-padding: 0;
-    -fx-font-size: 1.4em;
 }
 
 /*
@@ -377,6 +376,12 @@
 .combo-box.no-selected .combo-box-popup .list-cell:selected {
     -fx-background-color: -color-bg-default;
     -fx-text-fill: -color-fg-default;
+}
+
+.combo-box.compact {
+    -fx-min-height: 1.6em;
+    -fx-max-height: 1.6em;
+    -fx-pref-height: 1.6em;
 }
 
 .combo-box.compact > .combo-box {

@@ -58,17 +58,17 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
 
     private final StackPane findComboBoxWrapper = new StackPane(findComboBox, findRightBox);
 
-    private ToggleButton matchCaseButton;
+    private ToggleButton matchCaseButton = new ToggleButton(null, new FontIconView(SharedIcons.MATCH_CASE));
 
-    private Button findPreviousButton;
+    private Button findPreviousButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_UP));
 
-    private Button findNextButton;
+    private Button findNextButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_DOWN));
 
-    private ToggleButton wholeWordButton;
+    private ToggleButton wholeWordButton = new ToggleButton(null, new FontIconView(SharedIcons.WHOLE_WORD));
 
-    private ToggleButton regExpButton;
+    private ToggleButton regExpButton = new ToggleButton(null, new FontIconView(SharedIcons.REG_EXP));
 
-    private ToggleButton highlightButton;
+    private ToggleButton highlightButton = new ToggleButton(null, new FontIconView(SharedIcons.HIGHLIGHT));
 
     private final BooleanProperty notFound = new SimpleBooleanProperty();
 
@@ -101,16 +101,6 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     @Override
     public void setFindText(String text) {
         this.findComboBox.getEditor().textProperty().set(text);
-    }
-
-    @Override
-    public void setupMatchCase() {
-        this.matchCaseButton = new ToggleButton(null, new FontIconView(SharedIcons.MATCH_CASE));
-        this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
-        this.matchCaseButton.setSelected(false);
-        this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
-        this.matchCaseButton.setFocusTraversable(false);
-        this.matchCaseButton.setOnAction((event) -> getPresenter().onMatchCase(this.matchCaseButton.isSelected()));
     }
 
     @Override
@@ -166,15 +156,6 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public void setupFindNext() {
-        this.findNextButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_DOWN));
-        this.findNextButton.setTooltip(new Tooltip("Next"));
-        this.findNextButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
-        this.findNextButton.setFocusTraversable(false);
-        findNextButton.setOnAction(e -> getPresenter().onFindNext());
-    }
-
-    @Override
     public void setFindNextDisabled(boolean value) {
         if (this.findNextButton != null) {
             this.findNextButton.setDisable(value);
@@ -182,28 +163,10 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public void setupFindPrevious() {
-        this.findPreviousButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_UP));
-        this.findPreviousButton.setTooltip(new Tooltip("Previous"));
-        this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
-        this.findPreviousButton.setFocusTraversable(false);
-        findPreviousButton.setOnAction(e -> getPresenter().onFindPrevious());
-    }
-
-    @Override
     public void setFindPreviousDisabled(boolean value) {
         if (this.findPreviousButton != null) {
             this.findPreviousButton.setDisable(value);
         }
-    }
-
-    @Override
-    public void setupWholeWord() {
-        this.wholeWordButton = new ToggleButton(null, new FontIconView(SharedIcons.WHOLE_WORD));
-        this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
-        this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
-        this.wholeWordButton.setFocusTraversable(false);
-        this.wholeWordButton.setOnAction((event) -> getPresenter().onWholeWord(this.wholeWordButton.isSelected()));
     }
 
     @Override
@@ -221,15 +184,6 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public void setupRegExp() {
-        this.regExpButton = new ToggleButton(null, new FontIconView(SharedIcons.REG_EXP));
-        this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
-        this.regExpButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
-        this.regExpButton.setFocusTraversable(false);
-        this.regExpButton.setOnAction((event) -> getPresenter().onRegExp(this.regExpButton.isSelected()));
-    }
-
-    @Override
     public void setRegExpSelected(boolean value) {
         if (this.regExpButton != null) {
             this.regExpButton.setSelected(value);
@@ -241,15 +195,6 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         if (this.regExpButton != null) {
             this.regExpButton.setDisable(value);
         }
-    }
-
-    @Override
-    public void setupHighlight() {
-        this.highlightButton = new ToggleButton(null, new FontIconView(SharedIcons.HIGHLIGHT));
-        this.highlightButton.setTooltip(new Tooltip("Highlight All"));
-        this.highlightButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
-        this.highlightButton.setFocusTraversable(false);
-        this.highlightButton.setOnAction(e -> getPresenter().onHighlight(this.highlightButton.isSelected()));
     }
 
     @Override
@@ -289,6 +234,32 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
                 Spacing.VERTICAL_HALF, 0));
         clearButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
         clearButton.setFocusTraversable(false);
+
+        this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
+        this.matchCaseButton.setSelected(false);
+        this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.matchCaseButton.setFocusTraversable(false);
+        this.matchCaseButton.setOnAction((event) -> getPresenter().onMatchCase(this.matchCaseButton.isSelected()));
+
+        this.findNextButton.setTooltip(new Tooltip("Next"));
+        this.findNextButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.findNextButton.setFocusTraversable(false);
+
+        this.findPreviousButton.setTooltip(new Tooltip("Previous"));
+        this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.findPreviousButton.setFocusTraversable(false);
+
+        this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
+        this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.wholeWordButton.setFocusTraversable(false);
+
+        this.highlightButton.setTooltip(new Tooltip("Highlight All"));
+        this.highlightButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.highlightButton.setFocusTraversable(false);
+
+        this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
+        this.regExpButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.regExpButton.setFocusTraversable(false);
     }
 
     @Override
@@ -345,6 +316,11 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         });
 
         clearButton.setOnAction(e -> getPresenter().onClearFindText());
+        this.regExpButton.setOnAction((event) -> getPresenter().onRegExp(this.regExpButton.isSelected()));
+        this.wholeWordButton.setOnAction((event) -> getPresenter().onWholeWord(this.wholeWordButton.isSelected()));
+        this.highlightButton.setOnAction(e -> getPresenter().onHighlight(this.highlightButton.isSelected()));
+        findPreviousButton.setOnAction(e -> getPresenter().onFindPrevious());
+        findNextButton.setOnAction(e -> getPresenter().onFindNext());
     }
 
     /**

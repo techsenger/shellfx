@@ -24,7 +24,7 @@ public abstract class AbstractFindPanelPresenter<V extends FindPanelView>
         extends AbstractFindBasePresenter<V> {
 
     public AbstractFindPanelPresenter(V view) {
-        super(view, FindFeature.values());
+        super(view);
     }
 
     protected abstract void onClose();

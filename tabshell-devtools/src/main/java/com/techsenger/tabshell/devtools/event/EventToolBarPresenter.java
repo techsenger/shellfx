@@ -33,7 +33,6 @@ import com.techsenger.connectorfx.event.WindowPropertiesEvent;
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
-import com.techsenger.tabshell.shared.find.FindFeature;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -69,7 +68,7 @@ public class EventToolBarPresenter<V extends EventToolBarView> extends ToolBarPr
     private boolean recordSelected;
 
     public EventToolBarPresenter(V view, EventToolBarAwarePort toolBarAware) {
-        super(view, toolBarAware, FindFeature.MATCH_CASE);
+        super(view, toolBarAware);
     }
 
     @Override

@@ -16,13 +16,11 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -30,8 +28,6 @@ import java.util.Set;
  */
 public abstract class AbstractFindBasePresenter<V extends FindBaseView>
         extends AbstractAreaPresenter<V> implements ResultFindPort {
-
-    private final Set<FindFeature> features;
 
     private String findText;
 
@@ -65,18 +61,8 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
 
     private boolean highlightDisabled;
 
-    public AbstractFindBasePresenter(V view, FindFeature... features) {
+    public AbstractFindBasePresenter(V view) {
         super(view);
-        this.features = Set.of(features);
-    }
-
-    /**
-     * Returns an unmodifiable set of features.
-     *
-     * @return
-     */
-    public @Unmodifiable Set<FindFeature> getFeatures() {
-        return features;
     }
 
     public String getFindText() {
@@ -316,47 +302,23 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     @Override
-    protected void preInitialize() {
-        super.preInitialize();
-        for (var f : features) {
-            switch (f) {
-                case MATCH_CASE -> getView().setupMatchCase();
-                case FIND_NEXT -> getView().setupFindNext();
-                case FIND_PREVIOUS -> getView().setupFindPrevious();
-                case WHOLE_WORD -> getView().setupWholeWord();
-                case REG_EXP -> getView().setupRegExp();
-                case HIGHLIGHT -> getView().setupHighlight();
-                default -> throw new AssertionError();
-            }
-        }
-    }
-
-    @Override
     protected void restoreAppearance() {
         super.restoreAppearance();
         var h = getHistory();
-        for (var f : features) {
-            switch (f) {
-                case MATCH_CASE -> setMatchCaseSelected(h.isMatchCaseSelected());
-                case WHOLE_WORD -> setWholeWordSelected(h.isWholeWordSelected());
-                case REG_EXP -> setRegExpSelected(h.isRegExpSelected());
-                case HIGHLIGHT -> setHighlightSelected(h.isHighlightSelected());
-            }
-        }
+        setMatchCaseSelected(h.isMatchCaseSelected());
+        setWholeWordSelected(h.isWholeWordSelected());
+        setRegExpSelected(h.isRegExpSelected());
+        setHighlightSelected(h.isHighlightSelected());
     }
 
     @Override
     protected void saveAppearance() {
         super.saveAppearance();
         var h = getHistory();
-        for (var f : features) {
-            switch (f) {
-                case MATCH_CASE -> h.setMatchCaseSelected(isMatchCaseSelected());
-                case WHOLE_WORD -> h.setWholeWordSelected(isWholeWordSelected());
-                case REG_EXP -> h.setRegExpSelected(isRegExpSelected());
-                case HIGHLIGHT -> h.setHighlightSelected(isHighlightSelected());
-            }
-        }
+        h.setMatchCaseSelected(isMatchCaseSelected());
+        h.setWholeWordSelected(isWholeWordSelected());
+        h.setRegExpSelected(isRegExpSelected());
+        h.setHighlightSelected(isHighlightSelected());
     }
 
     @Override

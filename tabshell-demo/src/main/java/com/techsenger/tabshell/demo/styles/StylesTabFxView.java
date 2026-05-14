@@ -65,12 +65,19 @@ public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?>
 
     protected void buildIconedButtons() {
         var b1 = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
-        b1.getStyleClass().add(StyleClasses.ICON_BUTTON);
+        b1.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.HUGE);
         var b2 = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
-        b2.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.DENSE);
+        b2.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.LARGE);
+
         var b3 = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
-        b3.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
-        var buttons = new HBox(b1, b2, b3);
+        b3.getStyleClass().add(StyleClasses.ICON_BUTTON);
+
+        var b4 = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
+        b4.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.DENSE);
+        var b5 = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
+        b5.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+
+        var buttons = new HBox(b1, b2, b3, b4, b5);
         buttons.setSpacing(Spacing.HORIZONTAL);
         gridPane.addRow(gridPane.getRowCount(), new Label("Icon buttons"), buttons);
     }

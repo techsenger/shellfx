@@ -18,7 +18,6 @@ package com.techsenger.tabshell.devtools;
 
 import com.techsenger.patternfx.mvp.Descriptor;
 import com.techsenger.tabshell.shared.find.AbstractFindBasePresenter;
-import com.techsenger.tabshell.shared.find.FindFeature;
 import com.techsenger.tabshell.shared.find.FindNavigationAwarePort;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,8 +30,8 @@ public class ToolBarPresenter<V extends ToolBarView> extends AbstractFindBasePre
 
     private final ToolBarAwarePort toolBarAware;
 
-    public ToolBarPresenter(V view, ToolBarAwarePort toolBarAware, FindFeature... features) {
-        super(view, features);
+    public ToolBarPresenter(V view, ToolBarAwarePort toolBarAware) {
+        super(view);
         this.toolBarAware = toolBarAware;
     }
 
