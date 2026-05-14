@@ -47,7 +47,8 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
                         .addAlertDialog(AlertDialogType.WARNING, "Attention! You shouldn't do it!");
             }),
             Map.entry(DialogType.ERROR, () -> {
-                var dialog = getView().getComposer().addAlertDialog(AlertDialogType.ERROR, "Oops! That didn’t work.");
+                var dialog = getView().getComposer().addAlertDialog(AlertDialogType.ERROR,
+                        "Oops! That didn’t work.\nTwo times!");
             }),
             Map.entry(DialogType.YES_NO, () -> {
                 var dialog = getView().getComposer()

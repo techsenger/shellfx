@@ -19,14 +19,17 @@ package com.techsenger.tabshell.dialogs.alert;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import static com.techsenger.tabshell.dialogs.alert.AlertDialogType.ERROR;
-import com.techsenger.tabshell.dialogs.utils.FxViewUtils;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -39,7 +42,20 @@ public class AlertDialogFxView<P extends AlertDialogPresenter<?>> extends Abstra
 
     private final Label messageLabel = new Label();
 
-    private final HBox messageBox = new HBox(messageIconViewBox, messageLabel);
+    private final HBox messageBox = new HBox(messageIconViewBox, messageLabel) {
+
+         @Override
+        protected void layoutChildren() {
+            super.layoutChildren();
+            double labelHeight = messageLabel.prefHeight(-1);
+            double iconHeight = messageIconViewBox.prefHeight(-1);
+            if (labelHeight >= iconHeight) {
+                setAlignment(Pos.TOP_LEFT);
+            } else {
+                setAlignment(Pos.CENTER_LEFT);
+            }
+        }
+    };
 
     private final ResultButton okButton = new ResultButton(AlertDialogButtons.OK, "OK");
 
@@ -100,7 +116,9 @@ public class AlertDialogFxView<P extends AlertDialogPresenter<?>> extends Abstra
                 throw new AssertionError();
         }
         messageLabel.getStyleClass().add("message-label");
-        FxViewUtils.buildIconedMessageBox(messageIconViewBox, messageLabel, messageBox);
+        VBox.setVgrow(messageBox, Priority.ALWAYS);
+        messageBox.getStyleClass().add("message-box");
+        messageBox.setSpacing(Spacing.HORIZONTAL_HALF);
         getContentBox().getChildren().add(messageBox);
         registerButtons(okButton, cancelButton, noButton, yesButton);
     }
