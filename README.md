@@ -15,6 +15,11 @@ at runtime and automatically adapts to the currently focused component. The work
 foundation of the application and defines how components are arranged and interact visually. The platform supports
 two primary workspace models: browser-like and IDE-like.
 
+`TabShell` is built according to the KISS principle. We aimed to keep it as simple as possible — with no magic and
+no overly complex solutions. For example, the platform is based on a slightly extended classic MVP pattern and provides
+components for the core parts of an application, such as windows, tabs, dialogs, and others. The main idea was to
+allow developers to start working with the platform within a single day, and we believe this goal has been achieved.
+
 TabShell is built on top of the [PatternFX](https://github.com/techsenger/patternfx) framework.
 
 ## Table of Contents
@@ -53,6 +58,9 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
     * [EventTab](#devtools-event-tab)
     * [StylesheetTab](#devtools-stylesheet-tab)
     * [EnvironmentTab](#devtools-environment-tab)
+* [Extension Registries](#registries)
+    * [Control Registry](#registries-control)
+    * [Storage Registry](#registries-storage)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
 * [Dependencies](#dependencies)
@@ -201,7 +209,7 @@ The implementation of this feature is structured as follows. There are three key
 item. Each element has its own name, which is used for identification. A menu consists of groups separated by a
 separator. Items are added to groups, and empty groups are ignored. The factories of all three elements are
 registered/unregistered in the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is used
-by `Shell` to construct the final menu.
+by `Shell` to construct the final menu. See [ControlRegistry](#registries-control) for details.
 
 The `MenuManager` is responsible for managing the state of menu elements and responding to their actions. It
 interacts with a component that provides a port implementing the `MenuAwarePort` interface.
@@ -423,6 +431,29 @@ This component allows inspecting which stylesheets are applied to nodes within t
 ### EnvironmentTab <a name="devtools-environment-tab"></a>
 
 This component provides access to platform settings, system properties, and environment variables.
+
+## Extension Registries <a name="registries"></a>
+
+An extension registry is a runtime mechanism that allows components, plugins, and modules to dynamically contribute
+functionality to the platform without introducing direct compile-time dependencies between components. Extensions can
+be added or removed at runtime, and registrations may occur in any order.
+
+### Control Registry <a name="registries-control"></a>
+
+`ControlRegistry` manages UI control contributions such as menus, menu groups, and menu items. This registry is used
+to manage Shell’s main menu.
+
+However, this registry does not assemble final UI controls. For example, it does not create a `ToolBar`. Instead, it
+only stores metadata about elements that can later be used to construct UI components such as toolbars. The assembly of
+final control elements is handled by user-defined or default builders, such as `MenuBuilder.
+
+### Storage Registry <a name="registries-storage"></a>
+
+The `FileChooser` dialog is designed to work with different `FileStorage` implementations, such as Google Drive. The
+`StorageRegistry` keeps track of all available (registered) `FileStorage` instances.
+
+Both the `FileChooser` dialog and the `StorageRegistry` are optional components so `StorageRegistry` is not
+part of the `ShellContext`.
 
 ## Quick Start <a name="quick-start"></a>
 

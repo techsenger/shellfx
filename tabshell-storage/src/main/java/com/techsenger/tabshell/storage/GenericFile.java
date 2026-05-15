@@ -204,15 +204,15 @@ public final class GenericFile {
      * @param storages
      * @return
      */
-    public static GenericFile convert(File file, List<FileStorage> storages) throws InvalidFileException {
+    public static GenericFile convert(File file, StorageRegistry registry) throws InvalidFileException {
         var path = file.toPath();
         var uri = path.toUri(); // it is faster than file.toURI.
-        var storage = FileStorages.findByUri(storages, uri);
-        if (storage == null) {
+        var storage = registry.getStorage(uri);
+        if (storage.isEmpty()) {
             throw new IllegalArgumentException("Couldn't find storage for " + uri);
         }
         var builder = new Builder();
-        var result = createFile(builder, path, uri, storage);
+        var result = createFile(builder, path, uri, storage.get());
         return result;
     }
 

@@ -25,6 +25,7 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogPort;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
+import com.techsenger.tabshell.storage.FileStorage;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public interface DialogsDialogView extends DialogView {
         NameValueDialogPort addNameValueDialog();
 
         FileChooserDialogPort addFileChooserDialog(FileChooserType type, AppearanceSettings settings,
-                HistoryManager manager);
+                List<FileStorage> storages, HistoryManager manager);
 
         DialogPort addPagedDialog(HistoryManager manager, PageMenuType menuType);
     }

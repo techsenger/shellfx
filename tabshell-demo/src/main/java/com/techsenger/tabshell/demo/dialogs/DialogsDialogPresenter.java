@@ -28,6 +28,8 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.file.FileChooserButtons;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueButtons;
+import com.techsenger.tabshell.storage.DefaultStorageRegistry;
+import com.techsenger.tabshell.storage.StorageRegistry;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -70,6 +72,8 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     private final AppearanceSettings settings;
 
     private final HistoryManager historyManager;
+
+    private final StorageRegistry storageRegistry = new DefaultStorageRegistry();
 
     public DialogsDialogPresenter(DialogsDialogView view, AppearanceSettings settings, HistoryManager manager) {
         super(view);
@@ -120,7 +124,9 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     }
 
     private void showFileChooserDialog(FileChooserType type) {
-        var port = getView().getComposer().addFileChooserDialog(type, settings, historyManager);
+        this.storageRegistry.refreshDefaultStorages();
+        var port = getView().getComposer().addFileChooserDialog(type, settings,
+                this.storageRegistry.getAllStorages(), historyManager);
         port.setResultAction((buttonName) -> {
             if (buttonName == FileChooserButtons.OK) {
                 var result = port.getResult();

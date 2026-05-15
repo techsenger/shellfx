@@ -37,6 +37,7 @@ import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPresenter;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
+import com.techsenger.tabshell.storage.FileStorage;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
@@ -77,9 +78,9 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
 
         @Override
         public FileChooserDialogPort addFileChooserDialog(FileChooserType type, AppearanceSettings settings,
-                HistoryManager manager) {
+                List<FileStorage> storages, HistoryManager manager) {
             var view = new FileChooserDialogFxView<>();
-            var presenter = new FileChooserDialogPresenter<>(view, type, settings, manager);
+            var presenter = new FileChooserDialogPresenter<>(view, type, storages, settings, manager);
             presenter.initialize();
             presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);

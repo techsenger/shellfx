@@ -38,7 +38,7 @@ import com.techsenger.tabshell.storage.FileStorage;
 import static com.techsenger.tabshell.storage.FileStorageType.BASE;
 import static com.techsenger.tabshell.storage.FileStorageType.NETWORK;
 import static com.techsenger.tabshell.storage.FileStorageType.OPTICAL;
-import com.techsenger.tabshell.storage.FileStorages;
+import com.techsenger.tabshell.storage.FileStorageUtils;
 import com.techsenger.tabshell.storage.FileType;
 import com.techsenger.tabshell.storage.GenericFile;
 import com.techsenger.tabshell.storage.UriUtils;
@@ -110,11 +110,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     private Comparator<GenericFile> fileComparator;
 
-    public FileChooserDialogPresenter(V view, FileChooserType type, AppearanceSettings settings,
-            HistoryManager historyManager) {
-        this(view, type, FileStorages.getAll(true), settings, historyManager);
-    }
-
     public FileChooserDialogPresenter(V view, FileChooserType type, List<FileStorage> storages,
                     AppearanceSettings settings, HistoryManager historyManager) {
         super(view);
@@ -148,7 +143,12 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         this.initialDirectory = initialDirectory;
         this.directory = initialDirectory;
         if (this.storage != null) {
-            this.storage = FileStorages.findByUri(storages, directory);
+            var s = FileStorageUtils.findByUri(storages, directory);
+            if (s.isEmpty()) {
+                this.storage = null;
+            } else {
+                this.storage = s.get();
+            }
         }
     }
 
@@ -607,7 +607,12 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     private void setDefaultStorageAndDirectory() {
-        this.storage = FileStorages.findPrimary(storages);
+        var s = FileStorageUtils.findPrimary(storages);
+        if (s.isEmpty()) {
+            this.storage = null;
+        } else {
+            this.storage = s.get();
+        }
         if (this.storage != null) {
             this.directory = this.storage.getRootUri();
         }
