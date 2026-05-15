@@ -82,7 +82,7 @@
 .button.huge .font-icon-view,
 .toggle-button.huge .font-icon-view {
     -fx-padding: 0;
-    -fx-font-size: 2em;
+    -fx-font-size: 2.1em;
 }
 
 /***************** large iconed buttons ******************/
@@ -101,7 +101,7 @@
 .button.large .font-icon-view,
 .toggle-button.large .font-icon-view {
     -fx-padding: 0;
-    -fx-font-size: 1.7em;
+    -fx-font-size: 1.85em;
 }
 
 /***************** default iconed buttons ******************/
@@ -119,7 +119,7 @@
 .button .font-icon-view,
 .toggle-button .font-icon-view {
     -fx-padding: 0;
-    -fx-font-size: 1.4em;
+    -fx-font-size: 1.6em;
 }
 
 /***************** dense iconed buttons ******************/
@@ -137,7 +137,7 @@
 .button.dense .font-icon-view,
 .toggle-button.dense .font-icon-view { /* see .font-icon-view.dense {} */
     -fx-padding: 0;
-    -fx-font-size: 1.3em;
+    -fx-font-size: 1.4em;
 }
 
 /***************** compact iconed buttons ******************/
@@ -334,6 +334,12 @@
     -fx-min-height: -1;
     -fx-max-height: -1;
     -fx-padding: 1 4 2 4; /* 3 = 2(padding) + 1(bg-insetts) */
+}
+
+.tool-bar.inline {
+    -fx-min-height: -1;
+    -fx-max-height: -1;
+    -fx-padding: 1 0 3 0;
 }
 
 /*
