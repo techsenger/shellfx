@@ -26,10 +26,8 @@ import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.List;
-import javafx.collections.ListChangeListener;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseDragEvent;
 
@@ -42,6 +40,17 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     static final double MIN_SIZE = 100; // temp
 
     public class Composer extends TabHostFxView<P>.Composer implements TabDockView.Composer {
+
+        private final TabDockFxView<P> view = TabDockFxView.this;
+
+        @Override
+        public void removeTab(TabFxView<?> tab) {
+            super.removeTab(tab);
+            if (view.getNode().getTabs().isEmpty()
+                    && getPresenter().getTransitionState() != TabDockTransitionState.TO_MINIMIZED) {
+                dockHost.getComposer().removeTabDock(view);
+            }
+        }
 
         @Override
         public void remove() {
@@ -135,18 +144,6 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         tabHeaderArea.setTabDragContentFactory((s) -> dockHost.createTabDragContent(s));
         tabHeaderArea.setTabDragScrollStep(10.0);
 
-    }
-
-    @Override
-    protected void addListeners() {
-        super.addListeners();
-        var tabPane = getNode();
-        tabPane.getTabs().addListener((ListChangeListener<Tab>) change -> {
-            if (tabPane.getTabs().isEmpty()
-                    && getPresenter().getTransitionState() != TabDockTransitionState.TO_MINIMIZED) {
-                dockHost.getComposer().removeTabDock(this);
-            }
-        });
     }
 
     @Override
