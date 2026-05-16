@@ -19,6 +19,7 @@ package com.techsenger.tabshell.devtools.stylesheet;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
+import com.techsenger.tabshell.devtools.ToolBarParams;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.material.style.StyleClasses;
@@ -50,14 +51,15 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?>> extends Ab
             super.compose();
 
             this.toolBar = createToolBar();
-            this.toolBar.getPresenter().initialize();
             view.getModifiableChildren().add(this.toolBar);
             view.getContentBox().getChildren().add(0, this.toolBar.getNode());
         }
 
         protected ToolBarFxView<?> createToolBar() {
             var view = new ToolBarFxView<>("NodeClass / StyleClass / ID", false);
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new ToolBarAwarePortImpl());
+            var params = new ToolBarParams(getPresenter().new ToolBarAwarePortImpl());
+            var presenter = new ToolBarPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 

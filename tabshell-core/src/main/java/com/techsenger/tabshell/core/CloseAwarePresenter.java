@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.patternfx.mvp.ParentView;
 import java.util.Objects;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public interface CloseAwarePresenter<V extends ParentView> extends ParentPresenter<V>, CloseAwarePort {
 
-    Descriptor getDescriptor();
+    ComponentDescriptor getDescriptor();
 
     @Override
     default void requestClose(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {

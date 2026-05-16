@@ -20,6 +20,7 @@ import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.demo.page.PageMenuType;
 import com.techsenger.tabshell.demo.page.PageTabFxView;
 import com.techsenger.tabshell.demo.page.PageTabHistory;
+import com.techsenger.tabshell.demo.page.PageTabParams;
 import com.techsenger.tabshell.demo.page.PageTabPresenter;
 import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 
@@ -41,8 +42,9 @@ public class PageItemHandler extends AbstractContainerItemHandler {
 
         var tabView = new PageTabFxView(getComponent());
         var historyManager = getComponent().getPresenter().getContext().getHistoryManager();
-        var tabPresenter = new PageTabPresenter(tabView,
-                () -> historyManager.getOrCreateHistory(PageTabHistory.class, PageTabHistory::new), menuType);
+        var params = new PageTabParams(() -> historyManager
+                .getOrCreateHistory(PageTabHistory.class, PageTabHistory::new), menuType);
+        var tabPresenter = new PageTabPresenter(tabView, params);
         tabPresenter.initialize();
         resolveMainTabContainer().getComposer().addTab(tabView);
         tabView.requestFocus();

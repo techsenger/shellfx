@@ -16,6 +16,8 @@
 
 package com.techsenger.tabshell.shared.find;
 
+import com.techsenger.tabshell.core.area.AreaParams;
+
 /**
  *
  * @author Pavel Castornii
@@ -23,8 +25,8 @@ package com.techsenger.tabshell.shared.find;
 public abstract class AbstractFindPanelPresenter<V extends FindPanelView>
         extends AbstractFindBasePresenter<V> {
 
-    public AbstractFindPanelPresenter(V view) {
-        super(view);
+    public AbstractFindPanelPresenter(V view, AreaParams params) {
+        super(view, params);
     }
 
     protected abstract void onClose();

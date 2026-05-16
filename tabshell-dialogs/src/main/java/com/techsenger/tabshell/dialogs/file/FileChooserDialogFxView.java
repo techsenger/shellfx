@@ -22,8 +22,8 @@ import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
@@ -142,16 +142,17 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     public class Composer extends AbstractDialogFxView<P>.Composer implements FileChooserDialogView.Composer {
 
         @Override
-        public DialogPort addAlertDialog(AlertDialogType type, String message) {
-            var dialog = createAlertDialog(type, message);
-            dialog.getPresenter().initialize();
+        public DialogPort addAlertDialog(AlertDialogParams params, String message) {
+            var dialog = createAlertDialog(params);
+            dialog.getPresenter().setMessage(message);
             getContainer().getComposer().addDialog(dialog);
             return dialog.getPresenter();
         }
 
-        protected AlertDialogFxView<?> createAlertDialog(AlertDialogType type, String message) {
+        protected AlertDialogFxView<?> createAlertDialog(AlertDialogParams params) {
             var view = new AlertDialogFxView();
-            var presenter = new AlertDialogPresenter<>(view, type, message);
+            var presenter = new AlertDialogPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
     }

@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demo.theme;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
@@ -39,14 +39,14 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
 
     private Theme theme;
 
-    public ThemeDialogPresenter(ThemeDialogView view, AppearanceSettings settings) {
-        super(view);
-        this.settings = settings;
+    public ThemeDialogPresenter(ThemeDialogView view, ThemeDialogParams params) {
+        super(view, params);
+        this.settings = params.getSettings();
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.THEME_DIALOG);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.THEME_DIALOG);
     }
 
     @Override

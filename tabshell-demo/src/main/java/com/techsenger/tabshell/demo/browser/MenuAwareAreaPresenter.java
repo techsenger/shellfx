@@ -16,9 +16,10 @@
 
 package com.techsenger.tabshell.demo.browser;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.MenuAwarePort;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.demo.dialogs.DemoResultButtons;
@@ -38,7 +39,7 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     private boolean barDisabled;
 
     public MenuAwareAreaPresenter(MenuAwareAreaView view) {
-        super(view);
+        super(view, new AreaParams());
     }
 
     @Override
@@ -57,8 +58,8 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.MENU_AWARE_AREA);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.MENU_AWARE_AREA);
     }
 
     protected void onFooDisabledSelected(boolean value) {

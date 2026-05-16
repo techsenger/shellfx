@@ -16,10 +16,11 @@
 
 package com.techsenger.tabshell.demo.styles;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
+import com.techsenger.tabshell.core.tab.TabParams;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
 
@@ -30,7 +31,7 @@ import java.util.function.Consumer;
 public class StylesTabPresenter extends AbstractTabPresenter<StylesTabView> {
 
     public StylesTabPresenter(StylesTabView view) {
-        super(view);
+        super(view, new TabParams());
     }
 
     @Override
@@ -44,8 +45,8 @@ public class StylesTabPresenter extends AbstractTabPresenter<StylesTabView> {
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.STYLES_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.STYLES_TAB);
     }
 
     @Override

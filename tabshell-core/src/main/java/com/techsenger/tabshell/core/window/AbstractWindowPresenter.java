@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.core.window;
 
 import com.techsenger.patternfx.mvp.AbstractParentPresenter;
-import com.techsenger.patternfx.mvp.ComponentPresenter;
+import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
@@ -58,9 +58,9 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     private SettingsSubscription monospaceFontSubscription;
 
-    public AbstractWindowPresenter(T view, AppearanceSettings setting) {
-        super(view);
-        this.setting = setting;
+    public AbstractWindowPresenter(T view, WindowParams params) {
+        super(view, params);
+        this.setting = params.getSetting();
     }
 
     @Override
@@ -178,7 +178,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         while (iterator.hasNext()) {
             var c = iterator.next();
             if (iterator.getDepth() > 0) {
-                ((ComponentPresenter<?>) c).deinitialize();
+                ((Presenter<?>) c).deinitialize();
             }
         }
         // the window is deinitilized at the end

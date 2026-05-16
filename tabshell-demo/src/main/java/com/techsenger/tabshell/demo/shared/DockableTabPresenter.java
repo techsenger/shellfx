@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.demo.shared;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.core.tab.TabView;
@@ -31,9 +31,9 @@ public class DockableTabPresenter extends AbstractTabPresenter<TabView> {
 
     private final int index;
 
-    public DockableTabPresenter(TabView view, int index) {
-        super(view);
-        this.index = index;
+    public DockableTabPresenter(TabView view, DockableTabParams params) {
+        super(view, params);
+        this.index = params.getIndex();
     }
 
     @Override
@@ -49,8 +49,8 @@ public class DockableTabPresenter extends AbstractTabPresenter<TabView> {
 
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DOCKABLE_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.DOCKABLE_TAB);
     }
 
     @Override

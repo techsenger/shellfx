@@ -88,8 +88,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
 
     private final Map<ResultButtonName, ButtonModel> buttonsByName = new HashMap<>();
 
-    public AbstractDialogPresenter(V view) {
-        super(view, true);
+    public AbstractDialogPresenter(V view, DialogParams params) {
+        super(view, params);
     }
 
     @Override

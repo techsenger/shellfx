@@ -39,8 +39,8 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     private boolean selected;
 
-    public AbstractTabPresenter(V view) {
-        super(view);
+    public AbstractTabPresenter(V view, TabParams params) {
+        super(view, params);
     }
 
     @Override

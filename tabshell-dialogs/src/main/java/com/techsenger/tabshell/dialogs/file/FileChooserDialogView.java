@@ -19,7 +19,7 @@ package com.techsenger.tabshell.dialogs.file;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.dialog.DialogView;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
 import com.techsenger.tabshell.material.table.TableColumnInfo;
 import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.storage.GenericFile;
@@ -34,7 +34,7 @@ public interface FileChooserDialogView extends DialogView {
 
     interface Composer extends DialogView.Composer {
 
-        DialogPort addAlertDialog(AlertDialogType type, String message);
+        DialogPort addAlertDialog(AlertDialogParams params, String message);
     }
 
     @Override

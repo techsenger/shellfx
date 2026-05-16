@@ -16,7 +16,8 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.layout.LayoutComponents;
 
 /**
@@ -28,12 +29,12 @@ import com.techsenger.tabshell.layout.LayoutComponents;
  */
 class PlaceholderPresenter extends TabDockPresenter<PlaceholderView> {
 
-    PlaceholderPresenter(PlaceholderView view) {
-        super(view);
+    PlaceholderPresenter(PlaceholderView view, AreaParams params) {
+        super(view, params);
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.PLACEHOLDER);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.PLACEHOLDER);
     }
 }

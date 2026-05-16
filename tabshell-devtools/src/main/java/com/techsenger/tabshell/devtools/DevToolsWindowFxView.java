@@ -41,7 +41,6 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
 
         public void addTabDock() {
             var tabDock = createTabDock();
-            tabDock.getPresenter().initialize();
             doAddTabDock(tabDock);
         }
 
@@ -58,8 +57,9 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
         protected DevToolsTabDockFxView<?> createTabDock() {
             var view = new DevToolsTabDockFxView<>(this.view.shell, this.view);
             var context = this.view.shell.getPresenter().getContext();
-            var presenter = new DevToolsTabDockPresenter<>(view, DevToolsHostType.WINDOW,
-                    context.getSettings(), historyManager);
+            var params = new DevToolsTabDockParams(DevToolsHostType.WINDOW, context.getSettings(), historyManager);
+            var presenter = new DevToolsTabDockPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 

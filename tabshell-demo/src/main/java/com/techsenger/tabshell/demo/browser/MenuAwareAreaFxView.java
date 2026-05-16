@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupParams;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogFxView;
@@ -68,16 +69,17 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
 
         @Override
         public PopupPort addDemoPopup(OverlayScope scope) {
-            var v = new DemoPopupFxView();
-            var p = new DemoPopupPresenter(v, false);
-            p.initialize();
+            var view = new DemoPopupFxView();
+            var params = new PopupParams(false);
+            var presenter = new DemoPopupPresenter(view, params);
+            presenter.initialize();
             if (scope == OverlayScope.WINDOW) {
                 var shell = mainTab.getComposer().getShell();
-                shell.getComposer().addPopup(v, Anchors.topRight(40, 20));
+                shell.getComposer().addPopup(view, Anchors.topRight(40, 20));
             } else {
-                mainTab.getComposer().addPopup(v, Anchors.bottomRight(20, 20));
+                mainTab.getComposer().addPopup(view, Anchors.bottomRight(20, 20));
             }
-            return p;
+            return presenter;
         }
 
         private void setMainTab(TabFxView<?> mainTab) {

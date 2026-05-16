@@ -24,6 +24,7 @@ import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import static com.techsenger.tabshell.layout.dockhost.DockConstants.ONE_HALF;
@@ -783,7 +784,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         public void compose() {
             super.compose();
             var placeholderV = createPlaceholder();
-            placeholderV.getPresenter().initialize();
             placeholder = placeholderV;
 
             addListenerToBarPolicy(rightBarPolicy, RIGHT);
@@ -822,7 +822,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         public TabDockFxView<?> createTabDock() {
             var v = new TabDockFxView<>();
             v.setDockHost(view);
-            var p = new TabDockPresenter<>(v);
+            var p = new TabDockPresenter<>(v, new AreaParams());
+            p.initialize();
             return v;
         }
 
@@ -849,7 +850,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         public SplitSpaceFxView<?> createSplitSpace() {
             var v = new SplitSpaceFxView<>();
             v.getComposer().setDockHost(view);
-            var p = new SplitSpacePresenter<>(v);
+            var p = new SplitSpacePresenter<>(v, new AreaParams());
+            p.initialize();
             return v;
         }
 
@@ -1059,14 +1061,16 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         protected SideBarFxView<?> createBar(Side side, SideBarHistory history) {
             var v = new SideBarFxView<>(view);
-            var p = new SideBarPresenter<>(v, history, side);
+            var p = new SideBarPresenter<>(v, new SideBarParams(side, () -> history));
+            p.initialize();
             return v;
         }
 
         protected PlaceholderFxView createPlaceholder() {
             var v = new PlaceholderFxView();
             v.setDockHost(view);
-            var p = new PlaceholderPresenter(v);
+            var p = new PlaceholderPresenter(v, new AreaParams());
+            p.initialize();
             return v;
         }
 
@@ -1103,7 +1107,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 return wrapper.get();
             }
             var sideBar = createBar(side, sideBarHistory);
-            sideBar.getPresenter().initialize();
             getModifiableChildren().add(sideBar);
             wrapper.set(sideBar);
             viewAdder.accept(sideBar);
@@ -1629,7 +1632,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             hideDragDockPopup();
             if (this.dragDock == null) {
                 var tabDock = getComposer().createTabDock();
-                tabDock.getPresenter().initialize();
                 dockInfo.getComposer().accept(dockInfo, tabDock);
                 moveTab(tabDock);
             } else {
@@ -2009,7 +2011,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             newOrientation = Orientation.VERTICAL;
         }
         var newSplitSpace = getComposer().createSplitSpace();
-        newSplitSpace.getPresenter().initialize();
         newSplitSpace.getPresenter().setOrientation(newOrientation);
 
         double[] parentOldPositions = null;

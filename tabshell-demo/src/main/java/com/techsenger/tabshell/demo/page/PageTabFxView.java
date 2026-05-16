@@ -20,8 +20,10 @@ import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.layout.pagehost.AbstractPageHostFxView;
 import com.techsenger.tabshell.layout.pagehost.PageHostFxView;
+import com.techsenger.tabshell.layout.pagehost.PageHostParams;
 import com.techsenger.tabshell.layout.pagehost.PageHostPresenter;
 import com.techsenger.tabshell.layout.pagehost.TreePageHostFxView;
+import com.techsenger.tabshell.layout.pagehost.TreePageHostParams;
 import com.techsenger.tabshell.layout.pagehost.TreePageHostPresenter;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.scene.control.Button;
@@ -52,8 +54,8 @@ public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implement
             if (menuType == PageMenuType.FLAT) {
                 var pages = MenuFactory.createMenu(PageHostParent.TAB);
                 var pageHost = new PageHostFxView<>();
-                var hostPresenter = new PageHostPresenter<>(pageHost,
-                        () -> getPresenter().getHistory().getHostHistory());
+                var params = new PageHostParams(() -> getPresenter().getHistory().getHostHistory());
+                var hostPresenter = new PageHostPresenter<>(pageHost, params);
                 hostPresenter.initialize();
                 hostPresenter.setDividerPosition(0.275);
                 pageHost.getComposer().setPages(pages);
@@ -65,8 +67,8 @@ public class PageTabFxView extends AbstractTabFxView<PageTabPresenter> implement
             } else {
                 var rootItem = MenuFactory.createTreeMenu(PageHostParent.TAB);
                 var pageHost = new TreePageHostFxView<>();
-                var hostPresenter = new TreePageHostPresenter<>(pageHost,
-                        () -> getPresenter().getHistory().getHostHistory());
+                var params = new TreePageHostParams(() -> getPresenter().getHistory().getHostHistory());
+                var hostPresenter = new TreePageHostPresenter<>(pageHost, params);
                 hostPresenter.initialize();
                 hostPresenter.setDividerPosition(0.275);
                 pageHost.getComposer().setPages(rootItem, false);

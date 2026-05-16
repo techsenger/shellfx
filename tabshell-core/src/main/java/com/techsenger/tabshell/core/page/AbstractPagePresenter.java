@@ -29,9 +29,9 @@ public abstract class AbstractPagePresenter<V extends PageView> extends Abstract
 
     private final PageItem item;
 
-    public AbstractPagePresenter(V view, PageItem item) {
-        super(view);
-        this.item = item;
+    public AbstractPagePresenter(V view, PageParams params) {
+        super(view, params);
+        this.item = params.getItem();
     }
 
     @Override

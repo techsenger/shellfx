@@ -17,13 +17,14 @@
 package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.page.DefaultPageDescriptor;
 import com.techsenger.tabshell.core.page.DefaultTreePageDescriptor;
 import com.techsenger.tabshell.core.page.PageDescriptor;
 import com.techsenger.tabshell.core.page.PageFactory;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.core.page.PageItem;
+import com.techsenger.tabshell.core.page.PageParams;
 import com.techsenger.tabshell.core.page.TreePageDescriptor;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.material.style.Spacing;
@@ -60,10 +61,11 @@ final class MenuFactory {
                 padding = new Insets(0, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL);
             }
             var view = new DemoPageFxView(padding);
-            var presenter = new DemoPagePresenter(view, item) {
+            var params = new PageParams(item);
+            var presenter = new DemoPagePresenter(view, params) {
                 @Override
-                protected Descriptor createDescriptor() {
-                    return new Descriptor(name);
+                protected ComponentDescriptor createDescriptor() {
+                    return new ComponentDescriptor(name);
                 }
             };
             presenter.initialize();

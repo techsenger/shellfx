@@ -26,9 +26,11 @@ import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
+import com.techsenger.tabshell.devtools.ToolBarParams;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogFxView;
@@ -192,12 +194,10 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
             super.compose();
 
             this.componentToolBar = createComponentToolBar();
-            this.componentToolBar.getPresenter().initialize();
             view.getModifiableChildren().add(this.componentToolBar);
             view.componentBox.getChildren().add(0, this.componentToolBar.getNode());
 
             this.inspectorToolBar = createInspectorToolBar();
-            this.inspectorToolBar.getPresenter().initialize();
             view.getModifiableChildren().add(inspectorToolBar);
             view.inspectorBox.getChildren().add(0, inspectorToolBar.getNode());
         }
@@ -216,7 +216,6 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
         public NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption) {
             var dialog = createNameValueDialog(nameCaption, valueCaption);
             var presenter = dialog.getPresenter();
-            presenter.initialize();
             presenter.setPrefWidth(600);
             presenter.setPrefHeight(350);
             view.dialogContainer.addDialog(dialog);
@@ -233,19 +232,24 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
 
         protected ToolBarFxView<?> createComponentToolBar() {
             var view = new ToolBarFxView<>("Name / UUID", true);
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new ComponentToolBarAwarePort());
+            var params = new ToolBarParams(getPresenter().new ComponentToolBarAwarePort());
+            var presenter = new ToolBarPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
         protected ToolBarFxView<?> createInspectorToolBar() {
             var view = new ToolBarFxView<>("Property / Class / Interface", false);
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new InspectorToolBarAwarePort());
+            var params = new ToolBarParams(getPresenter().new InspectorToolBarAwarePort());
+            var presenter = new ToolBarPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
         protected NameValueDialogFxView<?> createNameValueDialog(String nameCaption, String valueCaption) {
             var view = new NameValueDialogFxView<>(nameCaption, valueCaption);
-            var presenter = new NameValueDialogPresenter<>(view);
+            var presenter = new NameValueDialogPresenter<>(view, new DialogParams());
+            presenter.initialize();
             return view;
         }
     }

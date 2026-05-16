@@ -21,8 +21,10 @@ import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
 import com.techsenger.tabshell.devtools.DevToolsHostType;
 import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
+import com.techsenger.tabshell.devtools.DevToolsTabDockParams;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPresenter;
 import com.techsenger.tabshell.devtools.DevToolsWindowFxView;
+import com.techsenger.tabshell.devtools.DevToolsWindowParams;
 import com.techsenger.tabshell.devtools.DevToolsWindowPresenter;
 import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
@@ -48,19 +50,16 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
             var tab = tabHost.getComposer().getSelectedTab();
             if (tab != null && tab instanceof UtilityDockContainerFxView<?> c) {
                 var devTools = createDevToolsDock();
-                devTools.getPresenter().initialize();
                 devTools.getPresenter().setDraggable(true);
                 c.getComposer().addUtilityDock(devTools);
             } else {
                 var devTools = createDevToolsWindow();
-                devTools.getPresenter().initialize();
                 devTools.getPresenter().setMaximizable(false);
                 devTools.getComposer().addTabDock();
                 devTools.getWindow().show();
             }
         } else if (shell.getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
             var devTools = createDevToolsDock();
-            devTools.getPresenter().initialize();
             devTools.getPresenter().setDraggable(true);
             dockHost.getComposer().addTabDock(devTools, Side.BOTTOM, 250);
         }
@@ -70,15 +69,19 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
         var shell = getComponent();
         var view = new DevToolsTabDockFxView<>(shell, resolveDialogContainer());
         var context = shell.getPresenter().getContext();
-        var presenter = new DevToolsTabDockPresenter<>(view, DevToolsHostType.SPLIT_SPACE,
+        var params = new DevToolsTabDockParams(DevToolsHostType.SPLIT_SPACE,
                 context.getSettings(), context.getHistoryManager());
+        var presenter = new DevToolsTabDockPresenter<>(view, params);
+        presenter.initialize();
         return view;
     }
 
     protected DevToolsWindowFxView<?> createDevToolsWindow() {
         var view = new DevToolsWindowFxView<>(getComponent(), IconStylesheetFactory.forAll());
         var context = getComponent().getPresenter().getContext();
-        var presenter = new DevToolsWindowPresenter<>(view, context.getSettings(), context.getHistoryManager());
+        var params = new DevToolsWindowParams(context.getSettings().getAppearance(), context.getHistoryManager());
+        var presenter = new DevToolsWindowPresenter<>(view, params);
+        presenter.initialize();
         return view;
     }
 

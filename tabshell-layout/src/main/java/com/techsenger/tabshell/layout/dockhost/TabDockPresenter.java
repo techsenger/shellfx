@@ -16,10 +16,11 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseAwarePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.layout.LayoutComponents;
 import com.techsenger.tabshell.layout.tabhost.TabHostPresenter;
 import java.util.function.Consumer;
@@ -43,8 +44,8 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
 
     private boolean closable;
 
-    public TabDockPresenter(V view) {
-        super(view);
+    public TabDockPresenter(V view, AreaParams params) {
+        super(view, params);
     }
 
     @Override
@@ -104,8 +105,8 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.TAB_DOCK);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.TAB_DOCK);
     }
 
     protected void onMinimize() {

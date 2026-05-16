@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.dialogs.alert;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
@@ -40,10 +40,9 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
 
     private Icon<?> messageIcon;
 
-    public AlertDialogPresenter(V view, AlertDialogType dialogType, String message) {
-        super(view);
-        this.dialogType = dialogType;
-        this.message = message;
+    public AlertDialogPresenter(V view, AlertDialogParams params) {
+        super(view, params);
+        this.dialogType = params.getDialogType();
     }
 
     @Override
@@ -79,8 +78,8 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DialogComponents.ALERT_DIALOG);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DialogComponents.ALERT_DIALOG);
     }
 
     @Override

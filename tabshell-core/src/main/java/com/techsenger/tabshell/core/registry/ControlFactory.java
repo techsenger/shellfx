@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.core.registry;
 
-import com.techsenger.patternfx.mvp.ComponentFxView;
+import com.techsenger.patternfx.mvp.FxView;
 
 /**
  *
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface ControlFactory<V extends ComponentFxView<?>, T> {
+public interface ControlFactory<V extends FxView<?>, T> {
 
     T create(V view);
 }

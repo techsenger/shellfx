@@ -60,7 +60,6 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
             view.addLayout();
 
             var textViewer = createTextViewer();
-            textViewer.getPresenter().initialize();
             dockHost.getComposer().setMain(textViewer);
             dockHost.getComposer().getRoot().getComposer().addChild(textViewer);
         }
@@ -73,6 +72,7 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
         protected MenuAwareAreaFxView createTextViewer() {
             var v = new MenuAwareAreaFxView(view);
             var p = new MenuAwareAreaPresenter(v);
+            p.initialize();
             return v;
         }
     }

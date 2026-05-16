@@ -16,10 +16,11 @@
 
 package com.techsenger.tabshell.demo.popup;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
+import com.techsenger.tabshell.core.popup.PopupParams;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
 
@@ -29,13 +30,13 @@ import java.util.function.Consumer;
  */
 public class DemoPopupPresenter extends AbstractPopupPresenter<DemoPopupView> {
 
-    public DemoPopupPresenter(DemoPopupView view, boolean modal) {
-        super(view, modal);
+    public DemoPopupPresenter(DemoPopupView view, PopupParams params) {
+        super(view, params);
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_POPUP);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.DEMO_POPUP);
     }
 
     @Override

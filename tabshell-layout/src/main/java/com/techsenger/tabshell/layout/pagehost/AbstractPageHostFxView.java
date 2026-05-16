@@ -53,7 +53,6 @@ public abstract class AbstractPageHostFxView<P extends AbstractPageHostPresenter
         public void compose() {
             super.compose();
             this.findPanel = createFindPanel();
-            this.findPanel.getPresenter().initialize();
             getModifiableChildren().add(this.findPanel);
             addFindPanel(this.findPanel.getNode());
         }
@@ -74,7 +73,8 @@ public abstract class AbstractPageHostFxView<P extends AbstractPageHostPresenter
 
         protected FindPanelFxView<?> createFindPanel() {
             var view = new FindPanelFxView<>();
-            var presenter = new FindPanelPresenter<>(view, getPresenter());
+            var presenter = new FindPanelPresenter<>(view, new FindPanelParams(getPresenter()));
+            presenter.initialize();
             return view;
         }
     }

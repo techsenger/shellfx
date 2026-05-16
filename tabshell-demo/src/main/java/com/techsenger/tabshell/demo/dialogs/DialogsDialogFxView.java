@@ -18,26 +18,23 @@ package com.techsenger.tabshell.demo.dialogs;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.page.PageDialogFxView;
-import com.techsenger.tabshell.demo.page.PageDialogHistory;
+import com.techsenger.tabshell.demo.page.PageDialogParams;
 import com.techsenger.tabshell.demo.page.PageDialogPresenter;
-import com.techsenger.tabshell.demo.page.PageMenuType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
-import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogFxView;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogParams;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogPort;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogPresenter;
-import com.techsenger.tabshell.dialogs.file.FileChooserType;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogFxView;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPresenter;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
-import com.techsenger.tabshell.storage.FileStorage;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
@@ -56,10 +53,11 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             implements DialogsDialogView.Composer {
 
         @Override
-        public DialogPort addAlertDialog(AlertDialogType type, String message) {
+        public DialogPort addAlertDialog(AlertDialogParams params, String message) {
             var view = new AlertDialogFxView<>();
-            var presenter = new AlertDialogPresenter<>(view, type, message);
+            var presenter = new AlertDialogPresenter<>(view, params);
             presenter.initialize();
+            presenter.setMessage(message);
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
             return presenter;
@@ -68,7 +66,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         @Override
         public NameValueDialogPort addNameValueDialog() {
             var view = new NameValueDialogFxView<>();
-            var presenter = new NameValueDialogPresenter<>(view);
+            var presenter = new NameValueDialogPresenter<>(view, new DialogParams());
             presenter.initialize();
             presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);
@@ -77,10 +75,9 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         }
 
         @Override
-        public FileChooserDialogPort addFileChooserDialog(FileChooserType type, AppearanceSettings settings,
-                List<FileStorage> storages, HistoryManager manager) {
+        public FileChooserDialogPort addFileChooserDialog(FileChooserDialogParams params) {
             var view = new FileChooserDialogFxView<>();
-            var presenter = new FileChooserDialogPresenter<>(view, type, storages, settings, manager);
+            var presenter = new FileChooserDialogPresenter<>(view, params);
             presenter.initialize();
             presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);
@@ -89,10 +86,9 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         }
 
         @Override
-        public DialogPort addPagedDialog(HistoryManager hm, PageMenuType menuType) {
+        public DialogPort addPagedDialog(PageDialogParams params) {
             var view = new PageDialogFxView();
-            var presenter = new PageDialogPresenter(view,
-                    () -> hm.getOrCreateHistory(PageDialogHistory.class, PageDialogHistory::new), menuType);
+            var presenter = new PageDialogPresenter(view, params);
             presenter.initialize();
             presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);

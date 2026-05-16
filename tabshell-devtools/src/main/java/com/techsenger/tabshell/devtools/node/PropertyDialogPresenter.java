@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.devtools.node;
 
 import com.techsenger.connectorfx.scenegraph.Element;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
@@ -39,13 +39,12 @@ public class PropertyDialogPresenter<V extends PropertyDialogView>  extends Abst
 
     private final Consumer<String> linkOpener;
 
-    public PropertyDialogPresenter(V view, Element node, PropertyItem item, String declaringClassName,
-            Consumer<String> linkOpener) {
-        super(view);
-        this.node = node;
-        this.item = item;
-        this.declaringClassName = declaringClassName;
-        this.linkOpener = linkOpener;
+    public PropertyDialogPresenter(V view, PropertyDialogParams params) {
+        super(view, params);
+        this.node = params.getNode();
+        this.item = params.getItem();
+        this.declaringClassName = params.getDeclaringClassName();
+        this.linkOpener = params.getLinkOpener();
     }
 
     @Override
@@ -67,8 +66,8 @@ public class PropertyDialogPresenter<V extends PropertyDialogView>  extends Abst
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.PROPERTY_DIALOG);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.PROPERTY_DIALOG);
     }
 
     @Override

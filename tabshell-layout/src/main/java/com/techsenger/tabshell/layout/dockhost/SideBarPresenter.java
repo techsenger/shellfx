@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.layout.LayoutComponents;
 import java.util.List;
@@ -28,14 +28,11 @@ import javafx.geometry.Side;
  */
 public class SideBarPresenter<V extends SideBarView> extends AbstractAreaPresenter<V> implements SideBarPort {
 
-    private final SideBarHistory history;
-
     private final Side side;
 
-    public SideBarPresenter(V view, SideBarHistory history, Side side) {
-        super(view);
-        this.history = history;
-        this.side = side;
+    public SideBarPresenter(V view, SideBarParams params) {
+        super(view, params);
+        this.side = params.getSide();
     }
 
     public Side getSide() {
@@ -43,7 +40,7 @@ public class SideBarPresenter<V extends SideBarView> extends AbstractAreaPresent
     }
 
     public SideBarHistory getHistory() {
-        return history;
+        return (SideBarHistory) super.getHistory();
     }
 
     @Override
@@ -52,7 +49,7 @@ public class SideBarPresenter<V extends SideBarView> extends AbstractAreaPresent
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.SIDE_BAR);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.SIDE_BAR);
     }
 }

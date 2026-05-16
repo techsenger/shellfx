@@ -16,10 +16,7 @@
 
 package com.techsenger.tabshell.devtools;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.settings.ShellSettings;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.window.AbstractWindowPresenter;
 import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 
@@ -29,17 +26,14 @@ import com.techsenger.tabshell.devtools.style.DevToolsIcons;
  */
 public class DevToolsWindowPresenter<V extends DevToolsWindowView> extends AbstractWindowPresenter<V> {
 
-    public DevToolsWindowPresenter(V view, ShellSettings settings, HistoryManager historyManager) {
-        super(view, settings.getAppearance());
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> historyManager
-                .getOrCreateHistory(DevToolsWindowHistory.class, DevToolsWindowHistory::new));
-        getView().getComposer().setHistoryManager(historyManager);
+    public DevToolsWindowPresenter(V view, DevToolsWindowParams params) {
+        super(view, params);
+        getView().getComposer().setHistoryManager(params.getHistoryManager());
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.WINDOW);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.WINDOW);
     }
 
     @Override

@@ -29,8 +29,8 @@ public abstract class AbstractAreaPresenter<V extends AreaView>
 
     private double height;
 
-    public AbstractAreaPresenter(V view) {
-        super(view);
+    public AbstractAreaPresenter(V view, AreaParams params) {
+        super(view, params);
     }
 
     @Override

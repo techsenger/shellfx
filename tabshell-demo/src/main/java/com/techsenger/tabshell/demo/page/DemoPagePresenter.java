@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.page.AbstractPagePresenter;
-import com.techsenger.tabshell.core.page.PageItem;
+import com.techsenger.tabshell.core.page.PageParams;
 
 /**
  *
@@ -25,8 +25,8 @@ import com.techsenger.tabshell.core.page.PageItem;
  */
 public abstract class DemoPagePresenter extends AbstractPagePresenter<DemoPageView> {
 
-    public DemoPagePresenter(DemoPageView view, PageItem item) {
-        super(view, item);
+    public DemoPagePresenter(DemoPageView view, PageParams params) {
+        super(view, params);
     }
 
     @Override

@@ -16,10 +16,11 @@
 
 package com.techsenger.tabshell.dialogs.namevalue;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import java.util.function.Consumer;
 
@@ -38,13 +39,13 @@ public class NameValueDialogPresenter<V extends NameValueDialogView> extends Abs
 
     private boolean valueEditable;
 
-    public NameValueDialogPresenter(V view) {
-        super(view);
+    public NameValueDialogPresenter(V view, DialogParams params) {
+        super(view, params);
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DialogComponents.NAME_VALUE_DIALOG);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DialogComponents.NAME_VALUE_DIALOG);
     }
 
     @Override

@@ -16,16 +16,19 @@
 
 package com.techsenger.tabshell.demo.dialogs;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.demo.DemoComponents;
+import com.techsenger.tabshell.demo.page.PageDialogParams;
 import com.techsenger.tabshell.demo.page.PageMenuType;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
 import com.techsenger.tabshell.dialogs.file.FileChooserButtons;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogParams;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueButtons;
 import com.techsenger.tabshell.storage.DefaultStorageRegistry;
@@ -42,19 +45,20 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     private final Map<DialogType, Runnable> dialogActionsByType = Map.ofEntries(
             Map.entry(DialogType.INFO, () -> {
-                var dialog = getView().getComposer().addAlertDialog(AlertDialogType.INFO, "All done! Time for coffee.");
+                var params = new AlertDialogParams(AlertDialogType.INFO);
+                var dialog = getView().getComposer().addAlertDialog(params, "All done! Time for coffee.");
             }),
             Map.entry(DialogType.WARNING, () -> {
-                var dialog = getView().getComposer()
-                        .addAlertDialog(AlertDialogType.WARNING, "Attention! You shouldn't do it!");
+                var params = new AlertDialogParams(AlertDialogType.WARNING);
+                var dialog = getView().getComposer().addAlertDialog(params, "Attention! You shouldn't do it!");
             }),
             Map.entry(DialogType.ERROR, () -> {
-                var dialog = getView().getComposer().addAlertDialog(AlertDialogType.ERROR,
-                        "Oops! That didn’t work.\nTwo times!");
+                var params = new AlertDialogParams(AlertDialogType.ERROR);
+                var dialog = getView().getComposer().addAlertDialog(params, "Oops! That didn’t work.\nTwice!");
             }),
             Map.entry(DialogType.YES_NO, () -> {
-                var dialog = getView().getComposer()
-                        .addAlertDialog(AlertDialogType.CONFIRMATION, "Are you really sure?");
+                var params = new AlertDialogParams(AlertDialogType.CONFIRMATION);
+                var dialog = getView().getComposer().addAlertDialog(params, "Are you really sure?");
             }),
             Map.entry(DialogType.NAME_VALUE, () -> {
                 var dialog = getView().getComposer().addNameValueDialog();
@@ -75,15 +79,15 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     private final StorageRegistry storageRegistry = new DefaultStorageRegistry();
 
-    public DialogsDialogPresenter(DialogsDialogView view, AppearanceSettings settings, HistoryManager manager) {
-        super(view);
-        this.settings = settings;
-        this.historyManager = manager;
+    public DialogsDialogPresenter(DialogsDialogView view, DialogsDialogParams params) {
+        super(view, params);
+        this.settings = params.getSettings();
+        this.historyManager = params.getManager();
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DIALOGS_DIALOG);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.DIALOGS_DIALOG);
     }
 
     @Override
@@ -125,8 +129,8 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     private void showFileChooserDialog(FileChooserType type) {
         this.storageRegistry.refreshDefaultStorages();
-        var port = getView().getComposer().addFileChooserDialog(type, settings,
-                this.storageRegistry.getAllStorages(), historyManager);
+        var params = new FileChooserDialogParams(type, this.storageRegistry.getAllStorages(), settings, historyManager);
+        var port = getView().getComposer().addFileChooserDialog(params);
         port.setResultAction((buttonName) -> {
             if (buttonName == FileChooserButtons.OK) {
                 var result = port.getResult();
@@ -139,6 +143,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     }
 
     private void showPagedDialog(PageMenuType menuType) {
-        getView().getComposer().addPagedDialog(historyManager, menuType);
+        var params = new PageDialogParams(menuType, historyManager);
+        getView().getComposer().addPagedDialog(params);
     }
 }

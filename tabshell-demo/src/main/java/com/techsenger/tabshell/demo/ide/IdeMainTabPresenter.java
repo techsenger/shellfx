@@ -16,12 +16,13 @@
 
 package com.techsenger.tabshell.demo.ide;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.MenuAwarePort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
+import com.techsenger.tabshell.core.tab.TabParams;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.demo.dialogs.DemoResultButtons;
 import com.techsenger.tabshell.demo.main.DemoMenuAwarePort;
@@ -41,7 +42,7 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
     private boolean barDisabled;
 
     public IdeMainTabPresenter(V view) {
-        super(view);
+        super(view, new TabParams());
     }
 
     @Override
@@ -88,8 +89,8 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.MAIN_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.MAIN_TAB);
     }
 
     protected void onDialogOpen() {

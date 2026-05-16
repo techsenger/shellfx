@@ -22,16 +22,21 @@ import com.techsenger.connectorfx.LocalConnector;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabFxView;
+import com.techsenger.tabshell.devtools.component.ComponentTabParams;
 import com.techsenger.tabshell.devtools.component.ComponentTabPresenter;
 import com.techsenger.tabshell.devtools.component.JfxComponentService;
 import com.techsenger.tabshell.devtools.environment.EnvironmentTabFxView;
+import com.techsenger.tabshell.devtools.environment.EnvironmentTabParams;
 import com.techsenger.tabshell.devtools.environment.EnvironmentTabPresenter;
 import com.techsenger.tabshell.devtools.event.EventTabFxView;
+import com.techsenger.tabshell.devtools.event.EventTabParams;
 import com.techsenger.tabshell.devtools.event.EventTabPresenter;
 import com.techsenger.tabshell.devtools.node.NodeTabFxView;
+import com.techsenger.tabshell.devtools.node.NodeTabParams;
 import com.techsenger.tabshell.devtools.node.NodeTabPresenter;
 import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabFxView;
+import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabParams;
 import com.techsenger.tabshell.devtools.stylesheet.StylesheetTabPresenter;
 import com.techsenger.tabshell.layout.dockhost.TabDockFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -55,23 +60,18 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
             super.compose();
 
             var nodeTab = createNodeTab();
-            nodeTab.getPresenter().initialize();
             var componentTab = createComponentTab();
-            componentTab.getPresenter().initialize();
 
             addTab(componentTab);
             addTab(nodeTab);
 
             var eventTab = createEventTab();
-            eventTab.getPresenter().initialize();
             addTab(eventTab);
 
             var stylesheetTab = createStylesheetTab();
-            stylesheetTab.getPresenter().initialize();
             addTab(stylesheetTab);
 
             var environmentTab = createEnvironmentTab();
-            environmentTab.getPresenter().initialize();
             addTab(environmentTab);
 
             selectTab(0);
@@ -79,32 +79,41 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
 
         protected ComponentTabFxView<?> createComponentTab() {
             var view = new ComponentTabFxView<>(shell, dialogContainer.getComposer());
-            var presenter = new ComponentTabPresenter<>(view, new JfxComponentService(shell), getPresenter());
+            var params = new ComponentTabParams(new JfxComponentService(shell), getPresenter());
+            var presenter = new ComponentTabPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
         protected NodeTabFxView<?> createNodeTab() {
             var view = new NodeTabFxView<>(shell, dialogContainer.getComposer());
-            var presenter = new NodeTabPresenter<>(view, getPresenter());
+            var params = new NodeTabParams(getPresenter());
+            var presenter = new NodeTabPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
         protected EventTabFxView<?> createEventTab() {
             var view = new EventTabFxView<>(shell);
-            var presenter = new EventTabPresenter<>(view, connector, getPresenter().getSelector());
+            var params = new EventTabParams(connector, getPresenter().getSelector());
+            var presenter = new EventTabPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
         protected StylesheetTabFxView<?> createStylesheetTab() {
             var view = new StylesheetTabFxView<>(shell);
-            var windowUid = shell.getWindow().hashCode();
-            var presenter = new StylesheetTabPresenter<>(view, getPresenter());
+            var params = new StylesheetTabParams(getPresenter());
+            var presenter = new StylesheetTabPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
         protected EnvironmentTabFxView<?> createEnvironmentTab() {
             var view = new EnvironmentTabFxView<>(shell, dialogContainer.getComposer());
-            var presenter = new EnvironmentTabPresenter<>(view, connector);
+            var params = new EnvironmentTabParams(connector);
+            var presenter = new EnvironmentTabPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
     }

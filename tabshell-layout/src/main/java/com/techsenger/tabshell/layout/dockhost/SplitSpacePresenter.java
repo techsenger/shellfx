@@ -16,8 +16,9 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.layout.LayoutComponents;
 import java.util.Arrays;
 import java.util.List;
@@ -34,8 +35,8 @@ public class SplitSpacePresenter<V extends SplitSpaceView> extends AbstractAreaP
 
     private double[] dividerPositions = new double[0];
 
-    public SplitSpacePresenter(V view) {
-        super(view);
+    public SplitSpacePresenter(V view, AreaParams params) {
+        super(view, params);
     }
 
     @Override
@@ -60,8 +61,8 @@ public class SplitSpacePresenter<V extends SplitSpaceView> extends AbstractAreaP
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.SPLIT_SPACE);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.SPLIT_SPACE);
     }
 
     protected void onDividerPositionsChanged(double[] pos) {

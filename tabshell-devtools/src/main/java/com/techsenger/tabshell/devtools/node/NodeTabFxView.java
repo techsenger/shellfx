@@ -30,6 +30,7 @@ import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.ElementUtils;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
+import com.techsenger.tabshell.devtools.ToolBarParams;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.material.style.Spacing;
@@ -40,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -289,12 +289,10 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             super.compose();
 
             nodeToolBar = createNodeToolBar();
-            nodeToolBar.getPresenter().initialize();
             getModifiableChildren().add(nodeToolBar);
             nodeBox.getChildren().add(0, nodeToolBar.getNode());
 
             propertyToolBar = createPropertyToolBar();
-            propertyToolBar.getPresenter().initialize();
             getModifiableChildren().add(propertyToolBar);
             propertyBox.getChildren().add(0, propertyToolBar.getNode());
         }
@@ -318,31 +316,32 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         }
 
         @Override
-        public void addPropertyDialog(Element element, PropertyItem item, String declaringClassName,
-                Consumer<String> linkOpener) {
-            var dialog = createPropertyDialog(element, item, declaringClassName, linkOpener);
-            dialog.getPresenter().initialize();
+        public void addPropertyDialog(PropertyDialogParams params) {
+            var dialog = createPropertyDialog(params);
             dialog.getPresenter().setResizable(true);
             dialogContainer.addDialog(dialog);
         }
 
         protected ToolBarFxView<?> createNodeToolBar() {
             var view = new ToolBarFxView<>("NodeClass / StyleClass / ID", true);
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new NodeToolBarAwarePort());
+            var params = new ToolBarParams(getPresenter().new NodeToolBarAwarePort());
+            var presenter = new ToolBarPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
         protected ToolBarFxView<?> createPropertyToolBar() {
             var view = new ToolBarFxView<>("Property", false);
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new PropertyToolBarAwarePort());
+            var params = new ToolBarParams(getPresenter().new PropertyToolBarAwarePort());
+            var presenter = new ToolBarPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
-        protected PropertyDialogFxView<?> createPropertyDialog(Element element, PropertyItem item,
-                String declaringClassName, Consumer<String> linkOpener) {
+        protected PropertyDialogFxView<?> createPropertyDialog(PropertyDialogParams params) {
             var view = new PropertyDialogFxView<>(getShell());
-            var presenter = new PropertyDialogPresenter<>(view, element, item, declaringClassName,
-                    linkOpener);
+            var presenter = new PropertyDialogPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
     }

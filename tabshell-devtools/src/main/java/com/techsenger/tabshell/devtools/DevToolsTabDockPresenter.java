@@ -18,9 +18,7 @@ package com.techsenger.tabshell.devtools;
 
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.mvp.Descriptor;
-import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.core.settings.ShellSettings;
 import static com.techsenger.tabshell.devtools.DevToolsHostType.WINDOW;
@@ -46,16 +44,12 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
 
     private DevToolsHostType hostType;
 
-    public DevToolsTabDockPresenter(V view, DevToolsHostType hostType, ShellSettings settings,
-            HistoryManager historyManager) {
-        super(view);
-        this.hostType = hostType;
-        this.settings = settings;
+    public DevToolsTabDockPresenter(V view, DevToolsTabDockParams params) {
+        super(view, params);
+        this.hostType = params.getHostType();
+        this.settings = params.getSettings();
         themeSubscription = settings.getAppearance().onThemeChanged((oldV, newV) -> updateHighlight(newV));
         this.selector = new Selector(view.getConnector());
-        this.setHistoryProvider(() -> historyManager
-                .getOrCreateHistory(DevToolsTabDockHistory.class, DevToolsTabDockHistory::new));
-        this.setHistoryPolicy(HistoryPolicy.APPEARANCE);
     }
 
     public boolean isSelectionSelected() {
@@ -107,8 +101,8 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.TAB_DOCK);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.TAB_DOCK);
     }
 
     protected void onSelect() {

@@ -16,9 +16,7 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.core.HistoryProvider;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.page.PageContainerPresenter;
 import com.techsenger.tabshell.core.page.PageItem;
 import com.techsenger.tabshell.layout.LayoutComponents;
@@ -48,10 +46,8 @@ public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostP
 
     private List<PageItem> matchedItems;
 
-    public PageHostPresenter(V view, HistoryProvider<PageHostHistoryBase> historyProvider) {
-        super(view);
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(historyProvider);
+    public PageHostPresenter(V view, PageHostParams params) {
+        super(view, params);
     }
 
     @Override
@@ -114,8 +110,8 @@ public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostP
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.PAGE_HOST);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.PAGE_HOST);
     }
 
     protected List<PageItem> getItems() {

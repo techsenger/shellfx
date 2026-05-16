@@ -16,8 +16,7 @@
 
 package com.techsenger.tabshell.demo.page;
 
-import com.techsenger.patternfx.core.HistoryProvider;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
@@ -30,16 +29,14 @@ import java.util.function.Consumer;
  */
 public class PageDialogPresenter extends AbstractDialogPresenter<PageDialogView> {
 
-    public PageDialogPresenter(PageDialogView view, HistoryProvider<PageDialogHistory> hp,
-            PageMenuType menuType) {
-        super(view);
-        setHistoryProvider(hp);
-        getView().getComposer().setMenuType(menuType);
+    public PageDialogPresenter(PageDialogView view, PageDialogParams params) {
+        super(view, params);
+        getView().getComposer().setMenuType(params.getMenuType());
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.PAGE_DIALOG);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.PAGE_DIALOG);
     }
 
     @Override

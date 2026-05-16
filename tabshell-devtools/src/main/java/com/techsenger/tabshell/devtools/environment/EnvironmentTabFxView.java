@@ -18,8 +18,10 @@ package com.techsenger.tabshell.devtools.environment;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
+import com.techsenger.tabshell.devtools.ToolBarParams;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogFxView;
@@ -55,7 +57,6 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
         public void compose() {
             super.compose();
             this.toolBar = createToolBar();
-            this.toolBar.getPresenter().initialize();
             getModifiableChildren().add(this.toolBar);
             getContentBox().getChildren().add(0, this.toolBar.getNode());
         }
@@ -69,7 +70,6 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
         public NameValueDialogPort addNameValueDialog() {
             var dialog = createNameValueDialog();
             var presenter = dialog.getPresenter();
-            presenter.initialize();
             presenter.setResizable(true);
             dialogContainer.addDialog(dialog);
             return presenter;
@@ -77,13 +77,16 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
 
         protected ToolBarFxView<?> createToolBar() {
             var view = new ToolBarFxView<>("Property", false);
-            var presenter = new ToolBarPresenter<>(view, getPresenter().new ToolBarAwarePortImpl());
+            var params = new ToolBarParams(getPresenter().new ToolBarAwarePortImpl());
+            var presenter = new ToolBarPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
 
         protected NameValueDialogFxView<?> createNameValueDialog() {
             var view = new NameValueDialogFxView<>();
-            var presenter = new NameValueDialogPresenter<>(view);
+            var presenter = new NameValueDialogPresenter<>(view, new DialogParams());
+            presenter.initialize();
             return view;
         }
     }

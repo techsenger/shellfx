@@ -18,6 +18,7 @@ package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.core.page.PageItem;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,8 +48,8 @@ public abstract class AbstractPageHostPresenter<V extends PageHostViewBase>
 
     private boolean findMode = false;
 
-    public AbstractPageHostPresenter(V view) {
-        super(view);
+    public AbstractPageHostPresenter(V view, AreaParams params) {
+        super(view, params);
     }
 
     public void setDividerPosition(double pos) {

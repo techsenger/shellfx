@@ -17,9 +17,7 @@
 package com.techsenger.tabshell.layout.pagehost;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.core.HistoryProvider;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.page.TreePageContainerPresenter;
 import com.techsenger.tabshell.core.page.TreePageItem;
 import com.techsenger.tabshell.layout.LayoutComponents;
@@ -119,10 +117,8 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
 
     private List<PageBreadcrumb> breadcrumbs;
 
-    public TreePageHostPresenter(V view, HistoryProvider<PageHostHistoryBase> historyProvider) {
-        super(view);
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(historyProvider);
+    public TreePageHostPresenter(V view, TreePageHostParams params) {
+        super(view, params);
     }
 
     @Override
@@ -183,8 +179,8 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.TREE_PAGE_HOST);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.TREE_PAGE_HOST);
     }
 
     protected TreePageItem getRootItem() {

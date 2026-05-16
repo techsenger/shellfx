@@ -37,7 +37,6 @@ public class EventTabFxView<P extends EventTabPresenter<?>> extends AbstractTabF
         public void compose() {
             super.compose();
             toolBar = createToolBar();
-            toolBar.getPresenter().initialize();
             getModifiableChildren().add(toolBar);
             getContentBox().getChildren().add(0, toolBar.getNode());
         }
@@ -49,7 +48,9 @@ public class EventTabFxView<P extends EventTabPresenter<?>> extends AbstractTabF
 
         protected EventToolBarFxView<?> createToolBar() {
             var view = new EventToolBarFxView<>();
-            var presenter = new EventToolBarPresenter<>(view, getPresenter().new ToolBarAwarePortImpl());
+            var params = new EventToolBarParams(getPresenter().new ToolBarAwarePortImpl());
+            var presenter = new EventToolBarPresenter<>(view, params);
+            presenter.initialize();
             return view;
         }
     }

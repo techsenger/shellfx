@@ -30,7 +30,7 @@ import com.techsenger.connectorfx.event.NodeVisibilityEvent;
 import com.techsenger.connectorfx.event.RootChangedEvent;
 import com.techsenger.connectorfx.event.WindowClosedEvent;
 import com.techsenger.connectorfx.event.WindowPropertiesEvent;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import java.util.Map;
@@ -67,8 +67,8 @@ public class EventToolBarPresenter<V extends EventToolBarView> extends ToolBarPr
 
     private boolean recordSelected;
 
-    public EventToolBarPresenter(V view, EventToolBarAwarePort toolBarAware) {
-        super(view, toolBarAware);
+    public EventToolBarPresenter(V view, EventToolBarParams params) {
+        super(view, params);
     }
 
     @Override
@@ -106,8 +106,8 @@ public class EventToolBarPresenter<V extends EventToolBarView> extends ToolBarPr
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.EVENT_TOOL_BAR);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.EVENT_TOOL_BAR);
     }
 
     @Override

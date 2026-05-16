@@ -16,10 +16,11 @@
 
 package com.techsenger.tabshell.demo.dialogs;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
 
@@ -30,7 +31,7 @@ import java.util.function.Consumer;
 public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView> {
 
     public DemoDialogPresenter(DemoDialogView view) {
-        super(view);
+        super(view, new DialogParams());
     }
 
     @Override
@@ -44,8 +45,8 @@ public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView>
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.DEMO_DIALOG);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.DEMO_DIALOG);
     }
 
     @Override

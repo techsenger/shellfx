@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.window;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.util.List;
@@ -48,7 +48,7 @@ class ThemeApplier {
 
     private final ObservableList<Stylesheet> stylesheets;
 
-    private final Descriptor descriptor;
+    private final ComponentDescriptor descriptor;
 
     private Theme theme;
 
@@ -58,7 +58,7 @@ class ThemeApplier {
      * @param root the root of the scene. We can't get the root from stage.getScene().getRoot() because of custom stage.
      * @param theme
      */
-    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets, Descriptor descriptor) {
+    ThemeApplier(Scene scene, ObservableList<Stylesheet> stylesheets, ComponentDescriptor descriptor) {
         this.stylesheets = stylesheets;
         this.scene = scene;
         this.descriptor = descriptor;

@@ -22,7 +22,7 @@ import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.MODAL;
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.POPUP;
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.STAGE;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
@@ -95,9 +95,9 @@ public class StylesheetTabPresenter<V extends StylesheetTabView> extends Abstrac
 
     private final DevToolsTabDockPort tabDock;
 
-    public StylesheetTabPresenter(V view, DevToolsTabDockPort dock) {
-        super(view);
-        this.tabDock = dock;
+    public StylesheetTabPresenter(V view, StylesheetTabParams params) {
+        super(view, params);
+        this.tabDock = params.getTabDock();
     }
 
     @Override
@@ -120,8 +120,8 @@ public class StylesheetTabPresenter<V extends StylesheetTabView> extends Abstrac
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.STYLESHEET_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.STYLESHEET_TAB);
     }
 
     @Override

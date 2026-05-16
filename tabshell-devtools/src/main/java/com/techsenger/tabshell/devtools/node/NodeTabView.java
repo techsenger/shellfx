@@ -21,7 +21,6 @@ import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  *
@@ -35,7 +34,7 @@ public interface NodeTabView extends TabView {
 
         ToolBarPort getPropertyToolBarPort();
 
-        void addPropertyDialog(Element node, PropertyItem item, String declaringClassName, Consumer<String> linkOpener);
+        void addPropertyDialog(PropertyDialogParams params);
     }
 
     @Override

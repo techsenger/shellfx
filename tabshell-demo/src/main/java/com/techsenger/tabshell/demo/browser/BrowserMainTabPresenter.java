@@ -16,11 +16,9 @@
 
 package com.techsenger.tabshell.demo.browser;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.demo.DemoComponents;
@@ -32,11 +30,8 @@ import java.util.function.Consumer;
  */
 public class BrowserMainTabPresenter extends AbstractTabPresenter<TabView> {
 
-    public BrowserMainTabPresenter(TabView view, HistoryManager historyManager) {
-        super(view);
-        setHistoryPolicy(HistoryPolicy.ALL);
-        setHistoryProvider(() -> historyManager
-                .getOrCreateHistory(BrowserMainTabHistory.class, BrowserMainTabHistory::new));
+    public BrowserMainTabPresenter(TabView view, BrowserMainTabParams params) {
+        super(view, params);
     }
 
     @Override
@@ -61,7 +56,7 @@ public class BrowserMainTabPresenter extends AbstractTabPresenter<TabView> {
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.MAIN_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.MAIN_TAB);
     }
 }

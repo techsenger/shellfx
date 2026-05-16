@@ -19,10 +19,13 @@ package com.techsenger.tabshell.demo;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.demo.shared.DockableTabFxView;
+import com.techsenger.tabshell.demo.shared.DockableTabParams;
 import com.techsenger.tabshell.demo.shared.DockableTabPresenter;
 import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
 import com.techsenger.tabshell.layout.dockhost.DockHostHistory;
+import com.techsenger.tabshell.layout.dockhost.DockHostParams;
 import com.techsenger.tabshell.layout.dockhost.DockHostPresenter;
 import com.techsenger.tabshell.layout.dockhost.SideBarPolicy;
 import com.techsenger.tabshell.layout.dockhost.TabDockFxView;
@@ -38,8 +41,9 @@ public final class HostFactory {
 
     public static TabHostFxView<?> createTabHost() {
         var view = new TabHostFxView<>(true);
-        var presenter = new TabHostPresenter<>(view);
-        presenter.setHistoryPolicy(HistoryPolicy.NONE);
+        var params = new AreaParams();
+        params.setHistoryPolicy(HistoryPolicy.NONE);
+        var presenter = new TabHostPresenter<>(view, params);
         presenter.initialize();
         return view;
     }
@@ -47,19 +51,20 @@ public final class HostFactory {
     public static DockHostFxView<?> createDockHost(ShellFxView<?> shell,
             HistoryProvider<DockHostHistory> historyProvider) {
         var view = new DockHostFxView<>();
-        var presenter = new DockHostPresenter<>(view, historyProvider);
-        presenter.setHistoryPolicy(HistoryPolicy.NONE);
+        var params = new DockHostParams(historyProvider);
+        params.setHistoryPolicy(HistoryPolicy.NONE);
+        params.setHistoryProvider(historyProvider);
+        var presenter = new DockHostPresenter<>(view, params);
         presenter.initialize();
         view.getComposer().setBottomBarPolicy(SideBarPolicy.EXISTS_ALWAYS);
 
         var leftTabDock = view.getComposer().createTabDock();
-        leftTabDock.getPresenter().initialize();
         leftTabDock.getPresenter().setDraggable(true);
+        leftTabDock.getPresenter().setMinimizable(true);
         fillTabs(shell, leftTabDock);
         leftTabDock.selectTab(0);
 
         var splitSpace = view.getComposer().createSplitSpace();
-        splitSpace.getPresenter().initialize();
         splitSpace.getPresenter().setOrientation(Orientation.HORIZONTAL);
         view.getComposer().setRoot(splitSpace);
         splitSpace.getComposer().addChild(leftTabDock);
@@ -69,7 +74,8 @@ public final class HostFactory {
     private static void fillTabs(ShellFxView<?> shell, TabDockFxView<?> tabDock) {
         for (var i = 0; i < 10; i++) {
             var tabView = new DockableTabFxView(shell);
-            var tabPresenter = new DockableTabPresenter(tabView, i + 1);
+            var tabParams = new DockableTabParams(i + 1);
+            var tabPresenter = new DockableTabPresenter(tabView, tabParams);
             tabPresenter.initialize();
             tabDock.getComposer().addTab(tabView);
         }

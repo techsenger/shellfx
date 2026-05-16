@@ -18,7 +18,7 @@ package com.techsenger.tabshell.devtools.environment;
 
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.KeyValue;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
@@ -77,9 +77,9 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
 
     private final Map<EnvironmentCategory, BooleanProperty> expandedByCategory;
 
-    public EnvironmentTabPresenter(V view, Connector connector) {
-        super(view);
-        this.connector = connector;
+    public EnvironmentTabPresenter(V view, EnvironmentTabParams params) {
+        super(view, params);
+        this.connector = params.getConnector();
         expandedByCategory = Arrays.stream(EnvironmentCategory.values())
                 .collect(Collectors.toMap(e -> e, e -> new SimpleBooleanProperty()));
     }
@@ -95,8 +95,8 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.ENVIRONMENT_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.ENVIRONMENT_TAB);
     }
 
     @Override

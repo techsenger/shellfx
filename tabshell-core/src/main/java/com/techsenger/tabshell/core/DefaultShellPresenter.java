@@ -16,8 +16,7 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.window.AbstractWindowPresenter;
 
 /**
@@ -31,11 +30,9 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
 
     private Runnable onClose;
 
-    public DefaultShellPresenter(V view, ShellContext context) {
-        super(view, context.getSettings().getAppearance());
-        this.context = context;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(() -> context.getHistoryManager().getOrCreateHistory(ShellHistory.class, ShellHistory::new));
+    public DefaultShellPresenter(V view, DefaultShellParams params) {
+        super(view, params);
+        this.context = params.getContext();
     }
 
     @Override
@@ -77,7 +74,7 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(CoreComponents.SHELL);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(CoreComponents.SHELL);
     }
 }

@@ -31,9 +31,9 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
 
     private double prefHeight;
 
-    public AbstractPopupPresenter(V view, boolean modal) {
-        super(view);
-        this.modal = modal;
+    public AbstractPopupPresenter(V view, PopupParams params) {
+        super(view, params);
+        this.modal = params.isModal();
     }
 
     @Override

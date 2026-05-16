@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupParams;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogFxView;
@@ -64,7 +65,8 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
         @Override
         public PopupPort addDemoPopup(OverlayScope scope) {
             var v = new DemoPopupFxView();
-            var p = new DemoPopupPresenter(v, false);
+            var params = new PopupParams(false);
+            var p = new DemoPopupPresenter(v, params);
             p.initialize();
             if (scope == OverlayScope.WINDOW) {
                 getShell().getComposer().addPopup(v, Anchors.topRight(40, 20));

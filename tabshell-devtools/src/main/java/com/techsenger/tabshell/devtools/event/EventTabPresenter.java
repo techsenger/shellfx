@@ -19,7 +19,7 @@ package com.techsenger.tabshell.devtools.event;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.event.ConnectorEvent;
 import com.techsenger.connectorfx.event.ElementEvent;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.UiExecutor;
@@ -147,10 +147,10 @@ public class EventTabPresenter<V extends EventTabView> extends AbstractTabPresen
 
     private int totalEntriesCount;
 
-    public EventTabPresenter(V view, Connector connector, Selector selector) {
-        super(view);
-        this.connector = connector;
-        this.selector = selector;
+    public EventTabPresenter(V view, EventTabParams params) {
+        super(view, params);
+        this.connector = params.getConnector();
+        this.selector = params.getSelector();
     }
 
     @Override
@@ -164,8 +164,8 @@ public class EventTabPresenter<V extends EventTabView> extends AbstractTabPresen
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.EVENT_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.EVENT_TAB);
     }
 
     @Override

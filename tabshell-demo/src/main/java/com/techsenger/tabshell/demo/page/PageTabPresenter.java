@@ -16,9 +16,7 @@
 
 package com.techsenger.tabshell.demo.page;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.core.HistoryProvider;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
@@ -31,16 +29,14 @@ import java.util.function.Consumer;
  */
 public class PageTabPresenter extends AbstractTabPresenter<PageTabView> {
 
-    public PageTabPresenter(PageTabView view, HistoryProvider<PageTabHistory> historyProvider, PageMenuType menuType) {
-        super(view);
-        setHistoryProvider(historyProvider);
-        setHistoryPolicy(HistoryPolicy.ALL);
-        getView().getComposer().setMenuType(menuType);
+    public PageTabPresenter(PageTabView view, PageTabParams params) {
+        super(view, params);
+        getView().getComposer().setMenuType(params.getMenuType());
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DemoComponents.PAGE_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DemoComponents.PAGE_TAB);
     }
 
     @Override

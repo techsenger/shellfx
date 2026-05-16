@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.shared.find;
 
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.core.history.HistoryUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,8 +62,8 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
 
     private boolean highlightDisabled;
 
-    public AbstractFindBasePresenter(V view) {
-        super(view);
+    public AbstractFindBasePresenter(V view, AreaParams params) {
+        super(view, params);
     }
 
     public String getFindText() {

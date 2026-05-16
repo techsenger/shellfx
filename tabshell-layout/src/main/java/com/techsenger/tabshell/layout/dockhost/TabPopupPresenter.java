@@ -16,9 +16,7 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
-import com.techsenger.patternfx.core.HistoryProvider;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.core.tab.TabPort;
 import com.techsenger.tabshell.layout.LayoutComponents;
@@ -39,11 +37,9 @@ public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPrese
 
     private final Side side;
 
-    public TabPopupPresenter(V view, Side side, HistoryProvider<? extends TabPopupHistory> historyProvider) {
-        super(view);
-        this.side = side;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
-        setHistoryProvider(historyProvider);
+    public TabPopupPresenter(V view, TabPopupParams params) {
+        super(view, params);
+        this.side = params.getSide();
     }
 
     public double getOldWidth() {
@@ -97,8 +93,8 @@ public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPrese
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.TAB_POPUP);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.TAB_POPUP);
     }
 
     boolean isClosing() {

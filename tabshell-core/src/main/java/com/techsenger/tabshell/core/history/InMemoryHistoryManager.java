@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.history;
 
-import com.techsenger.patternfx.core.ComponentHistory;
+import com.techsenger.patternfx.mvp.ComponentHistory;
 import com.techsenger.toolkit.core.function.Factory;
 import java.util.HashMap;
 import java.util.Map;

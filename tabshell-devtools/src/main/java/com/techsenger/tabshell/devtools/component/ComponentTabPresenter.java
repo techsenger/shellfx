@@ -17,9 +17,9 @@
 package com.techsenger.tabshell.devtools.component;
 
 import com.techsenger.connectorfx.scenegraph.Element;
-import com.techsenger.patternfx.mvp.ComponentPresenter;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.patternfx.mvp.ParentView;
+import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.patternfx.mvp.View;
 import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
@@ -112,7 +112,7 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
     private record InspectorMatchResult(List<InspectorItem> items, int totalMatches) { }
 
     private static InspectorMatchResult matchInspectorItems(Class<? extends View> fxViewClass,
-            Class<? extends ParentView.Composer> fxComposerClass, ComponentPresenter<?> presenter, Matcher matcher) {
+            Class<? extends ParentView.Composer> fxComposerClass, Presenter<?> presenter, Matcher matcher) {
         var descriptor = presenter.getDescriptor();
         var totalMatches = 0;
         var items = new ArrayList<InspectorItem>();
@@ -284,16 +284,16 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
 
     private Class<? extends ParentView.Composer> componentFxComposerClass;
 
-    private ComponentPresenter<?> componentPresenter;
+    private Presenter<?> componentPresenter;
 
     private ComponentItem selectedComponent;
 
     private boolean selectNode = true;
 
-    public ComponentTabPresenter(V view, ComponentService service, DevToolsTabDockPort tabDock) {
-        super(view);
-        this.service = service;
-        this.tabDock = tabDock;
+    public ComponentTabPresenter(V view, ComponentTabParams params) {
+        super(view, params);
+        this.service = params.getService();
+        this.tabDock = params.getTabDock();
     }
 
     @Override
@@ -332,12 +332,12 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.COMPONENT_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.COMPONENT_TAB);
     }
 
     protected void onComponentSelected(ComponentItem component, Class<? extends View> fxViewClass,
-            Class<? extends ParentView.Composer> fxComposerClass, ComponentPresenter<?> presenter,
+            Class<? extends ParentView.Composer> fxComposerClass, Presenter<?> presenter,
             Element componentNode) {
         this.selectedComponent = component;
         if (componentNode != null && this.selectNode) {

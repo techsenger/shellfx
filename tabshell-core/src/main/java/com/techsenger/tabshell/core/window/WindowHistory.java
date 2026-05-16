@@ -16,13 +16,13 @@
 
 package com.techsenger.tabshell.core.window;
 
-import com.techsenger.patternfx.mvp.AbstractComponentHistory;
+import com.techsenger.patternfx.mvp.ComponentHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WindowHistory extends AbstractComponentHistory {
+public class WindowHistory extends ComponentHistory {
 
     private double width;
 

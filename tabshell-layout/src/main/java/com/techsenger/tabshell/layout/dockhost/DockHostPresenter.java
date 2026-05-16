@@ -16,8 +16,7 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
-import com.techsenger.patternfx.core.HistoryProvider;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.layout.LayoutComponents;
 
@@ -27,9 +26,8 @@ import com.techsenger.tabshell.layout.LayoutComponents;
  */
 public class DockHostPresenter<V extends DockHostView> extends AbstractAreaPresenter<V> implements DockHostPort {
 
-    public DockHostPresenter(V view, HistoryProvider<? extends DockHostHistory> history) {
-        super(view);
-        setHistoryProvider(history);
+    public DockHostPresenter(V view, DockHostParams params) {
+        super(view, params);
     }
 
     @Override
@@ -38,7 +36,7 @@ public class DockHostPresenter<V extends DockHostView> extends AbstractAreaPrese
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.DOCK_HOST);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.DOCK_HOST);
     }
 }

@@ -16,8 +16,9 @@
 
 package com.techsenger.tabshell.layout.tabhost;
 
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
+import com.techsenger.tabshell.core.area.AreaParams;
 import com.techsenger.tabshell.core.tab.TabContainerPresenter;
 import com.techsenger.tabshell.core.tab.TabPort;
 import com.techsenger.tabshell.layout.LayoutComponents;
@@ -36,8 +37,8 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
 
     private int selectedTabIndex;
 
-    public TabHostPresenter(V view) {
-        super(view);
+    public TabHostPresenter(V view, AreaParams params) {
+        super(view, params);
     }
 
     @Override
@@ -79,8 +80,8 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(LayoutComponents.TAB_HOST);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(LayoutComponents.TAB_HOST);
     }
 
     protected void onCloseOtherTabs(TabPort tab) {

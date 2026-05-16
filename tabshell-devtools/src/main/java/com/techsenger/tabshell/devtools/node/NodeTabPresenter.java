@@ -21,7 +21,7 @@ import com.techsenger.connectorfx.event.ConnectorEvent;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
-import com.techsenger.patternfx.mvp.Descriptor;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
@@ -136,9 +136,9 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
 
     private boolean selectedProgrammatically;
 
-    public NodeTabPresenter(V view, DevToolsTabDockPort tabDock) {
-        super(view);
-        this.tabDock = tabDock;
+    public NodeTabPresenter(V view, NodeTabParams params) {
+        super(view, params);
+        this.tabDock = params.getTabDock();
     }
 
     @Override
@@ -254,7 +254,8 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         if (field != null && node != null && node.getClassInfo().module().startsWith("javafx.")) {
             declaringClassName = this.tabDock.getConnector().getDeclaringClass(node.getClassInfo().className(), field);
         }
-        getView().getComposer().addPropertyDialog(node, item, declaringClassName, linkOpener);
+        var params = new PropertyDialogParams(node, item, declaringClassName, linkOpener);
+        getView().getComposer().addPropertyDialog(params);
     }
 
     @Override
@@ -265,8 +266,8 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
     }
 
     @Override
-    protected Descriptor createDescriptor() {
-        return new Descriptor(DevToolsComponents.NODE_TAB);
+    protected ComponentDescriptor createDescriptor() {
+        return new ComponentDescriptor(DevToolsComponents.NODE_TAB);
     }
 
     protected DevToolsTabDockPort getTabDock() {

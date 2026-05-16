@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.history;
 
-import com.techsenger.patternfx.core.ComponentHistory;
+import com.techsenger.patternfx.mvp.ComponentHistory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

@@ -19,6 +19,7 @@ package com.techsenger.tabshell.demo.menu;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.demo.browser.BrowserMainTabFxView;
+import com.techsenger.tabshell.demo.browser.BrowserMainTabParams;
 import com.techsenger.tabshell.demo.browser.BrowserMainTabPresenter;
 import com.techsenger.tabshell.demo.ide.IdeMainTabFxView;
 import com.techsenger.tabshell.demo.ide.IdeMainTabPresenter;
@@ -37,17 +38,19 @@ public class MainTabItemHandler extends AbstractContainerItemHandler {
 
     @Override
     public void onAction() {
-        AbstractTabFxView<?> tabV;
+        AbstractTabFxView<?> tabView;
         var shell = getComponent();
         if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?>) {
-            tabV = new BrowserMainTabFxView(shell);
-            var tabP = new BrowserMainTabPresenter(tabV, shell.getPresenter().getContext().getHistoryManager());
+            tabView = new BrowserMainTabFxView(shell);
+            var tabParams = new BrowserMainTabParams(shell.getPresenter().getContext().getHistoryManager());
+            var tabPresenter = new BrowserMainTabPresenter(tabView, tabParams);
+            tabPresenter.initialize();
         } else {
-            tabV = new IdeMainTabFxView<>(shell);
-            var tabP = new IdeMainTabPresenter<>((IdeMainTabFxView<?>) tabV);
+            tabView = new IdeMainTabFxView<>(shell);
+            var tabPresenter = new IdeMainTabPresenter<>((IdeMainTabFxView<?>) tabView);
+            tabPresenter.initialize();
         }
-        tabV.getPresenter().initialize();
-        resolveMainTabContainer().getComposer().addTab(tabV);
+        resolveMainTabContainer().getComposer().addTab(tabView);
     }
 
 }

@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.patternfx.mvp.AbstractComponentHistory;
+import com.techsenger.patternfx.mvp.ComponentHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TabHistory extends AbstractComponentHistory {
+public class TabHistory extends ComponentHistory {
 
 }

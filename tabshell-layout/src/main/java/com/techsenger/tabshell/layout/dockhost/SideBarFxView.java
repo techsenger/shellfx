@@ -209,7 +209,8 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
         void addPopupToLayout(Side side) {
             var history = view.getPresenter().getHistory();
             var v = new TabPopupFxView<>(view, dockHost.getCenterDimension());
-            var p = new TabPopupPresenter<>(v, side, () -> history.getOrCreatePopup());
+            var params = new TabPopupParams(side, () -> history.getOrCreatePopup());
+            var p = new TabPopupPresenter<>(v, params);
             p.initialize();
             dockHost.getComposer().addTabPopup(v);
         }

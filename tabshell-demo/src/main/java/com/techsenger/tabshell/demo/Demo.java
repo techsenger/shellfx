@@ -19,6 +19,7 @@ package com.techsenger.tabshell.demo;
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.DefaultShellContext;
 import com.techsenger.tabshell.core.DefaultShellFxView;
+import com.techsenger.tabshell.core.DefaultShellParams;
 import com.techsenger.tabshell.core.DefaultShellPresenter;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
@@ -86,7 +87,8 @@ public class Demo extends Application {
         var shellView = new DefaultShellFxView<>(this, IconStylesheetFactory.forAll(), new ControlRegistry());
         var context = new DefaultShellContext(DemoSettings.createSettings(),
                 new DemoHistoryManager(), getHostServices());
-        var shellPresenter = new DefaultShellPresenter<>(shellView, context);
+        var shellParams = new DefaultShellParams(context);
+        var shellPresenter = new DefaultShellPresenter<>(shellView, shellParams);
         shellPresenter.initialize();
         shellView.setTitle("TabShell Demo");
 
@@ -101,7 +103,6 @@ public class Demo extends Application {
                 var dockHost = HostFactory.createDockHost(shellView, () -> context.getHistoryManager()
                         .getOrCreateHistory(DockHostHistory.class, DockHostHistory::new));
                 var rightTabDock = dockHost.getComposer().createTabDock();
-                rightTabDock.getPresenter().initialize();
                 dockHost.getComposer().getRoot().getComposer().addChild(rightTabDock);
                 dockHost.getComposer().setMain(rightTabDock);
                 workspace = dockHost;
