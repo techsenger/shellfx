@@ -29,7 +29,7 @@ import java.util.Optional;
  *
  * @author Pavel Castornii
  */
-public interface StorageRegistry {
+public interface FileStorageRegistry {
     /**
      * Represents a handle for a registered contribution.
      *

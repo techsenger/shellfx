@@ -37,7 +37,7 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author Pavel Castornii
  */
-public final class DefaultStorageRegistry implements StorageRegistry {
+public final class DefaultFileStorageRegistry implements FileStorageRegistry {
 
     private final List<FileStorage> customStorages = new CopyOnWriteArrayList<>();
     private volatile List<FileStorage> defaultStorages = null;

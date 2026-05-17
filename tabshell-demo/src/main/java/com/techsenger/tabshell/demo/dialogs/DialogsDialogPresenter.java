@@ -31,8 +31,8 @@ import com.techsenger.tabshell.dialogs.file.FileChooserButtons;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogParams;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueButtons;
-import com.techsenger.tabshell.storage.DefaultStorageRegistry;
-import com.techsenger.tabshell.storage.StorageRegistry;
+import com.techsenger.tabshell.storage.DefaultFileStorageRegistry;
+import com.techsenger.tabshell.storage.FileStorageRegistry;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -77,7 +77,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     private final HistoryManager historyManager;
 
-    private final StorageRegistry storageRegistry = new DefaultStorageRegistry();
+    private final FileStorageRegistry storageRegistry = new DefaultFileStorageRegistry();
 
     public DialogsDialogPresenter(DialogsDialogView view, DialogsDialogParams params) {
         super(view, params);
