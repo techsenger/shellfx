@@ -16,13 +16,14 @@
 
 package com.techsenger.tabshell.material.table;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TableHistory {
+public class TableHistory implements Serializable {
 
     private List<TableColumnInfo> columns;
 
