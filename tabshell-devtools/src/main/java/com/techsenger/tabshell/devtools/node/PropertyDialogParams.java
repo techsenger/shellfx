@@ -64,7 +64,5 @@ public class PropertyDialogParams extends DialogParams {
         super.validate();
         Objects.requireNonNull(node);
         Objects.requireNonNull(item);
-        Objects.requireNonNull(declaringClassName);
-        Objects.requireNonNull(linkOpener);
     }
 }
