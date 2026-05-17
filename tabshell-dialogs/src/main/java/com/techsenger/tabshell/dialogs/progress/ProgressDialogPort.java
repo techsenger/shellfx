@@ -24,7 +24,17 @@ import com.techsenger.tabshell.core.dialog.DialogPort;
  */
 public interface ProgressDialogPort extends DialogPort, ProgressDialogShared {
 
+    String getMessage();
+
+    boolean isShowSteps();
+
+    double getProgress();
+
     void setStepCount(int count);
 
+    int getStepCount();
+
     void setCurrentStep(int step);
+
+    int getCurrentStep();
 }

@@ -64,54 +64,64 @@ public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDia
     }
 
     @Override
-    protected void postInitialize() {
-        super.postInitialize();
-        setPrefWidth(450);
-        setTitle("Progress Dialog");
-    }
-
     public boolean isShowSteps() {
         return showSteps;
     }
 
+    @Override
     public void setShowSteps(boolean showSteps) {
         this.showSteps = showSteps;
         getView().setShowSteps(showSteps);
     }
 
+    @Override
     public int getStepCount() {
         return stepCount;
     }
 
+    @Override
     public void setStepCount(int stepCount) {
         this.stepCount = stepCount;
         getView().showSteps(currentStep, stepCount);
     }
 
+    @Override
     public int getCurrentStep() {
         return currentStep;
     }
 
+    @Override
     public void setCurrentStep(int currentStep) {
         this.currentStep = currentStep;
         getView().showSteps(currentStep, stepCount);
     }
 
+    @Override
     public String getMessage() {
         return message;
     }
 
+    @Override
     public void setMessage(String message) {
         this.message = message;
         getView().setMessage(message);
     }
 
+    @Override
     public double getProgress() {
         return progress;
     }
 
+    @Override
     public void setProgress(double progress) {
         this.progress = progress;
         getView().setProgress(progress);
+    }
+
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        setPrefWidth(450);
+        setTitle("Progress Dialog");
     }
 }
