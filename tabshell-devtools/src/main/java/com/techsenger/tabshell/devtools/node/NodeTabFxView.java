@@ -484,6 +484,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         propertyTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         propertyTableView.setShowRoot(false);
         propertyTableView.setPlaceholder(new Label(""));
+        VBox.setVgrow(propertyTableView, Priority.ALWAYS);
         propertyTableView.setRowFactory(ttv -> {
             TreeTableRow<PropertyItem> row = new TreeTableRow<>();
             row.setOnMouseClicked(event -> {
