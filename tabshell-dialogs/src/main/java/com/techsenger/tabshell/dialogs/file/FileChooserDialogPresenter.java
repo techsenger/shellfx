@@ -152,7 +152,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     @Override
     public void onResult(ResultButtonName name) {
-        if (name == FileChooserButtons.OK) {
+        if (name == FileChooserDialogButtons.OK) {
             this.resultFile = getResultFile();
             if (this.resultFile == null) {
                 return;
@@ -315,8 +315,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
             default -> throw new AssertionError();
         }
         updateFiles(null);
-        setRightButtons(FileChooserButtons.CANCEL, FileChooserButtons.OK);
-        setButtonDefault(FileChooserButtons.OK, true);
+        setRightButtons(FileChooserDialogButtons.CANCEL, FileChooserDialogButtons.OK);
+        setButtonDefault(FileChooserDialogButtons.OK, true);
         setMinWidth(600);
         setMinHeight(400);
     }

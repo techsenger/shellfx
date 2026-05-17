@@ -250,9 +250,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
 
     private final ContextMenu itemContextMenu = new ContextMenu();
 
-    private final ResultButton cancelButton = new ResultButton(FileChooserButtons.CANCEL, "Cancel");
+    private final ResultButton cancelButton = new ResultButton(FileChooserDialogButtons.CANCEL, "Cancel");
 
-    private final ResultButton okButton = new ResultButton(FileChooserButtons.OK, "OK");
+    private final ResultButton okButton = new ResultButton(FileChooserDialogButtons.OK, "OK");
 
     private AppearanceSettings settings;
 

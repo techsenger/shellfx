@@ -27,7 +27,6 @@ import com.techsenger.tabshell.demo.page.PageDialogParams;
 import com.techsenger.tabshell.demo.page.PageMenuType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
-import com.techsenger.tabshell.dialogs.file.FileChooserButtons;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogParams;
 import com.techsenger.tabshell.dialogs.file.FileChooserType;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueButtons;
@@ -36,6 +35,7 @@ import com.techsenger.tabshell.storage.FileStorageRegistry;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
+import com.techsenger.tabshell.dialogs.file.FileChooserDialogButtons;
 
 /**
  *
@@ -132,7 +132,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         var params = new FileChooserDialogParams(type, this.storageRegistry.getAllStorages(), settings, historyManager);
         var port = getView().getComposer().addFileChooserDialog(params);
         port.setResultAction((buttonName) -> {
-            if (buttonName == FileChooserButtons.OK) {
+            if (buttonName == FileChooserDialogButtons.OK) {
                 var result = port.getResult();
                 System.out.println("Result: " + result.getUri());
                 port.requestClose();

@@ -23,7 +23,7 @@ import com.techsenger.tabshell.material.button.ResultButtonName;
  *
  * @author Pavel Castornii
  */
-public interface FileChooserButtons {
+public interface FileChooserDialogButtons {
 
     ResultButtonName OK = new DefaultResultButtonName();
 
