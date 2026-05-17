@@ -33,6 +33,8 @@ public final class DialogComponents {
 
     public static final ComponentName NAME_VALUE_DIALOG = new DefaultComponentName("Dialogs.NameValueDialog");
 
+    public static final ComponentName PLUGIN_PROGRESS_DIALOG = new DefaultComponentName("Dialogs.PluginProgressDialog");
+
     private DialogComponents() {
         // empty
     }
