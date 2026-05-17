@@ -82,4 +82,28 @@ public class ProgressDialogFxView extends AbstractDialogFxView<ProgressDialogPre
         getContentBox().getChildren().add(mainBox);
         registerButtons(cancelButton);
     }
+
+    protected Label getMessageLabel() {
+        return messageLabel;
+    }
+
+    protected Label getStepLabel() {
+        return stepLabel;
+    }
+
+    protected HBox getTextBox() {
+        return textBox;
+    }
+
+    protected ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    protected VBox getMainBox() {
+        return mainBox;
+    }
+
+    protected ResultButton getCancelButton() {
+        return cancelButton;
+    }
 }
