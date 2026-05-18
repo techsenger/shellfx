@@ -16,14 +16,13 @@
 
 package com.techsenger.tabshell.material.table;
 
-import java.io.Serializable;
 import javafx.scene.control.TableColumn;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class TableColumnInfo extends AbstractTableColumnInfo implements Serializable {
+public class TableColumnInfo extends AbstractTableColumnInfo {
 
     private Enum<?> name;
 

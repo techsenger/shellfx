@@ -16,11 +16,13 @@
 
 package com.techsenger.tabshell.material.table;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractTableColumnInfo {
+public abstract class AbstractTableColumnInfo implements Serializable {
 
     private int index;
 
