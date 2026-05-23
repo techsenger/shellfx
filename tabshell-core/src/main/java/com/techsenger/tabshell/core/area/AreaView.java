@@ -24,4 +24,10 @@ import com.techsenger.patternfx.mvp.ChildView;
  */
 public interface AreaView extends ChildView {
 
+    interface Composer extends ChildView.Composer {
+
+    }
+
+    @Override
+    Composer getComposer();
 }
