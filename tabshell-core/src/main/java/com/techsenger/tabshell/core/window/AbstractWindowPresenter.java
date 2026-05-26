@@ -48,6 +48,8 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     private boolean closable = true;
 
+    private boolean blocked = false;
+
     private Icon<?> icon;
 
     private final AppearanceSettings setting;
@@ -184,6 +186,20 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         // the window is deinitilized at the end
         deinitialize();
         getView().closeWindow();
+    }
+
+    @Override
+    public void setBlocked(boolean blocked) {
+        if (this.blocked == blocked) {
+            return;
+        }
+        this.blocked = blocked;
+        getView().setBlocked(blocked);
+    }
+
+    @Override
+    public boolean isBlocked() {
+        return blocked;
     }
 
     @Override

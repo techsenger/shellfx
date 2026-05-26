@@ -51,4 +51,6 @@ public interface ModifiableWindow {
     void setMinimizable(boolean minimizable);
 
     void setClosable(boolean closable);
+
+    void setBlocked(boolean blocked);
 }

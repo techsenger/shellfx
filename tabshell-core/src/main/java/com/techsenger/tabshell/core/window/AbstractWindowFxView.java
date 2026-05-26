@@ -46,10 +46,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.PauseTransition;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -62,6 +60,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HeaderBar;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -232,7 +231,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private final StackPane stackPane = new StackPane(windowBox);
 
-    private final DialogManager dialogManager;
+    private Pane blockPane;
+
+    private final DialogManager dialogManager = new WindowDialogManager(stackPane, contentBox);
 
     private ThemeApplier themeApplier;
 
@@ -259,10 +260,6 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         if (stylesheets != null) {
             this.stylesheets.addAll(stylesheets);
         }
-        var dialogCount = new SimpleIntegerProperty();
-//        stageController = new ShellStageController(stage, DEFAULT_WIDTH, DEFAULT_HEIGHT, dialogCount);
-        this.dialogManager = new WindowDialogManager(stackPane, contentBox);
-        dialogCount.bind(Bindings.size(this.dialogManager.getDialogs()));
     }
 
     @Override
@@ -368,6 +365,18 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     @Override
     public void setMonospaceFont(Font font) {
         this.fontApplier.setMonospaceFont(font);
+    }
+
+    @Override
+    public void setBlocked(boolean blocked) {
+        if (blocked) {
+            this.blockPane = new Pane();
+            this.blockPane.setMouseTransparent(false);
+            this.stackPane.getChildren().add(this.blockPane);
+        } else {
+            this.stackPane.getChildren().remove(this.blockPane);
+            this.blockPane = null;
+        }
     }
 
     @Override
@@ -518,6 +527,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     protected StackPane getStackPane() {
         return stackPane;
+    }
+
+    protected Pane getBlockPane() {
+        return blockPane;
     }
 
     /**

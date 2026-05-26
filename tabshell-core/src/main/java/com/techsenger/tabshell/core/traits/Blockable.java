@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Pavel Castornii.
+ * Copyright 2026 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,42 +14,27 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.window;
-
-import com.techsenger.tabshell.material.icon.Icon;
+package com.techsenger.tabshell.core.traits;
 
 /**
+ * Defines a component that can be blocked from receiving user input. When blocked, the component remains visually
+ * unchanged but does not respond to mouse or keyboard events.
  *
  * @author Pavel Castornii
  */
-public interface UnmodifiableWindow {
+public interface Blockable {
 
     /**
-     * Returns the title of the component.
+     * Sets the blocked state of this component.
      *
-     * @return
+     * @param blocked {@code true} to block user input, {@code false} to unblock
      */
-    String getTitle();
+    void setBlocked(boolean blocked);
 
     /**
-     * Returns the icon of the component.
-     * @return
+     * Returns whether this component is currently blocked.
+     *
+     * @return {@code true} if this component is blocked, {@code false} otherwise
      */
-    Icon<?> getIcon();
-
-    boolean isMaximized();
-
-    boolean isMaximizable();
-
-    boolean isMinimized();
-
-    boolean isMinimizable();
-
-    boolean isClosable();
-
-    double getWidth();
-
-    double getHeight();
-
     boolean isBlocked();
 }
