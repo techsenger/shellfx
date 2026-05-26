@@ -33,7 +33,6 @@ import com.techsenger.tabshell.layout.style.LayoutIcons;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.toolkit.core.Pair;
-import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2067,18 +2066,15 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
 
             // last child has parent space provider
-            getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
-                grandparentComponent.updateDividersOnUnwrap(index, oldPositions, childPositions);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{} Unwrapped {} into {}",
-                        getDescriptor().getLogPrefix(),
-                        otherTabDocks.stream().map(e -> e.getDescriptor().getFullName())
-                                .collect(Collectors.joining(", ")),
-                        grandparentComponent.getDescriptor().getFullName());
-                }
-                return false;
-            });
-
+            refresh();
+            grandparentComponent.updateDividersOnUnwrap(index, oldPositions, childPositions);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} Unwrapped {} into {}",
+                    getDescriptor().getLogPrefix(),
+                    otherTabDocks.stream().map(e -> e.getDescriptor().getFullName())
+                            .collect(Collectors.joining(", ")),
+                    grandparentComponent.getDescriptor().getFullName());
+            }
         } else {
             if (child instanceof SplitSpaceFxView<?> c) {
                 getComposer().setRoot(c);
@@ -2244,38 +2240,33 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         if (splitPane.getOrientation() == Orientation.VERTICAL) {
             oldSplitPaneSize = splitPane.getHeight();
         }
-        final var dividerSize = parent.computeDividerSize();
+        var dividerSize = parent.computeDividerSize();
 
         var oldPositions = parent.getNode().getDividerPositions();
         parent.getComposer().addChild(index, dock);
 
-        final var finalOldSplitPaneSize = oldSplitPaneSize;
-        final var finalIndex = index;
-        final var finalParent = parent;
-        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
-            var divSize = dividerSize;
-            if (divSize < 0) {
-                divSize = finalParent.computeDividerSize();
-            }
-            if (finalParent.getParent() != null && grandParentPositions != null) {
-                ((SplitSpaceFxView<?>) finalParent.getParent()).getNode().setDividerPositions(grandParentPositions);
-            }
-            var mainIndex = indexOfMain(finalParent);
-            if (mainIndex >= 0) {
-                finalParent.updateDividersOnAddWithMain(finalOldSplitPaneSize, oldPositions, divSize, mainIndex,
-                        finalIndex, size);
-            } else {
-                finalParent.updateDividersOnAddWithoutMain(finalOldSplitPaneSize, oldPositions, divSize,
-                        finalIndex, size);
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Added {} into {}", getDescriptor().getLogPrefix(),
-                        dock.getDescriptor().getFullName(),
-                        dock.getParent().getDescriptor().getFullName());
-                printTreeDebugInfo();
-            }
-            return false;
-        });
+        refresh();
+
+        if (dividerSize < 0) {
+            dividerSize = parent.computeDividerSize();
+        }
+        if (parent.getParent() != null && grandParentPositions != null) {
+            ((SplitSpaceFxView<?>) parent.getParent()).getNode().setDividerPositions(grandParentPositions);
+        }
+        var mainIndex = indexOfMain(parent);
+        if (mainIndex >= 0) {
+            parent.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex,
+                    index, size);
+        } else {
+            parent.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize,
+                    index, size);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} Added {} into {}", getDescriptor().getLogPrefix(),
+                    dock.getDescriptor().getFullName(),
+                    dock.getParent().getDescriptor().getFullName());
+            printTreeDebugInfo();
+        }
     }
 
     /**
@@ -2298,24 +2289,23 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         splitSpace.getComposer().removeChild(tabDockInfo.getIndex(), deinitialize);
-        final var dividerSize = splitSpace.computeDividerSize();
+        var dividerSize = splitSpace.computeDividerSize();
 
-        final var finalOldSplitSpaneSize = oldSplitPaneSize;
-        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
-            var divSize = dividerSize;
-            if (divSize < 0) {
-                divSize = splitSpace.computeDividerSize();
-            }
-            var mainChildIndex = indexOfMain(splitSpace);
-            if (mainChildIndex != -1) {
-                splitSpace.updateDividersOnRemoveWithMain(finalOldSplitSpaneSize, oldPositions, divSize,
-                        mainChildIndex, tabDockInfo.getIndex());
-            } else {
-                splitSpace.updateDividersOnRemoveWithoutMain(finalOldSplitSpaneSize, oldPositions, divSize,
-                        tabDockInfo.getIndex());
-            }
-            return false;
-        });
+        // refresh
+        refresh();
+
+        if (dividerSize < 0) {
+            dividerSize = splitSpace.computeDividerSize();
+        }
+        var mainChildIndex = indexOfMain(splitSpace);
+        if (mainChildIndex != -1) {
+            splitSpace.updateDividersOnRemoveWithMain(oldSplitPaneSize, oldPositions, dividerSize,
+                    mainChildIndex, tabDockInfo.getIndex());
+        } else {
+            splitSpace.updateDividersOnRemoveWithoutMain(oldSplitPaneSize, oldPositions, dividerSize,
+                    tabDockInfo.getIndex());
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug("{} Removed {} from {}", getDescriptor().getLogPrefix(),
                     componentToRemove.getDescriptor().getFullName(),
@@ -2537,5 +2527,10 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             case LEFT -> getComposer().leftBar;
             default -> throw new AssertionError();
         };
+    }
+
+    private void refresh() {
+        getNode().applyCss();
+        getNode().layout();
     }
 }
