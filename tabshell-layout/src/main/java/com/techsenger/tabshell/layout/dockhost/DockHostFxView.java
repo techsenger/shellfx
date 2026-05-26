@@ -1650,11 +1650,14 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 // it is necessary to create a new info with a new index for example,
                 // if there are new children, besides the old parent should be used
                 var oldInfo = oldContainer.createInfo(oldParent);
-                removeTabDock(oldParent, oldInfo, true);
+                removeTabDock(oldParent, oldInfo, false);
 
                 // finally replacing the placeholder
                 SplitSpaceFxView<?> newParent = (SplitSpaceFxView<?>) getComposer().placeholder.getParent();
-                newParent.getComposer().replacePlaceholder(dockInfo.getNewInfo().getIndex(), dragDock);
+                // it is not possible to use dockInfo.getNewInfo().getIndex()
+                // because after removing tabDock indexes have changed
+                var placeholderIndex = newParent.getChildren().indexOf(getComposer().placeholder);
+                newParent.getComposer().replacePlaceholder(placeholderIndex, dragDock);
                 logger.debug("{} Replaced {} with {}", getDescriptor().getLogPrefix(),
                         getComposer().placeholder.getDescriptor().getFullName(),
                         dragDock.getDescriptor().getFullName());
