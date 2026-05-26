@@ -88,6 +88,11 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
         }
 
         @Override
+        public <T extends AreaFxView<?>> T getWorkspace(Class<T> clazz) {
+            return (T) this.workspace;
+        }
+
+        @Override
         public AreaPort getWorkspacePort() {
             return this.workspace == null ? null : this.workspace.getPresenter();
         }
