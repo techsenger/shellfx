@@ -36,8 +36,6 @@ public interface ShellFxView<P extends ShellPresenter<?>> extends WindowFxView<P
 
         AreaFxView<?> getWorkspace();
 
-        <T extends AreaFxView<?>> T getWorkspace(Class<T> clazz);
-
         /**
          * Defines the component that is currently forms the menu in the Shell.
          * @return
