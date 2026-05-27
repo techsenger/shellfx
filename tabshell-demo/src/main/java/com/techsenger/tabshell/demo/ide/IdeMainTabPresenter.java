@@ -94,7 +94,7 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
     }
 
     protected void onDialogOpen() {
-        var dialog = getView().getComposer().addDemoDialog(true);
+        var dialog = getView().getComposer().openDemoDialog(true);
         dialog.setResultAction((name) -> {
             if (name == DemoResultButtons.OK) {
                 dialog.requestClose();
@@ -103,6 +103,6 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
     }
 
     protected void onPopupOpen(OverlayScope scope) {
-        getView().getComposer().addDemoPopup(scope);
+        getView().getComposer().openDemoPopup(scope);
     }
 }

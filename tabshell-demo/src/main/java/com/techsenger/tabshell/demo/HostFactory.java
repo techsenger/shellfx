@@ -53,7 +53,6 @@ public final class HostFactory {
         var view = new DockHostFxView<>();
         var params = new DockHostParams(historyProvider);
         params.setHistoryPolicy(HistoryPolicy.NONE);
-        params.setHistoryProvider(historyProvider);
         var presenter = new DockHostPresenter<>(view, params);
         presenter.initialize();
         view.getComposer().setBottomBarPolicy(SideBarPolicy.EXISTS_ALWAYS);

@@ -26,9 +26,9 @@ import javafx.collections.ObservableList;
  */
 public interface DialogManager extends PopupManager {
 
-    void showDialog(DialogFxView<?> dialogView);
+    void addDialog(DialogFxView<?> dialogView);
 
-    void hideDialog(DialogFxView<?> dialogView);
+    void removeDialog(DialogFxView<?> dialogView);
 
     /**
      * Returns an unmodifiable list of dialogs.

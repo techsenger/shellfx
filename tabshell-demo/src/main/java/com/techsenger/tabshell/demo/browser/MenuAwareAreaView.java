@@ -29,9 +29,9 @@ public interface MenuAwareAreaView extends AreaView {
 
     interface Composer extends AreaView.Composer {
 
-        DialogPort addDemoDialog(OverlayScope scope, boolean resizable);
+        DialogPort openDemoDialog(OverlayScope scope, boolean resizable);
 
-        PopupPort addDemoPopup(OverlayScope scope);
+        PopupPort openDemoPopup(OverlayScope scope);
     }
 
     @Override

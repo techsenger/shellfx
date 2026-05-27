@@ -31,7 +31,7 @@ public interface TabView extends ChildView, DialogContainerView {
 
         ShellPort getShellPort();
 
-        void remove();
+        void close();
     }
 
     @Override

@@ -44,6 +44,13 @@ public interface DialogContainerFxView<P extends ParentPresenter<?>> extends Pop
         void removeDialog(DialogFxView<?> dialog);
 
         /**
+         * Removes the specified dialog component from the component tree and deinitializes it.
+         *
+         * @param dialog the dialog component to close
+         */
+        void closeDialog(DialogFxView<?> dialog);
+
+        /**
          * Returns an unmodifiable list of dialogs.
          * @return
          */

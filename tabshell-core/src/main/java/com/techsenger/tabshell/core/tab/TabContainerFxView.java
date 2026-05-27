@@ -32,6 +32,8 @@ public interface TabContainerFxView<P extends TabContainerPresenter<?>> extends 
 
         void removeTab(TabFxView<?> tab);
 
+        void closeTab(TabFxView<?> tab);
+
         /**
          * Returns an unmodifiable list of tabs.
          *

@@ -143,6 +143,11 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         public void removeTab(TabFxView<?> tab) {
             view.tabPane.getTabs().remove(tab.getNode());
             view.getModifiableChildren().remove(tab);
+        }
+
+        @Override
+        public void closeTab(TabFxView<?> tab) {
+            removeTab(tab);
             tab.getPresenter().deinitializeTree();
         }
 

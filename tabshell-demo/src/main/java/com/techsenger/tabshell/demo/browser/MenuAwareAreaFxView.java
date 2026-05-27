@@ -53,7 +53,7 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
         private TabFxView<?> mainTab;
 
         @Override
-        public DialogPort addDemoDialog(OverlayScope scope, boolean resizable) {
+        public DialogPort openDemoDialog(OverlayScope scope, boolean resizable) {
             var v = new DemoDialogFxView();
             var p = new DemoDialogPresenter(v);
             p.initialize();
@@ -68,7 +68,7 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
         }
 
         @Override
-        public PopupPort addDemoPopup(OverlayScope scope) {
+        public PopupPort openDemoPopup(OverlayScope scope) {
             var view = new DemoPopupFxView();
             var params = new PopupParams(false);
             var presenter = new DemoPopupPresenter(view, params);

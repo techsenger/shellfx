@@ -95,7 +95,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             if (childrenCreated) {
                 return;
             }
-            // remove the fake child item
+            // close the fake child item
             getChildren().clear();
             for (var child : getValue().getChildren()) {
                 var childItem = createNodeItem(child);

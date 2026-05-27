@@ -53,7 +53,7 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
         private final IdeMainTabFxView<P> view = IdeMainTabFxView.this;
 
         @Override
-        public DialogPort addDemoDialog(boolean resizable) {
+        public DialogPort openDemoDialog(boolean resizable) {
             var v = new DemoDialogFxView();
             var p = new DemoDialogPresenter(v);
             p.initialize();
@@ -63,7 +63,7 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
         }
 
         @Override
-        public PopupPort addDemoPopup(OverlayScope scope) {
+        public PopupPort openDemoPopup(OverlayScope scope) {
             var v = new DemoPopupFxView();
             var params = new PopupParams(false);
             var p = new DemoPopupPresenter(v, params);

@@ -53,7 +53,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             implements DialogsDialogView.Composer {
 
         @Override
-        public DialogPort addAlertDialog(AlertDialogParams params, String message) {
+        public DialogPort openAlertDialog(AlertDialogParams params, String message) {
             var view = new AlertDialogFxView<>();
             var presenter = new AlertDialogPresenter<>(view, params);
             presenter.initialize();
@@ -64,7 +64,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         }
 
         @Override
-        public NameValueDialogPort addNameValueDialog() {
+        public NameValueDialogPort openNameValueDialog() {
             var view = new NameValueDialogFxView<>();
             var presenter = new NameValueDialogPresenter<>(view, new DialogParams());
             presenter.initialize();
@@ -75,7 +75,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         }
 
         @Override
-        public FileChooserDialogPort addFileChooserDialog(FileChooserDialogParams params) {
+        public FileChooserDialogPort openFileChooserDialog(FileChooserDialogParams params) {
             var view = new FileChooserDialogFxView<>();
             var presenter = new FileChooserDialogPresenter<>(view, params);
             presenter.initialize();
@@ -86,7 +86,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         }
 
         @Override
-        public DialogPort addPagedDialog(PageDialogParams params) {
+        public DialogPort openPagedDialog(PageDialogParams params) {
             var view = new PageDialogFxView();
             var presenter = new PageDialogPresenter(view, params);
             presenter.initialize();

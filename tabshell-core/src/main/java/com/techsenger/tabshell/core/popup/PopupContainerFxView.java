@@ -45,6 +45,13 @@ public interface PopupContainerFxView<P extends ParentPresenter<?>> extends Pare
         void removePopup(PopupFxView<?> popup);
 
         /**
+         * Removes the specified popup component from the component tree and deinitializes it.
+         *
+         * @param popup the popup component to close
+         */
+        void closePopup(PopupFxView<?> popup);
+
+        /**
          * Returns an an modifiable list of popups.
          */
         @Unmodifiable List<? extends PopupFxView<?>> getPopups();

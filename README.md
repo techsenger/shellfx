@@ -61,6 +61,7 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
 * [Extension Registries](#registries)
     * [Control Registry](#registries-control)
     * [Storage Registry](#registries-storage)
+* [Naming Convention](#naming-convention)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
 * [Dependencies](#dependencies)
@@ -172,9 +173,10 @@ through the `ShellFxView` interface rather than a concrete class.
 
 When working with components, there are several important points to keep in mind:
 
-1. A component must be initialized manually (by calling the `initialize()` method) and is typically deinitialized by
-its parent component (by calling the `deinitialize()` method). This approach allows developers to perform additional
-configuration or setup after initialization but before attaching the component to the component tree.
+1. The developer must control the component lifecycle. Component initialization is performed either manually or in
+the `open*` or `show*` methods of `Composer`, which may delegate this logic to `create*` methods (using `create*`
+methods makes it easy to replace the component being created). Component deinitialization is performed either manually
+or in the `close*` or `hide*` methods of `Composer`. See [Naming Convention](#naming-convention) for details.
 
 2. Working with components involves maintaining two hierarchies — the component tree and the JavaFX scene graph.
 Therefore, any addition or removal of a component must be reflected in both structures. For example, removing a component
@@ -454,6 +456,42 @@ The `FileChooser` dialog is designed to work with different `FileStorage` implem
 
 Both the `FileChooser` dialog and the `StorageRegistry` are optional components so `StorageRegistry` is not
 part of the `ShellContext`.
+
+## Naming Convention <a name="naming-convention"></a>
+
+TabShell is built on top of PatternFX and fully conforms to its patterns. Because of this, the naming of classes and
+interfaces for components follows a consistent scheme:
+
+1. A unique name (may be omitted for brevity) — `Alert`, `File`, `Info`, etc.
+2. The component role — `Tab`, `Window`, `Popup`, `Area`, `Panel`, `ToolBar`, etc.
+3. The component part — `View`, `Presenter`, `FxView`, `Params`, `Port`, `History` etc.
+
+Examples: `AlertDialogFxView`, `EditorTabPresenter`, `InfoPopupParams`, `ToolBarPort`
+
+This approach is justified by the following reasons. When a complex component is split into multiple components
+(due to complexity, reuse of components, or use of a docking layout), there may be several components with the same
+unique name but different roles — such as `FooTab` and `FooArea`. Another reason is that the role of a component
+immediately makes it clear how to work with it and where to place it.
+
+When working with `Composer` methods, there are two categories of methods:
+
+1. Methods that create/destroy a component and compose/decompose it. It is important to note that these methods
+manage the component lifecycle, meaning they are responsible for component initialization and deinitialization.
+Such methods include: `open*`, `close*`, `show*`, and `hide*`.
+
+2. Methods that only compose/decompose a component. These methods are responsible solely for structural component
+composition and do not manage the component lifecycle. Such methods include: `add*`, `remove*`, and `replace*`.
+
+Examples of `Composer` methods:
+
+| Component | Create + Add         | Remove + Destroy      | Add only            | Remove only            |
+|-----------|----------------------|-----------------------|---------------------|------------------------|
+| Window    | `openWindow(params)` | `closeWindow(window)` | `addWindow(window)` | `removeWindow(window)` |
+| Tab       | `openTab(params)`    | `closeTab(tab)`       | `addTab(tab)`       | `removeTab(tab)`       |
+| Dialog    | `openDialog(params)` | `closeDialog(dialog)` | `addDialog(dialog)` | `removeDialog(dialog)` |
+| Popup     | `openPopup(params)`  | `closePopup(popup)`   | `addPopup(popup)`   | `removePopup(popup)`   |
+| Page      | `openPage(params)`   | `closePage(page)`     | `addPage(page)`     | `removePage(page)`     |
+| Area      | `openArea(params)`   | `closeArea(area)`     | `addArea(area)`     | `removeArea(area)`     |
 
 ## Quick Start <a name="quick-start"></a>
 

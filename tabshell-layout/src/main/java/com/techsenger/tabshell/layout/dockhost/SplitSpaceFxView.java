@@ -60,12 +60,18 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?>> extends Abstract
         }
 
         public void removeChild(int index) {
-            removeChild(index, true);
+            var child = removeChildFromView(index);
+            var childName = child.getDescriptor().getFullName();
+            logger.debug("{} Removed {}; index: {}", getDescriptor().getLogPrefix(), childName, index);
         }
 
-        public void replacePlaceholder(int index, TabDockFxView<?> tabDock) {
+        void replacePlaceholder(int index, TabDockFxView<?> tabDock) {
             removeChildFromView(index);
             addChild(index, tabDock);
+        }
+
+        AreaFxView<?> getChild(int index) {
+            return (AreaFxView<?>) getModifiableChildren().get(index);
         }
 
         protected DockHostFxView<?> getDockHost() {
@@ -75,13 +81,6 @@ public class SplitSpaceFxView<P extends SplitSpacePresenter<?>> extends Abstract
         protected void setDockHost(DockHostFxView<?> dockHost) {
             if (this.dockHost == null) {
                 this.dockHost = dockHost;
-            }
-        }
-
-        void removeChild(int index, boolean deinitialize) {
-            var child = removeChildFromView(index);
-            if (deinitialize) {
-                child.getPresenter().deinitializeTree();
             }
         }
 

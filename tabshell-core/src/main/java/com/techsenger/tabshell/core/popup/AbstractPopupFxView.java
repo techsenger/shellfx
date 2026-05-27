@@ -39,10 +39,10 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
         private final AbstractPopupFxView<P> view = AbstractPopupFxView.this;
 
         @Override
-        public void remove() {
+        public void close() {
             var parent = view.getParent();
             if (parent != null) {
-                ((PopupContainerFxView.Composer) parent.getComposer()).removePopup(view);
+                ((PopupContainerFxView.Composer) parent.getComposer()).closePopup(view);
             }
         }
     }

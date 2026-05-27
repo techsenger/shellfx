@@ -217,7 +217,7 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
 
         void removePopupFromLayout() {
             if (getPopupPort() != null) {
-                dockHost.getComposer().removeTabPopup(view.getPresenter().getSide());
+                dockHost.getComposer().closeTabPopup(view.getPresenter().getSide());
             }
         }
     }
@@ -328,7 +328,7 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
         var composer = getComposer();
         if (composer.tabDocks.isEmpty()
                 && composer.dockHost.getComposer().getBarPolicy(side) != SideBarPolicy.EXISTS_ALWAYS) {
-            composer.dockHost.getComposer().removeBar(side);
+            composer.dockHost.getComposer().hideBar(side);
         }
         composer.dockHost.getComposer().restoreTabDock(tabDock);
     }

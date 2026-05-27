@@ -99,22 +99,22 @@ public class DefaultDialogManager implements DialogManager {
     }
 
     @Override
-    public void showDialog(DialogFxView<?> dialogView) {
+    public void addDialog(DialogFxView<?> dialogView) {
         if (!modifiableDialogs.isEmpty()) {
             var last = modifiableDialogs.getLast();
             last.setActive(false);
         }
         modifiableDialogs.add(dialogView);
-        doShow(dialogView, null);
+        doAdd(dialogView, null);
         dialogView.setActive(true);
         var aligner = new DialogAligner(stackPane, dialogView);
         stackPane.getScene().addPostLayoutPulseListener(aligner);
     }
 
     @Override
-    public void hideDialog(DialogFxView<?> dialogView) {
+    public void removeDialog(DialogFxView<?> dialogView) {
         if (modifiableDialogs.remove(dialogView)) {
-            doHide(dialogView);
+            doShow(dialogView);
             if (!modifiableDialogs.isEmpty()) {
                 var last = modifiableDialogs.getLast();
                 last.setActive(true);
@@ -128,15 +128,15 @@ public class DefaultDialogManager implements DialogManager {
     }
 
     @Override
-    public void showPopup(PopupFxView<?> view, Anchors anchors) {
+    public void addPopup(PopupFxView<?> view, Anchors anchors) {
         modifiablePopups.add(view);
-        doShow(view, anchors);
+        doAdd(view, anchors);
     }
 
     @Override
-    public void hidePopup(PopupFxView<?> view) {
+    public void removePopup(PopupFxView<?> view) {
         if (modifiablePopups.remove(view)) {
-            doHide(view);
+            doShow(view);
         }
     }
 
@@ -145,7 +145,7 @@ public class DefaultDialogManager implements DialogManager {
         return popups;
     }
 
-    private void doShow(PopupFxView<?> view, Anchors anchors) {
+    private void doAdd(PopupFxView<?> view, Anchors anchors) {
         var node = view.getNode();
         // node.setMouseTransparent(false);
         //for every node a bg pane is created
@@ -174,7 +174,7 @@ public class DefaultDialogManager implements DialogManager {
         stackPane.getChildren().add(bgPane);
     }
 
-    private void doHide(PopupFxView<?> view) {
+    private void doShow(PopupFxView<?> view) {
         stackPane.getChildren().remove(view.getNode().getParent());
         if (view.getPresenter().isModal()) {
             allModalComponents.remove(view);

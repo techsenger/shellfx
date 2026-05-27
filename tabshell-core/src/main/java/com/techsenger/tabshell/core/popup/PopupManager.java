@@ -26,9 +26,9 @@ import javafx.collections.ObservableList;
  */
 public interface PopupManager {
 
-    void showPopup(PopupFxView<?> view, Anchors anchors);
+    void addPopup(PopupFxView<?> view, Anchors anchors);
 
-    void hidePopup(PopupFxView<?> view);
+    void removePopup(PopupFxView<?> view);
 
     /**
      * Returns an unmodifiable list of popups.

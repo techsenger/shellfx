@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.layout.dockhost;
 
+import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.tabshell.core.area.AreaParams;
 
@@ -26,6 +27,7 @@ import com.techsenger.tabshell.core.area.AreaParams;
 public class DockHostParams extends AreaParams {
 
     public DockHostParams(HistoryProvider<? extends DockHostHistory> history) {
+        setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(history);
     }
 }

@@ -32,15 +32,15 @@ public interface DockHostView extends AreaView {
 
         AreaPort getMainPort();
 
+        void showBar(Side side);
+
+        void hideBar(Side side);
+
         SideBarPort getRightBarPort();
 
         SideBarPort getBottomBarPort();
 
         SideBarPort getLeftBarPort();
-
-        void addBar(Side side);
-
-        void removeBar(Side side);
 
         SideBarPort getBarPort(Side side);
 

@@ -27,7 +27,7 @@ public interface PopupFxView<P extends PopupPresenter<?>> extends AreaFxView<P>,
 
     interface Composer extends AreaFxView.Composer, PopupView.Composer {
 
-        void remove();
+        void close();
     }
 
     @Override

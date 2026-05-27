@@ -115,14 +115,19 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
         @Override
         public void addDialog(DialogFxView<?> dialog) {
-            view.dialogManager.showDialog(dialog);
+            view.dialogManager.addDialog(dialog);
             view.getModifiableChildren().add(dialog);
         }
 
         @Override
         public void removeDialog(DialogFxView<?> dialog) {
-            view.dialogManager.hideDialog(dialog);
+            view.dialogManager.removeDialog(dialog);
             view.getModifiableChildren().remove(dialog);
+        }
+
+        @Override
+        public void closeDialog(DialogFxView<?> dialog) {
+            removeDialog(dialog);
             dialog.getPresenter().deinitializeTree();
         }
 
@@ -138,14 +143,19 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
         @Override
         public void addPopup(PopupFxView<?> popup, Anchors anchors) {
-            view.dialogManager.showPopup(popup, anchors);
+            view.dialogManager.addPopup(popup, anchors);
             view.getModifiableChildren().add(popup);
         }
 
         @Override
         public void removePopup(PopupFxView<?> popup) {
-            view.dialogManager.hidePopup(popup);
+            view.dialogManager.removePopup(popup);
             view.getModifiableChildren().remove(popup);
+        }
+
+        @Override
+        public void closePopup(PopupFxView<?> popup) {
+            removePopup(popup);
             popup.getPresenter().deinitializeTree();
         }
 
@@ -191,14 +201,14 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         }
 
         @Override
-        public void hideDialog(DialogFxView<?> dialog) {
-            super.hideDialog(dialog);
+        public void addDialog(DialogFxView<?> dialog) {
+            super.addDialog(dialog);
             updateUnfocused();
         }
 
         @Override
-        public void showDialog(DialogFxView<?> dialog) {
-            super.showDialog(dialog);
+        public void removeDialog(DialogFxView<?> dialog) {
+            super.removeDialog(dialog);
             updateUnfocused();
         }
     }

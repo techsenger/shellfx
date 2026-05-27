@@ -55,7 +55,7 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     @Override
     public void close() {
-        getView().getComposer().remove();
+        getView().getComposer().close();
     }
 
     @Override

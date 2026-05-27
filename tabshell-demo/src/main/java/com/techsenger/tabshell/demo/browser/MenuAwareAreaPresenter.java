@@ -75,7 +75,7 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     }
 
     protected void onDialogOpen(OverlayScope scope) {
-        var dialog = getView().getComposer().addDemoDialog(scope, true);
+        var dialog = getView().getComposer().openDemoDialog(scope, true);
         dialog.setResultAction((name) -> {
             if (name == DemoResultButtons.OK) {
                 dialog.requestClose();
@@ -84,6 +84,6 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     }
 
     protected void onPopupOpen(OverlayScope scope) {
-        getView().getComposer().addDemoPopup(scope);
+        getView().getComposer().openDemoPopup(scope);
     }
 }

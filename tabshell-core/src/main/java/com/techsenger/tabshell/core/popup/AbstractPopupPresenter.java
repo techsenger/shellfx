@@ -43,7 +43,7 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
 
     @Override
     public void close() {
-        getView().getComposer().remove();
+        getView().getComposer().close();
     }
 
     @Override

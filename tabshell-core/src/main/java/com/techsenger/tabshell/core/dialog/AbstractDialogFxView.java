@@ -72,10 +72,10 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         private final AbstractDialogFxView<P> view = AbstractDialogFxView.this;
 
         @Override
-        public void remove() {
+        public void close() {
             var parent = view.getParent();
             if (parent != null) {
-                ((DialogContainerFxView.Composer) parent.getComposer()).removeDialog(view);
+                ((DialogContainerFxView.Composer) parent.getComposer()).closeDialog(view);
             }
         }
     }

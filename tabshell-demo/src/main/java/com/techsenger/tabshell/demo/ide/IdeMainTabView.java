@@ -29,9 +29,9 @@ public interface IdeMainTabView extends TabView {
 
     interface Composer extends TabView.Composer {
 
-        DialogPort addDemoDialog(boolean resizable);
+        DialogPort openDemoDialog(boolean resizable);
 
-        PopupPort addDemoPopup(OverlayScope scope);
+        PopupPort openDemoPopup(OverlayScope scope);
     }
 
     @Override

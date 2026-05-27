@@ -26,7 +26,7 @@ public interface PopupView extends AreaView {
 
     interface Composer extends AreaView.Composer {
 
-        void remove();
+        void close();
     }
 
     @Override

@@ -43,12 +43,14 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
 
         private final TabDockFxView<P> view = TabDockFxView.this;
 
+        private DockHostFxView<?> dockHost;
+
         @Override
         public void removeTab(TabFxView<?> tab) {
             super.removeTab(tab);
             if (view.getNode().getTabs().isEmpty()
                     && getPresenter().getTransitionState() != TabDockTransitionState.TO_MINIMIZED) {
-                dockHost.getComposer().removeTabDock(view);
+                dockHost.getComposer().closeTabDock(view);
             }
         }
 
@@ -61,6 +63,17 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         protected @Unmodifiable List<? extends TabFxView<?>> getDetachedTabs() {
             return super.getDetachedTabs();
         }
+
+        protected DockHostFxView<?> getDockHost() {
+            return dockHost;
+        }
+
+        protected void setDockHost(DockHostFxView<?> dockHost) {
+            if (this.dockHost == null) {
+                this.dockHost = dockHost;
+                getNode().setDragAndDropContext(dockHost.getDragAndDropContext());
+            }
+        }
     }
 
     private final FontIconView dragIconView = new FontIconView(LayoutIcons.DRAG_VERTICAL);
@@ -68,8 +81,6 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     private final Button minimizeButton = new Button(null, new FontIconView(LayoutIcons.REMOVE));
 
     private final Button closeButton = new Button(null, new FontIconView(LayoutIcons.CLOSE));
-
-    private DockHostFxView<?> dockHost;
 
     protected TabDockFxView() {
         super(false);
@@ -141,7 +152,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
 
         var tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
-        tabHeaderArea.setTabDragContentFactory((s) -> dockHost.createTabDragContent(s));
+        tabHeaderArea.setTabDragContentFactory((s) -> getComposer().getDockHost().createTabDragContent(s));
         tabHeaderArea.setTabDragScrollStep(10.0);
 
     }
@@ -149,12 +160,12 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        dragIconView.setOnDragDetected(e -> dockHost.onDockDragDetected(this, dragIconView, e));
-        dragIconView.setOnMouseDragged(e -> dockHost.onDockMouseDragged(this, dragIconView, e));
-        dragIconView.setOnMouseReleased(e -> dockHost.onDockMouseReleased(this, dragIconView, e));
+        dragIconView.setOnDragDetected(e -> getComposer().getDockHost().onDockDragDetected(this, dragIconView, e));
+        dragIconView.setOnMouseDragged(e -> getComposer().getDockHost().onDockMouseDragged(this, dragIconView, e));
+        dragIconView.setOnMouseReleased(e -> getComposer().getDockHost().onDockMouseReleased(this, dragIconView, e));
         minimizeButton.setOnAction(e -> {
             getPresenter().onMinimize();
-            dockHost.getComposer().minimizeTabDock(this);
+            getComposer().getDockHost().getComposer().minimizeTabDock(this);
             getPresenter().onMinimized();
         });
         closeButton.setOnAction(e -> getPresenter().requestClose());
@@ -162,20 +173,20 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         var tabPane = getNode();
         tabPane.addEventHandler(TabEvent.TAB_DRAG_STARTED, (e) -> {
             if (e.getTarget() == getNode()) {
-                dockHost.onTabDrag(e.getTab());
+                getComposer().getDockHost().onTabDrag(e.getTab());
                 e.consume();
             }
         });
         // this handler is called when mouse is over TabHeaderArea
         tabPane.addEventHandler(TabEvent.TAB_DROPPED, (e) -> {
             if (e.getTarget() == getNode()) {
-                dockHost.onTabDrop(e.getTab());
+                getComposer().getDockHost().onTabDrop(e.getTab());
                 e.consume();
             }
         });
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
-                e -> dockHost.onTabHeaderAreaMouseDragOver(tabPane, e));
+                e -> getComposer().getDockHost().onTabHeaderAreaMouseDragOver(tabPane, e));
     }
 
     protected Button getMinimizeButton() {
@@ -205,16 +216,5 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
 
     protected int getDragIconViewIndex() {
         return 0;
-    }
-
-    protected DockHostFxView<?> getDockHost() {
-        return dockHost;
-    }
-
-    protected void setDockHost(DockHostFxView<?> dockHost) {
-        if (this.dockHost == null) {
-            this.dockHost = dockHost;
-            getNode().setDragAndDropContext(dockHost.getDragAndDropContext());
-        }
     }
 }

@@ -33,13 +33,13 @@ public interface DialogsDialogView extends DialogView {
 
     interface Composer extends DialogView.Composer {
 
-        DialogPort addAlertDialog(AlertDialogParams params, String message);
+        DialogPort openAlertDialog(AlertDialogParams params, String message);
 
-        NameValueDialogPort addNameValueDialog();
+        NameValueDialogPort openNameValueDialog();
 
-        FileChooserDialogPort addFileChooserDialog(FileChooserDialogParams params);
+        FileChooserDialogPort openFileChooserDialog(FileChooserDialogParams params);
 
-        DialogPort addPagedDialog(PageDialogParams params);
+        DialogPort openPagedDialog(PageDialogParams params);
     }
 
     @Override
