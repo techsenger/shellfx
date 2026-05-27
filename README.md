@@ -464,7 +464,7 @@ interfaces for components follows a consistent scheme:
 
 1. A unique name (may be omitted for brevity) — `Alert`, `File`, `Info`, etc.
 2. The component role — `Tab`, `Window`, `Popup`, `Area`, `Panel`, `ToolBar`, etc.
-3. The component part — `View`, `Presenter`, `FxView`, `Params`, `Port`, `History` etc.
+3. The component element — `View`, `Presenter`, `FxView`, `Params`, `Port`, `History` etc.
 
 Examples: `AlertDialogFxView`, `EditorTabPresenter`, `InfoPopupParams`, `ToolBarPort`
 
@@ -482,7 +482,7 @@ Such methods include: `open*`, `close*`, `show*`, and `hide*`.
 2. Methods that only compose/decompose a component. These methods are responsible solely for structural component
 composition and do not manage the component lifecycle. Such methods include: `add*`, `remove*`, and `replace*`.
 
-Examples of `Composer` methods:
+Examples of `Composer` methods using `open*` and `close*`:
 
 | Component | Create + Add         | Remove + Destroy      | Add only            | Remove only            |
 |-----------|----------------------|-----------------------|---------------------|------------------------|
