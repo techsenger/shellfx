@@ -22,7 +22,7 @@ import com.techsenger.patternfx.mvp.ParentView;
  *
  * @author Pavel Castornii
  */
-public interface TreePageContainerView extends ParentView {
+public interface TreePageContainerView extends ParentView, TreePageContainerPort.ViewAccess {
 
     interface Composer extends ParentView.Composer, TreePageContainerPort.Composer {
 

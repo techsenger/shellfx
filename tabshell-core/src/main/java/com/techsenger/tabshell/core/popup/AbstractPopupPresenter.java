@@ -31,6 +31,8 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
 
     private double prefHeight;
 
+    private boolean waiting;
+
     public AbstractPopupPresenter(V view, PopupParams params) {
         super(view, params);
         this.modal = params.isModal();
@@ -56,14 +58,30 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
         return this.prefHeight;
     }
 
+    @Override
     public void setPrefWidth(double prefWidth) {
         this.prefWidth = prefWidth;
         getView().setPrefWidth(prefWidth);
     }
 
+    @Override
     public void setPrefHeight(double prefHeight) {
         this.prefHeight = prefHeight;
         getView().setPrefHeight(prefHeight);
+    }
+
+    @Override
+    public boolean isWaiting() {
+        return waiting;
+    }
+
+    @Override
+    public void setWaiting(boolean waiting) {
+        if (this.waiting == waiting) {
+            return;
+        }
+        this.waiting = waiting;
+        getView().setWaiting(waiting);
     }
 
     @Override

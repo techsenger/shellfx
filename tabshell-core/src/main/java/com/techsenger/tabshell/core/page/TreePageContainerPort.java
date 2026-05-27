@@ -38,7 +38,12 @@ public interface TreePageContainerPort extends ParentPort {
         PagePort getSelectedPagePort();
     }
 
-    Composer getComposer();
+    interface ViewAccess {
+
+        Composer getComposer();
+    }
+
+    ViewAccess getViewAccess();
 
     void selectPage(TreePageItem item);
 }

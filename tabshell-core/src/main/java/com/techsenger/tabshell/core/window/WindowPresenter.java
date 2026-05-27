@@ -24,6 +24,6 @@ import com.techsenger.tabshell.core.CloseAwarePresenter;
  * @author Pavel Castornii
  */
 public interface WindowPresenter<V extends WindowView> extends ParentPresenter<V>, CloseAwarePresenter<V>,
-        ModifiableWindow, WindowPort {
+        WindowPort {
 
 }

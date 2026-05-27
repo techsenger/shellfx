@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Pavel Castornii.
+ * Copyright 2026 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.dockhost;
-
-import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabshell.core.area.AreaPort;
-import java.util.List;
+package com.techsenger.tabshell.core.popup;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface SideBarPort extends AreaPort {
+public interface PopupShared {
 
-    interface Composer {
+    void setPrefWidth(double value);
 
-        /**
-         * Returns an unmodifiable list of minimized tab docks.
-         *
-         * @return
-         */
-        @Unmodifiable List<? extends TabDockPort> getTabDockPorts();
-    }
+    void setPrefHeight(double value);
 
-    interface ViewAccess {
-
-        Composer getComposer();
-    }
-
-    ViewAccess getViewAccess();
+    /**
+     * Enables or disables the waiting state of the dialog.
+     * <p>
+     * When the waiting state is enabled, user interaction is temporarily disabled
+     * and the dialog indicates that a background operation is in progress.
+     *
+     * @param waiting {@code true} to enable the waiting state, {@code false} to restore normal interaction
+     */
+    void setWaiting(boolean waiting);
 }

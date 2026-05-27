@@ -49,6 +49,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
@@ -109,6 +110,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     private Comparator<GenericFile> fileComparator;
 
+    private String locationCaption;
+
     public FileChooserDialogPresenter(V view, FileChooserDialogParams params) {
         super(view, params);
         this.settings = params.getSettings();
@@ -138,14 +141,17 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public FileChooserType getType() {
         return type;
     }
 
+    @Override
     public URI getInitialDirectory() {
         return initialDirectory;
     }
 
+    @Override
     public String getInitialFileName() {
         return initialFileName;
     }
@@ -161,51 +167,62 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         super.onResult(name);
     }
 
+    @Override
     public List<Location> getLocations() {
         return locations;
     }
 
+    @Override
     public void setLocations(List<Location> locations) {
         this.locations = locations;
         getView().setLocations(locations);
     }
 
+    @Override
     public Location getLocation() {
         return location;
     }
 
+    @Override
     public void setLocation(Location location) {
         this.location = location;
         getView().setLocation(location);
     }
 
+    @Override
     public boolean isListSelected() {
         return listSelected;
     }
 
+    @Override
     public void setListSelected(boolean listSelected) {
         this.listSelected = listSelected;
         getView().setListSelected(listSelected);
     }
 
+    @Override
     public boolean isDetailsSelected() {
         return detailsSelected;
     }
 
+    @Override
     public void setDetailsSelected(boolean detailsSelected) {
         this.detailsSelected = detailsSelected;
         getView().setDetailsSelected(detailsSelected);
     }
 
+    @Override
     public List<GenericFile> getFiles() {
         return files;
     }
 
+    @Override
     public void setFiles(List<GenericFile> files) {
         this.files = files;
         getView().setFiles(files);
     }
 
+    @Override
     public GenericFile getSelectedFile() {
         if (this.selectedFileIndex >= 0) {
             return this.files.get(selectedFileIndex);
@@ -214,32 +231,40 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         }
     }
 
+    @Override
     public int getSelectedFileIndex() {
         return selectedFileIndex;
     }
 
+    @Override
     public ExtensionFilter getExtensionFilter() {
         return extensionFilter;
     }
 
+    @Override
     public void setExtensionFilter(ExtensionFilter extensionFilter) {
         this.extensionFilter = extensionFilter;
         getView().setExtensionFilter(extensionFilter);
         updateFiles(getSelectedFile());
     }
 
+    @Override
     public String getFileName() {
         return fileName;
     }
 
+    @Override
     public void setFileName(String fileName) {
         this.fileName = fileName;
         getView().setFileName(fileName);
     }
+
+    @Override
     public List<ExtensionFilter> getExtensionFilters() {
         return extensionFilters;
     }
 
+    @Override
     public void setExtensionFilters(List<ExtensionFilter> extensionFilters) {
         this.extensionFilters = extensionFilters;
         getView().setExtensionFilters(extensionFilters);
@@ -249,6 +274,20 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     @Override
     public GenericFile getResult() {
         return this.resultFile;
+    }
+
+    @Override
+    public String getLocationCaption() {
+        return locationCaption;
+    }
+
+    @Override
+    public void setLocationCaption(String locationCaption) {
+        if (Objects.equals(this.locationCaption, locationCaption)) {
+            return;
+        }
+        this.locationCaption = locationCaption;
+        getView().setLocationCaption(locationCaption);
     }
 
     @Override
@@ -305,12 +344,12 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
             case OPEN -> {
                 setTitle("Open");
                 setIcon(DialogIcons.OPEN);
-                getView().setLocationCaption("Look In");
+                setLocationCaption("Look In");
             }
             case SAVE_AS -> {
                 setTitle("Save As");
                 setIcon(DialogIcons.SAVE_AS);
-                getView().setLocationCaption("Save In");
+                setLocationCaption("Save In");
             }
             default -> throw new AssertionError();
         }

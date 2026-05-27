@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.popup.PopupContainerView;
  *
  * @author Pavel Castornii
  */
-public interface DialogContainerView extends PopupContainerView {
+public interface DialogContainerView extends PopupContainerView, DialogContainerPort.ViewAccess {
 
     interface Composer extends PopupContainerView.Composer, DialogContainerPort.Composer {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Pavel Castornii.
+ * Copyright 2026 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.dockhost;
+package com.techsenger.tabshell.dialogs.alert;
 
-import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabshell.core.area.AreaPort;
-import java.util.List;
+import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface SideBarPort extends AreaPort {
+public interface AlertDialogPort extends DialogPort {
 
-    interface Composer {
+    AlertDialogType getDialogType();
 
-        /**
-         * Returns an unmodifiable list of minimized tab docks.
-         *
-         * @return
-         */
-        @Unmodifiable List<? extends TabDockPort> getTabDockPorts();
-    }
+    String getMessage();
 
-    interface ViewAccess {
+    void setMessage(String message);
 
-        Composer getComposer();
-    }
+    Icon<?> getMessageIcon();
 
-    ViewAccess getViewAccess();
+    void setMessageIcon(Icon<?> messageIcon);
 }

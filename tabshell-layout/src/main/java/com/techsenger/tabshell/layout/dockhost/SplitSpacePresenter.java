@@ -44,7 +44,11 @@ public class SplitSpacePresenter<V extends SplitSpaceView> extends AbstractAreaP
         return this.orientation;
     }
 
+    @Override
     public void setOrientation(Orientation orientation) {
+        if (Objects.equals(this.orientation, orientation)) {
+            return;
+        }
         Objects.requireNonNull(orientation, "Orientation can't be null");
         this.orientation = orientation;
         getView().setOrientation(orientation);

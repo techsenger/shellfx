@@ -16,17 +16,18 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.core.window.WindowView;
 import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.dialog.DialogContainerView;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
+import com.techsenger.tabshell.core.window.WindowView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellView extends WindowView {
+public interface ShellView extends WindowView, DialogContainerView {
 
-    interface Composer extends WindowView.Composer {
+    interface Composer extends WindowView.Composer, DialogContainerView.Composer {
 
         AreaPort getWorkspacePort();
     }

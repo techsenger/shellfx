@@ -18,12 +18,42 @@ package com.techsenger.tabshell.dialogs.file;
 
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.storage.GenericFile;
+import java.net.URI;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogPort extends DialogPort {
+public interface FileChooserDialogPort extends DialogPort, FileChooserDialogShared {
 
     GenericFile getResult();
+
+    FileChooserType getType();
+
+    URI getInitialDirectory();
+
+    String getInitialFileName();
+
+    List<Location> getLocations();
+
+    Location getLocation();
+
+    boolean isListSelected();
+
+    boolean isDetailsSelected();
+
+    List<GenericFile> getFiles();
+
+    GenericFile getSelectedFile();
+
+    int getSelectedFileIndex();
+
+    ExtensionFilter getExtensionFilter();
+
+    String getFileName();
+
+    List<ExtensionFilter> getExtensionFilters();
+
+    String getLocationCaption();
 }

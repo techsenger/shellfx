@@ -25,9 +25,9 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public interface TabView extends ChildView, DialogContainerView {
+public interface TabView extends ChildView, TabPort.ViewAccess, DialogContainerView {
 
-    interface Composer extends ChildView.Composer,  DialogContainerView.Composer {
+    interface Composer extends ChildView.Composer,  DialogContainerView.Composer, TabPort.Composer {
 
         ShellPort getShellPort();
 

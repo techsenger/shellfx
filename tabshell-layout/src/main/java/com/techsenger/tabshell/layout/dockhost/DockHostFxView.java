@@ -852,8 +852,9 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         public void closeTabDock(TabDockFxView<?> dock) {
-            removeTabDock(dock);
-            dock.getPresenter().deinitializeTree();
+            view.removeTabDock(dock, TabDockOperation.CLOSE);
+            view.printTreeDebugInfo();
+            logger.debug("{} Closed TabDock", getDescriptor().getLogPrefix());
         }
 
         public SplitSpaceFxView<?> createSplitSpace() {

@@ -28,6 +28,20 @@ import com.techsenger.tabshell.material.icon.Icon;
  */
 public interface TabPort extends ChildPort, CloseAwarePort, DialogContainerPort {
 
+    interface Composer extends DialogContainerPort.Composer {
+
+        ShellPort getShellPort();
+    }
+
+    interface ViewAccess extends DialogContainerPort.ViewAccess {
+
+        @Override
+        Composer getComposer();
+    }
+
+    @Override
+    ViewAccess getViewAccess();
+
     /**
      * Returns whether the tab can be closed.
      *
@@ -44,6 +58,4 @@ public interface TabPort extends ChildPort, CloseAwarePort, DialogContainerPort 
     Icon<?> getIcon();
 
     String getTooltip();
-
-    ShellPort getShell();
 }

@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentPresenter;
-import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 import com.techsenger.tabshell.core.window.WindowPresenter;
 
 /**
@@ -25,7 +24,7 @@ import com.techsenger.tabshell.core.window.WindowPresenter;
  * @author Pavel Castornii
  */
 public interface ShellPresenter<V extends ShellView> extends ParentPresenter<V>,
-        ShellPort, WindowPresenter<V>, DialogContainerPort {
+        ShellPort, WindowPresenter<V> {
 
     /**
      * Returns the action to be executed when the shell is closed.

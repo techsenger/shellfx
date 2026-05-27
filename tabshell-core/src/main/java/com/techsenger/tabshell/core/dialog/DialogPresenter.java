@@ -23,11 +23,9 @@ import com.techsenger.tabshell.material.button.ResultButtonName;
  *
  * @author Pavel Castornii
  */
-public interface DialogPresenter<V extends DialogView> extends PopupPresenter<V>,
-        ReadOnlyDialog, WriteOnlyDialog, DialogPort {
+public interface DialogPresenter<V extends DialogView> extends PopupPresenter<V>, DialogPort {
 
     void onClose();
 
     void onResult(ResultButtonName name);
-
 }

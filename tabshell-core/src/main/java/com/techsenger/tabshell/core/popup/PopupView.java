@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.area.AreaView;
  *
  * @author Pavel Castornii
  */
-public interface PopupView extends AreaView {
+public interface PopupView extends AreaView, PopupShared {
 
     interface Composer extends AreaView.Composer {
 
@@ -31,18 +31,4 @@ public interface PopupView extends AreaView {
 
     @Override
     Composer getComposer();
-
-    void setPrefWidth(double value);
-
-    void setPrefHeight(double value);
-
-    /**
-     * Enables or disables the waiting state of the dialog.
-     * <p>
-     * When the waiting state is enabled, user interaction is temporarily disabled
-     * and the dialog indicates that a background operation is in progress.
-     *
-     * @param waiting {@code true} to enable the waiting state, {@code false} to restore normal interaction
-     */
-    void setWaiting(boolean waiting);
 }

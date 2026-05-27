@@ -17,9 +17,6 @@
 package com.techsenger.tabshell.core.popup;
 
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
-import com.techsenger.toolkit.fx.value.ValueUtils;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Cursor;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -54,8 +51,6 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
      */
     private final StackPane stackPane = new StackPane(contentBox);
 
-    private final BooleanProperty waiting = new SimpleBooleanProperty(false);
-
     private final Pane waitingPane = new Pane();
 
     public AbstractPopupFxView() {
@@ -79,7 +74,11 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
 
     @Override
     public void setWaiting(boolean waiting) {
-        this.waiting.set(waiting);
+        if (waiting) {
+            stackPane.getChildren().add(waitingPane);
+        } else {
+            stackPane.getChildren().remove(waitingPane);
+        }
     }
 
     @Override
@@ -90,10 +89,6 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
     @Override
     protected Composer createComposer() {
         return new AbstractPopupFxView.Composer();
-    }
-
-    protected BooleanProperty waitingProperty() {
-        return waiting;
     }
 
     protected VBox getContentBox() {
@@ -108,17 +103,5 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
         contentBox.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         VBox.setVgrow(contentBox, Priority.ALWAYS);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
-    }
-
-    @Override
-    protected void addListeners() {
-        super.addListeners();
-        ValueUtils.callAndAddListener(this.waiting, (ov, oldV, newV) -> {
-            if (newV) {
-                stackPane.getChildren().add(waitingPane);
-            } else {
-                stackPane.getChildren().remove(waitingPane);
-            }
-        });
     }
 }

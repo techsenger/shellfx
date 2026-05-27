@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Pavel Castornii.
+ * Copyright 2026 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,42 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.core.window;
+package com.techsenger.tabshell.layout.dockhost;
 
-import com.techsenger.tabshell.material.icon.Icon;
+import java.util.List;
+import javafx.geometry.Orientation;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface UnmodifiableWindow {
+public interface SplitSpaceShared {
 
-    /**
-     * Returns the title of the component.
-     *
-     * @return
-     */
-    String getTitle();
+    void setOrientation(Orientation orientation);
 
-    /**
-     * Returns the icon of the component.
-     * @return
-     */
-    Icon<?> getIcon();
-
-    boolean isMaximized();
-
-    boolean isMaximizable();
-
-    boolean isMinimized();
-
-    boolean isMinimizable();
-
-    boolean isClosable();
-
-    double getWidth();
-
-    double getHeight();
-
-    boolean isBlocked();
+    void setDividerPositions(List<Double> positions);
 }

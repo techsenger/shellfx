@@ -36,5 +36,10 @@ public interface PopupContainerPort extends ParentPort {
         @Unmodifiable List<? extends PopupPort> getPopupPorts();
     }
 
-    Composer getComposer();
+    interface ViewAccess {
+
+        Composer getComposer();
+    }
+
+    ViewAccess getViewAccess();
 }

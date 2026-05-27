@@ -22,7 +22,7 @@ import com.techsenger.tabshell.core.popup.PopupView;
  *
  * @author Pavel Castornii
  */
-public interface DialogView extends PopupView, WriteOnlyDialog {
+public interface DialogView extends PopupView, DialogShared {
 
     interface Composer extends PopupView.Composer {
 

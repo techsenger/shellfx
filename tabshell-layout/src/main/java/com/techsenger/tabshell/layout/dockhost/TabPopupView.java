@@ -25,9 +25,9 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface TabPopupView extends AreaView {
+public interface TabPopupView extends AreaView, TabPopupPort.ViewAccess {
 
-    interface Composer extends AreaView.Composer {
+    interface Composer extends AreaView.Composer, TabPopupPort.Composer {
 
         /**
          * Returns un unmodifiable list of tabs. A list instance is created on each method call.

@@ -23,14 +23,13 @@ import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
 import com.techsenger.tabshell.material.table.TableColumnInfo;
 import com.techsenger.tabshell.material.table.TableColumnName;
 import com.techsenger.tabshell.storage.GenericFile;
-import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogView extends DialogView {
+public interface FileChooserDialogView extends DialogView, FileChooserDialogShared {
 
     interface Composer extends DialogView.Composer {
 
@@ -42,19 +41,7 @@ public interface FileChooserDialogView extends DialogView {
 
     void setAppearanceSettings(AppearanceSettings settings);
 
-    void setLocationCaption(String value);
-
-    void setLocations(List<Location> locations);
-
-    void setLocation(Location value);
-
-    void setListSelected(boolean value);
-
-    void setDetailsSelected(boolean value);
-
     void addColumns(Map<TableColumnName, TableColumnInfo> infosByName);
-
-    void setFiles(List<GenericFile> files);
 
     void addFile(int index, GenericFile file);
 
@@ -65,10 +52,4 @@ public interface FileChooserDialogView extends DialogView {
     void scrollToFile(int index);
 
     void editFile(int index);
-
-    void setFileName(String fileName);
-
-    void setExtensionFilters(List<ExtensionFilter> filters);
-
-    void setExtensionFilter(ExtensionFilter filter);
 }

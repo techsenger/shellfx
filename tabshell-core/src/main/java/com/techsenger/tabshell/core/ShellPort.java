@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.core;
 
+import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 import com.techsenger.tabshell.core.window.WindowPort;
-import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellPort extends MenuAwarePort, WindowPort {
+public interface ShellPort extends MenuAwarePort, WindowPort, DialogContainerPort {
 
     /**
      * Returns the context of the shell.
@@ -38,39 +38,4 @@ public interface ShellPort extends MenuAwarePort, WindowPort {
      * @return
      */
     <T extends ShellContext> T getContext(Class<T> contextClass);
-
-    /**
-     * Returns shell current width.
-     *
-     * @return
-     */
-    double getWidth();
-
-    /**
-     * Returns shell current height.
-     *
-     * @return
-     */
-    double getHeight();
-
-    /**
-     * Returns true if the shell stage is maximized, otherwise false.
-     *
-     * @return
-     */
-    boolean isMaximized();
-
-    /**
-     * Returns the title of the component.
-     *
-     * @return
-     */
-    String getTitle();
-
-    /**
-     * Returns the icon of the component.
-     * @return
-     */
-    Icon<?> getIcon();
-
 }

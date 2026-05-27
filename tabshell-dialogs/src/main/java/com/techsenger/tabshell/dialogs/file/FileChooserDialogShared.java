@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Pavel Castornii.
+ * Copyright 2026 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.layout.dockhost;
+package com.techsenger.tabshell.dialogs.file;
 
-import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.storage.GenericFile;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface SideBarPort extends AreaPort {
+public interface FileChooserDialogShared {
 
-    interface Composer {
+    void setFiles(List<GenericFile> files);
 
-        /**
-         * Returns an unmodifiable list of minimized tab docks.
-         *
-         * @return
-         */
-        @Unmodifiable List<? extends TabDockPort> getTabDockPorts();
-    }
+    void setLocationCaption(String value);
 
-    interface ViewAccess {
+    void setLocations(List<Location> locations);
 
-        Composer getComposer();
-    }
+    void setLocation(Location value);
 
-    ViewAccess getViewAccess();
+    void setListSelected(boolean value);
+
+    void setDetailsSelected(boolean value);
+
+    void setFileName(String fileName);
+
+    void setExtensionFilters(List<ExtensionFilter> filters);
+
+    void setExtensionFilter(ExtensionFilter filter);
 }

@@ -22,7 +22,7 @@ import com.techsenger.patternfx.mvp.ParentView;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerView extends ParentView {
+public interface TabContainerView extends ParentView, TabContainerPort.ViewAccess {
 
     interface Composer extends ParentView.Composer, TabContainerPort.Composer {
 

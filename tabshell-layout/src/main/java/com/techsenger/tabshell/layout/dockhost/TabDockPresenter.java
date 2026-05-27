@@ -58,28 +58,34 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
         return state;
     }
 
+    @Override
     public boolean isDraggable() {
         return draggable;
     }
 
+    @Override
     public void setDraggable(boolean draggable) {
         this.draggable = draggable;
         getView().setDraggable(draggable);
     }
 
+    @Override
     public boolean isMinimizable() {
         return minimizable;
     }
 
+    @Override
     public void setMinimizable(boolean minimizable) {
         this.minimizable = minimizable;
         getView().setMinimizable(minimizable);
     }
 
+    @Override
     public boolean isClosable() {
         return closable;
     }
 
+    @Override
     public void setClosable(boolean closable) {
         this.closable = closable;
         getView().setClosable(closable);

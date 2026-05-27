@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.AbstractChildPresenter;
-import com.techsenger.tabshell.core.ShellPort;
 import com.techsenger.tabshell.material.icon.Icon;
 
 /**
@@ -41,11 +40,6 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     public AbstractTabPresenter(V view, TabParams params) {
         super(view, params);
-    }
-
-    @Override
-    public Composer getComposer() {
-        return getView().getComposer();
     }
 
     @Override
@@ -119,8 +113,8 @@ public abstract class AbstractTabPresenter<V extends TabView>
     }
 
     @Override
-    public ShellPort getShell() {
-        return getView().getComposer().getShellPort();
+    public ViewAccess getViewAccess() {
+        return getView();
     }
 
     @Override

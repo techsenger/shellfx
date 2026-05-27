@@ -19,7 +19,6 @@ package com.techsenger.tabshell.layout.dockhost;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
 import com.techsenger.tabshell.layout.LayoutComponents;
-import java.util.List;
 import javafx.geometry.Side;
 
 /**
@@ -44,8 +43,8 @@ public class SideBarPresenter<V extends SideBarView> extends AbstractAreaPresent
     }
 
     @Override
-    public List<? extends TabDockPort> getTabDocks() {
-        return getView().getComposer().getTabDockPorts();
+    public ViewAccess getViewAccess() {
+        return getView();
     }
 
     @Override

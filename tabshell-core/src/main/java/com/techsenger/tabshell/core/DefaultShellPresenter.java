@@ -64,8 +64,8 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
     }
 
     @Override
-    public Composer getComposer() {
-        return getView().getComposer();
+    public ViewAccess getViewAccess() {
+        return getView();
     }
 
     @Override

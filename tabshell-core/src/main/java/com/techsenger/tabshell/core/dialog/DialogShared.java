@@ -23,7 +23,7 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public interface WriteOnlyDialog {
+public interface DialogShared {
 
     /**
      * Sets the value shows if the dialog is currently active.

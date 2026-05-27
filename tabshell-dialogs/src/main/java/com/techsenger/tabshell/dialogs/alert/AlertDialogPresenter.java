@@ -32,7 +32,8 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDialogPresenter<V> {
+public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDialogPresenter<V>
+        implements AlertDialogPort {
 
     private final AlertDialogType dialogType;
 
@@ -55,23 +56,28 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public AlertDialogType getDialogType() {
         return dialogType;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }
 
+    @Override
     public void setMessage(String message) {
         this.message = message;
         getView().setMessage(message);
     }
 
+    @Override
     public Icon<?> getMessageIcon() {
         return messageIcon;
     }
 
+    @Override
     public void setMessageIcon(Icon<?> messageIcon) {
         this.messageIcon = messageIcon;
         getView().setMessageIcon(messageIcon);

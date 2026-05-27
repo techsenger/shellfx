@@ -17,16 +17,11 @@
 package com.techsenger.tabshell.layout.dockhost;
 
 import com.techsenger.tabshell.core.area.AreaView;
-import java.util.List;
-import javafx.geometry.Orientation;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface SplitSpaceView extends AreaView {
+public interface SplitSpaceView extends AreaView, SplitSpaceShared {
 
-    void setOrientation(Orientation orientation);
-
-    void setDividerPositions(List<Double> positions);
 }

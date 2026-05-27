@@ -20,6 +20,7 @@ import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.tab.TabPort;
 import java.util.List;
+import javafx.geometry.Side;
 
 /**
  *
@@ -27,10 +28,21 @@ import java.util.List;
  */
 public interface TabPopupPort extends AreaPort {
 
-    /**
-     * Returns un unmodifiable list of tabs. A list instance is created on each method call.
-     *
-     * @return
-     */
-    @Unmodifiable List<? extends TabPort> getTabs();
+    interface Composer {
+
+        /**
+         * Returns un unmodifiable list of tabs. A list instance is created on each method call.
+         *
+         * @return
+         */
+        @Unmodifiable List<? extends TabPort> getTabPorts();
+    }
+
+    interface ViewAccess {
+        Composer getComposer();
+    }
+
+    ViewAccess getViewAccess();
+
+    Side getSide();
 }

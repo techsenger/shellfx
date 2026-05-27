@@ -36,6 +36,12 @@ public interface DialogContainerPort extends PopupContainerPort {
         @Unmodifiable List<? extends DialogPort> getDialogPorts();
     }
 
+    interface ViewAccess extends PopupContainerPort.ViewAccess {
+
+        @Override
+        Composer getComposer();
+    }
+
     @Override
-    Composer getComposer();
+    ViewAccess getViewAccess();
 }

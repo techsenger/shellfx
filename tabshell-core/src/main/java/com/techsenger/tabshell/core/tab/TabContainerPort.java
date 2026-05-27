@@ -41,7 +41,12 @@ public interface TabContainerPort extends ParentPort {
         TabPort getSelectedTabPort();
     }
 
-    Composer getComposer();
+    interface  ViewAccess {
+
+        Composer getComposer();
+    }
+
+    ViewAccess getViewAccess();
 
     /**
      * Returns the index of the currently selected tab.

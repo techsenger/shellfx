@@ -122,8 +122,8 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
     }
 
     @Override
-    public Composer getComposer() {
-        return getView().getComposer();
+    public ViewAccess getViewAccess() {
+        return getView();
     }
 
     @Override

@@ -18,9 +18,7 @@ package com.techsenger.tabshell.layout.dockhost;
 
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.core.tab.TabPort;
 import com.techsenger.tabshell.layout.LayoutComponents;
-import java.util.List;
 import javafx.geometry.Side;
 
 /**
@@ -50,13 +48,14 @@ public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPrese
         return oldHeight;
     }
 
+    @Override
     public Side getSide() {
         return side;
     }
 
     @Override
-    public List<? extends TabPort> getTabs() {
-        return getView().getComposer().getTabPorts();
+    public ViewAccess getViewAccess() {
+        return getView();
     }
 
     @Override

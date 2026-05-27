@@ -24,11 +24,9 @@ import javafx.geometry.Orientation;
  *
  * @author Pavel Castornii
  */
-public interface SplitSpacePort extends AreaPort {
+public interface SplitSpacePort extends AreaPort, SplitSpaceShared {
 
     Orientation getOrientation();
 
     List<Double> getDividerPositions();
-
-    void setDividerPositions(List<Double> positions);
 }

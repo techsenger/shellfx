@@ -16,14 +16,15 @@
 
 package com.techsenger.tabshell.core.popup;
 
-import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.CloseAwarePort;
+import com.techsenger.tabshell.core.area.AreaPort;
+import com.techsenger.tabshell.core.traits.Waitable;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupPort extends AreaPort, CloseAwarePort {
+public interface PopupPort extends AreaPort, PopupShared, CloseAwarePort, Waitable {
 
     /**
      * Returns {@code true} if the popup blocks interaction with underlying content (modal) and {@code false} otherwise.

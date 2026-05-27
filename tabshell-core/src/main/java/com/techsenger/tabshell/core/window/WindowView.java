@@ -28,7 +28,7 @@ import javafx.scene.text.Font;
  *
  * @author Pavel Castornii
  */
-public interface WindowView extends ParentView, ModifiableWindow {
+public interface WindowView extends ParentView, WindowShared {
 
     interface Composer extends ParentView.Composer, DialogContainerView.Composer {
 
