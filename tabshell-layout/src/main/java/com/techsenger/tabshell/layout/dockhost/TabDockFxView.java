@@ -55,8 +55,8 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         }
 
         @Override
-        public void remove() {
-            dockHost.getComposer().removeTabDock(TabDockFxView.this);
+        public void close() {
+            dockHost.getComposer().closeTabDock(TabDockFxView.this);
         }
 
         @Override

@@ -93,7 +93,7 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
 
     @Override
     public void close() {
-        getView().getComposer().remove();
+        getView().getComposer().close();
     }
 
     @Override

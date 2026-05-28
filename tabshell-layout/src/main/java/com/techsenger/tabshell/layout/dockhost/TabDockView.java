@@ -26,7 +26,7 @@ public interface TabDockView extends TabHostView, TabDockShared {
 
     interface Composer extends TabHostView.Composer {
 
-        void remove();
+        void close();
     }
 
     @Override
