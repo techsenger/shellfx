@@ -484,7 +484,7 @@ composition and do not manage the component lifecycle. Such methods include: `ad
 
 Examples of `Composer` methods using `open*` and `close*`:
 
-| Component | Create + Add         | Remove + Destroy      | Add only            | Remove only            |
+| Component | Create + Add         | Remove + Destroy      | Add Only            | Remove Only            |
 |-----------|----------------------|-----------------------|---------------------|------------------------|
 | Window    | `openWindow(params)` | `closeWindow(window)` | `addWindow(window)` | `removeWindow(window)` |
 | Tab       | `openTab(params)`    | `closeTab(tab)`       | `addTab(tab)`       | `removeTab(tab)`       |
