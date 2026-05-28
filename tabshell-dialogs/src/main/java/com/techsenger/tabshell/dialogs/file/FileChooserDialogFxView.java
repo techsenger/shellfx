@@ -42,14 +42,12 @@ import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -103,41 +101,6 @@ import javafx.util.StringConverter;
  */
 public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         extends AbstractDialogFxView<P> implements FileChooserDialogView {
-
-    private static class LocationCell extends ListCell<Location> {
-
-        private final Label label = new Label();
-
-        private final HBox box = new HBox();
-
-        private final boolean valueCell;
-
-        LocationCell(boolean valueCell) {
-            this.valueCell = valueCell;
-            this.box.setAlignment(Pos.CENTER_LEFT);
-        }
-
-        @Override
-        protected void updateItem(Location item, boolean empty) {
-            //many updates happening, resulting in visible flickering of the value cell's content
-            if (valueCell && item == getItem()) {
-                return;
-            }
-            super.updateItem(item, empty);
-            setText(null);
-            if (empty || item == null) {
-                setGraphic(null);
-            } else {
-                if (!this.valueCell) {
-                    this.box.setPadding(new Insets(0, 0, 0, item.getLevel() * Spacing.HORIZONTAL));
-                }
-                this.label.setText(item.getName());
-                this.box.getChildren().clear();
-                this.box.getChildren().addAll(new FontIconView(item.getIcon()), this.label);
-                setGraphic(this.box);
-            }
-        }
-    }
 
     public class Composer extends AbstractDialogFxView<P>.Composer implements FileChooserDialogView.Composer {
 

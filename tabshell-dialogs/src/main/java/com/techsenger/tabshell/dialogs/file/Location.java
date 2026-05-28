@@ -24,7 +24,7 @@ import java.net.URI;
  *
  * @author Pavel Castornii
  */
-class Location {
+public class Location {
 
     private final StyleFontIcon icon;
 
