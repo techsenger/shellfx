@@ -137,6 +137,16 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
     }
 
     @Override
+    public GenericFile getRoot() {
+        GenericFile.Builder builder = new GenericFile.Builder();
+        return builder
+                .virtual(true)
+                .type(FileType.DIRECTORY)
+                .uri(getRootUri())
+                .build();
+    }
+
+    @Override
     public void createDirectory(URI uri) throws NoSuchFileException, FileAlreadyExistsException,
             AccessDeniedException, IOException {
         var path = toPath(uri);

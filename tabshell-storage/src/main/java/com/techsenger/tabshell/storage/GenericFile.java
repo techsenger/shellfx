@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -318,14 +319,24 @@ public final class GenericFile {
     }
 
     /**
-     * Checks if this file is virtual (i.e., created manually without full data from storage).
-     * Virtual files are typically placeholders for paths that haven't been fully resolved
-     * with the underlying {@link FileStorage} (e.g., parent/child inferred from path structure).
+     * Checks if this file is virtual (i.e., created manually without a real corresponding file or directory on
+     * the underlying storage). Virtual files are used as placeholders — for example, a parent or child inferred from
+     * a path structure, or a root directory that does not physically exist.
      *
-     * @return {@code true} if the file is virtual (lacks full metadata),
-     *         {@code false} if it was loaded from a storage backend with complete data.
+     * @return {@code true} if the file is virtual (no real file or directory backing it),
+     *         {@code false} if it was loaded from a storage backend and corresponds to an actual entry.
      */
     public boolean isVirtual() {
         return virtual;
+    }
+
+    /**
+     * Checks if this file represents the root directory of its {@link FileStorage}.
+     *
+     * @return {@code true} if this file's URI matches the root URI of its storage,
+     *         {@code false} otherwise.
+     */
+    public boolean isRoot() {
+        return isDirectory() && Objects.equals(uri, storage.getRootUri());
     }
 }

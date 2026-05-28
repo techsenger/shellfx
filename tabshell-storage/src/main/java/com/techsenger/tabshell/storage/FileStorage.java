@@ -94,6 +94,16 @@ public interface FileStorage {
     GenericFile getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException;
 
     /**
+     * Returns the root directory of this storage.
+     *
+     * <p>The root may be either a real directory (e.g., on a network drive) or a virtual placeholder (e.g., a
+     * local filesystem root that does not physically exist as a standalone directory).
+     *
+     * @return a {@link GenericFile} representing the root directory of this storage.
+     */
+    GenericFile getRoot();
+
+    /**
      * Creates one directory.
      *
      * @param uri
