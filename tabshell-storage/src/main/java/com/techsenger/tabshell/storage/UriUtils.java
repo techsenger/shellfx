@@ -51,7 +51,7 @@ public final class UriUtils {
     public static List<String> getPathSegments(URI baseUri, URI childUri) {
         String basePath = baseUri.getPath();
         String childPath = childUri.getPath();
-        if (!childPath.startsWith(basePath)) {
+        if (!childPath.startsWith(basePath.endsWith("/") ? basePath : basePath + "/")) {
             throw new IllegalArgumentException("Child URI is not a descendant of the base URI");
         }
         String relativePart = childPath.substring(basePath.length());

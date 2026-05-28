@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -128,29 +129,35 @@ public final class GenericFile {
     private static final Logger logger = LoggerFactory.getLogger(GenericFile.class);
 
     /**
-     * Tries to create parent file with minimum data - storage, type, uri, name or returns null.
+     * Returns the immediate parent of the given file, or the root directory if the file is a direct child of the root.
      *
-     * @param child
-     * @return
+     * @param child the file whose parent to retrieve
+     * @return the parent {@link GenericFile}, never null
      */
     public static GenericFile getParent(GenericFile child) {
-        var segments = UriUtils.getPathSegments(child.getStorage().getRootUri(), child.getUri());
-        var parentUri = UriUtils.getParentUri(child.getStorage().getRootUri(), child.getUri(), segments);
-        if (parentUri == null || parentUri == child.getStorage().getRootUri()) {
-            return null;
-        }
-        var builder = new Builder();
-        builder.storage(child.storage);
-        builder.type(FileType.DIRECTORY);
-        builder.name(segments.get(segments.size() - 2));
-        builder.uri(parentUri);
-        builder.virtual(true);
-        var result = builder.build();
-        return result;
+        return buildParents(child, 1).get(0);
     }
 
     /**
-     * Creates child file.
+     * Returns all parent directories from the immediate parent up to and including the root.
+     *
+     * <p>Example: for a file with URI {@code /home/user/foo/bar}, returns:
+     * <pre>
+     * /home/user/foo/
+     * /home/use/
+     * /home/
+     * /  (root)
+     * </pre>
+     *
+     * @param child the file whose parents to collect
+     * @return ordered list of parents from immediate parent to root, never null, never empty
+     */
+    public static List<GenericFile> getParents(GenericFile child) {
+        return buildParents(child, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Creates a virtual child file.
      *
      * @param parent
      * @param childName
@@ -245,6 +252,28 @@ public final class GenericFile {
         }
         builder.virtual(false);
         return builder.build();
+    }
+
+    private static List<GenericFile> buildParents(GenericFile child, int limit) {
+        var storage = child.getStorage();
+        var rootUri = storage.getRootUri();
+        var segments = UriUtils.getPathSegments(rootUri, child.getUri());
+
+        var parents = new ArrayList<GenericFile>(Math.min(segments.size(), limit));
+        for (int i = segments.size() - 1; i >= 1 && parents.size() < limit; i--) {
+            var parentUri = UriUtils.resolvePath(rootUri, String.join("/", segments.subList(0, i)));
+            var builder = new Builder();
+            builder.storage(storage);
+            builder.type(FileType.DIRECTORY);
+            builder.name(segments.get(i - 1));
+            builder.uri(parentUri);
+            builder.virtual(true);
+            parents.add(builder.build());
+        }
+        if (parents.size() < limit) {
+            parents.add(storage.getRoot());
+        }
+        return parents;
     }
 
     private final FileStorage storage;
