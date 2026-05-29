@@ -60,6 +60,16 @@ public final class DemoComponents {
 
     public static final ComponentName PAGE_DIALOG = new DefaultComponentName("Demo.PageDialog");
 
+    public static final ComponentName VARIANT_PAGE = new DefaultComponentName("Demo.VariantPage");
+
+    public static final ComponentName SET_PAGE_1 = new DefaultComponentName("Demo.SetPage1");
+
+    public static final ComponentName SET_PAGE_2 = new DefaultComponentName("Demo.SetPage2");
+
+    public static final ComponentName SET_PAGE_3 = new DefaultComponentName("Demo.SetPage3");
+
+    public static final ComponentName SET_PAGE_4 = new DefaultComponentName("Demo.SetPage4");
+
     public static final ComponentName STYLES_TAB = new DefaultComponentName("Demo.StylesTab");
 
     private DemoComponents() {

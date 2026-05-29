@@ -450,7 +450,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
 
         updateNodeRoot();
         nodeTreeView.setCellFactory(tv -> new NodeCell());
-        nodeTreeView.getStyleClass().addAll(StyleClasses.COMPACT, StyleClasses.NO_BORDER);
+        nodeTreeView.getStyleClass().addAll(StyleClasses.COMPRESSED, StyleClasses.NO_BORDER);
         VBox.setVgrow(nodeTreeView, Priority.ALWAYS);
 
         TreeTableColumn<PropertyItem, String> propertyColumn = new TreeTableColumn<>("Property");
@@ -480,7 +480,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         });
         valueColumn.setCellFactory(col -> new ValueTableCell());
         propertyTableView.getColumns().addAll(propertyColumn, valueColumn);
-        propertyTableView.getStyleClass().addAll(StyleClasses.COMPACT, Tweaks.NO_HEADER);
+        propertyTableView.getStyleClass().addAll(StyleClasses.COMPRESSED, Tweaks.NO_HEADER);
         propertyTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         propertyTableView.setShowRoot(false);
         propertyTableView.setPlaceholder(new Label(""));

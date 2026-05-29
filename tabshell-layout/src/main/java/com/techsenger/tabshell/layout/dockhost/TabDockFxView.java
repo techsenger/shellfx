@@ -142,10 +142,10 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         tabPane.setTabDragEnabled(true);
         tabPane.setTabDropEnabled(true);
 
-        this.dragIconView.getStyleClass().add(StyleClasses.COMPACT);
-        minimizeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
+        this.dragIconView.getStyleClass().add(StyleClasses.COMPRESSED);
+        minimizeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPRESSED);
         minimizeButton.setTooltip(new Tooltip("Minimize"));
-        closeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPACT);
+        closeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.COMPRESSED);
         closeButton.setTooltip(new Tooltip("Close"));
 
         this.getNode().getStyleClass().add("tab-dock");

@@ -286,7 +286,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
 
         this.titleButtonBox.getStyleClass().add("button-box");
         this.titleButtonBox.setAlignment(Pos.CENTER);
-        closeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+        closeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
 
         super.getNode().getChildren().clear();
         super.getNode().getChildren().add(mainBox);

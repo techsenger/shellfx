@@ -82,14 +82,19 @@ public interface StyleClasses {
     String HUGE = "huge";
 
     /**
-     * Represents a moderately dense spacing mode. Equivalent to the {@code dense} style class in Atlantafx Styles.
+     * Represents a moderately dense spacing mode. Equivalent to the {@code dense} style class in AtlantaFX.
      */
     String DENSE = "dense";
 
     /**
-     * Represents the most compact spacing mode. Typically used when minimal padding and margins are desired.
+     * Represents a compact spacing mode, between {@code dense} and {@code compressed}.
      */
     String COMPACT = "compact";
+
+    /**
+     * Represents the most compressed spacing mode, with minimal padding and margins.
+     */
+    String COMPRESSED = "compressed";
 
     /**
      * Class for a cross button.

@@ -59,16 +59,16 @@ public class ToolBarFxView<P extends ToolBarPresenter<?>> extends AbstractFindBa
         HBox.setHgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
         getFindComboBoxWrapper().setPadding(Insets.EMPTY);
         getFindComboBox().setMaxWidth(Double.MAX_VALUE);
-        getFindComboBox().getStyleClass().add(StyleClasses.COMPACT);
-        getFindRightBox().getStyleClass().add(StyleClasses.COMPACT);
+        getFindComboBox().getStyleClass().add(StyleClasses.COMPRESSED);
+        getFindRightBox().getStyleClass().add(StyleClasses.COMPRESSED);
 
-        getFindNextButton().getStyleClass().add(StyleClasses.COMPACT);
-        getFindPreviousButton().getStyleClass().add(StyleClasses.COMPACT);
-        getMatchCaseButton().getStyleClass().add(StyleClasses.COMPACT);
-        this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+        getFindNextButton().getStyleClass().add(StyleClasses.COMPRESSED);
+        getFindPreviousButton().getStyleClass().add(StyleClasses.COMPRESSED);
+        getMatchCaseButton().getStyleClass().add(StyleClasses.COMPRESSED);
+        this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
         this.refreshButton.setTooltip(new Tooltip("Refresh"));
 
-        this.toolBar.getStyleClass().add(StyleClasses.COMPACT);
+        this.toolBar.getStyleClass().add(StyleClasses.COMPRESSED);
         this.toolBar.getItems().addAll(getFindComboBoxWrapper());
         if (this.findNavigation) {
             this.toolBar.getItems().addAll(getFindPreviousButton(), getFindNextButton());

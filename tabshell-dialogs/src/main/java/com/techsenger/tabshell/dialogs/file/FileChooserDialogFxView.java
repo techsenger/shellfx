@@ -360,7 +360,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     @Override
     protected void build() {
         super.build();
-        this.fileTableView.getStyleClass().addAll(StyleClasses.COMPACT, StyleClasses.SAME_SPACING_COLUMN);
+        this.fileTableView.getStyleClass().addAll(StyleClasses.COMPRESSED, StyleClasses.SAME_SPACING_COLUMN);
         this.fileTableView.setEditable(true);
         this.fileTableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
         this.fileTableView.setPlaceholder(new Label(""));

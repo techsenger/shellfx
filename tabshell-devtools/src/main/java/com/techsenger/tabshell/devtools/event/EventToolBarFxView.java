@@ -99,17 +99,17 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?>> extends Tool
     @Override
     protected void build() {
         super.build();
-        this.recordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+        this.recordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
         this.recordButton.setTooltip(new Tooltip("Start/Stop"));
-        this.clearButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+        this.clearButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
         this.clearButton.setTooltip(new Tooltip("Clear"));
-        this.filterButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+        this.filterButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
         this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
-        this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPACT);
+        this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
 
         // selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());
-        eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.COMPACT);
+        eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.COMPRESSED);
         var selectAllTypesItem = new MenuItem("Select All Types");
         selectAllTypesItem.setOnAction(e -> {
             for (var item : eventTypesButton.getItems()) {

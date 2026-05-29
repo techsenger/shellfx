@@ -142,8 +142,8 @@
 
 /***************** compact iconed buttons ******************/
 
-.button.iconed.compact,
-.toggle-button.iconed.compact {
+.button.iconed.compressed,
+.toggle-button.iconed.compressed {
     -fx-padding: 0;
     -fx-min-height: 1.6em;
     -fx-max-height: 1.6em;
@@ -153,8 +153,8 @@
     -fx-pref-width: 1.6em;
 }
 
-.button.compact .font-icon-view,
-.toggle-button.compact .font-icon-view { /* see .font-icon-view.compact {} */
+.button.compressed .font-icon-view,
+.toggle-button.compressed .font-icon-view { /* see .font-icon-view.compressed {} */
     -fx-padding: 0;
     -fx-font-size: 1.25em;
 }
@@ -201,7 +201,7 @@
     -fx-font-size: 1.3em;
 }
 
-.font-icon-view.compact {
+.font-icon-view.compressed {
     -fx-font-size: 1.2em;
 }
 
@@ -270,7 +270,7 @@
 /*
     MenuButton
 */
-.menu-button.compact > .label {
+.menu-button.compressed > .label {
   -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 }
 
@@ -278,17 +278,39 @@
     TextField
 */
 .text-field.dense {
-    -fx-padding: 0.55em 0.85em 0.55em 0.85em;
+    -fx-padding: 0.65em 0.85em 0.65em 0.85em;
     -fx-min-height: 2.1em;
     -fx-pref-height: 2.1em;
     -fx-max-height: 2.1em;
 }
 
 .text-field.compact {
-    -fx-padding: 0.15em 0.6em 0.15em 0.6em;
-/*    -fx-min-height: 2.1em;
-    -fx-pref-height: 2.1em;
-    -fx-max-height: 2.1em;*/
+    -fx-padding: 0.55em 0.7em 0.55em 0.7em;
+    -fx-min-height: 1.9em;
+    -fx-pref-height: 1.9em;
+    -fx-max-height: 1.9em;
+}
+
+.text-field.compressed {
+    -fx-padding: 0.45em 0.6em 0.45em 0.6em;
+    -fx-min-height: 1.7em;
+    -fx-max-height: 1.7em;
+    -fx-pref-height: 1.7em;
+}
+
+/*
+    TextArea
+ */
+.text-area.dense .content {
+    -fx-padding: 0.3em 0.85em 0.3em 0.85em;
+}
+
+.text-area.compact .content {
+    -fx-padding: 0.2em 0.7em 0.2em 0.7em;
+}
+
+.text-area.compressed .content {
+    -fx-padding: 0.1em 0.4em 0.1em 0.4em;
 }
 
 /*
@@ -330,7 +352,7 @@
     -fx-padding: 2;
 }
 
-.tool-bar.compact {
+.tool-bar.compressed {
     -fx-min-height: -1;
     -fx-max-height: -1;
     -fx-padding: 1 4 2 4; /* 3 = 2(padding) + 1(bg-insetts) */
@@ -354,6 +376,13 @@
 /*
     Combobox
 */
+/*  In .no-selected combo-box selected item is not marked. See theme overriding files for details. */
+.combo-box.no-selected .combo-box-popup .list-cell:selected {
+    -fx-background-color: -color-bg-default;
+    -fx-text-fill: -color-fg-default;
+}
+
+/* dense */
 .combo-box.dense {
     -fx-max-height: 2.1em;
     -fx-pref-height: 2.1em;
@@ -376,42 +405,108 @@
 .combo-box.dense .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
     -fx-padding: 0.35em 0.45em 0.35em 0.45em;
 }
-/*
-    In .no-selected combo-box selected item is not marked. See theme overriding files for details.
-*/
-.combo-box.no-selected .combo-box-popup .list-cell:selected {
-    -fx-background-color: -color-bg-default;
-    -fx-text-fill: -color-fg-default;
-}
 
+/* compact */
 .combo-box.compact {
-    -fx-min-height: 1.6em;
-    -fx-max-height: 1.6em;
-    -fx-pref-height: 1.6em;
+    -fx-max-height: 1.9em;
+    -fx-pref-height: 1.9em;
+    -fx-min-height: 1.9em;
+    -fx-alignment: center;
+    -fx-padding: 0 0 0 0.7em;
 }
-
-.combo-box.compact > .combo-box {
+.combo-box.compact > .list-cell { /* list cell is te container with up/down arrows */
     -fx-padding: 0;
 }
 
-.combo-box.compact > .text-field {
-    -fx-padding: 0.15em 0.6em 0.15em 0.6em;
+.combo-box.compact:editable {
+    -fx-padding: 0;
+}
+
+.combo-box-base.compact:editable > .text-field {
+    -fx-padding: 0.35em 0.7em 0.35em 0.7em;
+}
+
+.combo-box.compact .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-padding: 0.25em 0.35em 0.25em 0.35em;
+}
+
+/* compressed */
+.combo-box.compressed {
+    -fx-max-height: 1.7em;
+    -fx-pref-height: 1.7em;
+    -fx-min-height: 1.7em;
+    -fx-alignment: center;
+    -fx-padding: 0 0 0 0.7em;
+}
+.combo-box.compressed > .list-cell { /* list cell is te container with up/down arrows */
+    -fx-padding: 0;
+}
+
+.combo-box.compressed:editable {
+    -fx-padding: 0;
+}
+
+.combo-box-base.compressed:editable > .text-field {
+    -fx-padding: 0.25em 0.6em 0.25em 0.6em;
+}
+
+.combo-box.compressed .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-padding: 0.15em 0.25em 0.15em 0.25em;
 }
 
 /*
     ListView
 */
 .list-view.dense .list-cell {
-  -fx-cell-size: 2em;
+    -fx-cell-size: 2em;
+    -fx-padding: 0.4em 0.85em 0.3em 0.85em;
 }
 
 .list-view.compact .list-cell {
-    -fx-padding: 0 0.25em 0 0.25em;
+    -fx-cell-size: 1.8em;
+    -fx-padding: 0.2em 0.7em 0.2em 0.7em;
+}
+
+.list-view.compressed .list-cell {
     -fx-cell-size: 1.65em;
+    -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 }
 
 /*
-    Table/TreeTable
+    TreeView
+*/
+.tree-view.dense .tree-cell {
+    -fx-cell-size: 2em;
+    -fx-padding: 0.4em 0.85em 0.3em 0;
+    -fx-indent: 1.1em;
+}
+
+.tree-view.dense .tree-cell .tree-disclosure-node {
+    -fx-padding: 0.3em 0.85em 0 0.4em; /* left padding is constant */
+}
+
+.tree-view.compact .tree-cell {
+    -fx-cell-size: 1.8em;
+    -fx-padding: 0.2em 0.7em 0.2em 0;
+    -fx-indent: 1.0em;
+}
+
+.tree-view.compact .tree-cell .tree-disclosure-node {
+    -fx-padding: 0.3em 0.7em 0 0.4em; /* left padding is constant */
+}
+
+.tree-view.compressed .tree-cell {
+    -fx-cell-size: 1.65em;
+    -fx-padding: 0.15em 0.6em 0.15em 0;
+    -fx-indent: 0.9em;
+}
+
+.tree-view.compressed .tree-cell .tree-disclosure-node {
+    -fx-padding: 0.3em 0.6em 0 0.4em; /* left padding is constant */
+}
+
+/*
+    TableView / TreeTableView
 */
 .table-view, .tree-table-view {
     /*settings colors for selected, but not focused rows */
@@ -424,29 +519,85 @@
     -fx-font-weight: normal;
 }
 
+/* the alignment of the text in the first column in rows under tree-disclosure-node */
+.tree-table-view .tree-table-row-cell > .tree-table-cell > HBox {
+  -fx-alignment: CENTER_LEFT;
+}
+
+/* dense, also see atlantafx styles */
+
 .table-view.dense .column-header-background .column-header,
 .tree-table-view.dense .column-header-background .column-header {
     -fx-fixed-cell-size: 2em; /* decimal values (e.g., 2.Xem) may remove the header border */
     -fx-size: 2em;
+    -fx-padding: 0.35em 0 0.35em 0; /* the left padding is 0 - workaround, the right padding is 0 - sort arrow */
 }
 
-.table-view.dense, .tree-table-view.dense {
-    -fx-fixed-cell-size: 2em;
+.table-view.dense .column-header-background .column-header > .label,
+.tree-table-view.dense .column-header-background .column-header > .label {
+    /*
+       All padding shoulw be 0. Currently cell left padding is set to 0; left padding is applied to
+       the label instead. This is a temporary workaround: sort arrow position is calculated incorrectly.
+    */
+    -fx-padding: 0 0 0 0.85em;
 }
+
+.table-view.dense .table-row-cell,
+.tree-table-view.dense .tree-table-row-cell {
+    -fx-cell-size: 2em;
+    -fx-size: 2em;
+    -fx-padding: 0;
+}
+
+.table-view.dense .table-cell {
+    -fx-padding: 0.4em 0.85em 0.3em 0.85em;
+}
+
+.tree-table-view.dense .tree-table-cell {
+    -fx-padding: 0.4em 0.85em 0.3em 0;
+    -fx-indent: 1.1em;
+}
+
+.tree-table-view.dense .tree-table-row-cell > .tree-disclosure-node {
+    -fx-padding: 0.2em 0.85em 0 0.4em; /* left padding is constant */
+}
+
+/* compact */
 
 .table-view.compact .column-header-background .column-header,
 .tree-table-view.compact .column-header-background .column-header {
     -fx-fixed-cell-size: 2em; /* decimal values (e.g., 2.Xem) may remove the header border */
     -fx-size: 2em;
+    -fx-padding: 0.2em 0 0.2em 0; /* the left padding is 0 - workaround, the right padding is 0 - sort arrow */
+}
+
+.table-view.compact .column-header-background .column-header > .label,
+.tree-table-view.compact .column-header-background .column-header > .label {
+    /*
+       All padding shoulw be 0. Currently cell left padding is set to 0; left padding is applied to
+       the label instead. This is a temporary workaround: sort arrow position is calculated incorrectly.
+    */
+    -fx-padding: 0 0 0 0.7em;
 }
 
 .table-view.compact .table-row-cell,
 .tree-table-view.compact .tree-table-row-cell {
-    -fx-cell-size: 1.65em;
+    -fx-cell-size: 1.8em;
+    -fx-size: 1.8em;
+    -fx-padding: 0;
+}
+
+.table-view.compact .table-cell {
+    -fx-padding: 0.2em 0.7em 0.2em 0.7em;
+}
+
+.tree-table-view.compact .tree-table-cell {
+    -fx-padding: 0.2em 0.7em 0.2em 0;
+    -fx-indent: 1.0em;
 }
 
 .tree-table-view.compact .tree-table-row-cell > .tree-disclosure-node {
-  -fx-padding: 0 0.5em 0 0.5em;
+    -fx-padding: 0.3em 0.7em 0 0.4em; /* left padding is constant */
 }
 
 .table-view.compact.same-spacing-column .column-header-background .column-header .label,
@@ -464,16 +615,57 @@
     -fx-padding: 0 0.5em 0 0.25em;
 }
 
-/* the alignment of the text in the first column in rows under tree-disclosure-node */
-.tree-table-view .tree-table-row-cell > .tree-table-cell > HBox {
-  -fx-alignment: CENTER_LEFT;
+/* compressed */
+
+.table-view.compressed .column-header-background .column-header,
+.tree-table-view.compressed .column-header-background .column-header {
+    -fx-fixed-cell-size: 2em; /* decimal values (e.g., 2.Xem) may remove the header border */
+    -fx-size: 2em;
+    -fx-padding: 0.15em 0 0.15em 0; /* the left padding is 0 - workaround, the right padding is 0 - sort arrow */
 }
 
-/*
-    TreeView
-*/
-.tree-view.compact .tree-cell {
-  -fx-padding: 0.176em 0 0.175em 0;
+.table-view.compressed .column-header-background .column-header > .label,
+.tree-table-view.compressed .column-header-background .column-header > .label {
+    /*
+       All padding shoulw be 0. Currently cell left padding is set to 0; left padding is applied to
+       the label instead. This is a temporary workaround: sort arrow position is calculated incorrectly.
+    */
+    -fx-padding: 0 0 0 0.6em;
+}
+
+.table-view.compressed .table-row-cell,
+.tree-table-view.compressed .tree-table-row-cell {
+    -fx-cell-size: 1.65em;
+    -fx-size: 1.65em;
+    -fx-padding: 0;
+}
+
+.table-view.compressed .table-cell {
+    -fx-padding: 0.15em 0.6em 0.15em 0.6em;
+}
+
+.tree-table-view.compressed .tree-table-cell {
+    -fx-padding: 0.15em 0.6em 0.15em 0;
+    -fx-indent: 0.9em;
+}
+
+.tree-table-view.compressed .tree-table-row-cell > .tree-disclosure-node {
+    -fx-padding: 0 0.6em 0 0.4em; /* left padding is constant */
+}
+
+.table-view.compressed.same-spacing-column .column-header-background .column-header .label,
+.table-view.compressed.same-spacing-column .table-row-cell > .table-cell {
+    -fx-padding: 0 0.25em 0 0.25em;
+}
+
+.table-view.compressed.same-spacing-column .column-header-background .column-header.first .label,
+.table-view.compressed.same-spacing-column .table-row-cell > .table-cell.first {
+    -fx-padding: 0 0.25em 0 0.5em;
+}
+
+.table-view.compressed.same-spacing-column .column-header-background .column-header.last .label,
+.table-view.compressed.same-spacing-column .table-row-cell > .table-cell.last {
+    -fx-padding: 0 0.5em 0 0.25em;
 }
 
 /*
