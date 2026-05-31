@@ -26,16 +26,4 @@ import com.techsenger.tabshell.core.window.WindowPresenter;
 public interface ShellPresenter<V extends ShellView> extends ParentPresenter<V>,
         ShellPort, WindowPresenter<V> {
 
-    /**
-     * Returns the action to be executed when the shell is closed.
-     *
-     * @return
-     */
-    Runnable getOnClose();
-
-    /**
-     * Sets the action to be executed when the shell is closed.
-     * @param onClose
-     */
-    void setOnClose(Runnable onClose);
 }

@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.devtools;
+package com.techsenger.tabshell.devtools.node;
 
-import com.techsenger.connectorfx.Connector;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.layout.dockhost.TabDockPort;
+import com.techsenger.tabshell.material.button.DefaultResultButtonName;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DevToolsTabDockPort extends TabDockPort {
+public interface EditorDialogButtons {
 
-    int getWindowUid();
+    ResultButtonName CANCEL = new DefaultResultButtonName();
 
-    Selector getSelector();
-
-    Connector getConnector();
-
-    HistoryManager getHistoryManager();
+    ResultButtonName OK = new DefaultResultButtonName();
 }

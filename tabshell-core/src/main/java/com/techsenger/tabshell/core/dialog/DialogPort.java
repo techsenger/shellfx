@@ -31,42 +31,46 @@ import java.util.function.Consumer;
 public interface DialogPort extends DialogShared, PopupPort {
 
     /**
-     * Returns the action to be executed when the dialog is closed via the close button or window close event.
+     * Returns the action that determines whether the dialog should be closed when the close button
+     * or window close event is triggered.
      * <p>
-     * This action is typically invoked when the user clicks the close button (X) in the dialog's title bar or
-     * closes the dialog through system means, rather than selecting a result button.
+     * If no action has been set, the default behavior is to simply close the dialog.
      *
-     * @return the close action, or {@code null} if no action is set
+     * @return the close action, or {@code null} if the default close behavior is used
      */
     Runnable getCloseAction();
 
     /**
      * Sets the action to be executed when the dialog is closed via the close button or window close event.
      * <p>
-     * This action is typically invoked when the user clicks the close button (X) in the dialog's title bar or
-     * closes the dialog through system means, rather than selecting a result button.
+     * This action determines whether the dialog should actually be closed. If not set, the default
+     * action simply closes the dialog. Custom actions can implement confirmation logic, data saving,
+     * or any other behavior — and choose whether or not to close the dialog as a result.
      *
-     * @param action the close action to execute, or {@code null} to clear the action
+     * @param action the close action to execute, or {@code null} to reset to the default close behavior
      */
     void setCloseAction(Runnable action);
 
     /**
      * Returns the action to be executed when a result button is clicked.
      * <p>
-     * This consumer receives the name of the clicked result button and allows the presenter to handle the
-     * dialog result appropriately. The consumer is always invoked with a non-null button name.
+     * This action determines whether the dialog should actually be closed. The consumer receives
+     * the name of the clicked button and can implement any logic — including choosing not to close
+     * the dialog. If not set, the default action simply closes the dialog.
      *
-     * @return the result action consumer, or {@code null} if no action is set
+     * @return the result action consumer, or {@code null} if the default close behavior is used
      */
     Consumer<ResultButtonName> getResultAction();
 
     /**
      * Sets the action to be executed when a result button is clicked.
      * <p>
-     * This consumer receives the name of the clicked result button and allows the presenter to handle the
-     * dialog result appropriately. The consumer is always invoked with a non-null button name.
+     * This action determines whether the dialog should actually be closed. The consumer receives
+     * the name of the clicked button and can implement any logic — including choosing not to close
+     * the dialog. If not set, the default action simply closes the dialog.
+     * The consumer is always invoked with a non-null button name.
      *
-     * @param action the result action consumer, or {@code null} to clear the action
+     * @param action the result action consumer, or {@code null} to reset to the default close behavior
      */
     void setResultAction(Consumer<ResultButtonName> action);
 

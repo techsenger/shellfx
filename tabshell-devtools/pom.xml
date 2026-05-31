@@ -23,6 +23,10 @@
             <artifactId>toolkit-fx</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.annotations</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.tabpanepro</groupId>
             <artifactId>tabpanepro-core</artifactId>
         </dependency>

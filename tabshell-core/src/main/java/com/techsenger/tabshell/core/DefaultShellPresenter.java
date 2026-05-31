@@ -28,8 +28,6 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
 
     private final ShellContext context;
 
-    private Runnable onClose;
-
     public DefaultShellPresenter(V view, DefaultShellParams params) {
         super(view, params);
         this.context = params.getContext();
@@ -43,24 +41,6 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
     @Override
     public <T extends ShellContext> T getContext(Class<T> contextClass) {
         return (T) this.context;
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        if (this.onClose != null) {
-            this.onClose.run();
-        }
-    }
-
-    @Override
-    public Runnable getOnClose() {
-        return this.onClose;
-    }
-
-    @Override
-    public void setOnClose(Runnable onClose) {
-        this.onClose = onClose;
     }
 
     @Override

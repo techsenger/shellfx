@@ -19,6 +19,7 @@ package com.techsenger.tabshell.devtools;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
+import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.core.settings.ShellSettings;
 import static com.techsenger.tabshell.devtools.DevToolsHostType.WINDOW;
@@ -38,6 +39,8 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
 
     private final SettingsSubscription themeSubscription;
 
+    private final HistoryManager historyManager;
+
     private boolean selectionSelected;
 
     private final Selector selector;
@@ -48,6 +51,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
         super(view, params);
         this.hostType = params.getHostType();
         this.settings = params.getSettings();
+        this.historyManager = params.getHistoryManager();
         themeSubscription = settings.getAppearance().onThemeChanged((oldV, newV) -> updateHighlight(newV));
         this.selector = new Selector(view.getConnector());
     }
@@ -75,6 +79,11 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
     @Override
     public Selector getSelector() {
         return this.selector;
+    }
+
+    @Override
+    public HistoryManager getHistoryManager() {
+        return this.historyManager;
     }
 
     public DevToolsHostType getHostType() {

@@ -44,6 +44,8 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
 
     private boolean closable;
 
+    private Runnable onClosed;
+
     public TabDockPresenter(V view, AreaParams params) {
         super(view, params);
     }
@@ -94,6 +96,19 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
     @Override
     public void close() {
         getView().getComposer().close();
+        if (this.onClosed != null) {
+            this.onClosed.run();
+        }
+    }
+
+    @Override
+    public Runnable getOnClosed() {
+        return onClosed;
+    }
+
+    @Override
+    public void setOnClosed(Runnable onClosed) {
+        this.onClosed = onClosed;
     }
 
     @Override

@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.devtools;
+package com.techsenger.tabshell.devtools.node;
 
-import com.techsenger.connectorfx.Connector;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.layout.dockhost.TabDockPort;
+import com.techsenger.tabshell.core.dialog.DialogView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DevToolsTabDockPort extends TabDockPort {
+public interface ViewerDialogView extends DialogView {
 
-    int getWindowUid();
+    void setName(String name);
 
-    Selector getSelector();
+    void addNameUrl(String url);
 
-    Connector getConnector();
+    void setValue(String value);
 
-    HistoryManager getHistoryManager();
+    void setCss(String css);
+
+    void addCssUrl(String url);
+
+    void setState(String state);
 }

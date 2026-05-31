@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -92,7 +93,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
 
         @Override
         public void onRefresh() {
-            // connector.reloadSelectedAttributes(...);
+            refreshProperties();
         }
 
         @Override
@@ -117,7 +118,12 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
     /**
      * All properties, including filtered out properties.
      */
-    private final Map<AttributeCategory, List<PropertyItem>> propsByCategory = new HashMap<>();
+    private final Map<AttributeCategory, List<PropertyItem>> allPropsByCategory = new LinkedHashMap<>();
+
+    /**
+     * The properties that are currently shown.
+     */
+    private final Map<AttributeCategory, List<PropertyItem>> shownPropsByCategory = new LinkedHashMap<>();
 
     private Matcher propsMatcher;
 
@@ -130,11 +136,19 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
 
     private Element selectedNode;
 
+    // ObservableType in Attribute is incorrect because its value is determined by the property instance
+    // rather than the property method's return type. However, we cannot fix this in the connector because
+    // using reflection there would significantly slow down node event firing.
+    private final Map<String, Boolean> readOnlyByProperty = new HashMap<>();
+
     private Map<AttributeCategory, Boolean> categoryExpansion;
 
+    // Attribute events come after node events, so we need to save them.
     private List<AttributeListEvent> savedAttributeEvents = new ArrayList<>();
 
-    private boolean selectedProgrammatically;
+    private boolean selectedFromNodeTree;
+
+    private PropertyItem selectedProperty;
 
     public NodeTabPresenter(V view, NodeTabParams params) {
         super(view, params);
@@ -184,11 +198,12 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
             this.selectedNode = node; // so the onNodeSelected method won't complete
             if (this.selectedNode != null) {
                 createNodeIndex();
-                getView().selectNode(this.selectedNode); // -> onNodeSelected(..)
+                getView().selectNode(this.selectedNode, true); // -> onNodeSelected(..)
                 clearProperties();
                 for (var events : this.savedAttributeEvents) { // adding saved events
                     processPropertyEvent(events);
                 }
+                selectPreviousProperty();
             }
             this.savedAttributeEvents.clear();
         });
@@ -198,7 +213,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
             switch (event) {
                 case AttributeListEvent ale -> {
                     if (Objects.equals(this.selectedNode, ale.element())) {
-                        if (selectedProgrammatically) {
+                        if (selectedFromNodeTree) {
                             processPropertyEvent(ale);
                         }
                     } else {
@@ -227,13 +242,14 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
             return;
         }
         clearProperties();
-        this.selectedProgrammatically = true;
+        this.selectedFromNodeTree = true;
         if (node.isWindowElement()) {
             this.tabDock.getSelector().selectWindow(tabDock.getWindowUid());
         } else {
             this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), node);
         }
-        this.selectedProgrammatically = false;
+        this.selectedFromNodeTree = false;
+        selectPreviousProperty();
     }
 
     protected void onCategoryExpanded(AttributeCategory category, boolean expanded) {
@@ -254,8 +270,27 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         if (field != null && node != null && node.getClassInfo().module().startsWith("javafx.")) {
             declaringClassName = this.tabDock.getConnector().getDeclaringClass(node.getClassInfo().className(), field);
         }
-        var params = new PropertyDialogParams(node, item, declaringClassName, linkOpener);
-        getView().getComposer().addPropertyDialog(params);
+        var params = new ViewerDialogParams(node, item, declaringClassName, linkOpener);
+        var dialog = getView().getComposer().openViewerDialog(params);
+        dialog.setOnClosed(() -> getView().focusProperties());
+    }
+
+    protected void onPropertySelected(PropertyItem item) {
+        // when properites are clered, selected item is null
+        if (item != null) {
+            this.selectedProperty = item;
+        }
+    }
+
+    protected void onEditProperty(EditPropertyTask<?> task) {
+        var params = new EditorDialogParams(task, this.tabDock.getHistoryManager());
+        var dialog = getView().getComposer().openEditorDialog(params);
+        dialog.setOnClosed(() -> {
+            if (dialog.isPropertyUpdated()) {
+                refreshProperties();
+            }
+            getView().focusProperties();
+        });
     }
 
     @Override
@@ -263,6 +298,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         super.postInitialize();
         setTitle("Nodes");
         setClosable(false);
+        getView().setReadOnlyByProperty(readOnlyByProperty);
     }
 
     @Override
@@ -275,7 +311,8 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
     }
 
     private void clearProperties() {
-        this.propsByCategory.clear();
+        this.allPropsByCategory.clear();
+        this.shownPropsByCategory.clear();
         clearFindPropertyResult();
         getView().clearProperties();
     }
@@ -287,7 +324,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         if (matcher != null) {
             findNode(rootNode, matcher);
             if (!foundNodes.isEmpty()) {
-                getView().selectNode(foundNodes.get(foundNodeIndex));
+                getView().selectNode(foundNodes.get(foundNodeIndex), false);
             }
             updateFoundNodeInfo();
         }
@@ -317,7 +354,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         if (this.foundNodeIndex >= this.foundNodes.size()) {
             this.foundNodeIndex = 0;
         }
-        getView().selectNode(foundNodes.get(foundNodeIndex));
+        getView().selectNode(foundNodes.get(foundNodeIndex), false);
         updateFoundNodeInfo();
     }
 
@@ -329,7 +366,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         if (this.foundNodeIndex < 0) {
             this.foundNodeIndex = this.foundNodes.size() - 1;
         }
-        getView().selectNode(foundNodes.get(foundNodeIndex));
+        getView().selectNode(foundNodes.get(foundNodeIndex), false);
         updateFoundNodeInfo();
     }
 
@@ -360,11 +397,13 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         sortedList.sort(Comparator.comparing(Attribute::name));
         var properties = new ArrayList<PropertyItem>();
         for (var attribute : sortedList) {
-            var property = new PropertyItem(event.category(), attribute);
+            var readOnly = this.readOnlyByProperty.get(attribute.field());
+            var property = new PropertyItem(event.category(), attribute,
+                    readOnly == null ? false : readOnly.booleanValue());
             properties.add(property);
         }
         // adding new items to the map
-        this.propsByCategory.put(event.category(), properties);
+        this.allPropsByCategory.put(event.category(), properties);
         filterAndAddProperties(event.category(), properties);
     }
 
@@ -373,7 +412,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         clearFindPropertyResult();
         this.propsMatcher = getView().getComposer().getPropertyToolBarPort().createFindMatcher();
         // existing items from the map are filtered
-        for (var entry : this.propsByCategory.entrySet()) {
+        for (var entry : this.allPropsByCategory.entrySet()) {
             filterAndAddProperties(entry.getKey(), entry.getValue());
         }
     }
@@ -387,17 +426,50 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
                 }
             }
             if (!filteredProps.isEmpty()) {
-                getView().addProperties(cat, this.categoryExpansion.get(cat), filteredProps);
+                setShownProperties(cat, this.categoryExpansion.get(cat), filteredProps);
                 this.foundPropertyCount += filteredProps.size();
             }
             getView().getComposer().getPropertyToolBarPort().showFindResultInfo(foundPropertyCount);
         } else {
-            getView().addProperties(cat, this.categoryExpansion.get(cat), props);
+            setShownProperties(cat, this.categoryExpansion.get(cat), props);
         }
+    }
+
+    private void setShownProperties(AttributeCategory category, boolean expanded, List<PropertyItem> items) {
+        this.shownPropsByCategory.put(category, items);
+        getView().addProperties(category, expanded, items);
     }
 
     private void clearFindPropertyResult() {
         getView().getComposer().getPropertyToolBarPort().hideFindResultInfo();
         this.foundPropertyCount = 0;
+    }
+
+    private void refreshProperties() {
+        selectedFromNodeTree = true;
+        clearProperties();
+        tabDock.getConnector().reloadSelectedAttributes(tabDock.getWindowUid(), null, null);
+        selectedFromNodeTree = false;
+        selectPreviousProperty();
+    }
+
+    private void selectPreviousProperty() {
+        if (this.selectedProperty != null) {
+            if (this.selectedProperty.getType() == PropertyItemType.CATEGORY) {
+                getView().selectPropertyCategory(this.selectedProperty.getCategory());
+            } else {
+                var selProp = this.selectedProperty;
+                var properties = this.shownPropsByCategory.get(this.selectedProperty.getCategory());
+                if (properties != null) {
+                    properties.stream()
+                            // name check is last
+                            .filter(item -> item.getAttribute().displayHint() == selProp.getAttribute().displayHint()
+                                    && item.getAttribute().observableType() == selProp.getAttribute().observableType()
+                                    && Objects.equals(item.getAttribute().name(), selProp.getAttribute().name()))
+                            .findFirst()
+                            .ifPresent(getView()::selectProperty);
+                }
+            }
+        }
     }
 }

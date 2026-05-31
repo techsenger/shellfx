@@ -33,24 +33,29 @@ public class PropertyItem {
 
     private final PropertyItemType type;
 
+    private final boolean readOnly;
+
     private PropertyValueData valueData;
 
     public PropertyItem() {
         this.type = PropertyItemType.ROOT;
         this.attribute = null;
         this.category = null;
+        this.readOnly = false;
     }
 
     public PropertyItem(AttributeCategory category) {
         this.category = category;
         this.type = PropertyItemType.CATEGORY;
         this.attribute = null;
+        this.readOnly = false;
     }
 
-    public PropertyItem(AttributeCategory category, Attribute<?> attribute) {
+    public PropertyItem(AttributeCategory category, Attribute<?> attribute, boolean readOnly) {
         this.category = category;
         this.type = PropertyItemType.PROPERTY;
         this.attribute = attribute;
+        this.readOnly = readOnly;
     }
 
     public PropertyItemType getType() {
@@ -63,6 +68,15 @@ public class PropertyItem {
 
     public Attribute<?> getAttribute() {
         return attribute;
+    }
+
+    /**
+     * Use this property but not the {@link Attribute#observableType} because the last one is wrong.
+     *
+     * @return
+     */
+    public boolean isReadOnly() {
+        return readOnly;
     }
 
     PropertyValueData getValueData() {

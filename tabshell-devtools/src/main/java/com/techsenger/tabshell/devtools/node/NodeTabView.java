@@ -18,9 +18,11 @@ package com.techsenger.tabshell.devtools.node;
 
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
+import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -34,7 +36,9 @@ public interface NodeTabView extends TabView {
 
         ToolBarPort getPropertyToolBarPort();
 
-        void addPropertyDialog(PropertyDialogParams params);
+        DialogPort openViewerDialog(ViewerDialogParams params);
+
+        EditorDialogPort openEditorDialog(EditorDialogParams params);
     }
 
     @Override
@@ -44,11 +48,19 @@ public interface NodeTabView extends TabView {
 
     void refreshNodes();
 
-    void selectNode(Element node);
+    void selectNode(Element node, boolean afterDataUpdate);
 
     void refreshNodeIndex();
 
+    void focusProperties();
+
     void clearProperties();
 
+    void setReadOnlyByProperty(Map<String, Boolean> map);
+
     void addProperties(AttributeCategory category, boolean expanded, List<PropertyItem> items);
+
+    void selectPropertyCategory(AttributeCategory cat);
+
+    void selectProperty(PropertyItem item);
 }

@@ -40,12 +40,16 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class Demo extends Application {
+
+    private static final Logger logger = LoggerFactory.getLogger(Demo.class);
 
     private final Label label = new Label("Select Workspace:");
 
@@ -57,6 +61,9 @@ public class Demo extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
+            logger.error("Uncaught exception in {}", thread.getName(), throwable)
+        );
         typeListView.getStyleClass().add(Styles.DENSE);
         typeListView.setCellFactory(lv -> {
             ListCell<WorkspaceType> cell = new ListCell<>() {

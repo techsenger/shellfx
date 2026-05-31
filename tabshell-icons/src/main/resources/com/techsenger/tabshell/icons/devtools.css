@@ -65,3 +65,12 @@
 .font-icon-view.tools-icon {
     -fx-code-point: 987236; /* tools */
 }
+
+.font-icon-view.edit-icon {
+    -fx-code-point: 986294; /* pencil-outline */
+}
+
+.font-icon-view.view-icon {
+    -fx-code-point: 985976; /* card-text-outline */
+}
+

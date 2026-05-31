@@ -20,6 +20,7 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 import com.techsenger.tabshell.material.style.Spacing;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -70,12 +71,14 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
         gridPane.add(fooLabel, 0, 0);
         gridPane.add(fooTextField, 1, 0);
         fooTextField.setText("No closeRequest for Cancel! See ResultAction!");
+        fooTextField.getStyleClass().add(StyleClasses.DENSE);
         fooTextField.setFocusTraversable(true);
         GridPane.setHgrow(fooTextField, Priority.ALWAYS);
         gridPane.add(barLabel, 0, 1);
         gridPane.add(barTextField, 1, 1);
         GridPane.setHgrow(barTextField, Priority.ALWAYS);
         barTextField.setFocusTraversable(true);
+        barTextField.getStyleClass().add(StyleClasses.DENSE);
         VBox.setVgrow(gridPane, Priority.ALWAYS);
 
         okButton.setDefaultButton(true);

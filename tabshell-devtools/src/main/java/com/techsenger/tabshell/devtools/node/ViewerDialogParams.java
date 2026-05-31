@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogParams extends DialogParams {
+public class ViewerDialogParams extends DialogParams {
 
     private final Element node;
 
@@ -35,7 +35,7 @@ public class PropertyDialogParams extends DialogParams {
 
     private final Consumer<String> linkOpener;
 
-    public PropertyDialogParams(Element node, PropertyItem item, String declaringClassName,
+    public ViewerDialogParams(Element node, PropertyItem item, String declaringClassName,
             Consumer<String> linkOpener) {
         this.node = node;
         this.item = item;

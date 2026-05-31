@@ -21,6 +21,7 @@ module com.techsenger.tabshell.devtools {
     requires com.techsenger.patternfx.mvp;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
+    requires com.techsenger.annotations;
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.tabshell.core;
     requires com.techsenger.tabshell.shared;

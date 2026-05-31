@@ -35,7 +35,9 @@ public final class DevToolsComponents {
 
     public static final ComponentName NODE_TAB = new DefaultComponentName("DevTools.NodeTab");
 
-    public static final ComponentName PROPERTY_DIALOG = new DefaultComponentName("DevTools.PropertyDialog");
+    public static final ComponentName VIEWER_DIALOG = new DefaultComponentName("DevTools.ViewerDialog");
+
+    public static final ComponentName EDITOR_DIALOG = new DefaultComponentName("DevTools.EditorDialog");
 
     public static final ComponentName EVENT_TAB = new DefaultComponentName("DevTools.EventTab");
 

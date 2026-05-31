@@ -124,4 +124,18 @@ public interface CloseAwarePort {
      *                       {@link ClosePreparationResult} that describes the result
      */
     void prepareToClose(Consumer<ClosePreparationResult> resultCallback);
+
+    /**
+     * Returns the callback to be executed after the component has been fully closed and deinitialized.
+     *
+     * @return the callback, or {@code null} if no callback is set
+     */
+    Runnable getOnClosed();
+
+    /**
+     * Sets the callback to be executed after the component has been fully closed and deinitialized.
+     *
+     * @param runnable the callback to execute, or {@code null} to clear it
+     */
+    void setOnClosed(Runnable runnable);
 }

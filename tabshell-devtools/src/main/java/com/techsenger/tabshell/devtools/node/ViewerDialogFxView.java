@@ -38,8 +38,8 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogFxView<P extends PropertyDialogPresenter<?>>  extends AbstractDialogFxView<P>
-        implements PropertyDialogView {
+public class ViewerDialogFxView<P extends ViewerDialogPresenter<?>>  extends AbstractDialogFxView<P>
+        implements ViewerDialogView {
 
     private final GridPane gridPane = new GridPane();
 
@@ -59,11 +59,11 @@ public class PropertyDialogFxView<P extends PropertyDialogPresenter<?>>  extends
 
     private final TextField stateTextField = new TextField();
 
-    private final ResultButton okButton = new ResultButton(PropertyDialogButtons.OK, "OK");
+    private final ResultButton okButton = new ResultButton(ViewerDialogButtons.OK, "OK");
 
     private final ShellFxView<?> shell;
 
-    public PropertyDialogFxView(ShellFxView<?> shell) {
+    public ViewerDialogFxView(ShellFxView<?> shell) {
         this.shell = shell;
     }
 

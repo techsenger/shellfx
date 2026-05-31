@@ -46,10 +46,6 @@ public class Selector {
 
     Selector(Connector connector) {
         this.connector = connector;
-    }
-
-    public void addListener(BiConsumer<Integer, Element> listener) {
-        this.listeners.add(listener);
         // this event is fired only when a node is selected in inspector mode (using select button)
         connector.getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
             // When inspect mode is set to false the selection is removed because for selection
@@ -62,6 +58,10 @@ public class Selector {
                 updateSelectedElements(e.eventSource().uid(), null);
             }
         });
+    }
+
+    public void addListener(BiConsumer<Integer, Element> listener) {
+        this.listeners.add(listener);
     }
 
     public void selectWindow(int uid) {
@@ -91,14 +91,10 @@ public class Selector {
         updateHighlightOptions(selectionVisible);
         // this method may be called by connector event handlers at any time
         if (this.selectedWindowUid != null) {
-            if (selectionVisible) {
-                if (this.selectedNode != null) {
-                    selectNode(this.selectedWindowUid, this.selectedNode);
-                } else {
-                    selectWindow(this.selectedWindowUid);
-                }
+            if (this.selectedNode != null) {
+                selectNode(this.selectedWindowUid, this.selectedNode);
             } else {
-                clearSelection(this.selectedWindowUid);
+                selectWindow(this.selectedWindowUid);
             }
         }
     }

@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.tabshell.core.popup.PopupPresenter;
-import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
@@ -25,7 +24,4 @@ import com.techsenger.tabshell.material.button.ResultButtonName;
  */
 public interface DialogPresenter<V extends DialogView> extends PopupPresenter<V>, DialogPort {
 
-    void onClose();
-
-    void onResult(ResultButtonName name);
 }

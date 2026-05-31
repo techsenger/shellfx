@@ -93,20 +93,6 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
     }
 
     @Override
-    public void onClose() {
-        if (this.closeAction != null) {
-            this.closeAction.run();
-        }
-    }
-
-    @Override
-    public void onResult(ResultButtonName name) {
-        if (this.resultAction != null) {
-            this.resultAction.accept(name);
-        }
-    }
-
-    @Override
     public boolean isActive() {
         return active;
     }
@@ -312,6 +298,18 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         var h = getHistory();
         setPrefWidth(h.getWidth());
         setPrefHeight(h.getHeight());
+    }
+
+    protected void onClose() {
+        if (this.closeAction != null) {
+            this.closeAction.run();
+        }
+    }
+
+    protected void onResult(ResultButtonName name) {
+        if (this.resultAction != null) {
+            this.resultAction.accept(name);
+        }
     }
 
     @Override

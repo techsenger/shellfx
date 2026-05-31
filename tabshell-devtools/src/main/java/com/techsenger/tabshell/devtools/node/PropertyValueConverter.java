@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.devtools;
-
-import com.techsenger.connectorfx.Connector;
-import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.layout.dockhost.TabDockPort;
+package com.techsenger.tabshell.devtools.node;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DevToolsTabDockPort extends TabDockPort {
+@FunctionalInterface
+public interface PropertyValueConverter<T> {
 
-    int getWindowUid();
-
-    Selector getSelector();
-
-    Connector getConnector();
-
-    HistoryManager getHistoryManager();
+    T convert(String value) throws Exception;
 }

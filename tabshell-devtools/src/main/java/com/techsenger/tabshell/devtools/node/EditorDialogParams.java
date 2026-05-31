@@ -16,14 +16,26 @@
 
 package com.techsenger.tabshell.devtools.node;
 
-import com.techsenger.tabshell.material.button.DefaultResultButtonName;
-import com.techsenger.tabshell.material.button.ResultButtonName;
+import com.techsenger.patternfx.core.HistoryPolicy;
+import com.techsenger.tabshell.core.dialog.DialogParams;
+import com.techsenger.tabshell.core.history.HistoryManager;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PropertyDialogButtons {
+public class EditorDialogParams extends DialogParams {
 
-    ResultButtonName OK = new DefaultResultButtonName();
+    private EditPropertyTask<?> task;
+
+    public EditorDialogParams(EditPropertyTask<?> task, HistoryManager historyManager) {
+        this.task = task;
+        setHistoryPolicy(HistoryPolicy.APPEARANCE);
+        setHistoryProvider(() -> historyManager.getOrCreateHistory(EditorDialogHistory.class,
+                EditorDialogHistory::new));
+    }
+
+    public EditPropertyTask<?> getTask() {
+        return task;
+    }
 }

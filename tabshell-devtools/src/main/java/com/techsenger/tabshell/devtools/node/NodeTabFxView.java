@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.devtools.node;
 
 import atlantafx.base.theme.Tweaks;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.connectorfx.ConnectorOptions;
 import com.techsenger.connectorfx.LocalElement;
 import com.techsenger.connectorfx.event.EventSource;
@@ -25,27 +26,47 @@ import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.INSETS;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
+import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
+import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.devtools.ElementUtils;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarParams;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.devtools.ToolBarPresenter;
+import com.techsenger.tabshell.devtools.style.DevToolsIcons;
+import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.toolkit.fx.utils.TableUtils;
 import com.techsenger.toolkit.fx.utils.TreeViewUtils;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -54,16 +75,24 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxView<P> implements NodeTabView {
+
+    private static final Logger logger = LoggerFactory.getLogger(NodeTabFxView.class);
 
     private static final class NodeCell extends TreeCell<Element> {
 
@@ -276,6 +305,174 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         return Math.abs(v) < 1e-10;
     }
 
+    private static @Nullable EditPropertyTask<?> createEditTask(Element element, Attribute<?> attr,
+            ComponentDescriptor descriptor) {
+        LocalElement local = (LocalElement) element;
+        var node = local.unwrap();
+        if (node != null) {
+            var property = findProperty(node, attr.field());
+            if (property != null) {
+                return createEditTask(attr, property, descriptor);
+            } else {
+                logger.warn("{} Couldn't create task - property {} for {} not found", descriptor.getLogPrefix(),
+                        attr.field(), node);
+                return null;
+            }
+        }
+        logger.warn("{} Couldn't create task - node is null", descriptor.getLogPrefix());
+        return null;
+    }
+
+    private static @Nullable ReadOnlyProperty<?> findProperty(Node node, String propertyName) {
+        Class<?> clazz = node.getClass();
+        while (clazz != null) {
+            try {
+                Method method = clazz.getDeclaredMethod(propertyName);
+                method.setAccessible(true);
+                Object result = method.invoke(node);
+                if (result instanceof ReadOnlyProperty<?> property) {
+                    return property;
+                } else {
+                    return null;
+                }
+            } catch (NoSuchMethodException e) {
+                clazz = clazz.getSuperclass();
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException("Failed to invoke " + propertyName + " on " + node.getClass(), e);
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static EditPropertyTask<?> createEditTask(Attribute<?> attr, ReadOnlyProperty<?> property,
+            ComponentDescriptor descriptor) {
+        if (property instanceof BooleanProperty bp) {
+            return new EditPropertyTask<>(
+                attr,
+                Boolean.class,
+                value -> Boolean.parseBoolean(value),
+                bp::setValue,
+                bp::getValue
+            );
+        }
+        if (property instanceof DoubleProperty dp) {
+            return new EditPropertyTask<>(
+                attr,
+                Double.class,
+                value -> Double.parseDouble(value),
+                dp::setValue,
+                dp::getValue
+            );
+        }
+        if (property instanceof IntegerProperty ip) {
+            return new EditPropertyTask<>(
+                attr,
+                Integer.class,
+                value -> Integer.parseInt(value),
+                ip::setValue,
+                ip::getValue
+            );
+        }
+        if (property instanceof FloatProperty fp) {
+            return new EditPropertyTask<>(
+                attr,
+                Float.class,
+                value -> Float.parseFloat(value),
+                fp::setValue,
+                fp::getValue
+            );
+        }
+        if (property instanceof LongProperty lp) {
+            return new EditPropertyTask<>(
+                attr,
+                Long.class,
+                value -> Long.parseLong(value),
+                lp::setValue,
+                lp::getValue
+            );
+        }
+        if (property instanceof StringProperty sp) {
+            return new EditPropertyTask<>(
+                attr,
+                String.class,
+                value -> value,
+                sp::setValue,
+                sp::getValue
+            );
+        }
+        Type type = property.getClass().getGenericSuperclass();
+        if (type instanceof ParameterizedType parameterizedType) {
+            Type[] args = parameterizedType.getActualTypeArguments();
+            if (args.length > 0 && args[0] instanceof Class<?> clazz) {
+                return createObjectPropertyTask(attr, (Property<Object>) property, (Class<Object>) clazz, descriptor);
+            }
+        }
+        Object value = property.getValue();
+        if (value != null) {
+            return createObjectPropertyTask(attr, (Property<Object>) property,
+                    (Class<Object>) value.getClass(), descriptor);
+        }
+        logger.warn("{} Couldn't create task - property type is unresolved, value is null", descriptor.getLogPrefix());
+        return null;
+    }
+
+    private static <T> EditPropertyTask<T> createObjectPropertyTask(Attribute<?> attr, Property<T> property,
+            Class<T> clazz, ComponentDescriptor descriptor) {
+        if (clazz.isEnum()) {
+            return new EditPropertyTask<>(
+                attr,
+                clazz,
+                value -> (T) Enum.valueOf((Class<Enum>) clazz, value),
+                property::setValue,
+                property::getValue
+            );
+        }
+        if (clazz == Color.class) {
+            return new EditPropertyTask<>(
+                attr,
+                clazz,
+                value -> (T) Color.web(value),
+                property::setValue,
+                property::getValue
+            );
+        }
+        if (clazz == Insets.class) {
+            return new EditPropertyTask<>(
+                attr,
+                clazz,
+                value -> {
+                    String[] parts = value.split(","); // format: top,right,bottom,left
+                    return (T) new Insets(
+                        Double.parseDouble(parts[0].trim()),
+                        Double.parseDouble(parts[1].trim()),
+                        Double.parseDouble(parts[2].trim()),
+                        Double.parseDouble(parts[3].trim())
+                    );
+                },
+                property::setValue,
+                property::getValue
+            );
+        }
+        logger.warn("{} Couldn't create task - unknown property type", descriptor.getLogPrefix());
+        return null;
+    }
+
+    private static void updateReadOnlyByProperty(Map<String, Boolean> result, Node node) {
+        Class<?> clazz = node.getClass();
+        while (clazz != null) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.getName().endsWith("Property")
+                        && method.getParameterCount() == 0
+                        && ReadOnlyProperty.class.isAssignableFrom(method.getReturnType())) {
+                    boolean readOnly = !Property.class.isAssignableFrom(method.getReturnType());
+                    result.putIfAbsent(method.getName(), readOnly);
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+    }
+
     public class Composer extends AbstractTabFxView<P>.Composer implements NodeTabView.Composer {
 
         private final NodeTabFxView<P> view = NodeTabFxView.this;
@@ -316,10 +513,25 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         }
 
         @Override
-        public void addPropertyDialog(PropertyDialogParams params) {
-            var dialog = createPropertyDialog(params);
+        public DialogPort openViewerDialog(ViewerDialogParams params) {
+            var dialog = createViewerDialog(params);
             dialog.getPresenter().setResizable(true);
             dialogContainer.addDialog(dialog);
+            return dialog.getPresenter();
+        }
+
+        @Override
+        public EditorDialogPort openEditorDialog(EditorDialogParams params) {
+            AbstractEditorDialogFxView<?> dialog = null;
+            if (params.getTask().getType().isEnum()) {
+                dialog = createEnumEditorDialog(params);
+            } else if (Insets.class.isAssignableFrom(params.getTask().getType())) {
+                dialog = createInsetEditorDialog(params);
+            } else {
+                dialog = createTextEditorDialog(params);
+            }
+            dialogContainer.addDialog(dialog);
+            return dialog.getPresenter();
         }
 
         protected ToolBarFxView<?> createNodeToolBar() {
@@ -338,9 +550,30 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             return view;
         }
 
-        protected PropertyDialogFxView<?> createPropertyDialog(PropertyDialogParams params) {
-            var view = new PropertyDialogFxView<>(getShell());
-            var presenter = new PropertyDialogPresenter<>(view, params);
+        protected ViewerDialogFxView<?> createViewerDialog(ViewerDialogParams params) {
+            var view = new ViewerDialogFxView<>(getShell());
+            var presenter = new ViewerDialogPresenter<>(view, params);
+            presenter.initialize();
+            return view;
+        }
+
+        protected TextEditorDialogFxView<?> createTextEditorDialog(EditorDialogParams params) {
+            var view = new TextEditorDialogFxView<>();
+            var presenter = new TextEditorDialogPresenter<>(view, params);
+            presenter.initialize();
+            return view;
+        }
+
+        protected EnumEditorDialogFxView<?> createEnumEditorDialog(EditorDialogParams params) {
+            var view = new EnumEditorDialogFxView<>();
+            var presenter = new EnumEditorDialogPresenter<>(view, params);
+            presenter.initialize();
+            return view;
+        }
+
+        protected InsetEditorDialogFxView<?> createInsetEditorDialog(EditorDialogParams params) {
+            var view = new InsetEditorDialogFxView<>();
+            var presenter = new InsetEditorDialogPresenter<>(view, params);
             presenter.initialize();
             return view;
         }
@@ -353,6 +586,8 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
     private final Map<Element, TreeItem<Element>> treeItemsByNode = new HashMap<>();
 
     private final VBox nodeBox = new VBox(nodeTreeView);
+
+    private Map<String, Boolean> readOnlyByProperty;
 
     private final TreeTableView<PropertyItem> propertyTableView = new TreeTableView<>();
 
@@ -376,18 +611,22 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
     }
 
     @Override
-    public void selectNode(Element node) {
+    public void selectNode(Element node, boolean afterDataUpdate) {
         var treeItem = this.treeItemsByNode.get(node);
         if (treeItem != null) {
             nodeTreeView.getSelectionModel().select(treeItem);
-            TreeViewUtils.scrollToIfNeeded(nodeTreeView, nodeTreeView.getSelectionModel().getSelectedIndex());
+            if (afterDataUpdate) {
+                nodeTreeView.scrollTo(nodeTreeView.getSelectionModel().getSelectedIndex());
+            } else {
+                TreeViewUtils.scrollToIfNeeded(nodeTreeView, nodeTreeView.getSelectionModel().getSelectedIndex());
+            }
         }
     }
 
     @Override
     public void selectRoot() {
         nodeTreeView.getSelectionModel().select(0);
-        TreeViewUtils.scrollToIfNeeded(nodeTreeView, nodeTreeView.getSelectionModel().getSelectedIndex());
+        nodeTreeView.scrollTo(nodeTreeView.getSelectionModel().getSelectedIndex());
     }
 
     @Override
@@ -399,12 +638,22 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         }
         updateNodeRoot();
         refreshNodeIndex();
-        selectNode(selectedNode);
+        selectNode(selectedNode, true);
     }
 
     @Override
     public void refreshNodeIndex() {
         refreshNodeIndex((NodeTreeItem) nodeTreeView.getRoot(), treeItemsByNode);
+    }
+
+    @Override
+    public void setReadOnlyByProperty(Map<String, Boolean> map) {
+        this.readOnlyByProperty = map;
+    }
+
+    @Override
+    public void focusProperties() {
+        propertyTableView.requestFocus();
     }
 
     @Override
@@ -428,6 +677,31 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             prop.setValueData(createValueData(prop));
             var treeItem = new TreeItem<>(prop);
             cat.getChildren().add(treeItem);
+        }
+    }
+
+    @Override
+    public void selectPropertyCategory(AttributeCategory cat) {
+        for (var child : this.propertyTableView.getRoot().getChildren()) {
+            if (child.getValue().getCategory() == cat) {
+                this.propertyTableView.getSelectionModel().select(child);
+                this.propertyTableView.scrollTo(this.propertyTableView.getSelectionModel().getSelectedIndex());
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void selectProperty(PropertyItem item) {
+        var treeItem = TableUtils.findTreeItem(this.propertyTableView.getRoot(), item);
+        if (treeItem != null) {
+            TreeItem<PropertyItem> parent = treeItem.getParent();
+            while (parent != null) {
+                parent.setExpanded(true);
+                parent = parent.getParent();
+            }
+            this.propertyTableView.getSelectionModel().select(treeItem);
+            this.propertyTableView.scrollTo(this.propertyTableView.getSelectionModel().getSelectedIndex());
         }
     }
 
@@ -485,6 +759,42 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         propertyTableView.setShowRoot(false);
         propertyTableView.setPlaceholder(new Label(""));
         VBox.setVgrow(propertyTableView, Priority.ALWAYS);
+        var viewMenuItem = new MenuItem("View", new FontIconView(DevToolsIcons.VIEW));
+        viewMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.ENTER));
+        viewMenuItem.setOnAction(e -> {
+            var treeItem = this.propertyTableView.getSelectionModel().getSelectedItem();
+            if (treeItem != null && treeItem.getValue() != null) {
+                getPresenter().onPropertyRequested(treeItem.getValue());
+            }
+        });
+        var editMenuItem = new MenuItem("Edit", new FontIconView(DevToolsIcons.EDIT));
+        editMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN));
+        EditPropertyTask<?>[] tasks = new EditPropertyTask[]{null};
+        editMenuItem.setOnAction(e -> {
+            if (tasks[0] != null) {
+                getPresenter().onEditProperty(tasks[0]);
+            }
+        });
+        var menu = new ContextMenu(viewMenuItem, editMenuItem);
+        menu.setOnShowing((e) -> {
+            tasks[0] = null;
+            var treeItem = this.propertyTableView.getSelectionModel().getSelectedItem();
+            var selItem = this.nodeTreeView.getSelectionModel().getSelectedItem();
+            Element el = null;
+            if (selItem != null) {
+                el = selItem.getValue();
+            } else {
+                return;
+            }
+            if (treeItem != null && treeItem.getValue() != null && !treeItem.getValue().isReadOnly()) {
+                var propItem = treeItem.getValue();
+                var task = createEditTask(el, propItem.getAttribute(), getDescriptor());
+                tasks[0] = task;
+            }
+            editMenuItem.setDisable(tasks[0] == null);
+        });
+        menu.getStyleClass().add(StyleClasses.COMPACT);
+        this.propertyTableView.setContextMenu(menu);
         propertyTableView.setRowFactory(ttv -> {
             TreeTableRow<PropertyItem> row = new TreeTableRow<>();
             row.setOnMouseClicked(event -> {
@@ -502,8 +812,18 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
     @Override
     protected void addListeners() {
         super.addListeners();
-        nodeTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) ->
-            getPresenter().onNodeSelected(newV == null ? null : newV.getValue()));
+        nodeTreeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+            this.readOnlyByProperty.clear();
+            Element el = null;
+            if (newV != null) {
+                el = newV.getValue();
+                LocalElement localElement = (LocalElement) el;
+                updateReadOnlyByProperty(readOnlyByProperty, localElement.unwrap());
+            }
+            getPresenter().onNodeSelected(el);
+        });
+        propertyTableView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) ->
+            getPresenter().onPropertySelected(newV == null ? null : newV.getValue()));
     }
 
     protected TreeTableView<PropertyItem> getPropertyTableView() {

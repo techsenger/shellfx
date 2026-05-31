@@ -16,23 +16,11 @@
 
 package com.techsenger.tabshell.devtools.node;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
-
 /**
  *
  * @author Pavel Castornii
  */
-public interface PropertyDialogView extends DialogView {
-
-    void setName(String name);
-
-    void addNameUrl(String url);
+public interface TextEditorDialogView extends EditorDialogView {
 
     void setValue(String value);
-
-    void setCss(String css);
-
-    void addCssUrl(String url);
-
-    void setState(String state);
 }

@@ -28,6 +28,8 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     private boolean closable = true;
 
+    private Runnable onClosed;
+
     private boolean waiting;
 
     private String tooltip;
@@ -50,6 +52,9 @@ public abstract class AbstractTabPresenter<V extends TabView>
     @Override
     public void close() {
         getView().getComposer().close();
+        if (this.onClosed != null) {
+            this.onClosed.run();
+        }
     }
 
     @Override
@@ -61,6 +66,16 @@ public abstract class AbstractTabPresenter<V extends TabView>
     public void setClosable(boolean closable) {
         this.closable = closable;
         getView().setClosable(closable);
+    }
+
+    @Override
+    public Runnable getOnClosed() {
+        return onClosed;
+    }
+
+    @Override
+    public void setOnClosed(Runnable onClosed) {
+        this.onClosed = onClosed;
     }
 
     @Override

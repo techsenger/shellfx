@@ -45,4 +45,8 @@ public interface DevToolsIcons {
     StyleFontIcon REFRESH = new StyleFontIcon("refresh-icon");
 
     StyleFontIcon TOOLS = new StyleFontIcon("tools-icon");
+
+    StyleFontIcon EDIT = new StyleFontIcon("edit-icon");
+
+    StyleFontIcon VIEW = new StyleFontIcon("view-icon");
 }

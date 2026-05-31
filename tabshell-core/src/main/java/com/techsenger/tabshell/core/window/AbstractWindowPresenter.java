@@ -60,6 +60,8 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     private SettingsSubscription monospaceFontSubscription;
 
+    private Runnable onClosed;
+
     public AbstractWindowPresenter(T view, WindowParams params) {
         super(view, params);
         this.setting = params.getSetting();
@@ -186,6 +188,9 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         // the window is deinitilized at the end
         deinitialize();
         getView().closeWindow();
+        if (this.onClosed != null) {
+            this.onClosed.run();
+        }
     }
 
     @Override
@@ -200,6 +205,16 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     @Override
     public boolean isBlocked() {
         return blocked;
+    }
+
+    @Override
+    public Runnable getOnClosed() {
+        return onClosed;
+    }
+
+    @Override
+    public void setOnClosed(Runnable onClosed) {
+        this.onClosed = onClosed;
     }
 
     @Override

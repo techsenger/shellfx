@@ -33,6 +33,8 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
 
     private boolean waiting;
 
+    private Runnable onClosed;
+
     public AbstractPopupPresenter(V view, PopupParams params) {
         super(view, params);
         this.modal = params.isModal();
@@ -46,6 +48,9 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
     @Override
     public void close() {
         getView().getComposer().close();
+        if (this.onClosed != null) {
+            this.onClosed.run();
+        }
     }
 
     @Override
@@ -82,6 +87,16 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
         }
         this.waiting = waiting;
         getView().setWaiting(waiting);
+    }
+
+    @Override
+    public Runnable getOnClosed() {
+        return onClosed;
+    }
+
+    @Override
+    public void setOnClosed(Runnable onClosed) {
+        this.onClosed = onClosed;
     }
 
     @Override

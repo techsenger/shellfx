@@ -23,13 +23,14 @@ import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.UrlUtils;
+import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class PropertyDialogPresenter<V extends PropertyDialogView>  extends AbstractDialogPresenter<V> {
+public class ViewerDialogPresenter<V extends ViewerDialogView>  extends AbstractDialogPresenter<V> {
 
     private final Element node;
 
@@ -39,7 +40,7 @@ public class PropertyDialogPresenter<V extends PropertyDialogView>  extends Abst
 
     private final Consumer<String> linkOpener;
 
-    public PropertyDialogPresenter(V view, PropertyDialogParams params) {
+    public ViewerDialogPresenter(V view, ViewerDialogParams params) {
         super(view, params);
         this.node = params.getNode();
         this.item = params.getItem();
@@ -67,7 +68,7 @@ public class PropertyDialogPresenter<V extends PropertyDialogView>  extends Abst
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.PROPERTY_DIALOG);
+        return new ComponentDescriptor(DevToolsComponents.VIEWER_DIALOG);
     }
 
     @Override
@@ -75,7 +76,8 @@ public class PropertyDialogPresenter<V extends PropertyDialogView>  extends Abst
         super.postInitialize();
         setPrefWidth(600);
         setPrefHeight(350);
-        setTitle("Property Dialog");
+        setIcon(DevToolsIcons.VIEW);
+        setTitle("Property Viewer");
         getView().setName(item.getAttribute().name());
         var nameUrl = resolveNameUrl();
         if (nameUrl != null) {
@@ -93,7 +95,7 @@ public class PropertyDialogPresenter<V extends PropertyDialogView>  extends Abst
         }
         getView().setState(item.getAttribute().valueState().name());
         setResultAction((button) -> requestClose());
-        setRightButtons(PropertyDialogButtons.OK);
+        setRightButtons(ViewerDialogButtons.OK);
     }
 
     protected void onFollowLink(String url) {
