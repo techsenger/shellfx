@@ -50,6 +50,10 @@
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-css</artifactId>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

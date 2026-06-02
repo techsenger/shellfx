@@ -17,12 +17,19 @@
 package com.techsenger.tabshell.material.theme;
 
 import atlantafx.base.theme.Theme;
+import com.helger.css.ECSSVersion;
+import com.helger.css.decl.CSSDeclaration;
+import com.helger.css.decl.CSSStyleRule;
+import com.helger.css.decl.CascadingStyleSheet;
+import com.helger.css.reader.CSSReader;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import com.techsenger.toolkit.core.StringUtils;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -134,7 +141,16 @@ final class ThemeProvider {
     private Map<String, Integer> themeColorsByName;
 
     private ThemeProvider() {
-        this.sharedColorsByName = readColors(Stylesheet.class, "material.css", null);
+        var fileName = "material.css";
+        Map<String, Integer> tempColorsByName;
+        try {
+            var css = readColors(Stylesheet.class, fileName);
+            tempColorsByName = parseColors(css, null);
+        } catch (Exception ex) {
+            logger.error("Error reading CSS file {}", fileName, ex);
+            tempColorsByName = null;
+        }
+        this.sharedColorsByName = tempColorsByName;
     }
 
     ThemePalettes createCupertinoPalettes(boolean dark) {
@@ -296,83 +312,74 @@ final class ThemeProvider {
     }
 
     private Map<String, Integer> createThemeColors(String baseFile) {
-        //reading atlantafx css file
-        var atlantaColorsByName = readColors(Theme.class, baseFile.substring("material-".length()), null);
-        //now we add shared colors, because they must override atlantafx colors
-        atlantaColorsByName.putAll(sharedColorsByName);
-        //reading tabshell base css file
-        var shellThemeColorsByName = readColors(Stylesheet.class, baseFile, atlantaColorsByName);
-        return shellThemeColorsByName;
+        try {
+            //reading atlantafx css file
+            var css = readColors(Theme.class, baseFile.substring("material-".length()));
+            var atlantaColorsByName = parseColors(css, null);
+            //now we add shared colors, because they must override atlantafx colors
+            atlantaColorsByName.putAll(sharedColorsByName);
+            //reading tabshell base css file
+            css = readColors(Stylesheet.class, baseFile);
+            var shellThemeColorsByName = parseColors(css, atlantaColorsByName);
+            return shellThemeColorsByName;
+        } catch (Exception ex) {
+            logger.error("Error reading CSS file {}", baseFile, ex);
+            return null;
+        }
     }
 
-    private Map<String, Integer> readColors(Class<?> anchorClass, String cssName, Map<String, Integer> colorsByName) {
-        try {
-            String packageName = anchorClass.getPackageName();
-            Module thatModule = anchorClass.getModule();
-            Module thisModule = this.getClass().getModule();
-            if (!thatModule.isOpen(packageName, thisModule)) {
-                throw new IllegalStateException(StringUtils.format("Module {} didn't open package {} to module {}",
-                        thatModule.getName(), packageName, thisModule.getName()));
-            }
-            String packagePath = packageName.replaceAll(Pattern.quote("."), "/");
-            String cssPath = "/" + packagePath + "/" + cssName;
-            logger.debug("Resolved CSS file path: {}", cssPath);
-            //relative path
-            try (InputStream is = thatModule.getResourceAsStream(cssPath);
-                 InputStreamReader isr = new InputStreamReader(is);
-                 BufferedReader br = new BufferedReader(isr)) {
-                String content = br.lines().collect(Collectors.joining("\n"));
-                return parseColors(content, colorsByName);
-            }
-        } catch (Exception ex) {
-            logger.error("Error reading CSS file {}", cssName, ex);
+    private String readColors(Class<?> anchorClass, String cssName) throws IOException {
+        String packageName = anchorClass.getPackageName();
+        Module thatModule = anchorClass.getModule();
+        Module thisModule = this.getClass().getModule();
+        if (!thatModule.isOpen(packageName, thisModule)) {
+            throw new IllegalStateException(StringUtils.format("Module {} didn't open package {} to module {}",
+                    thatModule.getName(), packageName, thisModule.getName()));
         }
-        return null;
+        String packagePath = packageName.replaceAll(Pattern.quote("."), "/");
+        String cssPath = "/" + packagePath + "/" + cssName;
+        logger.debug("Resolved CSS file path: {}", cssPath);
+        //relative path
+        try (InputStream is = thatModule.getResourceAsStream(cssPath);
+             InputStreamReader isr = new InputStreamReader(is);
+             BufferedReader br = new BufferedReader(isr)) {
+            String content = br.lines().collect(Collectors.joining("\n"));
+            return content;
+        }
     }
 
     private Map<String, Integer> parseColors(String cssContent, Map<String, Integer> colorsByName) throws Exception {
-        String regex = "\\.root\\s*\\{([^}]*)\\}";
-        var pattern = Pattern.compile(regex);
-        var matcher = pattern.matcher(cssContent);
-        String rules = null;
         Map<String, Integer> finalColorsByName;
         if (colorsByName == null) {
             finalColorsByName = new HashMap<>();
         } else {
             finalColorsByName = new HashMap<>(colorsByName);
         }
-        if (matcher.find()) {
-            rules = matcher.group(1).trim();
-        } else {
-            return finalColorsByName;
-        }
-        regex = "-color[\\w-]+\\s*:\\s*"
-                + "(#[a-fA-F0-9]{6}|rgb\\(\\s*\\d{1,3}\\s*,\\s*\\d{1,3}\\s*,\\s*\\d{1,3}\\s*\\)|"
-                + "rgba\\(\\s*\\d{1,3}\\s*,\\s*\\d{1,3}\\s*,\\s*\\d{1,3}\\s*,\\s*(0(?:\\.\\d+)?|1(?:\\.0*)?)\\s*\\)|"
-                + "(-color-[a-zA-Z0-9\\-]*)|"
-                + "(\\w*))";
-        pattern = Pattern.compile(regex);
-        matcher = pattern.matcher(rules);
-        while (matcher.find()) {
-            String match = matcher.group();
-            String[] parts = match.split(":\\s*", 2);
-            if (parts.length == 2) {
-                String name = parts[0].trim();
-                if (!name.startsWith("-color-")) {
-                    continue;
-                }
-                String value = parts[1].trim();
-                if (value.startsWith("-color-")) {
-                    //reference to another color
-                    finalColorsByName.put(name, finalColorsByName.get(value));
-                } else {
-                    var color = Color.web(value);
-                    var colorStr = color.toString();
-                    if (colorStr.endsWith("FF")) {
-                        finalColorsByName.put(name, Integer.parseUnsignedInt(colorStr.substring(2), 16));
-                    } else {
-                        finalColorsByName.put(name, Integer.parseUnsignedInt(colorStr.substring(2, 8), 16));
+        CascadingStyleSheet css = CSSReader.readFromString(cssContent, StandardCharsets.UTF_8, ECSSVersion.CSS30);
+        if (css != null) {
+            for (CSSStyleRule rule : css.getAllStyleRules()) {
+                if (rule.getSelectorCount() == 1 && rule.getSelectorAtIndex(0).getAsCSSString().equals(".root")) {
+                    // System.out.println("Selector: " + rule.getAsCSSString());
+                    for (CSSDeclaration decl : rule.getAllDeclarations()) {
+                        if (decl.getProperty().startsWith("-color-")) {
+                            var value = decl.getExpressionAsCSSString();
+                            if (value.startsWith("-color-")) {
+                                //reference to another color
+                                finalColorsByName.put(decl.getProperty(), finalColorsByName.get(value));
+                            } else {
+                                var color = Color.web(value);
+                                var colorStr = color.toString();
+                                if (colorStr.endsWith("FF")) {
+                                    finalColorsByName.put(decl.getProperty(),
+                                            Integer.parseUnsignedInt(colorStr.substring(2), 16));
+                                } else {
+                                    finalColorsByName.put(decl.getProperty(),
+                                            Integer.parseUnsignedInt(colorStr.substring(2, 8), 16));
+                                }
+                            }
+                        }
                     }
+                    break;
                 }
             }
         }

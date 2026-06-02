@@ -24,6 +24,8 @@ module com.techsenger.tabshell.material {
     requires javafx.graphics;
     requires javafx.controls;
     requires atlantafx.base;
+    requires com.helger.css;
+    requires com.helger.commons;
 
     exports com.techsenger.tabshell.material;
     exports com.techsenger.tabshell.material.button;
