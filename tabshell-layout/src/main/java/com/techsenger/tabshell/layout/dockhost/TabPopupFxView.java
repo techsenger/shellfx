@@ -141,7 +141,7 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
         TabPaneProSkin tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
         var lastArea = tabPaneSkin.getTabHeaderArea().getLastArea();
         lastArea.getChildren().add(closeButton);
-        lastArea.setPadding(new Insets(0, Spacing.HORIZONTAL, 0, 0));
+        lastArea.setPadding(new Insets(0, Spacing.getHorizontal(), 0, 0));
         closeButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
 
         setInitialSizeAndPosition();

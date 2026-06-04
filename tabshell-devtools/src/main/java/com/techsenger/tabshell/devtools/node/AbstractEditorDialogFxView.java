@@ -88,7 +88,7 @@ public abstract class AbstractEditorDialogFxView<P extends AbstractEditorDialogP
         super.build();
         propertyNameLabel.setMinWidth(Label.USE_PREF_SIZE);
 
-        rowBox.setSpacing(Spacing.HORIZONTAL);
+        rowBox.setSpacing(Spacing.getHorizontal());
         rowBox.setAlignment(Pos.CENTER_LEFT);
         VBox.setVgrow(rowBox, Priority.ALWAYS);
         getContentBox().getChildren().add(rowBox);

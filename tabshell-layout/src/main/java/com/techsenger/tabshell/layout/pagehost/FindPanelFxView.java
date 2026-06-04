@@ -46,7 +46,8 @@ public class FindPanelFxView<P extends FindPanelPresenter<?>> extends AbstractFi
     protected void build() {
         super.build();
         box.getStyleClass().add("find-box");
-        box.setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL));
+        box.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
+                Spacing.getVertical(), Spacing.getHorizontal()));
         HBox.setHgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
         getFindComboBox().setMaxWidth(Double.MAX_VALUE);
         getFindComboBoxWrapper().setMinWidth(100);

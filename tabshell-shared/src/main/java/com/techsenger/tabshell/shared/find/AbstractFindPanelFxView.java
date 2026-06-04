@@ -90,7 +90,7 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
 
         this.findLabel.setMinWidth(Label.USE_PREF_SIZE);
         // 3 = 2(padding) + 1(bg-insetts)
-        this.findLabelWrapper.setPadding(new Insets(2, Spacing.HORIZONTAL, 3, Spacing.HORIZONTAL));
+        this.findLabelWrapper.setPadding(new Insets(2, Spacing.getHorizontal(), 3, Spacing.getHorizontal()));
         this.findLabelWrapper.setAlignment(Pos.CENTER_LEFT);
         GridPane.setVgrow(this.findLabelWrapper, Priority.ALWAYS);
         GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
@@ -101,11 +101,11 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
 
         this.toolBox.getChildren().addAll(getFindPreviousButton(), getFindNextButton(), getMatchCaseButton(),
                 getWholeWordButton(), getRegExpButton(), getHighlightButton(),
-                new Spacer(Spacing.HORIZONTAL - Spacing.HORIZONTAL_THIRD * 2), this.closeButton);
+                new Spacer(Spacing.getHorizontal() - Spacing.getHorizontalThird() * 2), this.closeButton);
         this.toolBox.getStyleClass().add(Styles.DENSE);
-        this.toolBox.setSpacing(Spacing.HORIZONTAL_THIRD);
+        this.toolBox.setSpacing(Spacing.getHorizontalThird());
         this.toolBox.setAlignment(Pos.CENTER_LEFT);
-        this.toolBox.setPadding(new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL_THIRD));
+        this.toolBox.setPadding(new Insets(0, Spacing.getHorizontal(), 0, Spacing.getHorizontalThird()));
         GridPane.setVgrow(this.toolBox, Priority.ALWAYS);
 
         gridPane.add(this.findLabelWrapper, 0, 0);

@@ -118,7 +118,7 @@ public class AlertDialogFxView<P extends AlertDialogPresenter<?>> extends Abstra
         messageLabel.getStyleClass().add("message-label");
         VBox.setVgrow(messageBox, Priority.ALWAYS);
         messageBox.getStyleClass().add("message-box");
-        messageBox.setSpacing(Spacing.HORIZONTAL_HALF);
+        messageBox.setSpacing(Spacing.getHorizontalHalf());
         getContentBox().getChildren().add(messageBox);
         registerButtons(okButton, cancelButton, noButton, yesButton);
     }

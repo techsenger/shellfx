@@ -53,7 +53,7 @@ public class LocationCell extends ListCell<Location> {
             setGraphic(null);
         } else {
             if (!this.valueCell) {
-                this.box.setPadding(new Insets(0, 0, 0, item.getLevel() * Spacing.HORIZONTAL));
+                this.box.setPadding(new Insets(0, 0, 0, item.getLevel() * Spacing.getHorizontal()));
             }
             this.label.setText(item.getName());
             this.box.getChildren().clear();

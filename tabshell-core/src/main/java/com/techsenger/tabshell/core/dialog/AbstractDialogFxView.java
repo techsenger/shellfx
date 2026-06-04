@@ -292,7 +292,8 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         super.getNode().getChildren().add(mainBox);
         mainBox.getStyleClass().add("main-box");
         VBox.setVgrow(getContentBox(), Priority.ALWAYS);
-        getContentBox().setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL));
+        getContentBox().setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
+                0, Spacing.getHorizontal()));
         getContentBox().getStyleClass().addAll("content-box", StyleClasses.CORNERS_BOTTOM);
         super.getNode().getStyleClass().addAll("wrapper", StyleClasses.CORNERS_BOTTOM);
         VBox.setVgrow(super.getNode(), Priority.ALWAYS);
@@ -310,12 +311,12 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         this.resizer.initialize(dialogBox);
 
         this.buttonBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
-        this.buttonBox.setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL,
-                Spacing.VERTICAL, Spacing.HORIZONTAL));
-        buttonBox.setSpacing(Spacing.HORIZONTAL);
+        this.buttonBox.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
+                Spacing.getVertical(), Spacing.getHorizontal()));
+        buttonBox.setSpacing(Spacing.getHorizontal());
 
-        leftButtonBox.setSpacing(Spacing.HORIZONTAL);
-        rightButtonBox.setSpacing(Spacing.HORIZONTAL);
+        leftButtonBox.setSpacing(Spacing.getHorizontal());
+        rightButtonBox.setSpacing(Spacing.getHorizontal());
     }
 
     @Override

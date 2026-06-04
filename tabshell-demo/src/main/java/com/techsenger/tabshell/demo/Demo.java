@@ -81,8 +81,9 @@ public class Demo extends Application {
             });
             return cell;
         });
-        root.setSpacing(Spacing.VERTICAL);
-        root.setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL));
+        root.setSpacing(Spacing.getVertical());
+        root.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
+                Spacing.getVertical(), Spacing.getHorizontal()));
         var scene = new Scene(root, 300, 200);
         stage.setTitle("TabShell");
         stage.setScene(scene);

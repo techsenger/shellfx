@@ -52,14 +52,14 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         var rightBox = createRightBox(styleClass);
         GridPane.setVgrow(rightBox, Priority.ALWAYS);
         gridPane.addRow(gridPane.getRowCount(), leftBox, rightBox);
-        gridPane.setHgap(Spacing.HORIZONTAL);
+        gridPane.setHgap(Spacing.getHorizontal());
         return gridPane;
     }
 
     private static VBox createLeftBox(String styleClass) {
         GridPane grid = new GridPane();
-        grid.setHgap(Spacing.HORIZONTAL);
-        grid.setVgap(Spacing.VERTICAL);
+        grid.setHgap(Spacing.getHorizontal());
+        grid.setVgap(Spacing.getVertical());
         ColumnConstraints labelCol = new ColumnConstraints();
         labelCol.setHalignment(HPos.LEFT);
         ColumnConstraints fieldCol = new ColumnConstraints();
@@ -121,7 +121,7 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         // Root
         var root = new VBox(grid, listView, treeView, buttonBar);
         VBox.setVgrow(grid, Priority.ALWAYS);
-        root.setSpacing(Spacing.VERTICAL);
+        root.setSpacing(Spacing.getVertical());
         return root;
     }
 
@@ -131,7 +131,7 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         var treeTable = NodeFactory.createTreeTable(PERSONS);
         VBox.setVgrow(treeTable, Priority.ALWAYS);
         var rightBox = new VBox(table, treeTable);
-        rightBox.setSpacing(Spacing.VERTICAL);
+        rightBox.setSpacing(Spacing.getVertical());
         return rightBox;
     }
 
@@ -166,7 +166,8 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         scrollPane.getStylesheets().add(StylesTabFxView.class.getResource("page.css").toExternalForm());
 
         mainBox.getChildren().addAll(createSetPane(styleName));
-        mainBox.setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL));
-        mainBox.setSpacing(Spacing.VERTICAL);
+        mainBox.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
+                Spacing.getVertical(), Spacing.getHorizontal()));
+        mainBox.setSpacing(Spacing.getVertical());
     }
 }

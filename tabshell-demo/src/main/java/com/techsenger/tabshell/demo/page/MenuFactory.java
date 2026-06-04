@@ -56,9 +56,9 @@ final class MenuFactory {
         public PageFxView<?> createAndInitialize(PageItem item) {
             Insets padding;
             if (pageHostParent == PageHostParent.DIALOG) {
-                padding = new Insets(0, Spacing.HORIZONTAL, 0, Spacing.HORIZONTAL);
+                padding = new Insets(0, Spacing.getHorizontal(), 0, Spacing.getHorizontal());
             } else {
-                padding = new Insets(0, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL);
+                padding = new Insets(0, Spacing.getHorizontal(), Spacing.getVertical(), Spacing.getHorizontal());
             }
             var view = new DemoPageFxView(padding);
             var params = new PageParams(item);

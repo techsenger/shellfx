@@ -17,24 +17,101 @@
 package com.techsenger.tabshell.material.style;
 
 /**
+ * Defines the base spacing constants used for padding and gaps throughout the UI.
+ *
+ * <p>Unlike {@code spacing} and {@code gap}, which can be applied via CSS style classes and automatically respond
+ * to the global {@code density} setting, padding cannot be expressed through a finite set of CSS classes — it requires
+ * up to four independent values (top, right, bottom, left) that may all differ.
+ *
+ * <p>A cleaner solution would be CSS custom properties (variables), but JavaFX currently supports lookup values only
+ * for colors, not for numeric properties such as {@code -fx-padding}. Until JavaFX adds support for numeric CSS
+ * variables, padding must be set programmatically using the constants defined here.
  *
  * @author Pavel Castornii
  */
 public final class Spacing {
 
-    public static final double VERTICAL = 10.0;
+    private static double vertical = 8.0;
 
-    public static final double VERTICAL_HALF = 5.0;
+    private static double horizontal = 10.0;
 
-    public static final double HORIZONTAL = 12.0;
+    /**
+     * Returns the base vertical spacing value, used as the primary gap between rows
+     * or as top/bottom padding.
+     *
+     * @return the vertical spacing in pixels
+     */
+    public static double getVertical() {
+        return vertical;
+    }
 
-    public static final double HORIZONTAL_HALF = 6.0;
+    /**
+     * Sets the base vertical spacing value. All derived vertical values are calculated
+     * from this value automatically.
+     *
+     * <p>This value should be updated before the UI is constructed, as already-created
+     * components will not reflect the change automatically.
+     *
+     * @param value the vertical spacing in pixels
+     */
+    public static void setVertical(double value) {
+        vertical = value;
+    }
 
-    public static final double HORIZONTAL_THIRD = 4.0;
+    /**
+     * Returns half of the base vertical spacing value, used for tighter row gaps
+     * or reduced top/bottom padding.
+     *
+     * @return {@code vertical / 2.0} in pixels
+     */
+    public static double getVerticalHalf() {
+        return vertical / 2.0;
+    }
 
-    public static final double HORIZONTAL_SIXTH = 2.0;
+    /**
+     * Returns the base horizontal spacing value, used as the primary gap between columns
+     * or as left/right padding.
+     *
+     * @return the horizontal spacing in pixels
+     */
+    public static double getHorizontal() {
+        return horizontal;
+    }
+
+    /**
+     * Sets the base horizontal spacing value. All derived horizontal values are calculated
+     * from this value automatically.
+     *
+     * <p>This value should be updated before the UI is constructed, as already-created
+     * components will not reflect the change automatically.
+     *
+     * @param value the horizontal spacing in pixels
+     */
+    public static void setHorizontal(double value) {
+        horizontal = value;
+    }
+
+    /**
+     * Returns half of the base horizontal spacing value, used for tighter column gaps
+     * or reduced left/right padding.
+     *
+     * @return {@code horizontal / 2.0} in pixels
+     */
+    public static double getHorizontalHalf() {
+        return horizontal / 2.0;
+    }
+
+    /**
+     * Returns one third of the base horizontal spacing value, used for compact inline gaps
+     * or minimal left/right padding.
+     *
+     * @return {@code horizontal / 3.0} in pixels
+     */
+    public static double getHorizontalThird() {
+        return horizontal / 3.0;
+    }
 
     private Spacing() {
-        //empty
+        // empty
     }
 }

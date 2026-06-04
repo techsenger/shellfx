@@ -120,9 +120,9 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
         setupButton(shellPopupButton);
         setupButton(tabPopupButton);
         vBox.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        vBox.setSpacing(Spacing.VERTICAL);
-        dialogHBox.setSpacing(Spacing.HORIZONTAL);
-        popupHBox.setSpacing(Spacing.HORIZONTAL);
+        vBox.setSpacing(Spacing.getVertical());
+        dialogHBox.setSpacing(Spacing.getHorizontal());
+        popupHBox.setSpacing(Spacing.getHorizontal());
         VBox.setVgrow(stackPane, Priority.ALWAYS);
         getContentBox().getChildren().add(stackPane);
     }

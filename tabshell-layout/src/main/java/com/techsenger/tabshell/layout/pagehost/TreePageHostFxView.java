@@ -212,7 +212,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends Abst
         getHeaderBox().getChildren().add(0, breadcrumbsBox);
         breadcrumbsBox.getStyleClass().add("breadcrumbs-box");
         breadcrumbsBox.setAlignment(Pos.CENTER_LEFT);
-        breadcrumbsBox.setSpacing(Spacing.HORIZONTAL_THIRD);
+        breadcrumbsBox.setSpacing(Spacing.getHorizontalThird());
         HBox.setHgrow(breadcrumbsBox, Priority.ALWAYS);
     }
 

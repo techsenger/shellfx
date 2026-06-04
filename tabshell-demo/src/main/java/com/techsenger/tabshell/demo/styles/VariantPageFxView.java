@@ -51,7 +51,7 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         }
         VBox.setVgrow(stackPane, Priority.ALWAYS);
         var box = new VBox(stackPane, new Label(styleClass));
-        box.setSpacing(Spacing.VERTICAL_HALF);
+        box.setSpacing(Spacing.getVerticalHalf());
         box.setAlignment(Pos.CENTER);
         if (minWidth != null) {
             box.setStyle("-fx-min-width: " + minWidth);
@@ -64,7 +64,7 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         var w1 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_M), StyleClasses.DENSITY_M);
         var w2 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_S), StyleClasses.DENSITY_S);
         var w3 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_XS), StyleClasses.DENSITY_XS);
-        var vbox = new VBox(Spacing.VERTICAL);
+        var vbox = new VBox(Spacing.getVertical());
         var h0 = createSpacedHBox(w0, w1);
         VBox.setVgrow(h0, Priority.ALWAYS);
         var h1 = createSpacedHBox(w2, w3);
@@ -111,7 +111,7 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         VBox.setVgrow(h0, Priority.ALWAYS);
         var h1 = createSpacedHBox(w2, w3);
         VBox.setVgrow(h1, Priority.ALWAYS);
-        var box = new VBox(Spacing.VERTICAL, h0, h1);
+        var box = new VBox(Spacing.getVertical(), h0, h1);
         box.setMaxHeight(450);
         return box;
     }
@@ -126,7 +126,7 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         VBox.setVgrow(h0, Priority.ALWAYS);
         var h1 = createSpacedHBox(w2, w3);
         VBox.setVgrow(h1, Priority.ALWAYS);
-        var box = new VBox(Spacing.VERTICAL, h0, h1);
+        var box = new VBox(Spacing.getVertical(), h0, h1);
         box.setMaxHeight(450);
         return box;
     }
@@ -141,7 +141,7 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         VBox.setVgrow(h0, Priority.ALWAYS);
         var h1 = createSpacedHBox(w2, w3);
         VBox.setVgrow(h1, Priority.ALWAYS);
-        var box = new VBox(Spacing.VERTICAL, h0, h1);
+        var box = new VBox(Spacing.getVertical(), h0, h1);
         box.setMaxHeight(450);
         return box;
     }
@@ -156,14 +156,14 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         VBox.setVgrow(h0, Priority.ALWAYS);
         var h1 = createSpacedHBox(w2, w3);
         VBox.setVgrow(h1, Priority.ALWAYS);
-        var box = new VBox(Spacing.VERTICAL, h0, h1);
+        var box = new VBox(Spacing.getVertical(), h0, h1);
         box.setMaxHeight(450);
         return box;
     }
 
     private static HBox createSpacedHBox(Node... nodes) {
         var hbox = new HBox(nodes);
-        hbox.setSpacing(Spacing.HORIZONTAL);
+        hbox.setSpacing(Spacing.getHorizontal());
         for (var node : nodes) {
             HBox.setHgrow(node, Priority.ALWAYS);
         }
@@ -193,8 +193,9 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         scrollPane.setFitToWidth(true);
         scrollPane.getStylesheets().add(StylesTabFxView.class.getResource("page.css").toExternalForm());
 
-        mainBox.setPadding(new Insets(Spacing.VERTICAL, Spacing.HORIZONTAL, Spacing.VERTICAL, Spacing.HORIZONTAL));
-        mainBox.setSpacing(Spacing.VERTICAL);
+        mainBox.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
+                Spacing.getVertical(), Spacing.getHorizontal()));
+        mainBox.setSpacing(Spacing.getVertical());
 
         addToBox(NodeFactory.createSection("Icon Buttons"), createIconedButtons());
         addToBox(NodeFactory.createSection("Text Fields"), createTextFields());

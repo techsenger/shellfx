@@ -101,8 +101,8 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?>>
         GridPane.setHgrow(valueTextArea, Priority.ALWAYS);
         GridPane.setVgrow(valueTextArea, Priority.ALWAYS);
 
-        gridPane.setVgap(Spacing.VERTICAL);
-        gridPane.setHgap(Spacing.HORIZONTAL);
+        gridPane.setVgap(Spacing.getVertical());
+        gridPane.setHgap(Spacing.getHorizontal());
         VBox.setVgrow(gridPane, Priority.ALWAYS);
         getContentBox().getChildren().add(gridPane);
 

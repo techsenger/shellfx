@@ -226,12 +226,12 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.findComboBox.getStyleClass().addAll(StyleClasses.NO_SELECTED);
         this.matchesLabel.getStyleClass().add("matches");
         this.findRightBox.getStyleClass().add("find-right-box");
-        StackPane.setMargin(this.findRightBox, new Insets(0, Spacing.HORIZONTAL * 2, 0, 0));
+        StackPane.setMargin(this.findRightBox, new Insets(0, Spacing.getHorizontal() * 2, 0, 0));
         this.findComboBoxWrapper.setAlignment(Pos.CENTER_RIGHT);
         this.findRightBox.setMaxWidth(HBox.USE_PREF_SIZE);
         this.findRightBox.setAlignment(Pos.CENTER);
-        this.findComboBoxWrapper.setPadding(new Insets(Spacing.VERTICAL_HALF, 0,
-                Spacing.VERTICAL_HALF, 0));
+        this.findComboBoxWrapper.setPadding(new Insets(Spacing.getVerticalHalf(), 0,
+                Spacing.getVerticalHalf(), 0));
         clearButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
         clearButton.setFocusTraversable(false);
 

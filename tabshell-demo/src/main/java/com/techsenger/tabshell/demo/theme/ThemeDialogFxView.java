@@ -84,7 +84,7 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
         });
         themeComboBox.getStyleClass().add(Styles.DENSE);
         HBox.setHgrow(themeComboBox, Priority.ALWAYS);
-        hBox.setSpacing(Spacing.HORIZONTAL);
+        hBox.setSpacing(Spacing.getHorizontal());
         hBox.setAlignment(Pos.CENTER_LEFT);
 
         okButton.setDefaultButton(true);

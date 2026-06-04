@@ -144,9 +144,9 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
         setupButton(shellPopupButton);
         setupButton(tabPopupButton);
         vBox.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        vBox.setSpacing(Spacing.VERTICAL);
-        dialogHBox.setSpacing(Spacing.HORIZONTAL);
-        popupHBox.setSpacing(Spacing.HORIZONTAL);
+        vBox.setSpacing(Spacing.getVertical());
+        dialogHBox.setSpacing(Spacing.getHorizontal());
+        popupHBox.setSpacing(Spacing.getHorizontal());
     }
 
     @Override

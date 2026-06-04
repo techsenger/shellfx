@@ -413,7 +413,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         this.leftBox.getStyleClass().add("left-box");
         this.titleBar.getStyleClass().add("title-bar");
         this.rightBox.getStyleClass().add("right-box");
-        this.rightBox.setSpacing(Spacing.HORIZONTAL + Spacing.HORIZONTAL_THIRD);
+        this.rightBox.setSpacing(Spacing.getHorizontal() + Spacing.getHorizontalThird());
         VBox.setVgrow(contentBox, Priority.ALWAYS);
         this.contentBox.getStyleClass().add("content-box");
         HeaderBar.setPrefButtonHeight(window, 0); // to hide default buttons

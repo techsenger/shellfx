@@ -41,7 +41,7 @@ public class ProgressDialogFxView extends AbstractDialogFxView<ProgressDialogPre
 
     private final ProgressBar progressBar = new ProgressBar();
 
-    private final VBox mainBox = new VBox(Spacing.VERTICAL * 3, textBox, progressBar);
+    private final VBox mainBox = new VBox(Spacing.getVertical() * 3, textBox, progressBar);
 
     private final ResultButton cancelButton = new ResultButton(ProgressDialogButtons.CANCEL, "Cancel");
 

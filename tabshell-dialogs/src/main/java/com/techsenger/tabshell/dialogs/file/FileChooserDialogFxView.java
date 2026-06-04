@@ -434,8 +434,8 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         detailsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
         detailsButton.setTooltip(new Tooltip("Details"));
         detailsButton.setToggleGroup(toggleGroup);
-        buttonBox.setSpacing(Spacing.HORIZONTAL_THIRD);
-        locationBox.setSpacing(Spacing.HORIZONTAL);
+        buttonBox.setSpacing(Spacing.getHorizontalThird());
+        locationBox.setSpacing(Spacing.getHorizontal());
         locationBox.setAlignment(Pos.CENTER_LEFT);
 
         VBox.setVgrow(fileBox, Priority.ALWAYS);
@@ -470,8 +470,8 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         var columnConstraint2 = new ColumnConstraints();
         columnConstraint2.setHgrow(Priority.ALWAYS);
         gridPane.getColumnConstraints().addAll(columnConstraint1, columnConstraint2);
-        gridPane.setHgap(Spacing.HORIZONTAL);
-        gridPane.setVgap(Spacing.VERTICAL);
+        gridPane.setHgap(Spacing.getHorizontal());
+        gridPane.setVgap(Spacing.getVertical());
 
         fileNameLabel.setMinWidth(Region.USE_PREF_SIZE);
         gridPane.add(fileNameLabel, 0, 0);
@@ -485,7 +485,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         gridPane.add(filterComboBox, 1, 1);
 
         VBox.setVgrow(main, Priority.ALWAYS);
-        main.setSpacing(Spacing.VERTICAL);
+        main.setSpacing(Spacing.getVertical());
         main.getStylesheets().add(FileChooserDialogFxView.class.getResource("file-dialog.css").toExternalForm());
         getContentBox().getChildren().addAll(main);
 

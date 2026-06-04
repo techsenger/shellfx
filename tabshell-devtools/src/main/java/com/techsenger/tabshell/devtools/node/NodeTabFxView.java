@@ -161,7 +161,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
                 if (propertyItem.getType() == PropertyItemType.PROPERTY) {
                     var valueData = propertyItem.getValueData();
                     Label mainLabel = new Label(item);
-                    HBox box = new HBox(Spacing.HORIZONTAL_THIRD, mainLabel);
+                    HBox box = new HBox(Spacing.getHorizontalThird(), mainLabel);
                     if (valueData.isDefault()) {
                         mainLabel.getStyleClass().add("default-value");
                     }

@@ -82,7 +82,7 @@ public class ViewerDialogFxView<P extends ViewerDialogPresenter<?>>  extends Abs
         var link = new Hyperlink(null, new FontIconView(DevToolsIcons.OPEN_IN_NEW));
         link.setTooltip(new Tooltip(url));
         nameBox.getChildren().add(link);
-        nameBox.setSpacing(Spacing.HORIZONTAL_THIRD);
+        nameBox.setSpacing(Spacing.getHorizontalThird());
         link.setOnAction(e -> {
             getPresenter().onFollowLink(url);
         });
@@ -103,7 +103,7 @@ public class ViewerDialogFxView<P extends ViewerDialogPresenter<?>>  extends Abs
         var link = new Hyperlink(null, new FontIconView(DevToolsIcons.OPEN_IN_NEW));
         link.setTooltip(new Tooltip(url));
         cssBox.getChildren().add(link);
-        cssBox.setSpacing(Spacing.HORIZONTAL_THIRD);
+        cssBox.setSpacing(Spacing.getHorizontalThird());
         link.setOnAction(e -> {
             getPresenter().onFollowLink(url);
         });
@@ -141,8 +141,8 @@ public class ViewerDialogFxView<P extends ViewerDialogPresenter<?>>  extends Abs
         GridPane.setHgrow(stateTextField, Priority.ALWAYS);
         gridPane.add(stateTextField, 1, 2);
 
-        gridPane.setVgap(Spacing.VERTICAL);
-        gridPane.setHgap(Spacing.HORIZONTAL);
+        gridPane.setVgap(Spacing.getVertical());
+        gridPane.setHgap(Spacing.getHorizontal());
         VBox.setVgrow(gridPane, Priority.ALWAYS);
         getContentBox().getChildren().addAll(gridPane);
 

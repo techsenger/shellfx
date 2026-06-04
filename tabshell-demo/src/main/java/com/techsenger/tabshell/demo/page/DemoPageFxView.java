@@ -58,6 +58,6 @@ public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implem
         super.build();
         textArea.setWrapText(true);
         VBox.setVgrow(textArea, Priority.ALWAYS);
-        box.setSpacing(Spacing.VERTICAL);
+        box.setSpacing(Spacing.getVertical());
     }
 }

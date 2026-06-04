@@ -65,8 +65,8 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
     @Override
     protected void build() {
         super.build();
-        gridPane.setHgap(Spacing.HORIZONTAL);
-        gridPane.setVgap(Spacing.VERTICAL);
+        gridPane.setHgap(Spacing.getHorizontal());
+        gridPane.setVgap(Spacing.getVertical());
         gridPane.add(fooLabel, 0, 0);
         gridPane.add(fooTextField, 1, 0);
         fooTextField.setText("No closeRequest for Cancel! See ResultAction!");
@@ -81,7 +81,7 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
         okButton.setDefaultButton(true);
         registerButtons(okButton, cancelButton);
         getContentBox().getChildren().add(gridPane);
-        getContentBox().setSpacing(Spacing.VERTICAL);
+        getContentBox().setSpacing(Spacing.getVertical());
         getFocusTrap().activate();
     }
 }
