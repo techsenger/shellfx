@@ -144,7 +144,7 @@ public class PageHostFxView<P extends PageHostPresenter<?>> extends AbstractPage
     protected void build() {
         super.build();
         getLeftBox().getChildren().add(pageListView);
-        pageListView.getStyleClass().addAll(StyleClasses.DENSE, StyleClasses.NO_BORDER);
+        pageListView.getStyleClass().add(StyleClasses.NO_BORDER);
         VBox.setVgrow(pageListView, Priority.ALWAYS);
 
         getHeaderBox().getChildren().add(0, titleBox);

@@ -20,6 +20,7 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.demo.Density;
 import com.techsenger.tabshell.demo.page.PageDialogFxView;
 import com.techsenger.tabshell.demo.page.PageDialogParams;
 import com.techsenger.tabshell.demo.page.PageDialogPresenter;
@@ -57,6 +58,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var view = new AlertDialogFxView<>();
             var presenter = new AlertDialogPresenter<>(view, params);
             presenter.initialize();
+            view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
             presenter.setMessage(message);
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
@@ -68,6 +70,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var view = new NameValueDialogFxView<>();
             var presenter = new NameValueDialogPresenter<>(view, new DialogParams());
             presenter.initialize();
+            view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
             presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
@@ -79,6 +82,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var view = new FileChooserDialogFxView<>();
             var presenter = new FileChooserDialogPresenter<>(view, params);
             presenter.initialize();
+            view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
             presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);
             view.requestFocus();
@@ -90,6 +94,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var view = new PageDialogFxView();
             var presenter = new PageDialogPresenter(view, params);
             presenter.initialize();
+            view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
             presenter.setResizable(true);
             getContainer().getComposer().addDialog(view);
             view.requestFocus();

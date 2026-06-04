@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demo.menu;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.demo.Density;
 import com.techsenger.tabshell.demo.browser.BrowserMainTabFxView;
 import com.techsenger.tabshell.demo.browser.BrowserMainTabParams;
 import com.techsenger.tabshell.demo.browser.BrowserMainTabPresenter;
@@ -41,12 +42,20 @@ public class MainTabItemHandler extends AbstractContainerItemHandler {
         AbstractTabFxView<?> tabView;
         var shell = getComponent();
         if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?>) {
-            tabView = new BrowserMainTabFxView(shell);
+            tabView = new BrowserMainTabFxView(shell) {
+                {
+                    getWrapperPane().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
+                }
+            };
             var tabParams = new BrowserMainTabParams(shell.getPresenter().getContext().getHistoryManager());
             var tabPresenter = new BrowserMainTabPresenter(tabView, tabParams);
             tabPresenter.initialize();
         } else {
-            tabView = new IdeMainTabFxView<>(shell);
+            tabView = new IdeMainTabFxView<>(shell) {
+                {
+                    getWrapperPane().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
+                }
+            };
             var tabPresenter = new IdeMainTabPresenter<>((IdeMainTabFxView<?>) tabView);
             tabPresenter.initialize();
         }

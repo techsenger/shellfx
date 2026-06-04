@@ -47,16 +47,16 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         col2.setPercentWidth(50);
         gridPane.getColumnConstraints().addAll(col1, col2);
 
-        var leftBox = createGridPaneLeftBox(styleClass);
+        var leftBox = createLeftBox(styleClass);
         GridPane.setVgrow(leftBox, Priority.ALWAYS);
-        var rightBox = createGridPaneRightBox(styleClass);
+        var rightBox = createRightBox(styleClass);
         GridPane.setVgrow(rightBox, Priority.ALWAYS);
         gridPane.addRow(gridPane.getRowCount(), leftBox, rightBox);
         gridPane.setHgap(Spacing.HORIZONTAL);
         return gridPane;
     }
 
-    private static VBox createGridPaneLeftBox(String styleClass) {
+    private static VBox createLeftBox(String styleClass) {
         GridPane grid = new GridPane();
         grid.setHgap(Spacing.HORIZONTAL);
         grid.setVgap(Spacing.VERTICAL);
@@ -70,15 +70,15 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         // First Name
         grid.addRow(grid.getRowCount(),
                 NodeFactory.createLabel("First Name:", styleClass),
-                NodeFactory.createTextField("Alice", styleClass));
+                NodeFactory.createTextField("Alice"));
 
         // Last Name
         grid.addRow(grid.getRowCount(),
                 NodeFactory.createLabel("Last Name:", styleClass),
-                NodeFactory.createTextField("Martin", styleClass));
+                NodeFactory.createTextField("Martin"));
 
         // Gender — ComboBox (required)
-        var genderBox = NodeFactory.createComboBox(List.of("Male", "Female"), styleClass);
+        var genderBox = NodeFactory.createComboBox(List.of("Male", "Female"));
         genderBox.setEditable(true);
         genderBox.getSelectionModel().select(1);
         GridPane.setHgrow(genderBox, Priority.ALWAYS);
@@ -88,7 +88,7 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         ComboBox<String> countryBox = NodeFactory.createComboBox(List.of(
                 "United States", "United Kingdom", "France",
                 "Germany", "Japan", "Australia", "Canada",
-                "Spain", "Italy", "Netherlands"), styleClass);
+                "Spain", "Italy", "Netherlands"));
         GridPane.setHgrow(countryBox, Priority.ALWAYS);
         grid.addRow(grid.getRowCount(), NodeFactory.createLabel("Country:", styleClass), countryBox);
 
@@ -96,13 +96,13 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         TextArea bio = NodeFactory.createTextArea("Alice is a passionate software engineer with over 8 years of "
                 + "experience in building scalable distributed systems. She holds a Master's degree in "
                 + "Computer Science from MIT and has contributed to several open-source projects. "
-                + "In her spare time she enjoys hiking, photography, and playing the piano.", styleClass);
+                + "In her spare time she enjoys hiking, photography, and playing the piano.");
         GridPane.setHgrow(bio, Priority.ALWAYS);
         grid.addRow(grid.getRowCount(), NodeFactory.createLabel("Biography:", styleClass), bio);
 
-        var listView = NodeFactory.createListView(PERSONS, styleClass);
+        var listView = NodeFactory.createListView(PERSONS);
         VBox.setVgrow(listView, Priority.ALWAYS);
-        var treeView = NodeFactory.createTreeView(PERSONS, styleClass);
+        var treeView = NodeFactory.createTreeView(PERSONS);
         VBox.setVgrow(treeView, Priority.ALWAYS);
 
         // Buttons
@@ -125,10 +125,10 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         return root;
     }
 
-    private static VBox createGridPaneRightBox(String styleClass) {
-        var table = NodeFactory.createTable(PERSONS, styleClass);
+    private static VBox createRightBox(String styleClass) {
+        var table = NodeFactory.createTable(PERSONS);
         VBox.setVgrow(table, Priority.ALWAYS);
-        var treeTable = NodeFactory.createTreeTable(PERSONS, styleClass);
+        var treeTable = NodeFactory.createTreeTable(PERSONS);
         VBox.setVgrow(treeTable, Priority.ALWAYS);
         var rightBox = new VBox(table, treeTable);
         rightBox.setSpacing(Spacing.VERTICAL);
@@ -143,6 +143,7 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
 
     public SetPageFxView(String styleName) {
         this.styleName = styleName;
+        getNode().getStyleClass().add(styleName);
     }
 
     @Override

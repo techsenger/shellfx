@@ -46,6 +46,9 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
 
     private static VBox wrapWithName(Node node, String styleClass, String minWidth) {
         var stackPane = new StackPane(node);
+        if (styleClass != null && !styleClass.equals(StylePageData.DEFAULT_STYLE_NAME)) {
+            stackPane.getStyleClass().add(styleClass);
+        }
         VBox.setVgrow(stackPane, Priority.ALWAYS);
         var box = new VBox(stackPane, new Label(styleClass));
         box.setSpacing(Spacing.VERTICAL_HALF);
@@ -56,36 +59,53 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         return box;
     }
 
-    private static HBox createIconedButtons() {
-        var w0 = wrapWithName(NodeFactory.createIconButton(StyleClasses.HUGE), StyleClasses.HUGE, "5em");
-        var w1 = wrapWithName(NodeFactory.createIconButton(StyleClasses.LARGE), StyleClasses.LARGE, "5em");
-        var w2 = wrapWithName(NodeFactory.createIconButton(null), DEFAULT_STYLE_NAME, "5em");
-        var w3 = wrapWithName(NodeFactory.createIconButton(StyleClasses.DENSE), StyleClasses.DENSE, "5em");
-        var w4 = wrapWithName(NodeFactory.createIconButton(StyleClasses.COMPRESSED), StyleClasses.COMPRESSED, "5em");
-        return new HBox(w0, w1, w2, w3, w4);
+    private static VBox createIconedButtons() {
+        var w0 = wrapWithName(createIconedButtons(DEFAULT_STYLE_NAME), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_M), StyleClasses.DENSITY_M);
+        var w2 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_S), StyleClasses.DENSITY_S);
+        var w3 = wrapWithName(createIconedButtons(StyleClasses.DENSITY_XS), StyleClasses.DENSITY_XS);
+        var vbox = new VBox(Spacing.VERTICAL);
+        var h0 = createSpacedHBox(w0, w1);
+        VBox.setVgrow(h0, Priority.ALWAYS);
+        var h1 = createSpacedHBox(w2, w3);
+        VBox.setVgrow(h1, Priority.ALWAYS);
+        vbox.getChildren().addAll(h0, h1);
+        return vbox;
+    }
+
+    private static HBox createIconedButtons(String densityStyleClass) {
+        var w0 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XL), StyleClasses.SIZE_XL, "5em");
+        var w1 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_L), StyleClasses.SIZE_L, "5em");
+        var w2 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_M), StyleClasses.SIZE_M, "5em");
+        var w3 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_S), StyleClasses.SIZE_S, "5em");
+        var w4 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XS), StyleClasses.SIZE_XS, "5em");
+        var box = new HBox(w0, w1, w2, w3, w4);
+        box.setMaxWidth(Region.USE_PREF_SIZE);
+        box.getStyleClass().add(densityStyleClass);
+        return box;
     }
 
     private static HBox createTextFields() {
-        var w0 = wrapWithName(NodeFactory.createTextField(TEXT, null), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createTextField(TEXT, StyleClasses.DENSE), StyleClasses.DENSE);
-        var w2 = wrapWithName(NodeFactory.createTextField(TEXT, StyleClasses.COMPACT), StyleClasses.COMPACT);
-        var w3 = wrapWithName(NodeFactory.createTextField(TEXT, StyleClasses.COMPRESSED), StyleClasses.COMPRESSED);
+        var w0 = wrapWithName(NodeFactory.createTextField(TEXT), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_M);
+        var w2 = wrapWithName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_S);
+        var w3 = wrapWithName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_XS);
         return createSpacedHBox(w0, w1, w2, w3);
     }
 
     private static HBox createComboBoxes() {
-        var w0 = wrapWithName(NodeFactory.createComboBox(TEXTS, null), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createComboBox(TEXTS, StyleClasses.DENSE), StyleClasses.DENSE);
-        var w2 = wrapWithName(NodeFactory.createComboBox(TEXTS, StyleClasses.COMPACT), StyleClasses.COMPACT);
-        var w3 = wrapWithName(NodeFactory.createComboBox(TEXTS, StyleClasses.COMPRESSED), StyleClasses.COMPRESSED);
+        var w0 = wrapWithName(NodeFactory.createComboBox(TEXTS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(NodeFactory.createComboBox(TEXTS), StyleClasses.DENSITY_M);
+        var w2 = wrapWithName(NodeFactory.createComboBox(TEXTS), StyleClasses.DENSITY_S);
+        var w3 = wrapWithName(NodeFactory.createComboBox(TEXTS), StyleClasses.DENSITY_XS);
         return createSpacedHBox(w0, w1, w2, w3);
     }
 
     private static VBox createTableViewBox() {
-        var w0 = wrapWithName(NodeFactory.createTable(PERSONS, null), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createTable(PERSONS, StyleClasses.DENSE), StyleClasses.DENSE);
-        var w2 = wrapWithName(NodeFactory.createTable(PERSONS, StyleClasses.COMPACT), StyleClasses.COMPACT);
-        var w3 = wrapWithName(NodeFactory.createTable(PERSONS, StyleClasses.COMPRESSED), StyleClasses.COMPRESSED);
+        var w0 = wrapWithName(NodeFactory.createTable(PERSONS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(NodeFactory.createTable(PERSONS), StyleClasses.DENSITY_M);
+        var w2 = wrapWithName(NodeFactory.createTable(PERSONS), StyleClasses.DENSITY_S);
+        var w3 = wrapWithName(NodeFactory.createTable(PERSONS), StyleClasses.DENSITY_XS);
 
         var h0 = createSpacedHBox(w0, w1);
         VBox.setVgrow(h0, Priority.ALWAYS);
@@ -97,10 +117,10 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
     }
 
     private static VBox createTreeTableViewBox() {
-        var w0 = wrapWithName(NodeFactory.createTreeTable(PERSONS, null), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createTreeTable(PERSONS, StyleClasses.DENSE), StyleClasses.DENSE);
-        var w2 = wrapWithName(NodeFactory.createTreeTable(PERSONS, StyleClasses.COMPACT), StyleClasses.COMPACT);
-        var w3 = wrapWithName(NodeFactory.createTreeTable(PERSONS, StyleClasses.COMPRESSED), StyleClasses.COMPRESSED);
+        var w0 = wrapWithName(NodeFactory.createTreeTable(PERSONS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(NodeFactory.createTreeTable(PERSONS), StyleClasses.DENSITY_M);
+        var w2 = wrapWithName(NodeFactory.createTreeTable(PERSONS), StyleClasses.DENSITY_S);
+        var w3 = wrapWithName(NodeFactory.createTreeTable(PERSONS), StyleClasses.DENSITY_XS);
 
         var h0 = createSpacedHBox(w0, w1);
         VBox.setVgrow(h0, Priority.ALWAYS);
@@ -112,10 +132,10 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
     }
 
     private static VBox createListViewBox() {
-        var w0 = wrapWithName(NodeFactory.createListView(PERSONS, null), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createListView(PERSONS, StyleClasses.DENSE), StyleClasses.DENSE);
-        var w2 = wrapWithName(NodeFactory.createListView(PERSONS, StyleClasses.COMPACT), StyleClasses.COMPACT);
-        var w3 = wrapWithName(NodeFactory.createListView(PERSONS, StyleClasses.COMPRESSED), StyleClasses.COMPRESSED);
+        var w0 = wrapWithName(NodeFactory.createListView(PERSONS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(NodeFactory.createListView(PERSONS), StyleClasses.DENSITY_M);
+        var w2 = wrapWithName(NodeFactory.createListView(PERSONS), StyleClasses.DENSITY_S);
+        var w3 = wrapWithName(NodeFactory.createListView(PERSONS), StyleClasses.DENSITY_XS);
 
         var h0 = createSpacedHBox(w0, w1);
         VBox.setVgrow(h0, Priority.ALWAYS);
@@ -127,10 +147,10 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
     }
 
     private static VBox createTreeViewBox() {
-        var w0 = wrapWithName(NodeFactory.createTreeView(PERSONS, null), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createTreeView(PERSONS, StyleClasses.DENSE), StyleClasses.DENSE);
-        var w2 = wrapWithName(NodeFactory.createTreeView(PERSONS, StyleClasses.COMPACT), StyleClasses.COMPACT);
-        var w3 = wrapWithName(NodeFactory.createTreeView(PERSONS, StyleClasses.COMPRESSED), StyleClasses.COMPRESSED);
+        var w0 = wrapWithName(NodeFactory.createTreeView(PERSONS), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(NodeFactory.createTreeView(PERSONS), StyleClasses.DENSITY_M);
+        var w2 = wrapWithName(NodeFactory.createTreeView(PERSONS), StyleClasses.DENSITY_S);
+        var w3 = wrapWithName(NodeFactory.createTreeView(PERSONS), StyleClasses.DENSITY_XS);
 
         var h0 = createSpacedHBox(w0, w1);
         VBox.setVgrow(h0, Priority.ALWAYS);

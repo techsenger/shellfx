@@ -19,6 +19,8 @@ package com.techsenger.tabshell.demo.menu;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
+import com.techsenger.tabshell.demo.Density;
+import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.DevToolsHostType;
 import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
 import com.techsenger.tabshell.devtools.DevToolsTabDockParams;
@@ -49,9 +51,19 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
         if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
             var tab = tabHost.getComposer().getSelectedTab();
             if (tab != null && tab instanceof UtilityDockContainerFxView<?> c) {
-                var devTools = createDevToolsDock();
-                devTools.getPresenter().setDraggable(true);
-                c.getComposer().addUtilityDock(devTools);
+                var iterator = tab.depthFirstIterator();
+                boolean devToolsPresent = false;
+                while (iterator.hasNext()) {
+                    if (iterator.next().getDescriptor().getName() == DevToolsComponents.TAB_DOCK) {
+                        devToolsPresent = true;
+                        break;
+                    }
+                }
+                if (!devToolsPresent) {
+                    var devTools = createDevToolsDock();
+                    devTools.getPresenter().setDraggable(true);
+                    c.getComposer().addUtilityDock(devTools);
+                }
             } else {
                 var devTools = createDevToolsWindow();
                 devTools.getPresenter().setMaximizable(false);
@@ -78,10 +90,12 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
 
     protected DevToolsWindowFxView<?> createDevToolsWindow() {
         var view = new DevToolsWindowFxView<>(getComponent(), IconStylesheetFactory.forAll());
+        view.getWindow().getScene().getRoot().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
         var context = getComponent().getPresenter().getContext();
         var params = new DevToolsWindowParams(context.getSettings().getAppearance(), context.getHistoryManager());
         var presenter = new DevToolsWindowPresenter<>(view, params);
         presenter.initialize();
+        view.getWindow().getScene().getRoot().getStyleClass().add(Density.STYLE_CLASS);
         return view;
     }
 

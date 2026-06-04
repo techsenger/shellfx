@@ -27,7 +27,6 @@ import com.techsenger.tabshell.devtools.ToolBarPresenter;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogFxView;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPresenter;
-import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -141,7 +140,7 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
         });
 
         tableView.getColumns().addAll(propertyColumn, valueColumn);
-        tableView.getStyleClass().addAll(StyleClasses.COMPRESSED, "no-header");
+        tableView.getStyleClass().add("no-header");
         tableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         tableView.setShowRoot(false);
         tableView.setPlaceholder(new Label(""));

@@ -52,7 +52,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -360,9 +359,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     @Override
     protected void build() {
         super.build();
-        this.fileTableView.getStyleClass().addAll(StyleClasses.COMPRESSED, StyleClasses.SAME_SPACING_COLUMN);
+        this.fileTableView.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN);
         this.fileTableView.setEditable(true);
-        this.fileTableView.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
+        this.fileTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         this.fileTableView.setPlaceholder(new Label(""));
         var columnBuilder = new FileColumnBuilder(settings.getRegularFont());
         this.fileColumnManager.registerColumnFactory(FileColumns.TYPE, () -> {

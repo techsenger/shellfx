@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools.node;
 
-import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -65,13 +64,9 @@ public class InsetEditorDialogFxView<P extends InsetEditorDialogPresenter<?>> ex
     protected void build() {
         super.build();
         HBox.setHgrow(topTextField, Priority.ALWAYS);
-        topTextField.getStyleClass().add(StyleClasses.DENSE);
         HBox.setHgrow(rightTextField, Priority.ALWAYS);
-        rightTextField.getStyleClass().add(StyleClasses.DENSE);
         HBox.setHgrow(bottomTextField, Priority.ALWAYS);
-        bottomTextField.getStyleClass().add(StyleClasses.DENSE);
         HBox.setHgrow(leftTextField, Priority.ALWAYS);
-        leftTextField.getStyleClass().add(StyleClasses.DENSE);
 
         getRowBox().getChildren().addAll(topTextField, rightTextField, bottomTextField, leftTextField);
     }

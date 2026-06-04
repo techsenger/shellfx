@@ -406,9 +406,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     @Override
     protected void build() {
         super.build();
-        this.closeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
-        this.minimizeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
-        this.maximizeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.COMPRESSED);
+        this.closeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.SIZE_XS);
+        this.minimizeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.SIZE_XS);
+        this.maximizeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.SIZE_XS);
         this.windowBox.getStyleClass().add("window-box");
         this.leftBox.getStyleClass().add("left-box");
         this.titleBar.getStyleClass().add("title-bar");

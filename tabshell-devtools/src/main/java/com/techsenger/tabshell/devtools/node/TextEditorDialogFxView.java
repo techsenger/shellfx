@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools.node;
 
-import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -44,7 +43,6 @@ public class TextEditorDialogFxView<P extends TextEditorDialogPresenter<?>> exte
     protected void build() {
         super.build();
         HBox.setHgrow(textField, Priority.ALWAYS);
-        textField.getStyleClass().add(StyleClasses.DENSE);
         getRowBox().getChildren().add(textField);
     }
 

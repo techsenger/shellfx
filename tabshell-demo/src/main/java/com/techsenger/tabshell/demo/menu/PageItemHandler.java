@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.demo.menu;
 
 import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.demo.Density;
 import com.techsenger.tabshell.demo.page.PageMenuType;
 import com.techsenger.tabshell.demo.page.PageTabFxView;
 import com.techsenger.tabshell.demo.page.PageTabHistory;
@@ -39,8 +40,11 @@ public class PageItemHandler extends AbstractContainerItemHandler {
 
     @Override
     public void onAction() {
-
-        var tabView = new PageTabFxView(getComponent());
+        var tabView = new PageTabFxView(getComponent()) {
+            {
+                getWrapperPane().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
+            }
+        };
         var historyManager = getComponent().getPresenter().getContext().getHistoryManager();
         var params = new PageTabParams(() -> historyManager
                 .getOrCreateHistory(PageTabHistory.class, PageTabHistory::new), menuType);

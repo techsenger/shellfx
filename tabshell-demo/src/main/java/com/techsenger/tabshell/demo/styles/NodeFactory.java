@@ -45,6 +45,8 @@ import javafx.scene.layout.Priority;
  */
 final class NodeFactory {
 
+    private static final double DATA_NODE_MAX_HEIGHT = 300;
+
     static Label createSection(String title) {
         var label = NodeFactory.createLabel(title, null);
         label.getStyleClass().add("section");
@@ -69,43 +71,30 @@ final class NodeFactory {
         return lbl;
     }
 
-    static TextField createTextField(String text, String styleClass) {
+    static TextField createTextField(String text) {
         TextField tf = new TextField(text);
-        if (styleClass != null) {
-            tf.getStyleClass().add(styleClass);
-        }
         tf.setMaxWidth(Double.MAX_VALUE);
         GridPane.setHgrow(tf, Priority.ALWAYS);
         return tf;
     }
 
-    static ComboBox<String> createComboBox(List<String> values, String styleClass) {
+    static ComboBox<String> createComboBox(List<String> values) {
         var c = new ComboBox<>(FXCollections.observableArrayList(values));
         c.setMaxWidth(Double.MAX_VALUE);
         c.getSelectionModel().select(0);
-        if (styleClass != null) {
-            c.getStyleClass().add(styleClass);
-        }
         return c;
     }
 
-    static TextArea createTextArea(String text, String styleClass) {
+    static TextArea createTextArea(String text) {
         TextArea bio = new TextArea(text);
-        if (styleClass != null) {
-            bio.getStyleClass().add(styleClass);
-        }
         bio.setWrapText(true);
         bio.setPrefRowCount(5);
         bio.setMaxWidth(Double.MAX_VALUE);
         return bio;
     }
 
-
-    static ListView<Person> createListView(List<Person> persons, String styleClass) {
+    static ListView<Person> createListView(List<Person> persons) {
         ListView<Person> listView = new ListView<>(FXCollections.observableArrayList(persons));
-        if (styleClass != null) {
-            listView.getStyleClass().add(styleClass);
-        }
         listView.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(Person person, boolean empty) {
@@ -118,14 +107,13 @@ final class NodeFactory {
                 }
             }
         });
+        listView.setMaxHeight(DATA_NODE_MAX_HEIGHT);
+        listView.getSelectionModel().select(0);
         return listView;
     }
 
-    static TreeView<Person> createTreeView(List<Person> persons, String styleClass) {
+    static TreeView<Person> createTreeView(List<Person> persons) {
         TreeView<Person> treeView = new TreeView<>(createTreeRoot(persons));
-        if (styleClass != null) {
-            treeView.getStyleClass().add(styleClass);
-        }
         treeView.setShowRoot(false);
         treeView.setCellFactory(tv -> new TreeCell<>() {
             @Override
@@ -142,14 +130,13 @@ final class NodeFactory {
                 }
             }
         });
+        treeView.setMaxHeight(DATA_NODE_MAX_HEIGHT);
+        treeView.getSelectionModel().select(0);
         return treeView;
     }
 
-    static TableView<Person> createTable(List<Person> persons, String styleClass) {
+    static TableView<Person> createTable(List<Person> persons) {
         TableView<Person> table = new TableView<>();
-        if (styleClass != null) {
-            table.getStyleClass().add(styleClass);
-        }
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
         TableColumn<Person, String> colFirst = new TableColumn<>("First Name");
@@ -166,10 +153,12 @@ final class NodeFactory {
 
         // Select first row so the form looks populated
         table.getSelectionModel().selectFirst();
+        table.setMaxHeight(DATA_NODE_MAX_HEIGHT);
+        table.getSelectionModel().select(0);
         return table;
     }
 
-    static TreeTableView<Person> createTreeTable(List<Person> persons, String styleClass) {
+    static TreeTableView<Person> createTreeTable(List<Person> persons) {
         var firstNameCol = new TreeTableColumn<Person, String>("First Name");
         firstNameCol.setCellValueFactory(p ->
             new SimpleStringProperty(p.getValue().getValue().getFirstName()));
@@ -183,14 +172,14 @@ final class NodeFactory {
             new SimpleStringProperty(p.getValue().getValue().getGender()));
 
         var root = createTreeRoot(persons);
-        var treeTableView = new TreeTableView<>(root);
-        treeTableView.setShowRoot(false);
-        treeTableView.getColumns().addAll(firstNameCol, lastNameCol, genderCol);
-        if (styleClass != null) {
-            treeTableView.getStyleClass().add(styleClass);
-        }
-        treeTableView.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        return treeTableView;
+        var treeTable = new TreeTableView<>(root);
+        treeTable.setShowRoot(false);
+        treeTable.getColumns().addAll(firstNameCol, lastNameCol, genderCol);
+
+        treeTable.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        treeTable.setMaxHeight(DATA_NODE_MAX_HEIGHT);
+        treeTable.getSelectionModel().select(0);
+        return treeTable;
     }
 
     private static TreeItem<Person> createTreeRoot(List<Person> persons) {

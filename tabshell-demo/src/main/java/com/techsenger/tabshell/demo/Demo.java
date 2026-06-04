@@ -91,7 +91,13 @@ public class Demo extends Application {
 
     private void createShell(WorkspaceType workspaceType) {
         //creating shell
-        var shellView = new DefaultShellFxView<>(this, IconStylesheetFactory.forAll(), new ControlRegistry());
+        var shellView = new DefaultShellFxView<>(this, IconStylesheetFactory.forAll(), new ControlRegistry()) {
+            @Override
+            protected void build() {
+                super.build();
+                getTitleBar().getStyleClass().add(Density.STYLE_CLASS);
+            }
+        };
         var context = new DefaultShellContext(DemoSettings.createSettings(),
                 new DemoHistoryManager(), getHostServices());
         var shellParams = new DefaultShellParams(context);

@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demo.menu;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
+import com.techsenger.tabshell.demo.Density;
 import com.techsenger.tabshell.demo.theme.ThemeDialogFxView;
 import com.techsenger.tabshell.demo.theme.ThemeDialogParams;
 import com.techsenger.tabshell.demo.theme.ThemeDialogPresenter;
@@ -38,6 +39,7 @@ public class ThemeItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> {
         var shell = getComponent();
         var appearance = shell.getPresenter().getContext().getSettings().getAppearance();
         var view = new ThemeDialogFxView();
+        view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
         var params = new ThemeDialogParams(appearance);
         var presenter = new ThemeDialogPresenter(view, params);
         presenter.initialize();

@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.dialogs.file;
+package com.techsenger.tabshell.demo;
 
-import com.techsenger.tabshell.material.list.ColumnListView;
 import com.techsenger.tabshell.material.style.StyleClasses;
-import com.techsenger.tabshell.storage.GenericFile;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ContextMenu;
+import javafx.scene.Scene;
 
 /**
+ * In a real application, a density style class should only be added to the root node of the {@link Scene}.
+ * However, in the demo application, we need to test multiple density style classes (including the default one)
+ * within the same application. For this reason, the density style class is applied to the root container of each
+ * demo section.
  *
  * @author Pavel Castornii
  */
-class FileListView extends ColumnListView<GenericFile> {
+public final class Density {
 
-    private final FileStringConverter stringConverter = new FileStringConverter();
+    public static final String STYLE_CLASS = StyleClasses.DENSITY_S;
 
-    FileListView(ObservableList<GenericFile> files, ContextMenu cellContextMenu) {
-        setItems(files);
-        setManualRefresh(true);
-        setEditable(true);
-        getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN);
+    private Density() {
+        // empty
     }
 }

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.devtools.node;
 
-import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
@@ -52,7 +51,6 @@ public class EnumEditorDialogFxView<P extends EnumEditorDialogPresenter<?>> exte
         super.build();
         HBox.setHgrow(comboBox, Priority.ALWAYS);
         comboBox.setMaxWidth(Double.MAX_VALUE);
-        comboBox.getStyleClass().add(StyleClasses.DENSE);
         getRowBox().getChildren().add(comboBox);
     }
 

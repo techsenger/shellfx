@@ -82,14 +82,14 @@ public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?>
        }
 
         private final List<PageDescriptor> pages = List.of(
-                new DefaultPageDescriptor("Style Variants", new VariantPageFactory()),
+                new DefaultPageDescriptor("Density Variants", new VariantPageFactory()),
                 new DefaultPageDescriptor("Default Set", new SetPageFactory(null, DemoComponents.SET_PAGE_1)),
-                new DefaultPageDescriptor("Dense Set",
-                        new SetPageFactory(StyleClasses.DENSE, DemoComponents.SET_PAGE_2)),
-                new DefaultPageDescriptor("Compact Set",
-                        new SetPageFactory(StyleClasses.COMPACT, DemoComponents.SET_PAGE_3)),
-                new DefaultPageDescriptor("Compressed Set",
-                        new SetPageFactory(StyleClasses.COMPRESSED, DemoComponents.SET_PAGE_4)));
+                new DefaultPageDescriptor("Medium Set",
+                        new SetPageFactory(StyleClasses.DENSITY_M, DemoComponents.SET_PAGE_2)),
+                new DefaultPageDescriptor("Small Set",
+                        new SetPageFactory(StyleClasses.DENSITY_S, DemoComponents.SET_PAGE_3)),
+                new DefaultPageDescriptor("Extra Small Set",
+                        new SetPageFactory(StyleClasses.DENSITY_XS, DemoComponents.SET_PAGE_4)));
 
         @Override
         public void compose() {

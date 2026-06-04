@@ -70,31 +70,67 @@ public interface StyleClasses {
     String MONOSPACE = "monospace";
 
     /**
-     * Represents a larger spacing mode with increased padding and margins. Typically used to improve emphasis,
-     * readability, or touch accessibility.
+     * Represents a medium density spacing mode. This is the default spacing level and provides balanced padding and
+     * layout density.
      */
-    String LARGE = "large";
+    String DENSITY_M = "density-m";
 
     /**
-     * Represents the largest spacing mode with maximum padding and margins. Typically used for highly prominent or
-     * touch-focused UI elements.
+     * Represents a slightly more compact spacing mode than {@code DENSITY_M}, reducing padding and spacing for denser
+     * layouts.
      */
-    String HUGE = "huge";
+    String DENSITY_S = "density-s";
 
     /**
-     * Represents a moderately dense spacing mode. Equivalent to the {@code dense} style class in AtlantaFX.
+     * Represents the most compact spacing mode, with minimal padding and margins, intended for highly space-constrained
+     * UIs.
      */
-    String DENSE = "dense";
+    String DENSITY_XS = "density-xs";
 
     /**
-     * Represents a compact spacing mode, between {@code dense} and {@code compressed}.
+     * Represents the extra-small size variant for UI controls.
+     *
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
+     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
+     * {@code size} value.
      */
-    String COMPACT = "compact";
+    String SIZE_XS = "size-xs";
 
     /**
-     * Represents the most compressed spacing mode, with minimal padding and margins.
+     * Represents the small size variant for UI controls.
+     *
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
+     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
+     * {@code size} value.
      */
-    String COMPRESSED = "compressed";
+    String SIZE_S = "size-s";
+
+    /**
+     * Represents the medium (default) size variant for UI controls.
+     *
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
+     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
+     * {@code size} value.
+     */
+    String SIZE_M = "size-m";
+
+    /**
+     * Represents the large size variant for UI controls.
+     *
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
+     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
+     * {@code size} value.
+     */
+    String SIZE_L = "size-l";
+
+    /**
+     * Represents the extra-large size variant for UI controls.
+     *
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
+     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
+     * {@code size} value.
+     */
+    String SIZE_XL = "size-xl";
 
     /**
      * Class for a cross button.
