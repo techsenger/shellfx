@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demo.styles;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.page.AbstractPageFxView;
 import static com.techsenger.tabshell.demo.styles.StylePageData.PERSONS;
 import com.techsenger.tabshell.material.style.Spacing;
@@ -61,8 +62,8 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
     }
 
     private static VBox createLeftBox(String styleClass) {
-        var defToolBar = NodeFactory.createToolBar(null, StyleClasses.SIZE_M);
-        var denseToolBar = NodeFactory.createToolBar(StyleClasses.DENSE, StyleClasses.SIZE_S);
+        var defToolBar = NodeFactory.createToolBar(null, StyleClasses.SIZE_L);
+        var denseToolBar = NodeFactory.createToolBar(Styles.DENSE, StyleClasses.SIZE_M);
         GridPane grid = new GridPane();
         grid.setHgap(Spacing.getHorizontal());
         grid.setVgap(Spacing.getVertical());

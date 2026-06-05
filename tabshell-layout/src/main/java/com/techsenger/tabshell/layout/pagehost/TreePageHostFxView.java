@@ -247,7 +247,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends Abst
 
     protected Node createBreadcrumbDivider() {
         var node = new FontIconView(LayoutIcons.CHEVRON_RIGHT);
-        node.getStyleClass().add(StyleClasses.SIZE_XS);
+        node.getStyleClass().add(StyleClasses.SIZE_S);
         return node;
     }
 }

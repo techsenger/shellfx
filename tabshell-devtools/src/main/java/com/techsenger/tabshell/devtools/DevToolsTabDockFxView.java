@@ -160,9 +160,9 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
     @Override
     protected void build() {
         super.build();
-        selectButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_XS);
+        selectButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         selectButton.setTooltip(new Tooltip("Select Node"));
-        selectionButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_XS);
+        selectionButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         selectionButton.setTooltip(new Tooltip("Enable/Disable Selection"));
         getTabHeaderFirstBox().getChildren().addAll(selectButton, selectionButton);
         getTabHeaderFirstBox().setSpacing(Spacing.getHorizontalThird());
@@ -171,7 +171,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
         getNode().setTabDragEnabled(false);
         getNode().setTabDropEnabled(false);
 
-        optionsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_XS);
+        optionsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         optionsButton.setTooltip(new Tooltip("Options"));
         getTabHeaderLastBox().getChildren().add(0, optionsButton);
         getTabHeaderLastBox().setSpacing(Spacing.getHorizontalThird());

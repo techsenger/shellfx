@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demo.styles;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.page.AbstractPageFxView;
 import static com.techsenger.tabshell.demo.styles.StylePageData.DEFAULT_STYLE_NAME;
 import static com.techsenger.tabshell.demo.styles.StylePageData.PERSONS;
@@ -74,12 +75,16 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
     }
 
     private static HBox createIconedButtons(String densityStyleClass) {
-        var w0 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XL), StyleClasses.SIZE_XL, "5em");
-        var w1 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_L), StyleClasses.SIZE_L, "5em");
-        var w2 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_M), StyleClasses.SIZE_M, "5em");
-        var w3 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_S), StyleClasses.SIZE_S, "5em");
-        var w4 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XS), StyleClasses.SIZE_XS, "5em");
-        var box = new HBox(w0, w1, w2, w3, w4);
+        var w0 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XXL), StyleClasses.SIZE_XXL, "5em");
+        var w1 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XL), StyleClasses.SIZE_XL, "5em");
+        var w2 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_L), StyleClasses.SIZE_L, "5em");
+        var w3 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_M), StyleClasses.SIZE_M, "5em");
+        var w4 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_S), StyleClasses.SIZE_S, "5em");
+        var crossButton = NodeFactory.createIconButton(StyleClasses.SIZE_XS);
+        crossButton.setGraphic(null);
+        crossButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
+        var w5 = wrapWithName(crossButton, StyleClasses.SIZE_XS, "5em");
+        var box = new HBox(w0, w1, w2, w3, w4, w5);
         box.setMaxWidth(Region.USE_PREF_SIZE);
         box.getStyleClass().add(densityStyleClass);
         return box;
@@ -92,8 +97,8 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
     }
 
     private static VBox createToolBars(String densityStyleClass) {
-        var w0 = wrapWithName(NodeFactory.createToolBar(null, StyleClasses.SIZE_M), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createToolBar(StyleClasses.DENSE, StyleClasses.SIZE_S), StyleClasses.DENSE);
+        var w0 = wrapWithName(NodeFactory.createToolBar(null, StyleClasses.SIZE_L), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(NodeFactory.createToolBar(Styles.DENSE, StyleClasses.SIZE_M), Styles.DENSE);
         var box = createSpacedHBox(w0, w1);
         return wrapWithName(box, densityStyleClass);
     }

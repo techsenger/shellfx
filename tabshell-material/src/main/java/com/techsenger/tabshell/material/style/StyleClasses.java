@@ -87,34 +87,23 @@ public interface StyleClasses {
      */
     String DENSITY_XS = "density-xs";
 
-    String DENSE = "dense";
-
     /**
-     * Represents the extra-small size variant for UI controls.
+     * Represents the extra-extra-large size variant for UI controls.
      *
      * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
      * determined by both the global {@code density} setting applied to the scene/root and this component-specific
      * {@code size} value.
      */
-    String SIZE_XS = "size-xs";
+    String SIZE_XXL = "size-xxl";
 
     /**
-     * Represents the small size variant for UI controls.
+     * Represents the extra-large size variant for UI controls.
      *
      * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
      * determined by both the global {@code density} setting applied to the scene/root and this component-specific
      * {@code size} value.
      */
-    String SIZE_S = "size-s";
-
-    /**
-     * Represents the medium (default) size variant for UI controls.
-     *
-     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
-     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
-     * {@code size} value.
-     */
-    String SIZE_M = "size-m";
+    String SIZE_XL = "size-xl";
 
     /**
      * Represents the large size variant for UI controls.
@@ -126,13 +115,31 @@ public interface StyleClasses {
     String SIZE_L = "size-l";
 
     /**
-     * Represents the extra-large size variant for UI controls.
+     * Represents the medium (default) size variant for UI controls.
      *
      * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
      * determined by both the global {@code density} setting applied to the scene/root and this component-specific
      * {@code size} value.
      */
-    String SIZE_XL = "size-xl";
+    String SIZE_M = "size-m";
+
+    /**
+     * Represents the small size variant for UI controls.
+     *
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
+     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
+     * {@code size} value.
+     */
+    String SIZE_S = "size-s";
+
+    /**
+     * Represents the extra-small size variant for UI controls.
+     *
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
+     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
+     * {@code size} value.
+     */
+    String SIZE_XS = "size-xs";
 
     /**
      * Class for a cross button.

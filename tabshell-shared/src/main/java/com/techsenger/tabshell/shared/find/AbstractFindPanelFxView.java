@@ -93,7 +93,8 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
         GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
 
         this.closeButton.setOnAction(e -> getPresenter().onClose());
-        this.closeButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
+        this.closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XS,
+                StyleClasses.ICON_BUTTON);
         this.closeButton.setFocusTraversable(false);
 
         this.toolBox.getChildren().addAll(getFindPreviousButton(), getFindNextButton(), getMatchCaseButton(),

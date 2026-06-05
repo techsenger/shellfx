@@ -67,9 +67,9 @@
     container there.
 */
 
-/***************** density-s - size-xl ******************/
-.density-s .button.size-xl.iconed,
-.density-s .toggle-button.size-xl.iconed {
+/***************** density-s - size-xxl ******************/
+.density-s .button.size-xxl.iconed,
+.density-s .toggle-button.size-xxl.iconed {
     -fx-padding: 0;
     -fx-min-height: 2.6em;
     -fx-max-height: 2.6em;
@@ -79,15 +79,15 @@
     -fx-pref-width: 2.6em;
 }
 
-.density-s .button.size-xl .font-icon-view,
-.density-s .toggle-button.size-xl .font-icon-view {
+.density-s .button.size-xxl .font-icon-view,
+.density-s .toggle-button.size-xxl .font-icon-view {
     -fx-padding: 0;
     -fx-font-size: 2.1em;
 }
 
-/***************** density-s - size-l ******************/
-.density-s .button.size-l.iconed,
-.density-s .toggle-button.size-l.iconed {
+/***************** density-s - size-xl ******************/
+.density-s .button.size-xl.iconed,
+.density-s .toggle-button.size-xl.iconed {
     -fx-padding: 0;
     -fx-min-height: 2.35em;
     -fx-max-height: 2.35em;
@@ -98,15 +98,15 @@
     -fx-font-size: 1em; /* atltantafx also has large  style class */
 }
 
-.density-s .button.size-l .font-icon-view,
-.density-s .toggle-button.size-l .font-icon-view {
+.density-s .button.size-xl .font-icon-view,
+.density-s .toggle-button.size-xl .font-icon-view {
     -fx-padding: 0;
     -fx-font-size: 1.85em;
 }
 
-/*****************  density-s - size-m  ******************/
-.density-s .button.size-m.iconed,
-.density-s .toggle-button.size-m.iconed {
+/*****************  density-s - size-l  ******************/
+.density-s .button.size-l.iconed,
+.density-s .toggle-button.size-l.iconed {
     -fx-padding: 0;
     -fx-min-height: 2.1em;
     -fx-max-height: 2.1em;
@@ -116,15 +116,15 @@
     -fx-pref-width: 2.1em;
 }
 
-.density-s .button.size-m .font-icon-view,
-.density-s .toggle-button.size-m .font-icon-view {
+.density-s .button.size-l .font-icon-view,
+.density-s .toggle-button.size-l .font-icon-view {
     -fx-padding: 0;
     -fx-font-size: 1.6em;
 }
 
-/*****************  density-s - size-s  ******************/
-.density-s .button.size-s.iconed,
-.density-s .toggle-button.size-s.iconed {
+/*****************  density-s - size-m  ******************/
+.density-s .button.size-m.iconed,
+.density-s .toggle-button.size-m.iconed {
     -fx-padding: 0;
     -fx-min-height: 1.85em;
     -fx-max-height: 1.85em;
@@ -134,16 +134,16 @@
     -fx-pref-width: 1.85em;
 }
 
-.density-s .button.size-s .font-icon-view,
-.density-s .toggle-button.size-s .font-icon-view { /* see .font-icon-view.dense {} */
+.density-s .button.size-m .font-icon-view,
+.density-s .toggle-button.size-m .font-icon-view { /* see .font-icon-view.dense {} */
     -fx-padding: 0;
     -fx-font-size: 1.4em;
 }
 
-/*****************  density-s - size-xs ******************/
+/*****************  density-s - size-s ******************/
 
-.density-s .button.size-xs.iconed,
-.density-s .toggle-button.size-xs.iconed {
+.density-s .button.size-s.iconed,
+.density-s .toggle-button.size-s.iconed {
     -fx-padding: 0;
     -fx-min-height: 1.6em;
     -fx-max-height: 1.6em;
@@ -153,10 +153,29 @@
     -fx-pref-width: 1.6em;
 }
 
+.density-s .button.size-s .font-icon-view,
+.density-s .toggle-button.size-s .font-icon-view { /* see .font-icon-view.compressed {} */
+    -fx-padding: 0;
+    -fx-font-size: 1.25em;
+}
+
+/*****************  density-s - size-xs ******************/
+
+.density-s .button.size-xs.iconed,
+.density-s .toggle-button.size-xs.iconed {
+    -fx-padding: 0;
+    -fx-min-height: 0.715em;
+    -fx-max-height: 0.715em;
+    -fx-pref-height: 0.715em;
+    -fx-min-width: 0.715em;
+    -fx-max-width: 0.715em;
+    -fx-pref-width: 0.715em;
+}
+
 .density-s .button.size-xs .font-icon-view,
 .density-s .toggle-button.size-xs .font-icon-view { /* see .font-icon-view.compressed {} */
     -fx-padding: 0;
-    -fx-font-size: 1.25em;
+    -fx-font-size: 1em;
 }
 
 /***************** cross button ******************/
@@ -165,13 +184,6 @@
    -fx-background-color: -color-fg-default;
    -fx-shape: "M 0,0 H1 L 4,3 7,0 H8 V1 L 5,4 8,7 V8 H7 L 4,5 1,8 H0 V7 L 3,4 0,1 Z";
    -fx-scale-shape: false;
-   -fx-min-width: 10 !important;
-   -fx-max-width: 10 !important;
-   -fx-pref-width: 10 !important;
-   -fx-min-height: 10 !important;
-   -fx-max-height: 10 !important;
-   -fx-pref-height: 10 !important;
-   -fx-padding: 10;
 }
 
 .button.cross:hover {

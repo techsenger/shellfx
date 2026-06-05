@@ -232,33 +232,33 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.findRightBox.setAlignment(Pos.CENTER);
         this.findComboBoxWrapper.setPadding(new Insets(Spacing.getVerticalHalf(), 0,
                 Spacing.getVerticalHalf(), 0));
-        clearButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
+        clearButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XS, StyleClasses.ICON_BUTTON);
         clearButton.setFocusTraversable(false);
 
         this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
         this.matchCaseButton.setSelected(false);
-        this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
+        this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         this.matchCaseButton.setFocusTraversable(false);
         this.matchCaseButton.setOnAction((event) -> getPresenter().onMatchCase(this.matchCaseButton.isSelected()));
 
         this.findNextButton.setTooltip(new Tooltip("Next"));
-        this.findNextButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
+        this.findNextButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         this.findNextButton.setFocusTraversable(false);
 
         this.findPreviousButton.setTooltip(new Tooltip("Previous"));
-        this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
+        this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         this.findPreviousButton.setFocusTraversable(false);
 
         this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
-        this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
+        this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         this.wholeWordButton.setFocusTraversable(false);
 
         this.highlightButton.setTooltip(new Tooltip("Highlight All"));
-        this.highlightButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
+        this.highlightButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         this.highlightButton.setFocusTraversable(false);
 
         this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
-        this.regExpButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
+        this.regExpButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         this.regExpButton.setFocusTraversable(false);
     }
 

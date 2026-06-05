@@ -37,6 +37,7 @@ import static javafx.geometry.Side.RIGHT;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -50,7 +51,7 @@ import javafx.scene.layout.VBox;
  */
 public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractAreaFxView<P> implements TabPopupView {
 
-    private static final double RESIZE_MARGIN = 2.0;
+    private static final double RESIZE_LARGIN = 2.0;
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements TabPopupView.Composer {
 
@@ -140,9 +141,11 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
 
         TabPaneProSkin tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
         var lastArea = tabPaneSkin.getTabHeaderArea().getLastArea();
-        lastArea.getChildren().add(closeButton);
-        lastArea.setPadding(new Insets(0, Spacing.getHorizontal(), 0, 0));
-        closeButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
+        closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XS, StyleClasses.ICON_BUTTON);
+        var hBox = new HBox(closeButton);
+        hBox.setPadding(new Insets(0, Spacing.getHorizontalHalf(), 0, 0));
+        hBox.setMaxHeight(HBox.USE_PREF_SIZE);
+        lastArea.getChildren().add(hBox);
 
         setInitialSizeAndPosition();
         var css = TabPopupFxView.class.getResource("tab-popup.css").toExternalForm();
@@ -295,11 +298,11 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
    private boolean isOnEdge(double x, double y) {
         switch (getPresenter().getSide()) {
             case RIGHT:
-                return x <= RESIZE_MARGIN;
+                return x <= RESIZE_LARGIN;
             case BOTTOM:
-                return y <= RESIZE_MARGIN;
+                return y <= RESIZE_LARGIN;
             case LEFT:
-                return x >= node.getWidth() - RESIZE_MARGIN;
+                return x >= node.getWidth() - RESIZE_LARGIN;
             default:
                 throw new AssertionError();
         }
