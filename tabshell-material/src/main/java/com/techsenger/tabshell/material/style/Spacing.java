@@ -31,9 +31,9 @@ package com.techsenger.tabshell.material.style;
  */
 public final class Spacing {
 
-    private static double vertical = 8.0;
+    private static double vertical = 10.0;
 
-    private static double horizontal = 10.0;
+    private static double horizontal = 12.0;
 
     /**
      * Returns the base vertical spacing value, used as the primary gap between rows
