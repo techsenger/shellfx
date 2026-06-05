@@ -43,7 +43,7 @@ import javafx.scene.layout.VBox;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractTabFxView<P extends TabPresenter<?>> extends AbstractChildFxView<P>
+public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> extends AbstractChildFxView<P>
         implements TabFxView<P> {
 
     public class Composer extends AbstractChildFxView<P>.Composer implements TabFxView.Composer {
@@ -236,7 +236,7 @@ public abstract class AbstractTabFxView<P extends TabPresenter<?>> extends Abstr
     protected void addHandlers() {
         super.addHandlers();
         this.wrapperPane.setFocusTraversable(true);
-        getNode().setOnCloseRequest((e) -> getPresenter().close());
+        getNode().setOnCloseRequest((e) -> getPresenter().onCloseRequest());
     }
 
     protected StackPane getWrapperPane() {

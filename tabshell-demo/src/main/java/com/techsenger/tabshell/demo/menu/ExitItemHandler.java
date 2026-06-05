@@ -32,7 +32,7 @@ public class ExitItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> {
 
     @Override
     public void onAction() {
-        getComponent().getPresenter().requestClose();
+        getComponent().getPresenter().closeSafely();
     }
 
 }

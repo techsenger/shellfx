@@ -37,12 +37,12 @@ public class EnumEditorDialogPresenter<V extends EnumEditorDialogView> extends A
             if (button == EditorDialogButtons.OK) {
                 try {
                     applyValue(getTask(), value);
-                    requestClose();
+                    closeSafely();
                 } catch (Exception ex) {
                     openErrorDialog();
                 }
             } else {
-                requestClose();
+                closeSafely();
             }
         });
     }

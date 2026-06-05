@@ -108,7 +108,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         setTitle("Dialogs");
         view.setDialogTypes(Arrays.asList(DialogType.values()));
         setResultAction((result) -> {
-            requestClose();
+            closeSafely();
         });
         setRightButtons(DialogsDialogButtons.CLOSE);
         setMinWidth(400);
@@ -135,9 +135,9 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
             if (buttonName == FileChooserDialogButtons.OK) {
                 var result = port.getResult();
                 System.out.println("Result: " + result.getUri());
-                port.requestClose();
+                port.closeSafely();
             } else {
-                port.requestClose();
+                port.closeSafely();
             }
         });
     }

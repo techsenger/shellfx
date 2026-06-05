@@ -28,6 +28,8 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     private boolean closable = true;
 
+    private Runnable onCloseRequest = () -> closeSafely();
+
     private Runnable onClosed;
 
     private boolean waiting;
@@ -76,6 +78,16 @@ public abstract class AbstractTabPresenter<V extends TabView>
     @Override
     public void setOnClosed(Runnable onClosed) {
         this.onClosed = onClosed;
+    }
+
+    @Override
+    public Runnable getOnCloseRequest() {
+        return this.onCloseRequest;
+    }
+
+    @Override
+    public void setOnCloseRequest(Runnable runnable) {
+        this.onCloseRequest = runnable;
     }
 
     @Override
@@ -135,5 +147,11 @@ public abstract class AbstractTabPresenter<V extends TabView>
     @Override
     protected TabHistory getHistory() {
         return (TabHistory) super.getHistory();
+    }
+
+    protected void onCloseRequest() {
+        if (this.onCloseRequest != null) {
+            this.onCloseRequest.run();
+        }
     }
 }

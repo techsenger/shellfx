@@ -74,7 +74,7 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
             if (buttonName == ThemeDialogButtons.OK) {
                 settings.setTheme(this.theme);
             }
-            requestClose();
+            closeSafely();
         });
     }
 

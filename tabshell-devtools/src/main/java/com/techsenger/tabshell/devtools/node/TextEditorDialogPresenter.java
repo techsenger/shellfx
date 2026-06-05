@@ -36,12 +36,12 @@ public class TextEditorDialogPresenter<V extends TextEditorDialogView> extends A
             if (button == EditorDialogButtons.OK) {
                 try {
                     applyValue(getTask(), value);
-                    requestClose();
+                    closeSafely();
                 } catch (Exception ex) {
                     openErrorDialog();
                 }
             } else {
-                requestClose();
+                closeSafely();
             }
         });
     }

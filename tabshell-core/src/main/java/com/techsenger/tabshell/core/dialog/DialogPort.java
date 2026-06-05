@@ -31,27 +31,6 @@ import java.util.function.Consumer;
 public interface DialogPort extends DialogShared, PopupPort {
 
     /**
-     * Returns the action that determines whether the dialog should be closed when the close button
-     * or window close event is triggered.
-     * <p>
-     * If no action has been set, the default behavior is to simply close the dialog.
-     *
-     * @return the close action, or {@code null} if the default close behavior is used
-     */
-    Runnable getCloseAction();
-
-    /**
-     * Sets the action to be executed when the dialog is closed via the close button or window close event.
-     * <p>
-     * This action determines whether the dialog should actually be closed. If not set, the default
-     * action simply closes the dialog. Custom actions can implement confirmation logic, data saving,
-     * or any other behavior — and choose whether or not to close the dialog as a result.
-     *
-     * @param action the close action to execute, or {@code null} to reset to the default close behavior
-     */
-    void setCloseAction(Runnable action);
-
-    /**
      * Returns the action to be executed when a result button is clicked.
      * <p>
      * This action determines whether the dialog should actually be closed. The consumer receives

@@ -78,7 +78,7 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
         var dialog = getView().getComposer().openDemoDialog(scope, true);
         dialog.setResultAction((name) -> {
             if (name == DemoResultButtons.OK) {
-                dialog.requestClose();
+                dialog.closeSafely();
             }
         });
     }

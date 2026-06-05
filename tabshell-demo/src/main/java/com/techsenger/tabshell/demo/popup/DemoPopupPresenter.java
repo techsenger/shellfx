@@ -49,4 +49,8 @@ public class DemoPopupPresenter extends AbstractPopupPresenter<DemoPopupView> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    protected void onCloseRequest() {
+        super.onCloseRequest();
+    }
 }

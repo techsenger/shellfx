@@ -47,6 +47,6 @@ public class DemoPopupFxView extends AbstractPopupFxView<DemoPopupPresenter> imp
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        closeButton.setOnAction(e -> getPresenter().requestClose());
+        closeButton.setOnAction(e -> getPresenter().onCloseRequest());
     }
 }

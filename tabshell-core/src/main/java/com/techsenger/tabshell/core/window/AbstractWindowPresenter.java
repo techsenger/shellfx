@@ -18,12 +18,9 @@ package com.techsenger.tabshell.core.window;
 
 import com.techsenger.patternfx.mvp.AbstractParentPresenter;
 import com.techsenger.patternfx.mvp.Presenter;
-import com.techsenger.tabshell.core.CloseCheckResult;
-import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
 import com.techsenger.tabshell.material.icon.Icon;
-import java.util.function.Consumer;
 
 /**
  *
@@ -59,6 +56,8 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     private SettingsSubscription regularFontSubscription;
 
     private SettingsSubscription monospaceFontSubscription;
+
+    private Runnable onCloseRequest = () -> closeSafely();
 
     private Runnable onClosed;
 
@@ -167,13 +166,13 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     }
 
     @Override
-    public CloseCheckResult isReadyToClose() {
-        return CloseCheckResult.READY;
+    public Runnable getOnCloseRequest() {
+        return this.onCloseRequest;
     }
 
     @Override
-    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setOnCloseRequest(Runnable runnable) {
+        this.onCloseRequest = runnable;
     }
 
     @Override
@@ -215,6 +214,12 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     @Override
     public void setOnClosed(Runnable onClosed) {
         this.onClosed = onClosed;
+    }
+
+    protected void onCloseRequest() {
+        if (this.onCloseRequest != null) {
+            this.onCloseRequest.run();
+        }
     }
 
     @Override

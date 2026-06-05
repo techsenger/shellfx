@@ -54,7 +54,7 @@ public interface TabContainerPresenter<V extends TabContainerView> extends Paren
                     }
                 }
                 if (tab != null) {
-                    tab.requestClose(this::handleCloseResult);
+                    tab.closeSafely(this::handleCloseResult);
                 }
             }
 
@@ -102,6 +102,6 @@ public interface TabContainerPresenter<V extends TabContainerView> extends Paren
 
     @Override
     default void closeTab(TabPort tab) {
-        tab.requestClose();
+        tab.closeSafely();
     }
 }

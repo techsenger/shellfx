@@ -33,6 +33,8 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
 
     private boolean waiting;
 
+    private Runnable onCloseRequest = () -> closeSafely();
+
     private Runnable onClosed;
 
     public AbstractPopupPresenter(V view, PopupParams params) {
@@ -90,6 +92,16 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
     }
 
     @Override
+    public Runnable getOnCloseRequest() {
+        return this.onCloseRequest;
+    }
+
+    @Override
+    public void setOnCloseRequest(Runnable runnable) {
+        this.onCloseRequest = runnable;
+    }
+
+    @Override
     public Runnable getOnClosed() {
         return onClosed;
     }
@@ -102,5 +114,11 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
     @Override
     protected PopupHistory getHistory() {
         return (PopupHistory) super.getHistory();
+    }
+
+    protected void onCloseRequest() {
+        if (this.onCloseRequest != null) {
+            this.onCloseRequest.run();
+        }
     }
 }

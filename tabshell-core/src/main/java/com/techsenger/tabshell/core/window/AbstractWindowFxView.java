@@ -451,7 +451,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        this.closeButton.setOnAction(e -> getPresenter().requestClose());
+        this.closeButton.setOnAction(e -> getPresenter().onCloseRequest());
         this.maximizeButton.setOnAction(e -> window.setMaximized(!window.isMaximized()));
         this.minimizeButton.setOnAction(e -> window.setIconified(true));
         this.window.getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::fixAcceleratorKeyPressed);
@@ -464,7 +464,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 //        });
         window.setOnCloseRequest(event -> {
             event.consume();
-            getPresenter().requestClose();
+            getPresenter().onCloseRequest();
         });
     }
 

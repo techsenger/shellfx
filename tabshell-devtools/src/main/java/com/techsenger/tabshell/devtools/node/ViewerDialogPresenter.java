@@ -94,7 +94,7 @@ public class ViewerDialogPresenter<V extends ViewerDialogView>  extends Abstract
             getView().addCssUrl(cssUrl);
         }
         getView().setState(item.getAttribute().valueState().name());
-        setResultAction((button) -> requestClose());
+        setResultAction((button) -> closeSafely());
         setRightButtons(ViewerDialogButtons.OK);
     }
 

@@ -168,7 +168,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
             getComposer().getDockHost().getComposer().minimizeTabDock(this);
             getPresenter().onMinimized();
         });
-        closeButton.setOnAction(e -> getPresenter().requestClose());
+        closeButton.setOnAction(e -> getPresenter().onCloseRequest());
 
         var tabPane = getNode();
         tabPane.addEventHandler(TabEvent.TAB_DRAG_STARTED, (e) -> {

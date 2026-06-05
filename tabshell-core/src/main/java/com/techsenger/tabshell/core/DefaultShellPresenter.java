@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.window.AbstractWindowPresenter;
+import java.util.function.Consumer;
 
 /**
  *
@@ -46,6 +47,16 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
     @Override
     public ViewAccess getViewAccess() {
         return getView();
+    }
+
+    @Override
+    public CloseCheckResult isReadyToClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

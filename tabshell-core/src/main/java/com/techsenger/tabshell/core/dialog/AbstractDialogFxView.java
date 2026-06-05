@@ -338,12 +338,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         super.addHandlers();
         titleBar.setOnMousePressed((event) -> this.onMousePressed(event));
         titleBar.setOnMouseDragged((event) -> this.onMouseDragged(event));
-        closeButton.setOnAction(e -> {
-            var r = getPresenter().getCloseAction();
-            if (r != null) {
-                r.run();
-            }
-        });
+        closeButton.setOnAction(e -> getPresenter().onCloseRequest());
     }
 
     /**

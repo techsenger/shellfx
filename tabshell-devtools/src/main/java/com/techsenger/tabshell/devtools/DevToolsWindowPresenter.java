@@ -17,8 +17,11 @@
 package com.techsenger.tabshell.devtools;
 
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
+import com.techsenger.tabshell.core.CloseCheckResult;
+import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.window.AbstractWindowPresenter;
 import com.techsenger.tabshell.devtools.style.DevToolsIcons;
+import java.util.function.Consumer;
 
 /**
  *
@@ -29,6 +32,16 @@ public class DevToolsWindowPresenter<V extends DevToolsWindowView> extends Abstr
     public DevToolsWindowPresenter(V view, DevToolsWindowParams params) {
         super(view, params);
         getView().getComposer().setHistoryManager(params.getHistoryManager());
+    }
+
+    @Override
+    public CloseCheckResult isReadyToClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

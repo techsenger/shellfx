@@ -33,7 +33,7 @@ public interface CloseAwarePresenter<V extends ParentView> extends ParentPresent
     ComponentDescriptor getDescriptor();
 
     @Override
-    default void requestClose(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {
+    default void closeSafely(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {
         class Requester {
 
             private int attemptCount = -1;

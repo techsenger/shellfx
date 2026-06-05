@@ -40,12 +40,12 @@ public class InsetEditorDialogPresenter<V extends InsetEditorDialogView> extends
                 try {
                     var value = top + "," + right + "," + bottom + "," + left;
                     applyValue(getTask(), value);
-                    requestClose();
+                    closeSafely();
                 } catch (Exception ex) {
                     openErrorDialog();
                 }
             } else {
-                requestClose();
+                closeSafely();
             }
         });
     }
