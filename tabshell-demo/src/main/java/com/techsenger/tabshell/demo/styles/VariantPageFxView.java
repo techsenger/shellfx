@@ -85,6 +85,19 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         return box;
     }
 
+    private static VBox createToolBars() {
+        var w0 = createToolBars(DEFAULT_STYLE_NAME);
+        var w1 = createToolBars(StyleClasses.DENSITY_S);
+        return new VBox(w0, w1);
+    }
+
+    private static VBox createToolBars(String densityStyleClass) {
+        var w0 = wrapWithName(NodeFactory.createToolBar(null, StyleClasses.SIZE_M), DEFAULT_STYLE_NAME);
+        var w1 = wrapWithName(NodeFactory.createToolBar(StyleClasses.DENSE, StyleClasses.SIZE_S), StyleClasses.DENSE);
+        var box = createSpacedHBox(w0, w1);
+        return wrapWithName(box, densityStyleClass);
+    }
+
     private static HBox createTextFields() {
         var w0 = wrapWithName(NodeFactory.createTextField(TEXT), DEFAULT_STYLE_NAME);
         var w1 = wrapWithName(NodeFactory.createTextField(TEXT), StyleClasses.DENSITY_M);
@@ -197,9 +210,10 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
                 Spacing.getVertical(), Spacing.getHorizontal()));
         mainBox.setSpacing(Spacing.getVertical());
 
-        addToBox(NodeFactory.createSection("Icon Buttons"), createIconedButtons());
-        addToBox(NodeFactory.createSection("Text Fields"), createTextFields());
-        addToBox(NodeFactory.createSection("ComboBoxes"), createComboBoxes());
+        addToBox(NodeFactory.createSection("Icon Button"), createIconedButtons());
+        addToBox(NodeFactory.createSection("ToolBar"), createToolBars());
+        addToBox(NodeFactory.createSection("TextField"), createTextFields());
+        addToBox(NodeFactory.createSection("ComboBox"), createComboBoxes());
         addToBox(NodeFactory.createSection("ListView"), createListViewBox());
         addToBox(NodeFactory.createSection("TreeView"), createTreeViewBox());
         addToBox(NodeFactory.createSection("TableView"), createTableViewBox());

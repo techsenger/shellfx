@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.page.PageFxView;
 import com.techsenger.tabshell.core.page.PagePort;
@@ -205,7 +204,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends Abst
     protected void build() {
         super.build();
         getLeftBox().getChildren().add(pageTreeView);
-        pageTreeView.getStyleClass().addAll(Styles.DENSE, StyleClasses.NO_BORDER);
+        pageTreeView.getStyleClass().add(StyleClasses.NO_BORDER);
         pageTreeView.setShowRoot(false);
         VBox.setVgrow(pageTreeView, Priority.ALWAYS);
 
@@ -248,7 +247,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends Abst
 
     protected Node createBreadcrumbDivider() {
         var node = new FontIconView(LayoutIcons.CHEVRON_RIGHT);
-        node.getStyleClass().add(Styles.DENSE);
+        node.getStyleClass().add(StyleClasses.SIZE_XS);
         return node;
     }
 }

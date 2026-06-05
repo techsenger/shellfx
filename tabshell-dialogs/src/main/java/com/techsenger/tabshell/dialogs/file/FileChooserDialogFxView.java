@@ -404,7 +404,6 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
 
         locationLabel.setMinWidth(Region.USE_PREF_SIZE);
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
-        locationComboBox.getStyleClass().add(Styles.DENSE);
         locationComboBox.setMaxWidth(Double.MAX_VALUE);
         locationComboBox.setCellFactory(cb -> {
             var cell = new LocationCell(false);

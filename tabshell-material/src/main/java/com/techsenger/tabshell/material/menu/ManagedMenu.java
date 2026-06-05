@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.material.menu;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.material.Named;
 import com.techsenger.tabshell.material.Positioned;
 import javafx.beans.property.ObjectProperty;
@@ -50,7 +49,6 @@ public class ManagedMenu extends Menu implements Named, Positioned {
         super(text, node, mis);
         this.name = name;
         this.position = position;
-        this.getStyleClass().add(Styles.DENSE);
     }
 
     @Override

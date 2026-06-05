@@ -114,7 +114,6 @@
     -fx-min-width: 2.1em;
     -fx-max-width: 2.1em;
     -fx-pref-width: 2.1em;
-    -fx-background-color: red;
 }
 
 .density-s .button.size-m .font-icon-view,
@@ -424,23 +423,24 @@
   -color-button-bg: -color-bg-default;
 }
 
-.tool-bar {
+.tool-bar .separator:vertical {
+    -fx-padding: 2 0 2 0;
+}
+
+.density-s .tool-bar {
     -fx-padding: 4 4 5 4; /*bottom padding is 5 = 4 + 1 because of the botttom line */
     -fx-alignment: center-left;
-    -fx-spacing: 6px;
+    -fx-spacing: 12px;
 }
 
-.tool-bar .separator:vertical {
-    -fx-padding: 2;
-}
-
-.tool-bar.compressed {
+.density-s .tool-bar.dense {
     -fx-min-height: -1;
     -fx-max-height: -1;
     -fx-padding: 1 4 2 4; /* 3 = 2(padding) + 1(bg-insetts) */
+    -fx-spacing: 6px;
 }
 
-.tool-bar.inline {
+.density-s .tool-bar.inline {
     -fx-min-height: -1;
     -fx-max-height: -1;
     -fx-padding: 1 0 3 0;

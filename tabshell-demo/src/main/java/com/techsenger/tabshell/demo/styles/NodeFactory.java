@@ -16,21 +16,28 @@
 
 package com.techsenger.tabshell.demo.styles;
 
+import atlantafx.base.theme.Styles;
+import com.techsenger.tabshell.devtools.style.DevToolsIcons;
 import com.techsenger.tabshell.dialogs.style.DialogIcons;
 import com.techsenger.tabshell.material.icon.FontIconView;
+import com.techsenger.tabshell.material.icon.StyleFontIcon;
 import com.techsenger.tabshell.material.style.StyleClasses;
+import com.techsenger.tabshell.shared.style.SharedIcons;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -60,6 +67,27 @@ final class NodeFactory {
             b.getStyleClass().add(styleClass);
         }
         return b;
+    }
+
+    static ToolBar createToolBar(String toolBarStyleClass, String buttonStyleClass) {
+        var toolbar = new ToolBar();
+        if (toolBarStyleClass != null) {
+            toolbar.getStyleClass().add(toolBarStyleClass);
+        }
+        toolbar.getItems().addAll(
+                createToolBarButton(SharedIcons.HIGHLIGHT, buttonStyleClass),
+                createToolBarButton(SharedIcons.MATCH_CASE, buttonStyleClass),
+                new Separator(Orientation.VERTICAL),
+                createToolBarButton(SharedIcons.WHOLE_WORD, buttonStyleClass),
+                new Separator(Orientation.VERTICAL),
+                createToolBarButton(SharedIcons.REG_EXP, buttonStyleClass),
+                createToolBarButton(DevToolsIcons.CLEAR, buttonStyleClass),
+                createToolBarButton(DevToolsIcons.EDIT, buttonStyleClass),
+                createToolBarButton(DevToolsIcons.REFRESH, buttonStyleClass),
+                createToolBarButton(DevToolsIcons.OPEN_IN_NEW, buttonStyleClass),
+                createToolBarButton(DevToolsIcons.TOOLS, buttonStyleClass),
+                createToolBarButton(DevToolsIcons.VIEW, buttonStyleClass));
+        return toolbar;
     }
 
     static Label createLabel(String text, String styleClass) {
@@ -197,6 +225,15 @@ final class NodeFactory {
             root.getChildren().add(group);
         }
         return root;
+    }
+
+    private static Button createToolBarButton(StyleFontIcon icon, String styleClass) {
+        var button = new Button(null, new FontIconView(icon));
+        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        if (styleClass != null) {
+            button.getStyleClass().add(styleClass);
+        }
+        return button;
     }
 
     private NodeFactory() {

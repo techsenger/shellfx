@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.shared.find;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.FocusTrap;
@@ -75,8 +74,6 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
     @Override
     protected void build() {
         super.build();
-        getFindComboBox().getStyleClass().add(Styles.DENSE);
-        getFindRightBox().getStyleClass().add(Styles.DENSE);
         var css = AbstractFindPanelFxView.class.getResource("find-panel.css").toExternalForm();
         this.gridPane.getStylesheets().add(css);
         this.gridPane.getStyleClass().add("find");
@@ -102,7 +99,6 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
         this.toolBox.getChildren().addAll(getFindPreviousButton(), getFindNextButton(), getMatchCaseButton(),
                 getWholeWordButton(), getRegExpButton(), getHighlightButton(),
                 new Spacer(Spacing.getHorizontal() - Spacing.getHorizontalThird() * 2), this.closeButton);
-        this.toolBox.getStyleClass().add(Styles.DENSE);
         this.toolBox.setSpacing(Spacing.getHorizontalThird());
         this.toolBox.setAlignment(Pos.CENTER_LEFT);
         this.toolBox.setPadding(new Insets(0, Spacing.getHorizontal(), 0, Spacing.getHorizontalThird()));

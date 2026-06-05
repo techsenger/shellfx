@@ -141,7 +141,6 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
     @Override
     protected void build() {
         super.build();
-        listView.getStyleClass().add(Styles.DENSE);
         listView.setCellFactory(lv -> new ListCell<DialogType>() {
 
             {

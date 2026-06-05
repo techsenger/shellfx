@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.layout.pagehost;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.shared.find.AbstractFindBaseFxView;
 import com.techsenger.tabshell.shared.find.FindTrigger;
@@ -52,7 +51,5 @@ public class FindPanelFxView<P extends FindPanelPresenter<?>> extends AbstractFi
         getFindComboBox().setMaxWidth(Double.MAX_VALUE);
         getFindComboBoxWrapper().setMinWidth(100);
         getFindComboBoxWrapper().setPadding(Insets.EMPTY);
-        getFindComboBox().getStyleClass().add(Styles.DENSE);
-        getFindRightBox().getStyleClass().add(Styles.DENSE);
     }
 }

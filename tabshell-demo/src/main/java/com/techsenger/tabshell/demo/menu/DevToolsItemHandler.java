@@ -90,12 +90,11 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
 
     protected DevToolsWindowFxView<?> createDevToolsWindow() {
         var view = new DevToolsWindowFxView<>(getComponent(), IconStylesheetFactory.forAll());
-        view.getWindow().getScene().getRoot().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
         var context = getComponent().getPresenter().getContext();
         var params = new DevToolsWindowParams(context.getSettings().getAppearance(), context.getHistoryManager());
         var presenter = new DevToolsWindowPresenter<>(view, params);
         presenter.initialize();
-        view.getWindow().getScene().getRoot().getStyleClass().add(Density.STYLE_CLASS);
+        view.getWindow().getScene().getRoot().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
         return view;
     }
 

@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demo.browser;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
@@ -173,7 +172,6 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
     }
 
     private void setupButton(Button button) {
-        button.getStyleClass().add(Styles.DENSE);
         HBox.setHgrow(button, Priority.ALWAYS);
         button.setMaxWidth(Double.MAX_VALUE);
     }

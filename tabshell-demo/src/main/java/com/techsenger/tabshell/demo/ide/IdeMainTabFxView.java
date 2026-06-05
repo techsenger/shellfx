@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demo.ide;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
@@ -155,7 +154,6 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
     }
 
     private void setupButton(Button button) {
-        button.getStyleClass().add(Styles.DENSE);
         HBox.setHgrow(button, Priority.ALWAYS);
         button.setMaxWidth(Double.MAX_VALUE);
     }

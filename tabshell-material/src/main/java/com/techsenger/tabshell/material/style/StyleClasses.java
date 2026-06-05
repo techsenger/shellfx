@@ -87,6 +87,8 @@ public interface StyleClasses {
      */
     String DENSITY_XS = "density-xs";
 
+    String DENSE = "dense";
+
     /**
      * Represents the extra-small size variant for UI controls.
      *

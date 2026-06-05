@@ -19,6 +19,7 @@ package com.techsenger.tabshell.demo.styles;
 import com.techsenger.tabshell.core.page.AbstractPageFxView;
 import static com.techsenger.tabshell.demo.styles.StylePageData.PERSONS;
 import com.techsenger.tabshell.material.style.Spacing;
+import com.techsenger.tabshell.material.style.StyleClasses;
 import java.util.List;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -41,6 +42,9 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
 
     private static GridPane createSetPane(String styleClass) {
         var gridPane = new GridPane();
+        if (styleClass != null) {
+            gridPane.getStyleClass().add(styleClass);
+        }
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
         ColumnConstraints col2 = new ColumnConstraints();
@@ -57,6 +61,8 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
     }
 
     private static VBox createLeftBox(String styleClass) {
+        var defToolBar = NodeFactory.createToolBar(null, StyleClasses.SIZE_M);
+        var denseToolBar = NodeFactory.createToolBar(StyleClasses.DENSE, StyleClasses.SIZE_S);
         GridPane grid = new GridPane();
         grid.setHgap(Spacing.getHorizontal());
         grid.setVgap(Spacing.getVertical());
@@ -119,7 +125,7 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         buttonBar.getChildren().add(0, spacer);
 
         // Root
-        var root = new VBox(grid, listView, treeView, buttonBar);
+        var root = new VBox(defToolBar, denseToolBar, grid, listView, treeView, buttonBar);
         VBox.setVgrow(grid, Priority.ALWAYS);
         root.setSpacing(Spacing.getVertical());
         return root;

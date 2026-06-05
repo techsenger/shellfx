@@ -16,7 +16,6 @@
 
 package com.techsenger.tabshell.demo;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.DefaultShellContext;
 import com.techsenger.tabshell.core.DefaultShellFxView;
 import com.techsenger.tabshell.core.DefaultShellParams;
@@ -64,7 +63,6 @@ public class Demo extends Application {
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
             logger.error("Uncaught exception in {}", thread.getName(), throwable)
         );
-        typeListView.getStyleClass().add(Styles.DENSE);
         typeListView.setCellFactory(lv -> {
             ListCell<WorkspaceType> cell = new ListCell<>() {
                 @Override

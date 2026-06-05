@@ -102,9 +102,9 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
     protected void build() {
         super.build();
         var removeButton = new Button(null, new FontIconView(new FontIcon(983924)));
-        removeButton.getStyleClass().add(StyleClasses.ICON_BUTTON);
+        removeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.SIZE_M);
         var addButton = new Button(null, new FontIconView(new FontIcon(984085)));
-        addButton.getStyleClass().add(StyleClasses.ICON_BUTTON);
+        addButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.SIZE_M);
         addButton.setOnAction((e) -> {
             removeButton.setVisible(!removeButton.isVisible());
         });
