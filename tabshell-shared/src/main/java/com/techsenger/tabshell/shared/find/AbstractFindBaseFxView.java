@@ -237,28 +237,28 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
 
         this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
         this.matchCaseButton.setSelected(false);
-        this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.matchCaseButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         this.matchCaseButton.setFocusTraversable(false);
         this.matchCaseButton.setOnAction((event) -> getPresenter().onMatchCase(this.matchCaseButton.isSelected()));
 
         this.findNextButton.setTooltip(new Tooltip("Next"));
-        this.findNextButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.findNextButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         this.findNextButton.setFocusTraversable(false);
 
         this.findPreviousButton.setTooltip(new Tooltip("Previous"));
-        this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.findPreviousButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         this.findPreviousButton.setFocusTraversable(false);
 
         this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
-        this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.wholeWordButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         this.wholeWordButton.setFocusTraversable(false);
 
         this.highlightButton.setTooltip(new Tooltip("Highlight All"));
-        this.highlightButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.highlightButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         this.highlightButton.setFocusTraversable(false);
 
         this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
-        this.regExpButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        this.regExpButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
         this.regExpButton.setFocusTraversable(false);
     }
 
