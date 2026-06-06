@@ -58,7 +58,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         }
     }
 
-    private Consumer<ResultButtonName> resultAction = (name) -> closeSafely();
+    private Consumer<ResultButtonName> onResult = (name) -> closeSafely();
 
     private boolean active;
 
@@ -266,13 +266,13 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
     }
 
     @Override
-    public Consumer<ResultButtonName> getResultAction() {
-        return resultAction;
+    public Consumer<ResultButtonName> getOnResult() {
+        return onResult;
     }
 
     @Override
-    public void setResultAction(Consumer<ResultButtonName> resultAction) {
-        this.resultAction = resultAction;
+    public void setOnResult(Consumer<ResultButtonName> resultAction) {
+        this.onResult = resultAction;
     }
 
     @Override
@@ -294,8 +294,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
     }
 
     protected void onResult(ResultButtonName name) {
-        if (this.resultAction != null) {
-            this.resultAction.accept(name);
+        if (this.onResult != null) {
+            this.onResult.accept(name);
         }
     }
 

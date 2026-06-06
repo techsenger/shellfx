@@ -118,7 +118,7 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
             setRightButtons(AlertDialogButtons.NO, AlertDialogButtons.YES);
             setButtonDefault(AlertDialogButtons.YES, true);
         }
-        setResultAction((result) -> closeSafely());
+        setOnResult((result) -> closeSafely());
         setMessage(message);
         setMinWidth(400);
         setMinHeight(140);

@@ -39,7 +39,7 @@ public interface DialogPort extends DialogShared, PopupPort {
      *
      * @return the result action consumer, or {@code null} if the default close behavior is used
      */
-    Consumer<ResultButtonName> getResultAction();
+    Consumer<ResultButtonName> getOnResult();
 
     /**
      * Sets the action to be executed when a result button is clicked.
@@ -51,7 +51,7 @@ public interface DialogPort extends DialogShared, PopupPort {
      *
      * @param action the result action consumer, or {@code null} to reset to the default close behavior
      */
-    void setResultAction(Consumer<ResultButtonName> action);
+    void setOnResult(Consumer<ResultButtonName> action);
 
     /**
      * Returns whether this dialog is active.

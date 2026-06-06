@@ -35,7 +35,7 @@ public class InsetEditorDialogPresenter<V extends InsetEditorDialogView> extends
 
     public InsetEditorDialogPresenter(V view, EditorDialogParams params) {
         super(view, params);
-        setResultAction((button) -> {
+        setOnResult((button) -> {
             if (button == EditorDialogButtons.OK) {
                 try {
                     var value = top + "," + right + "," + bottom + "," + left;

@@ -107,7 +107,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         setResizable(true);
         setTitle("Dialogs");
         view.setDialogTypes(Arrays.asList(DialogType.values()));
-        setResultAction((result) -> {
+        setOnResult((result) -> {
             closeSafely();
         });
         setRightButtons(DialogsDialogButtons.CLOSE);
@@ -131,7 +131,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         this.storageRegistry.refreshDefaultStorages();
         var params = new FileChooserDialogParams(type, this.storageRegistry.getAllStorages(), settings, historyManager);
         var port = getView().getComposer().openFileChooserDialog(params);
-        port.setResultAction((buttonName) -> {
+        port.setOnResult((buttonName) -> {
             if (buttonName == FileChooserDialogButtons.OK) {
                 var result = port.getResult();
                 System.out.println("Result: " + result.getUri());

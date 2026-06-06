@@ -33,7 +33,7 @@ public class EnumEditorDialogPresenter<V extends EnumEditorDialogView> extends A
 
     public EnumEditorDialogPresenter(V view, EditorDialogParams params) {
         super(view, params);
-        setResultAction((button) -> {
+        setOnResult((button) -> {
             if (button == EditorDialogButtons.OK) {
                 try {
                     applyValue(getTask(), value);

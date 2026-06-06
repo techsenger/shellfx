@@ -76,7 +76,7 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
 
     protected void onDialogOpen(OverlayScope scope) {
         var dialog = getView().getComposer().openDemoDialog(scope, true);
-        dialog.setResultAction((name) -> {
+        dialog.setOnResult((name) -> {
             if (name == DemoResultButtons.OK) {
                 dialog.closeSafely();
             }

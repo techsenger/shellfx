@@ -53,7 +53,7 @@ public class PageDialogPresenter extends AbstractDialogPresenter<PageDialogView>
     protected void postInitialize() {
         super.postInitialize();
         getView().setTitle("Page Dialog");
-        setResultAction((button) -> closeSafely());
+        setOnResult((button) -> closeSafely());
         setRightButtons(PageDialogButtons.OK);
         setButtonDefault(PageDialogButtons.OK, true);
         setMinWidth(500);

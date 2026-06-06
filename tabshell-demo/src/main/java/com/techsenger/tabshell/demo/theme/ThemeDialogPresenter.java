@@ -70,7 +70,7 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
         getView().setTheme(settings.getTheme());
         setRightButtons(ThemeDialogButtons.CANCEL, ThemeDialogButtons.OK);
         setButtonDefault(ThemeDialogButtons.OK, true);
-        setResultAction((buttonName) -> {
+        setOnResult((buttonName) -> {
             if (buttonName == ThemeDialogButtons.OK) {
                 settings.setTheme(this.theme);
             }

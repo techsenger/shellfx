@@ -95,7 +95,7 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
 
     protected void onDialogOpen() {
         var dialog = getView().getComposer().openDemoDialog(true);
-        dialog.setResultAction((name) -> {
+        dialog.setOnResult((name) -> {
             if (name == DemoResultButtons.OK) {
                 dialog.closeSafely();
             }

@@ -32,7 +32,7 @@ public class TextEditorDialogPresenter<V extends TextEditorDialogView> extends A
 
     public TextEditorDialogPresenter(V view, EditorDialogParams params) {
         super(view, params);
-        setResultAction((button) -> {
+        setOnResult((button) -> {
             if (button == EditorDialogButtons.OK) {
                 try {
                     applyValue(getTask(), value);
