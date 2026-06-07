@@ -709,3 +709,9 @@
     -fx-pref-width: 2px;
 }
 
+/*
+    Chart
+*/
+.chart > .chart-title {
+  -fx-font-size: 1em;
+}

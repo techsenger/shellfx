@@ -15,6 +15,7 @@
  */
 
 module com.techsenger.tabshell.demo {
+    requires com.techsenger.annotations;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.tabshell.core;

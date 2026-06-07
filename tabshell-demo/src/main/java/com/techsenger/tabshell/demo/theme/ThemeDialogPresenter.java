@@ -64,7 +64,7 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
         super.postInitialize();
         setTitle("Select Theme");
         setIcon(new FontIcon(984334)); // theme-light-dark
-        setPrefWidth(500);
+        setWidth(500);
         setResizable(false);
         getView().setThemes(Arrays.stream(AtlantaFxTheme.values()).collect(Collectors.toList()));
         getView().setTheme(settings.getTheme());

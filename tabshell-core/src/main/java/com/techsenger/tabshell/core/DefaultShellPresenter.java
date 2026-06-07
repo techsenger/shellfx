@@ -17,14 +17,15 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
-import com.techsenger.tabshell.core.window.AbstractWindowPresenter;
+import com.techsenger.tabshell.core.window.AbstractHostWindowPresenter;
+import com.techsenger.tabshell.core.window.WindowContainerPort;
 import java.util.function.Consumer;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPresenter<V>
+public class DefaultShellPresenter<V extends ShellView> extends AbstractHostWindowPresenter<V>
         implements ShellPresenter<V> {
 
     private final ShellContext context;
@@ -45,7 +46,7 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
     }
 
     @Override
-    public ViewAccess getViewAccess() {
+    public WindowContainerPort.ViewAccess getViewAccess() {
         return getView();
     }
 
@@ -67,5 +68,12 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractWindowPr
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(CoreComponents.SHELL);
+    }
+
+    @Override
+    protected void applyAppearance() {
+        super.applyAppearance();
+        setWidth(1200);
+        setHeight(800);
     }
 }

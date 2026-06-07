@@ -16,9 +16,9 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import javafx.scene.control.Tab;
 
 /**
@@ -26,11 +26,13 @@ import javafx.scene.control.Tab;
  *
  * @author Pavel Castornii
  */
-public interface TabFxView<P extends TabPresenter<?>> extends ChildFxView<P>, TabView, DialogContainerFxView<P> {
+public interface TabFxView<P extends TabPresenter<?>> extends ChildFxView<P>, TabView {
 
-    interface Composer extends ChildFxView.Composer, TabView.Composer, DialogContainerFxView.Composer {
+    interface Composer extends ChildFxView.Composer, TabView.Composer {
 
         ShellFxView<?> getShell();
+
+        @Nullable TabContainerFxView<?> getContainer();
     }
 
     @Override

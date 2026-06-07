@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.tabshell.core.area.AreaView;
 
 /**
@@ -27,6 +28,8 @@ public interface PopupView extends AreaView, PopupShared {
     interface Composer extends AreaView.Composer {
 
         void close();
+
+        @Nullable PopupContainerPort getContainerPort();
     }
 
     @Override

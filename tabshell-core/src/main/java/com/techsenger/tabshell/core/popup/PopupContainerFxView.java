@@ -18,7 +18,6 @@ package com.techsenger.tabshell.core.popup;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.patternfx.mvp.ParentPresenter;
 import com.techsenger.tabshell.material.Anchors;
 import java.util.List;
 
@@ -26,7 +25,8 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerFxView<P extends ParentPresenter<?>> extends ParentFxView<P>, PopupContainerView {
+public interface PopupContainerFxView<P extends PopupContainerPresenter<?>> extends ParentFxView<P>,
+        PopupContainerView {
 
     interface Composer extends ParentFxView.Composer, PopupContainerView.Composer {
 

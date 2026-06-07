@@ -16,18 +16,12 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.popup.PopupView;
+import com.techsenger.tabshell.core.window.WindowView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogView extends PopupView, DialogShared {
+public interface DialogView extends WindowView, DialogShared {
 
-    interface Composer extends PopupView.Composer {
-
-    }
-
-    @Override
-    Composer getComposer();
 }

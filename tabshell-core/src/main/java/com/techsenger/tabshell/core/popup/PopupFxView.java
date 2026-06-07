@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import javafx.scene.layout.Pane;
 
@@ -28,6 +29,8 @@ public interface PopupFxView<P extends PopupPresenter<?>> extends AreaFxView<P>,
     interface Composer extends AreaFxView.Composer, PopupView.Composer {
 
         void close();
+
+        @Nullable PopupContainerFxView<?> getContainer();
     }
 
     @Override

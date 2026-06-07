@@ -44,7 +44,7 @@ public interface CloseAwarePresenter<V extends ParentView> extends ParentPresent
                 CloseCheckResult checkResult = null;
                 CloseAwarePort notReadyComponent = null;
                 CloseAwarePort prepRequiredComponent = null;
-                var iterator = getView().getComposer().breadthFirstIterator();
+                var iterator = getView().getComposer().breadthFirstPortIterator();
                 while (iterator.hasNext()) {
                     var parent = iterator.next();
                     if (parent instanceof CloseAwarePort closeable) {
@@ -62,7 +62,7 @@ public interface CloseAwarePresenter<V extends ParentView> extends ParentPresent
                 if (checkResult != CloseCheckResult.READY && logger().isDebugEnabled()) {
                     final var finalCanClose = checkResult;
                     final var finalSavedCloseable = notReadyComponent;
-                    var tree = getView().getComposer().toTreeString((c, b) -> {
+                    var tree = getView().getComposer().toPortTreeString((c, b) -> {
                         b.append(c.getDescriptor().getFullName());
                         if (c == finalSavedCloseable) {
                             b.append(" <-- ");

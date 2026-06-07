@@ -51,7 +51,7 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?>> extends Ab
             super.compose();
 
             this.toolBar = createToolBar();
-            view.getModifiableChildren().add(this.toolBar);
+            getModifiableChildren().add(this.toolBar);
             view.getContentBox().getChildren().add(0, this.toolBar.getNode());
         }
 

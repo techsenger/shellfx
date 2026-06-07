@@ -107,7 +107,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         public DialogPort addAlertDialog(AlertDialogParams params, String message) {
             var dialog = createAlertDialog(params);
             dialog.getPresenter().setMessage(message);
-            getContainer().getComposer().addDialog(dialog);
+            getContainer().getComposer().addWindow(dialog);
             return dialog.getPresenter();
         }
 

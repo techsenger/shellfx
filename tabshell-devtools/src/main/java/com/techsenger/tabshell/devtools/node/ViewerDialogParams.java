@@ -18,6 +18,8 @@ package com.techsenger.tabshell.devtools.node;
 
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.tabshell.core.dialog.DialogParams;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowType;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -35,8 +37,10 @@ public class ViewerDialogParams extends DialogParams {
 
     private final Consumer<String> linkOpener;
 
-    public ViewerDialogParams(Element node, PropertyItem item, String declaringClassName,
+    public ViewerDialogParams(WindowType windowType, AppearanceSettings settings,
+            Element node, PropertyItem item, String declaringClassName,
             Consumer<String> linkOpener) {
+        super(windowType, settings);
         this.node = node;
         this.item = item;
         this.declaringClassName = declaringClassName;

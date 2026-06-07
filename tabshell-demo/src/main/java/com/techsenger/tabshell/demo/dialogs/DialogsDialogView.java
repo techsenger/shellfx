@@ -16,10 +16,13 @@
 
 package com.techsenger.tabshell.demo.dialogs;
 
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.dialog.DialogView;
+import com.techsenger.tabshell.core.window.WindowView;
 import com.techsenger.tabshell.demo.page.PageDialogParams;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogPort;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogParams;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogPort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
@@ -31,11 +34,11 @@ import java.util.List;
  */
 public interface DialogsDialogView extends DialogView {
 
-    interface Composer extends DialogView.Composer {
+    interface Composer extends WindowView.Composer {
 
-        DialogPort openAlertDialog(AlertDialogParams params, String message);
+        AlertDialogPort openAlertDialog(AlertDialogParams params);
 
-        NameValueDialogPort openNameValueDialog();
+        NameValueDialogPort openNameValueDialog(DialogParams params);
 
         FileChooserDialogPort openFileChooserDialog(FileChooserDialogParams params);
 

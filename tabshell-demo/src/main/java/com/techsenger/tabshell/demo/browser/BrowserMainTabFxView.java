@@ -17,7 +17,7 @@
 package com.techsenger.tabshell.demo.browser;
 
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.core.tab.AbstractHostTabFxView;
 import com.techsenger.tabshell.demo.HostFactory;
 import com.techsenger.tabshell.demo.main.TestInterface;
 import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
@@ -40,10 +40,10 @@ import javafx.scene.layout.HBox;
  *
  * @author Pavel Castornii
  */
-public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresenter>
+public class BrowserMainTabFxView extends AbstractHostTabFxView<BrowserMainTabPresenter>
         implements UtilityDockContainerFxView<BrowserMainTabPresenter> {
 
-    private final class Composer extends AbstractTabFxView<BrowserMainTabPresenter>.Composer
+    private final class Composer extends AbstractHostTabFxView<BrowserMainTabPresenter>.Composer
             implements UtilityDockContainerFxView.Composer, TestInterface {
 
         private final BrowserMainTabFxView view = BrowserMainTabFxView.this;
@@ -55,7 +55,7 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
             var dockHost = HostFactory
                     .createDockHost(getShell(),
                             () -> historyManager.getHistory(BrowserMainTabHistory.class).getDockHost());
-            view.getModifiableChildren().add(dockHost);
+            getModifiableChildren().add(dockHost);
             view.dockHost = dockHost;
             view.addLayout();
 
@@ -71,7 +71,8 @@ public class BrowserMainTabFxView extends AbstractTabFxView<BrowserMainTabPresen
 
         protected MenuAwareAreaFxView createTextViewer() {
             var v = new MenuAwareAreaFxView(view);
-            var p = new MenuAwareAreaPresenter(v);
+            var params = new MenuAwareAreaParams(getShell().getPresenter().getContext().getSettings().getAppearance());
+            var p = new MenuAwareAreaPresenter(v, params);
             p.initialize();
             return v;
         }

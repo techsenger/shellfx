@@ -86,6 +86,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
         return this.historyManager;
     }
 
+    @Override
     public DevToolsHostType getHostType() {
         return hostType;
     }

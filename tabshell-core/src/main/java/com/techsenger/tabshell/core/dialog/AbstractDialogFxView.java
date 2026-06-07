@@ -16,212 +16,57 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabshell.core.popup.AbstractPopupFxView;
-import com.techsenger.tabshell.core.style.CoreIcons;
+import com.techsenger.tabshell.core.window.AbstractWindowFxView;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
-import com.techsenger.tabshell.material.icon.FontIconView;
-import com.techsenger.tabshell.material.icon.Icon;
-import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.FocusTrap;
-import com.techsenger.toolkit.fx.RegionResizer;
 import com.techsenger.toolkit.fx.Spacer;
-import com.techsenger.toolkit.fx.pulse.LayoutPhase;
 import com.techsenger.toolkit.fx.utils.ButtonUtils;
-import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
 public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
-        extends AbstractPopupFxView<P> implements DialogFxView<P> {
+        extends AbstractWindowFxView<P> implements DialogFxView<P> {
 
-    private static final PseudoClass INACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("inactive");
+    private final HBox leftBottomBox = new HBox();
 
-    public class Composer extends AbstractPopupFxView<P>.Composer implements DialogFxView.Composer {
+    private final HBox rightBottomBox = new HBox();
 
-        private final AbstractDialogFxView<P> view = AbstractDialogFxView.this;
-
-        @Override
-        public void close() {
-            var parent = view.getParent();
-            if (parent != null) {
-                ((DialogContainerFxView.Composer) parent.getComposer()).closeDialog(view);
-            }
-        }
-    }
-
-    private final IconViewBox iconViewBox = new IconViewBox();
-
-    private final Label titleLabel = new Label();
-
-    private final Pane spacePane = new Pane();
-
-    private final Button closeButton = new Button(null, new FontIconView(CoreIcons.WINDOW_CLOSE));
-
-    private final HBox titleButtonBox = new HBox(closeButton);
-
-    private final HBox titleBar = new HBox(iconViewBox, titleLabel, spacePane, titleButtonBox);
-
-    private final VBox dialogBox = new VBox(titleBar, super.getNode());
-
-    private final HBox leftButtonBox = new HBox();
-
-    private final HBox rightButtonBox = new HBox();
-
-    private final HBox buttonBox = new HBox(leftButtonBox, new Spacer(Orientation.HORIZONTAL), rightButtonBox);
-
-    private final VBox mainBox = new VBox(super.getContentBox(), buttonBox);
+    private final HBox buttomBox = new HBox(leftBottomBox, new Spacer(Orientation.HORIZONTAL), rightBottomBox);
 
     /**
      * Trap for focus dialog. This trap should always be activated after adding all controls to dialog. Otherwise
      * it is necessary to update it.
      */
-    private final FocusTrap focusTrap = new FocusTrap(mainBox);
-
-    /**
-     * If it is true user can move dialog only with minimum top constrain. If this value is false user
-     * can only move the dialog within the bounds of the parent Pane.
-     */
-    private final BooleanProperty outOfBoundsAllowed = new SimpleBooleanProperty(false);
-
-    private final BooleanProperty active = new SimpleBooleanProperty(true);
-
-    private final BooleanProperty resizable = new SimpleBooleanProperty();
-
-    private final DoubleProperty minWidth = new SimpleDoubleProperty();
-
-    private final DoubleProperty minHeight = new SimpleDoubleProperty();
-
-    private final DoubleProperty maxWidth = new SimpleDoubleProperty();
-
-    private final DoubleProperty maxHeight = new SimpleDoubleProperty();
+    private final FocusTrap focusTrap = new FocusTrap(getContentBox());
 
     private final Map<ResultButtonName, Button> buttonsByName = new HashMap<>();
 
-    /**
-     * While dragging we need the difference. So, we keep in this variable previous value.
-     */
-    private double offsetX;
-
-    /**
-     * While dragging we need the difference. So, we keep in this variable previous value.
-     */
-    private double offsetY;
-
-    private Pane parent;
-
-    private RegionResizer resizer;
-
-    @Override
-    public VBox getNode() {
-        return this.dialogBox;
-    }
-
-    @Override
-    public void setActive(boolean active) {
-        this.active.set(active);
-    }
-
-    @Override
-    public void setPrefWidth(double value) {
-        dialogBox.setPrefWidth(value);
-    }
-
-    @Override
-    public void setPrefHeight(double value) {
-        dialogBox.setPrefHeight(value);
-    }
-
-    @Override
-    public void setMinWidth(double value) {
-        this.minWidth.set(value);
-    }
-
-    @Override
-    public void setMinHeight(double value) {
-        this.minHeight.set(value);
-    }
-
-    @Override
-    public void setMaxWidth(double value) {
-       this.maxWidth.set(value);
-    }
-
-    @Override
-    public void setMaxHeight(double value) {
-        this.maxHeight.set(value);
-    }
-
-    @Override
-    public void setTitle(String title) {
-        titleLabel.textProperty().set(title);
-    }
-
-    @Override
-    public void setOutOfBoundsAllowed(boolean outOfBoundsAllowed) {
-        this.outOfBoundsAllowed.set(outOfBoundsAllowed);
-    }
-
-    @Override
-    public void setResizable(boolean value) {
-        this.resizable.set(value);
-    }
-
-    @Override
-    public void setIcon(Icon<?> icon) {
-        iconViewBox.setIcon(icon);
-    }
-
-    @Override
-    public Composer getComposer() {
-        return (Composer) super.getComposer();
-    }
-
-    @Override
-    public void setCloseDisabled(boolean value) {
-        this.closeButton.setDisable(value);
-    }
-
     @Override
     public void setLeftButtons(ResultButtonName... names) {
-        removeButtons(leftButtonBox);
-        addButtons(leftButtonBox, names);
+        removeButtons(leftBottomBox);
+        addButtons(leftBottomBox, names);
     }
 
     @Override
     public void setRightButtons(ResultButtonName... names) {
-        removeButtons(rightButtonBox);
-        addButtons(rightButtonBox, names);
+        removeButtons(rightBottomBox);
+        addButtons(rightBottomBox, names);
     }
 
     @Override
@@ -240,105 +85,28 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         }
     }
 
-    public boolean isOutOfBoundsAllowed() {
-        return outOfBoundsAllowed.get();
-    }
-
-    public boolean isActive() {
-        return active.get();
-    }
-
-    public boolean isResizable() {
-        return resizable.get();
-    }
-
-    protected BooleanProperty activeProperty() {
-        return resizable;
-    }
-
-    protected BooleanProperty resizableProperty() {
-        return resizable;
-    }
-
-    protected BooleanProperty outOfBoundsAllowedProperty() {
-        return outOfBoundsAllowed;
-    }
-
-    protected DialogContainerFxView<?> getContainer() {
-        return (DialogContainerFxView<?>) getParent();
-    }
-
-    @Override
-    protected Composer createComposer() {
-        return new AbstractDialogFxView.Composer();
-    }
-
     protected FocusTrap getFocusTrap() {
         return focusTrap;
     }
 
     @Override
     protected void build() {
-        titleLabel.getStyleClass().add("title-label");
-        titleBar.setAlignment(Pos.CENTER_LEFT);
-        titleBar.getStyleClass().addAll("title-bar", StyleClasses.CORNERS_TOP);
-        HBox.setHgrow(spacePane, Priority.ALWAYS);
-
-        this.titleButtonBox.getStyleClass().add("button-box");
-        this.titleButtonBox.setAlignment(Pos.CENTER);
-        closeButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.SIZE_S);
-
-        super.getNode().getChildren().clear();
-        super.getNode().getChildren().add(mainBox);
-        mainBox.getStyleClass().add("main-box");
-        VBox.setVgrow(getContentBox(), Priority.ALWAYS);
+        super.build();
+        if (getPresenter().getWindowType() == WindowType.NESTED) {
+            setShadowVisible(true);
+        }
         getContentBox().setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
                 0, Spacing.getHorizontal()));
-        getContentBox().getStyleClass().addAll("content-box", StyleClasses.CORNERS_BOTTOM);
-        super.getNode().getStyleClass().addAll("wrapper", StyleClasses.CORNERS_BOTTOM);
-        VBox.setVgrow(super.getNode(), Priority.ALWAYS);
-        this.dialogBox.getStyleClass().addAll("dialog-box", StyleClasses.CORNERS_ALL, StyleClasses.SHADOW);
-        dialogBox.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        this.resizer = new RegionResizer(minWidth, minHeight, maxWidth, maxHeight,
-                (e) -> {
-                    var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_STARTED, e);
-                    this.dialogBox.fireEvent(event);
-                },
-                (e) -> {
-                    var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_FINISHED, e);
-                    this.dialogBox.fireEvent(event);
-                });
-        this.resizer.initialize(dialogBox);
-
-        this.buttonBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
-        this.buttonBox.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
+        getWindowBox().getChildren().add(buttomBox);
+        this.buttomBox.getStyleClass().addAll(StyleClasses.CORNERS_BOTTOM, "bottom-box");
+        this.buttomBox.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
                 Spacing.getVertical(), Spacing.getHorizontal()));
-        buttonBox.setSpacing(Spacing.getHorizontal());
+        buttomBox.setSpacing(Spacing.getHorizontal());
 
-        leftButtonBox.setSpacing(Spacing.getHorizontal());
-        rightButtonBox.setSpacing(Spacing.getHorizontal());
-    }
-
-    @Override
-    protected void bind() {
-        super.bind();
-        this.resizer.disabledProperty().bind(Bindings.not(this.resizable));
-    }
-
-    @Override
-    protected void addListeners() {
-        super.addListeners();
-        ValueUtils.callAndAddListener(this.active, (ov, oldV, newV) -> {
-            dialogBox.pseudoClassStateChanged(INACTIVE_PSEUDO_CLASS, !newV);
-        });
-    }
-
-    @Override
-    protected void addHandlers() {
-        super.addHandlers();
-        titleBar.setOnMousePressed((event) -> this.onMousePressed(event));
-        titleBar.setOnMouseDragged((event) -> this.onMouseDragged(event));
-        closeButton.setOnAction(e -> getPresenter().onCloseRequest());
+        leftBottomBox.setSpacing(Spacing.getHorizontal());
+        leftBottomBox.getStyleClass().add("left-bottom-box");
+        rightBottomBox.setSpacing(Spacing.getHorizontal());
+        rightBottomBox.getStyleClass().add("right-bottom-box");
     }
 
     /**
@@ -352,24 +120,11 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
      * Makes the specified buttons equal in width.
      */
     protected void makeEqualWidth(List<Button> buttons) {
-        // To avoid flickering, both button boxes are hidden for one pulse:
-        // [Before Pulse N] hide buttons, register POST-layout listener
-        // [Pulse N | Layout] calculate sizes of invisible buttons
-        // [Pulse N | POST] equalize button widths, schedule setVisible(true) via runLater
-        // [Pulse N | Render] nothing visible, nothing rendered
-        // [Between N and N+1] runLater executes → buttons marked visible + dirty
-        // [Pulse N+1 | Layout] recalculate layout with correct minWidth
-        // [Pulse N+1 | Render] buttons appear on screen with correct size
-        rightButtonBox.setVisible(false);
-        leftButtonBox.setVisible(false);
-        getPulseListenerManager().addListener(LayoutPhase.POST, () -> {
-            ButtonUtils.makeEqualWidthBySize(buttons, true);
-            Platform.runLater(() -> {
-                rightButtonBox.setVisible(true);
-                leftButtonBox.setVisible(true);
-            });
-            return false;
-        });
+        buttomBox.applyCss();
+        buttomBox.layout();
+        buttons.stream().forEach(b -> System.out.println("button: " + b.getText() + " / " + b.getWidth()));
+        ButtonUtils.makeEqualWidthBySize(buttons, true);
+        buttons.stream().forEach(b -> System.out.println("button: " + b.getText() + " / " + b.getWidth()));
     }
 
     /**
@@ -408,7 +163,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
      * @return unmodifiable list of buttons from the left {@code HBox}
      */
     protected @Unmodifiable List<Button> getLeftButtons(boolean resultButtonsOnly) {
-        return getButtons(leftButtonBox, resultButtonsOnly);
+        return getButtons(leftBottomBox, resultButtonsOnly);
     }
 
     /**
@@ -419,7 +174,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
      * @return unmodifiable list of buttons from the right {@code HBox}
      */
     protected @Unmodifiable List<Button> getRightButtons(boolean resultButtonsOnly) {
-        return getButtons(rightButtonBox, resultButtonsOnly);
+        return getButtons(rightBottomBox, resultButtonsOnly);
     }
 
     /**
@@ -438,73 +193,23 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
     }
 
     /**
-     * Returns a button box that can contain both result and additional buttons. In other words, it is safe to
+     * Returns a bottom box that can contain both result and additional buttons. In other words, it is safe to
      * add custom buttons to this box.
      */
-    protected HBox getLeftButtonBox() {
-        return leftButtonBox;
+    protected HBox getLeftBottomBox() {
+        return leftBottomBox;
     }
 
     /**
-     * Returns a button box that can contain both result and additional buttons. In other words, it is safe to
+     * Returns a bottom box that can contain both result and additional buttons. In other words, it is safe to
      * add custom buttons to this box.
      */
-    protected HBox getRightButtonBox() {
-        return rightButtonBox;
+    protected HBox getRightBottomBox() {
+        return rightBottomBox;
     }
 
-    protected HBox getButtonBox() {
-        return buttonBox;
-    }
-
-    protected VBox getMainBox() {
-        return mainBox;
-    }
-
-    private void onMousePressed(MouseEvent event) {
-        if (isMoving()) {
-            offsetX = event.getSceneX() - this.dialogBox.getLayoutX();
-            offsetY = event.getSceneY() - this.dialogBox.getLayoutY();
-            event.consume();
-        }
-    }
-
-    private void onMouseDragged(MouseEvent event) {
-        if (isMoving()) {
-            var newX = event.getSceneX() - offsetX;
-            var newY = event.getSceneY() - offsetY;
-            if (this.parent == null) {
-                this.parent = (Pane) this.dialogBox.getParent();
-            }
-            //checking position constraints
-            if (newY < 0) {
-                newY = 0;
-            }
-            if (!isOutOfBoundsAllowed()) {
-                if (newX < 0) {
-                    newX = 0;
-                }
-                if ((newX + this.dialogBox.getWidth()) > this.parent.getWidth()) {
-                    newX = this.parent.getWidth() - this.dialogBox.getWidth();
-                }
-                if ((newY + this.dialogBox.getHeight()) > this.parent.getHeight()) {
-                    newY = this.parent.getHeight() - this.dialogBox.getHeight();
-                }
-            }
-            this.dialogBox.setLayoutX(newX);
-            this.dialogBox.setLayoutY(newY);
-            event.consume();
-        }
-    }
-
-    /**
-     * There is also a resizing handlers. so, we check cursor type to know if resizing is enabled.
-     *
-     * @return
-     */
-    private boolean isMoving() {
-        var currentCursor = this.dialogBox.getCursor();
-        return (currentCursor == null || currentCursor == Cursor.DEFAULT);
+    protected HBox getBottomBox() {
+        return buttomBox;
     }
 
     private void addButtons(HBox box, ResultButtonName... names) {

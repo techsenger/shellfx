@@ -73,14 +73,14 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
             modifiableTabs.add(tab);
             // there can be other children, so index is not used
             view.tabPane.getTabs().add(tab.getNode());
-            view.getModifiableChildren().add(tab);
+            getModifiableChildren().add(tab);
         }
 
         public void removeTab(TabFxView<?> tab) {
             modifiableTabs.remove(tab);
             // there can be other children, so index is not used
             view.tabPane.getTabs().remove(tab.getNode());
-            view.getModifiableChildren().remove(tab);
+            getModifiableChildren().remove(tab);
         }
 
         @Unmodifiable ObservableList<TabFxView<?>> getTabs() {

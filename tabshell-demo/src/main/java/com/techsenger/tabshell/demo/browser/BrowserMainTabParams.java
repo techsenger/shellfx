@@ -18,14 +18,14 @@ package com.techsenger.tabshell.demo.browser;
 
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.history.HistoryManager;
-import com.techsenger.tabshell.core.tab.TabParams;
+import com.techsenger.tabshell.core.tab.HostTabParams;
 import java.util.Objects;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class BrowserMainTabParams extends TabParams {
+public class BrowserMainTabParams extends HostTabParams {
 
     private final HistoryManager historyManager;
 

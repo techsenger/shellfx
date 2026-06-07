@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.window;
 
-import com.techsenger.patternfx.mvp.ParentPort;
+import com.techsenger.patternfx.mvp.ChildPort;
 import com.techsenger.tabshell.core.CloseAwarePort;
 import com.techsenger.tabshell.core.traits.Blockable;
 import com.techsenger.tabshell.core.traits.Closable;
@@ -28,7 +28,35 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public interface WindowPort extends ParentPort, WindowShared, CloseAwarePort, Titled, Closable, Iconed, Blockable {
+public interface WindowPort extends ChildPort, WindowShared, CloseAwarePort, Titled, Closable, Iconed, Blockable {
+
+    /**
+     * Returns the type of this window.
+     *
+     * @return the window type
+     */
+    WindowType getWindowType();
+
+    /**
+     * Returns whether this window is modal.
+     *
+     * @return {@code true} if this window is modal; {@code false} otherwise
+     */
+    boolean isModal();
+
+    /**
+     * Returns whether this window is always on top.
+     *
+     * @return {@code true} if this window is always on top; {@code false} otherwise
+     */
+    boolean isAlwaysOnTop();
+
+    /**
+     * Returns whether this window is currently active. For {@link WindowType#TOP_LEVEL} windows, this indicates that
+     * the window has OS focus. For {@link WindowType#NESTED} windows, this indicates that the window is the most
+     * recently selected window in the window manager.
+     */
+    boolean isActive();
 
     /**
      * Returns the title of the window.
@@ -94,9 +122,54 @@ public interface WindowPort extends ParentPort, WindowShared, CloseAwarePort, Ti
     double getHeight();
 
     /**
+     * Returns the minimum width of the window.
+     *
+     * @return the minimum width in pixels
+     */
+    double getMinWidth();
+
+    /**
+     * Returns the minimum height of the window.
+     *
+     * @return the minimum height in pixels
+     */
+    double getMinHeight();
+
+    /**
+     * Returns the maximum width of the window.
+     *
+     * @return the maximum width in pixels
+     */
+    double getMaxWidth();
+
+    /**
+     * Returns the maximum height of the window.
+     *
+     * @return the maximum height in pixels
+     */
+    double getMaxHeight();
+
+    /**
      * Returns whether the window is currently blocked, preventing user interaction.
      *
      * @return {@code true} if the window is blocked, {@code false} otherwise
      */
     boolean isBlocked();
+
+    /**
+     * Returns whether moving the dialog outside the bounds of its parent container is allowed.
+     *
+     * <p>This method is intended for {@link WindowType#NESTED} windows only.
+     *
+     * @return {@code true} if the dialog may be moved beyond the parent bounds,
+     *         {@code false} if movement is restricted to the parent area
+     */
+    boolean isOutOfBoundsAllowed();
+
+    /**
+     * Returns whether the window can be resized by the user.
+     *
+     * @return {@code true} if the window is resizable, {@code false} otherwise
+     */
+    boolean isResizable();
 }

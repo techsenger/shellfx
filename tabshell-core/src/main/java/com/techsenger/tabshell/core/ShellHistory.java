@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.core.window.WindowHistory;
+import com.techsenger.tabshell.core.window.HostWindowHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ShellHistory extends WindowHistory {
+public class ShellHistory extends HostWindowHistory {
 
 }

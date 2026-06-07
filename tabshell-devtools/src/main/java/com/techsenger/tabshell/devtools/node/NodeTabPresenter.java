@@ -26,7 +26,9 @@ import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
+import com.techsenger.tabshell.devtools.DevToolsHostType;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
 import com.techsenger.tabshell.shared.find.FindNavigationAwarePort;
@@ -270,7 +272,12 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         if (field != null && node != null && node.getClassInfo().module().startsWith("javafx.")) {
             declaringClassName = this.tabDock.getConnector().getDeclaringClass(node.getClassInfo().className(), field);
         }
-        var params = new ViewerDialogParams(node, item, declaringClassName, linkOpener);
+        WindowType windowType = WindowType.NESTED;
+        if (tabDock.getHostType() == DevToolsHostType.WINDOW) {
+            windowType = WindowType.TOP_LEVEL;
+        }
+        var params = new ViewerDialogParams(windowType, getShellContext().getSettings().getAppearance(),
+                node, item, declaringClassName, linkOpener);
         var dialog = getView().getComposer().openViewerDialog(params);
         dialog.setOnClosed(() -> getView().focusProperties());
     }
@@ -283,7 +290,12 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
     }
 
     protected void onEditProperty(EditPropertyTask<?> task) {
-        var params = new EditorDialogParams(task, this.tabDock.getHistoryManager());
+        WindowType windowType = WindowType.NESTED;
+        if (this.tabDock.getHostType() == DevToolsHostType.WINDOW) {
+            windowType = WindowType.TOP_LEVEL;
+        }
+        var params = new EditorDialogParams(windowType, getShellContext().getSettings().getAppearance(),
+                task, this.tabDock.getHistoryManager());
         var dialog = getView().getComposer().openEditorDialog(params);
         dialog.setOnClosed(() -> {
             if (dialog.isPropertyUpdated()) {

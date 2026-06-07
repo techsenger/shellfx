@@ -23,8 +23,9 @@ import com.techsenger.tabshell.core.DefaultShellPresenter;
 import com.techsenger.tabshell.core.area.AreaFxView;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.demo.history.DemoHistoryManager;
-import com.techsenger.tabshell.demo.menu.ExtraMenuRegistrar;
-import com.techsenger.tabshell.demo.menu.FileMenuRegistrar;
+import com.techsenger.tabshell.demo.menu.extra.ExtraMenuRegistrar;
+import com.techsenger.tabshell.demo.menu.file.FileMenuRegistrar;
+import com.techsenger.tabshell.demo.menu.window.WindowMenuRegistrar;
 import com.techsenger.tabshell.demo.settings.DemoSettings;
 import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.layout.dockhost.DockHostHistory;
@@ -59,7 +60,7 @@ public class Demo extends Application {
     private final VBox root = new VBox(label, typeListView);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage primaryStage) throws Exception {
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
             logger.error("Uncaught exception in {}", thread.getName(), throwable)
         );
@@ -83,9 +84,9 @@ public class Demo extends Application {
         root.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
                 Spacing.getVertical(), Spacing.getHorizontal()));
         var scene = new Scene(root, 300, 200);
-        stage.setTitle("TabShell");
-        stage.setScene(scene);
-        stage.show();
+        primaryStage.setTitle("TabShell");
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     private void createShell(WorkspaceType workspaceType) {
@@ -94,7 +95,7 @@ public class Demo extends Application {
             @Override
             protected void build() {
                 super.build();
-                getTitleBar().getStyleClass().add(Density.STYLE_CLASS);
+                getTitleBar().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
             }
         };
         var context = new DefaultShellContext(DemoSettings.createSettings(),
@@ -107,11 +108,11 @@ public class Demo extends Application {
         // creating workspace
         AreaFxView<?> workspace;
         switch (workspaceType) {
-            case BROWSER_LIKE -> {
+            case BROWSER -> {
                 var tabHost = HostFactory.createTabHost();
                 workspace = tabHost;
             }
-            case IDE_LIKE -> {
+            case IDE -> {
                 var dockHost = HostFactory.createDockHost(shellView, () -> context.getHistoryManager()
                         .getOrCreateHistory(DockHostHistory.class, DockHostHistory::new));
                 var rightTabDock = dockHost.getComposer().createTabDock();
@@ -119,19 +120,27 @@ public class Demo extends Application {
                 dockHost.getComposer().setMain(rightTabDock);
                 workspace = dockHost;
             }
+            case MDI -> {
+                workspace = null;
+            }
             default -> throw new AssertionError();
         }
-        shellView.getComposer().addWorkspace(workspace);
+        if (workspace != null) {
+            shellView.getComposer().addWorkspace(workspace);
+        }
 
         // adding menu
         var controlRegistry = shellView.getControlRegistry();
-        var fmr = new FileMenuRegistrar(controlRegistry, shellView);
+        var fmr = new FileMenuRegistrar(controlRegistry, workspaceType, shellView);
         fmr.register();
         var dmr = new ExtraMenuRegistrar(controlRegistry);
         dmr.register();
-        shellView.upgradeMenuBar();
+        if (workspaceType == WorkspaceType.MDI) {
+            var wmr = new WindowMenuRegistrar(controlRegistry, shellView);
+            wmr.register();
+        }
 
-        // showing the window
-        shellView.getWindow().show();
+        shellView.upgradeMenuBar();
+        shellView.getStage().show();
     }
 }

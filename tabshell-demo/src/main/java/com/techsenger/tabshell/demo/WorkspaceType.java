@@ -22,5 +22,5 @@ package com.techsenger.tabshell.demo;
  */
 public enum WorkspaceType {
 
-    BROWSER_LIKE, IDE_LIKE
+    BROWSER, IDE, MDI
 }

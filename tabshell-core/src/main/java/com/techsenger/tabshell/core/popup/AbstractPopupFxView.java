@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.popup;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
 import javafx.scene.Cursor;
 import javafx.scene.layout.Pane;
@@ -37,10 +38,21 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
 
         @Override
         public void close() {
-            var parent = view.getParent();
+            var parent = getParent();
             if (parent != null) {
                 ((PopupContainerFxView.Composer) parent.getComposer()).closePopup(view);
             }
+        }
+
+        @Override
+        public @Nullable PopupContainerFxView<?> getContainer() {
+            return getParent(PopupContainerFxView.class);
+        }
+
+        @Override
+        public @Nullable PopupContainerPort getContainerPort() {
+            var container = getContainer();
+            return container == null ? null : container.getPresenter();
         }
     }
 

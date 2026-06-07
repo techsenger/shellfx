@@ -19,6 +19,7 @@ package com.techsenger.tabshell.demo.dialogs;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowType;
 import java.util.Objects;
 
 /**
@@ -32,6 +33,7 @@ public class DialogsDialogParams extends DialogParams {
     private final HistoryManager manager;
 
     public DialogsDialogParams(AppearanceSettings settings, HistoryManager manager) {
+        super(WindowType.NESTED, settings);
         this.settings = settings;
         this.manager = manager;
     }

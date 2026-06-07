@@ -42,73 +42,77 @@
     -fx-background-radius: 0, 0;
 }
 
-.window-box > .title-bar {
+.window-box > .title-pane > .title-bar {
     -fx-background-color: -color-bg-extra;
     -fx-background-insets: 0;
     -fx-pref-height: 38;
     -fx-min-height: 38;
 }
 
-.window-box > .title-bar > .left-box {
+.window-box > .title-pane > HBox.title-bar {
+    -fx-alignment: CENTER_LEFT;
+}
+
+.window-box > .title-pane > .title-bar > .left-box {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 0 0 12px;
 /*    -fx-background-radius: 4 0 0 0;*/
 }
 
-.window-box:maximized > .title-bar > .left-box {
+.window-box:maximized > .title-pane > .title-bar > .left-box {
     -fx-background-radius: 0;
 }
 
-.window-box > .title-bar > .left-box > .icon-view-box {
+.window-box > .title-pane > .title-bar > .left-box > .icon-view-box {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 4 0 0;
 }
 
-.window-box > .title-bar > .left-box > .icon-view-box:empty {
+.window-box > .title-pane > .title-bar > .left-box > .icon-view-box:empty {
     -fx-padding: 0;
 }
 
-.window-box > .title-bar > .left-box > .icon-view-box > .image-icon-view { }
+.window-box > .title-pane > .title-bar > .left-box > .icon-view-box > .image-icon-view { }
 
-.window-box > .title-bar > .left-box > .icon-view-box > .font-icon-view {
+.window-box > .title-pane > .title-bar > .left-box > .icon-view-box > .font-icon-view {
     -fx-text-fill: -color-fg-default;
 }
 
-.window-box > .title-bar > .left-box > .menu-bar {
+.window-box > .title-pane > .title-bar > .left-box > .menu-bar {
     -fx-background-color: -color-bg-extra;
 }
 
-.window-box > .title-bar > .left-box > .menu-bar >.container {
+.window-box > .title-pane > .title-bar > .left-box > .menu-bar >.container {
     -fx-padding: 0;
 }
 
-.window-box > .title-bar > .right-box {
+.window-box > .title-pane > .title-bar > .right-box {
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 12px 0 0;
 /*    -fx-background-radius: 0 4 0 0;*/
 }
 
-.window-box:maximized > .title-bar > .right-box {
+.window-box:maximized > .title-pane > .title-bar > .right-box {
     -fx-background-radius: 0;
 }
 
-.window-box > .title-bar > .right-box > .button {
+.window-box > .title-pane > .title-bar > .right-box > .button {
     -fx-focus-traversable: false;
 }
 
-.window-box:unfocused > .title-bar {
+.window-box:inactive > .title-pane > .title-bar {
     -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
 }
 
-.window-box:unfocused > .title-bar > .left-box > .menu-bar {
+.window-box:inactive > .title-pane > .title-bar > .left-box > .menu-bar {
     -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
 }
 
-.window-box > .title-bar > .icon-view-box > .font-icon-view {
+.window-box > .title-pane > .title-bar > .icon-view-box > .font-icon-view {
     -fx-font-size: 1.6em;
 }
 
-.window-box > .content-box {
+.window-box > .content-pane > .content-box {
     -fx-background-color: -color-bg-default;
 }
 
@@ -118,57 +122,4 @@
 
 .window-box .context-menu {
     -fx-background-color:  -color-border-muted, ladder(-color-bg-default, -color-bg-extra 49%, -color-bg-default 50%);
-}
-
-/*
-    Dialog
-*/
-.dialog-box {
-    -fx-background-color: ladder(-color-bg-default, -color-border-muted 49%, -color-base-4 50%), -color-bg-default;
-    -fx-background-insets: 0 0 0 0, 1 1 1 1;
-    -fx-padding: 1px; /* 1 - line */
-}
-
-.dialog-box > .title-bar {
-    -fx-min-height: 2.6em;
-    -fx-max-height: 2.6em;
-    -fx-background-color: -color-bg-extra;
-    -fx-background-insets: 0;
-    -fx-padding: 0 12px 0 12px;
-    -fx-alignment: CENTER_LEFT;
-}
-
-.dialog-box > .title-bar > .icon-view-box {
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 4 0 0;
-}
-
-.dialog-box > .title-bar > .icon-view-box:empty {
-    -fx-padding: 0;
-}
-
-.dialog-box > .title-bar > .icon-view-box > .image-icon-view { }
-
-.dialog-box > .title-bar > .icon-view-box > .font-icon-view {
-    -fx-text-fill: -color-fg-default;
-}
-
-.dialog-box > .title-bar > .title-label {
-    -fx-padding: 0;
-}
-
-.dialog-box > .title-bar > .button-box > .close-button {
-    -fx-padding: 10px;
-}
-
-.dialog-box > .title-bar > .icon-view-box > .font-icon-view {
-    -fx-font-size: 1.6em;
-}
-
-.dialog-box:inactive > .title-bar {
-    -fx-background-color: ladder(-color-bg-default, derive(-color-bg-extra, +4%) 49%, derive(-color-bg-extra, +20%) 50%);
-}
-
-.dialog-box > .wrapper > .main-box > .content-box {
-    -fx-background-color: -color-bg-default;
 }

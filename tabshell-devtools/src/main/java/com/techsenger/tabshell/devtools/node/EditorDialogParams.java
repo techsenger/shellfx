@@ -19,6 +19,8 @@ package com.techsenger.tabshell.devtools.node;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowType;
 
 /**
  *
@@ -28,7 +30,9 @@ public class EditorDialogParams extends DialogParams {
 
     private EditPropertyTask<?> task;
 
-    public EditorDialogParams(EditPropertyTask<?> task, HistoryManager historyManager) {
+    public EditorDialogParams(WindowType windowType, AppearanceSettings settings, EditPropertyTask<?> task,
+            HistoryManager historyManager) {
+        super(windowType, settings);
         this.task = task;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager.getOrCreateHistory(EditorDialogHistory.class,

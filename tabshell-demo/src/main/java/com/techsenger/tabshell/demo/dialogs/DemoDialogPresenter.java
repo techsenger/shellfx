@@ -30,8 +30,8 @@ import java.util.function.Consumer;
  */
 public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView> {
 
-    public DemoDialogPresenter(DemoDialogView view) {
-        super(view, new DialogParams());
+    public DemoDialogPresenter(DemoDialogView view, DialogParams params) {
+        super(view, params);
     }
 
     @Override
@@ -53,8 +53,15 @@ public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView>
     protected void postInitialize() {
         super.postInitialize();
         setResizable(true);
-        setPrefWidth(500);
         setTitle("Demo Dialog");
         setRightButtons(DemoResultButtons.CANCEL, DemoResultButtons.OK);
     }
+
+    @Override
+    protected void applyAppearance() {
+        super.applyAppearance();
+        //setWidth(500);
+    }
+
+
 }

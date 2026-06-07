@@ -17,9 +17,8 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabshell.core.popup.PopupPort;
+import com.techsenger.tabshell.core.window.WindowPort;
 import com.techsenger.tabshell.material.button.ResultButtonName;
-import com.techsenger.tabshell.material.icon.Icon;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -28,7 +27,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public interface DialogPort extends DialogShared, PopupPort {
+public interface DialogPort extends DialogShared, WindowPort {
 
     /**
      * Returns the action to be executed when a result button is clicked.
@@ -52,63 +51,6 @@ public interface DialogPort extends DialogShared, PopupPort {
      * @param action the result action consumer, or {@code null} to reset to the default close behavior
      */
     void setOnResult(Consumer<ResultButtonName> action);
-
-    /**
-     * Returns whether this dialog is active.
-     *
-     * @return {@code true} if the dialog is active, {@code false} otherwise
-     */
-    boolean isActive();
-
-    /**
-     * Returns the minimum width of the dialog.
-     *
-     * @return the minimum width in pixels
-     */
-    double getMinWidth();
-
-    /**
-     * Returns the minimum height of the dialog.
-     *
-     * @return the minimum height in pixels
-     */
-    double getMinHeight();
-
-    /**
-     * Returns the maximum width of the dialog.
-     *
-     * @return the maximum width in pixels
-     */
-    double getMaxWidth();
-
-    /**
-     * Returns the maximum height of the dialog.
-     *
-     * @return the maximum height in pixels
-     */
-    double getMaxHeight();
-
-    /**
-     * Returns whether moving the dialog outside the bounds of its parent container is allowed.
-     *
-     * @return {@code true} if the dialog may be moved beyond the parent bounds,
-     *         {@code false} if movement is restricted to the parent area
-     */
-    boolean isOutOfBoundsAllowed();
-
-    /**
-     * Returns whether the dialog can be resized by the user.
-     *
-     * @return {@code true} if the dialog is resizable, {@code false} otherwise
-     */
-    boolean isResizable();
-
-    /**
-     * Returns whether the close button in the top right corner of the dialog is disabled.
-     *
-     * @return {@code true} if the close button is disabled, {@code false} otherwise
-     */
-    boolean isCloseDisabled();
 
     /**
      * Returns the list of result button names currently displayed on the left side of the dialog's button bar.
@@ -141,17 +83,4 @@ public interface DialogPort extends DialogShared, PopupPort {
      *         or empty if the button does not exist
      */
     Optional<Boolean> getButtonDefault(ResultButtonName name);
-
-    /**
-     * Returns the title of the component.
-     *
-     * @return
-     */
-    String getTitle();
-
-    /**
-     * Returns the icon of the component.
-     * @return
-     */
-    Icon<?> getIcon();
 }

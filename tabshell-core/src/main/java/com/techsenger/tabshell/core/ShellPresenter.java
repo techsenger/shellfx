@@ -17,13 +17,13 @@
 package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentPresenter;
-import com.techsenger.tabshell.core.window.WindowPresenter;
+import com.techsenger.tabshell.core.window.HostWindowPresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface ShellPresenter<V extends ShellView> extends ParentPresenter<V>,
-        ShellPort, WindowPresenter<V> {
+        ShellPort, HostWindowPresenter<V> {
 
 }

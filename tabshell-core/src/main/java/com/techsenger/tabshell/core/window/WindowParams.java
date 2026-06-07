@@ -26,19 +26,35 @@ import java.util.Objects;
  */
 public class WindowParams extends ComponentParams {
 
-    private final AppearanceSettings setting;
+    private final WindowType windowType;
 
-    public WindowParams(AppearanceSettings setting) {
-        this.setting = setting;
+    private final boolean modal;
+
+    private final AppearanceSettings settings;
+
+    public WindowParams(WindowType type, boolean modal, AppearanceSettings settings) {
+        this.windowType = type;
+        this.modal = modal;
+        this.settings = settings;
     }
 
-    public AppearanceSettings getSetting() {
-        return setting;
+    public WindowType getWindowType() {
+        return windowType;
+    }
+
+    public boolean isModal() {
+        return modal;
+    }
+
+    public AppearanceSettings getSettings() {
+        return settings;
     }
 
     @Override
     protected void validate() {
         super.validate();
-        Objects.requireNonNull(setting);
+        if (this.windowType == WindowType.TOP_LEVEL) {
+            Objects.requireNonNull(settings);
+        }
     }
 }

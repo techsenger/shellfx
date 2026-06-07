@@ -23,16 +23,12 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDialogView> implements ProgressDialogPort {
-
-    private static final Logger logger = LoggerFactory.getLogger(ProgressDialogPresenter.class);
 
     private boolean showSteps;
 
@@ -121,7 +117,7 @@ public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDia
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        setPrefWidth(450);
+        setWidth(450);
         setTitle("Progress Dialog");
     }
 }

@@ -23,7 +23,7 @@ import com.techsenger.tabshell.core.area.AreaPort;
 import com.techsenger.tabshell.core.menu.manager.MenuManager;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
 import com.techsenger.tabshell.core.registry.MenuBuilder;
-import com.techsenger.tabshell.core.window.AbstractWindowFxView;
+import com.techsenger.tabshell.core.window.AbstractHostWindowFxView;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
 import java.util.Objects;
@@ -45,11 +45,11 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
-        extends AbstractWindowFxView<P> implements ShellFxView<P> {
+        extends AbstractHostWindowFxView<P> implements ShellFxView<P> {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultShellFxView.class);
 
-    public class Composer extends AbstractWindowFxView<P>.Composer implements ShellFxView.Composer {
+    public class Composer extends AbstractHostWindowFxView<P>.Composer implements ShellFxView.Composer {
 
         private final ReadOnlyObjectWrapper<ParentFxView<?>> menuAware = new ReadOnlyObjectWrapper<>();
 
@@ -68,7 +68,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
         @Override
         public void addWorkspace(AreaFxView<?> workspace) {
             this.workspace = workspace;
-            view.getModifiableChildren().add(workspace);
+            getModifiableChildren().add(workspace);
             VBox.setVgrow(workspace.getNode(), Priority.ALWAYS);
             view.getContentBox().getChildren().add(workspace.getNode());
         }
@@ -78,7 +78,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
             if (this.workspace == null) {
                 return;
             }
-            view.getModifiableChildren().remove(this.workspace);
+            getModifiableChildren().remove(this.workspace);
             view.getContentBox().getChildren().remove(this.workspace.getNode());
         }
 
@@ -105,7 +105,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
         @Override
         protected void onFocusPauseFinished() {
             super.onFocusPauseFinished();
-            var newNode = view.getWindow().getScene().getFocusOwner();
+            var newNode = view.getStage().getScene().getFocusOwner();
             if (newNode == null) {
                 setMenuAware(view);
                 return;
@@ -134,7 +134,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
                     return;
                 }
                 if (currentComponent instanceof ChildFxView<?> child) {
-                    currentComponent = child.getParent();
+                    currentComponent = child.getComposer().getParent();
                     if (currentComponent == null) {
                         logger.warn("{} Child {} has no parent", getDescriptor().getLogPrefix(),
                                 child.getDescriptor().getFullName());
@@ -224,7 +224,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        getWindow().getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
+        getStage().getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
                 e -> menuManager.setLastMouseClickTime(System.nanoTime()));
     }
 

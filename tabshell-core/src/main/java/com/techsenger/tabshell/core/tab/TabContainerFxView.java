@@ -19,6 +19,7 @@ package com.techsenger.tabshell.core.tab;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import java.util.List;
+import javafx.scene.control.Tab;
 
 /**
  *
@@ -46,4 +47,11 @@ public interface TabContainerFxView<P extends TabContainerPresenter<?>> extends 
 
     @Override
     Composer getComposer();
+
+    /**
+     * Prevents interaction with the tab header while it is blocked (e.g. during modal operation).
+     *
+     * @param tab the tab to block
+    */
+    void setTabHeaderBlocked(Tab tab, boolean blocked);
 }

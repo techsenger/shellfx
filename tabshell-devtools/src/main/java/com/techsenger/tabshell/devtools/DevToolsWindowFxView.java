@@ -23,6 +23,7 @@ import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
  *
@@ -55,7 +56,7 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
         }
 
         protected DevToolsTabDockFxView<?> createTabDock() {
-            var view = new DevToolsTabDockFxView<>(this.view.shell, this.view);
+            var view = new DevToolsTabDockFxView<>(this.view.shell, null);
             var context = this.view.shell.getPresenter().getContext();
             var params = new DevToolsTabDockParams(DevToolsHostType.WINDOW, context.getSettings(), historyManager);
             var presenter = new DevToolsTabDockPresenter<>(view, params);
@@ -74,13 +75,18 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
     private final ShellFxView<?> shell;
 
     public DevToolsWindowFxView(ShellFxView<?> shell, List<Stylesheet> stylesheets) {
-        super(stylesheets);
+        super(new Stage(), stylesheets);
         this.shell = shell;
     }
 
     @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
+    }
+
+    @Override
+    public void requestFocus() {
+
     }
 
     @Override
@@ -91,6 +97,6 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
     @Override
     protected void build() {
         super.build();
-        getWindow().setAlwaysOnTop(true);
+        getStage().setAlwaysOnTop(true);
     }
 }

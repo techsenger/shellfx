@@ -127,7 +127,7 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
     @Override
     protected void applyAppearance() {
         super.applyAppearance();
-        setPrefWidth(600);
+        setWidth(600);
     }
 
 

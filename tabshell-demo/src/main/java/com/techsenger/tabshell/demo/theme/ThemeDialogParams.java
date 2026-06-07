@@ -18,7 +18,7 @@ package com.techsenger.tabshell.demo.theme;
 
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import java.util.Objects;
+import com.techsenger.tabshell.core.window.WindowType;
 
 /**
  *
@@ -26,19 +26,7 @@ import java.util.Objects;
  */
 public class ThemeDialogParams extends DialogParams {
 
-    private final AppearanceSettings settings;
-
-    public ThemeDialogParams(AppearanceSettings settings) {
-        this.settings = settings;
-    }
-
-    public AppearanceSettings getSettings() {
-        return settings;
-    }
-
-    @Override
-    protected void validate() {
-        super.validate();
-        Objects.requireNonNull(settings);
+    public ThemeDialogParams(WindowType type, AppearanceSettings setting) {
+        super(type, setting);
     }
 }

@@ -17,10 +17,11 @@
 package com.techsenger.tabshell.devtools;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.LocalConnector;
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
+import com.techsenger.tabshell.core.window.WindowContainerFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabFxView;
 import com.techsenger.tabshell.devtools.component.ComponentTabParams;
 import com.techsenger.tabshell.devtools.component.ComponentTabPresenter;
@@ -78,7 +79,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
         }
 
         protected ComponentTabFxView<?> createComponentTab() {
-            var view = new ComponentTabFxView<>(shell, dialogContainer.getComposer());
+            var view = new ComponentTabFxView<>(shell, getWindowComposer());
             var params = new ComponentTabParams(new JfxComponentService(shell), getPresenter());
             var presenter = new ComponentTabPresenter<>(view, params);
             presenter.initialize();
@@ -86,7 +87,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
         }
 
         protected NodeTabFxView<?> createNodeTab() {
-            var view = new NodeTabFxView<>(shell, dialogContainer.getComposer());
+            var view = new NodeTabFxView<>(shell, getWindowComposer());
             var params = new NodeTabParams(getPresenter());
             var presenter = new NodeTabPresenter<>(view, params);
             presenter.initialize();
@@ -110,11 +111,19 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
         }
 
         protected EnvironmentTabFxView<?> createEnvironmentTab() {
-            var view = new EnvironmentTabFxView<>(shell, dialogContainer.getComposer());
-            var params = new EnvironmentTabParams(connector);
+            var view = new EnvironmentTabFxView<>(shell, getWindowComposer());
+            var params = new EnvironmentTabParams(getPresenter());
             var presenter = new EnvironmentTabPresenter<>(view, params);
             presenter.initialize();
             return view;
+        }
+
+        private @Nullable WindowContainerFxView.Composer getWindowComposer() {
+            if (windowContainer != null) {
+                return windowContainer.getComposer();
+            } else {
+                return null;
+            }
         }
     }
 
@@ -126,15 +135,15 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
 
     private final ShellFxView<?> shell;
 
-    private final DialogContainerFxView dialogContainer;
+    private final WindowContainerFxView<?> windowContainer;
 
     private final Connector connector;
 
-    public DevToolsTabDockFxView(ShellFxView<?> shell, DialogContainerFxView<?> dialogContainer) {
+    public DevToolsTabDockFxView(ShellFxView<?> shell, WindowContainerFxView<?> windowContainer) {
         super();
         this.shell = shell;
-        this.dialogContainer = dialogContainer;
-        this.connector = new LocalConnector(shell.getWindow(), null);
+        this.windowContainer = windowContainer;
+        this.connector = new LocalConnector(shell.getStage(), null);
     }
 
     @Override
@@ -149,7 +158,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
 
     @Override
     public int getWindowUid() {
-        return shell.getWindow().hashCode();
+        return shell.getStage().hashCode();
     }
 
     @Override

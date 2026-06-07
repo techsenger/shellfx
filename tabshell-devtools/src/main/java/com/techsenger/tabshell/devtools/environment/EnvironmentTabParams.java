@@ -16,8 +16,8 @@
 
 package com.techsenger.tabshell.devtools.environment;
 
-import com.techsenger.connectorfx.Connector;
 import com.techsenger.tabshell.core.tab.TabParams;
+import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import java.util.Objects;
 
 /**
@@ -26,19 +26,19 @@ import java.util.Objects;
  */
 public class EnvironmentTabParams extends TabParams {
 
-    private final Connector connector;
+    private final DevToolsTabDockPort tabDock;
 
-    public EnvironmentTabParams(Connector connector) {
-        this.connector = connector;
+    public EnvironmentTabParams(DevToolsTabDockPort tabDock) {
+        this.tabDock = tabDock;
     }
 
-    public Connector getConnector() {
-        return connector;
+    public DevToolsTabDockPort getTabDock() {
+        return tabDock;
     }
 
     @Override
     protected void validate() {
         super.validate();
-        Objects.requireNonNull(connector);
+        Objects.requireNonNull(tabDock);
     }
 }

@@ -16,14 +16,13 @@
 
 package com.techsenger.tabshell.core;
 
-import com.techsenger.tabshell.core.dialog.DialogContainerPort;
-import com.techsenger.tabshell.core.window.WindowPort;
+import com.techsenger.tabshell.core.window.HostWindowPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellPort extends MenuAwarePort, WindowPort, DialogContainerPort {
+public interface ShellPort extends MenuAwarePort, HostWindowPort {
 
     /**
      * Returns the context of the shell.

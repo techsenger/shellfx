@@ -19,7 +19,6 @@ package com.techsenger.tabshell.core.tab;
 import com.techsenger.patternfx.mvp.ChildPort;
 import com.techsenger.tabshell.core.CloseAwarePort;
 import com.techsenger.tabshell.core.ShellPort;
-import com.techsenger.tabshell.core.dialog.DialogContainerPort;
 import com.techsenger.tabshell.core.traits.Closable;
 import com.techsenger.tabshell.core.traits.Iconed;
 import com.techsenger.tabshell.core.traits.Titled;
@@ -31,21 +30,18 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public interface TabPort extends ChildPort, CloseAwarePort, DialogContainerPort, Closable, Waitable, Iconed, Titled,
-        Tooltiped {
+public interface TabPort extends ChildPort, CloseAwarePort, Closable, Waitable, Iconed, Titled, Tooltiped {
 
-    interface Composer extends DialogContainerPort.Composer {
+    interface Composer {
 
         ShellPort getShellPort();
     }
 
-    interface ViewAccess extends DialogContainerPort.ViewAccess {
+    interface ViewAccess {
 
-        @Override
         Composer getComposer();
     }
 
-    @Override
     ViewAccess getViewAccess();
 
     /**

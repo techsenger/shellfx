@@ -86,7 +86,7 @@ public abstract class AbstractEditorDialogPresenter<V extends EditorDialogView> 
     @Override
     protected void applyAppearance() {
         super.applyAppearance();
-        setPrefWidth(600);
+        setWidth(600);
     }
 
     protected EditPropertyTask<?> getTask() {
@@ -108,7 +108,7 @@ public abstract class AbstractEditorDialogPresenter<V extends EditorDialogView> 
     }
 
     void openErrorDialog() {
-        var alertParams = new AlertDialogParams(AlertDialogType.ERROR);
+        var alertParams = new AlertDialogParams(getWindowType(), getAppearanceSettings(), AlertDialogType.ERROR);
         var alertDialog = getView().getComposer().openAlertDialog(alertParams);
         alertDialog.setMessage("Failed to apply the value.");
         alertDialog.setOnClosed(() -> getView().requestFocus());

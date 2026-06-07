@@ -24,8 +24,11 @@ import com.techsenger.patternfx.mvp.View;
 import com.techsenger.tabshell.core.AddablePresenter;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
+import com.techsenger.tabshell.devtools.DevToolsHostType;
 import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueButtons;
@@ -354,12 +357,19 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
         if (item.category() != null) {
             return;
         }
+        WindowType type = WindowType.NESTED;
+        if (tabDock.getHostType() == DevToolsHostType.WINDOW) {
+            type = WindowType.TOP_LEVEL;
+        }
+        var params = new DialogParams(type, getShellContext().getSettings().getAppearance());
         NameValueDialogPort dialog;
         if (parent.category() == InspectorCategory.PROPERTY) {
-            dialog = getView().getComposer().addNameValueDialog("Property", "Value");
+            dialog = getView().getComposer().addNameValueDialog("Property", "Value", params);
         } else {
-            dialog = getView().getComposer().addNameValueDialog("Class", "Interfaces");
+            dialog = getView().getComposer().addNameValueDialog("Class", "Interfaces", params);
         }
+        dialog.setWidth(600);
+        dialog.setHeight(350);
         dialog.setRightButtons(NameValueButtons.OK);
         dialog.setTitle("Inspector Dialog");
         dialog.setName(item.name());

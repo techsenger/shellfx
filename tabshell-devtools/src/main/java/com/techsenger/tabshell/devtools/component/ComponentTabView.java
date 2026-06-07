@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.devtools.component;
 
 import com.techsenger.connectorfx.scenegraph.Element;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
@@ -35,7 +36,7 @@ public interface ComponentTabView extends TabView {
 
         ToolBarPort getInspectorToolBarPort();
 
-        NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption);
+        NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption, DialogParams params);
     }
 
     @Override

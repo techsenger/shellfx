@@ -19,8 +19,10 @@ package com.techsenger.tabshell.demo.browser;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.MenuAwarePort;
 import com.techsenger.tabshell.core.area.AbstractAreaPresenter;
-import com.techsenger.tabshell.core.area.AreaParams;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.demo.dialogs.DemoResultButtons;
 import com.techsenger.tabshell.demo.main.DemoMenuAwarePort;
@@ -32,14 +34,17 @@ import com.techsenger.tabshell.demo.main.DemoMenuAwarePort;
 public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaView>
         implements MenuAwarePort, DemoMenuAwarePort {
 
+    private final AppearanceSettings settings;
+
     private boolean fooDisabled;
 
     private boolean barIncluded;
 
     private boolean barDisabled;
 
-    public MenuAwareAreaPresenter(MenuAwareAreaView view) {
-        super(view, new AreaParams());
+    public MenuAwareAreaPresenter(MenuAwareAreaView view, MenuAwareAreaParams params) {
+        super(view, params);
+        this.settings = params.getSettings();
     }
 
     @Override
@@ -75,7 +80,8 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     }
 
     protected void onDialogOpen(OverlayScope scope) {
-        var dialog = getView().getComposer().openDemoDialog(scope, true);
+        var params = new DialogParams(WindowType.NESTED, settings);
+        var dialog = getView().getComposer().openDemoDialog(scope, true, params);
         dialog.setOnResult((name) -> {
             if (name == DemoResultButtons.OK) {
                 dialog.closeSafely();

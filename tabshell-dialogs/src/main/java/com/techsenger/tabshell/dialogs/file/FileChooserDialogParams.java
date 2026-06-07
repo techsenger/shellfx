@@ -20,6 +20,7 @@ import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.storage.FileStorage;
 import java.net.URI;
 import java.util.List;
@@ -31,11 +32,9 @@ import java.util.Objects;
  */
 public class FileChooserDialogParams extends DialogParams {
 
-    private final FileChooserType type;
+    private final FileChooserType chooserType;
 
     private final List<FileStorage> storages;
-
-    private final AppearanceSettings settings;
 
     private final HistoryManager historyManager;
 
@@ -43,27 +42,23 @@ public class FileChooserDialogParams extends DialogParams {
 
     private String initialFileName;
 
-    public FileChooserDialogParams(FileChooserType type, List<FileStorage> storages, AppearanceSettings settings,
-            HistoryManager historyManager) {
-        this.type = type;
+    public FileChooserDialogParams(WindowType windowType, AppearanceSettings settings,
+            FileChooserType chooserType, List<FileStorage> storages, HistoryManager historyManager) {
+        super(windowType, settings);
+        this.chooserType = chooserType;
         this.storages = storages;
-        this.settings = settings;
         this.historyManager = historyManager;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager.getOrCreateHistory(FileChooserDialogHistory.class,
                 FileChooserDialogHistory::new));
     }
 
-    public FileChooserType getType() {
-        return type;
+    public FileChooserType getChooserType() {
+        return chooserType;
     }
 
     public List<FileStorage> getStorages() {
         return storages;
-    }
-
-    public AppearanceSettings getSettings() {
-        return settings;
     }
 
     public HistoryManager getHistoryManager() {
@@ -89,9 +84,8 @@ public class FileChooserDialogParams extends DialogParams {
     @Override
     protected void validate() {
         super.validate();
-        Objects.requireNonNull(type);
+        Objects.requireNonNull(chooserType);
         Objects.requireNonNull(storages);
-        Objects.requireNonNull(settings);
         Objects.requireNonNull(historyManager);
     }
 }

@@ -16,22 +16,14 @@
 
 package com.techsenger.tabshell.core.tab;
 
-import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.AbstractChildFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.ShellPort;
-import com.techsenger.tabshell.core.dialog.DefaultDialogManager;
-import com.techsenger.tabshell.core.dialog.DialogFxView;
-import com.techsenger.tabshell.core.dialog.DialogManager;
-import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.popup.PopupFxView;
-import com.techsenger.tabshell.core.popup.PopupPort;
-import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
-import java.util.List;
 import javafx.scene.Cursor;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
@@ -64,66 +56,21 @@ public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> exten
 
         @Override
         public void close() {
-            var parent = view.getParent();
+            var parent = getParent();
             if (parent != null) {
                 ((TabContainerFxView.Composer) parent.getComposer()).closeTab(view);
             }
         }
 
         @Override
-        public void addDialog(DialogFxView<?> dialog) {
-            view.dialogManager.addDialog(dialog);
-            view.getModifiableChildren().add(dialog);
+        public @Nullable TabContainerFxView<?> getContainer() {
+            return getParent(TabContainerFxView.class);
         }
 
         @Override
-        public void removeDialog(DialogFxView<?> dialog) {
-            view.dialogManager.removeDialog(dialog);
-            view.getModifiableChildren().remove(dialog);
-        }
-
-        @Override
-        public void closeDialog(DialogFxView<?> dialog) {
-            removeDialog(dialog);
-            dialog.getPresenter().deinitializeTree();
-        }
-
-        @Override
-        public @Unmodifiable List<? extends DialogFxView<?>> getDialogs() {
-            return view.dialogManager.getDialogs();
-        }
-
-        @Override
-        public @Unmodifiable List<? extends DialogPort> getDialogPorts() {
-            return view.dialogManager.getDialogs().stream().map(v -> v.getPresenter()).toList();
-        }
-
-        @Override
-        public void addPopup(PopupFxView<?> popup, Anchors anchors) {
-            view.dialogManager.addPopup(popup, anchors);
-            view.getModifiableChildren().add(popup);
-        }
-
-        @Override
-        public void removePopup(PopupFxView<?> popup) {
-            view.dialogManager.removePopup(popup);
-            view.getModifiableChildren().remove(popup);
-        }
-
-        @Override
-        public void closePopup(PopupFxView<?> popup) {
-            removePopup(popup);
-            popup.getPresenter().deinitializeTree();
-        }
-
-        @Override
-        public @Unmodifiable List<? extends PopupFxView<?>> getPopups() {
-            return view.dialogManager.getPopups();
-        }
-
-        @Override
-        public List<? extends PopupPort> getPopupPorts() {
-            return view.dialogManager.getPopups().stream().map(v -> v.getPresenter()).toList();
+        public @Nullable TabContainerPort getContainerPort() {
+            var container = getContainer();
+            return container == null ? null : container.getPresenter();
         }
 
         private void setShell(ShellFxView<?> shell) {
@@ -140,8 +87,6 @@ public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> exten
     private final StackPane wrapperPane = new StackPane(contentBox);
 
     private final IconViewBox iconViewBox = new IconViewBox();
-
-    private final DialogManager dialogManager = new DefaultDialogManager(wrapperPane, contentBox);
 
     private PulseListenerManager pulseListenerManager;
 
@@ -200,10 +145,6 @@ public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> exten
     @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
-    }
-
-    protected DialogManager getDialogManager() {
-        return dialogManager;
     }
 
     @Override

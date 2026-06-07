@@ -17,11 +17,12 @@
 package com.techsenger.tabshell.demo.browser;
 
 import com.techsenger.tabshell.core.area.AbstractAreaFxView;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.popup.PopupParams;
 import com.techsenger.tabshell.core.popup.PopupPort;
-import com.techsenger.tabshell.core.tab.TabFxView;
+import com.techsenger.tabshell.core.tab.HostTabFxView;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogFxView;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogPresenter;
 import com.techsenger.tabshell.demo.popup.DemoPopupFxView;
@@ -49,19 +50,19 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
 
         private final MenuAwareAreaFxView view = MenuAwareAreaFxView.this;
 
-        private TabFxView<?> mainTab;
+        private HostTabFxView<?> mainTab;
 
         @Override
-        public DialogPort openDemoDialog(OverlayScope scope, boolean resizable) {
+        public DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params) {
             var v = new DemoDialogFxView();
-            var p = new DemoDialogPresenter(v);
+            var p = new DemoDialogPresenter(v, params);
             p.initialize();
             p.setResizable(resizable);
             if (scope == OverlayScope.WINDOW) {
                 var shell = mainTab.getComposer().getShell();
-                shell.getComposer().addDialog(v);
+                shell.getComposer().addWindow(v);
             } else {
-                mainTab.getComposer().addDialog(v);
+                mainTab.getComposer().addWindow(v);
             }
             return p;
         }
@@ -74,14 +75,14 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
             presenter.initialize();
             if (scope == OverlayScope.WINDOW) {
                 var shell = mainTab.getComposer().getShell();
-                shell.getComposer().addPopup(view, Anchors.topRight(40, 20));
+                shell.getComposer().addPopup(view, Anchors.topRight(20, 20));
             } else {
                 mainTab.getComposer().addPopup(view, Anchors.bottomRight(20, 20));
             }
             return presenter;
         }
 
-        private void setMainTab(TabFxView<?> mainTab) {
+        private void setMainTab(HostTabFxView<?> mainTab) {
             this.mainTab = mainTab;
         }
     }
@@ -109,7 +110,7 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
 
     private final StackPane stackPane = new StackPane(vBox);
 
-    public MenuAwareAreaFxView(TabFxView<?> mainTab) {
+    public MenuAwareAreaFxView(HostTabFxView<?> mainTab) {
         super();
         getComposer().setMainTab(mainTab);
     }

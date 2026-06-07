@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.window.WindowParams;
+import com.techsenger.tabshell.core.window.WindowType;
 import java.util.Objects;
 
 /**
@@ -29,7 +30,7 @@ public class DefaultShellParams extends WindowParams {
     private final ShellContext context;
 
     public DefaultShellParams(ShellContext context) {
-        super(context.getSettings().getAppearance());
+        super(WindowType.TOP_LEVEL, false, context.getSettings().getAppearance());
         this.context = context;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> context.getHistoryManager().getOrCreateHistory(ShellHistory.class, ShellHistory::new));

@@ -20,6 +20,7 @@ import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.window.WindowParams;
+import com.techsenger.tabshell.core.window.WindowType;
 import java.util.Objects;
 
 /**
@@ -31,7 +32,7 @@ public class DevToolsWindowParams extends WindowParams {
     private final HistoryManager historyManager;
 
     public DevToolsWindowParams(AppearanceSettings setting, HistoryManager historyManager) {
-        super(setting);
+        super(WindowType.TOP_LEVEL, false, setting);
         this.historyManager = historyManager;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager

@@ -16,15 +16,17 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.popup.PopupParams;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowParams;
+import com.techsenger.tabshell.core.window.WindowType;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DialogParams extends PopupParams {
+public class DialogParams extends WindowParams {
 
-    public DialogParams() {
-        super(true);
+    public DialogParams(WindowType type, AppearanceSettings settings) {
+        super(type, true, settings);
     }
 }

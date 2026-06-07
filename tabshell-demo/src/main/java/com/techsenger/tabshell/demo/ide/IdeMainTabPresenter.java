@@ -20,9 +20,12 @@ import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.MenuAwarePort;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupContainerPresenter;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
 import com.techsenger.tabshell.core.tab.TabParams;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.demo.dialogs.DemoResultButtons;
 import com.techsenger.tabshell.demo.main.DemoMenuAwarePort;
@@ -33,7 +36,7 @@ import java.util.function.Consumer;
  * @author Pavel Castornii
  */
 public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPresenter<V>
-        implements MenuAwarePort, DemoMenuAwarePort {
+        implements MenuAwarePort, DemoMenuAwarePort, PopupContainerPresenter<V>, IdeMainTabPort {
 
     private boolean fooDisabled;
 
@@ -70,6 +73,11 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
         return barDisabled;
     }
 
+    @Override
+    public IdeMainTabPort.ViewAccess getViewAccess() {
+        return getView();
+    }
+
     protected void onFooDisabledSelected(boolean value) {
         this.fooDisabled = value;
     }
@@ -94,7 +102,9 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
     }
 
     protected void onDialogOpen() {
-        var dialog = getView().getComposer().openDemoDialog(true);
+        var settings = getShellContext().getSettings().getAppearance();
+        var params = new DialogParams(WindowType.NESTED, settings);
+        var dialog = getView().getComposer().openDemoDialog(true, params);
         dialog.setOnResult((name) -> {
             if (name == DemoResultButtons.OK) {
                 dialog.closeSafely();

@@ -18,9 +18,9 @@ package com.techsenger.tabshell.demo.settings;
 
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.settings.DefaultAppearanceSettings;
+import com.techsenger.tabshell.core.settings.ShellSettings;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import javafx.scene.text.Font;
-import com.techsenger.tabshell.core.settings.ShellSettings;
 
 /**
  *
@@ -31,7 +31,7 @@ public final class DemoSettings {
     public static ShellSettings createSettings() {
         var regularFont = Font.font("System", 14);
         var monospaceFont = Font.font("Monospace", 14);
-        var appearance = new DefaultAppearanceSettings(regularFont, monospaceFont);
+        var appearance = new DefaultAppearanceSettings(null, regularFont, monospaceFont);
         appearance.setTheme(AtlantaFxTheme.CUPERTINO_DARK);
         var settings = new ShellSettings() {
 

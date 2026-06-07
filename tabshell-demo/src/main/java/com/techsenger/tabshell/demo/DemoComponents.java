@@ -72,6 +72,8 @@ public final class DemoComponents {
 
     public static final ComponentName STYLES_TAB = new DefaultComponentName("Demo.StylesTab");
 
+    public static final ComponentName DEMO_WINDOW = new DefaultComponentName("Demo.Window");
+
     private DemoComponents() {
         // empty
     }

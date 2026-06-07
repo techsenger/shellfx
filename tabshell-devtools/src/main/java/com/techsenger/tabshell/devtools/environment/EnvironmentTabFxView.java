@@ -17,9 +17,10 @@
 package com.techsenger.tabshell.devtools.environment;
 
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.core.window.WindowContainerFxView;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarParams;
 import com.techsenger.tabshell.devtools.ToolBarPort;
@@ -66,11 +67,15 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
         }
 
         @Override
-        public NameValueDialogPort addNameValueDialog() {
-            var dialog = createNameValueDialog();
+        public NameValueDialogPort openNameValueDialog(DialogParams params) {
+            var dialog = createNameValueDialog(params);
             var presenter = dialog.getPresenter();
-            presenter.setResizable(true);
-            dialogContainer.addDialog(dialog);
+            if (params.getWindowType() == WindowType.NESTED) {
+                windowContainer.addWindow(dialog);
+            } else {
+                dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
+                dialog.getStage().show();
+            }
             return presenter;
         }
 
@@ -82,9 +87,9 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
             return view;
         }
 
-        protected NameValueDialogFxView<?> createNameValueDialog() {
+        protected NameValueDialogFxView<?> createNameValueDialog(DialogParams params) {
             var view = new NameValueDialogFxView<>();
-            var presenter = new NameValueDialogPresenter<>(view, new DialogParams());
+            var presenter = new NameValueDialogPresenter<>(view, params);
             presenter.initialize();
             return view;
         }
@@ -92,11 +97,11 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
 
     private final TreeTableView<EnvironmentItem> tableView = new TreeTableView<>();
 
-    private final DialogContainerFxView.Composer dialogContainer;
+    private final WindowContainerFxView.Composer windowContainer;
 
-    public EnvironmentTabFxView(ShellFxView<?> shell, DialogContainerFxView.Composer dialogContainer) {
+    public EnvironmentTabFxView(ShellFxView<?> shell, WindowContainerFxView.Composer windowContainer) {
         super(shell);
-        this.dialogContainer = dialogContainer;
+        this.windowContainer = windowContainer;
     }
 
     @Override

@@ -33,4 +33,6 @@ public interface DevToolsTabDockPort extends TabDockPort {
     Connector getConnector();
 
     HistoryManager getHistoryManager();
+
+    DevToolsHostType getHostType();
 }

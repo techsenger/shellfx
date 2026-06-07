@@ -36,4 +36,11 @@ public interface PopupManager {
      * @return the list of popups. If no popups are present, an empty list is returned.
      */
     @Unmodifiable ObservableList<PopupFxView<?>> getPopups();
+
+    /**
+     * Returns whether the container that owns this manager is blocked because a modal component is shown.
+     *
+     * @return true if the container is blocked by a modal component, false otherwise
+     */
+    boolean isContainerBlocked();
 }

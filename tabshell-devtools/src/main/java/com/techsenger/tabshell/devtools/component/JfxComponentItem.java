@@ -50,7 +50,10 @@ public class JfxComponentItem implements ComponentItem {
 
     @Override
     public List<ComponentItem> getChildren() {
-        return view.getChildren().stream().map(v -> new JfxComponentItem(v)).map(t -> (ComponentItem) t).toList();
+        return view.getComposer().getChildren()
+                .stream()
+                .map(v -> new JfxComponentItem(v))
+                .map(t -> (ComponentItem) t).toList();
     }
 
     public ParentFxView<?> getView() {

@@ -18,6 +18,7 @@ package com.techsenger.tabshell.layout.tabhost;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.tabpanepro.core.TabEvent;
 import com.techsenger.tabpanepro.core.TabPanePro;
@@ -36,13 +37,17 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.input.InputEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.slf4j.Logger;
@@ -61,6 +66,10 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
     private static Tab getTab(ContextMenu menu) {
         WeakReference<Tab> ref = (WeakReference<Tab>) menu.getProperties().get(TAB_KEY);
         return ref.get();
+    }
+
+    private static Tab getTab(TabPaneProSkin.TabHeaderSkin skin) {
+        return (Tab) skin.getProperties().get(TAB_KEY);
     }
 
     public class Composer extends AbstractAreaFxView<P>.Composer implements TabHostView.Composer,
@@ -136,13 +145,13 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         @Override
         public void addTab(TabFxView<?> tab) {
             view.tabPane.getTabs().add(tab.getNode());
-            view.getModifiableChildren().add(tab);
+            getModifiableChildren().add(tab);
         }
 
         @Override
         public void removeTab(TabFxView<?> tab) {
             view.tabPane.getTabs().remove(tab.getNode());
-            view.getModifiableChildren().remove(tab);
+            getModifiableChildren().remove(tab);
         }
 
         @Override
@@ -155,6 +164,10 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
             return detachedTabs;
         }
 
+        @Override
+        protected ObservableList<ChildFxView<?>> getModifiableChildren() {
+            return super.getModifiableChildren();
+        }
     }
 
     private static final Logger logger = LoggerFactory.getLogger(TabHostFxView.class);
@@ -175,6 +188,8 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
     private final HBox tabHeaderFirstBox = new HBox();
 
     private final HBox tabHeaderLastBox = new HBox();
+
+    private final EventHandler<Event> eventBlocker = event -> event.consume();
 
     public TabHostFxView(boolean workspace) {
         super();
@@ -234,6 +249,29 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
     }
 
     @Override
+    public void setTabHeaderBlocked(Tab tab, boolean blocked) {
+        StackPane headersRegion = (StackPane) getTabHeaderArea().lookup(".headers-region");
+        if (headersRegion != null) {
+            for (var child : headersRegion.getChildren()) {
+                if (child instanceof TabPaneProSkin.TabHeaderSkin skin) {
+                    var t = getTab(skin);
+                    if (t == tab) {
+                        var button = child.lookup(".tab-close-button");
+                        if (button != null) {
+                            if (blocked) {
+                                button.addEventFilter(InputEvent.ANY, eventBlocker);
+                            } else {
+                                button.removeEventFilter(InputEvent.ANY, eventBlocker);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     protected Composer createComposer() {
         return new TabHostFxView.Composer();
     }
@@ -266,6 +304,12 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         VBox.setVgrow(this.tabPane, Priority.ALWAYS);
         if (this.workspace) {
             buildWorkspace();
+        } else {
+            getTabHeaderArea().setTabHeaderFactory(c -> {
+                var header = new TabPaneProSkin.TabHeaderSkin(c);
+                header.getProperties().put(TAB_KEY, c.getTab());
+                return header;
+            });
         }
     }
 
@@ -273,7 +317,11 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
         tabPane.getStyleClass().addAll("workspace", Styles.DENSE);
         var tabHeaderArea = getTabHeaderArea();
-        tabHeaderArea.setTabHeaderFactory(c -> new SlantedTabHeaderSkin(c));
+        tabHeaderArea.setTabHeaderFactory(c -> {
+            var header = new SlantedTabHeaderSkin(c);
+            header.getProperties().put(TAB_KEY, c.getTab());
+            return header;
+        });
         tabHeaderArea.setTabGap(-10.0);
         // right corner is on top
         tabHeaderArea.setTabViewOrderResolver((tabHeader, index, tabCount, selected) -> {
@@ -334,10 +382,10 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
                     // Moving a tab from one pane to another is handled by TabPanePro.
                     // Here we only need to synchronize the component lists.
                     var tabView = (TabFxView<?>) FxViewUtils.getView(e.getTab());
-                    getModifiableChildren().remove(tabView);
+                    getComposer().getModifiableChildren().remove(tabView);
                     TabHostFxView<?> newTabHost = FxViewUtils.findView(e.getTab().getTabPane(), TabHostFxView.class);
                     if (newTabHost != null) {
-                        newTabHost.getModifiableChildren().add(tabView);
+                        newTabHost.getComposer().getModifiableChildren().add(tabView);
                         logger.debug("{} Tab {} was moved from {} to {}",
                                 getDescriptor().getLogPrefix(), tabView.getDescriptor().getFullName(),
                                 getDescriptor().getFullName(), newTabHost.getDescriptor().getFullName());

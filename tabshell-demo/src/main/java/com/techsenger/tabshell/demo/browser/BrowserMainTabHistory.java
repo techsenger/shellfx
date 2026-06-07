@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.demo.browser;
 
-import com.techsenger.tabshell.core.tab.TabHistory;
+import com.techsenger.tabshell.core.tab.HostTabHistory;
 import com.techsenger.tabshell.layout.dockhost.DockHostHistory;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class BrowserMainTabHistory extends TabHistory {
+public class BrowserMainTabHistory extends HostTabHistory {
 
     private DockHostHistory dockHost = new DockHostHistory();
 

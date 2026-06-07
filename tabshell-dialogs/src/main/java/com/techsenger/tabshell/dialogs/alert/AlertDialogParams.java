@@ -17,6 +17,8 @@
 package com.techsenger.tabshell.dialogs.alert;
 
 import com.techsenger.tabshell.core.dialog.DialogParams;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowType;
 import java.util.Objects;
 
 /**
@@ -27,7 +29,8 @@ public class AlertDialogParams extends DialogParams {
 
     private final AlertDialogType dialogType;
 
-    public AlertDialogParams(AlertDialogType dialogType) {
+    public AlertDialogParams(WindowType type, AppearanceSettings setting, AlertDialogType dialogType) {
+        super(type, setting);
         this.dialogType = dialogType;
     }
 

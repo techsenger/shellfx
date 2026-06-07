@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.demo.browser;
 
 import com.techsenger.tabshell.core.area.AreaView;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.popup.PopupPort;
@@ -29,7 +30,7 @@ public interface MenuAwareAreaView extends AreaView {
 
     interface Composer extends AreaView.Composer {
 
-        DialogPort openDemoDialog(OverlayScope scope, boolean resizable);
+        DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params);
 
         PopupPort openDemoPopup(OverlayScope scope);
     }

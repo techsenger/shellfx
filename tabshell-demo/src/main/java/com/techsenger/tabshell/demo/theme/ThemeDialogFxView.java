@@ -95,6 +95,4 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
         super.addListeners();
         themeComboBox.valueProperty().addListener((ov, oldV, newV) -> getPresenter().onThemeSelected(newV));
     }
-
-
 }

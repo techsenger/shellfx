@@ -25,10 +25,12 @@ import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
-import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.core.tab.TabFxView;
+import com.techsenger.tabshell.core.window.WindowContainerFxView;
+import com.techsenger.tabshell.core.window.WindowFxView;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarParams;
 import com.techsenger.tabshell.devtools.ToolBarPort;
@@ -194,11 +196,11 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
             super.compose();
 
             this.componentToolBar = createComponentToolBar();
-            view.getModifiableChildren().add(this.componentToolBar);
+            getModifiableChildren().add(this.componentToolBar);
             view.componentBox.getChildren().add(0, this.componentToolBar.getNode());
 
             this.inspectorToolBar = createInspectorToolBar();
-            view.getModifiableChildren().add(inspectorToolBar);
+            getModifiableChildren().add(inspectorToolBar);
             view.inspectorBox.getChildren().add(0, inspectorToolBar.getNode());
         }
 
@@ -213,13 +215,15 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
         }
 
         @Override
-        public NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption) {
-            var dialog = createNameValueDialog(nameCaption, valueCaption);
-            var presenter = dialog.getPresenter();
-            presenter.setPrefWidth(600);
-            presenter.setPrefHeight(350);
-            view.dialogContainer.addDialog(dialog);
-            return presenter;
+        public NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption, DialogParams params) {
+            var dialog = createNameValueDialog(nameCaption, valueCaption, params);
+            if (params.getWindowType() == WindowType.NESTED) {
+                view.windowContainer.addWindow(dialog);
+            } else {
+                dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
+                dialog.getStage().show();
+            }
+            return dialog.getPresenter();
         }
 
         protected ToolBarFxView<?> getComponentToolBar() {
@@ -246,9 +250,10 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
             return view;
         }
 
-        protected NameValueDialogFxView<?> createNameValueDialog(String nameCaption, String valueCaption) {
+        protected NameValueDialogFxView<?> createNameValueDialog(String nameCaption, String valueCaption,
+                DialogParams params) {
             var view = new NameValueDialogFxView<>(nameCaption, valueCaption);
-            var presenter = new NameValueDialogPresenter<>(view, new DialogParams());
+            var presenter = new NameValueDialogPresenter<>(view, params);
             presenter.initialize();
             return view;
         }
@@ -266,11 +271,11 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
 
     private final Map<ParentFxView<?>, TreeItem<ComponentItem>> treeItemsByComponent = new HashMap<>();
 
-    private final DialogContainerFxView.Composer dialogContainer;
+    private final WindowContainerFxView.Composer windowContainer;
 
-    public ComponentTabFxView(ShellFxView<?> shell, DialogContainerFxView.Composer dialogContainer) {
+    public ComponentTabFxView(ShellFxView<?> shell, WindowContainerFxView.Composer windowContainer) {
         super(shell);
-        this.dialogContainer = dialogContainer;
+        this.windowContainer = windowContainer;
     }
 
     @Override
@@ -460,9 +465,13 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
                 var jfxComponent = (JfxComponentItem) component;
                 var fxView = jfxComponent.getView();
                 Element element;
-                if (fxView instanceof ShellFxView<?> shell) {
-                    var stage = shell.getWindow();
-                    element = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
+                if (fxView instanceof WindowFxView<?> window) {
+                    if (window.getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
+                        var stage = window.getStage();
+                        element = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
+                    } else {
+                        element = LocalElement.of(window.getNode());
+                    }
                 } else if (fxView instanceof TabFxView<?> tab) {
                     element = LocalElement.of(tab.getNode().getContent());
                 } else if (fxView instanceof AreaFxView<?> area) {

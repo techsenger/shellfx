@@ -16,13 +16,16 @@
 
 package com.techsenger.tabshell.devtools.environment;
 
-import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.KeyValue;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
+import com.techsenger.tabshell.devtools.DevToolsHostType;
+import com.techsenger.tabshell.devtools.DevToolsTabDockPort;
 import com.techsenger.tabshell.devtools.ToolBarAwarePort;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,13 +76,13 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
         }
     }
 
-    private final Connector connector;
+    private final DevToolsTabDockPort tabDock;
 
     private final Map<EnvironmentCategory, BooleanProperty> expandedByCategory;
 
     public EnvironmentTabPresenter(V view, EnvironmentTabParams params) {
         super(view, params);
-        this.connector = params.getConnector();
+        this.tabDock = params.getTabDock();
         expandedByCategory = Arrays.stream(EnvironmentCategory.values())
                 .collect(Collectors.toMap(e -> e, e -> new SimpleBooleanProperty()));
     }
@@ -110,7 +113,7 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
 
     protected void refresh() {
         var composer = getView().getComposer();
-        var e = this.connector.getEnv();
+        var e = this.tabDock.getConnector().getEnv();
         var items = new ArrayList<EnvironmentItem>();
         items.add(new DefaultEnvironmentItem(EnvironmentItemType.ROOT, "", null, true));
         var matcher = composer.getToolBarPort().createFindMatcher();
@@ -129,7 +132,13 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
 
     protected void onItemRequested(EnvironmentItem i) {
         if (i.getType() == EnvironmentItemType.PROPERTY) {
-            var dialog = getView().getComposer().addNameValueDialog();
+            WindowType windowType = WindowType.NESTED;
+            if (tabDock.getHostType() == DevToolsHostType.WINDOW) {
+                windowType = WindowType.TOP_LEVEL;
+            }
+            var params = new DialogParams(windowType, getShellContext().getSettings().getAppearance());
+            var dialog = getView().getComposer().openNameValueDialog(params);
+            dialog.setResizable(true);
             dialog.setTitle("Property Dialog");
             dialog.setName(i.getName());
             dialog.setValue(i.getValue());

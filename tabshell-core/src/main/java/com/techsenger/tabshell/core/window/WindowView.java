@@ -16,63 +16,77 @@
 
 package com.techsenger.tabshell.core.window;
 
-import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ParentView;
-import com.techsenger.tabshell.core.dialog.DialogContainerView;
-import com.techsenger.tabshell.material.style.Stylesheet;
+import com.techsenger.annotations.Nullable;
+import com.techsenger.patternfx.mvp.ChildView;
 import com.techsenger.tabshell.material.theme.Theme;
-import java.util.List;
 import javafx.scene.text.Font;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowView extends ParentView, WindowShared {
+public interface WindowView extends ChildView, WindowShared {
 
-    interface Composer extends ParentView.Composer, DialogContainerView.Composer {
+    interface Composer extends ChildView.Composer {
 
+        /**
+         * Closes both {@link WindowType#TOP_LEVEL} and {@link WindowType#NESTED} windows.
+         */
+        void close();
+
+        @Nullable WindowContainerPort getContainerPort();
     }
 
     @Override
     Composer getComposer();
 
     /**
-     * Adds stylesheets to TabShell.
+     * Sets whether this window is modal.
      *
-     * @param sheets
+     * @param modal {@code true} to make the window modal; {@code false} otherwise
      */
-    void addStylesheets(List<Stylesheet> sheets);
+    void setModal(boolean modal);
 
     /**
-     * Removes stylesheets from Shell.
+     * Sets the density of this window.
      *
-     * @param sheets
+     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @param density the density to apply
      */
-    void removeStylesheets(List<Stylesheet> sheets);
+    void setDensity(@Nullable String density);
 
     /**
-     * Returns an unmodifiable list of stylesheets.
-     */
-    @Unmodifiable List<Stylesheet> getStylesheets();
-
-    /**
-     * Closes the window.
-     */
-    void closeWindow();
-
-    /**
-     * Sets theme.
+     * Sets the theme of this window.
+     *
+     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @param theme the theme to apply
      */
     void setTheme(Theme theme);
 
     /**
-     * Sets regular font.
+     * Sets the regular font of this window.
+     *
+     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @param font the regular font to apply
      */
     void setRegularFont(Font font);
 
     /**
-     * Sets monospace font.
+     * Sets the monospace font of this window.
+     *
+     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @param font the monospace font to apply
      */
     void setMonospaceFont(Font font);
+
+    /**
+     * Closes the top level window.
+     *
+     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
+     */
+    void closeWindow();
 }

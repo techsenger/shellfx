@@ -16,12 +16,19 @@
 
 package com.techsenger.tabshell.demo.ide;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.core.popup.AbstractPopupManager;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupContainerFxView;
+import com.techsenger.tabshell.core.popup.PopupFxView;
+import com.techsenger.tabshell.core.popup.PopupManager;
 import com.techsenger.tabshell.core.popup.PopupParams;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.core.tab.TabContainerFxView;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogFxView;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogPresenter;
 import com.techsenger.tabshell.demo.main.TestInterface;
@@ -29,11 +36,13 @@ import com.techsenger.tabshell.demo.popup.DemoPopupFxView;
 import com.techsenger.tabshell.demo.popup.DemoPopupPresenter;
 import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.style.Spacing;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.InputEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -41,23 +50,38 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
+ * This tab is a popup container.
  *
  * @author Pavel Castornii
  */
 public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends AbstractTabFxView<P> implements
-        IdeMainTabView {
+        IdeMainTabView, PopupContainerFxView<P> {
 
-    public class Composer extends AbstractTabFxView<P>.Composer implements IdeMainTabView.Composer, TestInterface {
+    public class Composer extends AbstractTabFxView<P>.Composer implements IdeMainTabView.Composer,
+            PopupContainerFxView.Composer, TestInterface {
 
         private final IdeMainTabFxView<P> view = IdeMainTabFxView.this;
 
+        private final PopupManager popupManager = new AbstractPopupManager(() -> view.getWrapperPane()) {
+
+            @Override
+            protected void onContainerBlocked(boolean blocked) {
+                if (blocked) {
+                    view.getNode().getContent().addEventFilter(InputEvent.ANY, getEventBlocker());
+                } else {
+                    view.getNode().getContent().removeEventFilter(InputEvent.ANY, getEventBlocker());
+                }
+                getParent(TabContainerFxView.class).setTabHeaderBlocked(view.getNode(), blocked);
+            }
+        };
+
         @Override
-        public DialogPort openDemoDialog(boolean resizable) {
+        public DialogPort openDemoDialog(boolean resizable, DialogParams params) {
             var v = new DemoDialogFxView();
-            var p = new DemoDialogPresenter(v);
+            var p = new DemoDialogPresenter(v, params);
             p.initialize();
             p.setResizable(resizable);
-            getShell().getComposer().addDialog(v);
+            getShell().getComposer().addWindow(v);
             return p;
         }
 
@@ -73,6 +97,34 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
                 addPopup(v, Anchors.bottomRight(20, 20));
             }
             return p;
+        }
+
+        @Override
+        public void addPopup(PopupFxView<?> popup, Anchors anchors) {
+            getModifiableChildren().add(popup);
+            this.popupManager.addPopup(popup, anchors);
+        }
+
+        @Override
+        public void removePopup(PopupFxView<?> popup) {
+            this.popupManager.removePopup(popup);
+            getModifiableChildren().remove(popup);
+        }
+
+        @Override
+        public void closePopup(PopupFxView<?> popup) {
+            removePopup(popup);
+            popup.getPresenter().deinitializeTree();
+        }
+
+        @Override
+        public @Unmodifiable List<? extends PopupFxView<?>> getPopups() {
+            return popupManager.getPopups();
+        }
+
+        @Override
+        public @Unmodifiable List<? extends PopupPort> getPopupPorts() {
+            return popupManager.getPopups().stream().map(d -> d.getPresenter()).toList();
         }
     }
 

@@ -16,14 +16,15 @@
 
 package com.techsenger.tabshell.demo;
 
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import javafx.scene.Scene;
 
 /**
- * In a real application, a density style class should only be added to the root node of the {@link Scene}.
- * However, in the demo application, we need to test multiple density style classes (including the default one)
- * within the same application. For this reason, the density style class is applied to the root container of each
- * demo section.
+ * In a real application, a density style class is specified in the {@link AppearanceSettings} and is added to the root
+ * node of the {@link Scene}. However, in the demo application, we need to test multiple density style classes
+ * (including the default one) within the same application. For this reason, the density style class is applied to
+ * the root container of each demo section.
  *
  * @author Pavel Castornii
  */

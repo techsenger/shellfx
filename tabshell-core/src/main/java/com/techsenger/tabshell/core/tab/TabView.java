@@ -16,20 +16,22 @@
 
 package com.techsenger.tabshell.core.tab;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ChildView;
 import com.techsenger.tabshell.core.ShellPort;
-import com.techsenger.tabshell.core.dialog.DialogContainerView;
 import com.techsenger.tabshell.material.icon.Icon;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabView extends ChildView, TabPort.ViewAccess, DialogContainerView {
+public interface TabView extends ChildView, TabPort.ViewAccess {
 
-    interface Composer extends ChildView.Composer,  DialogContainerView.Composer, TabPort.Composer {
+    interface Composer extends ChildView.Composer, TabPort.Composer {
 
         ShellPort getShellPort();
+
+        @Nullable TabContainerPort getContainerPort();
 
         void close();
     }

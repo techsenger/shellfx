@@ -190,7 +190,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         ContainerInfo createInfo() {
             ContainerInfo result;
             if (area != dockHost.getComposer().getRoot()) {
-                result = createInfo((SplitSpaceFxView<?>) area.getParent());
+                result = createInfo((SplitSpaceFxView<?>) area.getComposer().getParent());
             } else {
                 result = createInfo(null);
             }
@@ -392,7 +392,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             if (this.index == -1) { // root
                 return false;
             }
-            var splitPane = ((SplitSpaceFxView<?>) container.getArea().getParent()).getNode();
+            var splitPane = ((SplitSpaceFxView<?>) container.getArea().getComposer().getParent()).getNode();
             return index == splitPane.getItems().size() - 1;
         }
 
@@ -782,6 +782,21 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private final ObjectProperty<SideBarPolicy> leftBarPolicy =
                 new SimpleObjectProperty<>(SideBarPolicy.EXISTS_WHEN_TABS_PRESENT);
+
+        public Composer() {
+            // the root is a child, the main one is not
+            root.addListener((ov, oldV, newV) -> {
+                if (oldV != null) {
+                    centerStackPane.getChildren().remove(0);
+                    getModifiableChildren().remove(oldV);
+                }
+                if (newV != null) {
+                    SplitSpaceContainer container = new SplitSpaceContainer(view, newV);
+                    centerStackPane.getChildren().add(0, container); // there can be tab popup
+                    getModifiableChildren().add(newV);
+                }
+            });
+        }
 
         @Override
         public void compose() {
@@ -1234,18 +1249,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     @Override
     protected void addListeners() {
         super.addListeners();
-        // the root is a child, the main one is not
-        getComposer().root.addListener((ov, oldV, newV) -> {
-            if (oldV != null) {
-                centerStackPane.getChildren().remove(0);
-                getModifiableChildren().remove(oldV);
-            }
-            if (newV != null) {
-                SplitSpaceContainer container = new SplitSpaceContainer(this, newV);
-                centerStackPane.getChildren().add(0, container); // there can be tab popup
-                getModifiableChildren().add(newV);
-            }
-        });
         centerStackPane.widthProperty().addListener((ov2, oldV2, newV2) -> {
             var w = centerStackPane.getWidth();
             var h = centerStackPane.getHeight();
@@ -1446,9 +1449,9 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     private void minimizeTabDock(TabDockFxView<?> dock) {
         // saving current position
         var side = resolveSide(dock);
-        SplitSpaceFxView<?> parent = (SplitSpaceFxView<?>) dock.getParent();
-        var index = parent.getChildren().indexOf(dock);
-        var siblings = parent.getChildren().stream().filter(c -> c != dock)
+        SplitSpaceFxView<?> parent = (SplitSpaceFxView<?>) dock.getComposer().getParent();
+        var index = parent.getComposer().getChildren().indexOf(dock);
+        var siblings = parent.getComposer().getChildren().stream().filter(c -> c != dock)
                 .map(c -> c.getDescriptor().getUuid()).collect(Collectors.toList());
         var pathFromRoot = findPathFromRoot(dock)
                 .stream()
@@ -1482,7 +1485,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         var pathFromRoot = position.getPathFromRoot();
         dock.getPresenter().setMinimizedPosition(null);
         var splitSpacesByUuid = new HashMap<UUID, SplitSpaceFxView<?>>();
-        var iterator = getComposer().getRoot().breadthFirstIterator();
+        var iterator = getComposer().getRoot().getComposer().breadthFirstIterator();
         while (iterator.hasNext()) {
             ChildFxView<?> component = (ChildFxView<?>) iterator.next();
             if (component instanceof SplitSpaceFxView<?> c) {
@@ -1498,7 +1501,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         int index;
         if (parent != null) {
             index = position.getIndex();
-            var childCount = parent.getChildren().size();
+            var childCount = parent.getComposer().getChildren().size();
             if (index > childCount) {
                 index = childCount;
             }
@@ -1554,7 +1557,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     }
 
     private int resolveNewIndex(SplitSpaceFxView<?> parent, Side side) {
-        int index = parent.getChildren().size();
+        int index = parent.getComposer().getChildren().size();
         if (side == LEFT || side == TOP) {
             var mainIndex = indexOfMain(parent);
             if (mainIndex >= 0 && index >= mainIndex) {
@@ -1567,15 +1570,15 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     private boolean checkNewSide(SplitSpaceFxView<?> parent, int index, Side side) {
         var tempIndex = index;
         boolean isLastPosition = false;
-        if (parent.getChildren().size() - 1 < tempIndex) {
+        if (parent.getComposer().getChildren().size() - 1 < tempIndex) {
             tempIndex--;
             isLastPosition = true;
         }
-        var child = (AreaFxView<?>) parent.getChildren().get(tempIndex);
+        var child = (AreaFxView<?>) parent.getComposer().getChildren().get(tempIndex);
 
         Side resolvedSide;
         if (child == getComposer().getMain()) {
-            SplitSpaceFxView<?> parentSplitSpace = (SplitSpaceFxView<?>) child.getParent();
+            SplitSpaceFxView<?> parentSplitSpace = (SplitSpaceFxView<?>) child.getComposer().getParent();
             if (parentSplitSpace.getPresenter().getOrientation() == Orientation.HORIZONTAL) {
                 resolvedSide = LEFT;
                 if (isLastPosition) {
@@ -1598,7 +1601,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     }
 
     private AreaFxView<?> findSibling(SplitSpaceFxView<?> splitSpace, List<UUID> siblingUuids, Side side) {
-        var siblingsByUuid = splitSpace.getChildren()
+        var siblingsByUuid = splitSpace.getComposer().getChildren()
                 .stream()
                 .map(v -> (AreaFxView<?>) v)
                 .collect(Collectors.toMap(v -> v.getPresenter().getDescriptor().getUuid(), v -> v));
@@ -1652,7 +1655,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
                 // removing tabDock
                 SplitSpaceFxView<?> oldParent =
-                        (SplitSpaceFxView<?>) this.dragDock.getParent();
+                        (SplitSpaceFxView<?>) this.dragDock.getComposer().getParent();
                 var oldContainer = getContainer(dragDock);
                 // it is necessary to create a new info with a new index for example,
                 // if there are new children, besides the old parent should be used
@@ -1660,10 +1663,11 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 removeTabDock(oldParent, oldInfo, TabDockOperation.MOVE);
 
                 // finally replacing the placeholder
-                SplitSpaceFxView<?> newParent = (SplitSpaceFxView<?>) getComposer().placeholder.getParent();
+                SplitSpaceFxView<?> newParent =
+                        (SplitSpaceFxView<?>) getComposer().placeholder.getComposer().getParent();
                 // it is not possible to use dockInfo.getNewInfo().getIndex()
                 // because after removing tabDock indexes have changed
-                var placeholderIndex = newParent.getChildren().indexOf(getComposer().placeholder);
+                var placeholderIndex = newParent.getComposer().getChildren().indexOf(getComposer().placeholder);
                 newParent.getComposer().replacePlaceholder(placeholderIndex, dragDock);
                 logger.debug("{} Replaced {} with {}", getDescriptor().getLogPrefix(),
                         getComposer().placeholder.getDescriptor().getFullName(),
@@ -1692,7 +1696,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         info.setMousePosition(position);
         var indicatorBounds = createTabPaneIndicatorBounds(position, tabDockContainer);
         info.setIndicatorBounds(indicatorBounds);
-        SplitSpaceFxView<?> splitSpace = (SplitSpaceFxView<?>) tabDockContainer.getArea().getParent();
+        SplitSpaceFxView<?> splitSpace = (SplitSpaceFxView<?>) tabDockContainer.getArea().getComposer().getParent();
         SplitSpaceContainer splitSpaceContainer = (SplitSpaceContainer) splitSpace.getNode().getParent();
         info.setIndicatorInfo(splitSpaceContainer.createInfo());
         info.setValid(true);
@@ -1719,7 +1723,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         var eventInfo = eventContainer.createInfo();
         info.setEventInfo(eventInfo);
 
-        var parentComponent = (SplitSpaceFxView<?>) eventInfo.getContainer().getArea().getParent();
+        var parentComponent = (SplitSpaceFxView<?>) eventInfo.getContainer().getArea().getComposer().getParent();
         var parentInfo = getContainer(parentComponent).createInfo();
 
         SplitSpaceFxView<?> grandparentComponent = null;
@@ -1729,11 +1733,11 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         ContainerInfo greatGrandparentInfo = null;
 
         if (parentComponent != getComposer().getRoot()) {
-            grandparentComponent = (SplitSpaceFxView<?>) parentComponent.getParent();
+            grandparentComponent = (SplitSpaceFxView<?>) parentComponent.getComposer().getParent();
             grandparentInfo = getContainer(grandparentComponent).createInfo();
 
             if (grandparentComponent != getComposer().getRoot()) {
-                greatGrandparentComponent = (SplitSpaceFxView<?>) grandparentComponent.getParent();
+                greatGrandparentComponent = (SplitSpaceFxView<?>) grandparentComponent.getComposer().getParent();
                 greatGrandparentInfo = getContainer(greatGrandparentComponent).createInfo();
             }
         }
@@ -1960,7 +1964,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         info.setValid(true);
         if (this.dragDock != null) {
             if (info.getEventInfo().getContainer()
-                    .getArea().getParent() == this.dragDock.getParent()) {
+                    .getArea().getComposer().getParent() == this.dragDock.getComposer().getParent()) {
                 var dragDockInfo = getContainer(this.dragDock).createInfo();
                 var dragDockIndex = dragDockInfo.getIndex();
                 var eventIndex = info.getEventInfo().getIndex();
@@ -2011,7 +2015,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         SplitSpaceFxView<?> parentComponent = null;
         Orientation currentOrientation;
         if (area != getComposer().getRoot()) {
-            parentComponent = (SplitSpaceFxView<?>) area.getParent();
+            parentComponent = (SplitSpaceFxView<?>) area.getComposer().getParent();
             currentOrientation = parentComponent.getNode().getOrientation();
         } else {
             currentOrientation = getComposer().getRoot().getNode().getOrientation();
@@ -2052,14 +2056,14 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     private void unwrap(SplitSpaceFxView<?> splitSpace, int index) {
         double[] childPositions;
         // now it has only one child
-        AreaFxView<?> child = (AreaFxView<?>) splitSpace.getChildren().get(0);
+        AreaFxView<?> child = (AreaFxView<?>) splitSpace.getComposer().getChildren().get(0);
 
         if (splitSpace != getComposer().getRoot()) {
-            SplitSpaceFxView<?> grandparentComponent = (SplitSpaceFxView<?>) splitSpace.getParent();
+            SplitSpaceFxView<?> grandparentComponent = (SplitSpaceFxView<?>) splitSpace.getComposer().getParent();
             List<AreaFxView<?>> otherTabDocks;
             if (child instanceof SplitSpaceFxView<?>) {
                 SplitSpaceFxView<?> otherSplitSpace = (SplitSpaceFxView<?>) child;
-                otherTabDocks = (List) otherSplitSpace.getChildren();
+                otherTabDocks = (List) otherSplitSpace.getComposer().getChildren();
                 childPositions = otherSplitSpace.getNode().getDividerPositions();
             } else {
                 otherTabDocks = List.of(child);
@@ -2103,13 +2107,13 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     private void removeTabDock(TabDockFxView<?> tabDock, TabDockOperation operation) {
         TabDockContainer tabDockContainer = (TabDockContainer) tabDock.getNode().getParent();
         ContainerInfo tabDockInfo = tabDockContainer.createInfo();
-        SplitSpaceFxView<?> parent = (SplitSpaceFxView<?>) tabDock.getParent();
+        SplitSpaceFxView<?> parent = (SplitSpaceFxView<?>) tabDock.getComposer().getParent();
         removeTabDock(parent, tabDockInfo, operation);
     }
 
     private void removeTabDock(SplitSpaceFxView<?> parent, ContainerInfo tabDockInfo, TabDockOperation operation) {
         var parentInfo = getContainer(parent).createInfo();
-        if (parent.getChildren().size() == 2) {
+        if (parent.getComposer().getChildren().size() == 2) {
             removeTabDockAndUnwrap(parentInfo, tabDockInfo, operation);
         } else {
             removeTabDock(parentInfo, tabDockInfo, operation);
@@ -2188,7 +2192,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     private void addTabDock(Side side, ContainerInfo anchorInfo, ContainerInfo siblingInfo,
             ContainerInfo newInfo, TabDockFxView<?> newTabDock) {
         newTabDock.getComposer().setDockHost(this);
-        var parentComponent = (SplitSpaceFxView<?>) anchorInfo.getContainer().getArea().getParent();
+        var parentComponent = (SplitSpaceFxView<?>) anchorInfo.getContainer().getArea().getComposer().getParent();
         var splitPane = parentComponent.getNode();
         double[] oldPositions = splitPane.getDividerPositions();
         parentComponent.getComposer().addChild(newInfo.getIndex(), newTabDock);
@@ -2265,8 +2269,9 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         if (dividerSize < 0) {
             dividerSize = parent.computeDividerSize();
         }
-        if (parent.getParent() != null && grandParentPositions != null) {
-            ((SplitSpaceFxView<?>) parent.getParent()).getNode().setDividerPositions(grandParentPositions);
+        if (parent.getComposer().getParent() != null && grandParentPositions != null) {
+            ((SplitSpaceFxView<?>) parent.getComposer().getParent())
+                    .getNode().setDividerPositions(grandParentPositions);
         }
         var mainIndex = indexOfMain(parent);
         if (mainIndex >= 0) {
@@ -2279,7 +2284,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         if (logger.isDebugEnabled()) {
             logger.debug("{} Added {} into {}", getDescriptor().getLogPrefix(),
                     dock.getDescriptor().getFullName(),
-                    dock.getParent().getDescriptor().getFullName());
+                    dock.getComposer().getParent().getDescriptor().getFullName());
             printTreeDebugInfo();
         }
     }
@@ -2337,7 +2342,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         TabPaneProSkin.TabHeaderArea tabHeaderArea = skin.getTabHeaderArea();
         // we don't know if it is a tab dock
         TabFxView<?> tabFxView = (TabFxView<?>) FxViewUtils.getView(this.dragTab);
-        TabHostFxView<?> oldTabHost = (TabHostFxView<?>) tabFxView.getParent();
+        TabHostFxView<?> oldTabHost = (TabHostFxView<?>) tabFxView.getComposer().getParent();
         oldTabHost.getComposer().removeTab(tabFxView);
         newTabDock.getComposer().addTab(tabFxView);
         this.dragTab = null;
@@ -2349,7 +2354,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             return;
         }
         this.dragInProgress = value;
-        var iterator = getComposer().getRoot().depthFirstIterator();
+        var iterator = getComposer().getRoot().getComposer().depthFirstIterator();
         while (iterator.hasNext()) {
             ChildFxView<?> child = (ChildFxView<?>) iterator.next();
             if (child instanceof AreaFxView<?> area && hasContainer(area)) {
@@ -2377,7 +2382,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
     private String getTreeDebugInfo() {
         StringBuilder builder = new StringBuilder();
-        var iterator = depthFirstIterator();
+        var iterator = getComposer().depthFirstIterator();
         while (iterator.hasNext()) {
             ChildFxView<?> view = (ChildFxView<?>) iterator.next();
             String orientation = "";
@@ -2434,8 +2439,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         Side result = null;
-        var componentAncestorIndex = lca.getChildren().indexOf(componentAncestor);
-        var mainAncestorIndex = lca.getChildren().indexOf(mainAncestor);
+        var componentAncestorIndex = lca.getComposer().getChildren().indexOf(componentAncestor);
+        var mainAncestorIndex = lca.getComposer().getChildren().indexOf(mainAncestor);
         if (componentAncestorIndex < mainAncestorIndex) {
             if (lca.getNode().getOrientation() == Orientation.HORIZONTAL) {
                 result = LEFT;
@@ -2468,7 +2473,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         var current = startNode;
         while (current != null && current != this) {
             result.add(0, current);
-            current = (AreaFxView<?>) current.getParent();
+            current = (AreaFxView<?>) current.getComposer().getParent();
         }
         if (logger.isTraceEnabled()) {
             var nodes = result.stream().map(v -> v.getDescriptor().getFullName()).collect(Collectors.joining(", "));
@@ -2488,8 +2493,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     private int indexOfMain(SplitSpaceFxView<?> splitSpaceView) {
         var deque = findPathFromRoot(getComposer().getMain());
         var set = new HashSet<AreaFxView<?>>(deque);
-        for (var i = 0; i < splitSpaceView.getChildren().size(); i++) {
-            var child = splitSpaceView.getChildren().get(i);
+        for (var i = 0; i < splitSpaceView.getComposer().getChildren().size(); i++) {
+            var child = splitSpaceView.getComposer().getChildren().get(i);
             if (set.contains(child)) {
                 return i;
             }

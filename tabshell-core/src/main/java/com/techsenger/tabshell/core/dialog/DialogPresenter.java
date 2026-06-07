@@ -16,12 +16,12 @@
 
 package com.techsenger.tabshell.core.dialog;
 
-import com.techsenger.tabshell.core.popup.PopupPresenter;
+import com.techsenger.tabshell.core.window.WindowPresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogPresenter<V extends DialogView> extends PopupPresenter<V>, DialogPort {
+public interface DialogPresenter<V extends DialogView> extends WindowPresenter<V>, DialogPort {
 
 }

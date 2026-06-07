@@ -18,7 +18,7 @@ package com.techsenger.tabshell.core;
 
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.area.AreaFxView;
-import com.techsenger.tabshell.core.window.WindowFxView;
+import com.techsenger.tabshell.core.window.HostWindowFxView;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
@@ -26,9 +26,9 @@ import javafx.beans.property.ReadOnlyObjectProperty;
  *
  * @author Pavel Castornii
  */
-public interface ShellFxView<P extends ShellPresenter<?>> extends WindowFxView<P>, ShellView {
+public interface ShellFxView<P extends ShellPresenter<?>> extends HostWindowFxView<P>, ShellView {
 
-    interface Composer extends WindowFxView.Composer, ShellView.Composer {
+    interface Composer extends HostWindowFxView.Composer, ShellView.Composer {
 
         void addWorkspace(AreaFxView<?> workspace);
 

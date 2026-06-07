@@ -29,7 +29,7 @@ public interface FileChooserDialogPort extends DialogPort, FileChooserDialogShar
 
     GenericFile getResult();
 
-    FileChooserType getType();
+    FileChooserType getChooserType();
 
     URI getInitialDirectory();
 

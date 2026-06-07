@@ -18,14 +18,17 @@ package com.techsenger.tabshell.demo.dialogs;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
+import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.demo.Density;
 import com.techsenger.tabshell.demo.page.PageDialogFxView;
 import com.techsenger.tabshell.demo.page.PageDialogParams;
 import com.techsenger.tabshell.demo.page.PageDialogPresenter;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
+import com.techsenger.tabshell.dialogs.alert.AlertDialogPort;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogFxView;
 import com.techsenger.tabshell.dialogs.file.FileChooserDialogParams;
@@ -38,42 +41,37 @@ import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.button.ResultButtonName;
 import java.util.List;
 import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPresenter> implements DialogsDialogView {
+public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPresenter>
+        implements DialogsDialogView {
 
     public class Composer extends AbstractDialogFxView<DialogsDialogPresenter>.Composer
             implements DialogsDialogView.Composer {
 
         @Override
-        public DialogPort openAlertDialog(AlertDialogParams params, String message) {
+        public AlertDialogPort openAlertDialog(AlertDialogParams params) {
             var view = new AlertDialogFxView<>();
             var presenter = new AlertDialogPresenter<>(view, params);
             presenter.initialize();
-            view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
-            presenter.setMessage(message);
-            getContainer().getComposer().addDialog(view);
-            view.requestFocus();
+            showDialog(view);
             return presenter;
         }
 
         @Override
-        public NameValueDialogPort openNameValueDialog() {
+        public NameValueDialogPort openNameValueDialog(DialogParams params) {
             var view = new NameValueDialogFxView<>();
-            var presenter = new NameValueDialogPresenter<>(view, new DialogParams());
+            var presenter = new NameValueDialogPresenter<>(view, params);
             presenter.initialize();
-            view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
-            presenter.setResizable(true);
-            getContainer().getComposer().addDialog(view);
-            view.requestFocus();
+            showDialog(view);
             return presenter;
         }
 
@@ -82,10 +80,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var view = new FileChooserDialogFxView<>();
             var presenter = new FileChooserDialogPresenter<>(view, params);
             presenter.initialize();
-            view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
-            presenter.setResizable(true);
-            getContainer().getComposer().addDialog(view);
-            view.requestFocus();
+            showDialog(view);
             return presenter;
         }
 
@@ -94,19 +89,30 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
             var view = new PageDialogFxView();
             var presenter = new PageDialogPresenter(view, params);
             presenter.initialize();
-            view.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
-            presenter.setResizable(true);
-            getContainer().getComposer().addDialog(view);
-            view.requestFocus();
+            showDialog(view);
             return presenter;
+        }
+
+        private void showDialog(DialogFxView<?> dialog) {
+            dialog.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
+            if (dialog.getPresenter().getWindowType() == WindowType.NESTED) {
+                getContainer().getComposer().addWindow(dialog);
+            } else {
+                dialog.getStage().initOwner(getNode().getScene().getWindow());
+                dialog.getStage().show();
+            }
+            dialog.requestFocus();
         }
     }
 
     private final ListView<DialogType> listView = new ListView<>();
 
-    private final StackPane wrapper = new StackPane(listView);
+    private final VBox wrapper = new VBox(listView);
 
     private final ResultButton closeButton = new ResultButton(DialogsDialogButtons.CLOSE, "Close");
+
+    private final ComboBox<WindowType> windowTypeComboBox =
+            new ComboBox(FXCollections.observableArrayList(WindowType.values()));
 
     public DialogsDialogFxView() {
         super();
@@ -163,7 +169,22 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         });
         wrapper.getStyleClass().add(Styles.BORDERED);
         VBox.setVgrow(wrapper, Priority.ALWAYS);
+        VBox.setVgrow(listView, Priority.ALWAYS);
         getContentBox().getChildren().add(wrapper);
+        getLeftBottomBox().getChildren().add(windowTypeComboBox);
         registerButtons(closeButton);
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        windowTypeComboBox.getSelectionModel().selectedItemProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onWindowTypeSelected(newV));
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        windowTypeComboBox.getSelectionModel().select(0);
     }
 }

@@ -74,8 +74,6 @@ public class ViewerDialogPresenter<V extends ViewerDialogView>  extends Abstract
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        setPrefWidth(600);
-        setPrefHeight(350);
         setIcon(DevToolsIcons.VIEW);
         setTitle("Property Viewer");
         getView().setName(item.getAttribute().name());
@@ -96,6 +94,13 @@ public class ViewerDialogPresenter<V extends ViewerDialogView>  extends Abstract
         getView().setState(item.getAttribute().valueState().name());
         setOnResult((button) -> closeSafely());
         setRightButtons(ViewerDialogButtons.OK);
+    }
+
+    @Override
+    protected void applyAppearance() {
+        super.applyAppearance();
+        setWidth(600);
+        setHeight(350);
     }
 
     protected void onFollowLink(String url) {

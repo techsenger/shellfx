@@ -16,14 +16,14 @@
 
 package com.techsenger.tabshell.core.window;
 
-import com.techsenger.patternfx.mvp.ParentPresenter;
+import com.techsenger.patternfx.mvp.ChildPresenter;
 import com.techsenger.tabshell.core.CloseAwarePresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowPresenter<V extends WindowView> extends ParentPresenter<V>, CloseAwarePresenter<V>,
+public interface WindowPresenter<V extends WindowView> extends ChildPresenter<V>, CloseAwarePresenter<V>,
         WindowPort {
 
 }

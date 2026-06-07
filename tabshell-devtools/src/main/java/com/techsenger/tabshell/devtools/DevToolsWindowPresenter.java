@@ -54,6 +54,8 @@ public class DevToolsWindowPresenter<V extends DevToolsWindowView> extends Abstr
         super.postInitialize();
         setTitle("DevTools");
         setIcon(DevToolsIcons.TOOLS);
+        setMaximizable(true);
+        setMinimizable(true);
     }
 
     @Override

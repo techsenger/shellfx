@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.patternfx.mvp.AbstractChildPresenter;
+import com.techsenger.tabshell.core.ShellContext;
 import com.techsenger.tabshell.material.icon.Icon;
 
 /**
@@ -140,7 +141,7 @@ public abstract class AbstractTabPresenter<V extends TabView>
     }
 
     @Override
-    public ViewAccess getViewAccess() {
+    public TabPort.ViewAccess getViewAccess() {
         return getView();
     }
 
@@ -153,5 +154,25 @@ public abstract class AbstractTabPresenter<V extends TabView>
         if (this.onCloseRequest != null) {
             this.onCloseRequest.run();
         }
+    }
+
+    /**
+     * Convenience method that returns the current shell context.
+     *
+     * @return the current {@link ShellContext}
+     */
+    protected ShellContext getShellContext() {
+        return getView().getComposer().getShellPort().getContext();
+    }
+
+    /**
+     * Convenience method that returns the current shell context cast to the specified type.
+     *
+     * @param clazz the expected context type
+     * @param <T> the context type
+     * @return the current shell context as the specified type
+     */
+    protected <T extends ShellContext> T getShellContext(Class<T> clazz) {
+        return getView().getComposer().getShellPort().getContext(clazz);
     }
 }

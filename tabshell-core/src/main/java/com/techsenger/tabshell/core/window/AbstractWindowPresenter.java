@@ -16,7 +16,7 @@
 
 package com.techsenger.tabshell.core.window;
 
-import com.techsenger.patternfx.mvp.AbstractParentPresenter;
+import com.techsenger.patternfx.mvp.AbstractChildPresenter;
 import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.core.settings.SettingsSubscription;
@@ -26,30 +26,48 @@ import com.techsenger.tabshell.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractWindowPresenter<T extends WindowView> extends AbstractParentPresenter<T>
+public abstract class AbstractWindowPresenter<T extends WindowView> extends AbstractChildPresenter<T>
         implements WindowPresenter<T> {
+
+    private final WindowType windowType;
+
+    private final boolean modal;
+
+    private boolean alwaysOnTop;
 
     private double width;
 
     private double height;
 
+    private double minWidth;
+
+    private double minHeight;
+
+    private double maxWidth;
+
+    private double maxHeight;
+
+    private boolean resizable;
+
     private String title;
 
-    private boolean maximized = false;
+    private boolean maximized;
 
-    private boolean maximizable = true;
+    private boolean maximizable;
 
-    private boolean minimized = false;
+    private boolean minimized;
 
-    private boolean minimizable = true;
+    private boolean minimizable;
 
     private boolean closable = true;
 
-    private boolean blocked = false;
+    private boolean blocked;
 
     private Icon<?> icon;
 
-    private final AppearanceSettings setting;
+    private final AppearanceSettings appearanceSettings;
+
+    private SettingsSubscription densitySubscription;
 
     private SettingsSubscription themeSubscription;
 
@@ -61,9 +79,44 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     private Runnable onClosed;
 
+    private boolean outOfBoundsAllowed;
+
+    private boolean active;
+
     public AbstractWindowPresenter(T view, WindowParams params) {
         super(view, params);
-        this.setting = params.getSetting();
+        this.windowType = params.getWindowType();
+        this.modal = params.isModal();
+        this.appearanceSettings = params.getSettings();
+    }
+
+    @Override
+    public WindowType getWindowType() {
+        return this.windowType;
+    }
+
+    @Override
+    public boolean isModal() {
+        return modal;
+    }
+
+    @Override
+    public boolean isAlwaysOnTop() {
+        return alwaysOnTop;
+    }
+
+    @Override
+    public void setAlwaysOnTop(boolean alwaysOnTop) {
+        if (this.alwaysOnTop == alwaysOnTop) {
+            return;
+        }
+        this.alwaysOnTop = alwaysOnTop;
+        getView().setAlwaysOnTop(alwaysOnTop);
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     @Override
@@ -117,6 +170,9 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setMaximized(boolean maximized) {
+        if (this.maximized == maximized) {
+            return;
+        }
         this.maximized = maximized;
         getView().setMaximized(maximized);
     }
@@ -128,6 +184,9 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setMaximizable(boolean maximizable) {
+        if (this.maximizable == maximizable) {
+            return;
+        }
         this.maximizable = maximizable;
         getView().setMaximizable(maximizable);
     }
@@ -139,6 +198,9 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setMinimized(boolean minimized) {
+        if (this.minimized == minimized) {
+            return;
+        }
         this.minimized = minimized;
         getView().setMinimized(minimized);
     }
@@ -150,6 +212,9 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setMinimizable(boolean minimizable) {
+        if (this.minimizable == minimizable) {
+            return;
+        }
         this.minimizable = minimizable;
         getView().setMinimizable(minimizable);
     }
@@ -161,6 +226,9 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setClosable(boolean closable) {
+        if (this.closable == closable) {
+            return;
+        }
         this.closable = closable;
         getView().setClosable(closable);
     }
@@ -177,16 +245,19 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void close() {
-        var iterator = getView().getComposer().breadthFirstIterator();
+        var iterator = getView().getComposer().breadthFirstPortIterator();
         while (iterator.hasNext()) {
             var c = iterator.next();
             if (iterator.getDepth() > 0) {
                 ((Presenter<?>) c).deinitialize();
             }
         }
-        // the window is deinitilized at the end
-        deinitialize();
-        getView().closeWindow();
+        if (getWindowType() == WindowType.NESTED) {
+            getView().getComposer().close();
+        } else {
+            deinitialize();
+            getView().closeWindow();
+        }
         if (this.onClosed != null) {
             this.onClosed.run();
         }
@@ -207,6 +278,22 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     }
 
     @Override
+    public boolean isOutOfBoundsAllowed() {
+        checkIfNested();
+        return outOfBoundsAllowed;
+    }
+
+    @Override
+    public void setOutOfBoundsAllowed(boolean outOfBoundsAllowed) {
+        checkIfNested();
+        if (this.outOfBoundsAllowed == outOfBoundsAllowed) {
+            return;
+        }
+        this.outOfBoundsAllowed = outOfBoundsAllowed;
+        getView().setOutOfBoundsAllowed(outOfBoundsAllowed);
+    }
+
+    @Override
     public Runnable getOnClosed() {
         return onClosed;
     }
@@ -216,31 +303,104 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         this.onClosed = onClosed;
     }
 
+
+    @Override
+    public double getMinWidth() {
+        return minWidth;
+    }
+
+    @Override
+    public void setMinWidth(double minWidth) {
+        this.minWidth = minWidth;
+        getView().setMinWidth(minWidth);
+    }
+
+    @Override
+    public double getMinHeight() {
+        return minHeight;
+    }
+
+    @Override
+    public void setMinHeight(double minHeight) {
+        this.minHeight = minHeight;
+        getView().setMinHeight(minHeight);
+    }
+
+    @Override
+    public double getMaxWidth() {
+        return maxWidth;
+    }
+
+    @Override
+    public void setMaxWidth(double maxWidth) {
+        this.maxWidth = maxWidth;
+        getView().setMaxWidth(maxWidth);
+    }
+
+    @Override
+    public double getMaxHeight() {
+        return maxHeight;
+    }
+
+    @Override
+    public void setMaxHeight(double maxHeight) {
+        this.maxHeight = maxHeight;
+        getView().setMaxHeight(maxHeight);
+    }
+
+    @Override
+    public boolean isResizable() {
+        return resizable;
+    }
+
+    @Override
+    public void setResizable(boolean resizable) {
+        this.resizable = resizable;
+        getView().setResizable(resizable);
+    }
+
     protected void onCloseRequest() {
         if (this.onCloseRequest != null) {
             this.onCloseRequest.run();
         }
     }
 
+    protected void onMaximize() {
+        setMaximized(!maximized);
+    }
+
+    protected void onMinimize() {
+        setMinimized(!minimized);
+    }
+
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setRegularFont(this.setting.getRegularFont());
-        getView().setMonospaceFont(this.setting.getMonospaceFont());
-        getView().setTheme(this.setting.getTheme());
-        this.monospaceFontSubscription =
-                this.setting.onMonospaceFontChanged((oldV, newV) -> getView().setMonospaceFont(newV));
-        this.regularFontSubscription =
-                this.setting.onRegularFontChanged((oldV, newV) -> getView().setRegularFont(newV));
-        this.themeSubscription = this.setting.onThemeChanged((oldV, newV) -> getView().setTheme(newV));
+        if (this.windowType == WindowType.TOP_LEVEL) {
+            getView().setDensity(this.appearanceSettings.getDensity());
+            getView().setRegularFont(this.appearanceSettings.getRegularFont());
+            getView().setMonospaceFont(this.appearanceSettings.getMonospaceFont());
+            getView().setTheme(this.appearanceSettings.getTheme());
+            this.densitySubscription =
+                    this.appearanceSettings.onDensityChanged((oldV, newV) -> getView().setDensity(newV));
+            this.monospaceFontSubscription =
+                    this.appearanceSettings.onMonospaceFontChanged((oldV, newV) -> getView().setMonospaceFont(newV));
+            this.regularFontSubscription =
+                    this.appearanceSettings.onRegularFontChanged((oldV, newV) -> getView().setRegularFont(newV));
+            this.themeSubscription = this.appearanceSettings.onThemeChanged((oldV, newV) -> getView().setTheme(newV));
+        }
+        getView().setModal(modal);
     }
 
     @Override
     protected void postDeinitialize() {
         super.postDeinitialize();
-        this.monospaceFontSubscription.unsubscribe();
-        this.regularFontSubscription.unsubscribe();
-        this.themeSubscription.unsubscribe();
+        if (this.windowType == WindowType.TOP_LEVEL) {
+            this.densitySubscription.unsubscribe();
+            this.monospaceFontSubscription.unsubscribe();
+            this.regularFontSubscription.unsubscribe();
+            this.themeSubscription.unsubscribe();
+        }
     }
 
     protected void onWidthChanged(double width) {
@@ -255,16 +415,13 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         this.maximized = maximized;
     }
 
-    @Override
-    protected WindowHistory getHistory() {
-        return (WindowHistory) super.getHistory();
+    protected void onActiveChanged(boolean active) {
+        this.active = active;
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
-        setWidth(1200);
-        setHeight(800);
+    protected WindowHistory getHistory() {
+        return (WindowHistory) super.getHistory();
     }
 
     @Override
@@ -283,5 +440,16 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         h.setWidth(getWidth());
         h.setHeight(getHeight());
         h.setMaximized(isMaximized());
+    }
+
+    protected AppearanceSettings getAppearanceSettings() {
+        return appearanceSettings;
+    }
+
+    private void checkIfNested() {
+        if (windowType != WindowType.NESTED) {
+            throw new UnsupportedOperationException("The operation is not supported for " + WindowType.TOP_LEVEL
+                    + " Window");
+        }
     }
 }

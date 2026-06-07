@@ -16,40 +16,104 @@
 
 package com.techsenger.tabshell.core.settings;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.tabshell.material.theme.Theme;
 import javafx.scene.text.Font;
 
 /**
+ * Provides access to the application-wide appearance settings, including density, theme, and fonts. Changes to
+ * these settings are propagated to all windows. Settings can be observed for changes via subscription callbacks.
  *
  * @author Pavel Castornii
  */
 public interface AppearanceSettings {
 
+    /**
+     * Returns the density of the application UI, which controls the sizing of paddings, gaps, and similar spacing
+     * properties of UI components.
+     *
+     * @return the current density value
+     */
+    @Nullable String getDensity();
+
+    /**
+     * Sets the density of the application UI.
+     *
+     * @param density the density value to apply
+     */
+    void setDensity(@Nullable String density);
+
+    /**
+     * Registers a callback to be invoked when the density changes.
+     *
+     * @param callback the callback to invoke with the new density value
+     * @return a {@link SettingsSubscription} that can be used to unsubscribe
+     */
+    SettingsSubscription onDensityChanged(SettingsCallback<String> callback);
+
+    /**
+     * Returns the current application theme.
+     *
+     * @return the current {@link Theme}
+     */
     Theme getTheme();
 
+    /**
+     * Sets the application theme.
+     *
+     * @param theme the {@link Theme} to apply
+     */
     void setTheme(Theme theme);
 
+    /**
+     * Registers a callback to be invoked when the theme changes.
+     *
+     * @param callback the callback to invoke with the new {@link Theme}
+     * @return a {@link SettingsSubscription} that can be used to unsubscribe
+     */
     SettingsSubscription onThemeChanged(SettingsCallback<Theme> callback);
 
+    /**
+     * Returns the regular font used for general UI text.
+     *
+     * @return the current regular {@link Font}
+     */
     Font getRegularFont();
 
+    /**
+     * Sets the regular font used for general UI text.
+     *
+     * @param font the {@link Font} to apply
+     */
     void setRegularFont(Font font);
 
     /**
-     * Regular font that used for UI etc.
+     * Registers a callback to be invoked when the regular font changes.
      *
-     * @return
+     * @param callback the callback to invoke with the new regular {@link Font}
+     * @return a {@link SettingsSubscription} that can be used to unsubscribe
      */
     SettingsSubscription onRegularFontChanged(SettingsCallback<Font> callback);
 
+    /**
+     * Returns the monospace font used for displaying code or terminal-style text.
+     *
+     * @return the current monospace {@link Font}
+     */
     Font getMonospaceFont();
 
+    /**
+     * Sets the monospace font used for displaying code or terminal-style text.
+     *
+     * @param font the {@link Font} to apply
+     */
     void setMonospaceFont(Font font);
 
     /**
-     * Monospace font for displaying code or terminal-style text.
+     * Registers a callback to be invoked when the monospace font changes.
      *
-     * @return
+     * @param callback the callback to invoke with the new monospace {@link Font}
+     * @return a {@link SettingsSubscription} that can be used to unsubscribe
      */
     SettingsSubscription onMonospaceFontChanged(SettingsCallback<Font> callback);
 }

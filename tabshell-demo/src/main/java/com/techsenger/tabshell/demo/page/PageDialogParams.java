@@ -18,6 +18,8 @@ package com.techsenger.tabshell.demo.page;
 
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.history.HistoryManager;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowType;
 import java.util.Objects;
 
 /**
@@ -28,7 +30,8 @@ public class PageDialogParams extends DialogParams {
 
     private final PageMenuType menuType;
 
-    public PageDialogParams(PageMenuType menuType, HistoryManager hm) {
+    public PageDialogParams(WindowType type, AppearanceSettings setting, PageMenuType menuType, HistoryManager hm) {
+        super(type, setting);
         this.menuType = menuType;
         setHistoryProvider(() -> hm.getOrCreateHistory(PageDialogHistory.class, PageDialogHistory::new));
     }

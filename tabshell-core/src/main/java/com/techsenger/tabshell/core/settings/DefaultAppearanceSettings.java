@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.core.settings;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.tabshell.material.theme.Theme;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,6 +28,8 @@ import javafx.scene.text.Font;
  */
 public class DefaultAppearanceSettings implements AppearanceSettings {
 
+    private final ObjectProperty<String> density = new SimpleObjectProperty<>();
+
     private final ObjectProperty<Theme> theme = new SimpleObjectProperty<>();
 
     private final ObjectProperty<Font> regularFont = new SimpleObjectProperty<>();
@@ -37,9 +40,24 @@ public class DefaultAppearanceSettings implements AppearanceSettings {
 
     }
 
-    public DefaultAppearanceSettings(Font regularFont, Font monospaceFont) {
+    public DefaultAppearanceSettings(@Nullable String density, Font regularFont, Font monospaceFont) {
         setRegularFont(regularFont);
         setMonospaceFont(monospaceFont);
+    }
+
+    @Override
+    public String getDensity() {
+        return this.density.get();
+    }
+
+    @Override
+    public void setDensity(String density) {
+        this.density.set(density);
+    }
+
+    @Override
+    public SettingsSubscription onDensityChanged(SettingsCallback<String> callback) {
+        return SubscriptionUtils.onChanged(density, callback);
     }
 
     @Override

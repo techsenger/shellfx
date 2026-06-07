@@ -20,7 +20,6 @@ import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
-import com.techsenger.tabshell.core.settings.AppearanceSettings;
 import com.techsenger.tabshell.dialogs.DialogComponents;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogType;
@@ -86,7 +85,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     private List<ExtensionFilter> extensionFilters;
 
-    private final FileChooserType type;
+    private final FileChooserType chooserType;
 
     private final URI initialDirectory;
 
@@ -100,8 +99,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     private List<FileStorage> storages;
 
-    private final AppearanceSettings settings;
-
     private GenericFile resultFile;
 
     private EditType editType;
@@ -114,8 +111,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     public FileChooserDialogPresenter(V view, FileChooserDialogParams params) {
         super(view, params);
-        this.settings = params.getSettings();
-        this.type = params.getType();
+        this.chooserType = params.getChooserType();
         this.storages = params.getStorages();
         this.initialDirectory = params.getInitialDirectory();
         this.directory = initialDirectory;
@@ -142,8 +138,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     @Override
-    public FileChooserType getType() {
-        return type;
+    public FileChooserType getChooserType() {
+        return chooserType;
     }
 
     @Override
@@ -303,14 +299,14 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     @Override
     protected void preInitialize() {
         super.preInitialize();
-        getView().setAppearanceSettings(settings);
+        getView().setAppearanceSettings(getAppearanceSettings());
     }
 
     @Override
     protected void applyAppearance() {
         super.applyAppearance();
-        setPrefWidth(800);
-        setPrefHeight(500);
+        setWidth(800);
+        setHeight(500);
         createInitialColumns();
         getView().addColumns(columns);
     }
@@ -340,7 +336,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        switch (type) {
+        switch (chooserType) {
             case OPEN -> {
                 setTitle("Open");
                 setIcon(DialogIcons.OPEN);
@@ -366,10 +362,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     protected FileStorage getStorage() {
         return storage;
-    }
-
-    protected AppearanceSettings getSettings() {
-        return settings;
     }
 
     protected void onLocationRequested(Location location) {
@@ -633,7 +625,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     private void showWarning(String text) {
-        getView().getComposer().addAlertDialog(new AlertDialogParams(AlertDialogType.WARNING), text);
+        var params = new AlertDialogParams(getWindowType(), getAppearanceSettings(), AlertDialogType.WARNING);
+        getView().getComposer().addAlertDialog(params, text);
     }
 
     private void setDefaultStorageAndDirectory() {
@@ -748,7 +741,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
             }
         }
         //there is no file with such name
-        if (this.type == FileChooserType.SAVE_AS) {
+        if (this.chooserType == FileChooserType.SAVE_AS) {
             if (!getExtensionFilters().isEmpty() && getExtensionFilter() != null
                     && !getExtensionFilter().matchesAllFiles()) {
                 var extension = FileUtils.getExtension(fileName);

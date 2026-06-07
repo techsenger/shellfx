@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.devtools.environment;
 
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.TabView;
 import com.techsenger.tabshell.devtools.ToolBarPort;
 import com.techsenger.tabshell.dialogs.namevalue.NameValueDialogPort;
@@ -31,7 +32,7 @@ public interface EnvironmentTabView extends TabView {
 
         ToolBarPort getToolBarPort();
 
-        NameValueDialogPort addNameValueDialog();
+        NameValueDialogPort openNameValueDialog(DialogParams params);
     }
 
     @Override

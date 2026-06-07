@@ -28,9 +28,10 @@ import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.Display
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.core.dialog.DialogContainerFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
+import com.techsenger.tabshell.core.window.WindowContainerFxView;
+import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.ElementUtils;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarParams;
@@ -516,7 +517,12 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         public DialogPort openViewerDialog(ViewerDialogParams params) {
             var dialog = createViewerDialog(params);
             dialog.getPresenter().setResizable(true);
-            dialogContainer.addDialog(dialog);
+            if (params.getWindowType() == WindowType.NESTED) {
+                windowContainer.addWindow(dialog);
+            } else {
+                dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
+                dialog.getStage().show();
+            }
             return dialog.getPresenter();
         }
 
@@ -530,7 +536,12 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             } else {
                 dialog = createTextEditorDialog(params);
             }
-            dialogContainer.addDialog(dialog);
+            if (params.getWindowType() == WindowType.NESTED) {
+                windowContainer.addWindow(dialog);
+            } else {
+                dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
+                dialog.getStage().show();
+            }
             return dialog.getPresenter();
         }
 
@@ -579,7 +590,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         }
     }
 
-    private final DialogContainerFxView.Composer dialogContainer;
+    private final WindowContainerFxView.Composer windowContainer;
 
     private final TreeView<Element> nodeTreeView = new TreeView<>();
 
@@ -595,9 +606,9 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
 
     private final SplitPane splitPane = new SplitPane(nodeBox, propertyBox);
 
-    public NodeTabFxView(ShellFxView<?> shell, DialogContainerFxView.Composer dialogContainer) {
+    public NodeTabFxView(ShellFxView<?> shell, WindowContainerFxView.Composer windowContainer) {
         super(shell);
-        this.dialogContainer = dialogContainer;
+        this.windowContainer = windowContainer;
     }
 
     @Override
@@ -846,7 +857,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
     }
 
     private void updateNodeRoot() {
-        var stage = getComposer().getShell().getWindow();
+        var stage = getComposer().getShell().getStage();
         var root = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
         var rootItem = createNodeItem(root);
         nodeTreeView.setRoot(rootItem);

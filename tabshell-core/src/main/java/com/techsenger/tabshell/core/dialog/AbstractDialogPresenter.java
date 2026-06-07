@@ -17,9 +17,8 @@
 package com.techsenger.tabshell.core.dialog;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabshell.core.popup.AbstractPopupPresenter;
+import com.techsenger.tabshell.core.window.AbstractWindowPresenter;
 import com.techsenger.tabshell.material.button.ResultButtonName;
-import com.techsenger.tabshell.material.icon.Icon;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +32,7 @@ import java.util.function.Consumer;
  * @author Pavel Castornii
  */
 public abstract class AbstractDialogPresenter<V extends DialogView>
-        extends AbstractPopupPresenter<V> implements DialogPresenter<V> {
+        extends AbstractWindowPresenter<V> implements DialogPresenter<V> {
 
     private static final class ButtonModel {
 
@@ -60,26 +59,6 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
 
     private Consumer<ResultButtonName> onResult = (name) -> closeSafely();
 
-    private boolean active;
-
-    private double minWidth;
-
-    private double minHeight;
-
-    private double maxWidth;
-
-    private double maxHeight;
-
-    private boolean outOfBoundsAllowed;
-
-    private boolean resizable;
-
-    private boolean closeDisabled;
-
-    private String title;
-
-    private Icon<?> icon;
-
     private final List<ResultButtonName> leftButtons = new ArrayList<>();
 
     private final List<ResultButtonName> rightButtons = new ArrayList<>();
@@ -88,93 +67,6 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
 
     public AbstractDialogPresenter(V view, DialogParams params) {
         super(view, params);
-    }
-
-    @Override
-    public boolean isActive() {
-        return active;
-    }
-
-    @Override
-    public void setActive(boolean active) {
-        this.active = active;
-        getView().setActive(active);
-    }
-
-    @Override
-    public double getMinWidth() {
-        return minWidth;
-    }
-
-    @Override
-    public void setMinWidth(double minWidth) {
-        this.minWidth = minWidth;
-        getView().setMinWidth(minWidth);
-    }
-
-    @Override
-    public double getMinHeight() {
-        return minHeight;
-    }
-
-    @Override
-    public void setMinHeight(double minHeight) {
-        this.minHeight = minHeight;
-        getView().setMinHeight(minHeight);
-    }
-
-    @Override
-    public double getMaxWidth() {
-        return maxWidth;
-    }
-
-    @Override
-    public void setMaxWidth(double maxWidth) {
-        this.maxWidth = maxWidth;
-        getView().setMaxWidth(maxWidth);
-    }
-
-    @Override
-    public double getMaxHeight() {
-        return maxHeight;
-    }
-
-    @Override
-    public void setMaxHeight(double maxHeight) {
-        this.maxHeight = maxHeight;
-        getView().setMaxHeight(maxHeight);
-    }
-
-    @Override
-    public boolean isOutOfBoundsAllowed() {
-        return outOfBoundsAllowed;
-    }
-
-    @Override
-    public void setOutOfBoundsAllowed(boolean outOfBoundsAllowed) {
-        this.outOfBoundsAllowed = outOfBoundsAllowed;
-        getView().setOutOfBoundsAllowed(outOfBoundsAllowed);
-    }
-
-    @Override
-    public boolean isResizable() {
-        return resizable;
-    }
-
-    @Override
-    public void setResizable(boolean resizable) {
-        this.resizable = resizable;
-        getView().setResizable(resizable);
-    }
-
-    @Override
-    public boolean isCloseDisabled() {
-        return closeDisabled;
-    }
-
-    public void setCloseDisabled(boolean closeDisabled) {
-        this.closeDisabled = closeDisabled;
-        getView().setCloseDisabled(closeDisabled);
     }
 
     @Override
@@ -244,28 +136,6 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
     }
 
     @Override
-    public void setTitle(String title) {
-        this.title = title;
-        getView().setTitle(title);
-    }
-
-    @Override
-    public String getTitle() {
-        return this.title;
-    }
-
-    @Override
-    public void setIcon(Icon<?> icon) {
-        this.icon = icon;
-        getView().setIcon(icon);
-    }
-
-    @Override
-    public Icon<?> getIcon() {
-        return this.icon;
-    }
-
-    @Override
     public Consumer<ResultButtonName> getOnResult() {
         return onResult;
     }
@@ -289,8 +159,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
     protected void restoreAppearance() {
         super.restoreAppearance();
         var h = getHistory();
-        setPrefWidth(h.getWidth());
-        setPrefHeight(h.getHeight());
+        setWidth(h.getWidth());
+        setHeight(h.getHeight());
     }
 
     protected void onResult(ResultButtonName name) {

@@ -44,7 +44,7 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
 
     private boolean closable;
 
-    private Runnable onCloseRequest;
+    private Runnable onCloseRequest = () -> closeSafely();
 
     private Runnable onClosed;
 

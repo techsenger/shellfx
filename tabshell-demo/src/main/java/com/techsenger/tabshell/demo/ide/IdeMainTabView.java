@@ -16,8 +16,10 @@
 
 package com.techsenger.tabshell.demo.ide;
 
+import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.popup.OverlayScope;
+import com.techsenger.tabshell.core.popup.PopupContainerView;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.TabView;
 
@@ -25,11 +27,11 @@ import com.techsenger.tabshell.core.tab.TabView;
  *
  * @author Pavel Castornii
  */
-public interface IdeMainTabView extends TabView {
+public interface IdeMainTabView extends TabView, PopupContainerView, IdeMainTabPort.ViewAccess {
 
-    interface Composer extends TabView.Composer {
+    interface Composer extends TabView.Composer, PopupContainerView.Composer, IdeMainTabPort.Composer {
 
-        DialogPort openDemoDialog(boolean resizable);
+        DialogPort openDemoDialog(boolean resizable, DialogParams params);
 
         PopupPort openDemoPopup(OverlayScope scope);
     }

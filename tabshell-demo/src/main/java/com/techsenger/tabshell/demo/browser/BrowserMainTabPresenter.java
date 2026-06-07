@@ -19,8 +19,8 @@ package com.techsenger.tabshell.demo.browser;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
-import com.techsenger.tabshell.core.tab.AbstractTabPresenter;
-import com.techsenger.tabshell.core.tab.TabView;
+import com.techsenger.tabshell.core.tab.AbstractHostTabPresenter;
+import com.techsenger.tabshell.core.tab.HostTabView;
 import com.techsenger.tabshell.demo.DemoComponents;
 import java.util.function.Consumer;
 
@@ -28,9 +28,9 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class BrowserMainTabPresenter extends AbstractTabPresenter<TabView> {
+public class BrowserMainTabPresenter extends AbstractHostTabPresenter<HostTabView> {
 
-    public BrowserMainTabPresenter(TabView view, BrowserMainTabParams params) {
+    public BrowserMainTabPresenter(HostTabView view, BrowserMainTabParams params) {
         super(view, params);
     }
 
