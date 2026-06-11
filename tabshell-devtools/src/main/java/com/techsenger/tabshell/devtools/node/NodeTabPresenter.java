@@ -138,14 +138,18 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
 
     private Element selectedNode;
 
-    // ObservableType in Attribute is incorrect because its value is determined by the property instance
-    // rather than the property method's return type. However, we cannot fix this in the connector because
-    // using reflection there would significantly slow down node event firing.
+    /**
+     * ObservableType in Attribute is incorrect because its value is determined by the property instance
+     * rather than the property method's return type. However, we cannot fix this in the connector because
+     * using reflection there would significantly slow down node event firing.
+     */
     private final Map<String, Boolean> readOnlyByProperty = new HashMap<>();
 
     private Map<AttributeCategory, Boolean> categoryExpansion;
 
-    // Attribute events come after node events, so we need to save them.
+    /**
+     * Attribute events come after node events, so we need to save them.
+     */
     private List<AttributeListEvent> savedAttributeEvents = new ArrayList<>();
 
     private boolean selectedFromNodeTree;
