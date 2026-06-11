@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demo.theme;
+package com.techsenger.tabshell.demo.settings;
 
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.tabshell.core.CloseCheckResult;
@@ -33,20 +33,20 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogView> {
+public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDialogView> {
 
     private final AppearanceSettings settings;
 
     private Theme theme;
 
-    public ThemeDialogPresenter(ThemeDialogView view, ThemeDialogParams params) {
+    public SettingsDialogPresenter(SettingsDialogView view, SettingsDialogParams params) {
         super(view, params);
         this.settings = params.getSettings();
     }
 
     @Override
     protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.THEME_DIALOG);
+        return new ComponentDescriptor(DemoComponents.SETTINGS_DIALOG);
     }
 
     @Override
@@ -62,16 +62,16 @@ public class ThemeDialogPresenter extends AbstractDialogPresenter<ThemeDialogVie
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        setTitle("Select Theme");
-        setIcon(new FontIcon(984334)); // theme-light-dark
+        setTitle("Settings");
+        setIcon(new FontIcon(0xF08BB));
         setWidth(500);
         setResizable(false);
         getView().setThemes(Arrays.stream(AtlantaFxTheme.values()).collect(Collectors.toList()));
         getView().setTheme(settings.getTheme());
-        setRightButtons(ThemeDialogButtons.CANCEL, ThemeDialogButtons.OK);
-        setButtonDefault(ThemeDialogButtons.OK, true);
+        setRightButtons(SettingsDialogButtons.CANCEL, SettingsDialogButtons.OK);
+        setButtonDefault(SettingsDialogButtons.OK, true);
         setOnResult((buttonName) -> {
-            if (buttonName == ThemeDialogButtons.OK) {
+            if (buttonName == SettingsDialogButtons.OK) {
                 settings.setTheme(this.theme);
             }
             closeSafely();

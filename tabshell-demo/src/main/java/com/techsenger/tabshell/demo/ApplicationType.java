@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demo.theme;
-
-import com.techsenger.tabshell.material.button.DefaultResultButtonName;
-import com.techsenger.tabshell.material.button.ResultButtonName;
+package com.techsenger.tabshell.demo;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ThemeDialogButtons {
+public enum ApplicationType {
 
-    ResultButtonName CANCEL = new DefaultResultButtonName();
-
-    ResultButtonName OK = new DefaultResultButtonName();
+    BROWSER, IDE, MDI, STYLES_ONLY
 }

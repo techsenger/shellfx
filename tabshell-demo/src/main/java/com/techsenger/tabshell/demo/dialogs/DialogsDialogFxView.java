@@ -22,7 +22,6 @@ import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.window.WindowType;
-import com.techsenger.tabshell.demo.Density;
 import com.techsenger.tabshell.demo.page.PageDialogFxView;
 import com.techsenger.tabshell.demo.page.PageDialogParams;
 import com.techsenger.tabshell.demo.page.PageDialogPresenter;
@@ -94,7 +93,6 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
         }
 
         private void showDialog(DialogFxView<?> dialog) {
-            dialog.getNode().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
             if (dialog.getPresenter().getWindowType() == WindowType.NESTED) {
                 getContainer().getComposer().addWindow(dialog);
             } else {

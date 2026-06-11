@@ -16,6 +16,7 @@
 
 package com.techsenger.tabshell.demo.styles;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
@@ -94,7 +95,11 @@ public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?>
         @Override
         public void compose() {
             super.compose();
-            var pageHost = new PageHostFxView<>();
+            var pageHost = new PageHostFxView<>() {
+                {
+                    getPageListView().getStyleClass().add(Styles.DENSE);
+                }
+            };
             var params = new PageHostParams(null);
             params.setHistoryPolicy(HistoryPolicy.NONE);
             var hostPresenter = new PageHostPresenter<>(pageHost, params);

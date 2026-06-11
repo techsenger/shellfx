@@ -19,7 +19,6 @@ package com.techsenger.tabshell.demo.menu.file;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
 import com.techsenger.tabshell.core.window.WindowContainerFxView;
-import com.techsenger.tabshell.demo.Density;
 import com.techsenger.tabshell.devtools.DevToolsComponents;
 import com.techsenger.tabshell.devtools.DevToolsHostType;
 import com.techsenger.tabshell.devtools.DevToolsTabDockFxView;
@@ -101,7 +100,6 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
         var params = new DevToolsWindowParams(context.getSettings().getAppearance(), context.getHistoryManager());
         var presenter = new DevToolsWindowPresenter<>(view, params);
         presenter.initialize();
-        view.getStage().getScene().getRoot().getStyleClass().add(Density.STYLE_CLASS); // see Density javadoc
         return view;
     }
 

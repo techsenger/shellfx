@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demo;
+package com.techsenger.tabshell.demo.settings;
+
+import com.techsenger.tabshell.core.dialog.DialogParams;
+import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowType;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum WorkspaceType {
+public class SettingsDialogParams extends DialogParams {
 
-    BROWSER, IDE, MDI
+    public SettingsDialogParams(WindowType type, AppearanceSettings setting) {
+        super(type, setting);
+    }
 }

@@ -21,7 +21,7 @@ import com.techsenger.tabshell.core.menu.MenuItemHandler;
 import com.techsenger.tabshell.core.registry.AbstractControlRegistrar;
 import com.techsenger.tabshell.core.registry.ControlFactory;
 import com.techsenger.tabshell.core.registry.ControlRegistry;
-import com.techsenger.tabshell.demo.WorkspaceType;
+import com.techsenger.tabshell.demo.ApplicationType;
 import com.techsenger.tabshell.demo.page.PageMenuType;
 import com.techsenger.tabshell.material.menu.ManagedMenu;
 import com.techsenger.tabshell.material.menu.ManagedMenuGroup;
@@ -36,11 +36,11 @@ import javafx.scene.input.KeyCombination;
  */
 public class FileMenuRegistrar extends AbstractControlRegistrar {
 
-    private final WorkspaceType workspaceType;
+    private final ApplicationType workspaceType;
 
     private final ShellFxView<?> shell;
 
-    public FileMenuRegistrar(ControlRegistry registry, WorkspaceType workspaceType, ShellFxView<?> shell) {
+    public FileMenuRegistrar(ControlRegistry registry, ApplicationType workspaceType, ShellFxView<?> shell) {
         super(registry);
         this.workspaceType = workspaceType;
         this.shell = shell;
@@ -50,15 +50,14 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     public void register() {
         registerMenu();
         registerGroups();
-        if (workspaceType != WorkspaceType.MDI) {
+        if (workspaceType != ApplicationType.MDI) {
             registerMainTabItem();
             registerPageTabItem();
             registerTreePageTabItem();
         }
         registerDialogsItem();
         registerDevToolsItem();
-        registerThemeItem();
-        registerStylesTabItem();
+        registerSettingsItem();
         registerExitItem();
     }
 
@@ -126,19 +125,10 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
     }
 
-    protected void registerThemeItem() {
+    protected void registerSettingsItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("_Theme", 100);
-            MenuItemHandler.setHandler(item, new ThemeItemHandler(item, shell));
-            return item;
-        };
-        addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.APPEARANCE_GROUP, f));
-    }
-
-    protected void registerStylesTabItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Styles Tab", 200);
-            MenuItemHandler.setHandler(item, new StylesItemHandler(item, shell));
+            var item = new ManagedMenuItem("_Settings", 100);
+            MenuItemHandler.setHandler(item, new SettingsItemHandler(item, shell));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.APPEARANCE_GROUP, f));

@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demo.theme;
+package com.techsenger.tabshell.demo.settings;
 
-import com.techsenger.tabshell.core.dialog.DialogView;
-import com.techsenger.tabshell.material.theme.Theme;
-import java.util.List;
+import com.techsenger.tabshell.material.button.DefaultResultButtonName;
+import com.techsenger.tabshell.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ThemeDialogView extends DialogView {
+public interface SettingsDialogButtons {
 
-    void setThemes(List<Theme> themes);
+    ResultButtonName CANCEL = new DefaultResultButtonName();
 
-    void setTheme(Theme theme);
+    ResultButtonName OK = new DefaultResultButtonName();
 }

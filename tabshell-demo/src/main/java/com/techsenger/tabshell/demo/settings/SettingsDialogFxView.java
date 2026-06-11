@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demo.theme;
+package com.techsenger.tabshell.demo.settings;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.material.button.ResultButton;
@@ -34,7 +34,7 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter> implements ThemeDialogView {
+public class SettingsDialogFxView extends AbstractDialogFxView<SettingsDialogPresenter> implements SettingsDialogView {
 
     private final Label themeLabel = new Label("Theme");
 
@@ -42,11 +42,11 @@ public class ThemeDialogFxView extends AbstractDialogFxView<ThemeDialogPresenter
 
     private final HBox hBox = new HBox(themeLabel, themeComboBox);
 
-    private final ResultButton cancelButton = new ResultButton(ThemeDialogButtons.CANCEL, "Cancel");
+    private final ResultButton cancelButton = new ResultButton(SettingsDialogButtons.CANCEL, "Cancel");
 
-    private final ResultButton okButton = new ResultButton(ThemeDialogButtons.OK, "OK");
+    private final ResultButton okButton = new ResultButton(SettingsDialogButtons.OK, "OK");
 
-    public ThemeDialogFxView() {
+    public SettingsDialogFxView() {
         super();
     }
 

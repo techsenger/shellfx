@@ -17,29 +17,31 @@
 package com.techsenger.tabshell.demo.menu.file;
 
 import com.techsenger.tabshell.core.ShellFxView;
-import com.techsenger.tabshell.demo.menu.AbstractContainerItemHandler;
-import com.techsenger.tabshell.demo.styles.StylesTabFxView;
-import com.techsenger.tabshell.demo.styles.StylesTabPresenter;
+import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
+import com.techsenger.tabshell.core.window.WindowType;
+import com.techsenger.tabshell.demo.settings.SettingsDialogFxView;
+import com.techsenger.tabshell.demo.settings.SettingsDialogParams;
+import com.techsenger.tabshell.demo.settings.SettingsDialogPresenter;
 import com.techsenger.tabshell.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class StylesItemHandler extends AbstractContainerItemHandler {
+public class SettingsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> {
 
-    public StylesItemHandler(ManagedMenuItem item, ShellFxView<?> component) {
+    public SettingsItemHandler(ManagedMenuItem item, ShellFxView<?> component) {
         super(item, component);
     }
 
     @Override
     public void onAction() {
         var shell = getComponent();
-        var tabView = new StylesTabFxView(shell);
-        var tabPresenter = new StylesTabPresenter(tabView);
-        tabPresenter.initialize();
-        resolveMainTabContainer().getComposer().addTab(tabView);
-        tabView.requestFocus();
+        var appearance = shell.getPresenter().getContext().getSettings().getAppearance();
+        var view = new SettingsDialogFxView();
+        var params = new SettingsDialogParams(WindowType.NESTED, appearance);
+        var presenter = new SettingsDialogPresenter(view, params);
+        presenter.initialize();
+        shell.getComposer().addWindow(view);
     }
-
 }

@@ -42,7 +42,7 @@ public final class DemoComponents {
 
     public static final ComponentName DIALOGS_DIALOG = new DefaultComponentName("Demo.DialogsDialog");
 
-    public static final ComponentName THEME_DIALOG = new DefaultComponentName("Demo.ThemeDialog");
+    public static final ComponentName SETTINGS_DIALOG = new DefaultComponentName("Demo.SettingsDialog");
 
     public static final ComponentName PAGE_0 = new DefaultComponentName("Demo.Page0");
 

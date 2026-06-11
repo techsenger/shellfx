@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.tabshell.demo.theme;
+package com.techsenger.tabshell.demo.settings;
 
-import com.techsenger.tabshell.core.dialog.DialogParams;
-import com.techsenger.tabshell.core.settings.AppearanceSettings;
-import com.techsenger.tabshell.core.window.WindowType;
+import com.techsenger.tabshell.core.dialog.DialogView;
+import com.techsenger.tabshell.material.theme.Theme;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ThemeDialogParams extends DialogParams {
+public interface SettingsDialogView extends DialogView {
 
-    public ThemeDialogParams(WindowType type, AppearanceSettings setting) {
-        super(type, setting);
-    }
+    void setThemes(List<Theme> themes);
+
+    void setTheme(Theme theme);
 }
