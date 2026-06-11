@@ -17,17 +17,18 @@
 package com.techsenger.tabshell.demo.settings;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
+import com.techsenger.tabshell.core.settings.Density;
 import com.techsenger.tabshell.material.button.ResultButton;
 import com.techsenger.tabshell.material.style.Spacing;
+import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import com.techsenger.tabshell.material.theme.Theme;
-import java.util.List;
 import javafx.collections.FXCollections;
-import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 /**
@@ -38,9 +39,14 @@ public class SettingsDialogFxView extends AbstractDialogFxView<SettingsDialogPre
 
     private final Label themeLabel = new Label("Theme");
 
-    private final ComboBox<Theme> themeComboBox = new ComboBox<>();
+    private final ComboBox<Theme> themeComboBox =
+            new ComboBox<>(FXCollections.observableArrayList(AtlantaFxTheme.values()));
 
-    private final HBox hBox = new HBox(themeLabel, themeComboBox);
+    private final Label densityLabel = new Label("Density");
+
+    private final ComboBox<Density> densityComboBox = new ComboBox<>();
+
+    private final GridPane gridPane = new GridPane();
 
     private final ResultButton cancelButton = new ResultButton(SettingsDialogButtons.CANCEL, "Cancel");
 
@@ -52,17 +58,17 @@ public class SettingsDialogFxView extends AbstractDialogFxView<SettingsDialogPre
 
     @Override
     public void requestFocus() {
-        hBox.requestFocus();
+        themeComboBox.requestFocus();
     }
 
     @Override
-    public void setThemes(List<Theme> themes) {
-        themeComboBox.setItems(FXCollections.observableArrayList(themes));
-    }
-
-    @Override
-    public void setTheme(Theme theme) {
+    public void setSelectedTheme(Theme theme) {
         themeComboBox.getSelectionModel().select(theme);
+    }
+
+    @Override
+    public void setSelectedDensity(Density density) {
+        densityComboBox.getSelectionModel().select(density);
     }
 
     @Override
@@ -81,18 +87,29 @@ public class SettingsDialogFxView extends AbstractDialogFxView<SettingsDialogPre
                 return null;
             }
         });
-        HBox.setHgrow(themeComboBox, Priority.ALWAYS);
-        hBox.setSpacing(Spacing.getHorizontal());
-        hBox.setAlignment(Pos.CENTER_LEFT);
+        GridPane.setHgrow(themeComboBox, Priority.ALWAYS);
+        gridPane.addRow(gridPane.getRowCount(), themeLabel, themeComboBox);
+
+        densityLabel.setMinWidth(Region.USE_PREF_SIZE);
+        densityComboBox.getItems().add(null);
+        densityComboBox.getItems().addAll(Density.values());
+        densityComboBox.setMaxWidth(Double.MAX_VALUE);
+        GridPane.setHgrow(densityComboBox, Priority.ALWAYS);
+        gridPane.addRow(gridPane.getRowCount(), densityLabel, densityComboBox);
+
+        gridPane.setVgap(Spacing.getVertical());
+        gridPane.setHgap(Spacing.getHorizontal());
 
         okButton.setDefaultButton(true);
         registerButtons(cancelButton, okButton);
-        getContentBox().getChildren().add(hBox);
+        VBox.setVgrow(gridPane, Priority.ALWAYS);
+        getContentBox().getChildren().add(gridPane);
     }
 
     @Override
     protected void addListeners() {
         super.addListeners();
         themeComboBox.valueProperty().addListener((ov, oldV, newV) -> getPresenter().onThemeSelected(newV));
+        densityComboBox.valueProperty().addListener((ov, oldV, newV) -> getPresenter().onDensitySelected(newV));
     }
 }

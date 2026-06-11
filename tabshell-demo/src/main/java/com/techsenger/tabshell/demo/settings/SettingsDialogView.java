@@ -17,8 +17,8 @@
 package com.techsenger.tabshell.demo.settings;
 
 import com.techsenger.tabshell.core.dialog.DialogView;
+import com.techsenger.tabshell.core.settings.Density;
 import com.techsenger.tabshell.material.theme.Theme;
-import java.util.List;
 
 /**
  *
@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface SettingsDialogView extends DialogView {
 
-    void setThemes(List<Theme> themes);
+    void setSelectedTheme(Theme theme);
 
-    void setTheme(Theme theme);
+    void setSelectedDensity(Density density);
 }

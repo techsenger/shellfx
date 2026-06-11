@@ -21,13 +21,11 @@ import com.techsenger.tabshell.core.CloseCheckResult;
 import com.techsenger.tabshell.core.ClosePreparationResult;
 import com.techsenger.tabshell.core.dialog.AbstractDialogPresenter;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.settings.Density;
 import com.techsenger.tabshell.demo.DemoComponents;
 import com.techsenger.tabshell.material.icon.FontIcon;
-import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import com.techsenger.tabshell.material.theme.Theme;
-import java.util.Arrays;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -37,7 +35,12 @@ public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDia
 
     private final AppearanceSettings settings;
 
-    private Theme theme;
+    /**
+     * Important. WindowView has setDensity and setTheme methods.
+     */
+    private Theme selectedTheme;
+
+    private Density selectedDensity;
 
     public SettingsDialogPresenter(SettingsDialogView view, SettingsDialogParams params) {
         super(view, params);
@@ -66,19 +69,41 @@ public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDia
         setIcon(new FontIcon(0xF08BB));
         setWidth(500);
         setResizable(false);
-        getView().setThemes(Arrays.stream(AtlantaFxTheme.values()).collect(Collectors.toList()));
-        getView().setTheme(settings.getTheme());
+        setSelectedTheme(settings.getTheme());
+        setSelectedDensity(settings.getDensity());
+        getView().
         setRightButtons(SettingsDialogButtons.CANCEL, SettingsDialogButtons.OK);
         setButtonDefault(SettingsDialogButtons.OK, true);
         setOnResult((buttonName) -> {
             if (buttonName == SettingsDialogButtons.OK) {
-                settings.setTheme(this.theme);
+                settings.setTheme(this.selectedTheme);
+                settings.setDensity(selectedDensity);
             }
             closeSafely();
         });
     }
 
     void onThemeSelected(Theme theme) {
-        this.theme = theme;
+        this.selectedTheme = theme;
+    }
+
+    void onDensitySelected(Density density) {
+        this.selectedDensity = density;
+    }
+
+    private void setSelectedTheme(Theme theme) {
+        if (this.selectedTheme == theme) {
+            return;
+        }
+        this.selectedTheme = theme;
+        getView().setSelectedTheme(theme);
+    }
+
+    private void setSelectedDensity(Density density) {
+        if (this.selectedDensity == density) {
+            return;
+        }
+        this.selectedDensity = density;
+        getView().setSelectedDensity(density);
     }
 }

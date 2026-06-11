@@ -34,7 +34,7 @@ public final class DemoSettings {
         var monospaceFont = Font.font("Monospace", 14);
         var appearance = new DefaultAppearanceSettings(null, regularFont, monospaceFont);
         appearance.setTheme(AtlantaFxTheme.CUPERTINO_DARK);
-        appearance.setDensity(Density.M);
+        appearance.setDensity(Density.S);
         var settings = new ShellSettings() {
 
             @Override
