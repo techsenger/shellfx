@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core.window;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.tabshell.core.settings.Density;
 import com.techsenger.tabshell.material.theme.Theme;
 import javafx.scene.text.Font;
 
@@ -54,7 +55,7 @@ public interface WindowView extends ChildView, WindowShared {
      *
      * @param density the density to apply
      */
-    void setDensity(@Nullable String density);
+    void setDensity(@Nullable Density density);
 
     /**
      * Sets the theme of this window.

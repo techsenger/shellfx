@@ -23,6 +23,7 @@ import com.techsenger.patternfx.mvp.AbstractChildFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
+import com.techsenger.tabshell.core.settings.Density;
 import com.techsenger.tabshell.core.style.CoreIcons;
 import com.techsenger.tabshell.core.style.CssAnchor;
 import com.techsenger.tabshell.material.icon.FontIconView;
@@ -214,7 +215,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private @Nullable FontApplier fontApplier;
 
-    private @Nullable String density;
+    private @Nullable Density density;
 
     /**
      * If it is true user can move dialog only with minimum top constrain. If this value is false user
@@ -449,14 +450,14 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setDensity(@Nullable String density) {
+    public void setDensity(@Nullable Density density) {
         checkIfTopLevel();
         if (this.density != null) {
-            this.stage.getScene().getRoot().getStyleClass().remove(this.density);
+            this.stage.getScene().getRoot().getStyleClass().remove(this.density.getStyleClass());
         }
         this.density = density;
         if (this.density != null) {
-            this.stage.getScene().getRoot().getStyleClass().add(this.density);
+            this.stage.getScene().getRoot().getStyleClass().add(this.density.getStyleClass());
         }
     }
 

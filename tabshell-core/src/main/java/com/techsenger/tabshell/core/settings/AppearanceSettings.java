@@ -34,14 +34,14 @@ public interface AppearanceSettings {
      *
      * @return the current density value
      */
-    @Nullable String getDensity();
+    @Nullable Density getDensity();
 
     /**
      * Sets the density of the application UI.
      *
      * @param density the density value to apply
      */
-    void setDensity(@Nullable String density);
+    void setDensity(@Nullable Density density);
 
     /**
      * Registers a callback to be invoked when the density changes.
@@ -49,7 +49,7 @@ public interface AppearanceSettings {
      * @param callback the callback to invoke with the new density value
      * @return a {@link SettingsSubscription} that can be used to unsubscribe
      */
-    SettingsSubscription onDensityChanged(SettingsCallback<String> callback);
+    SettingsSubscription onDensityChanged(SettingsCallback<@Nullable Density> callback);
 
     /**
      * Returns the current application theme.

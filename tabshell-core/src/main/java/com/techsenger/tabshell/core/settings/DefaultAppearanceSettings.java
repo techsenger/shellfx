@@ -28,7 +28,7 @@ import javafx.scene.text.Font;
  */
 public class DefaultAppearanceSettings implements AppearanceSettings {
 
-    private final ObjectProperty<String> density = new SimpleObjectProperty<>();
+    private final ObjectProperty<Density> density = new SimpleObjectProperty<>();
 
     private final ObjectProperty<Theme> theme = new SimpleObjectProperty<>();
 
@@ -40,23 +40,23 @@ public class DefaultAppearanceSettings implements AppearanceSettings {
 
     }
 
-    public DefaultAppearanceSettings(@Nullable String density, Font regularFont, Font monospaceFont) {
+    public DefaultAppearanceSettings(@Nullable Density density, Font regularFont, Font monospaceFont) {
         setRegularFont(regularFont);
         setMonospaceFont(monospaceFont);
     }
 
     @Override
-    public String getDensity() {
+    public @Nullable Density getDensity() {
         return this.density.get();
     }
 
     @Override
-    public void setDensity(String density) {
+    public void setDensity(@Nullable Density density) {
         this.density.set(density);
     }
 
     @Override
-    public SettingsSubscription onDensityChanged(SettingsCallback<String> callback) {
+    public SettingsSubscription onDensityChanged(SettingsCallback<@Nullable Density> callback) {
         return SubscriptionUtils.onChanged(density, callback);
     }
 
