@@ -67,17 +67,20 @@ public interface WindowContainerFxView<P extends WindowContainerPresenter<?>> ex
 
         /**
          * Maximizes the specified window to fill the available container area.
-         * <p>
-         * If the window is already maximized, this method has no effect.
          *
          * @param window the window component to maximize
          */
         void maximizeWindow(WindowFxView<?> window);
 
         /**
+         * Minimizes the specified window.
+         *
+         * @param window the window component to minimize
+         */
+        void minimizeWindow(WindowFxView<?> window);
+
+        /**
          * Restores the specified window to its previous size and position before it was maximized or minimized.
-         * <p>
-         * If the window is already in its normal state, this method has no effect.
          *
          * @param window the window component to restore
          */

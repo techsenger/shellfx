@@ -92,6 +92,10 @@ public interface WindowShared {
     /**
      * Sets whether the window is maximized.
      *
+     * <p>Important: the {@code maximized} and {@code minimized} states are orthogonal and may be combined freely for
+     * {@link WindowType#TOP_LEVEL} windows. For {@link WindowType#NESTED} windows, however, these states are mutually
+     * exclusive - setting one to {@code true} resets the other to {@code false}.
+     *
      * @param value {@code true} to maximize the window, {@code false} to restore it
      */
     void setMaximized(boolean value);
@@ -105,6 +109,10 @@ public interface WindowShared {
 
     /**
      * Sets whether the window is minimized.
+     *
+     * <p>Important: the {@code maximized} and {@code minimized} states are orthogonal and may be combined freely for
+     * {@link WindowType#TOP_LEVEL} windows. For {@link WindowType#NESTED} windows, however, these states are mutually
+     * exclusive - setting one to {@code true} resets the other to {@code false}.
      *
      * @param minimized {@code true} to minimize the window, {@code false} to restore it
      */

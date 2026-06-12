@@ -52,6 +52,8 @@ public class DemoWindowFxView extends AbstractWindowFxView<DemoWindowPresenter> 
 
     private final CheckBox resizableCheckBox = new CheckBox("Resizable");
 
+    private final CheckBox minimizableCheckBox = new CheckBox("Minimizable");
+
     private final CheckBox maximizableCheckBox = new CheckBox("Maximizable");
 
     private final CheckBox closableCheckBox = new CheckBox("Closable");
@@ -71,7 +73,8 @@ public class DemoWindowFxView extends AbstractWindowFxView<DemoWindowPresenter> 
         textArea.setWrapText(true);
         VBox.setVgrow(textArea, Priority.ALWAYS);
         closableCheckBox.setSelected(true);
-        var hBox = new HBox(alwaysOnTopCheckBox, resizableCheckBox, maximizableCheckBox, closableCheckBox);
+        var hBox = new HBox(alwaysOnTopCheckBox, resizableCheckBox, minimizableCheckBox,
+                maximizableCheckBox, closableCheckBox);
         hBox.setSpacing(Spacing.getHorizontal());
         getContentBox().getChildren().addAll(textArea, hBox);
         getContentBox().setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
@@ -94,6 +97,8 @@ public class DemoWindowFxView extends AbstractWindowFxView<DemoWindowPresenter> 
         super.addListeners();
         alwaysOnTopCheckBox.selectedProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().onAlwaysOnTopSelected(newV));
+        minimizableCheckBox.selectedProperty()
+                .addListener((ov, oldV, newV) -> getPresenter().onMinimizableSelected(newV));
         maximizableCheckBox.selectedProperty()
                 .addListener((ov, oldV, newV) -> getPresenter().onMaximizableSelected(newV));
         resizableCheckBox.selectedProperty()

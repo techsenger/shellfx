@@ -75,6 +75,10 @@ public interface WindowPort extends ChildPort, WindowShared, CloseAwarePort, Tit
     /**
      * Returns whether the window is currently maximized.
      *
+     * <p>Important: the {@code maximized} and {@code minimized} states are orthogonal and may be combined freely for
+     * {@link WindowType#TOP_LEVEL} windows. For {@link WindowType#NESTED} windows, however, these states are mutually
+     * exclusive - setting one to {@code true} resets the other to {@code false}.
+     *
      * @return {@code true} if the window is maximized, {@code false} otherwise
      */
     boolean isMaximized();
@@ -88,6 +92,10 @@ public interface WindowPort extends ChildPort, WindowShared, CloseAwarePort, Tit
 
     /**
      * Returns whether the window is currently minimized.
+     *
+     * <p>Important: the {@code maximized} and {@code minimized} states are orthogonal and may be combined freely for
+     * {@link WindowType#TOP_LEVEL} windows. For {@link WindowType#NESTED} windows, however, these states are mutually
+     * exclusive - setting one to {@code true} resets the other to {@code false}.
      *
      * @return {@code true} if the window is minimized, {@code false} otherwise
      */

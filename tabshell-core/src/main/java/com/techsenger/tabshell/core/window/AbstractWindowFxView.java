@@ -179,7 +179,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private final Button closeButton = new Button(null, new FontIconView(CoreIcons.WINDOW_CLOSE));
 
-    private final Button minimizeButton = new Button(null, new FontIconView(CoreIcons.WINDOW_MINIMIZE));
+    private final FontIconView minimizeIconView = new FontIconView(CoreIcons.WINDOW_MINIMIZE);
+
+    private final Button minimizeButton = new Button(null, minimizeIconView);
 
     private final FontIconView maximizeIconView = new FontIconView(CoreIcons.WINDOW_MAXIMIZE);
 
@@ -201,9 +203,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private final VBox windowBox = new VBox(contentPane);
 
-    private final StackPane windowPane = new StackPane(windowBox);
-
-    private final VBox windowRoot = new VBox(windowPane);
+    private final StackPane windowNode = new StackPane(windowBox);
 
     private @Nullable Pane blockPane;
 
@@ -276,7 +276,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     @Override
     public Region getNode() {
-        return this.windowRoot;
+        return this.windowNode;
     }
 
     @Override
@@ -296,17 +296,24 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMaximized(boolean value) {
+    public void setMaximized(boolean maximized) {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
-            this.stage.setMaximized(value);
+            this.stage.setMaximized(maximized);
         } else {
-            if (value) {
+            if (maximized) {
+                if (this.minimized.get()) {
+                    this.minimized.set(false);
+                    getPresenter().onMinimized(false);
+                    showMinimized(false);
+                }
                 getComposer().getContainer().getComposer().maximizeWindow(this);
             } else {
                 getComposer().getContainer().getComposer().restoreWindow(this);
             }
+            getPresenter().onMaximized(maximized);
+            showMaximized(maximized);
         }
-        this.maximized.set(value);
+        this.maximized.set(maximized);
     }
 
     @Override
@@ -332,9 +339,21 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     public void setMinimized(boolean minimized) {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.setIconified(minimized);
+        } else {
+            if (minimized) {
+                if (this.maximized.get()) {
+                    this.maximized.set(false);
+                    getPresenter().onMaximized(false);
+                    showMaximized(false);
+                }
+                getComposer().getContainer().getComposer().minimizeWindow(this);
+            } else {
+                getComposer().getContainer().getComposer().restoreWindow(this);
+            }
+            getPresenter().onMinimized(minimized);
+            showMinimized(minimized);
         }
-        // todo: implement for nested windows
-        this.maximized.set(minimized);
+        this.minimized.set(minimized);
     }
 
     @Override
@@ -358,8 +377,8 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     @Override
     public void setWidth(double value) {
         if (this.stage == null) {
-            this.windowRoot.setMinWidth(value);
-            this.windowRoot.setMaxWidth(value);
+            this.windowNode.setMinWidth(value);
+            this.windowNode.setMaxWidth(value);
         } else {
             this.stage.setWidth(value);
         }
@@ -368,8 +387,8 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     @Override
     public void setHeight(double value) {
         if (this.stage == null) {
-            this.windowRoot.setMinHeight(value);
-            this.windowRoot.setMaxHeight(value);
+            this.windowNode.setMinHeight(value);
+            this.windowNode.setMaxHeight(value);
         } else {
             this.stage.setHeight(value);
         }
@@ -484,9 +503,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         if (blocked) {
             this.blockPane = new Pane();
             this.blockPane.setMouseTransparent(false);
-            this.windowPane.getChildren().add(this.blockPane);
+            this.windowNode.getChildren().add(this.blockPane);
         } else {
-            this.windowPane.getChildren().remove(this.blockPane);
+            this.windowNode.getChildren().remove(this.blockPane);
             this.blockPane = null;
         }
     }
@@ -535,9 +554,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         this.rightBox.setSpacing(Spacing.getHorizontal() + Spacing.getHorizontalThird());
         this.contentBox.getStyleClass().add("content-box");
         VBox.setVgrow(contentPane, Priority.ALWAYS);
-        VBox.setVgrow(windowPane, Priority.ALWAYS);
         this.titlePane.getStyleClass().add("title-pane");
-        this.windowPane.getStyleClass().add("window-pane");
         this.contentPane.getStyleClass().add("content-pane");
 
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
@@ -551,10 +568,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                 this.stylesheets = FXCollections.observableArrayList();
             }
             this.stylesheets.addAll(createDefaultStylesheets());
-            var scene = new Scene(windowRoot);
+            var scene = new Scene(windowNode);
             stage.setScene(scene);
             themeApplier = new ThemeApplier(scene, this.stylesheets, getDescriptor());
-            this.fontApplier = new FontApplier(windowRoot);
+            this.fontApplier = new FontApplier(windowNode);
             FxViewUtils.setView(scene, this);
         } else {
             this.titleBar = new HBox(leftBox, titleLabel, new Spacer(Orientation.HORIZONTAL), rightBox);
@@ -563,23 +580,24 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             this.stylesheets = null;
             contentBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
             this.windowBox.getStyleClass().add(StyleClasses.CORNERS_ALL);
-            this.windowRoot.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+            this.windowNode.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+            this.windowNode.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             this.resizer = new RegionResizer(minWidth, minHeight, maxWidth, maxHeight,
                     (e) -> {
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_STARTED, e);
-                        this.windowRoot.fireEvent(event);
+                        this.windowNode.fireEvent(event);
                     },
                     (e) -> {
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_FINISHED, e);
-                        this.windowRoot.fireEvent(event);
+                        this.windowNode.fireEvent(event);
                     });
-            this.resizer.initialize(windowRoot);
-            windowRoot.getStyleClass().add("root-stack-pane");
-            FxViewUtils.setView(windowRoot, this);
+            this.resizer.initialize(windowNode);
+            FxViewUtils.setView(windowNode, this);
         }
         this.titleBar.getStyleClass().add("title-bar");
         this.titlePane.getChildren().add(this.titleBar);
         this.windowBox.getChildren().add(0, titlePane);
+        windowNode.getStyleClass().add("window");
         setActive(false);
     }
 
@@ -598,6 +616,13 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                     .addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue()));
             getNode().heightProperty()
                     .addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
+            this.minimized.addListener((ov, oldV, newV) -> {
+                if (newV) {
+                    this.minimizeIconView.setIcon(CoreIcons.WINDOW_RESTORE);
+                } else {
+                    this.minimizeIconView.setIcon(CoreIcons.WINDOW_MINIMIZE);
+                }
+            });
         }
         this.maximized.addListener((ov, oldV, newV) -> {
             this.windowBox.pseudoClassStateChanged(PseudoClasses.MAXIMIZED, newV);
@@ -631,7 +656,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         } else {
             titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, (event) -> this.onMousePressed(event));
             titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, (event) -> this.onMouseDragged(event));
-            windowRoot.addEventFilter(MouseEvent.MOUSE_PRESSED, (event) -> windowRoot.requestFocus());
+            windowNode.addEventFilter(MouseEvent.MOUSE_PRESSED, (event) -> windowNode.requestFocus());
         }
     }
 
@@ -683,6 +708,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         return maximizeIconView;
     }
 
+    protected FontIconView getMinimizeIconView() {
+        return minimizeIconView;
+    }
+
     protected Button getMaximizeButton() {
         return maximizeButton;
     }
@@ -723,10 +752,6 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         return blockPane;
     }
 
-    protected StackPane getWindowPane() {
-        return windowPane;
-    }
-
     /**
      * JavaFX doesn't support the same accelerator to be installed in multiple MenuItems. See this bug:
      * https://bugs.openjdk.org/browse/JDK-8088068 . This method is a workaround for this problem.
@@ -764,9 +789,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             return;
         }
         if (visible) {
-            this.windowRoot.getStyleClass().add(StyleClasses.SHADOW);
+            this.windowNode.getStyleClass().add(StyleClasses.SHADOW);
         } else {
-            this.windowRoot.getStyleClass().remove(StyleClasses.SHADOW);
+            this.windowNode.getStyleClass().remove(StyleClasses.SHADOW);
         }
         this.shadowVisible = visible;
     }
@@ -774,6 +799,34 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     protected boolean isShadowVisible() {
         checkIfNested();
         return shadowVisible;
+    }
+
+    /**
+     * This method is used to modify the view for the {@code maximized} state if it is necessary.
+     *
+     * @param maximized
+     */
+    protected void showMaximized(boolean maximized) {
+        checkIfNested();
+    }
+
+    /**
+     * This method is used to modify the view for the {@code minimized} state if it is necessary.
+     *
+     * @param maximized
+     */
+    protected void showMinimized(boolean minimized) {
+        checkIfNested();
+        var pane = getContentPane();
+        pane.setVisible(!minimized);
+        pane.setManaged(!minimized);
+        if (minimized) {
+            titleBar.getStyleClass().remove(StyleClasses.CORNERS_TOP);
+            titleBar.getStyleClass().add(StyleClasses.CORNERS_ALL);
+        } else {
+            titleBar.getStyleClass().remove(StyleClasses.CORNERS_ALL);
+            titleBar.getStyleClass().add(StyleClasses.CORNERS_TOP);
+        }
     }
 
     void setActive(boolean active) {
@@ -801,8 +854,8 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private void onMousePressed(MouseEvent event) {
         if (isMoving()) {
-            offsetX = event.getSceneX() - this.windowRoot.getLayoutX();
-            offsetY = event.getSceneY() - this.windowRoot.getLayoutY();
+            offsetX = event.getSceneX() - this.windowNode.getLayoutX();
+            offsetY = event.getSceneY() - this.windowNode.getLayoutY();
             event.consume();
         }
     }
@@ -811,7 +864,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         if (isMoving()) {
             var newX = event.getSceneX() - offsetX;
             var newY = event.getSceneY() - offsetY;
-            var parent = (Pane) this.windowRoot.getParent();
+            var parent = (Pane) this.windowNode.getParent();
             //checking position constraints
             if (newY < 0) {
                 newY = 0;
@@ -820,15 +873,15 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                 if (newX < 0) {
                     newX = 0;
                 }
-                if ((newX + this.windowRoot.getWidth()) > parent.getWidth()) {
-                    newX = parent.getWidth() - this.windowRoot.getWidth();
+                if ((newX + this.windowNode.getWidth()) > parent.getWidth()) {
+                    newX = parent.getWidth() - this.windowNode.getWidth();
                 }
-                if ((newY + this.windowRoot.getHeight()) > parent.getHeight()) {
-                    newY = parent.getHeight() - this.windowRoot.getHeight();
+                if ((newY + this.windowNode.getHeight()) > parent.getHeight()) {
+                    newY = parent.getHeight() - this.windowNode.getHeight();
                 }
             }
-            this.windowRoot.setLayoutX(newX);
-            this.windowRoot.setLayoutY(newY);
+            this.windowNode.setLayoutX(newX);
+            this.windowNode.setLayoutY(newY);
             event.consume();
         }
     }
@@ -839,7 +892,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
      * @return
      */
     private boolean isMoving() {
-        var currentCursor = this.windowRoot.getCursor();
+        var currentCursor = this.windowNode.getCursor();
         return (currentCursor == null || currentCursor == Cursor.DEFAULT);
     }
 }

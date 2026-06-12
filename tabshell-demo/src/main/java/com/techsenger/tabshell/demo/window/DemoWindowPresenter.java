@@ -53,6 +53,10 @@ public class DemoWindowPresenter extends AbstractWindowPresenter<DemoWindowView>
         setAlwaysOnTop(value);
     }
 
+    protected void onMinimizableSelected(boolean value) {
+        setMinimizable(value);
+    }
+
     protected void onMaximizableSelected(boolean value) {
         setMaximizable(value);
     }

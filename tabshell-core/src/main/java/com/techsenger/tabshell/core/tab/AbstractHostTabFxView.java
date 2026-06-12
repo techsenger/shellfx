@@ -76,6 +76,11 @@ public abstract class AbstractHostTabFxView<P extends AbstractHostTabPresenter<?
         }
 
         @Override
+        public void minimizeWindow(WindowFxView<?> window) {
+            windowManager.minimizeWindow(window);
+        }
+
+        @Override
         public void restoreWindow(WindowFxView<?> window) {
             windowManager.restoreWindow(window);
         }

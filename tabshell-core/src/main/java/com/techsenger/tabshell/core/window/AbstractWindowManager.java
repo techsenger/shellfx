@@ -40,6 +40,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -47,7 +49,23 @@ import javafx.scene.layout.StackPane;
  */
 public abstract class AbstractWindowManager extends AbstractPopupManager implements WindowManager {
 
+    private enum SpecialState {
+        MAXIMIZED, MINIMIZED
+    }
+
     private record WindowBounds(double x, double y, double width, double height) { }
+
+    private static final class RestoreInfo {
+
+        private SpecialState state;
+
+        private final WindowBounds bounds;
+
+        private RestoreInfo(SpecialState state, WindowBounds bounds) {
+            this.state = state;
+            this.bounds = bounds;
+        }
+    }
 
     private static final class WindowPane extends AnchorPane {
 
@@ -87,6 +105,8 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
     }
 
+    private static final double MINIMIZED_WINDOW_WIDTH = 200;
+
     private static @Nullable WindowPane getWindowPane(WindowFxView<?> window) {
         if (window.getNode() != null) {
             return (WindowPane) window.getNode().getParent();
@@ -103,7 +123,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     // The last window in z-order.
     private WindowFxView<?> lastWindow;
 
-    private final Map<WindowFxView<?>, WindowBounds> savedBoundsByWindow = new HashMap<>();
+    private final Map<WindowFxView<?>, RestoreInfo> restoreInfosByWindow = new HashMap<>();
 
     public AbstractWindowManager(Supplier<StackPane> stackPane) {
         super(stackPane);
@@ -125,7 +145,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     @Override
     public void removeWindow(WindowFxView<?> windowView) {
         if (modifiableWindows.remove(windowView)) {
-            this.savedBoundsByWindow.remove(windowView);
+            this.restoreInfosByWindow.remove(windowView);
             doRemove(windowView, windowView.getPresenter().isModal());
             if (windowView instanceof AbstractWindowFxView<?> fxView) {
                 fxView.setWindowManager(null);
@@ -160,6 +180,12 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         for (var i = 0; i < bounds.size(); i++) {
             var bound = bounds.get(i);
             var window = windowsByZOder.get(i);
+            if (window.getPresenter().isMaximized()) {
+                window.getPresenter().setMaximized(false);
+            }
+            if (window.getPresenter().isMinimized()) {
+                window.getPresenter().setMinimized(false);
+            }
             window.getNode().setLayoutX(bound.x);
             window.getNode().setLayoutY(bound.y);
             window.getPresenter().setWidth(bound.width);
@@ -174,34 +200,63 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
 
     @Override
     public void maximizeWindow(WindowFxView<?> window) {
+        var restoreInfo = restoreInfosByWindow.get(window);
+        if (restoreInfo != null) { // from minimized
+            restoreInfo.state = SpecialState.MAXIMIZED;
+        } else {
+            createAndSaveRestoreInfo(SpecialState.MAXIMIZED, window);
+        }
         var n = window.getNode();
-        var bounds = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
-        this.savedBoundsByWindow.put(window, bounds);
         n.setLayoutX(0);
         n.setLayoutY(0);
-        n.setMaxWidth(Region.USE_COMPUTED_SIZE);
-        n.setMinWidth(Region.USE_COMPUTED_SIZE);
-        n.setMaxHeight(Region.USE_COMPUTED_SIZE);
-        n.setMinHeight(Region.USE_COMPUTED_SIZE);
+        n.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+        n.setMinSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
         AnchorPane.setTopAnchor(n, 0.0);
         AnchorPane.setRightAnchor(n, 0.0);
         AnchorPane.setBottomAnchor(n, 0.0);
         AnchorPane.setLeftAnchor(n, 0.0);
-        setMaximized(window, true);
+    }
+
+    @Override
+    public void minimizeWindow(WindowFxView<?> window) {
+        var restoreInfo = restoreInfosByWindow.get(window);
+        if (restoreInfo != null) { // from maximized
+            AnchorPane.clearConstraints(window.getNode());
+            restoreInfo.state = SpecialState.MINIMIZED;
+        } else {
+            createAndSaveRestoreInfo(SpecialState.MINIMIZED, window);
+        }
+        var minimizedWindowBounds = this.windows.stream()
+                .filter(w -> w.getPresenter().isMinimized() && w != window)
+                .map(w -> {
+                    var n = w.getNode();
+                    return new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
+                })
+                .toList();
+        var width = getMinimizedWindowWidth();
+        var height = getTitleBarHeight(window);
+        var sp = getStackPane().get();
+        var windowBounds = findFirstFreeSlot(minimizedWindowBounds, sp.getWidth(), sp.getHeight(), width, height);
+        var windowNode = window.getNode();
+        windowNode.setLayoutX(windowBounds.x);
+        windowNode.setLayoutY(windowBounds.y);
+        windowNode.setMaxSize(windowBounds.width, windowBounds.height);
+        windowNode.setMinSize(windowBounds.width, windowBounds.height);
     }
 
     @Override
     public void restoreWindow(WindowFxView<?> window) {
-        var bounds = this.savedBoundsByWindow.remove(window);
-        if (bounds != null) {
-            var restoredBounds = restoreBounds(bounds);
-            AnchorPane.clearConstraints(window.getNode());
+        var info = this.restoreInfosByWindow.remove(window);
+        if (info != null) {
+            var restoredBounds = restoreBounds(info.bounds);
             window.getNode().setLayoutX(restoredBounds.x);
             window.getNode().setLayoutY(restoredBounds.y);
             window.setWidth(restoredBounds.width);
             window.setHeight(restoredBounds.height);
+            if (info.state == SpecialState.MAXIMIZED) {
+                AnchorPane.clearConstraints(window.getNode());
+            }
         }
-        setMaximized(window, false);
     }
 
     protected void deactivateAllWindows(@Nullable WindowFxView<?> exclude) {
@@ -223,10 +278,12 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
     }
 
-    protected void setMaximized(WindowFxView<?> window, boolean maximized) {
+    protected double getTitleBarHeight(WindowFxView<?> window) {
         if (window instanceof AbstractWindowFxView<?> windowView) {
-            windowView.getPresenter().onMaximized(maximized);
+            return windowView.getTitleBar().getHeight() + windowView.getWindowBox().getPadding().getBottom()
+                    + windowView.getWindowBox().getPadding().getTop();
         }
+        return -1;
     }
 
     @Override
@@ -273,6 +330,10 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         getStackPane().get().getChildren().add(bgPane);
     }
 
+    double getMinimizedWindowWidth() {
+        return MINIMIZED_WINDOW_WIDTH;
+    }
+
     void onStageUnfocused() {
         deactivateAllWindows(null);
     }
@@ -286,6 +347,78 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             }
             reorderAll();
         });
+    }
+
+    private void createAndSaveRestoreInfo(SpecialState state, WindowFxView<?> window) {
+        var n = window.getNode();
+        var bounds = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
+        var info = new RestoreInfo(state, bounds);
+        this.restoreInfosByWindow.put(window, info);
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractWindowManager.class);
+
+    /**
+     * Finds the first free slot for a minimized window, scanning row by row starting from the bottom-left corner and
+     * moving right, then upward.
+     *
+     * <p>A slot is considered free if its rectangle does not intersect (even
+     * partially) with any of the given {@code minimizedWindowBounds}.
+     *
+     * @param minimizedWindowBounds bounds of windows already minimized (in {@code StackPane} coordinates)
+     * @param containerWidth        width of the {@code StackPane}
+     * @param containerHeight       height of the {@code StackPane}
+     * @param slotWidth              width of a minimized window slot
+     * @param slotHeight             height of a minimized window slot
+     * @return bounds of the first free slot
+     */
+    WindowBounds findFirstFreeSlot(List<WindowBounds> minimizedWindowBounds,
+                                    double containerWidth, double containerHeight,
+                                    double slotWidth, double slotHeight) {
+
+        int cols = Math.max(1, (int) Math.floor(containerWidth / slotWidth));
+        int rows = Math.max(1, (int) Math.floor(containerHeight / slotHeight));
+
+        logger.debug("findFirstFreeSlot: container={}x{}, slot={}x{}, cols={}, rows={}, existing={}",
+            containerWidth, containerHeight, slotWidth, slotHeight, cols, rows, minimizedWindowBounds);
+
+        for (int row = 0; row < rows; row++) {
+            double y = containerHeight - (row + 1) * slotHeight;
+            for (int col = 0; col < cols; col++) {
+                double x = col * slotWidth;
+
+                WindowBounds candidate = new WindowBounds(x, y, slotWidth, slotHeight);
+
+                WindowBounds blocker = null;
+                for (WindowBounds existing : minimizedWindowBounds) {
+                    if (intersects(candidate, existing)) {
+                        blocker = existing;
+                        break;
+                    }
+                }
+
+                if (blocker == null) {
+                    logger.debug("findFirstFreeSlot: free slot found at row={}, col={}, bounds={}",
+                            row, col, candidate);
+                    return candidate;
+                } else {
+                    logger.debug("findFirstFreeSlot: slot row={}, col={}, bounds={} occupied by {}",
+                        row, col, candidate, blocker);
+                }
+            }
+        }
+
+        double y = containerHeight - (rows + 1) * slotHeight;
+        WindowBounds fallback = new WindowBounds(0, y, slotWidth, slotHeight);
+        logger.debug("findFirstFreeSlot: no free slot in grid, using fallback {}", fallback);
+        return fallback;
+    }
+
+    private boolean intersects(WindowBounds a, WindowBounds b) {
+        return a.x() < b.x() + b.width()
+            && a.x() + a.width() > b.x()
+            && a.y() < b.y() + b.height()
+            && a.y() + a.height() > b.y();
     }
 
     // Z-order:

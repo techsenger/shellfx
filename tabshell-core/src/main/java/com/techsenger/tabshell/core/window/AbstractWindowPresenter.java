@@ -415,6 +415,10 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         this.maximized = maximized;
     }
 
+    protected void onMinimized(boolean minimized) {
+        this.minimized = minimized;
+    }
+
     protected void onActiveChanged(boolean active) {
         this.active = active;
     }
