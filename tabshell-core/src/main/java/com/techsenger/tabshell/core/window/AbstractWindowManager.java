@@ -310,10 +310,11 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             }
             @Override
             protected void interpolate(double frac) {
-                double w = from.width()  + (to.width()  - from.width())  * frac;
-                double h = from.height() + (to.height() - from.height()) * frac;
-                double x = from.x() + (to.x() - from.x()) * frac;
-                double y = from.y() + (to.y() - from.y()) * frac;
+                // round to whole pixels to avoid layout jitter from sub-pixel size/position changes
+                double w = Math.round(from.width()  + (to.width()  - from.width())  * frac);
+                double h = Math.round(from.height() + (to.height() - from.height()) * frac);
+                double x = Math.round(from.x() + (to.x() - from.x()) * frac);
+                double y = Math.round(from.y() + (to.y() - from.y()) * frac);
 
                 windowNode.setMinSize(w, h);
                 windowNode.setMaxSize(w, h);
@@ -365,12 +366,11 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             }
             @Override
             protected void interpolate(double frac) {
-                double w = from.width()  + (to.width()  - from.width())  * frac;
-                double h = from.height() + (to.height() - from.height()) * frac;
-
-                double curAnchorX = anchorX + (targetAnchorX - anchorX) * frac;
-                double curAnchorY = anchorY + (targetAnchorY - anchorY) * frac;
-
+                // round to whole pixels to avoid layout jitter from sub-pixel size/position changes
+                double w = Math.round(from.width()  + (to.width()  - from.width())  * frac);
+                double h = Math.round(from.height() + (to.height() - from.height()) * frac);
+                double curAnchorX = Math.round(anchorX + (targetAnchorX - anchorX) * frac);
+                double curAnchorY = Math.round(anchorY + (targetAnchorY - anchorY) * frac);
                 double x = anchorLeft ? curAnchorX : curAnchorX - w;
                 double y = anchorTop  ? curAnchorY : curAnchorY - h;
 
