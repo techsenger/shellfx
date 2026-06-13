@@ -73,7 +73,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -568,24 +567,6 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             this.stage.setY(y);
         } else {
             this.windowNode.setLayoutY(y);
-        }
-    }
-
-    @Override
-    public void align(WindowPosition pos, double xOffset, double yOffset) {
-        if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
-            var screens =
-                    Screen.getScreensForRectangle(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
-            Screen screen = screens.isEmpty() ? Screen.getPrimary() : screens.get(0);
-            var bounds = screen.getBounds();
-            var coordinates = WindowPositionResolver.resolve(pos,
-                    bounds.getWidth(), bounds.getHeight(),
-                    this.stage.getWidth(), this.stage.getHeight(),
-                    xOffset, yOffset);
-            setX(coordinates.getX());
-            setY(coordinates.getY());
-        } else {
-            getComposer().getContainer().getComposer().alignWindow(this, pos, xOffset, yOffset);
         }
     }
 
