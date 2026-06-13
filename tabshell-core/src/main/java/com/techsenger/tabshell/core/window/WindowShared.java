@@ -173,4 +173,22 @@ public interface WindowShared {
      * @param y the y-coordinate of the window
      */
     void setY(double y);
+
+    /**
+     * Aligns the window within its container according to the given {@link WindowPosition}, then applies the given
+     * offsets to the computed coordinates.
+     *
+     * <p>The container is the {@code Screen} for {@link WindowType#TOP_LEVEL} windows, or the {@code StackPane} for
+     * {@link WindowType#NESTED} windows.
+     *
+     * <p>This is a one-time positioning command, not a persisted constraint: once aligned, the window can be freely
+     * moved by the user (e.g. via drag), and its position is not re-aligned afterward.
+     *
+     * @param pos     the reference position within the container
+     * @param xOffset offset added to the computed x coordinate; positive values shift the window
+     *                 to the right, negative values shift it to the left
+     * @param yOffset offset added to the computed y coordinate; positive values shift the window
+     *                 down, negative values shift it up
+     */
+    void align(WindowPosition pos, double xOffset, double yOffset);
 }

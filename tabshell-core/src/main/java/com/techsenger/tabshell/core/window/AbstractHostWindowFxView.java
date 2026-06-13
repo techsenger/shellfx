@@ -78,6 +78,11 @@ public abstract class AbstractHostWindowFxView<P extends AbstractHostWindowPrese
         }
 
         @Override
+        public void alignWindow(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset) {
+            windowManager.alignWindow(window, pos, xOffset, yOffset);
+        }
+
+        @Override
         public void addPopup(PopupFxView<?> popup, Anchors anchors) {
             windowManager.addPopup(popup, anchors);
             getModifiableChildren().add(popup);

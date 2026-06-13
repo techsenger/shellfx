@@ -75,37 +75,6 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
     }
 
-    /**
-     * To align window to the center of the StackPane its necessary to know window sizes. However, these sizes
-     * will be available only after layout pulse. So, window aligner class that is used as a pulse listener.
-     */
-    private static final class WindowAligner implements Runnable {
-
-        private final StackPane stackPane;
-
-        private final WindowFxView<?> windowView;
-
-        WindowAligner(StackPane stackPane, WindowFxView<?> windowView) {
-            this.stackPane = stackPane;
-            this.windowView = windowView;
-        }
-
-        @Override
-        public void run() {
-            var window = windowView.getNode();
-            var x = (stackPane.getWidth() / 2) - (window.getWidth() / 2);
-            var y = (stackPane.getHeight() / 2) - (window.getHeight() / 2);
-            //move a little bit up
-            y -= 50;
-            y = Math.max(0, y);
-            /* if values are left as a double, the dialog border might appear blurry when the values are decimal */
-            window.setLayoutX((int) x);
-            window.setLayoutY((int) y);
-            stackPane.getScene().removePostLayoutPulseListener(this);
-            windowView.requestFocus();
-        }
-    }
-
     private enum MinimizeDirection {
 
         /**
@@ -469,8 +438,6 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
         modifiableWindows.add(windowView);
         doAdd(windowView, windowView.getPresenter().isModal(), null);
-        var aligner = new WindowAligner(getStackPane().get(), windowView);
-        getStackPane().get().getScene().addPostLayoutPulseListener(aligner);
         reorderAll();
         focusLast();
     }
@@ -526,6 +493,20 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             window.getPresenter().setHeight(bound.height);
         }
         this.animationEnabled = true;
+    }
+
+    @Override
+    public void alignWindow(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset) {
+        var sp = getStackPane().get();
+        sp.applyCss();
+        sp.layout();
+        var coordinates = WindowPositionResolver.resolve(pos,
+                    sp.getWidth() - sp.getPadding().getLeft() - sp.getPadding().getRight(),
+                    sp.getHeight() - sp.getPadding().getTop() - sp.getPadding().getBottom(),
+                    window.getNode().getWidth(), window.getNode().getHeight(),
+                    xOffset, yOffset);
+        window.setX(coordinates.getX());
+        window.setY(coordinates.getY());
     }
 
     @Override

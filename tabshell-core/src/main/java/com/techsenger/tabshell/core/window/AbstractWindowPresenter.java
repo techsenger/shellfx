@@ -385,6 +385,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         getView().setY(y);
     }
 
+    @Override
+    public void align(WindowPosition pos, double xOffset, double yOffset) {
+        getView().align(pos, xOffset, yOffset);
+    }
+
     protected void onCloseRequest() {
         if (this.onCloseRequest != null) {
             this.onCloseRequest.run();

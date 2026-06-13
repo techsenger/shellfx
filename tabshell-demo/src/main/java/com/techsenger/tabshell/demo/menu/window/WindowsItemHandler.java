@@ -19,6 +19,7 @@ package com.techsenger.tabshell.demo.menu.window;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
 import com.techsenger.tabshell.core.window.WindowParams;
+import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.demo.window.DemoWindowFxView;
 import com.techsenger.tabshell.demo.window.DemoWindowPresenter;
@@ -44,6 +45,7 @@ public class WindowsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> 
             presenter.initialize();
             presenter.setTitle("Window " + i);
             getComponent().getComposer().addWindow(view);
+            presenter.align(WindowPosition.CENTER, 0, -50);
         }
     }
 }

@@ -25,6 +25,7 @@ import com.techsenger.tabshell.core.window.WindowArrangement;
 import com.techsenger.tabshell.core.window.WindowFxView;
 import com.techsenger.tabshell.core.window.WindowManager;
 import com.techsenger.tabshell.core.window.WindowPort;
+import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.material.Anchors;
 import java.util.List;
 import javafx.scene.input.InputEvent;
@@ -68,6 +69,11 @@ public abstract class AbstractHostTabFxView<P extends AbstractHostTabPresenter<?
         @Override
         public void arrangeWindows(WindowArrangement arrangement) {
             windowManager.arrangeWindows(arrangement);
+        }
+
+        @Override
+        public void alignWindow(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset) {
+            windowManager.alignWindow(window, pos, xOffset, yOffset);
         }
 
         @Override
