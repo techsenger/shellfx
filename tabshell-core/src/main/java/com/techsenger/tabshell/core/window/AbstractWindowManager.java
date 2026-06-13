@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import javafx.animation.Interpolator;
+import javafx.animation.Transition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -40,8 +42,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javafx.util.Duration;
 
 /**
  *
@@ -105,7 +106,22 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
     }
 
-    private static final double MINIMIZED_WINDOW_WIDTH = 200;
+    private enum MinimizeDirection {
+
+        /**
+         * Window collapses into the slot: shrink height first (anchored at bottom), then fly to the slot.
+         */
+        TO_SLOT,
+
+        /**
+         * Window expands from the slot: fly from the slot first, then expand height (anchored at bottom).
+         */
+        FROM_SLOT
+    }
+
+    private static final double MINIMIZED_WINDOW_WIDTH = 250;
+
+    private static final Duration ANIMATION_DURATION = Duration.millis(250);
 
     private static @Nullable WindowPane getWindowPane(WindowFxView<?> window) {
         if (window.getNode() != null) {
@@ -114,6 +130,321 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             return null;
         }
     }
+
+    /**
+     * Calculates cascading layout positions for windows within a container.
+     * Windows are ordered from bottom to top — index 0 is the bottommost window.
+     *
+     * @param containerWidth  the width of the container StackPane
+     * @param containerHeight the height of the container StackPane
+     * @param windowCount     the number of windows to arrange
+     * @return list of window bounds ordered from bottom (index 0) to top (index n-1)
+     */
+    private static List<WindowBounds> cascade(double containerWidth, double containerHeight, int windowCount) {
+        if (windowCount <= 0) {
+            return List.of();
+        }
+
+        // Window occupies ~65% of the container
+        double windowWidth  = Math.round(containerWidth  * 0.65);
+        double windowHeight = Math.round(containerHeight * 0.65);
+
+        // Step between windows; title bar height is a good natural offset (~4.5% of container height)
+        double step = Math.max(Math.round(containerHeight * 0.045), 24);
+
+        // If windows would overflow the container, shrink the step to fit
+        if (windowWidth + step * (windowCount - 1) > containerWidth
+                || windowHeight + step * (windowCount - 1) > containerHeight) {
+            step = Math.max((int) Math.min(
+                    (containerWidth  - windowWidth)  / Math.max(windowCount - 1, 1),
+                    (containerHeight - windowHeight) / Math.max(windowCount - 1, 1)
+            ), 1);
+        }
+
+        var result = new ArrayList<WindowBounds>(windowCount);
+        for (int i = 0; i < windowCount; i++) {
+            result.add(new WindowBounds(step * i, step * i, windowWidth, windowHeight));
+        }
+        return result;
+    }
+
+    /**
+     * Calculates vertical tile layout — windows are placed side by side in columns.
+     * All windows get equal width and full container height. The last window absorbs
+     * any remainder from integer division, so it may be slightly larger or smaller
+     * than the others. There are no gaps between windows.
+     *
+     * @param containerWidth  the width of the container StackPane
+     * @param containerHeight the height of the container StackPane
+     * @param windowCount     the number of windows to arrange
+     * @return list of window bounds ordered from left (index 0) to right (index n-1)
+     */
+    private static List<WindowBounds> tileVertical(double containerWidth, double containerHeight, int windowCount) {
+        if (windowCount <= 0) {
+            return List.of();
+        }
+
+        int totalWidth = (int) containerWidth;
+        int winWidth = totalWidth / windowCount;
+
+        var result = new ArrayList<WindowBounds>(windowCount);
+        for (int i = 0; i < windowCount; i++) {
+            int x = winWidth * i;
+            int w = (i == windowCount - 1) ? totalWidth - x : winWidth;
+            result.add(new WindowBounds(x, 0, w, containerHeight));
+        }
+        return result;
+    }
+
+    /**
+     * Calculates horizontal tile layout — windows are stacked in rows.
+     * All windows get full container width and equal height. The last window absorbs
+     * any remainder from integer division, so it may be slightly larger or smaller
+     * than the others. There are no gaps between windows.
+     *
+     * @param containerWidth  the width of the container StackPane
+     * @param containerHeight the height of the container StackPane
+     * @param windowCount     the number of windows to arrange
+     * @return list of window bounds ordered from top (index 0) to bottom (index n-1)
+     */
+    private static List<WindowBounds> tileHorizontal(double containerWidth, double containerHeight, int windowCount) {
+        if (windowCount <= 0) {
+            return List.of();
+        }
+
+        int totalHeight = (int) containerHeight;
+        int winHeight = totalHeight / windowCount;
+
+        var result = new ArrayList<WindowBounds>(windowCount);
+        for (int i = 0; i < windowCount; i++) {
+            int y = winHeight * i;
+            int h = (i == windowCount - 1) ? totalHeight - y : winHeight;
+            result.add(new WindowBounds(0, y, containerWidth, h));
+        }
+        return result;
+    }
+
+    /**
+     * Calculates grid layout positions for windows within a container.
+     * The number of columns and rows is derived from the container's aspect ratio —
+     * wider containers get more columns, taller containers get more rows.
+     * If the last row is incomplete, its windows are stretched to fill the full width.
+     * The last window in an incomplete row absorbs any remainder from integer division.
+     *
+     * @param containerWidth  the width of the container StackPane
+     * @param containerHeight the height of the container StackPane
+     * @param windowCount     the number of windows to arrange
+     * @return list of window bounds ordered left-to-right, top-to-bottom (index 0 is top-left)
+     */
+    private static List<WindowBounds> tileGrid(double containerWidth, double containerHeight, int windowCount) {
+        if (windowCount <= 0) {
+            return List.of();
+        }
+        if (windowCount == 1) {
+            return List.of(new WindowBounds(0, 0, containerWidth, containerHeight));
+        }
+
+        double aspectRatio = containerWidth / containerHeight;
+
+        // derive columns from aspect ratio, then rows from columns
+        int cols = (int) Math.round(Math.sqrt(windowCount * aspectRatio));
+        cols = Math.max(1, Math.min(cols, windowCount));
+        int rows = (int) Math.ceil((double) windowCount / cols);
+
+        int totalWidth  = (int) containerWidth;
+        int totalHeight = (int) containerHeight;
+        int winWidth    = totalWidth  / cols;
+        int winHeight   = totalHeight / rows;
+
+        int lastRowCount = windowCount % cols == 0 ? cols : windowCount % cols;
+        int lastRowWinWidth = totalWidth / lastRowCount;
+
+        var result = new ArrayList<WindowBounds>(windowCount);
+        for (int i = 0; i < windowCount; i++) {
+            int row = i / cols;
+            int col = i % cols;
+            boolean isLastRow = (row == rows - 1);
+
+            int x;
+            int w;
+            if (isLastRow) {
+                int posInRow = i - (rows - 1) * cols;
+                x = lastRowWinWidth * posInRow;
+                w = (posInRow == lastRowCount - 1) ? totalWidth - x : lastRowWinWidth;
+            } else {
+                x = winWidth * col;
+                w = (col == cols - 1) ? totalWidth - x : winWidth;
+            }
+
+            int y = winHeight * row;
+            int h = (row == rows - 1) ? totalHeight - y : winHeight;
+
+            result.add(new WindowBounds(x, y, w, h));
+        }
+        return result;
+    }
+
+    private static Optional<WindowFxView<?>> findComponentWindow(ParentFxView<?> component, StackPane windowPane) {
+        while (component != null) {
+            if (component instanceof WindowFxView<?> window) {
+                var bgPane = getWindowPane(window);
+                if (bgPane != null && bgPane.getParent() == windowPane) {
+                    return Optional.of(window);
+                }
+            }
+            component = component instanceof ChildFxView<?> child ? child.getComposer().getParent() : null;
+        }
+        return Optional.empty();
+    }
+
+    private static void animateMaximize(Region windowNode, WindowBounds from, WindowBounds to, Runnable onFinished) {
+        windowNode.setLayoutX(from.x());
+        windowNode.setLayoutY(from.y());
+        windowNode.setMinSize(from.width(), from.height());
+        windowNode.setMaxSize(from.width(), from.height());
+
+        Transition t = new Transition() {
+            {
+                setCycleDuration(ANIMATION_DURATION);
+                setInterpolator(Interpolator.EASE_BOTH);
+            }
+            @Override
+            protected void interpolate(double frac) {
+                double w = from.width()  + (to.width()  - from.width())  * frac;
+                double h = from.height() + (to.height() - from.height()) * frac;
+                double x = from.x() + (to.x() - from.x()) * frac;
+                double y = from.y() + (to.y() - from.y()) * frac;
+
+                windowNode.setMinSize(w, h);
+                windowNode.setMaxSize(w, h);
+                windowNode.setLayoutX(x);
+                windowNode.setLayoutY(y);
+            }
+        };
+
+        t.setOnFinished(e -> {
+            windowNode.setMinSize(to.width(), to.height());
+            windowNode.setMaxSize(to.width(), to.height());
+            if (onFinished != null) {
+                onFinished.run();
+            }
+        });
+
+        t.play();
+    }
+
+    /**
+     * Two-phase minimize/restore animation between a window's normal bounds and its minimized slot.
+     *
+     * @param from      starting bounds ({@code TO_SLOT}: normal bounds; {@code FROM_SLOT}: slot bounds)
+     * @param to        target bounds ({@code TO_SLOT}: slot bounds; {@code FROM_SLOT}: normal bounds)
+     * @param direction whether the window is collapsing into the slot or expanding from it
+     */
+    private static void animateMinimize(Region windowNode, WindowBounds from, WindowBounds to,
+            MinimizeDirection direction, Runnable onFinished) {
+
+        windowNode.setLayoutX(from.x());
+        windowNode.setLayoutY(from.y());
+        windowNode.setMinSize(from.width(), from.height());
+        windowNode.setMaxSize(from.width(), from.height());
+
+        // pick anchor corner of 'from' closest to 'to' direction
+        boolean anchorLeft = to.x() <= from.x();
+        boolean anchorTop  = to.y() <= from.y();
+
+        double anchorX = anchorLeft ? from.x() : from.x() + from.width();
+        double anchorY = anchorTop  ? from.y() : from.y() + from.height();
+
+        double targetAnchorX = anchorLeft ? to.x() : to.x() + to.width();
+        double targetAnchorY = anchorTop  ? to.y() : to.y() + to.height();
+
+        Transition t = new Transition() {
+            {
+                setCycleDuration(ANIMATION_DURATION);
+                setInterpolator(Interpolator.EASE_BOTH);
+            }
+            @Override
+            protected void interpolate(double frac) {
+                double w = from.width()  + (to.width()  - from.width())  * frac;
+                double h = from.height() + (to.height() - from.height()) * frac;
+
+                double curAnchorX = anchorX + (targetAnchorX - anchorX) * frac;
+                double curAnchorY = anchorY + (targetAnchorY - anchorY) * frac;
+
+                double x = anchorLeft ? curAnchorX : curAnchorX - w;
+                double y = anchorTop  ? curAnchorY : curAnchorY - h;
+
+                windowNode.setMinSize(w, h);
+                windowNode.setMaxSize(w, h);
+                windowNode.setLayoutX(x);
+                windowNode.setLayoutY(y);
+            }
+        };
+
+        t.setOnFinished(e -> {
+            windowNode.setMinSize(to.width(), to.height());
+            windowNode.setMaxSize(to.width(), to.height());
+            if (onFinished != null) {
+                onFinished.run();
+            }
+        });
+
+        t.play();
+    }
+
+    /**
+     * Finds the first free slot for a minimized window, scanning row by row starting from the bottom-left corner and
+     * moving right, then upward.
+     *
+     * <p>A slot is considered free if its rectangle does not intersect (even partially) with any of the given
+     * {@code minimizedWindowBounds}.
+     *
+     * @param minimizedWindowBounds bounds of windows already minimized (in {@code StackPane} coordinates)
+     * @param containerWidth        width of the {@code StackPane}
+     * @param containerHeight       height of the {@code StackPane}
+     * @param slotWidth              width of a minimized window slot
+     * @param slotHeight             height of a minimized window slot
+     * @return bounds of the first free slot
+     */
+    private static WindowBounds findFirstFreeSlot(List<WindowBounds> minimizedWindowBounds, double containerWidth,
+            double containerHeight, double slotWidth, double slotHeight) {
+
+        int cols = Math.max(1, (int) Math.floor(containerWidth / slotWidth));
+        int rows = Math.max(1, (int) Math.floor(containerHeight / slotHeight));
+
+        for (int row = 0; row < rows; row++) {
+            double y = containerHeight - (row + 1) * slotHeight;
+            for (int col = 0; col < cols; col++) {
+                double x = col * slotWidth;
+
+                WindowBounds candidate = new WindowBounds(x, y, slotWidth, slotHeight);
+
+                WindowBounds blocker = null;
+                for (WindowBounds existing : minimizedWindowBounds) {
+                    if (intersects(candidate, existing)) {
+                        blocker = existing;
+                        break;
+                    }
+                }
+
+                if (blocker == null) {
+                    return candidate;
+                }
+            }
+        }
+
+        double y = containerHeight - (rows + 1) * slotHeight;
+        WindowBounds fallback = new WindowBounds(0, y, slotWidth, slotHeight);
+        return fallback;
+    }
+
+    private static boolean intersects(WindowBounds a, WindowBounds b) {
+        return a.x() < b.x() + b.width()
+            && a.x() + a.width() > b.x()
+            && a.y() < b.y() + b.height()
+            && a.y() + a.height() > b.y();
+    }
+
 
     private final ObservableList<WindowFxView<?>> modifiableWindows = FXCollections.observableArrayList();
 
@@ -124,6 +455,8 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     private WindowFxView<?> lastWindow;
 
     private final Map<WindowFxView<?>, RestoreInfo> restoreInfosByWindow = new HashMap<>();
+
+    private boolean animationEnabled = true;
 
     public AbstractWindowManager(Supplier<StackPane> stackPane) {
         super(stackPane);
@@ -177,6 +510,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             default -> throw new AssertionError();
         };
 
+        this.animationEnabled = false;
         for (var i = 0; i < bounds.size(); i++) {
             var bound = bounds.get(i);
             var window = windowsByZOder.get(i);
@@ -191,6 +525,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             window.getPresenter().setWidth(bound.width);
             window.getPresenter().setHeight(bound.height);
         }
+        this.animationEnabled = true;
     }
 
     @Override
@@ -207,14 +542,26 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             createAndSaveRestoreInfo(SpecialState.MAXIMIZED, window);
         }
         var n = window.getNode();
-        n.setLayoutX(0);
-        n.setLayoutY(0);
-        n.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
-        n.setMinSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
-        AnchorPane.setTopAnchor(n, 0.0);
-        AnchorPane.setRightAnchor(n, 0.0);
-        AnchorPane.setBottomAnchor(n, 0.0);
-        AnchorPane.setLeftAnchor(n, 0.0);
+        var from = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
+        var sp = getStackPane().get();
+        var width = sp.getWidth() - sp.getPadding().getRight() - sp.getPadding().getLeft();
+        var height = sp.getHeight() - sp.getPadding().getTop() - sp.getPadding().getBottom();
+        var to = new WindowBounds(0, 0, width, height);
+        Runnable onFinished = () -> {
+            n.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+            n.setMinSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+            AnchorPane.setTopAnchor(n, 0.0);
+            AnchorPane.setRightAnchor(n, 0.0);
+            AnchorPane.setBottomAnchor(n, 0.0);
+            AnchorPane.setLeftAnchor(n, 0.0);
+        };
+        if (animationEnabled) {
+            animateMaximize(n, from, to, onFinished);
+        } else {
+            n.setLayoutX(to.x);
+            n.setLayoutX(to.y);
+            onFinished.run();
+        }
     }
 
     @Override
@@ -226,7 +573,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         } else {
             createAndSaveRestoreInfo(SpecialState.MINIMIZED, window);
         }
-        var minimizedWindowBounds = this.windows.stream()
+        var allMinimizedWindowBounds = this.windows.stream()
                 .filter(w -> w.getPresenter().isMinimized() && w != window)
                 .map(w -> {
                     var n = w.getNode();
@@ -236,25 +583,40 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         var width = getMinimizedWindowWidth();
         var height = getTitleBarHeight(window);
         var sp = getStackPane().get();
-        var windowBounds = findFirstFreeSlot(minimizedWindowBounds, sp.getWidth(), sp.getHeight(), width, height);
-        var windowNode = window.getNode();
-        windowNode.setLayoutX(windowBounds.x);
-        windowNode.setLayoutY(windowBounds.y);
-        windowNode.setMaxSize(windowBounds.width, windowBounds.height);
-        windowNode.setMinSize(windowBounds.width, windowBounds.height);
+        var windowBounds = findFirstFreeSlot(allMinimizedWindowBounds, sp.getWidth(), sp.getHeight(), width, height);
+        var n = window.getNode();
+        if (this.animationEnabled) {
+            var from = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
+            animateMinimize(n, from, windowBounds, MinimizeDirection.TO_SLOT, null);
+        } else {
+            n.setLayoutX(windowBounds.x);
+            n.setLayoutY(windowBounds.y);
+            n.setMaxSize(windowBounds.width, windowBounds.height);
+            n.setMinSize(windowBounds.width, windowBounds.height);
+        }
     }
 
     @Override
     public void restoreWindow(WindowFxView<?> window) {
         var info = this.restoreInfosByWindow.remove(window);
         if (info != null) {
-            var restoredBounds = restoreBounds(info.bounds);
-            window.getNode().setLayoutX(restoredBounds.x);
-            window.getNode().setLayoutY(restoredBounds.y);
-            window.setWidth(restoredBounds.width);
-            window.setHeight(restoredBounds.height);
             if (info.state == SpecialState.MAXIMIZED) {
                 AnchorPane.clearConstraints(window.getNode());
+            }
+            var restoredBounds = restoreBounds(info.bounds);
+            if (this.animationEnabled) {
+                var n = window.getNode();
+                var from = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
+                if (info.state == SpecialState.MAXIMIZED) {
+                    animateMaximize(n, from, restoredBounds, null);
+                } else {
+                    animateMinimize(n, from, restoredBounds, MinimizeDirection.FROM_SLOT, null);
+                }
+            } else {
+                window.getNode().setLayoutX(restoredBounds.x);
+                window.getNode().setLayoutY(restoredBounds.y);
+                window.setWidth(restoredBounds.width);
+                window.setHeight(restoredBounds.height);
             }
         }
     }
@@ -339,7 +701,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     void onFocusedComponentChanged(ParentFxView<?> component) {
-        findWindowOwner(component).ifPresent(w -> {
+        findComponentWindow(component, getStackPane().get()).ifPresent(w -> {
             if (!w.getPresenter().isActive()) {
                 deactivateAllWindows(null);
                 activateWindow(w);
@@ -354,71 +716,6 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         var bounds = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
         var info = new RestoreInfo(state, bounds);
         this.restoreInfosByWindow.put(window, info);
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(AbstractWindowManager.class);
-
-    /**
-     * Finds the first free slot for a minimized window, scanning row by row starting from the bottom-left corner and
-     * moving right, then upward.
-     *
-     * <p>A slot is considered free if its rectangle does not intersect (even
-     * partially) with any of the given {@code minimizedWindowBounds}.
-     *
-     * @param minimizedWindowBounds bounds of windows already minimized (in {@code StackPane} coordinates)
-     * @param containerWidth        width of the {@code StackPane}
-     * @param containerHeight       height of the {@code StackPane}
-     * @param slotWidth              width of a minimized window slot
-     * @param slotHeight             height of a minimized window slot
-     * @return bounds of the first free slot
-     */
-    WindowBounds findFirstFreeSlot(List<WindowBounds> minimizedWindowBounds,
-                                    double containerWidth, double containerHeight,
-                                    double slotWidth, double slotHeight) {
-
-        int cols = Math.max(1, (int) Math.floor(containerWidth / slotWidth));
-        int rows = Math.max(1, (int) Math.floor(containerHeight / slotHeight));
-
-        logger.debug("findFirstFreeSlot: container={}x{}, slot={}x{}, cols={}, rows={}, existing={}",
-            containerWidth, containerHeight, slotWidth, slotHeight, cols, rows, minimizedWindowBounds);
-
-        for (int row = 0; row < rows; row++) {
-            double y = containerHeight - (row + 1) * slotHeight;
-            for (int col = 0; col < cols; col++) {
-                double x = col * slotWidth;
-
-                WindowBounds candidate = new WindowBounds(x, y, slotWidth, slotHeight);
-
-                WindowBounds blocker = null;
-                for (WindowBounds existing : minimizedWindowBounds) {
-                    if (intersects(candidate, existing)) {
-                        blocker = existing;
-                        break;
-                    }
-                }
-
-                if (blocker == null) {
-                    logger.debug("findFirstFreeSlot: free slot found at row={}, col={}, bounds={}",
-                            row, col, candidate);
-                    return candidate;
-                } else {
-                    logger.debug("findFirstFreeSlot: slot row={}, col={}, bounds={} occupied by {}",
-                        row, col, candidate, blocker);
-                }
-            }
-        }
-
-        double y = containerHeight - (rows + 1) * slotHeight;
-        WindowBounds fallback = new WindowBounds(0, y, slotWidth, slotHeight);
-        logger.debug("findFirstFreeSlot: no free slot in grid, using fallback {}", fallback);
-        return fallback;
-    }
-
-    private boolean intersects(WindowBounds a, WindowBounds b) {
-        return a.x() < b.x() + b.width()
-            && a.x() + a.width() > b.x()
-            && a.y() < b.y() + b.height()
-            && a.y() + a.height() > b.y();
     }
 
     // Z-order:
@@ -468,19 +765,6 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                 .toList();
     }
 
-    private Optional<WindowFxView<?>> findWindowOwner(ParentFxView<?> component) {
-        while (component != null) {
-            if (component instanceof WindowFxView<?> window) {
-                var bgPane = getWindowPane(window);
-                if (bgPane != null && bgPane.getParent() == getStackPane().get()) {
-                    return Optional.of(window);
-                }
-            }
-            component = component instanceof ChildFxView<?> child ? child.getComposer().getParent() : null;
-        }
-        return Optional.empty();
-    }
-
     /**
      * Restores window bounds after unmaximizing, adjusting position and size to fit within the current container
      * dimensions.
@@ -507,158 +791,5 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         double y = Math.max(0, Math.min(saved.y(), containerHeight - height));
 
         return new WindowBounds(x, y, width, height);
-    }
-
-    /**
-     * Calculates cascading layout positions for windows within a container.
-     * Windows are ordered from bottom to top — index 0 is the bottommost window.
-     *
-     * @param containerWidth  the width of the container StackPane
-     * @param containerHeight the height of the container StackPane
-     * @param windowCount     the number of windows to arrange
-     * @return list of window bounds ordered from bottom (index 0) to top (index n-1)
-     */
-    private List<WindowBounds> cascade(double containerWidth, double containerHeight, int windowCount) {
-        if (windowCount <= 0) {
-            return List.of();
-        }
-
-        // Window occupies ~65% of the container
-        double windowWidth  = Math.round(containerWidth  * 0.65);
-        double windowHeight = Math.round(containerHeight * 0.65);
-
-        // Step between windows; title bar height is a good natural offset (~4.5% of container height)
-        double step = Math.max(Math.round(containerHeight * 0.045), 24);
-
-        // If windows would overflow the container, shrink the step to fit
-        if (windowWidth + step * (windowCount - 1) > containerWidth
-                || windowHeight + step * (windowCount - 1) > containerHeight) {
-            step = Math.max((int) Math.min(
-                    (containerWidth  - windowWidth)  / Math.max(windowCount - 1, 1),
-                    (containerHeight - windowHeight) / Math.max(windowCount - 1, 1)
-            ), 1);
-        }
-
-        var result = new ArrayList<WindowBounds>(windowCount);
-        for (int i = 0; i < windowCount; i++) {
-            result.add(new WindowBounds(step * i, step * i, windowWidth, windowHeight));
-        }
-        return result;
-    }
-
-    /**
-     * Calculates vertical tile layout — windows are placed side by side in columns.
-     * All windows get equal width and full container height. The last window absorbs
-     * any remainder from integer division, so it may be slightly larger or smaller
-     * than the others. There are no gaps between windows.
-     *
-     * @param containerWidth  the width of the container StackPane
-     * @param containerHeight the height of the container StackPane
-     * @param windowCount     the number of windows to arrange
-     * @return list of window bounds ordered from left (index 0) to right (index n-1)
-     */
-    private List<WindowBounds> tileVertical(double containerWidth, double containerHeight, int windowCount) {
-        if (windowCount <= 0) {
-            return List.of();
-        }
-
-        int totalWidth = (int) containerWidth;
-        int winWidth = totalWidth / windowCount;
-
-        var result = new ArrayList<WindowBounds>(windowCount);
-        for (int i = 0; i < windowCount; i++) {
-            int x = winWidth * i;
-            int w = (i == windowCount - 1) ? totalWidth - x : winWidth;
-            result.add(new WindowBounds(x, 0, w, containerHeight));
-        }
-        return result;
-    }
-
-    /**
-     * Calculates horizontal tile layout — windows are stacked in rows.
-     * All windows get full container width and equal height. The last window absorbs
-     * any remainder from integer division, so it may be slightly larger or smaller
-     * than the others. There are no gaps between windows.
-     *
-     * @param containerWidth  the width of the container StackPane
-     * @param containerHeight the height of the container StackPane
-     * @param windowCount     the number of windows to arrange
-     * @return list of window bounds ordered from top (index 0) to bottom (index n-1)
-     */
-    private List<WindowBounds> tileHorizontal(double containerWidth, double containerHeight, int windowCount) {
-        if (windowCount <= 0) {
-            return List.of();
-        }
-
-        int totalHeight = (int) containerHeight;
-        int winHeight = totalHeight / windowCount;
-
-        var result = new ArrayList<WindowBounds>(windowCount);
-        for (int i = 0; i < windowCount; i++) {
-            int y = winHeight * i;
-            int h = (i == windowCount - 1) ? totalHeight - y : winHeight;
-            result.add(new WindowBounds(0, y, containerWidth, h));
-        }
-        return result;
-    }
-
-    /**
-     * Calculates grid layout positions for windows within a container.
-     * The number of columns and rows is derived from the container's aspect ratio —
-     * wider containers get more columns, taller containers get more rows.
-     * If the last row is incomplete, its windows are stretched to fill the full width.
-     * The last window in an incomplete row absorbs any remainder from integer division.
-     *
-     * @param containerWidth  the width of the container StackPane
-     * @param containerHeight the height of the container StackPane
-     * @param windowCount     the number of windows to arrange
-     * @return list of window bounds ordered left-to-right, top-to-bottom (index 0 is top-left)
-     */
-    private List<WindowBounds> tileGrid(double containerWidth, double containerHeight, int windowCount) {
-        if (windowCount <= 0) {
-            return List.of();
-        }
-        if (windowCount == 1) {
-            return List.of(new WindowBounds(0, 0, containerWidth, containerHeight));
-        }
-
-        double aspectRatio = containerWidth / containerHeight;
-
-        // derive columns from aspect ratio, then rows from columns
-        int cols = (int) Math.round(Math.sqrt(windowCount * aspectRatio));
-        cols = Math.max(1, Math.min(cols, windowCount));
-        int rows = (int) Math.ceil((double) windowCount / cols);
-
-        int totalWidth  = (int) containerWidth;
-        int totalHeight = (int) containerHeight;
-        int winWidth    = totalWidth  / cols;
-        int winHeight   = totalHeight / rows;
-
-        int lastRowCount = windowCount % cols == 0 ? cols : windowCount % cols;
-        int lastRowWinWidth = totalWidth / lastRowCount;
-
-        var result = new ArrayList<WindowBounds>(windowCount);
-        for (int i = 0; i < windowCount; i++) {
-            int row = i / cols;
-            int col = i % cols;
-            boolean isLastRow = (row == rows - 1);
-
-            int x;
-            int w;
-            if (isLastRow) {
-                int posInRow = i - (rows - 1) * cols;
-                x = lastRowWinWidth * posInRow;
-                w = (posInRow == lastRowCount - 1) ? totalWidth - x : lastRowWinWidth;
-            } else {
-                x = winWidth * col;
-                w = (col == cols - 1) ? totalWidth - x : winWidth;
-            }
-
-            int y = winHeight * row;
-            int h = (row == rows - 1) ? totalHeight - y : winHeight;
-
-            result.add(new WindowBounds(x, y, w, h));
-        }
-        return result;
     }
 }

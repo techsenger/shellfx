@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.PauseTransition;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -235,9 +236,25 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private boolean shadowVisible;
 
+    /**
+     * The minimum width explicitly specified by the user.
+     */
     private final DoubleProperty minWidth = new SimpleDoubleProperty();
 
+    /**
+     * The minimum height explicitly specified by the user.
+     */
     private final DoubleProperty minHeight = new SimpleDoubleProperty();
+
+    /**
+     * The minimum width calculated from the window content.
+     */
+    private final DoubleProperty calculatedMinWidth = new SimpleDoubleProperty();
+
+    /**
+     * The minimum height calculated from the window content.
+     */
+    private final DoubleProperty calculatedMinHeight = new SimpleDoubleProperty();
 
     private final DoubleProperty maxWidth = new SimpleDoubleProperty();
 
@@ -346,6 +363,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                     getPresenter().onMaximized(false);
                     showMaximized(false);
                 }
+                calculateMinSize();
                 getComposer().getContainer().getComposer().minimizeWindow(this);
             } else {
                 getComposer().getContainer().getComposer().restoreWindow(this);
@@ -576,16 +594,31 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         } else {
             this.titleBar = new HBox(leftBox, titleLabel, new Spacer(Orientation.HORIZONTAL), rightBox);
             titleBar.getStyleClass().add(StyleClasses.CORNERS_TOP);
+            titleBar.setMinHeight(Region.USE_PREF_SIZE);
+            VBox.setVgrow(this.titleBar, Priority.NEVER);
             this.stage = null;
             this.stylesheets = null;
             contentBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
             this.windowBox.getStyleClass().add(StyleClasses.CORNERS_ALL);
             this.windowNode.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
             this.windowNode.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-            this.resizer = new RegionResizer(minWidth, minHeight, maxWidth, maxHeight,
+
+            DoubleProperty resultMinWidth = new SimpleDoubleProperty();
+            resultMinWidth.bind(Bindings.when(minWidth.isEqualTo(0))
+                    .then(calculatedMinWidth)
+                    .otherwise(Bindings.min(minWidth, calculatedMinWidth)));
+            DoubleProperty resultMinHeight = new SimpleDoubleProperty();
+            resultMinHeight.bind(Bindings.when(minHeight.isEqualTo(0))
+                    .then(calculatedMinHeight)
+                    .otherwise(Bindings.min(minHeight, calculatedMinHeight)));
+            this.resizer = new RegionResizer(resultMinWidth, resultMinHeight, maxWidth, maxHeight,
                     (e) -> {
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_STARTED, e);
                         this.windowNode.fireEvent(event);
+                        calculateMinSize();
+                        // it is necessary to set sizes for both sides, as we don't know which side the user will resize
+                        setWidth(windowNode.getWidth());
+                        setHeight(windowNode.getHeight());
                     },
                     (e) -> {
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_FINISHED, e);
@@ -612,10 +645,14 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             this.stage.maximizedProperty().addListener((ov, oldV, newV) -> getPresenter().onMaximized(newV));
             this.stage.focusedProperty().addListener((ov, oldV, newV) -> setActive(newV));
         } else {
-            getNode().widthProperty()
-                    .addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue()));
-            getNode().heightProperty()
-                    .addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
+            getNode().widthProperty().addListener((ov, oldV, newV) -> {
+                getPresenter().onWidthChanged(newV.doubleValue());
+                checkContentFits();
+            });
+            getNode().heightProperty().addListener((ov, oldV, newV) -> {
+                getPresenter().onHeightChanged(newV.doubleValue());
+                checkContentFits();
+            });
             this.minimized.addListener((ov, oldV, newV) -> {
                 if (newV) {
                     this.minimizeIconView.setIcon(CoreIcons.WINDOW_RESTORE);
@@ -818,8 +855,6 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     protected void showMinimized(boolean minimized) {
         checkIfNested();
         var pane = getContentPane();
-        pane.setVisible(!minimized);
-        pane.setManaged(!minimized);
         if (minimized) {
             titleBar.getStyleClass().remove(StyleClasses.CORNERS_TOP);
             titleBar.getStyleClass().add(StyleClasses.CORNERS_ALL);
@@ -836,6 +871,19 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     void setWindowManager(@Nullable WindowManager windowManager) {
         this.windowManager = windowManager;
+    }
+
+    /**
+     * Hides the content if the window is too small to fit it during resizing (manual or animated).
+     */
+    private void checkContentFits() {
+        var containerHeight = windowNode.getHeight() - windowNode.getPadding().getTop()
+                        - windowNode.getPadding().getBottom();
+        var containerWidth = windowNode.getWidth() - windowNode.getPadding().getLeft()
+                        - windowNode.getPadding().getRight();
+        boolean fits = containerHeight >= calculatedMinHeight.get() && containerWidth >= calculatedMinWidth.get();
+        contentPane.setVisible(fits);
+        contentPane.setManaged(fits);
     }
 
     private void checkIfTopLevel() {
@@ -894,5 +942,13 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     private boolean isMoving() {
         var currentCursor = this.windowNode.getCursor();
         return (currentCursor == null || currentCursor == Cursor.DEFAULT);
+    }
+
+    private void calculateMinSize() {
+        var width = contentPane.minWidth(-1) + windowNode.getPadding().getLeft() + windowNode.getPadding().getRight();
+        this.calculatedMinWidth.set(width);
+        var height = contentPane.minHeight(-1) + windowNode.getPadding().getTop() + windowNode.getPadding().getBottom()
+                + titlePane.getHeight();
+        this.calculatedMinHeight.set(height);
     }
 }
