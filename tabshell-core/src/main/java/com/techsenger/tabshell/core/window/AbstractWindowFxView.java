@@ -318,17 +318,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             this.stage.setMaximized(maximized);
         } else {
             if (maximized) {
-                if (this.minimized.get()) {
-                    this.minimized.set(false);
-                    getPresenter().onMinimized(false);
-                    showMinimized(false);
-                }
                 getComposer().getContainer().getComposer().maximizeWindow(this);
             } else {
                 getComposer().getContainer().getComposer().restoreWindow(this);
             }
-            getPresenter().onMaximized(maximized);
-            showMaximized(maximized);
         }
         this.maximized.set(maximized);
     }
@@ -358,18 +351,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             this.stage.setIconified(minimized);
         } else {
             if (minimized) {
-                if (this.maximized.get()) {
-                    this.maximized.set(false);
-                    getPresenter().onMaximized(false);
-                    showMaximized(false);
-                }
-                calculateMinSize();
                 getComposer().getContainer().getComposer().minimizeWindow(this);
             } else {
                 getComposer().getContainer().getComposer().restoreWindow(this);
             }
-            getPresenter().onMinimized(minimized);
-            showMinimized(minimized);
         }
         this.minimized.set(minimized);
     }
@@ -862,32 +847,6 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         return shadowVisible;
     }
 
-    /**
-     * This method is used to modify the view for the {@code maximized} state if it is necessary.
-     *
-     * @param maximized
-     */
-    protected void showMaximized(boolean maximized) {
-        checkIfNested();
-    }
-
-    /**
-     * This method is used to modify the view for the {@code minimized} state if it is necessary.
-     *
-     * @param maximized
-     */
-    protected void showMinimized(boolean minimized) {
-        checkIfNested();
-        var pane = getContentPane();
-        if (minimized) {
-            titleBar.getStyleClass().remove(StyleClasses.CORNERS_TOP);
-            titleBar.getStyleClass().add(StyleClasses.CORNERS_ALL);
-        } else {
-            titleBar.getStyleClass().remove(StyleClasses.CORNERS_ALL);
-            titleBar.getStyleClass().add(StyleClasses.CORNERS_TOP);
-        }
-    }
-
     void setActive(boolean active) {
         windowBox.pseudoClassStateChanged(PseudoClasses.INACTIVE, !active);
         getPresenter().onActiveChanged(active);
@@ -895,6 +854,25 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     void setWindowManager(@Nullable WindowManager windowManager) {
         this.windowManager = windowManager;
+    }
+
+    void onMaximized(boolean maximized) {
+        var pane = getContentPane();
+        getPresenter().onMaximized(maximized);
+        this.maximized.set(maximized);
+    }
+
+    void onMinimized(boolean minimized) {
+        if (minimized) {
+            titleBar.getStyleClass().remove(StyleClasses.CORNERS_TOP);
+            titleBar.getStyleClass().add(StyleClasses.CORNERS_ALL);
+            calculateMinSize();
+        } else {
+            titleBar.getStyleClass().remove(StyleClasses.CORNERS_ALL);
+            titleBar.getStyleClass().add(StyleClasses.CORNERS_TOP);
+        }
+        getPresenter().onMinimized(minimized);
+        this.minimized.set(minimized);
     }
 
     /**

@@ -519,6 +519,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         var restoreInfo = restoreInfosByWindow.get(window);
         if (restoreInfo != null) { // from minimized
             restoreInfo.state = SpecialState.MAXIMIZED;
+            setMinimized(window, false);
         } else {
             createAndSaveRestoreInfo(SpecialState.MAXIMIZED, window);
         }
@@ -543,6 +544,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             n.setLayoutX(to.y);
             onFinished.run();
         }
+        setMaximized(window, true);
     }
 
     @Override
@@ -551,6 +553,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         if (restoreInfo != null) { // from maximized
             AnchorPane.clearConstraints(window.getNode());
             restoreInfo.state = SpecialState.MINIMIZED;
+            setMaximized(window, false);
         } else {
             createAndSaveRestoreInfo(SpecialState.MINIMIZED, window);
         }
@@ -575,6 +578,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             n.setMaxSize(windowBounds.width, windowBounds.height);
             n.setMinSize(windowBounds.width, windowBounds.height);
         }
+        setMinimized(window, true);
     }
 
     @Override
@@ -598,6 +602,11 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                 window.getNode().setLayoutY(restoredBounds.y);
                 window.setWidth(restoredBounds.width);
                 window.setHeight(restoredBounds.height);
+            }
+            if (info.state == SpecialState.MAXIMIZED) {
+                setMaximized(window, false);
+            } else {
+                setMinimized(window, false);
             }
         }
     }
@@ -627,6 +636,18 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                     + windowView.getWindowBox().getPadding().getTop();
         }
         return -1;
+    }
+
+    protected void setMaximized(WindowFxView<?> window, boolean maximized) {
+        if (window instanceof AbstractWindowFxView<?> windowView) {
+            windowView.onMaximized(maximized);
+        }
+    }
+
+    protected void setMinimized(WindowFxView<?> window, boolean minimized) {
+        if (window instanceof AbstractWindowFxView<?> windowView) {
+            windowView.onMinimized(minimized);
+        }
     }
 
     @Override
