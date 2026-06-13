@@ -553,6 +553,24 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
+    public void setX(double x) {
+        if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
+            this.stage.setX(x);
+        } else {
+            this.windowNode.setLayoutX(x);
+        }
+    }
+
+    @Override
+    public void setY(double y) {
+        if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
+            this.stage.setY(y);
+        } else {
+            this.windowNode.setLayoutY(y);
+        }
+    }
+
+    @Override
     protected Composer createComposer() {
         return new AbstractWindowFxView.Composer();
     }
@@ -644,15 +662,19 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                     .addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
             this.stage.maximizedProperty().addListener((ov, oldV, newV) -> getPresenter().onMaximized(newV));
             this.stage.focusedProperty().addListener((ov, oldV, newV) -> setActive(newV));
+            this.stage.xProperty().addListener((ov, oldV, newV) -> getPresenter().onXChanged(newV.doubleValue()));
+            this.stage.yProperty().addListener((ov, oldV, newV) -> getPresenter().onYChanged(newV.doubleValue()));
         } else {
-            getNode().widthProperty().addListener((ov, oldV, newV) -> {
+            windowNode.widthProperty().addListener((ov, oldV, newV) -> {
                 getPresenter().onWidthChanged(newV.doubleValue());
                 checkContentFits();
             });
-            getNode().heightProperty().addListener((ov, oldV, newV) -> {
+            windowNode.heightProperty().addListener((ov, oldV, newV) -> {
                 getPresenter().onHeightChanged(newV.doubleValue());
                 checkContentFits();
             });
+            windowNode.layoutXProperty().addListener((ov, oldV, newV) -> getPresenter().onXChanged(newV.doubleValue()));
+            windowNode.layoutYProperty().addListener((ov, oldV, newV) -> getPresenter().onYChanged(newV.doubleValue()));
             this.minimized.addListener((ov, oldV, newV) -> {
                 if (newV) {
                     this.minimizeIconView.setIcon(CoreIcons.WINDOW_RESTORE);

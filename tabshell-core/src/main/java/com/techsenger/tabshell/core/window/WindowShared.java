@@ -159,4 +159,18 @@ public interface WindowShared {
      * @param value {@code true} to make the window resizable, {@code false} to disable resizing
      */
     void setResizable(boolean value);
+
+    /**
+     * Sets the x-coordinate of the window.
+     *
+     * @param x the x-coordinate of the window
+     */
+    void setX(double x);
+
+    /**
+     * Sets the y-coordinate of the window.
+     *
+     * @param y the y-coordinate of the window
+     */
+    void setY(double y);
 }

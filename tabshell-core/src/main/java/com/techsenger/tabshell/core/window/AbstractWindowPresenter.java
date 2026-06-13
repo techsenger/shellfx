@@ -83,6 +83,10 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     private boolean active;
 
+    private double x;
+
+    private double y;
+
     public AbstractWindowPresenter(T view, WindowParams params) {
         super(view, params);
         this.windowType = params.getWindowType();
@@ -359,6 +363,28 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         getView().setResizable(resizable);
     }
 
+    @Override
+    public double getX() {
+        return this.x;
+    }
+
+    @Override
+    public double getY() {
+        return this.y;
+    }
+
+    @Override
+    public void setX(double x) {
+        this.x = x;
+        getView().setX(x);
+    }
+
+    @Override
+    public void setY(double y) {
+        this.y = y;
+        getView().setY(y);
+    }
+
     protected void onCloseRequest() {
         if (this.onCloseRequest != null) {
             this.onCloseRequest.run();
@@ -421,6 +447,14 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     protected void onActiveChanged(boolean active) {
         this.active = active;
+    }
+
+    protected void onXChanged(double x) {
+        this.x = x;
+    }
+
+    protected void onYChanged(double y) {
+        this.y = y;
     }
 
     @Override

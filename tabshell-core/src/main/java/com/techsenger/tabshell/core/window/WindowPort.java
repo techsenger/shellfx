@@ -180,4 +180,18 @@ public interface WindowPort extends ChildPort, WindowShared, CloseAwarePort, Tit
      * @return {@code true} if the window is resizable, {@code false} otherwise
      */
     boolean isResizable();
+
+    /**
+     * Returns the x-coordinate of the window.
+     *
+     * @return the x-coordinate of the window
+     */
+    double getX();
+
+    /**
+     * Returns the y-coordinate of the window.
+     *
+     * @return the y-coordinate of the window
+     */
+    double getY();
 }
