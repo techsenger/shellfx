@@ -45,7 +45,7 @@ public class WindowsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> 
             presenter.initialize();
             presenter.setTitle("Window " + i);
             getComponent().getComposer().addWindow(view);
-            getComponent().getComposer().alignWindow(view, WindowPosition.CENTER, 0, -50);
+            getComponent().getComposer().alignWindow(view, WindowPosition.CENTER);
         }
     }
 }

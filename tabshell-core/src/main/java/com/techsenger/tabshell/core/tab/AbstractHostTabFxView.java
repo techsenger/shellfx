@@ -72,8 +72,23 @@ public abstract class AbstractHostTabFxView<P extends AbstractHostTabPresenter<?
         }
 
         @Override
+        public void alignWindow(WindowFxView<?> window, WindowPosition pos) {
+            windowManager.alignWindow(window, pos, 0, 0);
+        }
+
+        @Override
         public void alignWindow(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset) {
             windowManager.alignWindow(window, pos, xOffset, yOffset);
+        }
+
+        @Override
+        public void alignWindowToStage(WindowFxView<?> window, WindowPosition pos) {
+            windowManager.alignWindowToStage(window, pos, 0, 0);
+        }
+
+        @Override
+        public void alignWindowToStage(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset) {
+            windowManager.alignWindowToStage(window, pos, xOffset, yOffset);
         }
 
         @Override

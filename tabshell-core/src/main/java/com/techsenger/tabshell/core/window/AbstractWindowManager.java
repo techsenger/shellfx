@@ -44,6 +44,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
@@ -526,12 +527,49 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         sp.applyCss();
         sp.layout();
         var coordinates = WindowPositionResolver.resolve(pos,
-                    sp.getWidth() - sp.getPadding().getLeft() - sp.getPadding().getRight(),
-                    sp.getHeight() - sp.getPadding().getTop() - sp.getPadding().getBottom(),
-                    window.getNode().getWidth(), window.getNode().getHeight(),
-                    xOffset, yOffset);
+                sp.getWidth() - sp.getPadding().getLeft() - sp.getPadding().getRight(),
+                sp.getHeight() - sp.getPadding().getTop() - sp.getPadding().getBottom(),
+                window.getNode().getWidth(), window.getNode().getHeight(),
+                xOffset, yOffset);
         window.setX(coordinates.getX());
         window.setY(coordinates.getY());
+    }
+
+    @Override
+    public void alignWindowToStage(WindowFxView<?> window, WindowPosition pos,
+            double xOffset, double yOffset) {
+        var sp = getStackPane().get();
+        var scene = sp.getScene();
+        if (scene == null || !(scene.getWindow() instanceof Stage stage)) {
+            throw new IllegalStateException("StackPane is not attached to a Stage");
+        }
+        sp.applyCss();
+        sp.layout();
+
+        // StackPane position in scene coordinates
+        var spOriginInScene = sp.localToScene(0, 0);
+        double spOffsetX = spOriginInScene.getX();
+        double spOffsetY = spOriginInScene.getY();
+
+        double spWidth = sp.getWidth() - sp.getPadding().getLeft() - sp.getPadding().getRight();
+        double spHeight = sp.getHeight() - sp.getPadding().getTop() - sp.getPadding().getBottom();
+
+        // resolve position relative to Stage/Scene bounds
+        var coordinates = WindowPositionResolver.resolve(pos,
+                scene.getWidth(), scene.getHeight(),
+                window.getNode().getWidth(), window.getNode().getHeight(),
+                xOffset, yOffset);
+
+        // convert from Scene coords to StackPane-local coords
+        double x = coordinates.getX() - spOffsetX;
+        double y = coordinates.getY() - spOffsetY;
+
+        // clamp to StackPane bounds — not always achievable relative to Stage
+        x = Math.max(0, Math.min(x, spWidth - window.getNode().getWidth()));
+        y = Math.max(0, Math.min(y, spHeight - window.getNode().getHeight()));
+
+        window.setX(x);
+        window.setY(y);
     }
 
     @Override

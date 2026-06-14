@@ -30,6 +30,7 @@ import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.core.tab.TabFxView;
 import com.techsenger.tabshell.core.window.WindowContainerFxView;
 import com.techsenger.tabshell.core.window.WindowFxView;
+import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarParams;
@@ -219,6 +220,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
             var dialog = createNameValueDialog(nameCaption, valueCaption, params);
             if (params.getWindowType() == WindowType.NESTED) {
                 view.windowContainer.addWindow(dialog);
+                view.windowContainer.alignWindowToStage(dialog, WindowPosition.CENTER);
             } else {
                 dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
                 dialog.getStage().show();

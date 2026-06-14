@@ -18,6 +18,7 @@ package com.techsenger.tabshell.demo.menu.file;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
+import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.demo.settings.SettingsDialogFxView;
 import com.techsenger.tabshell.demo.settings.SettingsDialogParams;
@@ -43,5 +44,6 @@ public class SettingsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
         var presenter = new SettingsDialogPresenter(view, params);
         presenter.initialize();
         shell.getComposer().addWindow(view);
+        shell.getComposer().alignWindowToStage(view, WindowPosition.CENTER);
     }
 }

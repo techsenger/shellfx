@@ -21,6 +21,7 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.dialog.DialogResizeEvent;
 import com.techsenger.tabshell.core.settings.AppearanceSettings;
+import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogPresenter;
@@ -108,6 +109,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             var dialog = createAlertDialog(params);
             dialog.getPresenter().setMessage(message);
             getContainer().getComposer().addWindow(dialog);
+            getContainer().getComposer().alignWindowToStage(dialog, WindowPosition.CENTER);
             return dialog.getPresenter();
         }
 

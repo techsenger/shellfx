@@ -29,6 +29,7 @@ import com.techsenger.tabshell.core.popup.PopupParams;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.core.tab.TabContainerFxView;
+import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogFxView;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogPresenter;
 import com.techsenger.tabshell.demo.main.TestInterface;
@@ -82,6 +83,7 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
             p.initialize();
             p.setResizable(resizable);
             getShell().getComposer().addWindow(v);
+            getShell().getComposer().alignWindowToStage(v, WindowPosition.CENTER);
             return p;
         }
 

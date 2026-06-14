@@ -31,6 +31,7 @@ import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogPort;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.core.window.WindowContainerFxView;
+import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.ElementUtils;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
@@ -519,6 +520,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             dialog.getPresenter().setResizable(true);
             if (params.getWindowType() == WindowType.NESTED) {
                 windowContainer.addWindow(dialog);
+                windowContainer.alignWindowToStage(dialog, WindowPosition.CENTER);
             } else {
                 dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
                 dialog.getStage().show();
@@ -538,6 +540,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             }
             if (params.getWindowType() == WindowType.NESTED) {
                 windowContainer.addWindow(dialog);
+                windowContainer.alignWindowToStage(dialog, WindowPosition.CENTER);
             } else {
                 dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
                 dialog.getStage().show();

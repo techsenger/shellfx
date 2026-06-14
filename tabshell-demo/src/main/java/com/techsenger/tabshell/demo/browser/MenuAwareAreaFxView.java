@@ -23,6 +23,7 @@ import com.techsenger.tabshell.core.popup.OverlayScope;
 import com.techsenger.tabshell.core.popup.PopupParams;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.tab.HostTabFxView;
+import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogFxView;
 import com.techsenger.tabshell.demo.dialogs.DemoDialogPresenter;
 import com.techsenger.tabshell.demo.popup.DemoPopupFxView;
@@ -61,8 +62,10 @@ public class MenuAwareAreaFxView extends AbstractAreaFxView<MenuAwareAreaPresent
             if (scope == OverlayScope.WINDOW) {
                 var shell = mainTab.getComposer().getShell();
                 shell.getComposer().addWindow(v);
+                shell.getComposer().alignWindowToStage(v, WindowPosition.CENTER);
             } else {
                 mainTab.getComposer().addWindow(v);
+                mainTab.getComposer().alignWindowToStage(v, WindowPosition.CENTER);
             }
             return p;
         }
