@@ -21,6 +21,7 @@ import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.popup.AbstractPopupManager;
 import com.techsenger.tabshell.core.popup.PopupFxView;
 import static com.techsenger.tabshell.core.window.WindowArrangement.CASCADE;
@@ -46,6 +47,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -94,6 +97,8 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     private static final double MINIMIZED_WINDOW_WIDTH = 250;
 
     private static final Duration ANIMATION_DURATION = Duration.millis(250);
+
+    private static final double DIALOG_Y_OFFSET = -50.0;
 
     private static @Nullable WindowPane getWindowPane(WindowFxView<?> window) {
         if (window.getNode() != null) {
@@ -529,11 +534,12 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         var coordinates = WindowPositionResolver.resolve(pos,
                 sp.getWidth() - sp.getPadding().getLeft() - sp.getPadding().getRight(),
                 sp.getHeight() - sp.getPadding().getTop() - sp.getPadding().getBottom(),
-                window.getNode().getWidth(), window.getNode().getHeight(),
-                xOffset, yOffset);
-        window.setX(coordinates.getX());
-        window.setY(coordinates.getY());
+                window.getNode().getWidth(), window.getNode().getHeight());
+        window.setX(Math.round(coordinates.getX() + xOffset));
+        window.setY(Math.round(coordinates.getY() + yOffset));
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractWindowManager.class);
 
     @Override
     public void alignWindowToStage(WindowFxView<?> window, WindowPosition pos,
@@ -557,19 +563,30 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         // resolve position relative to Stage/Scene bounds
         var coordinates = WindowPositionResolver.resolve(pos,
                 scene.getWidth(), scene.getHeight(),
-                window.getNode().getWidth(), window.getNode().getHeight(),
-                xOffset, yOffset);
+                window.getNode().getWidth(), window.getNode().getHeight());
 
         // convert from Scene coords to StackPane-local coords
-        double x = coordinates.getX() - spOffsetX;
-        double y = coordinates.getY() - spOffsetY;
+        double x = coordinates.getX() - spOffsetX + xOffset;
+        double y = coordinates.getY() - spOffsetY + yOffset;
 
         // clamp to StackPane bounds — not always achievable relative to Stage
         x = Math.max(0, Math.min(x, spWidth - window.getNode().getWidth()));
         y = Math.max(0, Math.min(y, spHeight - window.getNode().getHeight()));
 
-        window.setX(x);
-        window.setY(y);
+        logger.debug("x={}, y={}, spOffsetX={}, spOffsetY={}, coordinates={},{}, windowSize={}x{}, sceneSize={}x{}",
+                x, y, spOffsetX, spOffsetY,
+                coordinates.getX(), coordinates.getY(),
+                window.getNode().getWidth(), window.getNode().getHeight(),
+                scene.getWidth(), scene.getHeight());
+
+        window.setX(Math.round(x));
+        window.setY(Math.round(y));
+    }
+
+    @Override
+    public void addDialog(DialogFxView<?> dialog) {
+        addWindow(dialog);
+        alignWindowToStage(dialog, WindowPosition.CENTER, 0, DIALOG_Y_OFFSET);
     }
 
     @Override

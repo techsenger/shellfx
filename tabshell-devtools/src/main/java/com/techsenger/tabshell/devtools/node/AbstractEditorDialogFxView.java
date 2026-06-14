@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.devtools.node;
 
 import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
-import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogFxView;
 import com.techsenger.tabshell.dialogs.alert.AlertDialogParams;
@@ -45,8 +44,7 @@ public abstract class AbstractEditorDialogFxView<P extends AbstractEditorDialogP
         public AlertDialogPort openAlertDialog(AlertDialogParams params) {
             var dialog = createAlertDialog(params);
             if (params.getWindowType() == WindowType.NESTED) {
-                getContainer().getComposer().addWindow(dialog);
-                getContainer().getComposer().alignWindowToStage(dialog, WindowPosition.CENTER);
+                getContainer().getComposer().addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getStage());
                 dialog.getStage().show();

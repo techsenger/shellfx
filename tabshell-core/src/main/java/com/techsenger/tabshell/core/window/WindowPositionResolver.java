@@ -25,8 +25,7 @@ import javafx.geometry.Point2D;
 final class WindowPositionResolver {
 
     /**
-     * Resolves the coordinates for placing a window within its container according to a {@link WindowPosition},
-     * adjusted by the given offsets.
+     * Resolves the coordinates for placing a window within its container according to a {@link WindowPosition}.
      *
      * <p>The container is the {@code Screen} for {@link WindowType#TOP_LEVEL} windows (in which case the result is
      * the window's {@code x}/{@code y} in screen coordinates), or the {@code StackPane} for {@link WindowType#NESTED}
@@ -43,12 +42,10 @@ final class WindowPositionResolver {
      * @param windowHeight    height of the window being positioned
      * @param xOffset         offset added to the computed x coordinate; positive values shift the
      *                        window to the right, negative values shift it to the left
-     * @param yOffset         offset added to the computed y coordinate; positive values shift the
-     *                        window down, negative values shift it up
      * @return the resolved coordinates
      */
     static Point2D resolve(WindowPosition pos, double containerWidth, double containerHeight,
-            double windowWidth, double windowHeight, double xOffset, double yOffset) {
+            double windowWidth, double windowHeight) {
 
         double x = switch (pos) {
             case TOP_LEFT, CENTER_LEFT, BOTTOM_LEFT -> 0;
@@ -62,7 +59,7 @@ final class WindowPositionResolver {
             case BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT -> containerHeight - windowHeight;
         };
 
-        return new Point2D(Math.round(x + xOffset), Math.round(y + yOffset));
+        return new Point2D(x, y);
     }
 
     private WindowPositionResolver() {

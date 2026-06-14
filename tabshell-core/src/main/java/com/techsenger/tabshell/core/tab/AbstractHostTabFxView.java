@@ -18,6 +18,7 @@ package com.techsenger.tabshell.core.tab;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.core.ShellFxView;
+import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.popup.PopupFxView;
 import com.techsenger.tabshell.core.popup.PopupPort;
 import com.techsenger.tabshell.core.window.AbstractWindowManager;
@@ -89,6 +90,12 @@ public abstract class AbstractHostTabFxView<P extends AbstractHostTabPresenter<?
         @Override
         public void alignWindowToStage(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset) {
             windowManager.alignWindowToStage(window, pos, xOffset, yOffset);
+        }
+
+        @Override
+        public void addDialog(DialogFxView<?> dialog) {
+            windowManager.addDialog(dialog);
+            getModifiableChildren().add(dialog);
         }
 
         @Override

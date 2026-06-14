@@ -18,7 +18,6 @@ package com.techsenger.tabshell.demo.menu.file;
 
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.menu.AbstractMenuItemHandler;
-import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.demo.dialogs.DialogsDialogFxView;
 import com.techsenger.tabshell.demo.dialogs.DialogsDialogParams;
 import com.techsenger.tabshell.demo.dialogs.DialogsDialogPresenter;
@@ -44,7 +43,6 @@ public class DialogsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> 
                 shellP.getContext().getHistoryManager());
         var dialogPresenter = new DialogsDialogPresenter(dialogView, dialogParams);
         dialogPresenter.initialize();
-        shellV.getComposer().addWindow(dialogView);
-        shellV.getComposer().alignWindow(dialogView, WindowPosition.CENTER);
+        shellV.getComposer().addDialog(dialogView);
     }
 }

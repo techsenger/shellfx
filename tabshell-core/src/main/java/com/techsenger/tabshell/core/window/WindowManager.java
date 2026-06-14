@@ -17,6 +17,7 @@
 package com.techsenger.tabshell.core.window;
 
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.popup.PopupManager;
 import javafx.collections.ObservableList;
 
@@ -84,6 +85,22 @@ public interface WindowManager extends PopupManager {
      *                negative values shift it up
      */
     void alignWindowToStage(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset);
+
+    /**
+     * Convenience method that adds the given dialog to the component tree and aligns it slightly above the center
+     * of the top-level {@code Stage}, which is the conventional position for dialogs. Equivalent to calling
+     * {@link #addWindow(WindowFxView)} followed by {@link #alignWindowToStage(WindowFxView, WindowPosition)} with
+     * {@link WindowPosition#CENTER} and a small upward offset.
+     *
+     * <p>If the {@code Stage} bounds are not available, the {@code StackPane} center is used as a fallback.
+     *
+     * <p>For precise control over dialog positioning, use {@link #addWindow(WindowFxView)} combined with one of
+     * the {@link #alignWindow(WindowFxView, WindowPosition, double, double) }
+     * or {@link #alignWindowToStage(WindowFxView, WindowPosition, double, double) } methods.
+     *
+     * @param dialog the dialog to add and align
+     */
+    void addDialog(DialogFxView<?> dialog);
 
     /**
      * Arranges all managed windows according to the specified arrangement strategy.

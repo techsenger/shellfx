@@ -21,7 +21,6 @@ import com.techsenger.tabshell.core.dialog.AbstractDialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogFxView;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.dialog.DialogPort;
-import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.demo.page.PageDialogFxView;
 import com.techsenger.tabshell.demo.page.PageDialogParams;
@@ -95,8 +94,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
 
         private void showDialog(DialogFxView<?> dialog) {
             if (dialog.getPresenter().getWindowType() == WindowType.NESTED) {
-                getContainer().getComposer().addWindow(dialog);
-                getContainer().getComposer().alignWindowToStage(dialog, WindowPosition.CENTER);
+                getContainer().getComposer().addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getScene().getWindow());
                 dialog.getStage().show();

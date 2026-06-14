@@ -20,7 +20,6 @@ import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.dialog.DialogParams;
 import com.techsenger.tabshell.core.tab.AbstractTabFxView;
 import com.techsenger.tabshell.core.window.WindowContainerFxView;
-import com.techsenger.tabshell.core.window.WindowPosition;
 import com.techsenger.tabshell.core.window.WindowType;
 import com.techsenger.tabshell.devtools.ToolBarFxView;
 import com.techsenger.tabshell.devtools.ToolBarParams;
@@ -72,8 +71,7 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
             var dialog = createNameValueDialog(params);
             var presenter = dialog.getPresenter();
             if (params.getWindowType() == WindowType.NESTED) {
-                windowContainer.addWindow(dialog);
-                windowContainer.alignWindowToStage(dialog, WindowPosition.CENTER);
+                windowContainer.addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getContent().getScene().getWindow());
                 dialog.getStage().show();
