@@ -27,7 +27,6 @@ import com.techsenger.tabshell.devtools.DevToolsTabDockPresenter;
 import com.techsenger.tabshell.devtools.DevToolsWindowFxView;
 import com.techsenger.tabshell.devtools.DevToolsWindowParams;
 import com.techsenger.tabshell.devtools.DevToolsWindowPresenter;
-import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.layout.dockhost.DockHostFxView;
 import com.techsenger.tabshell.layout.dockhost.UtilityDockContainerFxView;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
@@ -95,7 +94,7 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>>
     }
 
     protected DevToolsWindowFxView<?> createDevToolsWindow() {
-        var view = new DevToolsWindowFxView<>(getComponent(), IconStylesheetFactory.forAll());
+        var view = new DevToolsWindowFxView<>(getComponent());
         var context = getComponent().getPresenter().getContext();
         var params = new DevToolsWindowParams(context.getSettings().getAppearance(), context.getHistoryManager());
         var presenter = new DevToolsWindowPresenter<>(view, params);

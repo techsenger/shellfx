@@ -20,6 +20,7 @@ import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.tabshell.material.theme.Theme;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -78,5 +79,27 @@ public class Stylesheet {
 
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 89 * hash + Objects.hashCode(this.url);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Stylesheet other = (Stylesheet) obj;
+        return Objects.equals(this.url, other.url);
     }
 }

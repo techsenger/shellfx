@@ -29,6 +29,7 @@ import com.techsenger.tabshell.core.style.CssAnchor;
 import com.techsenger.tabshell.material.icon.FontIconView;
 import com.techsenger.tabshell.material.icon.Icon;
 import com.techsenger.tabshell.material.icon.IconViewBox;
+import com.techsenger.tabshell.material.style.IconStylesheets;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.style.Stylesheet;
@@ -37,6 +38,7 @@ import com.techsenger.tabshell.material.theme.JavaFxTheme;
 import com.techsenger.tabshell.material.theme.Theme;
 import com.techsenger.toolkit.fx.RegionResizer;
 import com.techsenger.toolkit.fx.Spacer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -821,14 +823,16 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         }
     }
 
-    protected List<Stylesheet> createDefaultStylesheets() {
+    protected @Unmodifiable List<Stylesheet> createDefaultStylesheets() {
         Set<Theme> allThemes = Stream.concat(
                 Arrays.stream(AtlantaFxTheme.values()),
                 Arrays.stream(JavaFxTheme.values()))
                 .collect(Collectors.toSet());
-        return List.of(
-                new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())),
-                new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
+        List<Stylesheet> result = new ArrayList<>();
+        result.add(new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())));
+        result.add(new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
+        result.addAll(IconStylesheets.getAll());
+        return Collections.unmodifiableList(result);
     }
 
     protected void setShadowVisible(boolean visible) {

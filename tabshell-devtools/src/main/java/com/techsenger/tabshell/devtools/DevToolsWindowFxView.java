@@ -19,8 +19,6 @@ package com.techsenger.tabshell.devtools;
 import com.techsenger.tabshell.core.ShellFxView;
 import com.techsenger.tabshell.core.history.HistoryManager;
 import com.techsenger.tabshell.core.window.AbstractWindowFxView;
-import com.techsenger.tabshell.material.style.Stylesheet;
-import java.util.List;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -74,8 +72,8 @@ public class DevToolsWindowFxView<P extends DevToolsWindowPresenter<?>> extends 
 
     private final ShellFxView<?> shell;
 
-    public DevToolsWindowFxView(ShellFxView<?> shell, List<Stylesheet> stylesheets) {
-        super(new Stage(), stylesheets);
+    public DevToolsWindowFxView(ShellFxView<?> shell) {
+        super(new Stage(), null);
         this.shell = shell;
     }
 

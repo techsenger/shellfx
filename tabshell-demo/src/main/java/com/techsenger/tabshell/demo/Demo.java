@@ -34,6 +34,7 @@ import com.techsenger.tabshell.demo.styles.StylesTabPresenter;
 import com.techsenger.tabshell.icons.IconStylesheetFactory;
 import com.techsenger.tabshell.layout.dockhost.DockHostHistory;
 import com.techsenger.tabshell.layout.tabhost.TabHostFxView;
+import com.techsenger.tabshell.material.style.IconStylesheets;
 import com.techsenger.tabshell.material.style.Spacing;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -97,8 +98,11 @@ public class Demo extends Application {
     }
 
     private ShellFxView<?> createShell(ApplicationType appType) {
-        //creating shell
-        var shellView = new DefaultShellFxView<>(this, IconStylesheetFactory.forAll(), new ControlRegistry());
+        // use default icons
+        IconStylesheets.addAll(IconStylesheetFactory.forAll());
+
+        // creating component
+        var shellView = new DefaultShellFxView<>(this, null, new ControlRegistry());
         var context = new DefaultShellContext(DemoSettings.createSettings(),
                 new DemoHistoryManager(), getHostServices());
         if (appType == ApplicationType.STYLES_ONLY) {
