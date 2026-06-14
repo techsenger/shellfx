@@ -23,6 +23,7 @@ import com.techsenger.tabshell.material.Anchors;
 import com.techsenger.tabshell.material.style.Stylesheet;
 import java.util.List;
 import javafx.scene.input.InputEvent;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
@@ -147,12 +148,24 @@ public abstract class AbstractHostWindowFxView<P extends AbstractHostWindowPrese
         protected AbstractWindowManager createWindowManager() {
             return new AbstractWindowManager(() -> view.getContentPane(), () -> focusedProperty()) {
 
+                /**
+                 * This pane is used to prevent title bar dragging and, until JDK-8384230 is resolved,
+                 * resizing on a title bar double-click.
+                 */
+                private final StackPane blockingPane = new StackPane();
+
+                {
+                    this.blockingPane.setMouseTransparent(false);
+                }
+
                 @Override
                 protected void onContainerBlocked(boolean blocked) {
                     var scene = view.getNode().getScene();
                     if (blocked) {
+                        getTitlePane().getChildren().add(blockingPane);
                         scene.addEventFilter(InputEvent.ANY, getEventBlocker());
                     } else {
+                        getTitlePane().getChildren().remove(blockingPane);
                         scene.removeEventFilter(InputEvent.ANY, getEventBlocker());
                     }
                 }
