@@ -655,7 +655,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                     .addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue()));
             this.stage.heightProperty()
                     .addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
-            this.stage.maximizedProperty().addListener((ov, oldV, newV) -> getPresenter().onMaximized(newV));
+            this.stage.maximizedProperty().addListener((ov, oldV, newV) -> {
+                getPresenter().onMaximized(newV);
+                this.maximized.set(newV);
+            });
             this.stage.focusedProperty().addListener((ov, oldV, newV) -> setActive(newV));
             this.stage.xProperty().addListener((ov, oldV, newV) -> getPresenter().onXChanged(newV.doubleValue()));
             this.stage.yProperty().addListener((ov, oldV, newV) -> getPresenter().onYChanged(newV.doubleValue()));
