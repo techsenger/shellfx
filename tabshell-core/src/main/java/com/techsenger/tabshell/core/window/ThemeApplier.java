@@ -76,7 +76,6 @@ class ThemeApplier {
     }
 
     public void setTheme(Theme theme) {
-        logSceneStylesheets();
         if (this.theme != null) {
             removeTheme(this.theme);
         }
