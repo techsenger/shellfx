@@ -33,6 +33,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HeaderBar;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -218,6 +219,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     @Override
     protected void build() {
         super.build();
+        getLeftBox().getChildren().remove(getTitleLabel());
         getLeftBox().getChildren().add(menuBar);
     }
 
@@ -226,6 +228,11 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
         super.addHandlers();
         getStage().getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
                 e -> menuManager.setLastMouseClickTime(System.nanoTime()));
+    }
+
+    @Override
+    protected HeaderBar getTitleBar() {
+        return (HeaderBar) super.getTitleBar();
     }
 
     @Override

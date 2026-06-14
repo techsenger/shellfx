@@ -65,7 +65,7 @@
 
 .window-box > .title-pane > .title-bar > .left-box > .icon-view-box {
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 4 0 0;
+    -fx-padding: 0 6 0 0;
 }
 
 .window-box > .title-pane > .title-bar > .left-box > .icon-view-box:empty {

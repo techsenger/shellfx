@@ -176,11 +176,15 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         }
     }
 
+    /**
+     * This icon box is always present to prevent flickering when an icon is added or removed. For example, its minimum
+     * and maximum sizes can be set.
+     */
     private final IconViewBox iconViewBox = new IconViewBox();
 
-    private final HBox leftBox = new HBox(iconViewBox);
-
     private final Label titleLabel = new Label();
+
+    private final HBox leftBox = new HBox(iconViewBox, titleLabel);
 
     private final Button closeButton = new Button(null, new FontIconView(CoreIcons.WINDOW_CLOSE));
 
@@ -583,7 +587,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         this.contentPane.getStyleClass().add("content-pane");
 
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
-            this.titleBar = new HeaderBar(leftBox, titleLabel, rightBox);
+            this.titleBar = new HeaderBar(leftBox, null, rightBox);
             if (this.stage == null) {
                 this.stage = new Stage();
             }
@@ -714,7 +718,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     @Override
     protected void bind() {
         super.bind();
-        if (getPresenter().getWindowType() == WindowType.NESTED) {
+        if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
+            // it is necessary to update the title of the stage because it is shown in the title bar of the OS
+            this.stage.titleProperty().bind(this.titleLabel.textProperty());
+        } else {
             this.resizer.disabledProperty().bind(this.resizable.not().or(this.maximized).or(this.minimized));
         }
     }
