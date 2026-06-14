@@ -130,7 +130,7 @@ public abstract class AbstractHostWindowFxView<P extends AbstractHostWindowPrese
         }
 
         protected AbstractWindowManager createWindowManager() {
-            return new AbstractWindowManager(() -> view.getContentPane()) {
+            return new AbstractWindowManager(() -> view.getContentPane(), () -> focusedProperty()) {
 
                 @Override
                 protected void onContainerBlocked(boolean blocked) {

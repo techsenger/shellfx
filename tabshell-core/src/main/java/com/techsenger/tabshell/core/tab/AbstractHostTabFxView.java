@@ -129,7 +129,8 @@ public abstract class AbstractHostTabFxView<P extends AbstractHostTabPresenter<?
         }
 
         protected AbstractWindowManager createWindowManager() {
-            return new AbstractWindowManager(() -> view.getWrapperPane()) {
+            return new AbstractWindowManager(() -> view.getWrapperPane(),
+                    () -> getShell().getComposer().focusedProperty()) {
                 @Override
                 protected void onContainerBlocked(boolean blocked) {
                     if (blocked) {

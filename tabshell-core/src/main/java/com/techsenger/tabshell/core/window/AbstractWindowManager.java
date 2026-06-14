@@ -35,6 +35,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -425,10 +427,27 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
 
     private final Map<WindowFxView<?>, RestoreInfo> restoreInfosByWindow = new HashMap<>();
 
+    private final Supplier<ReadOnlyObjectProperty<@Nullable ParentFxView<?>>> focused;
+
     private boolean animationEnabled = true;
 
-    public AbstractWindowManager(Supplier<StackPane> stackPane) {
+    /**
+     * Since the focused component does not change when the window loses and regains focus, it is necessary to update
+     * the active window manually.
+     */
+    private final ChangeListener<? super Boolean> focusedListener;
+
+    public AbstractWindowManager(Supplier<StackPane> stackPane,
+            Supplier<ReadOnlyObjectProperty<@Nullable ParentFxView<?>>> focused) {
         super(stackPane);
+        this.focused = focused;
+        this.focusedListener = (ov, oldV, newV) ->  {
+            if (newV) {
+                if (lastWindow != null && focused.get().get() == lastWindow) {
+                    activateWindow(lastWindow);
+                }
+            }
+        };
     }
 
     @Override
@@ -440,6 +459,9 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         doAdd(windowView, windowView.getPresenter().isModal(), null);
         reorderAll();
         focusLast();
+        if (this.windows.size() == 1) {
+            getStackPane().get().getScene().getWindow().focusedProperty().addListener(focusedListener);
+        }
     }
 
     @Override
@@ -452,6 +474,9 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             }
             reorderAll();
             focusLast();
+            if (this.windows.size() == 0) {
+                getStackPane().get().getScene().getWindow().focusedProperty().removeListener(focusedListener);
+            }
         }
     }
 

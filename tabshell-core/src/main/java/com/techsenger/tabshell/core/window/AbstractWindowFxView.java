@@ -123,13 +123,13 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         }
 
         @Override
-        public ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty() {
+        public ReadOnlyObjectProperty<@Nullable ParentFxView<?>> focusedProperty() {
             checkIfTopLevel();
             return this.focused.getReadOnlyProperty();
         }
 
         @Override
-        public ParentFxView<?> getFocused() {
+        public @Nullable ParentFxView<?> getFocused() {
             checkIfTopLevel();
             return this.focused.get();
         }
@@ -145,11 +145,13 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
         @Override
         public @Nullable WindowContainerFxView<?> getContainer() {
+            checkIfNested();
             return getParent(WindowContainerFxView.class);
         }
 
         @Override
         public @Nullable WindowContainerPort getContainerPort() {
+            checkIfNested();
             var container = getContainer();
             return container == null ? null : container.getPresenter();
         }

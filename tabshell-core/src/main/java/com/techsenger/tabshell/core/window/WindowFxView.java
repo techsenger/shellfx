@@ -37,18 +37,22 @@ public interface WindowFxView<P extends WindowPresenter<?>> extends ChildFxView<
         /**
          * Defines the component that currently has the focus.
          *
+         * <p>When the window loses focus and then regains it, the focused component does not change,
+         * because JavaFX preserves and restores the focus automatically.
          * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
          */
-        ReadOnlyObjectProperty<ParentFxView<?>> focusedProperty();
+        ReadOnlyObjectProperty<@Nullable ParentFxView<?>> focusedProperty();
 
         /**
          * Returns the value of {@link #focusedProperty()}.
          *
+         * <p>When the window loses focus and then regains it, the focused component does not change,
+         * because JavaFX preserves and restores the focus automatically.
          * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
          *
          * @return
          */
-        ParentFxView<?> getFocused();
+        @Nullable ParentFxView<?> getFocused();
 
         /**
          * {@inheritDoc}
@@ -58,6 +62,13 @@ public interface WindowFxView<P extends WindowPresenter<?>> extends ChildFxView<
         @Override
         void close();
 
+        /**
+         * Returns the container.
+         *
+         * <p>This method is intended for {@link WindowType#NESTED} windows only.
+         *
+         * @return
+         */
         @Nullable WindowContainerFxView<?> getContainer();
     }
 
