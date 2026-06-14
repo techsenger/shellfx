@@ -118,8 +118,7 @@ public class Demo extends Application {
         AreaFxView<?> workspace;
         switch (appType) {
             case BROWSER -> {
-                var tabHost = HostFactory.createTabHost();
-                workspace = tabHost;
+                workspace = HostFactory.createTabHost();
             }
             case IDE -> {
                 var dockHost = HostFactory.createDockHost(shellView, () -> context.getHistoryManager()
@@ -133,8 +132,7 @@ public class Demo extends Application {
                 workspace = null;
             }
             case STYLES_ONLY -> {
-                var tabHost = HostFactory.createTabHost();
-                workspace = tabHost;
+                workspace = HostFactory.createTabHost();
             }
             default -> throw new AssertionError();
         }
