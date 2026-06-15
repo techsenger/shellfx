@@ -406,15 +406,15 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             getView().setDensity(this.appearanceSettings.getDensity());
             getView().setRegularFont(this.appearanceSettings.getRegularFont());
             getView().setMonospaceFont(this.appearanceSettings.getMonospaceFont());
-            getView().setTheme(this.appearanceSettings.getTheme());
             this.densitySubscription =
                     this.appearanceSettings.onDensityChanged((oldV, newV) -> getView().setDensity(newV));
             this.monospaceFontSubscription =
                     this.appearanceSettings.onMonospaceFontChanged((oldV, newV) -> getView().setMonospaceFont(newV));
             this.regularFontSubscription =
                     this.appearanceSettings.onRegularFontChanged((oldV, newV) -> getView().setRegularFont(newV));
-            this.themeSubscription = this.appearanceSettings.onThemeChanged((oldV, newV) -> getView().setTheme(newV));
         }
+        getView().setTheme(this.appearanceSettings.getTheme());
+        this.themeSubscription = this.appearanceSettings.onThemeChanged((oldV, newV) -> getView().setTheme(newV));
         getView().setModal(modal);
     }
 
@@ -425,8 +425,8 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             this.densitySubscription.unsubscribe();
             this.monospaceFontSubscription.unsubscribe();
             this.regularFontSubscription.unsubscribe();
-            this.themeSubscription.unsubscribe();
         }
+        this.themeSubscription.unsubscribe();
     }
 
     protected void onWidthChanged(double width) {

@@ -27,7 +27,6 @@ import com.techsenger.toolkit.core.function.Factory;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 import javafx.scene.text.Font;
 
 /**
@@ -37,31 +36,31 @@ import javafx.scene.text.Font;
 public enum AtlantaFxTheme implements Theme {
 
     CUPERTINO_LIGHT("Cupertino Light", "cupertino-light.css", false, 6,
-            () -> new CupertinoLight().getUserAgentStylesheet(),
+            new CupertinoLight().getUserAgentStylesheet(),
             () -> ThemeProvider.getInstance().createCupertinoPalettes(false)),
 
     CUPERTINO_DARK("Cupertino Dark", "cupertino-dark.css", true, 6,
-            () -> new CupertinoDark().getUserAgentStylesheet(),
+            new CupertinoDark().getUserAgentStylesheet(),
             () -> ThemeProvider.getInstance().createCupertinoPalettes(true)),
 
     PRIMER_LIGHT("Primer Light", "primer-light.css", false, 4,
-            () -> new PrimerLight().getUserAgentStylesheet(),
+            new PrimerLight().getUserAgentStylesheet(),
             () -> ThemeProvider.getInstance().createPrimerPalettes(false)),
 
     PRIMER_DARK("Primer Dark", "primer-dark.css", true, 4,
-            () -> new PrimerDark().getUserAgentStylesheet(),
+            new PrimerDark().getUserAgentStylesheet(),
             () -> ThemeProvider.getInstance().createPrimerPalettes(true)),
 
     NORD_LIGHT("Nord Light", "nord-light.css", false, 1,
-            () -> new NordLight().getUserAgentStylesheet(),
+            new NordLight().getUserAgentStylesheet(),
             () -> ThemeProvider.getInstance().createNordPalettes(false)),
 
     NORD_DARK("Nord Dark", "nord-dark.css", true, 1,
-            () -> new NordDark().getUserAgentStylesheet(),
+            new NordDark().getUserAgentStylesheet(),
             () -> ThemeProvider.getInstance().createNordPalettes(true)),
 
     DRACULA("Dracula", "dracula.css", true, 6,
-            () -> new Dracula().getUserAgentStylesheet(),
+            new Dracula().getUserAgentStylesheet(),
             () -> ThemeProvider.getInstance().createDraculaPalettes());
 
     private final String name;
@@ -72,7 +71,7 @@ public enum AtlantaFxTheme implements Theme {
 
     private final int borderRadius;
 
-    private final Supplier<String> stylesheetSupplier;
+    private final String userAgentStylesheet;
 
     private ThemePalette16 simplePalette16;
 
@@ -88,13 +87,13 @@ public enum AtlantaFxTheme implements Theme {
 
     private volatile boolean palettesCreated;
 
-    AtlantaFxTheme(String name, String fileName, boolean dark, int borderRadius, Supplier<String> stylesheetSupplier,
+    AtlantaFxTheme(String name, String fileName, boolean dark, int borderRadius, String stylesheet,
             Factory<ThemeProvider.ThemePalettes> palletesFactory) {
         this.name = name;
         this.fileName = fileName;
         this.dark = dark;
         this.borderRadius = borderRadius;
-        this.stylesheetSupplier = stylesheetSupplier;
+        this.userAgentStylesheet = stylesheet;
         this.palettesFactory = palletesFactory;
     }
 
@@ -119,8 +118,8 @@ public enum AtlantaFxTheme implements Theme {
     }
 
     @Override
-    public Supplier<String> getStylesheetSupplier() {
-        return stylesheetSupplier;
+    public String getUserAgentStylesheet() {
+        return userAgentStylesheet;
     }
 
     @Override

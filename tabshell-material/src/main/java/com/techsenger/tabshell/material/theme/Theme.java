@@ -17,7 +17,6 @@
 package com.techsenger.tabshell.material.theme;
 
 import java.util.Map;
-import java.util.function.Supplier;
 import javafx.scene.text.Font;
 
 /**
@@ -95,7 +94,7 @@ public interface Theme {
      */
     ThemePalette16 getSimplePalette16();
 
-    Supplier<String> getStylesheetSupplier();
+    String getUserAgentStylesheet();
 
     /**
      * Returns web CSS declarations for this theme, for example - background-color - red. Returned map can be used

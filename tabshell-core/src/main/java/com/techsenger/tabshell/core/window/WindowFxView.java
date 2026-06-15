@@ -76,18 +76,7 @@ public interface WindowFxView<P extends WindowPresenter<?>> extends ChildFxView<
     Composer getComposer();
 
     /**
-     * Returns the {@link Stage} that backs this window.
-     *
-     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @return the {@link Stage} of this window
-     */
-    Stage getStage();
-
-    /**
      * Adds stylesheets to this window.
-     *
-     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
      *
      * @param sheets the stylesheets to add
      */
@@ -96,8 +85,6 @@ public interface WindowFxView<P extends WindowPresenter<?>> extends ChildFxView<
     /**
      * Removes stylesheets from this window.
      *
-     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
      * @param sheets the stylesheets to remove
      */
     void removeStylesheets(List<Stylesheet> sheets);
@@ -105,11 +92,18 @@ public interface WindowFxView<P extends WindowPresenter<?>> extends ChildFxView<
     /**
      * Returns an unmodifiable list of stylesheets applied to this window.
      *
-     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
      * @return an unmodifiable list of stylesheets
      */
     @Unmodifiable List<Stylesheet> getStylesheets();
+
+    /**
+     * Returns the {@link Stage} that backs this window.
+     *
+     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @return the {@link Stage} of this window
+     */
+    Stage getStage();
 
     @Override
     Region getNode();

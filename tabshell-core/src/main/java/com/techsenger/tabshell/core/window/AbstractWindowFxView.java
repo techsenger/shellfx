@@ -33,6 +33,7 @@ import com.techsenger.tabshell.material.style.IconStylesheets;
 import com.techsenger.tabshell.material.style.Spacing;
 import com.techsenger.tabshell.material.style.StyleClasses;
 import com.techsenger.tabshell.material.style.Stylesheet;
+import com.techsenger.tabshell.material.style.StylesheetManager;
 import com.techsenger.tabshell.material.theme.AtlantaFxTheme;
 import com.techsenger.tabshell.material.theme.JavaFxTheme;
 import com.techsenger.tabshell.material.theme.Theme;
@@ -46,6 +47,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.animation.PauseTransition;
+import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -53,8 +55,6 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
@@ -214,13 +214,11 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private final StackPane windowNode = new StackPane(windowBox);
 
+    private final StylesheetManager stylesheetManager;
+
     private @Nullable Pane blockPane;
 
     private @Nullable Stage stage;
-
-    private @Nullable ObservableList<Stylesheet> stylesheets;
-
-    private @Nullable ThemeApplier themeApplier;
 
     private @Nullable FontApplier fontApplier;
 
@@ -294,8 +292,16 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
      */
     public AbstractWindowFxView(Stage stage, List<Stylesheet> stylesheets) {
         this.stage = stage;
+        this.stylesheetManager = new StylesheetManager(windowNode, () -> {
+            var descriptor = getDescriptor();
+            if (descriptor != null) {
+                return descriptor.getLogPrefix();
+            } else {
+                return null;
+            }
+        });
         if (stylesheets != null) {
-            this.stylesheets = FXCollections.observableArrayList(stylesheets);
+            stylesheetManager.addStylesheets(stylesheets);
         }
     }
 
@@ -463,20 +469,17 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     @Override
     public void addStylesheets(List<Stylesheet> sheets) {
-        checkIfTopLevel();
-        this.stylesheets.addAll(sheets);
+        this.stylesheetManager.addStylesheets(sheets);
     }
 
     @Override
     public void removeStylesheets(List<Stylesheet> sheets) {
-        checkIfTopLevel();
-        this.stylesheets.removeAll(sheets);
+        this.stylesheetManager.removeStylesheets(sheets);
     }
 
     @Override
     public @Unmodifiable List<Stylesheet> getStylesheets() {
-        checkIfTopLevel();
-        return Collections.unmodifiableList(stylesheets);
+        return this.stylesheetManager.getStylesheets();
     }
 
     @Override
@@ -493,8 +496,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     @Override
     public void setTheme(Theme theme) {
-        checkIfTopLevel();
-        this.themeApplier.setTheme(theme);
+        if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
+            Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
+        }
+        this.stylesheetManager.setTheme(theme);
     }
 
     @Override
@@ -593,13 +598,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             }
             HeaderBar.setPrefButtonHeight(stage, 0); // to hide default buttons
             stage.initStyle(StageStyle.EXTENDED);
-            if (stylesheets == null) {
-                this.stylesheets = FXCollections.observableArrayList();
-            }
-            this.stylesheets.addAll(createDefaultStylesheets());
             var scene = new Scene(windowNode);
             stage.setScene(scene);
-            themeApplier = new ThemeApplier(scene, this.stylesheets, getDescriptor());
+            this.stylesheetManager.addStylesheets(createDefaultStylesheets());
             this.fontApplier = new FontApplier(windowNode);
             FxViewUtils.setView(scene, this);
         } else {
@@ -608,7 +609,6 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             titleBar.setMinHeight(Region.USE_PREF_SIZE);
             VBox.setVgrow(this.titleBar, Priority.NEVER);
             this.stage = null;
-            this.stylesheets = null;
             contentBox.getStyleClass().add(StyleClasses.CORNERS_BOTTOM);
             this.windowBox.getStyleClass().add(StyleClasses.CORNERS_ALL);
             this.windowNode.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);

@@ -20,7 +20,6 @@ import com.techsenger.toolkit.core.function.Factory;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 import javafx.application.Application;
 import javafx.scene.text.Font;
 
@@ -34,14 +33,14 @@ public enum JavaFxTheme implements Theme {
      * NOT SUPPORTED. Use this theme only for testing debugging purposes.
      */
     MODENA("Modena", "modena.css", false, 4,
-            () -> Application.STYLESHEET_MODENA,
+            Application.STYLESHEET_MODENA,
             () -> ThemeProvider.getInstance().createJavaFxPalettes()),
 
     /**
      * NOT SUPPORTED. Use this theme only for testing debugging purposes.
      */
     CASPIAN("Caspian", "caspian.css", false, 4,
-            () -> Application.STYLESHEET_CASPIAN,
+            Application.STYLESHEET_CASPIAN,
             () -> ThemeProvider.getInstance().createJavaFxPalettes());
 
     private final String name;
@@ -52,7 +51,7 @@ public enum JavaFxTheme implements Theme {
 
     private final int borderRadius;
 
-    private final Supplier<String> stylesheetSupplier;
+    private final String userAgentStylesheet;
 
     private ThemePalette16 simplePalette16;
 
@@ -68,13 +67,13 @@ public enum JavaFxTheme implements Theme {
 
     private volatile boolean palettesCreated;
 
-    JavaFxTheme(String name, String fileName, boolean dark, int borderRadius, Supplier<String> stylesheetSupplier,
+    JavaFxTheme(String name, String fileName, boolean dark, int borderRadius, String stylesheet,
             Factory<ThemeProvider.ThemePalettes> palletesFactory) {
         this.name = name;
         this.fileName = fileName;
         this.dark = dark;
         this.borderRadius = borderRadius;
-        this.stylesheetSupplier = stylesheetSupplier;
+        this.userAgentStylesheet = stylesheet;
         this.palettesFactory = palletesFactory;
     }
 
@@ -99,8 +98,8 @@ public enum JavaFxTheme implements Theme {
     }
 
     @Override
-    public Supplier<String> getStylesheetSupplier() {
-        return stylesheetSupplier;
+    public String getUserAgentStylesheet() {
+        return userAgentStylesheet;
     }
 
     @Override

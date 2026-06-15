@@ -28,7 +28,7 @@ import java.util.Set;
  * variant. The name of the additional stylesheet is generated automatically based on the name of the base file
  * and the currently used theme.
  *
- * <p>For example, given a stylesheet {@code base.css}, if {@link Stylesheet#themed} is {@code true},
+ * <p>For example, given a stylesheet {@code base.css}, if {@link Stylesheet#extensionThemes} is non-empty,
  * then for the {@code CUPERTINO_DARK} theme the additional themed stylesheet will be named
  * {@code base-cupertino-dark.css}.
  *
@@ -36,46 +36,43 @@ import java.util.Set;
  * styles using only JavaFX CSS features. That's why in some cases it is necessary to add rules specific for
  * concrete theme. At the same time if it possible it must be avoided.
  *
- * <p>Important! This class is used ONLY for stylesheets that should be applied for the whole scene.
- *
  * @author Pavel Castornii
  */
 public class Stylesheet {
 
     private final URL url;
 
-    private final Set<Theme> extendedThemes;
+    private final Set<Theme> extensionThemes;
 
     /**
-     * Creates stylesheet with specific {@link URL}.
+     * Creates a stylesheet with the given {@link URL} and no theme-specific extensions.
      *
-     * @param url the url of the stylesheet.
+     * @param url the URL of the stylesheet
      */
     public Stylesheet(URL url) {
         this(url, Collections.emptySet());
     }
 
     /**
-     * Creates a stylesheet, optionally accompanied by a theme-specific stylesheet.
+     * Creates a stylesheet, optionally accompanied by theme-specific extension stylesheets.
      *
-     * @param url the URL of the base stylesheet
-     * @param extendedThemes set of themes for which extended stylesheet versions exist; empty set means no theme
-     *        extensions are available
+     * @param url             the URL of the base stylesheet
+     * @param extensionThemes the set of themes for which an extension stylesheet exists; an empty set means no
+     *                        theme-specific extensions are available
      */
-    public Stylesheet(URL url, Set<Theme> extendedThemes) {
+    public Stylesheet(URL url, Set<Theme> extensionThemes) {
         this.url = url;
-        this.extendedThemes = extendedThemes;
+        this.extensionThemes = extensionThemes;
     }
 
     /**
-     * Returns the set of themes for which extended stylesheet versions exist.
+     * Returns the set of themes for which a theme-specific extension stylesheet exists.
      *
-     * @return an unmodifiable set of themes with extended stylesheet versions; may be empty if no theme
-     * extensions exist
+     * @return an unmodifiable set of themes with extension stylesheets; may be empty if no extensions exist
      */
-   public @Unmodifiable Set<Theme> getExtendedThemes() {
-       return extendedThemes;
-   }
+    public @Unmodifiable Set<Theme> getExtensionThemes() {
+        return extensionThemes;
+    }
 
     public URL getUrl() {
         return url;
