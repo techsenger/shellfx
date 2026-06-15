@@ -111,6 +111,6 @@ public abstract class AbstractEditorDialogPresenter<V extends EditorDialogView> 
         var alertParams = new AlertDialogParams(getWindowType(), getAppearanceSettings(), AlertDialogType.ERROR);
         var alertDialog = getView().getComposer().openAlertDialog(alertParams);
         alertDialog.setMessage("Failed to apply the value.");
-        alertDialog.setOnClosed(() -> getView().requestFocus());
+        alertDialog.setOnClosed(() -> requestFocus());
     }
 }
