@@ -78,3 +78,7 @@
 .check-box.read-only > .box {
     -fx-opacity: 0.6;
 }
+
+.shadow {
+    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 6px, 0.3, 0, 2);
+}

@@ -21,7 +21,3 @@
 .window-box .menu-item:focused {
   -fx-background-color: -color-accent-emphasis, -color-accent-emphasis;
 }
-
-.shadow {
-    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 8px, 0.6, 0, 2);
-}
