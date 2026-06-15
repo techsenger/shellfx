@@ -84,6 +84,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -606,6 +607,8 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
 
     private final SplitPane splitPane = new SplitPane(nodeBox, propertyBox);
 
+    private Window window;
+
     public NodeTabFxView(ShellFxView<?> shell, WindowContainerFxView.Composer windowContainer) {
         super(shell);
         this.windowContainer = windowContainer;
@@ -614,6 +617,15 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
     @Override
     public void requestFocus() {
 
+    }
+
+    @Override
+    public void selectWindow(int uid) {
+        for (Window window : Window.getWindows()) {
+            if (window.hashCode() == uid) {
+                this.window = window;
+            }
+        }
     }
 
     @Override
@@ -828,7 +840,9 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             if (newV != null) {
                 el = newV.getValue();
                 LocalElement localElement = (LocalElement) el;
-                updateReadOnlyByProperty(readOnlyByProperty, localElement.unwrap());
+                if (localElement.unwrap() != null) {
+                    updateReadOnlyByProperty(readOnlyByProperty, localElement.unwrap());
+                }
             }
             getPresenter().onNodeSelected(el);
         });
@@ -857,8 +871,10 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
     }
 
     private void updateNodeRoot() {
-        var stage = getComposer().getShell().getStage();
-        var root = LocalElement.of(stage, new EventSource(null, stage.hashCode(), true));
+        if (this.window == null) {
+            this.window = getComposer().getShell().getStage();
+        }
+        var root = LocalElement.of(window, new EventSource(null, window.hashCode(), true));
         var rootItem = createNodeItem(root);
         nodeTreeView.setRoot(rootItem);
         getPresenter().onRootChanged(root);

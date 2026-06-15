@@ -27,7 +27,7 @@ public interface DevToolsTabDockView extends TabDockView {
 
     Connector getConnector();
 
-    int getWindowUid();
+    int getShellWindowUid();
 
     void setSelectionSelected(boolean value);
 }

@@ -26,8 +26,6 @@ import com.techsenger.tabshell.layout.dockhost.TabDockPort;
  */
 public interface DevToolsTabDockPort extends TabDockPort {
 
-    int getWindowUid();
-
     Selector getSelector();
 
     Connector getConnector();

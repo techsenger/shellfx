@@ -194,14 +194,22 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
 
     @Override
     public void onAdded() {
-        tabDock.getSelector().addListener((uid, node) -> {
-            if (node == null && uid != null) {
+        tabDock.getSelector().addListener((oldWindowUid, newWindowUid, oldElement, newElement) -> {
+            if (oldWindowUid != newWindowUid) {
+                getView().selectWindow(newWindowUid);
+                this.nodeIndexCreated = false;
+                clearProperties();
                 getView().selectRoot();
-            }
-            if (Objects.equals(this.selectedNode, node)) {
+                refreshProperties();
                 return;
             }
-            this.selectedNode = node; // so the onNodeSelected method won't complete
+            if (newElement == null) {
+                getView().selectRoot();
+            }
+            if (Objects.equals(oldElement, newElement)) {
+                return;
+            }
+            this.selectedNode = newElement; // so the onNodeSelected method won't complete
             if (this.selectedNode != null) {
                 createNodeIndex();
                 getView().selectNode(this.selectedNode, true); // -> onNodeSelected(..)
@@ -250,9 +258,9 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         clearProperties();
         this.selectedFromNodeTree = true;
         if (node.isWindowElement()) {
-            this.tabDock.getSelector().selectWindow(tabDock.getWindowUid());
+            this.tabDock.getSelector().selectWindow(tabDock.getSelector().getSelectedWindowUid());
         } else {
-            this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), node);
+            this.tabDock.getSelector().selectNode(tabDock.getSelector().getSelectedWindowUid(), node);
         }
         this.selectedFromNodeTree = false;
         selectPreviousProperty();
@@ -464,7 +472,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
     private void refreshProperties() {
         selectedFromNodeTree = true;
         clearProperties();
-        tabDock.getConnector().reloadSelectedAttributes(tabDock.getWindowUid(), null, null);
+        tabDock.getConnector().reloadSelectedAttributes(tabDock.getSelector().getSelectedWindowUid(), null, null);
         selectedFromNodeTree = false;
         selectPreviousProperty();
     }

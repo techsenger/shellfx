@@ -16,11 +16,15 @@
 
 package com.techsenger.tabshell.devtools.component;
 
+import com.techsenger.annotations.Nullable;
+
 /**
  *
  * @author Pavel Castornii
  */
 public interface ComponentService {
 
-    ComponentItem getRootComponent();
+    ComponentItem getShellComponent();
+
+    @Nullable ComponentItem getComponent(int windowUid);
 }

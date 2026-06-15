@@ -44,6 +44,8 @@ public interface NodeTabView extends TabView {
     @Override
     Composer getComposer();
 
+    void selectWindow(int uid);
+
     void selectRoot();
 
     void refreshNodes();

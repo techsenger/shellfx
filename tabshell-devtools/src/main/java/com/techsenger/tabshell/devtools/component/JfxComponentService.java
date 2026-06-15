@@ -16,7 +16,11 @@
 
 package com.techsenger.tabshell.devtools.component;
 
+import com.techsenger.annotations.Nullable;
+import com.techsenger.patternfx.mvp.FxViewUtils;
+import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.tabshell.core.ShellFxView;
+import javafx.stage.Window;
 
 /**
  *
@@ -31,7 +35,19 @@ public class JfxComponentService implements ComponentService {
     }
 
     @Override
-    public ComponentItem getRootComponent() {
+    public ComponentItem getShellComponent() {
         return new JfxComponentItem(shell);
     }
+
+    @Override
+    public @Nullable ComponentItem getComponent(int windowUid) {
+        for (Window window : Window.getWindows()) {
+            if (window.hashCode() == windowUid) {
+                return new JfxComponentItem((ParentFxView<?>) FxViewUtils.getView(window.getScene()));
+            }
+        }
+        return null;
+    }
+
+
 }

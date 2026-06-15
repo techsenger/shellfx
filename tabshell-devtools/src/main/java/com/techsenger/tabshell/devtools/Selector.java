@@ -23,7 +23,6 @@ import com.techsenger.connectorfx.scenegraph.Element;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 
 /**
  * This is the single point to control the selected node.
@@ -32,9 +31,14 @@ import java.util.function.BiConsumer;
  */
 public class Selector {
 
+    @FunctionalInterface
+    public interface SelectorListener {
+        void onSelected(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement);
+    }
+
     private final Connector connector;
 
-    private final List<BiConsumer<Integer, Element>> listeners = new ArrayList<>();
+    private final List<SelectorListener> listeners = new ArrayList<>();
 
     private HighlightOptions highlightOptions = new HighlightOptions(false, false, false);
 
@@ -42,7 +46,7 @@ public class Selector {
 
     private Integer selectedWindowUid;
 
-    private Element selectedNode;;
+    private Element selectedNode;
 
     Selector(Connector connector) {
         this.connector = connector;
@@ -60,7 +64,7 @@ public class Selector {
         });
     }
 
-    public void addListener(BiConsumer<Integer, Element> listener) {
+    public void addListener(SelectorListener listener) {
         this.listeners.add(listener);
     }
 
@@ -74,8 +78,8 @@ public class Selector {
         updateSelectedElements(uid, node);
     }
 
-    public void clearSelection(int uid) {
-        connector.clearSelection(uid);
+    public void clearSelection() {
+        connector.clearSelection(selectedWindowUid);
     }
 
     public Integer getSelectedWindowUid() {
@@ -84,6 +88,10 @@ public class Selector {
 
     public Element getSelectedNode() {
         return this.selectedNode;
+    }
+
+    void setSelectedWindowUid(Integer selectedWindowUid) {
+        this.selectedWindowUid = selectedWindowUid;
     }
 
     void setSelectionVisible(boolean selectionVisible) {
@@ -112,15 +120,17 @@ public class Selector {
         }
     }
 
-    private void updateSelectedElements(Integer uid, Element node) {
-        if (!Objects.equals(this.selectedWindowUid, uid) || !Objects.equals(this.selectedNode, node)) {
-            this.selectedWindowUid = uid;
-            this.selectedNode = node;
-            notifyListeners();
+    private void updateSelectedElements(Integer newWindowUid, Element newNode) {
+        if (!Objects.equals(this.selectedWindowUid, newWindowUid) || !Objects.equals(this.selectedNode, newNode)) {
+            var oldWindowUid = this.selectedWindowUid;
+            var oldNode = this.selectedNode;
+            this.selectedWindowUid = newWindowUid;
+            this.selectedNode = newNode;
+            notifyListeners(oldWindowUid, newWindowUid, oldNode, newNode);
         }
     }
 
-    private void notifyListeners() {
-        this.listeners.stream().forEach(l -> l.accept(this.selectedWindowUid, this.selectedNode));
+    private void notifyListeners(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement) {
+        this.listeners.stream().forEach(l -> l.onSelected(oldWindowUid, newWindowUid, oldElement, newElement));
     }
 }

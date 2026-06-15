@@ -136,15 +136,15 @@ public class StylesheetTabPresenter<V extends StylesheetTabView> extends Abstrac
             return;
         }
         if (s.node() != null) {
-            this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), s.node());
+            this.tabDock.getSelector().selectNode(tabDock.getSelector().getSelectedWindowUid(), s.node());
         } else {
-            this.tabDock.getSelector().selectWindow(tabDock.getWindowUid());
+            this.tabDock.getSelector().selectWindow(tabDock.getSelector().getSelectedWindowUid());
         }
     }
 
     protected void rebuildTree() {
         var connector = this.tabDock.getConnector();
-        var entry = connector.getStyledElements(tabDock.getWindowUid());
+        var entry = connector.getStyledElements(tabDock.getSelector().getSelectedWindowUid());
         Matcher matcher = getView().getComposer().getToolBarPort().createFindMatcher();
 
         List<StylesheetItem> items = new ArrayList<>();
@@ -152,7 +152,7 @@ public class StylesheetTabPresenter<V extends StylesheetTabView> extends Abstrac
                 "Application [" + connector.getUserAgentStylesheet() + "]", true, null);
         items.add(item);
         item = new StylesheetItem(StylesheetItemType.WINDOW,
-                formatWindowType(tabDock.getWindowUid(), entry.getKey()), true, null);
+                formatWindowType(tabDock.getSelector().getSelectedWindowUid(), entry.getKey()), true, null);
         items.add(item);
 
         var found = 0;

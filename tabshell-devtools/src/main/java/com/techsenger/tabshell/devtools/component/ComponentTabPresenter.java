@@ -324,10 +324,16 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
         super.postInitialize();
         setTitle("Components");
         setClosable(false);
-        this.tabDock.getSelector().addListener((uid, node) -> {
-            if (node != null) {
+        this.tabDock.getSelector().addListener((oldUid, newUid, oldNode, newNode) -> {
+            if (oldUid != newUid) {
+                var component = service.getComponent(newUid);
+                if (component != null) {
+                    getView().setRootComponent(component);
+                }
+            }
+            if (newNode != null) {
                 this.selectNode = false;
-                getView().selectComponent(node);
+                getView().selectComponent(newNode);
             } else {
                 getView().selectRootComponent();
             }
@@ -344,7 +350,7 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
             Element componentNode) {
         this.selectedComponent = component;
         if (componentNode != null && this.selectNode) {
-            this.tabDock.getSelector().selectNode(tabDock.getWindowUid(), componentNode);
+            this.tabDock.getSelector().selectNode(tabDock.getSelector().getSelectedWindowUid(), componentNode);
         }
         this.selectNode = true;
         this.componentFxViewClass = fxViewClass;
@@ -383,7 +389,7 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
     }
 
     protected void refreshComponents() {
-        this.rootComponent = this.service.getRootComponent();
+        this.rootComponent = this.service.getShellComponent();
         getView().setRootComponent(rootComponent);
         clearFoundComponents();
         findComponents();

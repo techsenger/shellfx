@@ -67,11 +67,6 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
     }
 
     @Override
-    public int getWindowUid() {
-        return getView().getWindowUid();
-    }
-
-    @Override
     public Connector getConnector() {
         return getView().getConnector();
     }
@@ -122,7 +117,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
             if (!isSelectionSelected()) {
                 setSelectionSelected(true);
             }
-            this.selector.clearSelection(getView().getWindowUid());
+            this.selector.clearSelection();
             opts.setInspectMode(true); // enable the mode only after clearing selection
         }
     }
@@ -139,6 +134,8 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
         var connector = getView().getConnector();
         connector.start();
         updateHighlight(this.settings.getAppearance().getTheme());
+        // we start with shell window
+        this.selector.setSelectedWindowUid(getView().getShellWindowUid());
     }
 
     @Override

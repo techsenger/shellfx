@@ -157,7 +157,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
     }
 
     @Override
-    public int getWindowUid() {
+    public int getShellWindowUid() {
         return shell.getStage().hashCode();
     }
 
