@@ -49,6 +49,14 @@ public class DemoWindowPresenter extends AbstractWindowPresenter<DemoWindowView>
         return new ComponentDescriptor(DemoComponents.DEMO_WINDOW);
     }
 
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        setResizable(true);
+        setMinimizable(true);
+        setMaximizable(true);
+    }
+
     protected void onAlwaysOnTopSelected(boolean value) {
         setAlwaysOnTop(value);
     }

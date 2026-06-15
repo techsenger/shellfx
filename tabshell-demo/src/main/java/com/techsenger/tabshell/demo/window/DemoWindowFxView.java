@@ -72,6 +72,9 @@ public class DemoWindowFxView extends AbstractWindowFxView<DemoWindowPresenter> 
         super.build();
         textArea.setWrapText(true);
         VBox.setVgrow(textArea, Priority.ALWAYS);
+        resizableCheckBox.setSelected(true);
+        minimizableCheckBox.setSelected(true);
+        maximizableCheckBox.setSelected(true);
         closableCheckBox.setSelected(true);
         var hBox = new HBox(alwaysOnTopCheckBox, resizableCheckBox, minimizableCheckBox,
                 maximizableCheckBox, closableCheckBox);
