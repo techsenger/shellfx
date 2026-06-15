@@ -155,9 +155,7 @@ public class ColumnListView<T> extends Region {
 
         private void updateCells() {
             var item = getItem();
-            if (node.getStyleClass().size() > 1) {
-                node.getStyleClass().remove(1);
-            }
+            node.getStyleClass().removeAll("first", "last");
             if (item == 0) {
                 node.getStyleClass().add("first");
             } else if (item == (this.listView.getColumnCount() - 1) * this.listView.getRowCount()) {
@@ -341,6 +339,13 @@ public class ColumnListView<T> extends Region {
      * Always only one sell can be in edit mode.
      */
     private int editingCellIndex = -1;
+
+    /**
+     * Guard flag to prevent reentrant calls to {@link #updateOffsets}. Without this flag, changing {@code rowCount}
+     * or {@code columnCount} inside {@link #updateOffsets} fires their change listeners, which call {@link #refresh},
+     * which calls {@link #updateOffsets} again, causing infinite recursion and eventually {@link OutOfMemoryError}.
+     */
+    private boolean updatingOffsets = false;
 
     private final ListChangeListener<T> changeListener = (change) -> {
         if (!isManualRefresh()) {
@@ -780,20 +785,27 @@ public class ColumnListView<T> extends Region {
     }
 
     private void updateOffsets(int rowCount, RefreshTrigger refreshTrigger) {
-        logger.trace("Refreshing, reason: {} changed", refreshTrigger);
-        this.rowCount.set(rowCount);
-        int columnCount = (int) Math.ceil((double) this.items.size() / rowCount);
-        this.columnCount.set(columnCount);
-        List<Integer> offs = new ArrayList<>();
-        for (int i = 0; i < columnCount; i++) {
-            offs.add(i * rowCount);
+        if (updatingOffsets) {
+            return;
         }
-        this.offsets.clear();
-        this.offsets.addAll(offs);
-        for (var c : virtualFlow.getCells()) {
-            //it is necessary to update all cells
-            c.requestLayout();
+        updatingOffsets = true;
+        try {
+            logger.debug("Refreshing, reason: {} changed", refreshTrigger);
+            this.rowCount.set(rowCount);
+            int columnCount = (int) Math.ceil((double) this.items.size() / rowCount);
+            this.columnCount.set(columnCount);
+            List<Integer> offs = new ArrayList<>();
+            for (int i = 0; i < columnCount; i++) {
+                offs.add(i * rowCount);
+            }
+            this.offsets.clear();
+            this.offsets.addAll(offs);
+            for (var c : virtualFlow.getCells()) {
+                c.requestLayout();
+            }
+            virtualFlow.setCellCount(this.offsets.size());
+        } finally {
+            updatingOffsets = false;
         }
-        virtualFlow.setCellCount(this.offsets.size());
     }
 }

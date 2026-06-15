@@ -39,7 +39,6 @@ public class ColumnListCell<T> extends IndexedCell<T> {
     private boolean manualEdit = false;
 
     public ColumnListCell() {
-        getStyleClass().add("cell");
         setFocusTraversable(true);
         addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             if (isSelected() && e.getClickCount() == 1) {
