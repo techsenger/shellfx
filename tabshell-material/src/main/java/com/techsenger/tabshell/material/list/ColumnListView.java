@@ -763,6 +763,9 @@ public class ColumnListView<T> extends Region {
         }
 
         var rowCount = (int) (this.virtualFlow.getViewportHeight() / rowHeight.get());
+        if (rowCount <= 0) {
+            return;
+        }
         if (refreshTrigger == RefreshTrigger.ITEMS) {
             if (getSelectionModel().getSelectedIndex() != -1) {
                 getSelectionModel().clearSelection();

@@ -74,8 +74,8 @@ public class FileColumnBuilder {
         );
         typeColumn.setComparator(Comparator.comparing(GenericFile::isDirectory).reversed());
         typeColumn.getStyleClass().add("type-column");
-        typeColumn.setMaxWidth(this.font.getSize() * 1.25 + this.font.getSize() * 0.75); //0.75 = left pad + right pad
-        typeColumn.setMinWidth(this.font.getSize() * 1.25 + this.font.getSize() * 0.75);
+        typeColumn.setMaxWidth(this.font.getSize() * 1.25 + this.font.getSize() * 1.05); //1.05 = left pad + right pad
+        typeColumn.setMinWidth(this.font.getSize() * 1.25 + this.font.getSize() * 1.05);
         typeColumn.setResizable(false);
         return typeColumn;
     }

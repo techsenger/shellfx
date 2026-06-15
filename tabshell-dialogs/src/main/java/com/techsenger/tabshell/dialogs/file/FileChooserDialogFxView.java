@@ -414,11 +414,11 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         });
         locationComboBox.setButtonCell(new LocationCell(true));
         locationComboBox.getStyleClass().add("location");
-        levelUpButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        levelUpButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         levelUpButton.setTooltip(new Tooltip("Up One Level"));
-        homeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        homeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         homeButton.setTooltip(new Tooltip("Home"));
-        createButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        createButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         createButton.setTooltip(new Tooltip("Create New Folder"));
         //always one button selected
         toggleGroup.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
@@ -426,14 +426,14 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
                 oldToggle.setSelected(true);
             }
         });
-        listButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        listButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         listButton.setTooltip(new Tooltip("List"));
         listButton.setToggleGroup(toggleGroup);
         listButton.setSelected(true);
-        detailsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        detailsButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_M);
         detailsButton.setTooltip(new Tooltip("Details"));
         detailsButton.setToggleGroup(toggleGroup);
-        buttonBox.setSpacing(Spacing.getHorizontalThird());
+        buttonBox.setSpacing(Spacing.getHorizontalHalf());
         locationBox.setSpacing(Spacing.getHorizontal());
         locationBox.setAlignment(Pos.CENTER_LEFT);
 

@@ -80,11 +80,12 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
         var w2 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_L), StyleClasses.SIZE_L, "5em");
         var w3 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_M), StyleClasses.SIZE_M, "5em");
         var w4 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_S), StyleClasses.SIZE_S, "5em");
-        var crossButton = NodeFactory.createIconButton(StyleClasses.SIZE_XS);
+        var w5 = wrapWithName(NodeFactory.createIconButton(StyleClasses.SIZE_XS), StyleClasses.SIZE_XS, "5em");
+        var crossButton = NodeFactory.createIconButton(StyleClasses.SIZE_XXS);
         crossButton.setGraphic(null);
         crossButton.getStyleClass().add(StyleClasses.CROSS_BUTTON);
-        var w5 = wrapWithName(crossButton, StyleClasses.SIZE_XS, "5em");
-        var box = new HBox(w0, w1, w2, w3, w4, w5);
+        var w6 = wrapWithName(crossButton, StyleClasses.SIZE_XXS, "5em");
+        var box = new HBox(w0, w1, w2, w3, w4, w5, w6);
         box.setMaxWidth(Region.USE_PREF_SIZE);
         box.getStyleClass().add(densityStyleClass);
         return box;

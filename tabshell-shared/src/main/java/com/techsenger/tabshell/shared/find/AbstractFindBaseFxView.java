@@ -232,7 +232,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
         this.findRightBox.setAlignment(Pos.CENTER);
         this.findComboBoxWrapper.setPadding(new Insets(Spacing.getVerticalHalf(), 0,
                 Spacing.getVerticalHalf(), 0));
-        clearButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XS, StyleClasses.ICON_BUTTON);
+        clearButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS, StyleClasses.ICON_BUTTON);
         clearButton.setFocusTraversable(false);
 
         this.matchCaseButton.setTooltip(new Tooltip("Match Case"));

@@ -135,11 +135,24 @@ public interface StyleClasses {
     /**
      * Represents the extra-small size variant for UI controls.
      *
-     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is dynamically
-     * determined by both the global {@code density} setting applied to the scene/root and this component-specific
-     * {@code size} value.
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is
+     * dynamically determined by both the global {@code density} setting applied to the scene/root
+     * and this component-specific {@code size} value.
      */
     String SIZE_XS = "size-xs";
+
+    /**
+     * Represents the extra-extra-small size variant for UI controls. This is the smallest available
+     * size in the size scale.
+     *
+     * <p>The actual rendered size (including padding, font size, minimum height, and icon size) is
+     * dynamically determined by both the global {@code density} setting applied to the scene/root
+     * and this component-specific {@code size} value.
+     *
+     * <p>Typical use cases: close button for a collapsed side panel, dismiss button for a compact
+     * notification badge.
+     */
+    String SIZE_XXS = "size-xxs";
 
     /**
      * Class for a cross button.
