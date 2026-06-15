@@ -272,6 +272,8 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private @Nullable WindowManager windowManager;
 
+    private boolean resizingInProgress;
+
     private final EventHandler<? super MouseEvent> maximizeHandler = (e) -> {
         if (e.getClickCount() == 2) {
             getPresenter().onMaximize();
@@ -626,6 +628,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                     .otherwise(Bindings.min(minHeight, calculatedMinHeight)));
             this.resizer = new RegionResizer(resultMinWidth, resultMinHeight, maxWidth, maxHeight,
                     (e) -> {
+                        resizingInProgress = true;
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_STARTED, e);
                         this.windowNode.fireEvent(event);
                         calculateMinSize();
@@ -636,6 +639,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                     (e) -> {
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_FINISHED, e);
                         this.windowNode.fireEvent(event);
+                        resizingInProgress = false;
                     });
             this.resizer.initialize(windowNode);
             FxViewUtils.setView(windowNode, this);
@@ -713,6 +717,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         } else {
             titleBar.addEventHandler(MouseEvent.MOUSE_PRESSED, (event) -> this.onMousePressed(event));
             titleBar.addEventHandler(MouseEvent.MOUSE_DRAGGED, (event) -> this.onMouseDragged(event));
+            titleBar.addEventHandler(MouseEvent.MOUSE_RELEASED, (event) -> this.onMouseReleased(event));
             windowNode.addEventFilter(MouseEvent.MOUSE_PRESSED, (event) -> windowNode.requestFocus());
         }
     }
@@ -919,7 +924,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     private void onMousePressed(MouseEvent event) {
-        if (isMoving()) {
+        if (!resizingInProgress) {
             offsetX = event.getSceneX() - this.windowNode.getLayoutX();
             offsetY = event.getSceneY() - this.windowNode.getLayoutY();
             event.consume();
@@ -927,7 +932,8 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     private void onMouseDragged(MouseEvent event) {
-        if (isMoving()) {
+        if (!resizingInProgress) {
+            this.titleBar.setCursor(Cursor.CLOSED_HAND);
             var newX = event.getSceneX() - offsetX;
             var newY = event.getSceneY() - offsetY;
             var parent = (Pane) this.windowNode.getParent();
@@ -952,14 +958,10 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         }
     }
 
-    /**
-     * There is also a resizing handlers. so, we check cursor type to know if resizing is enabled.
-     *
-     * @return
-     */
-    private boolean isMoving() {
-        var currentCursor = this.windowNode.getCursor();
-        return (currentCursor == null || currentCursor == Cursor.DEFAULT);
+    private void onMouseReleased(MouseEvent event) {
+        if (!resizingInProgress) {
+            this.titleBar.setCursor(Cursor.DEFAULT);
+        }
     }
 
     private void calculateMinSize() {
