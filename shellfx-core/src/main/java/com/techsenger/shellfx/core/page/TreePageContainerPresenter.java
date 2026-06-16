@@ -16,10 +16,13 @@
 
 package com.techsenger.shellfx.core.page;
 
+import com.techsenger.patternfx.mvp.ParentPresenter;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface TreePageContainerPresenter<V extends TreePageContainerView> extends TreePageContainerPort {
+public interface TreePageContainerPresenter<V extends TreePageContainerView> extends ParentPresenter<V>,
+        TreePageContainerPort {
 
 }

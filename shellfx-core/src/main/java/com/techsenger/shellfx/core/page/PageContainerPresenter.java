@@ -16,10 +16,12 @@
 
 package com.techsenger.shellfx.core.page;
 
+import com.techsenger.patternfx.mvp.ParentPresenter;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerPresenter<V extends PageContainerView> extends PageContainerPort {
+public interface PageContainerPresenter<V extends PageContainerView> extends ParentPresenter<V>, PageContainerPort {
 
 }

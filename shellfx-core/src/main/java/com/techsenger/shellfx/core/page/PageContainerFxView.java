@@ -16,15 +16,16 @@
 
 package com.techsenger.shellfx.core.page;
 
+import com.techsenger.patternfx.mvp.ParentFxView;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerFxView<P extends PageContainerPresenter<?>> extends PageContainerView {
+public interface PageContainerFxView<P extends PageContainerPresenter<?>> extends ParentFxView<P>, PageContainerView {
 
-    interface Composer extends PageContainerView.Composer {
+    interface Composer extends ParentFxView.Composer, PageContainerView.Composer {
 
         void setPages(List<PageDescriptor> pages);
     }
