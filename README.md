@@ -30,6 +30,7 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
 * [Features](#features)
 * [When to Use?](#when-to-use)
 * [Modules](#modules)
+* [Component Overview](#component-overview)
 * [Core Components](#core)
     * [Shell](#core-shell)
     * [Window](#core-window)
@@ -155,6 +156,100 @@ separately.
 * DevTools — contains tools for exploring component tree and JavaFX scene graph.
 * Demo — showcases ShellFX's core functionality, provides examples for building custom components, and
 presents ready-made components.
+
+## Component Overview <a name="component-overview"></a>
+
+The following diagram shows the basic components, containers, and their implementations in the `core` and `layout`
+modules:
+
+```mermaid
+classDiagram
+
+class Parent {
+    <<interface>>
+}
+
+class PageContainer {
+    <<interface>>
+}
+
+class TreePageContainer {
+    <<interface>>
+}
+
+class PopupContainer {
+    <<interface>>
+}
+
+class WindowContainer {
+    <<interface>>
+}
+
+class TabContainer {
+    <<interface>>
+}
+
+class AbstractParent
+class AbstractChild
+
+class AbstractArea
+class AbstractPage
+class AbstractPopup
+
+class AbstractPageHost
+class PageHost
+class TreePageHost
+
+class TabHost
+class TabDock
+class TabDockHost
+
+class AbstractWindow
+class AbstractDialog
+class AbstractHostWindow
+class DefaultShell
+
+class AbstractTab
+class AbstractHostTab
+
+Parent <|-- PageContainer
+Parent <|-- TreePageContainer
+Parent <|-- PopupContainer
+Parent <|-- TabContainer
+
+PopupContainer <|-- WindowContainer
+
+Parent <|.. AbstractParent
+
+AbstractParent <|-- AbstractChild
+
+AbstractChild <|-- AbstractArea
+AbstractChild <|-- AbstractWindow
+AbstractChild <|-- AbstractTab
+
+AbstractArea <|-- AbstractPage
+AbstractArea <|-- AbstractPopup
+AbstractArea <|-- AbstractPageHost
+AbstractArea <|-- TabHost
+
+AbstractPageHost <|-- PageHost
+AbstractPageHost <|-- TreePageHost
+
+TabHost <|-- TabDock
+
+AbstractTab <|-- AbstractHostTab
+
+PageContainer <|.. PageHost
+TreePageContainer <|.. TreePageHost
+
+TabContainer <|.. TabHost
+
+WindowContainer <|.. AbstractHostWindow
+WindowContainer <|.. AbstractHostTab
+
+%% composition: 0..N TabDock inside TabDockHost
+TabDockHost "1" o-- "0..*" TabDock
+```
 
 ## Core Components <a name="core"></a>
 
