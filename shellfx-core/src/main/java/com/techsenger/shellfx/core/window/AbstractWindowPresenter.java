@@ -415,7 +415,9 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         }
         getView().setTheme(this.appearanceSettings.getTheme());
         this.themeSubscription = this.appearanceSettings.onThemeChanged((oldV, newV) -> getView().setTheme(newV));
-        getView().setModal(modal);
+        if (modal) {
+            getView().setModal(modal); // it is not possible to set modality for the primary stage
+        }
     }
 
     @Override
