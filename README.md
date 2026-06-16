@@ -202,7 +202,6 @@ class TreePageHost
 
 class TabHost
 class TabDock
-class TabDockHost
 
 class AbstractWindow
 class AbstractDialog
@@ -237,6 +236,11 @@ AbstractPageHost <|-- TreePageHost
 
 TabHost <|-- TabDock
 
+AbstractWindow <|-- AbstractDialog
+AbstractWindow <|-- AbstractHostWindow
+
+AbstractHostWindow <|-- DefaultShell
+
 AbstractTab <|-- AbstractHostTab
 
 PageContainer <|.. PageHost
@@ -248,7 +252,8 @@ WindowContainer <|.. AbstractHostWindow
 WindowContainer <|.. AbstractHostTab
 
 %% composition: 0..N TabDock inside TabDockHost
-TabDockHost "1" o-- "0..*" TabDock
+DockHost "1" o-- "0..*" TabDock
+AbstractArea <|-- DockHost
 ```
 
 ## Core Components <a name="core"></a>
