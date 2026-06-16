@@ -1,26 +1,25 @@
-# Techsenger TabShell
+# Techsenger ShellFX
 
-Techsenger TabShell is a platform for building tab-based applications in JavaFX, where an application is structured
+Techsenger ShellFX is a platform for building JavaFX applications, where an application is structured
 as a tree of MVP components, each of which has its own lifecycle, history, etc. The platform provides abstract
-classes for creating the main types of components: window, tab, area, page, dialog, and popup, as well as containers
-for some of them.
+classes for creating the main types of components: window, tab, area, page, dialog, and popup.
 
 It also includes ready-to-use implementations of containers (including a docking layout) and dialogs (including a
 universal file chooser). In addition, the platform provides powerful devtools that allow you to inspect both the MVP
 component tree and the underlying JavaFX scene graph. These tools make it easy to understand how the platform works
 and are invaluable during development.
 
-TabShell is built around two core subsystems: the dynamic main menu and the workspace. The main menu is assembled
+ShellFX is built around two core subsystems: the dynamic main menu and the workspace. The main menu is assembled
 at runtime and automatically adapts to the currently focused component. The workspace provides the structural
 foundation of the application and defines how components are arranged and interact visually. The platform supports
-two primary workspace models: browser-like and IDE-like.
+different types of workspace models.
 
-`TabShell` is built according to the KISS principle. We aimed to keep it as simple as possible — with no magic and
+`ShellFX` is built according to the KISS principle. We aimed to keep it as simple as possible — with no magic and
 no overly complex solutions. For example, the platform is based on a slightly extended classic MVP pattern and provides
 components for the core parts of an application, such as windows, tabs, dialogs, and others. The main idea was to
 allow developers to start working with the platform within a single day, and we believe this goal has been achieved.
 
-TabShell is built on top of the [PatternFX](https://github.com/techsenger/patternfx) framework.
+ShellFX is built on top of the [PatternFX](https://github.com/techsenger/patternfx) framework.
 
 ## Table of Contents
 * [Demo](#demo)
@@ -75,29 +74,29 @@ TabShell is built on top of the [PatternFX](https://github.com/techsenger/patter
 
 ### Workspaces <a name="demo-workspaces"></a>
 
-![TabShell Workspace](https://raw.githubusercontent.com/techsenger/demo-media/main/1/1.png)
+![ShellFX Workspace](https://raw.githubusercontent.com/techsenger/demo-media/main/1/1.png)
 
-![TabShell Workspace](https://raw.githubusercontent.com/techsenger/demo-media/main/1/2.png)
+![ShellFX Workspace](https://raw.githubusercontent.com/techsenger/demo-media/main/1/2.png)
 
 ### Pages <a name="demo-pages"></a>
 
-![TabShell Pages](https://raw.githubusercontent.com/techsenger/demo-media/main/1/3.png)
+![ShellFX Pages](https://raw.githubusercontent.com/techsenger/demo-media/main/1/3.png)
 
 ### Dialogs <a name="demo-dialogs"></a>
 
-![TabShell Pages](https://raw.githubusercontent.com/techsenger/demo-media/main/1/4.png)
+![ShellFX Pages](https://raw.githubusercontent.com/techsenger/demo-media/main/1/4.png)
 
 ### DevTools <a name="demo-devtools"></a>
 
-![TabShell DevTools Components](https://raw.githubusercontent.com/techsenger/demo-media/main/1/5.png)
+![ShellFX DevTools Components](https://raw.githubusercontent.com/techsenger/demo-media/main/1/5.png)
 
-![TabShell DevTools Nodes](https://raw.githubusercontent.com/techsenger/demo-media/main/1/6.png)
+![ShellFX DevTools Nodes](https://raw.githubusercontent.com/techsenger/demo-media/main/1/6.png)
 
-![TabShell DevTools Events](https://raw.githubusercontent.com/techsenger/demo-media/main/1/7.png)
+![ShellFX DevTools Events](https://raw.githubusercontent.com/techsenger/demo-media/main/1/7.png)
 
 ## Features <a name="features"></a>
 
-Key features of TabShell include:
+Key features of ShellFX include:
 
 * Dynamically configurable menu.
 * Support for different types of workspace.
@@ -114,7 +113,7 @@ Key features of TabShell include:
 
 ## When to Use <a name="when-to-use"></a>
 
-TabShell is well suited for medium to large JavaFX applications that require a structured UI architecture and
+ShellFX is well suited for medium to large JavaFX applications that require a structured UI architecture and
 flexible workspace management.
 
 It is particularly effective for projects that:
@@ -124,7 +123,7 @@ It is particularly effective for projects that:
 - Need dynamic menus, theming support, and centralized shell-level infrastructure.
 - Benefit from built-in DevTools for inspecting both the component tree and the JavaFX scene graph.
 
-TabShell provides a scalable foundation for applications where UI complexity grows over time and clear structural
+ShellFX provides a scalable foundation for applications where UI complexity grows over time and clear structural
 boundaries are essential.
 
 Typical application types include:
@@ -154,7 +153,7 @@ local file system. Additional storage providers (for Google Drive, Dropbox, FTP,
 separately.
 * Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation etc.
 * DevTools — contains tools for exploring component tree and JavaFX scene graph.
-* Demo — showcases TabShell's core functionality, provides examples for building custom components, and
+* Demo — showcases ShellFX's core functionality, provides examples for building custom components, and
 presents ready-made components.
 
 ## Core Components <a name="core"></a>
@@ -162,9 +161,9 @@ presents ready-made components.
 These components form the architectural foundation of the platform, and all higher-level platform components are built
 upon them.
 
-TabShell is built on top of the PatternFX platform, which supports working both with and without a component tree.
-In TabShell, all components form a tree structure, and multiple trees may exist depending on the number of `Window`s.
-For this reason, all TabShell core components inherit from the `Parent` and `Child` components provided by PatternFX.
+ShellFX is built on top of the PatternFX platform, which supports working both with and without a component tree.
+In ShellFX, all components form a tree structure, and multiple trees may exist depending on the number of `Window`s.
+For this reason, all ShellFX core components inherit from the `Parent` and `Child` components provided by PatternFX.
 
 Each component is defined by an interface accompanied by a base implementation. This approach ensures loose coupling
 while still providing default implementations out of the box. It also allows developers to replace or extend the default
@@ -185,7 +184,7 @@ to inspect and monitor both hierarchies.
 
 ### Shell <a name="core-shell"></a>
 
-`Shell` is the main and top-level component. It extends the `Window` component and inherits its responsibilities for
+`Shell` is the main and top-level component. It extends the `HostWindow` component and inherits its responsibilities for
 managing the JavaFX `Stage` and window-level infrastructure. In addition, `Shell` defines the primary application
 structure and user experience layer.
 
@@ -232,8 +231,8 @@ It is also important to remember that the `MenuManager` also interacts with `Men
 To gain a complete understanding of working with the menu, it is recommended to familiarize yourself with the
 `MenuAwarePort` interface, experiment with the menu in the demo, and pay attention to log messages at the debug level.
 
-The second key part of TabShell is the workspace, which represents one of the available layouts. TabShell supports
-two primary workspace types:
+The second key part of ShellFX is the workspace, which represents one of the available layouts. ShellFX supports
+different types of workspace:
 
 1. Browser-like. This workspace is created using the `TabHost` component with a flag indicating that it is a workspace.
 Additionally, the tabs added to this `TabHost` contain a docking layout created with the `DockHost` component.
@@ -241,24 +240,28 @@ Additionally, the tabs added to this `TabHost` contain a docking layout created 
 
 ### Window <a name="core-window"></a>
 
-`Window` is the top-level component that represents an application window and serves as the root of a component tree.
-Each `Window` corresponds to a JavaFX `Stage` and defines an isolated environment in which all child components operate.
+`Window` is one of the core components of the platform and is available in two variants: `WindowType#NESTED` and
+`WindowType#TOP_LEVEL`.
 
-It is responsible for the following tasks:
+`NESTED` windows are internal windows managed by `WindowManager`. `WindowManager` allows an unlimited number of
+windows to be opened simultaneously, tracks the active window, manages window state, and provides various window
+arrangement operations such as cascade, tile, and others.
 
-* Window management.
-* Theme management.
-* Font management.
-* Stylesheet management
-* Window-scoped popup management.
-* Window-scoped dialog management.
+The platform provides two implementations of window hosts: `HostWindow` and `HostTab`. This allows nested windows
+to be displayed either inside another window or inside a tab. The latter approach is particularly useful for
+tab-based applications, where each tab can maintain its own set of dialogs and auxiliary windows, similar to
+how modern web browsers isolate dialogs and popups per tab.
 
-Multiple `Window` instances may exist within a single application, each backed by its own JavaFX `Stage`,
-maintaining an independent component tree and visual context.
+`TOP_LEVEL` windows are created in a separate `Stage` and are integrated with the operating system's windowing environment.
+
+Despite their different implementations, both `NESTED` and `TOP_LEVEL` windows are accessed through the same API.
+As a result, components built on top of `Window` (such as dialogs, wizards, or utility windows) can be displayed
+either inside the application or in separate system windows without any changes to application code. This allows
+window-based components to be implemented once and reused with any window type.
 
 ### Tab <a name="core-tab"></a>
 
-`Tab` is an abstract component used for creating custom tab implementations. In TabShell, `Tab` is one of the central
+`Tab` is an abstract component used for creating custom tab implementations. In ShellFX, `Tab` is one of the central
 platform components, since the primary application functionality is delivered through tabs.
 
 `Tab` can be added to any component that implements the `TabContainer` interface. The platform
@@ -275,29 +278,26 @@ this interface is `PageHost`.
 
 ### Dialog <a name="core-dialog"></a>
 
-All `Dialog`s in TabShell are inline, asynchronous, and have a scope that affects what will be blocked when the
-`Dialog` is open. `Dialog`s extend `Popup`s and represent a specialized type of `Popup` with dialog-specific behavior.
+`Dialog` inherits `Window` and is a specialized component designed for user interaction and result acquisition.
+Since `Dialog` inherits `Window`, it can be displayed in any environment that supports windows and uses the same
+API as regular windows.
 
-Asynchronous `Dialog`s allow the program to continue running while the `Dialog` is open, relying on callbacks, promises,
-or event listeners. These avoid UI freezes and enable background tasks but require handling user responses indirectly,
-often via lambda functions or observable states. Synchronous `Dialog`s, conversely, block the application's execution
-flow until the user responds, pausing all other interactions (e.g., `showAndWait()` in JavaFX). They simplify code logic
-by enforcing a linear sequence but risk freezing the UI during operation. The key distinction lies in control flow:
-asynchronous `Dialog`s prioritize responsiveness, deferring action until the user completes the interaction, while
-synchronous ones enforce immediate resolution. Modern UI design increasingly favors async approaches for scalability
-and user experience.
+All dialogs in ShellFX are asynchronous. Opening a dialog does not block the application's execution flow or freeze
+the user interface. Instead, user responses are delivered through callbacks, events, observable properties, or
+other asynchronous mechanisms. This approach keeps the UI responsive and simplifies background processing.
 
-There are two types of scope: `Window` and `Tab`. If a `Dialog` has a `Window` scope, the user will not be able to do
-anything in `Window` while this `Dialog` is displayed until it is closed. If a `Dialog` has a `Tab` scope, only the
-tab that triggered the `Dialog` will be blocked when it is displayed. All other tabs, the main menu, etc., will be
-available to the user.
+Dialogs can be displayed either as `NESTED` or `TOP_LEVEL` windows. Nested dialogs are rendered within a
+`WindowContainer` and appear as an integral part of the application's user interface. Top-level dialogs are displayed
+in a separate `Stage` and are integrated with the operating system's windowing environment.
 
-`Dialog` can be added to any component that implements the `DialogContainer` interface. The platform provides two
-components that implement this interface: `Tab` and `Window`.
+Nested dialogs can be displayed in any implementation of `WindowContainer`. The platform provides two implementations:
+`HostWindow` and `HostTab`. This allows dialogs to be associated either with a window or with a specific tab.
+For example, in a browser-like application, each tab can maintain its own set of dialogs and auxiliary windows,
+isolated from all other tabs.
 
 ### Popup <a name="core-popup"></a>
 
-All `Popup`s in TabShell are inline and have a scope that affects what will be blocked when the `Popup` is open.
+All `Popup`s in ShellFX are inline and have a scope that affects what will be blocked when the `Popup` is open.
 
 Inline `Popup`s are components that appear embedded within the current application window, typically overlaid on top
 of the existing content. They are contextually tied to a specific section (e.g., a `Shell` or `Tab`) and do not
@@ -459,7 +459,7 @@ part of the `ShellContext`.
 
 ## Naming Convention <a name="naming-convention"></a>
 
-TabShell is built on top of PatternFX and fully conforms to its patterns. Because of this, the naming of classes and
+ShellFX is built on top of PatternFX and fully conforms to its patterns. Because of this, the naming of classes and
 interfaces for components follows a consistent scheme:
 
 1. A unique name (may be omitted for brevity) — `Alert`, `File`, `Info`, etc.
@@ -495,7 +495,7 @@ Examples of `Composer` methods using `open*` and `close*`:
 
 ## Quick Start <a name="quick-start"></a>
 
-To get started with TabShell, it is recommended to follow these steps:
+To get started with ShellFX, it is recommended to follow these steps:
 
 1. Familiarize yourself with the [PatternFX](https://github.com/techsenger/patternfx) framework,
 the [MVP](https://github.com/techsenger/patternfx#templates-mvp) template, and its demo.
@@ -511,24 +511,24 @@ This project is available on Maven Central. Minimal set of required dependencies
 
 ```
 <dependency>
-    <groupId>com.techsenger.tabshell</groupId>
-    <artifactId>tabshell-material</artifactId>
-    <version>${tabshell.version}</version>
+    <groupId>com.techsenger.shellfx</groupId>
+    <artifactId>shellfx-material</artifactId>
+    <version>${shellfx.version}</version>
 </dependency>
 <dependency>
-    <groupId>com.techsenger.tabshell</groupId>
-    <artifactId>tabshell-core</artifactId>
-    <version>${tabshell.version}</version>
+    <groupId>com.techsenger.shellfx</groupId>
+    <artifactId>shellfx-core</artifactId>
+    <version>${shellfx.version}</version>
 </dependency>
 <dependency>
-    <groupId>com.techsenger.tabshell</groupId>
-    <artifactId>tabshell-layout</artifactId>
-    <version>${tabshell.version}</version>
+    <groupId>com.techsenger.shellfx</groupId>
+    <artifactId>shellfx-layout</artifactId>
+    <version>${shellfx.version}</version>
 </dependency>
 <dependency>
-    <groupId>com.techsenger.tabshell</groupId>
-    <artifactId>tabshell-icons</artifactId>
-    <version>${tabshell.version}</version>
+    <groupId>com.techsenger.shellfx</groupId>
+    <artifactId>shellfx-icons</artifactId>
+    <version>${shellfx.version}</version>
 </dependency>
 ```
 
@@ -536,22 +536,22 @@ This project is available on Maven Central. Minimal set of required dependencies
 
 To build the library use standard Git and Maven commands:
 
-    git clone https://github.com/techsenger/tabshell
-    cd tabshell
+    git clone https://github.com/techsenger/shellfx
+    cd shellfx
     mvn clean install
 
 ## Running Demo <a name="running-demo"></a>
 
 To run the demo, execute the following commands in the project root:
 
-    cd tabshell-demo
+    cd shellfx-demo
     mvn javafx:run
 
 Please note, that debugger settings are in `pom.xml` file.
 
 ## License <a name="license"></a>
 
-Techsenger TabShell is licensed under the Apache License, Version 2.0.
+Techsenger ShellFX is licensed under the Apache License, Version 2.0.
 
 ## Contributing <a name="contributing"></a>
 

@@ -1,0 +1,167 @@
+/*
+ * Copyright 2024-2026 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.shellfx.material.theme;
+
+import com.techsenger.toolkit.core.function.Factory;
+import com.techsenger.toolkit.fx.color.ColorUtils;
+import java.util.HashMap;
+import java.util.Map;
+import javafx.application.Application;
+import javafx.scene.text.Font;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public enum JavaFxTheme implements Theme {
+
+    /**
+     * NOT SUPPORTED. Use this theme only for testing debugging purposes.
+     */
+    MODENA("Modena", "modena.css", false, 4,
+            Application.STYLESHEET_MODENA,
+            () -> ThemeProvider.getInstance().createJavaFxPalettes()),
+
+    /**
+     * NOT SUPPORTED. Use this theme only for testing debugging purposes.
+     */
+    CASPIAN("Caspian", "caspian.css", false, 4,
+            Application.STYLESHEET_CASPIAN,
+            () -> ThemeProvider.getInstance().createJavaFxPalettes());
+
+    private final String name;
+
+    private final String fileName;
+
+    private final boolean dark;
+
+    private final int borderRadius;
+
+    private final String userAgentStylesheet;
+
+    private ThemePalette16 simplePalette16;
+
+    private ThemePalette32 highContrastPalette32;
+
+    private ThemePalette32 lowContrastPalette32;
+
+    private ThemePalette palette;
+
+    private Map<String, Integer> colorsByName;
+
+    private final Factory<ThemeProvider.ThemePalettes> palettesFactory;
+
+    private volatile boolean palettesCreated;
+
+    JavaFxTheme(String name, String fileName, boolean dark, int borderRadius, String stylesheet,
+            Factory<ThemeProvider.ThemePalettes> palletesFactory) {
+        this.name = name;
+        this.fileName = fileName;
+        this.dark = dark;
+        this.borderRadius = borderRadius;
+        this.userAgentStylesheet = stylesheet;
+        this.palettesFactory = palletesFactory;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getFileName() {
+        return fileName;
+    }
+
+    @Override
+    public boolean isDark() {
+        return dark;
+    }
+
+    @Override
+    public int getBorderRadius() {
+        return borderRadius;
+    }
+
+    @Override
+    public String getUserAgentStylesheet() {
+        return userAgentStylesheet;
+    }
+
+    @Override
+    public ThemePalette16 getSimplePalette16() {
+        createPalettes();
+        return simplePalette16;
+    }
+
+    @Override
+    public ThemePalette32 getHighContrastPalette32() {
+        createPalettes();
+        return highContrastPalette32;
+    }
+
+    @Override
+    public ThemePalette32 getLowContrastPalette32() {
+        createPalettes();
+        return lowContrastPalette32;
+    }
+
+    @Override
+    public ThemePalette getPalette() {
+        createPalettes();
+        return palette;
+    }
+
+    @Override
+    public Map<String, Integer> getColorsByName() {
+        createPalettes();
+        return colorsByName;
+    }
+
+    @Override
+    public Map<String, String> getWebStyle(Font font) {
+        var map = new HashMap<String, String>();
+        var palette = getPalette();
+        var bgColor = ColorUtils.toHexWithAlpha(ColorUtils.toColor(palette.getDefaultBgColor()));
+        map.put("background-color", bgColor);
+        var fgColor = ColorUtils.toHexWithAlpha(ColorUtils.toColor(palette.getDefaultFgColor()));
+        map.put("color", fgColor);
+        map.put("font-size", String.valueOf(Math.round(font.getSize())) + "px");
+        map.put("font-family", "'" + font.getFamily() + "'");
+        return map;
+    }
+
+    /**
+     * Creates colors for theme, if they have not been created yet.
+     */
+    private void createPalettes() {
+        if (!this.palettesCreated) {
+            synchronized (this) {
+                if (!this.palettesCreated) {
+                    this.palettesCreated = true;
+                    var p = palettesFactory.create();
+                    this.simplePalette16 = p.getSimplePalette16();
+                    this.highContrastPalette32 = p.getHighContrastPalette32();
+                    this.lowContrastPalette32 = p.getLowContrastPalette32();
+                    this.palette = p.getPalette();
+                    this.colorsByName = p.getColorsByName();
+                }
+            }
+        }
+    }
+
+}
