@@ -151,11 +151,6 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
     }
 
     @Override
-    protected void onCloseRequest() {
-        super.onCloseRequest();
-    }
-
-    @Override
     protected void restoreAppearance() {
         super.restoreAppearance();
         var h = getHistory();

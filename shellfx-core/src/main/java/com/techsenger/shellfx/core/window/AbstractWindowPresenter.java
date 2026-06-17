@@ -249,16 +249,16 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void close() {
-        var iterator = getView().getComposer().breadthFirstPortIterator();
-        while (iterator.hasNext()) {
-            var c = iterator.next();
-            if (iterator.getDepth() > 0) {
-                ((Presenter<?>) c).deinitialize();
-            }
-        }
         if (getWindowType() == WindowType.NESTED) {
             getView().getComposer().close();
         } else {
+            var iterator = getView().getComposer().breadthFirstPortIterator();
+            while (iterator.hasNext()) {
+                var c = iterator.next();
+                if (iterator.getDepth() > 0) {
+                    ((Presenter<?>) c).deinitialize();
+                }
+            }
             deinitialize();
             getView().closeWindow();
         }
