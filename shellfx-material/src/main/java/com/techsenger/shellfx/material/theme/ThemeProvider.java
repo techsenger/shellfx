@@ -359,7 +359,6 @@ final class ThemeProvider {
         if (css != null) {
             for (CSSStyleRule rule : css.getAllStyleRules()) {
                 if (rule.getSelectorCount() == 1 && rule.getSelectorAtIndex(0).getAsCSSString().equals(".root")) {
-                    // System.out.println("Selector: " + rule.getAsCSSString());
                     for (CSSDeclaration decl : rule.getAllDeclarations()) {
                         if (decl.getProperty().startsWith("-color-")) {
                             var value = decl.getExpressionAsCSSString();
