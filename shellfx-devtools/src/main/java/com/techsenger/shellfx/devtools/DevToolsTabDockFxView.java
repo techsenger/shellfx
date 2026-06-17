@@ -43,9 +43,14 @@ import com.techsenger.shellfx.layout.dockhost.TabDockFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  *
@@ -191,6 +196,23 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
         super.addHandlers();
         selectButton.setOnAction(e -> getPresenter().onSelect());
         selectionButton.setOnAction(e -> getPresenter().onSelection(selectionButton.isSelected()));
+        optionsButton.setOnAction(e -> {
+            var menu = createOptionsMenu();
+            menu.show(optionsButton, Side.BOTTOM, 0, 0);
+        });
+    }
+
+    protected ContextMenu createOptionsMenu() {
+        var menu = new ContextMenu();
+        for (var window : Window.getWindows()) {
+            if (window instanceof Stage stage) {
+                var uid = stage.hashCode();
+                var item = new MenuItem(stage.getTitle() + " (uid: " + uid + ")");
+                item.setOnAction(e -> getPresenter().onWindowSelected(uid));
+                menu.getItems().add(item);
+            }
+        }
+        return menu;
     }
 
     @Override

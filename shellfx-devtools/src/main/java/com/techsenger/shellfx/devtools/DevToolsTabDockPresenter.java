@@ -53,7 +53,7 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
         this.settings = params.getSettings();
         this.historyManager = params.getHistoryManager();
         themeSubscription = settings.getAppearance().onThemeChanged((oldV, newV) -> updateHighlight(newV));
-        this.selector = new Selector(view.getConnector());
+        this.selector = new Selector(view.getConnector(), getDescriptor().getLogPrefix());
     }
 
     public boolean isSelectionSelected() {
@@ -125,6 +125,10 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
     protected void onSelection(boolean selected) {
         this.selectionSelected = selected;
         this.selector.setSelectionVisible(selected);
+    }
+
+    protected void onWindowSelected(int uid) {
+        this.selector.selectWindow(uid);
     }
 
     @Override

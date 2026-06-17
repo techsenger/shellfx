@@ -18,11 +18,14 @@ package com.techsenger.shellfx.devtools;
 
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.HighlightOptions;
+import com.techsenger.connectorfx.LocalElement;
 import com.techsenger.connectorfx.event.NodeSelectedEvent;
 import com.techsenger.connectorfx.scenegraph.Element;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the single point to control the selected node.
@@ -31,12 +34,16 @@ import java.util.Objects;
  */
 public class Selector {
 
+    private static final Logger logger = LoggerFactory.getLogger(Selector.class);
+
     @FunctionalInterface
     public interface SelectorListener {
         void onSelected(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement);
     }
 
     private final Connector connector;
+
+    private final String logPrefix;
 
     private final List<SelectorListener> listeners = new ArrayList<>();
 
@@ -48,8 +55,9 @@ public class Selector {
 
     private Element selectedNode;
 
-    Selector(Connector connector) {
+    Selector(Connector connector, String logPrefix) {
         this.connector = connector;
+        this.logPrefix = logPrefix;
         // this event is fired only when a node is selected in inspector mode (using select button)
         connector.getEventBus().subscribe(NodeSelectedEvent.class, (e) -> {
             // When inspect mode is set to false the selection is removed because for selection
@@ -92,6 +100,7 @@ public class Selector {
 
     void setSelectedWindowUid(Integer selectedWindowUid) {
         this.selectedWindowUid = selectedWindowUid;
+        logger.debug("{} Selected window UID: {}", logPrefix, this.selectedWindowUid);
     }
 
     void setSelectionVisible(boolean selectionVisible) {
@@ -124,13 +133,25 @@ public class Selector {
         if (!Objects.equals(this.selectedWindowUid, newWindowUid) || !Objects.equals(this.selectedNode, newNode)) {
             var oldWindowUid = this.selectedWindowUid;
             var oldNode = this.selectedNode;
-            this.selectedWindowUid = newWindowUid;
-            this.selectedNode = newNode;
+            setSelectedWindowUid(newWindowUid);
+            setSelectedNode(newNode);
             notifyListeners(oldWindowUid, newWindowUid, oldNode, newNode);
         }
     }
 
     private void notifyListeners(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement) {
         this.listeners.stream().forEach(l -> l.onSelected(oldWindowUid, newWindowUid, oldElement, newElement));
+    }
+
+    public void setSelectedNode(Element selectedNode) {
+        this.selectedNode = selectedNode;
+        if (logger.isDebugEnabled()) {
+            if (this.selectedNode != null && this.selectedNode.isNodeElement()) {
+                logger.debug("{} Selected node: {} from window with UID: {}", logPrefix, this.selectedNode,
+                         ((LocalElement) this.selectedNode).unwrap().getScene().getWindow().hashCode());
+            } else {
+                logger.debug("{} Selected node: {}", logPrefix, this.selectedNode);
+            }
+        }
     }
 }
