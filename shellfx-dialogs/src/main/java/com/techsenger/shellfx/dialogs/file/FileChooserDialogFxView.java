@@ -26,7 +26,6 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
-import com.techsenger.shellfx.material.button.ResultButtonName;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.list.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -342,16 +341,6 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     }
 
     @Override
-    public void setRightButtons(ResultButtonName... names) {
-        super.setRightButtons(names);
-        makeButtonsEqualWidth();
-    }
-
-    protected void makeButtonsEqualWidth() {
-        makeEqualWidth(getRightButtons(true));
-    }
-
-    @Override
     protected Composer createComposer() {
         return new FileChooserDialogFxView.Composer();
     }
@@ -489,6 +478,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         getContentBox().getChildren().addAll(main);
 
         registerButtons(cancelButton, okButton);
+        getButtonWidthGroup().add(cancelButton, okButton);
     }
 
     @Override

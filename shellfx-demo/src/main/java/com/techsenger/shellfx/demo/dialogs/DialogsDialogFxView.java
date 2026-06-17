@@ -37,7 +37,6 @@ import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogFxView;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPresenter;
 import com.techsenger.shellfx.material.button.ResultButton;
-import com.techsenger.shellfx.material.button.ResultButtonName;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
@@ -129,12 +128,6 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
     @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
-    }
-
-    @Override
-    public void setRightButtons(ResultButtonName... names) {
-        super.setRightButtons(names);
-        makeEqualWidth(getRightButtons(true));
     }
 
     @Override

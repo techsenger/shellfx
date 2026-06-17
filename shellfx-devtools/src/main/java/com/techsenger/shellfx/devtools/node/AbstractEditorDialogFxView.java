@@ -100,7 +100,7 @@ public abstract class AbstractEditorDialogFxView<P extends AbstractEditorDialogP
         getContentBox().getChildren().add(rowBox);
 
         registerButtons(cancelButton, okButton);
-        makeEqualWidth(cancelButton, okButton);
+        getButtonWidthGroup().add(cancelButton, okButton);
     }
 
     protected Label getPropertyNameLabel() {

@@ -19,14 +19,13 @@ package com.techsenger.shellfx.core.dialog;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.window.AbstractWindowFxView;
 import com.techsenger.shellfx.core.window.WindowType;
+import com.techsenger.shellfx.material.button.ButtonWidthGroup;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.button.ResultButtonName;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.Spacer;
-import com.techsenger.toolkit.fx.utils.ButtonUtils;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -47,7 +47,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
 
     private final HBox rightBottomBox = new HBox();
 
-    private final HBox buttomBox = new HBox(leftBottomBox, new Spacer(Orientation.HORIZONTAL), rightBottomBox);
+    private final HBox bottomBox = new HBox(leftBottomBox, new Spacer(Orientation.HORIZONTAL), rightBottomBox);
 
     /**
      * Trap for focus dialog. This trap should always be activated after adding all controls to dialog. Otherwise
@@ -56,6 +56,9 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
     private final FocusTrap focusTrap = new FocusTrap(getContentBox());
 
     private final Map<ResultButtonName, Button> buttonsByName = new HashMap<>();
+
+    private final ButtonWidthGroup buttonWidthGroup = new ButtonWidthGroup(bottomBox,
+            () -> getDescriptor().getLogPrefix());
 
     @Override
     public void setLeftButtons(ResultButtonName... names) {
@@ -89,6 +92,10 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         return focusTrap;
     }
 
+    protected ButtonWidthGroup getButtonWidthGroup() {
+        return buttonWidthGroup;
+    }
+
     @Override
     protected void build() {
         super.build();
@@ -97,11 +104,11 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         }
         getContentBox().setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
                 0, Spacing.getHorizontal()));
-        getWindowBox().getChildren().add(buttomBox);
-        this.buttomBox.getStyleClass().addAll(StyleClasses.CORNERS_BOTTOM, "bottom-box");
-        this.buttomBox.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
+        getWindowBox().getChildren().add(bottomBox);
+        this.bottomBox.getStyleClass().addAll(StyleClasses.CORNERS_BOTTOM, "bottom-box");
+        this.bottomBox.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
                 Spacing.getVertical(), Spacing.getHorizontal()));
-        buttomBox.setSpacing(Spacing.getHorizontal());
+        bottomBox.setSpacing(Spacing.getHorizontal());
 
         leftBottomBox.setSpacing(Spacing.getHorizontal());
         leftBottomBox.getStyleClass().add("left-bottom-box");
@@ -109,22 +116,12 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
         rightBottomBox.getStyleClass().add("right-bottom-box");
     }
 
-    /**
-     * Makes the specified buttons equal in width.
-     */
-    protected void makeEqualWidth(Button... buttons) {
-        makeEqualWidth(Arrays.asList(buttons));
-    }
-
-    /**
-     * Makes the specified buttons equal in width.
-     */
-    protected void makeEqualWidth(List<Button> buttons) {
-        buttomBox.applyCss();
-        buttomBox.layout();
-        buttons.stream().forEach(b -> System.out.println("button: " + b.getText() + " / " + b.getWidth()));
-        ButtonUtils.makeEqualWidthBySize(buttons, true);
-        buttons.stream().forEach(b -> System.out.println("button: " + b.getText() + " / " + b.getWidth()));
+    @Override
+    protected void addHandlers() {
+        super.addHandlers();
+        if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
+            getStage().addEventHandler(WindowEvent.WINDOW_SHOWING, (e) -> buttonWidthGroup.refresh());
+        }
     }
 
     /**
@@ -209,7 +206,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
     }
 
     protected HBox getBottomBox() {
-        return buttomBox;
+        return bottomBox;
     }
 
     private void addButtons(HBox box, ResultButtonName... names) {

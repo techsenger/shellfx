@@ -20,7 +20,6 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.dialog.AbstractDialogFxView;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.ERROR;
 import com.techsenger.shellfx.material.button.ResultButton;
-import com.techsenger.shellfx.material.button.ResultButtonName;
 import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.shellfx.material.icon.IconViewBox;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -85,16 +84,6 @@ public class AlertDialogFxView<P extends AlertDialogPresenter<?>> extends Abstra
     }
 
     @Override
-    public void setRightButtons(ResultButtonName... names) {
-        super.setRightButtons(names);
-        makeButtonsEqualWidth();
-    }
-
-    protected void makeButtonsEqualWidth() {
-        makeEqualWidth(getRightButtons(true));
-    }
-
-    @Override
     protected void build() {
         super.build();
         getContentBox().getStylesheets().add(AlertDialogFxView.class.getResource("alert.css").toExternalForm());
@@ -121,6 +110,7 @@ public class AlertDialogFxView<P extends AlertDialogPresenter<?>> extends Abstra
         messageBox.setSpacing(Spacing.getHorizontalHalf());
         getContentBox().getChildren().add(messageBox);
         registerButtons(okButton, cancelButton, noButton, yesButton);
+        getButtonWidthGroup().add(okButton, cancelButton, noButton, yesButton);
     }
 
     public IconViewBox getMessageIconViewBox() {

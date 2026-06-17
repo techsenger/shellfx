@@ -102,6 +102,7 @@ public class SettingsDialogFxView extends AbstractDialogFxView<SettingsDialogPre
 
         okButton.setDefaultButton(true);
         registerButtons(cancelButton, okButton);
+        getButtonWidthGroup().add(cancelButton, okButton);
         VBox.setVgrow(gridPane, Priority.ALWAYS);
         getContentBox().getChildren().add(gridPane);
     }

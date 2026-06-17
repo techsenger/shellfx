@@ -18,7 +18,6 @@ package com.techsenger.shellfx.demo.dialogs;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogFxView;
 import com.techsenger.shellfx.material.button.ResultButton;
-import com.techsenger.shellfx.material.button.ResultButtonName;
 import com.techsenger.shellfx.material.style.Spacing;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -57,12 +56,6 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
     }
 
     @Override
-    public void setRightButtons(ResultButtonName... names) {
-        super.setRightButtons(names);
-        makeEqualWidth(getRightButtons(true));
-    }
-
-    @Override
     protected void build() {
         super.build();
         gridPane.setHgap(Spacing.getHorizontal());
@@ -80,6 +73,7 @@ public class DemoDialogFxView extends AbstractDialogFxView<DemoDialogPresenter> 
 
         okButton.setDefaultButton(true);
         registerButtons(okButton, cancelButton);
+        getButtonWidthGroup().add(okButton, cancelButton);
         getContentBox().getChildren().add(gridPane);
         getContentBox().setSpacing(Spacing.getVertical());
         getFocusTrap().activate();

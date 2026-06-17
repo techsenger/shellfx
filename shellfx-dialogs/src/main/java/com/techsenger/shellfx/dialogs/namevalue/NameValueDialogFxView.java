@@ -108,6 +108,7 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?>>
 
         okButton.setDefaultButton(true);
         registerButtons(cancelButton, okButton);
+        getButtonWidthGroup().add(cancelButton, okButton);
     }
 
     protected Label getNameLabel() {
