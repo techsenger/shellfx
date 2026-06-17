@@ -52,7 +52,6 @@ public class DemoWindowPresenter extends AbstractWindowPresenter<DemoWindowView>
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        setResizable(true);
         setMinimizable(true);
         setMaximizable(true);
     }

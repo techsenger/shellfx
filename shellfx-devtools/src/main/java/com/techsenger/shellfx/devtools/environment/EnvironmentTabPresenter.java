@@ -138,7 +138,6 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
             }
             var params = new DialogParams(windowType, getShellContext().getSettings().getAppearance());
             var dialog = getView().getComposer().openNameValueDialog(params);
-            dialog.setResizable(true);
             dialog.setTitle("Property Dialog");
             dialog.setName(i.getName());
             dialog.setValue(i.getValue());

@@ -268,7 +268,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
 
     private @Nullable RegionResizer resizer;
 
-    private final BooleanProperty resizable = new SimpleBooleanProperty();
+    private final BooleanProperty resizable = new SimpleBooleanProperty(true);
 
     private @Nullable WindowManager windowManager;
 

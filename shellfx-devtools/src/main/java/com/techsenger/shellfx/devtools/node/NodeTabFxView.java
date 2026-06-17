@@ -517,7 +517,6 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
         @Override
         public DialogPort openViewerDialog(ViewerDialogParams params) {
             var dialog = createViewerDialog(params);
-            dialog.getPresenter().setResizable(true);
             if (params.getWindowType() == WindowType.NESTED) {
                 windowContainer.addDialog(dialog);
             } else {

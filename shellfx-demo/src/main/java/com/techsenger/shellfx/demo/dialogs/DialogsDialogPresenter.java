@@ -83,7 +83,6 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
                 dialog.setName("Some Name");
                 dialog.setValue("Some Value");
                 dialog.setRightButtons(NameValueButtons.OK);
-                dialog.setResizable(true);
             }),
             Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
             Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
@@ -116,7 +115,6 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     protected void postInitialize() {
         super.postInitialize();
         var view = getView();
-        setResizable(true);
         setTitle("Dialogs");
         view.setDialogTypes(Arrays.asList(DialogType.values()));
         setOnResult((result) -> {
@@ -153,13 +151,11 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
                 dialog.closeSafely();
             }
         });
-        dialog.setResizable(true);
     }
 
     private void showPagedDialog(PageMenuType menuType) {
         var params = new PageDialogParams(selectedWindowType, settings, menuType, historyManager);
         var dialog = getView().getComposer().openPagedDialog(params);
-        dialog.setResizable(true);
     }
 
     protected AppearanceSettings getSettings() {

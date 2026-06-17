@@ -47,7 +47,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     private double maxHeight;
 
-    private boolean resizable;
+    private boolean resizable = true;
 
     private String title;
 

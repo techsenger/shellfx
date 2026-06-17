@@ -122,6 +122,7 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
         setMessage(message);
         setMinWidth(400);
         setMinHeight(140);
+        setResizable(false);
     }
 
     @Override
