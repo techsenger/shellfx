@@ -36,6 +36,7 @@ import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
+import com.techsenger.shellfx.material.style.StyleClasses;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -102,7 +103,15 @@ public class Demo extends Application {
         IconStylesheets.addAll(IconStylesheetFactory.forAll());
 
         // creating component
-        var shellView = new DefaultShellFxView<>(this, null, new ControlRegistry());
+        var shellView = new DefaultShellFxView<>(this, null, new ControlRegistry()) {
+            @Override
+            protected void build() {
+                super.build();
+                if (appType == ApplicationType.STYLES_ONLY) {
+                    getTitlePane().getStyleClass().add(StyleClasses.DENSITY_S);
+                }
+            }
+        };
         var context = new DefaultShellContext(DemoSettings.createSettings(),
                 new DemoHistoryManager(), getHostServices());
         if (appType == ApplicationType.STYLES_ONLY) {
