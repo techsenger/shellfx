@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TableCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Font;
 
 /**
@@ -42,18 +43,18 @@ public class FileColumnBuilder {
     }
 
     /**
-     * Builds type column.
+     * Builds name column.
      *
      * @return
      */
-    public NamedTableColumn<GenericFile, GenericFile> buildTypeColumn(GenericFontIcon<?> dirIcon,
+    public NamedTableColumn<GenericFile, GenericFile> buildNameColumn(GenericFontIcon<?> dirIcon,
             GenericFontIcon fileIcon) {
-        var typeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.TYPE, "");
-        typeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
-        typeColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
+        var nameColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.NAME, "Name");
+        nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
+        nameColumn.setCellFactory(col -> new TextFieldTableCell<GenericFile, GenericFile>() {
 
                 @Override
-                protected void updateItem(GenericFile file, boolean empty) {
+                public void updateItem(GenericFile file, boolean empty) {
                     super.updateItem(file, empty);
                     if (file == null || empty) {
                         setGraphic(null);
@@ -61,41 +62,13 @@ public class FileColumnBuilder {
                     } else {
                         if (file.getType() != null) {
                             if (file.isDirectory()) {
-                                this.setGraphic(new FontIconView(dirIcon));
+                                setGraphic(new FontIconView(dirIcon));
                             } else {
-                                this.setGraphic(new FontIconView(fileIcon));
+                                setGraphic(new FontIconView(fileIcon));
                             }
                         } else {
                             setGraphic(null);
                         }
-                    }
-                }
-            }
-        );
-        typeColumn.setComparator(Comparator.comparing(GenericFile::isDirectory).reversed());
-        typeColumn.getStyleClass().add("type-column");
-        typeColumn.setMaxWidth(this.font.getSize() * 1.25 + this.font.getSize() * 1.05); //1.05 = left pad + right pad
-        typeColumn.setMinWidth(this.font.getSize() * 1.25 + this.font.getSize() * 1.05);
-        typeColumn.setResizable(false);
-        return typeColumn;
-    }
-
-    /**
-     * Builds name column.
-     *
-     * @return
-     */
-    public NamedTableColumn<GenericFile, GenericFile> buildNameColumn() {
-        var nameColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.NAME, "Name");
-        nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
-        nameColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
-
-                @Override
-                protected void updateItem(GenericFile file, boolean empty) {
-                    super.updateItem(file, empty);
-                    if (file == null || empty) {
-                        setText(null);
-                    } else {
                         setText(file.getName());
                     }
                 }

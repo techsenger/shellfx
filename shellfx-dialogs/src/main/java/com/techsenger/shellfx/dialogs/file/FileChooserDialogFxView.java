@@ -33,10 +33,12 @@ import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnManager;
 import com.techsenger.shellfx.material.table.TableColumnName;
+import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileColumnBuilder;
 import com.techsenger.shellfx.storage.FileColumns;
 import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.toolkit.fx.value.ValueUtils;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import javafx.collections.FXCollections;
@@ -55,7 +57,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -352,18 +353,20 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         this.fileTableView.setEditable(true);
         this.fileTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         this.fileTableView.setPlaceholder(new Label(""));
-        var columnBuilder = new FileColumnBuilder(settings.getRegularFont());
-        this.fileColumnManager.registerColumnFactory(FileColumns.TYPE, () -> {
-            var column = columnBuilder.buildTypeColumn(DialogIcons.DIRECTORY, DialogIcons.FILE);
-            column.setEditable(false);
-            column.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN_FIRST);
-            return column;
+        this.fileTableView.setSortPolicy(tv -> {
+            // bottom layer: column comparators (user-defined column rules)
+            // middle layer: TableView aggregate comparator (built from sortOrder)
+            // top layer: sorting execution hook (applies comparator to items)
+            Comparator<GenericFile> base = tv.getComparator();
+            Comparator<GenericFile> decorated = Comparators.directoryFirst(base);
+            FXCollections.sort(tv.getItems(), decorated);
+            return true;
         });
-        var strConverter = new FileStringConverter();
+
+        var columnBuilder = new FileColumnBuilder(settings.getRegularFont());
         this.fileColumnManager.registerColumnFactory(FileColumns.NAME, () -> {
-            var column = columnBuilder.buildNameColumn();
+            var column = columnBuilder.buildNameColumn(DialogIcons.DIRECTORY, DialogIcons.FILE);
             column.setEditable(false);
-            column.setCellFactory(r -> new TextFieldTableCell<>(strConverter));
             column.setOnEditCancel(e -> {
                 var file = (GenericFile) e.getOldValue();
                 getPresenter().onEditCancelled(file);

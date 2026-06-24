@@ -24,7 +24,7 @@ import com.techsenger.shellfx.material.table.TableColumnName;
  */
 public enum FileColumns implements TableColumnName {
 
-    NAME("Name"), SIZE("Size"), TYPE("Type"), LAST_MODIFIED("Last Modified");
+    NAME("Name"), SIZE("Size"), LAST_MODIFIED("Last Modified");
 
     private final String text;
 

@@ -31,6 +31,7 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableHistory;
+import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileColumns;
 import com.techsenger.shellfx.storage.FileStorage;
 import static com.techsenger.shellfx.storage.FileStorageType.BASE;
@@ -552,7 +553,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     protected void onFileComparatorChanged(Comparator<GenericFile> comparator) {
-        this.fileComparator = comparator;
+        this.fileComparator = Comparators.directoryFirst(comparator);
     }
 
     protected Comparator<GenericFile> getFileComparator() {
@@ -699,23 +700,17 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     private void createInitialColumns() {
-        var typeColumn = new TableColumnInfo(FileColumns.TYPE);
-        typeColumn.setSortIndex(0);
-        typeColumn.setSortType(TableColumn.SortType.ASCENDING);
-        typeColumn.setIndex(0);
-        columns.put(typeColumn.getName(), typeColumn);
-
         var nameColumn = new TableColumnInfo(FileColumns.NAME);
-        nameColumn.setIndex(1);
-        nameColumn.setSortIndex(1);
+        nameColumn.setIndex(0);
+        nameColumn.setSortIndex(0);
         nameColumn.setSortType(TableColumn.SortType.ASCENDING);
         columns.put(nameColumn.getName(), nameColumn);
 
         var sizeColumn = new TableColumnInfo(FileColumns.SIZE);
-        sizeColumn.setIndex(2);
+        sizeColumn.setIndex(1);
         columns.put(sizeColumn.getName(), sizeColumn);
         var modifiedColumn = new TableColumnInfo(FileColumns.LAST_MODIFIED);
-        modifiedColumn.setIndex(3);
+        modifiedColumn.setIndex(2);
         columns.put(modifiedColumn.getName(), modifiedColumn);
     }
 
