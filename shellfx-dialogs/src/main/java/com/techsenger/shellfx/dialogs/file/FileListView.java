@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.shellfx.material.list.ColumnListView;
-import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.storage.GenericFile;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
@@ -34,6 +33,5 @@ class FileListView extends ColumnListView<GenericFile> {
         setItems(files);
         setManualRefresh(true);
         setEditable(true);
-        getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN);
     }
 }

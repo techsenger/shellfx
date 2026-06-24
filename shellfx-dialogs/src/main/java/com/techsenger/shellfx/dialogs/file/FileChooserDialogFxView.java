@@ -349,7 +349,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     @Override
     protected void build() {
         super.build();
-        this.fileTableView.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN);
+//        this.fileTableView.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN);
         this.fileTableView.setEditable(true);
         this.fileTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         this.fileTableView.setPlaceholder(new Label(""));
@@ -386,10 +386,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             return column;
         });
         this.fileColumnManager.registerColumnFactory(FileColumns.LAST_MODIFIED, () -> {
-            var coumn = columnBuilder.buildLastModifiedColumn();
-            coumn.setEditable(false);
-            coumn.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN_LAST);
-            return coumn;
+            var column = columnBuilder.buildLastModifiedColumn();
+            column.setEditable(false);
+            return column;
         });
 
         this.fileListView = new FileListView(files, new ContextMenu(createRefreshMenuItem()));
