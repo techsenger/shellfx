@@ -324,7 +324,7 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
         super.postInitialize();
         setTitle("Components");
         setClosable(false);
-        this.tabDock.getSelector().addListener((oldUid, newUid, oldNode, newNode) -> {
+        this.tabDock.getSelector().addPostListener((oldUid, newUid, oldNode, newNode) -> {
             if (oldUid != newUid) {
                 var component = service.getComponent(newUid);
                 if (component != null) {

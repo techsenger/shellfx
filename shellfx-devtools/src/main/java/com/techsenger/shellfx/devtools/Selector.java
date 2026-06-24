@@ -38,14 +38,24 @@ public class Selector {
 
     @FunctionalInterface
     public interface SelectorListener {
-        void onSelected(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement);
+        void onSelect(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement);
     }
 
     private final Connector connector;
 
     private final String logPrefix;
 
-    private final List<SelectorListener> listeners = new ArrayList<>();
+    /**
+     * Listeners called before the selection is applied to the connector. Event Bus events from the connector are
+     * received between pre- and post-listener notifications.
+     */
+    private final List<SelectorListener> preListeners = new ArrayList<>();
+
+    /**
+     * Listeners called after the selection is applied to the connector and the internal state is updated. Event Bus
+     * events from the connector are received before this point.
+     */
+    private final List<SelectorListener> postListeners = new ArrayList<>();
 
     private HighlightOptions highlightOptions = new HighlightOptions(false, false, false);
 
@@ -72,16 +82,32 @@ public class Selector {
         });
     }
 
-    public void addListener(SelectorListener listener) {
-        this.listeners.add(listener);
+    /**
+     * The listeners that are called before selection.
+     *
+     * @param listener
+     */
+    public void addPreListener(SelectorListener listener) {
+        this.preListeners.add(listener);
+    }
+
+    /**
+     * The listeners that are called after selection.
+     *
+     * @param listener
+     */
+    public void addPostListener(SelectorListener listener) {
+        this.postListeners.add(listener);
     }
 
     public void selectWindow(int uid) {
+        notifyPreListeners(this.selectedWindowUid, uid, selectedNode, selectedNode);
         this.connector.selectWindow(uid);
         this.updateSelectedElements(uid, null);
     }
 
     public void selectNode(int uid, Element node) {
+        notifyPreListeners(this.selectedWindowUid, uid, selectedNode, node);
         this.connector.selectNode(uid, node, highlightOptions);
         updateSelectedElements(uid, node);
     }
@@ -135,12 +161,18 @@ public class Selector {
             var oldNode = this.selectedNode;
             setSelectedWindowUid(newWindowUid);
             setSelectedNode(newNode);
-            notifyListeners(oldWindowUid, newWindowUid, oldNode, newNode);
+            notifyPostListeners(oldWindowUid, newWindowUid, oldNode, newNode);
         }
     }
 
-    private void notifyListeners(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement) {
-        this.listeners.stream().forEach(l -> l.onSelected(oldWindowUid, newWindowUid, oldElement, newElement));
+    private void notifyPreListeners(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement) {
+        if (!Objects.equals(this.selectedWindowUid, newWindowUid) || !Objects.equals(this.selectedNode, newElement)) {
+            this.preListeners.stream().forEach(l -> l.onSelect(oldWindowUid, newWindowUid, oldElement, newElement));
+        }
+    }
+
+    private void notifyPostListeners(int oldWindowUid, int newWindowUid, Element oldElement, Element newElement) {
+        this.postListeners.stream().forEach(l -> l.onSelect(oldWindowUid, newWindowUid, oldElement, newElement));
     }
 
     public void setSelectedNode(Element selectedNode) {

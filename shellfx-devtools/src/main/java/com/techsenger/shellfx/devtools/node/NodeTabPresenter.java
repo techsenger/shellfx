@@ -42,6 +42,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,6 +51,8 @@ import java.util.regex.Matcher;
  */
 public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresenter<V>
         implements AddablePresenter, NodeTabPort {
+
+    private static final Logger logger = LoggerFactory.getLogger(NodeTabPresenter.class);
 
     protected class NodeToolBarAwarePort implements ToolBarAwarePort, FindNavigationAwarePort {
 
@@ -194,11 +198,36 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
 
     @Override
     public void onAdded() {
-        tabDock.getSelector().addListener((oldWindowUid, newWindowUid, oldElement, newElement) -> {
+        tabDock.getSelector().addPreListener((oldWindowUid, newWindowUid, oldElement, newElement) -> {
+            if (Objects.equals(oldElement, newElement) && oldWindowUid == newWindowUid) {
+                return;
+            }
+            clearProperties();
+        });
+
+        // these events come between pre and post listeners;
+        // node selected via API or select button -> AttributeListEvents -> processEvent -> filterAndAdd
+        this.tabDock.getConnector().getEventBus().subscribe(ConnectorEvent.class, event -> {
+            switch (event) {
+                case AttributeListEvent ale -> {
+                    if (Objects.equals(this.selectedNode, ale.element())) {
+                        if (selectedFromNodeTree) {
+                            processPropertyEvent(ale);
+                            logger.debug("{} Properties {} processed", getDescriptor().getLogPrefix(), ale.category());
+                        }
+                    } else {
+                        this.savedAttributeEvents.add(ale);
+                        logger.debug("{} Properties {} saved", getDescriptor().getLogPrefix(), ale.category());
+                    }
+                }
+                default -> { }
+            }
+        });
+
+        tabDock.getSelector().addPostListener((oldWindowUid, newWindowUid, oldElement, newElement) -> {
             if (oldWindowUid != newWindowUid) {
                 getView().selectWindow(newWindowUid);
                 this.nodeIndexCreated = false;
-                clearProperties();
                 getView().selectRoot();
                 refreshProperties();
                 return;
@@ -212,30 +241,13 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
             this.selectedNode = newElement; // so the onNodeSelected method won't complete
             if (this.selectedNode != null) {
                 createNodeIndex();
-                getView().selectNode(this.selectedNode, true); // -> onNodeSelected(..)
-                clearProperties();
+                getView().selectNode(this.selectedNode, true);
                 for (var events : this.savedAttributeEvents) { // adding saved events
                     processPropertyEvent(events);
                 }
                 selectPreviousProperty();
             }
             this.savedAttributeEvents.clear();
-        });
-
-        // node selected via API or select button -> AttributeListEvents -> processEvent -> filterAndAdd
-        this.tabDock.getConnector().getEventBus().subscribe(ConnectorEvent.class, event -> {
-            switch (event) {
-                case AttributeListEvent ale -> {
-                    if (Objects.equals(this.selectedNode, ale.element())) {
-                        if (selectedFromNodeTree) {
-                            processPropertyEvent(ale);
-                        }
-                    } else {
-                        this.savedAttributeEvents.add(ale);
-                    }
-                }
-                default -> { }
-            }
         });
     }
 
@@ -255,7 +267,6 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         if (this.selectedNode == null) {
             return;
         }
-        clearProperties();
         this.selectedFromNodeTree = true;
         if (node.isWindowElement()) {
             this.tabDock.getSelector().selectWindow(tabDock.getSelector().getSelectedWindowUid());
@@ -263,7 +274,6 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
             this.tabDock.getSelector().selectNode(tabDock.getSelector().getSelectedWindowUid(), node);
         }
         this.selectedFromNodeTree = false;
-        selectPreviousProperty();
     }
 
     protected void onCategoryExpanded(AttributeCategory category, boolean expanded) {
