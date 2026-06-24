@@ -241,7 +241,9 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
             this.selectedNode = newElement; // so the onNodeSelected method won't complete
             if (this.selectedNode != null) {
                 createNodeIndex();
-                getView().selectNode(this.selectedNode, true);
+                if (!this.selectedFromNodeTree) {
+                    getView().selectNode(this.selectedNode, true);
+                }
                 for (var events : this.savedAttributeEvents) { // adding saved events
                     processPropertyEvent(events);
                 }
