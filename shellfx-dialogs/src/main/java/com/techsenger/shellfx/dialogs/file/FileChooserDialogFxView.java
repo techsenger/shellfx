@@ -358,6 +358,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             // middle layer: TableView aggregate comparator (built from sortOrder)
             // top layer: sorting execution hook (applies comparator to items)
             Comparator<GenericFile> base = tv.getComparator();
+            // note, that the Comparators.directoryFirst is also used in the presenter
             Comparator<GenericFile> decorated = Comparators.directoryFirst(base);
             FXCollections.sort(tv.getItems(), decorated);
             return true;
