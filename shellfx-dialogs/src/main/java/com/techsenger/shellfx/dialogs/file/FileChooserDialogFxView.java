@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
-import com.techsenger.shellfx.storage.FileStringConverter;
 import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.dialog.AbstractDialogFxView;
 import com.techsenger.shellfx.core.dialog.DialogPort;
@@ -37,6 +36,7 @@ import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileColumnBuilder;
 import com.techsenger.shellfx.storage.FileColumns;
+import com.techsenger.shellfx.storage.FileStringConverter;
 import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.Comparator;
@@ -127,7 +127,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
                 if (e.getClickCount() == 2) {
                     var file = getItem();
-                    getPresenter().onFileRequested(file);
+                    getPresenter().onNavigateDown(file);
                 }
             });
             setManualEdit(true);
@@ -437,7 +437,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             row.setOnMouseClicked(e -> {
                 if (e.getClickCount() == 2) {
                     var file = row.getItem();
-                    getPresenter().onFileRequested(file);
+                    getPresenter().onNavigateDown(file);
                 }
             });
             row.setContextMenu(itemContextMenu);

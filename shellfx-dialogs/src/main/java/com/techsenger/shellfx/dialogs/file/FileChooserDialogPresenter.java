@@ -410,9 +410,10 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         this.locationsUpdated = true;
     }
 
-    protected void onFileRequested(GenericFile file) {
+    protected void onNavigateDown(GenericFile file) {
         if (file.isDirectory()) {
             navigateTo(file.getStorage(), file.getUri());
+            getView().scrollToFile(0);
         }
     }
 
@@ -431,7 +432,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     protected void onNavigateHome() {
         var file = GenericFile.getHome(storages);
         if (file != null) {
-            onFileRequested(file);
+            onNavigateDown(file);
         }
     }
 
