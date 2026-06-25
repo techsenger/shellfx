@@ -92,6 +92,10 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     private final String initialFileName;
 
+    /**
+     * The current location is represented by {@link #storage} and {@link #directory}. A {@link GenericFile} cannot be
+     * used because when the user is at the storage root, there is no current directory.
+     */
     private FileStorage storage;
 
     private URI directory;

@@ -206,7 +206,7 @@ public final class GenericFile {
     }
 
     /**
-     * Converts file to GenericFile.
+     * Converts a local file to GenericFile.
      *
      * @param file
      * @param storages
