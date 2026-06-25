@@ -43,6 +43,7 @@ import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -429,8 +430,14 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         if (parentUri == null) {
             return;
         }
+        var builder = new GenericFile.Builder();
+        builder.storage(storage);
+        builder.name(Paths.get(directory).getFileName().toString());
+        builder.type(FileType.DIRECTORY);
+        builder.virtual(true);
+        var currentDirectory = builder.build();
         this.directory = parentUri;
-        updateFiles(null);
+        updateFiles(currentDirectory);
     }
 
     protected void onNavigateHome() {
