@@ -19,6 +19,7 @@ package com.techsenger.shellfx.storage;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.icon.GenericFontIcon;
 import com.techsenger.shellfx.material.table.NamedTableColumn;
+import com.techsenger.shellfx.material.table.TextFieldTableCell;
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.time.Instant;
 import java.time.Year;
@@ -26,8 +27,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.scene.Node;
 import javafx.scene.control.TableCell;
-import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
 /**
@@ -51,29 +53,47 @@ public class FileColumnBuilder {
             GenericFontIcon fileIcon) {
         var nameColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
-        nameColumn.setCellFactory(col -> new TextFieldTableCell<GenericFile, GenericFile>() {
+        var converter = new FileStringConverter();
+        nameColumn.setCellFactory(col -> new TextFieldTableCell<GenericFile, GenericFile>(converter) {
 
-                @Override
-                public void updateItem(GenericFile file, boolean empty) {
-                    super.updateItem(file, empty);
-                    if (file == null || empty) {
-                        setGraphic(null);
-                        setText(null);
-                    } else {
-                        if (file.getType() != null) {
-                            if (file.isDirectory()) {
-                                setGraphic(new FontIconView(dirIcon));
-                            } else {
-                                setGraphic(new FontIconView(fileIcon));
-                            }
-                        } else {
-                            setGraphic(null);
-                        }
-                        setText(file.getName());
-                    }
+            @Override
+            public void updateItem(GenericFile file, boolean empty) {
+                super.updateItem(file, empty);
+                if (file == null || empty) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setGraphic(buildIcon(file));
+                    setText(file.getName());
                 }
             }
-        );
+
+            @Override
+            protected HBox buildEditGraphic() {
+                var icon = buildIcon(getItem());
+                var box = new HBox(getTextField());
+                if (icon != null) {
+                    box.getChildren().add(0, icon);
+                }
+                return box;
+            }
+
+            @Override
+            protected void updateDisplay() {
+                var file = getItem();
+                if (file != null) {
+                    setGraphic(buildIcon(file));
+                    setText(file.getName());
+                }
+            }
+
+            private Node buildIcon(GenericFile file) {
+                if (file.getType() == null) {
+                    return null;
+                }
+                return new FontIconView(file.isDirectory() ? dirIcon : fileIcon);
+            }
+        });
         nameColumn.setComparator(Comparator.comparing(GenericFile::getName, String.CASE_INSENSITIVE_ORDER));
         return nameColumn;
     }

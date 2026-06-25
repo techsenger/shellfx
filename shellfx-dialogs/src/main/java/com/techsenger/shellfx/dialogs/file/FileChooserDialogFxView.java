@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
+import com.techsenger.shellfx.storage.FileStringConverter;
 import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.dialog.AbstractDialogFxView;
 import com.techsenger.shellfx.core.dialog.DialogPort;

@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-.table-view .table-row-cell {
-    -fx-background-insets: 0, 0 0 0 0;
-}
 
 .combo-box.location .list-cell HBox {
     -fx-spacing: 0.25em;
@@ -26,3 +23,18 @@
     -fx-graphic-text-gap: 0.4em;
 }
 
+.table-view .table-row-cell {
+    -fx-background-insets: 0, 0 0 0 0;
+    -fx-graphic-text-gap: 0.4em;
+}
+
+.table-view .table-row-cell HBox {
+    -fx-spacing: 0.25em;
+    -fx-alignment: center_left;
+}
+
+.table-view .table-row-cell .text-field {
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-color: -color-bg-default, -color-accent-emphasis, -color-bg-default;
+    -fx-padding: 1px 4px 1px 4px;
+}

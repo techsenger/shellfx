@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
+package com.techsenger.shellfx.storage;
 
-import com.techsenger.shellfx.storage.GenericFile;
 import javafx.util.StringConverter;
 
 
@@ -24,7 +23,7 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-class FileStringConverter extends StringConverter<GenericFile> {
+public class FileStringConverter extends StringConverter<GenericFile> {
 
     /**
      * It is supposed that toString is called always before fromString.

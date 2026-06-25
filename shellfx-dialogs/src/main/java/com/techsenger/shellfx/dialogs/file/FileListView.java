@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
+import com.techsenger.shellfx.storage.FileStringConverter;
 import com.techsenger.shellfx.material.list.ColumnListView;
 import com.techsenger.shellfx.storage.GenericFile;
 import javafx.collections.ObservableList;
