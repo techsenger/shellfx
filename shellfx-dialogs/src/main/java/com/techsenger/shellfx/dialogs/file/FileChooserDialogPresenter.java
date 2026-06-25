@@ -73,13 +73,11 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     private Location location;
 
-    private boolean listSelected;
-
-    private boolean detailsSelected;
+    private Mode mode;
 
     private List<GenericFile> files;
 
-    private int selectedFileIndex;
+    private int selectedFileIndex = -1;
 
     private ExtensionFilter extensionFilter;
 
@@ -192,25 +190,20 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     @Override
-    public boolean isListSelected() {
-        return listSelected;
+    public Mode getMode() {
+        return this.mode;
     }
 
     @Override
-    public void setListSelected(boolean listSelected) {
-        this.listSelected = listSelected;
-        getView().setListSelected(listSelected);
-    }
-
-    @Override
-    public boolean isDetailsSelected() {
-        return detailsSelected;
-    }
-
-    @Override
-    public void setDetailsSelected(boolean detailsSelected) {
-        this.detailsSelected = detailsSelected;
-        getView().setDetailsSelected(detailsSelected);
+    public void setMode(Mode mode) {
+        if (this.mode == mode) {
+            return;
+        }
+        this.mode = mode;
+        getView().setMode(mode);
+        if (this.selectedFileIndex >= 0) {
+            getView().scrollToFile(selectedFileIndex);
+        }
     }
 
     @Override
@@ -315,14 +308,14 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         setHeight(500);
         createInitialColumns();
         getView().addColumns(columns);
+        setMode(Mode.LIST);
     }
 
     @Override
     protected void saveAppearance() {
         super.saveAppearance();
         var history = getHistory();
-        history.setListSelected(isListSelected());
-        history.setDetailsSelected(isDetailsSelected());
+        history.setMode(mode);
         var tableHistory = new TableHistory(this.columns.values().stream().toList());
         history.setTable(tableHistory);
     }
@@ -331,8 +324,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     protected void restoreAppearance() {
         super.restoreAppearance();
         var history = getHistory();
-        setListSelected(history.isListSelected());
-        setDetailsSelected(history.isDetailsSelected());
+        setMode(history.getMode());
         for (var c : history.getTable().getColumns()) {
             this.columns.put(c.getName(), c);
         }
@@ -511,18 +503,12 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         this.editType = null;
     }
 
-    protected void onList(boolean selected) {
-        setListSelected(selected);
-        if (this.selectedFileIndex >= 0) {
-            getView().scrollToFile(selectedFileIndex);
-        }
+    protected void onList() {
+        setMode(Mode.LIST);
     }
 
-    protected void onDetails(boolean selected) {
-        setDetailsSelected(selected);
-        if (this.selectedFileIndex >= 0) {
-            getView().scrollToFile(selectedFileIndex);
-        }
+    protected void onDetails() {
+        setMode(Mode.DETAILS);
     }
 
     protected void onFileSelected(int index) {

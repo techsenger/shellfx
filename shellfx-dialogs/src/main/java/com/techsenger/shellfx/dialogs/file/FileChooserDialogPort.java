@@ -39,9 +39,7 @@ public interface FileChooserDialogPort extends DialogPort, FileChooserDialogShar
 
     Location getLocation();
 
-    boolean isListSelected();
-
-    boolean isDetailsSelected();
+    Mode getMode();
 
     List<GenericFile> getFiles();
 

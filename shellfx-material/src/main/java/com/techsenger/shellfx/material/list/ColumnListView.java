@@ -494,7 +494,16 @@ public class ColumnListView<T> extends Region {
         refresh(RefreshTrigger.ITEMS);
     }
 
+    /**
+     * Returns the column index or -1.
+     *
+     * @param cellIndex
+     * @return
+     */
     public int resolveColumnIndex(int cellIndex) {
+        if (getRowCount() == 0) {
+            return -1;
+        }
         var columnIndex = (int) cellIndex / getRowCount();
         return columnIndex;
     }

@@ -33,9 +33,7 @@ public interface FileChooserDialogShared {
 
     void setLocation(Location value);
 
-    void setListSelected(boolean value);
-
-    void setDetailsSelected(boolean value);
+    void setMode(Mode mode);
 
     void setFileName(String fileName);
 

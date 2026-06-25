@@ -16,36 +16,11 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
-import com.techsenger.shellfx.core.dialog.DialogHistory;
-import com.techsenger.shellfx.material.table.TableHistory;
-
 /**
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogHistory extends DialogHistory {
+public enum Mode {
 
-    private Mode mode;
-
-    private TableHistory table;
-
-    public FileChooserDialogHistory() {
-
-    }
-
-    public Mode getMode() {
-        return mode;
-    }
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    public TableHistory getTable() {
-        return table;
-    }
-
-    public void setTable(TableHistory table) {
-        this.table = table;
-    }
+    LIST, DETAILS
 }

@@ -249,15 +249,19 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     }
 
     @Override
-    public void setListSelected(boolean value) {
-        this.listButton.setSelected(value);
-        updateListSelected(value);
-    }
-
-    @Override
-    public void setDetailsSelected(boolean value) {
-        this.detailsButton.setSelected(value);
-        updateDetailsSelected(value);
+    public void setMode(Mode mode) {
+        if (mode == Mode.LIST) {
+            updateFileBox(this.fileListView);
+            this.fileListView.refresh();
+            this.fileListView.getSelectionModel().select(fileTableView.getSelectionModel().getSelectedIndex());
+            this.listButton.setSelected(true);
+            this.detailsButton.setSelected(false);
+        } else {
+            updateFileBox(this.fileTableView);
+            this.fileTableView.getSelectionModel().select(this.fileListView.getSelectionModel().getSelectedIndex());
+            this.listButton.setSelected(false);
+            this.detailsButton.setSelected(true);
+        }
     }
 
     @Override
@@ -308,7 +312,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     public void scrollToFile(int index) {
         if (listButton.isSelected()) {
             var columnIndex = this.fileListView.resolveColumnIndex(index);
-            this.fileListView.scrollToFirstColumn(columnIndex);
+            if (columnIndex >= 0) {
+                this.fileListView.scrollToFirstColumn(columnIndex);
+            }
         } else {
             this.fileTableView.scrollTo(index);
         }
@@ -350,7 +356,6 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     @Override
     protected void build() {
         super.build();
-//        this.fileTableView.getStyleClass().add(StyleClasses.SAME_SPACING_COLUMN);
         this.fileTableView.setEditable(true);
         this.fileTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         this.fileTableView.setPlaceholder(new Label(""));
@@ -393,8 +398,6 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         });
 
         this.fileListView = new FileListView(files, new ContextMenu(createRefreshMenuItem()));
-        updateListSelected(true);
-
         locationLabel.setMinWidth(Region.USE_PREF_SIZE);
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.setMaxWidth(Double.MAX_VALUE);
@@ -516,8 +519,8 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         this.levelUpButton.setOnAction(e -> presenter.onNavigateUp());
         this.homeButton.setOnAction(e -> presenter.onNavigateHome());
         this.createButton.setOnAction(e -> presenter.onNewDirectory());
-        this.listButton.setOnAction(e -> getPresenter().onList(listButton.isSelected()));
-        this.detailsButton.setOnAction(e -> getPresenter().onDetails(detailsButton.isSelected()));
+        this.listButton.setOnAction(e -> getPresenter().onList());
+        this.detailsButton.setOnAction(e -> getPresenter().onDetails());
         //when setOnShowing is used then popup height is calculated incorrectly
         //maybe because OnMousePressed handler is called before OnShowing handler.
         //another reason - update location property only after locations have been populated
@@ -575,21 +578,6 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
 
     protected FileListView getFileListView() {
         return fileListView;
-    }
-
-    private void updateListSelected(boolean selected) {
-        if (selected) {
-            updateFileBox(this.fileListView);
-            this.fileListView.refresh();
-            this.fileListView.getSelectionModel().select(fileTableView.getSelectionModel().getSelectedIndex());
-        }
-    }
-
-    private void updateDetailsSelected(boolean selected) {
-        if (selected) {
-            updateFileBox(this.fileTableView);
-            this.fileTableView.getSelectionModel().select(this.fileListView.getSelectionModel().getSelectedIndex());
-        }
     }
 
     private void updateFileBox(Node node) {
