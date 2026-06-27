@@ -16,326 +16,115 @@
 
 package com.techsenger.shellfx.storage;
 
-import java.io.File;
+import com.techsenger.annotations.Nullable;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Files are always immutable.
+ * Represents a file or directory entry within a {@link FileStorage}.
+ *
+ * <p>A {@code GenericFile} is a storage-agnostic abstraction over a file system entry. It carries the metadata
+ * provided by the underlying storage backend (name, URI, size, last modified time, entry type) without imposing any
+ * assumptions about the nature of the content.
+ *
+ * <p>Implementations must be obtainable via the factory method of the corresponding {@link FileStorage}. The interface
+ * intentionally exposes only getters; mutation, construction, and navigation helpers are the responsibility of concrete
+ * implementations.
  *
  * @author Pavel Castornii
  */
-public final class GenericFile {
+public interface GenericFile {
 
     /**
-     * A reusable builder.
-     */
-    public static class Builder {
-
-        private FileStorage storage;
-
-        private FileType type;
-
-        private URI uri;
-
-        private Long size;
-
-        private String name;
-
-        private Long lastModified;
-
-        private boolean virtual;
-
-        public Builder() {
-
-        }
-
-        public Builder storage(FileStorage storage) {
-            this.storage = storage;
-            return this;
-        }
-
-        public Builder type(FileType type) {
-            this.type = type;
-            return this;
-        }
-
-        public Builder name(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder uri(URI uri) {
-            this.uri = uri;
-            return this;
-        }
-
-        public Builder size(Long size) {
-            this.size = size;
-            return this;
-        }
-
-        public Builder lastModified(Long lastModified) {
-            this.lastModified = lastModified;
-            return this;
-        }
-
-        public Builder virtual(boolean virtual) {
-            this.virtual = virtual;
-            return this;
-        }
-
-        public GenericFile build() {
-            var file = new GenericFile(this);
-            return file;
-        }
-
-        /**
-         * Use this method to create a copy with or without modifications.
-         *
-         * @param file
-         */
-        public Builder setAllFrom(GenericFile file) {
-            this.storage = file.storage;
-            this.type = file.type;
-            this.uri = file.uri;
-            this.size = file.size;
-            this.name = file.name;
-            this.lastModified = file.lastModified;
-            this.virtual = file.virtual;
-            return this;
-        }
-
-        public Builder reset() {
-            this.storage = null;
-            this.type = null;
-            this.uri = null;
-            this.size = null;
-            this.name = null;
-            this.lastModified = null;
-            this.virtual = false;
-            return this;
-        }
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(GenericFile.class);
-
-    /**
-     * Returns the immediate parent of the given file, or the root directory if the file is a direct child of the root.
+     * Returns the {@link FileStorage} that owns this file.
      *
-     * @param child the file whose parent to retrieve
-     * @return the parent {@link GenericFile}, never null
+     * @return the storage, never {@code null}
      */
-    public static GenericFile getParent(GenericFile child) {
-        return buildParents(child, 1).get(0);
+    FileStorage getStorage();
+
+    /**
+     * Returns the structural type of this file system entry (regular file, directory, symbolic link, etc.).
+     *
+     * @return the entry type, never {@code null}
+     */
+    FileEntryType getEntryType();
+
+    /**
+     * Returns the name of this entry, i.e. the last segment of its path.
+     *
+     * <p>For the root directory the name is implementation-defined (typically an empty string or the storage label).
+     *
+     * @return the entry name, never {@code null}
+     */
+    String getName();
+
+    /**
+     * Returns the URI that uniquely identifies this entry within its {@link FileStorage}.
+     *
+     * @return the URI, never {@code null}
+     */
+    URI getUri();
+
+    /**
+     * Returns the size of this entry in bytes, or {@code null} if the size is unknown or not
+     * applicable (e.g. for directories).
+     *
+     * @return size in bytes, or {@code null}
+     */
+    @Nullable Long getSize();
+
+    /**
+     * Returns the last-modified timestamp of this entry in milliseconds since the Unix epoch
+     * (January 1, 1970, 00:00:00 UTC), or {@code null} if the value is unavailable.
+     *
+     * @return last-modified time in milliseconds since the Unix epoch, or {@code null}
+     */
+    @Nullable Long getLastModified();
+
+    /**
+     * Returns {@code true} if this entry is virtual, i.e. it was constructed programmatically without a corresponding
+     * real entry on the underlying storage.
+     *
+     * <p>Virtual entries are used as placeholders — for example, a parent directory inferred from a child's URI, or a
+     * root entry that does not physically exist on the backend.
+     *
+     * @return {@code true} if virtual, {@code false} if backed by a real storage entry
+     */
+    boolean isVirtual();
+
+    /**
+     * Returns {@code true} if this entry is a directory.
+     *
+     * @return {@code true} if {@link #getEntryType()} is {@link FileEntryType#DIRECTORY}
+     */
+    default boolean isDirectory() {
+        return getEntryType() == FileEntryType.DIRECTORY;
     }
 
     /**
-     * Returns all parent directories from the immediate parent up to and including the root.
+     * Returns {@code true} if this entry is a regular file.
      *
-     * <p>Example: for a file with URI {@code /home/user/foo/bar}, returns:
-     * <pre>
-     * /home/user/foo/
-     * /home/use/
-     * /home/
-     * /  (root)
-     * </pre>
-     *
-     * @param child the file whose parents to collect
-     * @return ordered list of parents from immediate parent to root, never null, never empty
+     * @return {@code true} if {@link #getEntryType()} is {@link FileEntryType#FILE}
      */
-    public static List<GenericFile> getParents(GenericFile child) {
-        return buildParents(child, Integer.MAX_VALUE);
+    default boolean isFile() {
+        return getEntryType() == FileEntryType.FILE;
     }
 
     /**
-     * Creates a virtual child file.
+     * Returns {@code true} if this entry is a symbolic link.
      *
-     * @param parent
-     * @param childName
-     * @param childType
-     * @return
+     * @return {@code true} if {@link #getEntryType()} is {@link FileEntryType#SYMBOLIC_LINK}
      */
-    public static GenericFile getChild(GenericFile parent, String childName, FileType childType) {
-        var builder = new Builder();
-        builder.storage(parent.storage);
-        builder.type(childType);
-        builder.name(childName);
-        var uri = UriUtils.resolvePath(parent.getUri(), childName);
-        builder.uri(uri);
-        builder.virtual(true);
-        var result = builder.build();
-        return result;
+    default boolean isSymbolicLink() {
+        return getEntryType() == FileEntryType.SYMBOLIC_LINK;
     }
 
     /**
-     * Converts a local file to GenericFile.
+     * Returns {@code true} if this entry represents the root directory of its {@link FileStorage}.
      *
-     * @param file
-     * @param storages
-     * @return
+     * @return {@code true} if this entry is a directory whose URI equals the storage root URI
      */
-    public static GenericFile convert(File file, FileStorageRegistry registry) throws InvalidFileException {
-        var path = file.toPath();
-        var uri = path.toUri(); // it is faster than file.toURI.
-        var storage = registry.getStorage(uri);
-        if (storage.isEmpty()) {
-            throw new IllegalArgumentException("Couldn't find storage for " + uri);
-        }
-        var builder = new Builder();
-        var result = createFile(builder, path, uri, storage.get());
-        return result;
-    }
-
-    static GenericFile createFile(GenericFile.Builder builder, Path path, URI uri, FileStorage storage)
-            throws InvalidFileException {
-        try {
-            var attrs = Files.readAttributes(path, BasicFileAttributes.class);
-            return createFile(builder, path, attrs, uri, storage);
-        } catch (Exception ex) {
-            throw new InvalidFileException(ex);
-        }
-    }
-
-    static GenericFile createFile(GenericFile.Builder builder, Path path, BasicFileAttributes attrs,
-            URI uri, FileStorage storage) {
-        builder.storage(storage);
-        builder.name(path.getFileName().toString());
-        builder.uri(uri);
-        builder.lastModified(attrs.lastModifiedTime().toMillis());
-        if (attrs.isDirectory()) {
-            builder.type(FileType.DIRECTORY);
-        } else {
-            var fileType = FileType.FILE;
-            if (attrs.isSymbolicLink()) {
-                fileType = FileType.SYMBOLIC_LINK;
-            }
-            builder.type(fileType);
-            builder.size(attrs.size());
-        }
-        builder.virtual(false);
-        return builder.build();
-    }
-
-    private static List<GenericFile> buildParents(GenericFile child, int limit) {
-        var storage = child.getStorage();
-        var rootUri = storage.getRootUri();
-        var segments = UriUtils.getPathSegments(rootUri, child.getUri());
-
-        var parents = new ArrayList<GenericFile>(Math.min(segments.size(), limit));
-        for (int i = segments.size() - 1; i >= 1 && parents.size() < limit; i--) {
-            var parentUri = UriUtils.resolvePath(rootUri, String.join("/", segments.subList(0, i)));
-            var builder = new Builder();
-            builder.storage(storage);
-            builder.type(FileType.DIRECTORY);
-            builder.name(segments.get(i - 1));
-            builder.uri(parentUri);
-            builder.virtual(true);
-            parents.add(builder.build());
-        }
-        if (parents.size() < limit) {
-            parents.add(storage.getRoot());
-        }
-        return parents;
-    }
-
-    private final FileStorage storage;
-
-    private final FileType type;
-
-    private final URI uri;
-
-    private final Long size;
-
-    private final String name;
-
-    private final Long lastModified;
-
-    private final boolean virtual;
-
-    private GenericFile(Builder builder) {
-        this.storage = builder.storage;
-        this.type = builder.type;
-        this.uri = builder.uri;
-        this.size = builder.size;
-        this.name = builder.name;
-        this.lastModified = builder.lastModified;
-        this.virtual = builder.virtual;
-    }
-
-    public FileStorage getStorage() {
-        return storage;
-    }
-
-    public FileType getType() {
-        return type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public URI getUri() {
-        return uri;
-    }
-
-    /**
-     * Returns the size of the file or null.
-     *
-     * @return
-     */
-    public Long getSize() {
-        return size;
-    }
-
-    public boolean isDirectory() {
-        return this.type == FileType.DIRECTORY;
-    }
-
-    public boolean isFile() {
-        return this.type == FileType.FILE;
-    }
-
-    public boolean isSymbolicLink() {
-        return this.type == FileType.SYMBOLIC_LINK;
-    }
-
-    /**
-     * Returns the last modified time of the file or null. The time is represented as a {@code Long} value, where the
-     * value is the number of milliseconds since the Unix epoch (January 1, 1970, 00:00:00 UTC).
-     *
-     * @return a {@code Long} representing the last modified time in milliseconds since the Unix epoch.
-     */
-    public Long getLastModified() {
-        return lastModified;
-    }
-
-    /**
-     * Checks if this file is virtual (i.e., created manually without a real corresponding file or directory on
-     * the underlying storage). Virtual files are used as placeholders — for example, a parent or child inferred from
-     * a path structure, or a root directory that does not physically exist.
-     *
-     * @return {@code true} if the file is virtual (no real file or directory backing it),
-     *         {@code false} if it was loaded from a storage backend and corresponds to an actual entry.
-     */
-    public boolean isVirtual() {
-        return virtual;
-    }
-
-    /**
-     * Checks if this file represents the root directory of its {@link FileStorage}.
-     *
-     * @return {@code true} if this file's URI matches the root URI of its storage,
-     *         {@code false} otherwise.
-     */
-    public boolean isRoot() {
-        return isDirectory() && Objects.equals(uri, storage.getRootUri());
+    default boolean isRoot() {
+        return isDirectory() && Objects.equals(getUri(), getStorage().getRootUri());
     }
 }

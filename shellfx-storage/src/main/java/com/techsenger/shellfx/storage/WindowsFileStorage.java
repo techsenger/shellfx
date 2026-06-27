@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.toolkit.core.function.Factory;
 import java.net.URI;
 
 /**
@@ -24,8 +25,9 @@ import java.net.URI;
  */
 public class WindowsFileStorage extends AbstractDefaultFileStorage {
 
-    public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri) {
-        super(type, displayName, rootUri);
+    public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri,
+            Factory<DefaultGenericFile> fileFactory) {
+        super(type, displayName, rootUri, fileFactory);
     }
 
     @Override

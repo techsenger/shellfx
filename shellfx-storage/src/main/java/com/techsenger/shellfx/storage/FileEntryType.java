@@ -20,7 +20,7 @@ package com.techsenger.shellfx.storage;
  *
  * @author Pavel Castornii
  */
-public enum FileType {
+public enum FileEntryType {
 
     DIRECTORY, FILE, SYMBOLIC_LINK
 }

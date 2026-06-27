@@ -18,6 +18,7 @@ package com.techsenger.shellfx.storage;
 
 import com.sun.jna.platform.win32.Kernel32;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.toolkit.core.function.Factory;
 import com.techsenger.toolkit.core.os.OsUtils;
 import java.net.URI;
 import java.nio.file.FileSystems;
@@ -40,8 +41,20 @@ import javax.swing.filechooser.FileSystemView;
 public final class DefaultFileStorageRegistry implements FileStorageRegistry {
 
     private final List<FileStorage> customStorages = new CopyOnWriteArrayList<>();
+
     private volatile List<FileStorage> defaultStorages = null;
+
     private volatile Map<String, FileStorage> storagesByUri = Map.of();
+
+    private final Factory<DefaultGenericFile> fileFactory;
+
+    public DefaultFileStorageRegistry() {
+        this(DefaultGenericFile::new);
+    }
+
+    public DefaultFileStorageRegistry(Factory<DefaultGenericFile> fileFactory) {
+        this.fileFactory = fileFactory;
+    }
 
     @Override
     public void refreshDefaultStorages() {
@@ -134,8 +147,8 @@ public final class DefaultFileStorageRegistry implements FileStorageRegistry {
 
     private FileStorage createStorage(FileStorageType type, String displayName, URI rootUri) {
         FileStorage newStorage = OsUtils.isWindows()
-                ? new WindowsFileStorage(type, displayName, rootUri)
-                : new UnixFileStorage(type, displayName, rootUri);
+                ? new WindowsFileStorage(type, displayName, rootUri, fileFactory)
+                : new UnixFileStorage(type, displayName, rootUri, fileFactory);
         // Reuse existing instance if it hasn't changed, to preserve identity and any associated state.
         var existing = storagesByUri.get(rootUri.toString());
         return (existing != null && existing.equals(newStorage)) ? existing : newStorage;

@@ -152,7 +152,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
                 setGraphic(null);
                 setText(null);
             } else {
-                if (item.getType() != null) {
+                if (item.getEntryType() != null) {
                     if (item.isDirectory()) {
                         setGraphic(new FontIconView(DialogIcons.DIRECTORY));
                     } else {

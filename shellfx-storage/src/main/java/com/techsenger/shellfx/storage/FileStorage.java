@@ -116,6 +116,16 @@ public interface FileStorage {
             IOException;
 
     /**
+     * Creates a virtual file.
+     *
+     * @param entryType
+     * @param name
+     * @param uri
+     * @return
+     */
+    GenericFile createVirtual(FileEntryType entryType, String name, URI uri);
+
+    /**
      * Renames one file/directory.
      *
      * @param uri

@@ -88,7 +88,7 @@ public class FileColumnBuilder {
             }
 
             private Node buildIcon(GenericFile file) {
-                if (file.getType() == null) {
+                if (file.getEntryType() == null) {
                     return null;
                 }
                 return new FontIconView(file.isDirectory() ? dirIcon : fileIcon);

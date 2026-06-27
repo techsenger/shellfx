@@ -28,30 +28,28 @@ import static org.mockito.Mockito.when;
  *
  * @author Pavel Castornii
  */
-public class GenericFileTest {
+public class DefaultGenericFileTest {
 
     private static final boolean IS_WINDOWS = OsUtils.isWindows();
 
     private FileStorage storage;
     private URI rootUri;
-    private GenericFile root;
-    private GenericFile child;
+    private DefaultGenericFile root;
+    private DefaultGenericFile child;
 
     @BeforeEach
     void setUp() {
         rootUri = IS_WINDOWS
                 ? URI.create("file:///C:/")
                 : URI.create("file:///");
-
         storage = mock(FileStorage.class);
 
-        root = new GenericFile.Builder()
-                .storage(storage)
-                .type(FileType.DIRECTORY)
-                .name("")
-                .uri(rootUri)
-                .virtual(true)
-                .build();
+        root = new DefaultGenericFile();
+        root.setStorage(storage);
+        root.setEntryType(FileEntryType.DIRECTORY);
+        root.setName("");
+        root.setUri(rootUri);
+        root.setVirtual(true);
 
         when(storage.getRootUri()).thenReturn(rootUri);
         when(storage.getRoot()).thenReturn(root);
@@ -60,18 +58,17 @@ public class GenericFileTest {
                 ? URI.create("file:///C:/home/user/foo/bar")
                 : URI.create("file:///home/user/foo/bar");
 
-        child = new GenericFile.Builder()
-                .storage(storage)
-                .type(FileType.FILE)
-                .name("bar")
-                .uri(childUri)
-                .virtual(true)
-                .build();
+        child = new DefaultGenericFile();
+        child.setStorage(storage);
+        child.setEntryType(FileEntryType.FILE);
+        child.setName("bar");
+        child.setUri(childUri);
+        child.setVirtual(true);
     }
 
     @Test
     void getParent_immediateParent_returned() {
-        var parent = GenericFile.getParent(child);
+        var parent = child.getParent();
 
         URI expectedUri = IS_WINDOWS
                 ? URI.create("file:///C:/home/user/foo")
@@ -89,22 +86,21 @@ public class GenericFileTest {
                 ? URI.create("file:///C:/home")
                 : URI.create("file:///home");
 
-        var directChild = new GenericFile.Builder()
-                .storage(storage)
-                .type(FileType.DIRECTORY)
-                .name("home")
-                .uri(directChildUri)
-                .virtual(true)
-                .build();
+        var directChild = new DefaultGenericFile();
+        directChild.setStorage(storage);
+        directChild.setEntryType(FileEntryType.DIRECTORY);
+        directChild.setName("home");
+        directChild.setUri(directChildUri);
+        directChild.setVirtual(true);
 
-        var parent = GenericFile.getParent(directChild);
+        var parent = directChild.getParent();
 
         assertThat(parent).isSameAs(root);
     }
 
     @Test
     void getParents_deeplyNestedFile_allParentsReturnedFromImmediateToRoot() {
-        var parents = GenericFile.getParents(child);
+        var parents = child.getParents();
 
         URI fooUri = IS_WINDOWS
                 ? URI.create("file:///C:/home/user/foo")
@@ -128,7 +124,7 @@ public class GenericFileTest {
 
     @Test
     void getParents_allIntermediateParents_virtualDirectories() {
-        var parents = GenericFile.getParents(child);
+        var parents = child.getParents();
 
         assertThat(parents.subList(0, parents.size() - 1))
                 .allSatisfy(p -> {
@@ -139,7 +135,7 @@ public class GenericFileTest {
 
     @Test
     void getParents_lastElement_isRoot() {
-        var parents = GenericFile.getParents(child);
+        var parents = child.getParents();
 
         assertThat(parents.getLast()).isSameAs(root);
         assertThat(parents.getLast().isRoot()).isTrue();
@@ -151,15 +147,14 @@ public class GenericFileTest {
                 ? URI.create("file:///C:/home")
                 : URI.create("file:///home");
 
-        var directChild = new GenericFile.Builder()
-                .storage(storage)
-                .type(FileType.DIRECTORY)
-                .name("home")
-                .uri(directChildUri)
-                .virtual(true)
-                .build();
+        var directChild = new DefaultGenericFile();
+        directChild.setStorage(storage);
+        directChild.setEntryType(FileEntryType.DIRECTORY);
+        directChild.setName("home");
+        directChild.setUri(directChildUri);
+        directChild.setVirtual(true);
 
-        var parents = GenericFile.getParents(directChild);
+        var parents = directChild.getParents();
 
         assertThat(parents).hasSize(1);
         assertThat(parents.getFirst()).isSameAs(root);

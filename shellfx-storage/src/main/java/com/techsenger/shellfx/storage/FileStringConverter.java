@@ -38,10 +38,7 @@ public class FileStringConverter extends StringConverter<GenericFile> {
 
     @Override
     public GenericFile fromString(String string) {
-        var builder = new GenericFile.Builder();
-        builder.setAllFrom(file);
-        builder.name(string);
-        var builtFile = builder.build();
-        return builtFile;
+        ((DefaultGenericFile) file).setName(string);
+        return file;
     }
 }

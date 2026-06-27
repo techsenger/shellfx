@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.toolkit.core.file.FileUtils;
+import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -44,10 +45,46 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
 
+
+    static GenericFile createFile(Factory<DefaultGenericFile> fileFactory, Path path, URI uri, FileStorage storage)
+            throws InvalidFileException {
+        try {
+            var attrs = Files.readAttributes(path, BasicFileAttributes.class);
+            return createFile(fileFactory, path, attrs, uri, storage);
+        } catch (Exception ex) {
+            throw new InvalidFileException(ex);
+        }
+    }
+
+    static GenericFile createFile(Factory<DefaultGenericFile> fileFactory, Path path, BasicFileAttributes attrs,
+            URI uri, FileStorage storage) {
+        var file = fileFactory.create();
+        file.setStorage(storage);
+        file.setName(path.getFileName().toString());
+        file.setUri(uri);
+        file.setLastModified(attrs.lastModifiedTime().toMillis());
+        if (attrs.isDirectory()) {
+            file.setEntryType(FileEntryType.DIRECTORY);
+        } else {
+            var fileType = FileEntryType.FILE;
+            if (attrs.isSymbolicLink()) {
+                fileType = FileEntryType.SYMBOLIC_LINK;
+            }
+            file.setEntryType(fileType);
+            file.setSize(attrs.size());
+        }
+        file.setVirtual(false);
+        return file;
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(AbstractDefaultFileStorage.class);
 
-    public AbstractDefaultFileStorage(FileStorageType type, String displayName, URI rootUri) {
+    private final Factory<DefaultGenericFile> fileFactory;
+
+    public AbstractDefaultFileStorage(FileStorageType type, String displayName, URI rootUri,
+            Factory<DefaultGenericFile> fileFactory) {
         super(type, displayName, rootUri, true);
+        this.fileFactory = fileFactory;
     }
 
     @Override
@@ -55,16 +92,13 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
         var result = new ArrayList<GenericFile>();
         var path = toPath(uri);
         checkIfExists(path);
-        GenericFile.Builder builder = new GenericFile.Builder();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
             for (Path filePath : stream) {
                 try {
-                    var createdFile = GenericFile.createFile(builder, filePath, filePath.toUri(), this);
+                    var createdFile = createFile(fileFactory, filePath, filePath.toUri(), this);
                     result.add(createdFile);
                 } catch (InvalidFileException ex) {
                     logger.error("Couldn't create GenericFile from {}", filePath, ex);
-                } finally {
-                    builder.reset();
                 }
             }
         } catch (SecurityException | AccessDeniedException e) {
@@ -79,7 +113,6 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
         var result = new ArrayList<GenericFile>();
         var path = toPath(uri);
         checkIfExists(path);
-        GenericFile.Builder builder = new GenericFile.Builder();
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<>() {
 
@@ -92,25 +125,16 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
                         root = false;
                         return FileVisitResult.CONTINUE;
                     }
-                    try {
-                        var createdFile = GenericFile.createFile(builder, dir, attrs, dir.toUri(),
-                                AbstractDefaultFileStorage.this);
-                        result.add(createdFile);
-                    } finally {
-                        builder.reset();
-                    }
+                    var createdFile = createFile(fileFactory, dir, attrs, dir.toUri(), AbstractDefaultFileStorage.this);
+                    result.add(createdFile);
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    try {
-                        var createdFile = GenericFile.createFile(builder, file, attrs, file.toUri(),
-                                AbstractDefaultFileStorage.this);
-                        result.add(createdFile);
-                    } finally {
-                        builder.reset();
-                    }
+                    var createdFile = createFile(fileFactory, file, attrs, file.toUri(),
+                            AbstractDefaultFileStorage.this);
+                    result.add(createdFile);
                     return FileVisitResult.CONTINUE;
                 }
 
@@ -131,19 +155,17 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
             IOException {
         var path = toPath(uri);
         checkIfExists(path);
-        var builder = new GenericFile.Builder();
-        var genFile = GenericFile.createFile(builder, path, uri, this);
+        var genFile = createFile(fileFactory, path, uri, this);
         return genFile;
     }
 
     @Override
     public GenericFile getRoot() {
-        GenericFile.Builder builder = new GenericFile.Builder();
-        return builder
-                .virtual(true)
-                .type(FileType.DIRECTORY)
-                .uri(getRootUri())
-                .build();
+        var file = fileFactory.create();
+        file.setVirtual(true);
+        file.setEntryType(FileEntryType.DIRECTORY);
+        file.setUri(getRootUri());
+        return file;
     }
 
     @Override
@@ -153,6 +175,17 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
         var parent = path.getParent();
         checkIfExists(parent);
         Files.createDirectory(path);
+    }
+
+    @Override
+    public GenericFile createVirtual(FileEntryType entryType, String name, URI uri) {
+        var file = fileFactory.create();
+        file.setEntryType(entryType);
+        file.setName(name);
+        file.setUri(uri);
+        file.setStorage(this);
+        file.setVirtual(true);
+        return file;
     }
 
     @Override
@@ -202,6 +235,10 @@ public abstract class AbstractDefaultFileStorage extends AbstractFileStorage {
         try (InputStream in = Files.newInputStream(path)) {
             return in.readAllBytes();
         }
+    }
+
+    protected Factory<DefaultGenericFile> getFileFactory() {
+        return fileFactory;
     }
 
     protected void checkWritable(Path path) throws AccessDeniedException {

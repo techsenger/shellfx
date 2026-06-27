@@ -33,12 +33,12 @@ import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableHistory;
 import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileColumns;
+import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileStorage;
 import static com.techsenger.shellfx.storage.FileStorageType.BASE;
 import static com.techsenger.shellfx.storage.FileStorageType.NETWORK;
 import static com.techsenger.shellfx.storage.FileStorageType.OPTICAL;
 import com.techsenger.shellfx.storage.FileStorageUtils;
-import com.techsenger.shellfx.storage.FileType;
 import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.toolkit.core.file.FileUtils;
@@ -422,12 +422,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         if (parentUri == null) {
             return;
         }
-        var builder = new GenericFile.Builder();
-        builder.storage(storage);
-        builder.name(Paths.get(directory).getFileName().toString());
-        builder.type(FileType.DIRECTORY);
-        builder.virtual(true);
-        var currentDirectory = builder.build();
+        var currentDirectory = storage.createVirtual(FileEntryType.DIRECTORY,
+                Paths.get(directory).getFileName().toString(), null);
         this.directory = parentUri;
         updateFiles(currentDirectory);
     }
@@ -444,11 +440,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
             return;
         }
         // creating a fake directory
-        var builder = new GenericFile.Builder();
-        builder.name("New Folder");
-        builder.storage(storage);
-        builder.type(FileType.DIRECTORY);
-        var file = builder.build();
+        var file = storage.createVirtual(FileEntryType.DIRECTORY, "New Folder", null);
         getView().addFile(0, file);
         getView().scrollToFile(0);
         getView().editFile(0);
@@ -610,7 +602,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         if (selectedFile != null) {
             for (int i = 0; i < files.size(); i++) {
                 var file = files.get(i);
-                if (file.getType() == selectedFile.getType() && file.getName() != null
+                if (file.getEntryType() == selectedFile.getEntryType() && file.getName() != null
                         && file.getName().equals(selectedFile.getName())) {
                     selectedFileIndex = i;
                     break;
@@ -754,12 +746,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
             return null;
         }
         URI fileUri = UriUtils.resolvePath(getDirectory(), fileName);
-        var builder = new GenericFile.Builder();
-        builder.storage(getStorage());
-        builder.uri(fileUri);
-        builder.name(fileName);
-        builder.virtual(true);
-        var file = builder.build();
+        var file = this.storage.createVirtual(null, fileName, fileUri);
         return file;
     }
 }

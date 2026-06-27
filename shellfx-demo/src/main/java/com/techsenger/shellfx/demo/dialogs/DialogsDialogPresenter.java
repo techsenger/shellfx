@@ -34,6 +34,7 @@ import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
 import com.techsenger.shellfx.dialogs.file.FileChooserType;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueButtons;
 import com.techsenger.shellfx.storage.DefaultFileStorageRegistry;
+import com.techsenger.shellfx.storage.DefaultGenericFile;
 import com.techsenger.shellfx.storage.FileStorageRegistry;
 import java.util.Arrays;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     private final HistoryManager historyManager;
 
-    private final FileStorageRegistry storageRegistry = new DefaultFileStorageRegistry();
+    private final FileStorageRegistry storageRegistry = new DefaultFileStorageRegistry(DefaultGenericFile::new);
 
     private WindowType selectedWindowType;
 
