@@ -17,14 +17,19 @@
 package com.techsenger.shellfx.storage;
 
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Pavel Castornii
  */
 public final class FileStorageUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(FileStorageUtils.class);
 
     /**
      * Returns the first default storage with {@link FileStorageType#BASE} type.
@@ -52,6 +57,30 @@ public final class FileStorageUtils {
         for (var s : storages) {
             if (s.refersToStorage(uri)) {
                 return Optional.of(s);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Returns the file to home directory.
+     *
+     * @param storages
+     * @return
+     */
+    public static Optional<GenericFile> getHome(List<FileStorage> storages) {
+        var str = System.getProperty("user.home");
+        if (str == null) {
+            return Optional.empty();
+        }
+        var homeUri = Paths.get(str).toUri();
+        for (var s : storages) {
+            if (s.isDefault() && s.refersToStorage(homeUri)) {
+                try {
+                    return Optional.of(s.getFile(homeUri));
+                } catch (Exception ex) {
+                    logger.error("Error getting home file", ex);
+                }
             }
         }
         return Optional.empty();

@@ -433,9 +433,9 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     protected void onNavigateHome() {
-        var file = GenericFile.getHome(storages);
-        if (file != null) {
-            onNavigateDown(file);
+        var file = FileStorageUtils.getHome(storages);
+        if (file.isPresent()) {
+            onNavigateDown(file.get());
         }
     }
 

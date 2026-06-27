@@ -20,7 +20,6 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -174,35 +173,6 @@ public final class GenericFile {
         builder.virtual(true);
         var result = builder.build();
         return result;
-    }
-
-    /**
-     * Returns file to home directory or null.
-     *
-     * @param storages
-     * @return
-     */
-    public static GenericFile getHome(List<FileStorage> storages) {
-        var str = System.getProperty("user.home");
-        if (str == null) {
-            return null;
-        }
-        var homeUri = Paths.get(str).toUri();
-        FileStorage storage = null;
-        for (var s : storages) {
-            if (s.isDefault() && s.refersToStorage(homeUri)) {
-                storage = s;
-                break;
-            }
-        }
-        if (storage != null) {
-            try {
-                return storage.getFile(homeUri);
-            } catch (Exception ex) {
-                logger.error("Error getting home file", ex);
-            }
-        }
-        return null;
     }
 
     /**
