@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.annotations.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -25,174 +26,210 @@ import java.nio.file.NoSuchFileException;
 import java.util.List;
 
 /**
+ * Represents a storage backend that provides access to a hierarchical file system.
  *
+ * <p>A {@code FileStorage} abstracts over different storage technologies (local file system, FTP,
+ * Google Drive, etc.) and exposes a uniform API for listing, reading, writing, and navigating
+ * file entries. All entries produced by a storage are typed via the type parameter {@code T},
+ * which allows storage-specific implementations to return richer subclasses of
+ * {@link GenericFile} without requiring callers to cast.
+ *
+ * <p>Every storage has a single root URI returned by {@link #getRootUri()}. All URIs passed to
+ * or returned by this interface must be within that root.
+ *
+ * @param <T> the concrete file entry type produced by this storage
  * @author Pavel Castornii
  */
-public interface FileStorage {
+public interface FileStorage<T extends GenericFile> {
 
     /**
-     * Returns the type of the storage.
-     * @return
+     * Returns the type of this storage (e.g. local, FTP, cloud).
+     *
+     * @return the storage type, never {@code null}
      */
     FileStorageType getType();
 
     /**
-     * Returns the root uri of this storage.
+     * Returns the root URI of this storage. All entries managed by this storage have URIs that
+     * are descendants of this URI.
      *
-     * @return
+     * @return the root URI, never {@code null}
      */
     URI getRootUri();
 
     /**
-     * For example, for Windows it can be Disk C:.
+     * Returns a human-readable name for this storage suitable for display in the UI.
      *
-     * @return
+     * <p>Examples: {@code "Disk C:"} on Windows, {@code "/"} on Linux, {@code "Google Drive"}.
+     *
+     * @return the display name, never {@code null}
      */
     String getDisplayName();
 
     /**
-     * Returns true if it is a default file storage and false otherwise.
+     * Returns {@code true} if this is the default storage for the current platform or user
+     * session. There should be at most one default storage per storage type.
      *
-     * @return
+     * @return {@code true} if this storage is the default, {@code false} otherwise
      */
     boolean isDefault();
 
     /**
-     * Returns list of files.
+     * Returns the direct children of the directory identified by {@code uri}.
      *
-     * @param uri
-     * @return
-     * @throws NoSuchFileException
-     * @throws AccessDeniedException
-     * @throws IOException
+     * @param uri the URI of the directory to list
+     * @return a list of direct children, never {@code null}, may be empty
+     * @throws NoSuchFileException   if no directory exists at {@code uri}
+     * @throws AccessDeniedException if the caller lacks read permission for the directory
+     * @throws IOException           if an I/O error occurs
      */
-    List<GenericFile> getFiles(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    List<T> getFiles(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
-     * Returns list of files recursively, including all subdirectories and their contents. The order is guaranteed: a
-     * directory always appears before its contents. The root directory itself is not included in the result list.
+     * Returns all descendants of the directory identified by {@code uri}, traversing
+     * subdirectories recursively.
      *
-     * @param uri
-     * @return
-     * @throws NoSuchFileException
-     * @throws AccessDeniedException
-     * @throws IOException
+     * <p>The order is guaranteed: a directory always appears in the list before its contents.
+     * The directory at {@code uri} itself is not included in the result.
+     *
+     * @param uri the URI of the root directory for the recursive traversal
+     * @return an ordered list of all descendants, never {@code null}, may be empty
+     * @throws NoSuchFileException   if no directory exists at {@code uri}
+     * @throws AccessDeniedException if the caller lacks read permission for the directory
+     * @throws IOException           if an I/O error occurs
      */
-    List<GenericFile> getFilesRecursively(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    List<T> getFilesRecursively(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
-     * Returns concrete file.
+     * Returns the file entry at the given URI.
      *
-     * @param uri
-     * @return
-     * @throws NoSuchFileException
-     * @throws AccessDeniedException
-     * @throws InvalidFileException if file is invalid for this filesystem (e.g., Thumbs.db:encryptable file from Linux
-     * storage in Windows)
-     * @throws IOException
+     * @param uri the URI of the entry to retrieve
+     * @return the file entry, never {@code null}
+     * @throws NoSuchFileException   if no entry exists at {@code uri}
+     * @throws AccessDeniedException if the caller lacks read permission
+     * @throws InvalidFileException  if the entry exists on the storage but cannot be represented
+     *                               as a valid {@link GenericFile} in the current environment
+     *                               (e.g. a {@code Thumbs.db:encryptable} path on Linux)
+     * @throws IOException           if an I/O error occurs
      */
-    GenericFile getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException;
+    T getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException;
 
     /**
-     * Returns the root directory of this storage.
+     * Returns the parent directory of the given file entry with full metadata loaded from storage.
      *
-     * <p>The root may be either a real directory (e.g., on a network drive) or a virtual placeholder (e.g., a
-     * local filesystem root that does not physically exist as a standalone directory).
-     *
-     * @return a {@link GenericFile} representing the root directory of this storage.
+     * @param file the file whose parent to retrieve
+     * @return the parent entry, never {@code null}
+     * @throws NoSuchFileException   if the parent directory does not exist
+     * @throws AccessDeniedException if the caller lacks read permission
+     * @throws IOException           if an I/O error occurs
      */
-    GenericFile getRoot();
+    T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
-     * Creates one directory.
+     * Returns the root directory entry of this storage.
      *
-     * @param uri
-     * @throws NoSuchFileException
-     * @throws FileAlreadyExistsException
-     * @throws AccessDeniedException
-     * @throws IOException
+     * <p>The root may be either a real directory (e.g. on a network drive) or a virtual
+     * placeholder (e.g. a local file system root that does not physically exist as a standalone
+     * directory entry).
+     *
+     * @return the root entry, never {@code null}
+     */
+    T getRoot();
+
+    /**
+     * Creates a new directory at the given URI. Only one directory level is created; the parent
+     * directory must already exist.
+     *
+     * @param uri the URI of the directory to create
+     * @throws NoSuchFileException        if the parent directory does not exist
+     * @throws FileAlreadyExistsException if an entry already exists at {@code uri}
+     * @throws AccessDeniedException      if the caller lacks write permission for the parent
+     * @throws IOException                if an I/O error occurs
      */
     void createDirectory(URI uri) throws NoSuchFileException, FileAlreadyExistsException, AccessDeniedException,
             IOException;
 
     /**
-     * Creates a virtual file.
+     * Creates a virtual entry that has no real backing on this storage.
      *
-     * @param entryType
-     * @param name
-     * @param uri
-     * @return
+     * <p>Virtual entries are used as lightweight placeholders — for example, a parent directory
+     * inferred from a child URI, or a temporary entry pending a create operation.
+     *
+     * @param entryType the structural type of the virtual entry
+     * @param name      the name of the virtual entry
+     * @param uri       the URI of the virtual entry
+     * @return the virtual entry, never {@code null}
      */
-    GenericFile createVirtual(FileEntryType entryType, String name, URI uri);
+    T createVirtual(FileEntryType entryType, String name, @Nullable URI uri);
 
     /**
-     * Renames one file/directory.
+     * Renames the file or directory at {@code uri} to {@code newName}.
      *
-     * @param uri
-     * @param newName
-     * @throws NoSuchFileException
-     * @throws FileAlreadyExistsException
-     * @throws AccessDeniedException
-     * @throws IOException
+     * <p>The entry is renamed within its current parent directory; moving to a different
+     * directory is not supported by this method.
+     *
+     * @param uri     the URI of the entry to rename
+     * @param newName the new name (not a full path, just the file name)
+     * @throws NoSuchFileException        if no entry exists at {@code uri}
+     * @throws FileAlreadyExistsException if an entry with {@code newName} already exists in the
+     *                                    same directory
+     * @throws AccessDeniedException      if the caller lacks write permission
+     * @throws IOException                if an I/O error occurs
      */
     void renameFile(URI uri, String newName) throws NoSuchFileException, FileAlreadyExistsException,
             AccessDeniedException, IOException;
 
     /**
-     * Checks if the given URI refers to this {@link FileStorage}.
+     * Returns {@code true} if the given URI refers to a location within this storage.
      *
-     * @param uri the URI to check.
-     * @return true if the URI refers to this FileStorage, false otherwise.
+     * @param uri the URI to check
+     * @return {@code true} if this storage owns the given URI, {@code false} otherwise
      */
     boolean refersToStorage(URI uri);
 
     /**
-     * Writes content to a file. If the file already exists, it is overwritten. If the file does not exist,
-     * it is created.
+     * Writes text content to a file at {@code uri} using the given character set. If the file
+     * already exists it is overwritten; if it does not exist it is created.
      *
-     * @param uri
-     * @param content
-     * @param charset
-     * @throws NoSuchFileException
-     * @throws AccessDeniedException
-     * @throws IOException
+     * @param uri     the URI of the file to write
+     * @param content the text content to write
+     * @param charset the character set to use for encoding
+     * @throws AccessDeniedException if the caller lacks write permission
+     * @throws IOException           if an I/O error occurs
      */
     void writeFile(URI uri, String content, Charset charset) throws AccessDeniedException, IOException;
 
     /**
-     * Reads one file.
+     * Reads the entire content of a text file at {@code uri} using the given character set.
      *
-     * @param uri
-     * @param charset
-     * @return
-     * @throws NoSuchFileException
-     * @throws AccessDeniedException
-     * @throws IOException
+     * @param uri     the URI of the file to read
+     * @param charset the character set to use for decoding
+     * @return the file content as a string, never {@code null}
+     * @throws NoSuchFileException   if no file exists at {@code uri}
+     * @throws AccessDeniedException if the caller lacks read permission
+     * @throws IOException           if an I/O error occurs
      */
     String readFile(URI uri, Charset charset) throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
-     * Writes content to a file. If the file already exists, it is overwritten. If the file does not exist,
-     * it is created.
+     * Writes raw bytes to a file at {@code uri}. If the file already exists it is overwritten;
+     * if it does not exist it is created.
      *
-     * @param uri
-     * @param content
-     * @throws NoSuchFileException
-     * @throws AccessDeniedException
-     * @throws IOException
+     * @param uri     the URI of the file to write
+     * @param content the bytes to write
+     * @throws AccessDeniedException if the caller lacks write permission
+     * @throws IOException           if an I/O error occurs
      */
     void writeFile(URI uri, byte[] content) throws AccessDeniedException, IOException;
 
     /**
-     * Reads one file.
+     * Reads the entire content of a binary file at {@code uri}.
      *
-     * @param uri
-     * @param charset
-     * @return
-     * @throws NoSuchFileException
-     * @throws AccessDeniedException
-     * @throws IOException
+     * @param uri the URI of the file to read
+     * @return the file content as a byte array, never {@code null}
+     * @throws NoSuchFileException   if no file exists at {@code uri}
+     * @throws AccessDeniedException if the caller lacks read permission
+     * @throws IOException           if an I/O error occurs
      */
     byte[] readFile(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
-
 }

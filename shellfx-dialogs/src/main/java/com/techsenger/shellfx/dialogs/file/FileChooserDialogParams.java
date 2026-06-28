@@ -22,6 +22,7 @@ import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.storage.FileStorage;
+import com.techsenger.shellfx.storage.GenericFile;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
@@ -30,11 +31,11 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogParams extends DialogParams {
+public class FileChooserDialogParams<T extends GenericFile> extends DialogParams {
 
     private final FileChooserType chooserType;
 
-    private final List<FileStorage> storages;
+    private final List<? extends FileStorage<T>> storages;
 
     private final HistoryManager historyManager;
 
@@ -43,7 +44,7 @@ public class FileChooserDialogParams extends DialogParams {
     private String initialFileName;
 
     public FileChooserDialogParams(WindowType windowType, AppearanceSettings settings,
-            FileChooserType chooserType, List<FileStorage> storages, HistoryManager historyManager) {
+            FileChooserType chooserType, List<? extends FileStorage<T>> storages, HistoryManager historyManager) {
         super(windowType, settings);
         this.chooserType = chooserType;
         this.storages = storages;
@@ -57,7 +58,7 @@ public class FileChooserDialogParams extends DialogParams {
         return chooserType;
     }
 
-    public List<FileStorage> getStorages() {
+    public List<? extends FileStorage<T>> getStorages() {
         return storages;
     }
 

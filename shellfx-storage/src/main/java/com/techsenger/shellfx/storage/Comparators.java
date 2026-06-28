@@ -45,7 +45,7 @@ public final class Comparators {
      *                            representing user-defined column sorting logic
      * @return a comparator that enforces directory-first ordering on top of the base comparator
      */
-    public static Comparator<GenericFile> directoryFirst(Comparator<GenericFile> aggregateComparator) {
+    public static <T extends GenericFile> Comparator<T> directoryFirst(Comparator<T> aggregateComparator) {
         return (a, b) -> {
             boolean aDir = a.isDirectory();
             boolean bDir = b.isDirectory();

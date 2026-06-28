@@ -23,10 +23,9 @@ import java.net.URI;
  *
  * @author Pavel Castornii
  */
-public class UnixFileStorage extends AbstractDefaultFileStorage {
+public class UnixFileStorage<T extends DefaultGenericFile> extends AbstractDefaultFileStorage<T> {
 
-    public UnixFileStorage(FileStorageType type, String displayName, URI rootUri,
-            Factory<DefaultGenericFile> fileFactory) {
+    public UnixFileStorage(FileStorageType type, String displayName, URI rootUri, Factory<T> fileFactory) {
         super(type, displayName, rootUri, fileFactory);
     }
 

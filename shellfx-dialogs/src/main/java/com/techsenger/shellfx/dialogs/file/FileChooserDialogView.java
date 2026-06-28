@@ -23,13 +23,14 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.storage.GenericFile;
+import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogView extends DialogView, FileChooserDialogShared {
+public interface FileChooserDialogView<T extends GenericFile> extends DialogView, FileChooserDialogShared {
 
     interface Composer extends DialogView.Composer {
 
@@ -43,7 +44,9 @@ public interface FileChooserDialogView extends DialogView, FileChooserDialogShar
 
     void addColumns(Map<TableColumnName, TableColumnInfo> infosByName);
 
-    void addFile(int index, GenericFile file);
+    void setFiles(List<T> files);
+
+    void addFile(int index, T file);
 
     void removeFile(int index);
 

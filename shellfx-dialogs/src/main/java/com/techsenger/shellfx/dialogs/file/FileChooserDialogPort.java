@@ -25,9 +25,9 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogPort extends DialogPort, FileChooserDialogShared {
+public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort, FileChooserDialogShared {
 
-    GenericFile getResult();
+    T getResult();
 
     FileChooserType getChooserType();
 
@@ -41,9 +41,9 @@ public interface FileChooserDialogPort extends DialogPort, FileChooserDialogShar
 
     Mode getMode();
 
-    List<GenericFile> getFiles();
+    List<T> getFiles();
 
-    GenericFile getSelectedFile();
+    T getSelectedFile();
 
     int getSelectedFileIndex();
 

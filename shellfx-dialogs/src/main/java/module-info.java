@@ -17,6 +17,7 @@
 module com.techsenger.shellfx.dialogs {
     requires org.slf4j;
     requires com.techsenger.toolkit.core;
+    requires com.techsenger.annotations;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.patternfx.mvp;
     requires com.techsenger.shellfx.core;

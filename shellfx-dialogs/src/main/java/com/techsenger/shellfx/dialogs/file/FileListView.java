@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
-import com.techsenger.shellfx.storage.FileStringConverter;
 import com.techsenger.shellfx.material.list.ColumnListView;
+import com.techsenger.shellfx.storage.FileStringConverter;
 import com.techsenger.shellfx.storage.GenericFile;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
@@ -26,11 +26,11 @@ import javafx.scene.control.ContextMenu;
  *
  * @author Pavel Castornii
  */
-class FileListView extends ColumnListView<GenericFile> {
+class FileListView<T extends GenericFile> extends ColumnListView<T> {
 
-    private final FileStringConverter stringConverter = new FileStringConverter();
+    private final FileStringConverter<T> stringConverter = new FileStringConverter<>();
 
-    FileListView(ObservableList<GenericFile> files, ContextMenu cellContextMenu) {
+    FileListView(ObservableList<T> files, ContextMenu cellContextMenu) {
         setItems(files);
         setManualRefresh(true);
         setEditable(true);

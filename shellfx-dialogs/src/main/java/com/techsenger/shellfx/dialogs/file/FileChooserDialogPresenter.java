@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
@@ -60,8 +61,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogPresenter<V extends FileChooserDialogView>
-        extends AbstractDialogPresenter<V> implements FileChooserDialogPort {
+public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T extends GenericFile>
+        extends AbstractDialogPresenter<V> implements FileChooserDialogPort<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileChooserDialogPresenter.class);
 
@@ -75,7 +76,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
 
     private Mode mode;
 
-    private List<GenericFile> files;
+    private List<T> files;
 
     private int selectedFileIndex = -1;
 
@@ -95,21 +96,21 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
      * The current location is represented by {@link #storage} and {@link #directory}. A {@link GenericFile} cannot be
      * used because when the user is at the storage root, there is no current directory.
      */
-    private FileStorage storage;
+    private FileStorage<T> storage;
 
     private URI directory;
 
     private boolean locationsUpdated;
 
-    private List<FileStorage> storages;
+    private List<? extends FileStorage<T>> storages;
 
-    private GenericFile resultFile;
+    private T resultFile;
 
     private EditType editType;
 
     private final Map<TableColumnName, TableColumnInfo> columns = new HashMap<>();
 
-    private Comparator<GenericFile> fileComparator;
+    private Comparator<T> fileComparator;
 
     private String locationCaption;
 
@@ -207,18 +208,12 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     @Override
-    public List<GenericFile> getFiles() {
+    public List<T> getFiles() {
         return files;
     }
 
     @Override
-    public void setFiles(List<GenericFile> files) {
-        this.files = files;
-        getView().setFiles(files);
-    }
-
-    @Override
-    public GenericFile getSelectedFile() {
+    public T getSelectedFile() {
         if (this.selectedFileIndex >= 0) {
             return this.files.get(selectedFileIndex);
         } else {
@@ -267,7 +262,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
     }
 
     @Override
-    public GenericFile getResult() {
+    public T getResult() {
         return this.resultFile;
     }
 
@@ -352,6 +347,11 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         setButtonDefault(FileChooserDialogButtons.OK, true);
         setMinWidth(600);
         setMinHeight(400);
+    }
+
+    protected void setFiles(List<T> files) {
+        this.files = files;
+        getView().setFiles(files);
     }
 
     protected URI getDirectory() {
@@ -455,7 +455,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         getView().editFile(fileIndex);
     }
 
-    protected void onEditCommitted(GenericFile file) {
+    protected void onEditCommitted(T file) {
         switch (editType) {
             case NEW_DIRECTORY -> {
                 var dirUri = UriUtils.resolvePath(directory, file.getName());
@@ -542,11 +542,11 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         info.setSortIndex(index);
     }
 
-    protected void onFileComparatorChanged(Comparator<GenericFile> comparator) {
+    protected void onFileComparatorChanged(Comparator<T> comparator) {
         this.fileComparator = Comparators.directoryFirst(comparator);
     }
 
-    protected Comparator<GenericFile> getFileComparator() {
+    protected Comparator<T> getFileComparator() {
         return fileComparator;
     }
 
@@ -556,7 +556,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         updateFiles(null);
     }
 
-    private void updateFiles(GenericFile selectedFile) {
+    private void updateFiles(T selectedFile) {
         setFiles(Collections.emptyList());
         boolean defaultUsed = false;
         if (this.storage == null || this.directory == null) {
@@ -564,7 +564,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
             defaultUsed = true;
             selectedFile = null;
         }
-        List<GenericFile> storageFiles = getFilesFromStorage();
+        List<T> storageFiles = getFilesFromStorage();
         if (storageFiles == null && !defaultUsed) {
             //the second attempt
             setDefaultStorageAndDirectory();
@@ -578,7 +578,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         }
         updateLocation();
         var extFilter = getExtensionFilter();
-        List<GenericFile> filteredFiles = null;
+        List<T> filteredFiles = null;
         if (extFilter != null && !extFilter.matchesAllFiles()) {
             filteredFiles = new ArrayList<>();
             for (var f : storageFiles) {
@@ -632,7 +632,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         }
     }
 
-    private List<GenericFile> getFilesFromStorage() {
+    private List<T> getFilesFromStorage() {
         try {
             return this.storage.getFiles(directory);
         } catch (Exception ex) {
@@ -704,7 +704,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView>
         columns.put(modifiedColumn.getName(), modifiedColumn);
     }
 
-    private GenericFile getResultFile() {
+    private @Nullable T getResultFile() {
         if (getDirectory() == null || getStorage() == null) {
             showWarning("Storage or/and directory are not selected.");
             return null;

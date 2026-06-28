@@ -32,12 +32,13 @@ public final class FileStorageUtils {
     private static final Logger logger = LoggerFactory.getLogger(FileStorageUtils.class);
 
     /**
-     * Returns the first default storage with {@link FileStorageType#BASE} type.
+     * Returns the first storage with {@link FileStorageType#BASE} type that is marked as default.
      *
-     * @param storages
-     * @return
+     * @param storages the list of storages to search, must not be {@code null}
+     * @return an {@link Optional} containing the primary storage, or empty if none matches
      */
-    public static Optional<FileStorage> findPrimary(List<FileStorage> storages) {
+    public static <T extends GenericFile> Optional<FileStorage<T>> findPrimary(
+            List<? extends FileStorage<T>> storages) {
         for (var s : storages) {
             if (s.getType() == FileStorageType.BASE && s.isDefault()) {
                 return Optional.of(s);
@@ -47,13 +48,15 @@ public final class FileStorageUtils {
     }
 
     /**
-     * Finds the storage for the given uri.
+     * Returns the first storage whose root URI contains the given URI.
      *
-     * @param storages
-     * @param uri
-     * @return
+     * @param storages the list of storages to search, must not be {@code null}
+     * @param uri      the URI to resolve, must not be {@code null}
+     * @param <T>      the concrete file entry type produced by the storages
+     * @return an {@link Optional} containing the matching storage, or empty if none matches
      */
-    public static Optional<FileStorage> findByUri(List<FileStorage> storages, URI uri) {
+    public static <T extends GenericFile> Optional<FileStorage<T>> findByUri(
+            List<? extends FileStorage<T>> storages, URI uri) {
         for (var s : storages) {
             if (s.refersToStorage(uri)) {
                 return Optional.of(s);
@@ -63,12 +66,18 @@ public final class FileStorageUtils {
     }
 
     /**
-     * Returns the file to home directory.
+     * Returns the file entry for the current user's home directory.
      *
-     * @param storages
-     * @return
+     * <p>The home directory is resolved from the {@code user.home} system property. The method searches the given
+     * storages for a default storage that covers the home URI and delegates to {@link FileStorage#getFile(URI)}.
+     *
+     * @param storages the list of storages to search, must not be {@code null}
+     * @param <T>      the concrete file entry type produced by the storages
+     * @return an {@link Optional} containing the home directory entry, or empty if the
+     *         {@code user.home} property is not set, no matching storage is found, or an error
+     *         occurs while retrieving the entry
      */
-    public static Optional<GenericFile> getHome(List<FileStorage> storages) {
+    public static <T extends GenericFile> Optional<T> getHome(List<? extends FileStorage<T>> storages) {
         var str = System.getProperty("user.home");
         if (str == null) {
             return Optional.empty();

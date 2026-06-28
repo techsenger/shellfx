@@ -23,21 +23,21 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class FileStringConverter extends StringConverter<GenericFile> {
+public class FileStringConverter<F extends GenericFile> extends StringConverter<F> {
 
     /**
      * It is supposed that toString is called always before fromString.
      */
-    private GenericFile file;
+    private F file;
 
     @Override
-    public String toString(GenericFile object) {
+    public String toString(F object) {
         this.file = object;
         return object != null ? object.getName() : "";
     }
 
     @Override
-    public GenericFile fromString(String string) {
+    public F fromString(String string) {
         ((DefaultGenericFile) file).setName(string);
         return file;
     }

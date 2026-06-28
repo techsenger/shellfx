@@ -38,21 +38,17 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author Pavel Castornii
  */
-public final class DefaultFileStorageRegistry implements FileStorageRegistry {
+public final class DefaultFileStorageRegistry<T extends DefaultGenericFile> implements FileStorageRegistry<T> {
 
-    private final List<FileStorage> customStorages = new CopyOnWriteArrayList<>();
+    private final List<FileStorage<T>> customStorages = new CopyOnWriteArrayList<>();
 
-    private volatile List<FileStorage> defaultStorages = null;
+    private volatile List<FileStorage<T>> defaultStorages = null;
 
-    private volatile Map<String, FileStorage> storagesByUri = Map.of();
+    private volatile Map<String, FileStorage<T>> storagesByUri = Map.of();
 
-    private final Factory<DefaultGenericFile> fileFactory;
+    private final Factory<T> fileFactory;
 
-    public DefaultFileStorageRegistry() {
-        this(DefaultGenericFile::new);
-    }
-
-    public DefaultFileStorageRegistry(Factory<DefaultGenericFile> fileFactory) {
+    public DefaultFileStorageRegistry(Factory<T> fileFactory) {
         this.fileFactory = fileFactory;
     }
 
@@ -68,7 +64,7 @@ public final class DefaultFileStorageRegistry implements FileStorageRegistry {
     }
 
     @Override
-    public @Unmodifiable List<FileStorage> getDefaultStorages() {
+    public @Unmodifiable List<FileStorage<T>> getDefaultStorages() {
         if (defaultStorages == null) {
             refreshDefaultStorages();
         }
@@ -76,31 +72,31 @@ public final class DefaultFileStorageRegistry implements FileStorageRegistry {
     }
 
     @Override
-    public Optional<FileStorage> getPrimaryStorage() {
+    public Optional<FileStorage<T>> getPrimaryStorage() {
         return getDefaultStorages().stream()
                 .filter(s -> s.getType() == FileStorageType.BASE && s.isDefault())
                 .findFirst();
     }
 
     @Override
-    public @Unmodifiable List<FileStorage> getCustomStorages() {
+    public @Unmodifiable List<FileStorage<T>> getCustomStorages() {
         return Collections.unmodifiableList(customStorages);
     }
 
     @Override
-    public Registration registerCustomStorage(FileStorage storage) {
+    public Registration registerCustomStorage(FileStorage<T> storage) {
         customStorages.add(storage);
         return () -> customStorages.remove(storage);
     }
 
     @Override
-    public @Unmodifiable List<FileStorage> getAllStorages() {
+    public @Unmodifiable List<FileStorage<T>> getAllStorages() {
         return Stream.concat(getDefaultStorages().stream(), customStorages.stream())
                 .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
-    public Optional<FileStorage> getStorage(URI uri) {
+    public Optional<FileStorage<T>> getStorage(URI uri) {
         var byDefault = storagesByUri.get(uri.toString());
         if (byDefault != null) {
             return Optional.of(byDefault);
@@ -110,8 +106,8 @@ public final class DefaultFileStorageRegistry implements FileStorageRegistry {
                 .findFirst();
     }
 
-    private List<FileStorage> getWindowsStorages() {
-        List<FileStorage> result = new ArrayList<>();
+    private List<FileStorage<T>> getWindowsStorages() {
+        List<FileStorage<T>> result = new ArrayList<>();
         FileSystemView fsv = FileSystemView.getFileSystemView();
         List<Path> rootPaths = new ArrayList<>();
         FileSystems.getDefault().getRootDirectories().forEach(rootPaths::add);
@@ -130,8 +126,8 @@ public final class DefaultFileStorageRegistry implements FileStorageRegistry {
         return result;
     }
 
-    private List<FileStorage> getUnixStorages() {
-        List<FileStorage> result = new ArrayList<>();
+    private List<FileStorage<T>> getUnixStorages() {
+        List<FileStorage<T>> result = new ArrayList<>();
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             var storage = createStorage(
@@ -145,7 +141,7 @@ public final class DefaultFileStorageRegistry implements FileStorageRegistry {
         return result;
     }
 
-    private FileStorage createStorage(FileStorageType type, String displayName, URI rootUri) {
+    private FileStorage<T> createStorage(FileStorageType type, String displayName, URI rootUri) {
         FileStorage newStorage = OsUtils.isWindows()
                 ? new WindowsFileStorage(type, displayName, rootUri, fileFactory)
                 : new UnixFileStorage(type, displayName, rootUri, fileFactory);
@@ -154,8 +150,8 @@ public final class DefaultFileStorageRegistry implements FileStorageRegistry {
         return (existing != null && existing.equals(newStorage)) ? existing : newStorage;
     }
 
-    private void updateStoragesByUri(List<FileStorage> storages) {
-        Map<String, FileStorage> newMap = new HashMap<>(storages.size() * 2);
+    private void updateStoragesByUri(List<FileStorage<T>> storages) {
+        Map<String, FileStorage<T>> newMap = new HashMap<>(storages.size() * 2);
         for (var s : storages) {
             newMap.put(s.getRootUri().toString(), s);
         }

@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
-import com.techsenger.shellfx.storage.GenericFile;
 import java.util.List;
 
 /**
@@ -24,8 +23,6 @@ import java.util.List;
  * @author Pavel Castornii
  */
 public interface FileChooserDialogShared {
-
-    void setFiles(List<GenericFile> files);
 
     void setLocationCaption(String value);
 

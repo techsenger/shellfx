@@ -22,22 +22,33 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * A registry of available {@link FileStorage file storages}.
+ * A registry of available {@link FileStorage} instances.
  *
- * <p>The registry manages both: default storages discovered from the operating system, and custom storages registered
- * at runtime. Custom storages may be added and removed dynamically using registrations.
+ * <p>The registry manages two categories of storages:
+ * <ul>
+ *   <li><b>Default storages</b> — discovered automatically from the operating system (e.g. local
+ *       drives, mount points). Refreshed on demand via {@link #refreshDefaultStorages()}.</li>
+ *   <li><b>Custom storages</b> — registered programmatically at runtime (e.g. FTP servers, cloud
+ *       drives). Added and removed via {@link #registerCustomStorage(FileStorage)} and
+ *       {@link Registration#unregister()}.</li>
+ * </ul>
  *
+ * @param <T> the concrete file entry type produced by the storages in this registry
  * @author Pavel Castornii
  */
-public interface FileStorageRegistry {
+public interface FileStorageRegistry<T extends GenericFile> {
+
     /**
-     * Represents a handle for a registered contribution.
+     * A handle representing a single custom storage registration.
      *
-     * <p>The holder of this handle is responsible for unregistering the associated contribution.
+     * <p>The caller that registers a storage is responsible for unregistering it when it is no
+     * longer needed by calling {@link #unregister()}.
      */
     interface Registration {
+
         /**
-         * Removes the associated contribution from the registry.
+         * Removes the associated storage from the registry. Has no effect if the storage has
+         * already been unregistered.
          */
         void unregister();
     }
@@ -45,62 +56,69 @@ public interface FileStorageRegistry {
     /**
      * Forces rediscovery of default storages available on the current machine.
      *
-     * <p>Call this method before reading default or all storages when up-to-date information is required.
-     * Implementations may otherwise return a cached result.
+     * <p>Implementations are permitted to cache the discovered storages between calls. Invoke
+     * this method before reading default or all storages whenever up-to-date information is
+     * required (e.g. after a drive is mounted or unmounted).
      */
     void refreshDefaultStorages();
 
     /**
-     * Returns all default file storages available on the current machine.
+     * Returns all default storages discovered from the operating system.
      *
-     * <p>Implementations may cache the discovered storages between calls. Call {@link #refreshDefaultStorages()}
-     * first to ensure the list is up to date.
+     * <p>The returned list reflects the last completed discovery. Call
+     * {@link #refreshDefaultStorages()} first if up-to-date information is required.
      *
-     * @return an unmodifiable list of default storages
+     * @return an unmodifiable list of default storages, never {@code null}, may be empty
      */
-    @Unmodifiable List<FileStorage> getDefaultStorages();
+    @Unmodifiable List<FileStorage<T>> getDefaultStorages();
 
     /**
-     * Returns the primary default storage.
+     * Returns the primary default storage, defined as the first storage whose type is
+     * {@link FileStorageType#BASE}.
      *
-     * <p>The primary storage is the first storage with {@link FileStorageType#BASE} type.
-     * Call {@link #refreshDefaultStorages()} first to ensure the result is up to date.
+     * <p>Call {@link #refreshDefaultStorages()} first if up-to-date information is required.
      *
-     * @return an optional containing the primary storage, or an empty optional if no primary storage exists
+     * @return an {@link Optional} containing the primary storage, or empty if none exists
      */
-    Optional<FileStorage> getPrimaryStorage();
+    Optional<FileStorage<T>> getPrimaryStorage();
 
     /**
-     * Returns all registered custom storages.
+     * Returns all custom storages currently registered in this registry.
      *
-     * <p>Custom storages are registered at runtime and are not discovered from the operating system.
+     * <p>Custom storages are registered programmatically and are not discovered from the
+     * operating system.
      *
-     * @return an unmodifiable list of custom storages
+     * @return an unmodifiable list of custom storages, never {@code null}, may be empty
      */
-    @Unmodifiable List<FileStorage> getCustomStorages();
+    @Unmodifiable List<FileStorage<T>> getCustomStorages();
 
     /**
-     * Registers a custom storage.
+     * Registers a custom storage with this registry.
      *
-     * @param storage the storage to register
-     * @return a registration handle that can be used to unregister the storage
+     * @param storage the storage to register, must not be {@code null}
+     * @return a {@link Registration} handle that can be used to remove the storage from the
+     *         registry; never {@code null}
      */
-    Registration registerCustomStorage(FileStorage storage);
+    Registration registerCustomStorage(FileStorage<T> storage);
 
     /**
      * Returns all available storages, combining both default and custom storages.
      *
-     * <p>Call {@link #refreshDefaultStorages()} first to ensure default storages are up to date.
+     * <p>Call {@link #refreshDefaultStorages()} first if up-to-date information about default
+     * storages is required.
      *
-     * @return an unmodifiable list of all storages
+     * @return an unmodifiable list of all storages, never {@code null}, may be empty
      */
-    @Unmodifiable List<FileStorage> getAllStorages();
+    @Unmodifiable List<FileStorage<T>> getAllStorages();
 
     /**
      * Returns the storage responsible for the given URI.
      *
-     * @param uri the URI to resolve
-     * @return an optional containing the matching storage, or an empty optional if no storage matches the URI
+     * <p>A storage is considered responsible for a URI if {@link FileStorage#refersToStorage(URI)}
+     * returns {@code true} for that URI.
+     *
+     * @param uri the URI to resolve, must not be {@code null}
+     * @return an {@link Optional} containing the matching storage, or empty if no storage matches
      */
-    Optional<FileStorage> getStorage(URI uri);
+    Optional<FileStorage<T>> getStorage(URI uri);
 }

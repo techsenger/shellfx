@@ -26,6 +26,7 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogPort;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
+import com.techsenger.shellfx.storage.GenericFile;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public interface DialogsDialogView extends DialogView {
 
         NameValueDialogPort openNameValueDialog(DialogParams params);
 
-        FileChooserDialogPort openFileChooserDialog(FileChooserDialogParams params);
+        FileChooserDialogPort<GenericFile> openFileChooserDialog(FileChooserDialogParams<GenericFile> params);
 
         DialogPort openPagedDialog(PageDialogParams params);
     }

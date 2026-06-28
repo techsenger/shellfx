@@ -99,8 +99,8 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
-        extends AbstractDialogFxView<P> implements FileChooserDialogView {
+public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>, T extends GenericFile>
+        extends AbstractDialogFxView<P> implements FileChooserDialogView<T> {
 
     public class Composer extends AbstractDialogFxView<P>.Composer implements FileChooserDialogView.Composer {
 
@@ -120,7 +120,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         }
     }
 
-    private final class DialogTextFieldColumnListCell extends TextFieldColumnListCell<GenericFile> {
+    private final class DialogTextFieldColumnListCell extends TextFieldColumnListCell<T> {
 
         private DialogTextFieldColumnListCell(StringConverter converter) {
             super(converter);
@@ -141,13 +141,13 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         }
 
         @Override
-        public void commitEdit(GenericFile newValue) {
+        public void commitEdit(T newValue) {
             super.commitEdit(newValue);
             getPresenter().onEditCommitted(newValue);
         }
 
         @Override
-        protected void updateItem(GenericFile item, boolean empty) {
+        protected void updateItem(T item, boolean empty) {
             if (item == null || empty) {
                 setGraphic(null);
                 setText(null);
@@ -199,13 +199,13 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
 
     private final VBox fileBox = new VBox();
 
-    private final ObservableList<GenericFile> files = FXCollections.observableArrayList();
+    private final ObservableList<T> files = FXCollections.observableArrayList();
 
-    private final TableView<GenericFile> fileTableView = new TableView<>(this.files);
+    private final TableView<T> fileTableView = new TableView<>(this.files);
 
     private TableColumnManager fileColumnManager = new TableColumnManager(fileTableView);
 
-    private FileListView fileListView;
+    private FileListView<T> fileListView;
 
     private final VBox main = new VBox(locationBox, fileBox, gridPane);
 
@@ -275,7 +275,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     }
 
     @Override
-    public void setFiles(List<GenericFile> files) {
+    public void setFiles(List<T> files) {
         this.files.clear();
         this.files.addAll(files);
         if (this.listButton.isSelected()) {
@@ -284,7 +284,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
     }
 
     @Override
-    public void addFile(int index, GenericFile file) {
+    public void addFile(int index, T file) {
         this.files.add(index, file);
         if (this.listButton.isSelected()) {
             this.fileListView.refresh();
@@ -329,7 +329,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             this.fileTableView.getSelectionModel().select(index);
             var column = fileColumnManager.getColumnsByName().get(FileColumns.NAME);
             column.setEditable(true);
-            this.fileTableView.edit(index, (TableColumn<GenericFile, Object>) column);
+            this.fileTableView.edit(index, (TableColumn<T, Object>) column);
         }
     }
 
@@ -363,9 +363,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             // bottom layer: column comparators (user-defined column rules)
             // middle layer: TableView aggregate comparator (built from sortOrder)
             // top layer: sorting execution hook (applies comparator to items)
-            Comparator<GenericFile> base = tv.getComparator();
+            Comparator<T> base = tv.getComparator();
             // note, that the Comparators.directoryFirst is also used in the presenter
-            Comparator<GenericFile> decorated = Comparators.directoryFirst(base);
+            Comparator<T> decorated = Comparators.directoryFirst(base);
             FXCollections.sort(tv.getItems(), decorated);
             return true;
         });
@@ -375,12 +375,12 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             var column = columnBuilder.buildNameColumn(DialogIcons.DIRECTORY, DialogIcons.FILE);
             column.setEditable(false);
             column.setOnEditCancel(e -> {
-                var file = (GenericFile) e.getOldValue();
+                var file = (T) e.getOldValue();
                 getPresenter().onEditCancelled(file);
                 column.setEditable(false);
             });
             column.setOnEditCommit(e -> {
-                var newFile = (GenericFile) e.getNewValue(); //from converter
+                var newFile = (T) e.getNewValue(); //from converter
                 getPresenter().onEditCommitted(newFile);
                 column.setEditable(false);
             });
@@ -397,7 +397,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
             return column;
         });
 
-        this.fileListView = new FileListView(files, new ContextMenu(createRefreshMenuItem()));
+        this.fileListView = new FileListView<>(files, new ContextMenu(createRefreshMenuItem()));
         locationLabel.setMinWidth(Region.USE_PREF_SIZE);
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.setMaxWidth(Double.MAX_VALUE);
@@ -436,7 +436,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         VBox.setVgrow(fileBox, Priority.ALWAYS);
         itemContextMenu.getItems().addAll(createRenameMenuItem(), createRefreshMenuItem());
         this.fileTableView.setRowFactory(tv -> {
-            TableRow<GenericFile> row = new TableRow<>();
+            TableRow<T> row = new TableRow<>();
             row.setOnMouseClicked(e -> {
                 if (e.getClickCount() == 2) {
                     var file = row.getItem();
@@ -457,7 +457,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?>>
         containerContextMenu.getItems().add(createRefreshMenuItem());
         this.fileTableView.setContextMenu(containerContextMenu);
         this.fileListView.setContextMenu(containerContextMenu);
-        var converter = new FileStringConverter();
+        var converter = new FileStringConverter<GenericFile>();
         this.fileListView.setCellFactory(listView -> new DialogTextFieldColumnListCell(converter));
 
         var columnConstraint1 = new ColumnConstraints();

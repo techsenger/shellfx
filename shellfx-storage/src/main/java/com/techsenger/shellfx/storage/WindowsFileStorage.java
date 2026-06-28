@@ -23,10 +23,9 @@ import java.net.URI;
  *
  * @author Pavel Castornii
  */
-public class WindowsFileStorage extends AbstractDefaultFileStorage {
+public class WindowsFileStorage<T extends DefaultGenericFile> extends AbstractDefaultFileStorage<T>  {
 
-    public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri,
-            Factory<DefaultGenericFile> fileFactory) {
+    public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri, Factory<T> fileFactory) {
         super(type, displayName, rootUri, fileFactory);
     }
 

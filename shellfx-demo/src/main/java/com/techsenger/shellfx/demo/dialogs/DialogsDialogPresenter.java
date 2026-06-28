@@ -36,6 +36,7 @@ import com.techsenger.shellfx.dialogs.namevalue.NameValueButtons;
 import com.techsenger.shellfx.storage.DefaultFileStorageRegistry;
 import com.techsenger.shellfx.storage.DefaultGenericFile;
 import com.techsenger.shellfx.storage.FileStorageRegistry;
+import com.techsenger.shellfx.storage.GenericFile;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -50,7 +51,8 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     private final HistoryManager historyManager;
 
-    private final FileStorageRegistry storageRegistry = new DefaultFileStorageRegistry(DefaultGenericFile::new);
+    private final FileStorageRegistry<GenericFile> storageRegistry =
+            new DefaultFileStorageRegistry(DefaultGenericFile::new);
 
     private WindowType selectedWindowType;
 
@@ -140,7 +142,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     private void showFileChooserDialog(FileChooserType type) {
         this.storageRegistry.refreshDefaultStorages();
-        var params = new FileChooserDialogParams(selectedWindowType, settings,
+        var params = new FileChooserDialogParams<>(selectedWindowType, settings,
                 type, this.storageRegistry.getAllStorages(), historyManager);
         var dialog = getView().getComposer().openFileChooserDialog(params);
         dialog.setOnResult((buttonName) -> {

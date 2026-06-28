@@ -49,15 +49,15 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public NamedTableColumn<GenericFile, GenericFile> buildNameColumn(GenericFontIcon<?> dirIcon,
+    public <F extends GenericFile> NamedTableColumn<F, F> buildNameColumn(GenericFontIcon<?> dirIcon,
             GenericFontIcon fileIcon) {
-        var nameColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.NAME, "Name");
+        var nameColumn = new NamedTableColumn<F, F>(FileColumns.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
-        var converter = new FileStringConverter();
-        nameColumn.setCellFactory(col -> new TextFieldTableCell<GenericFile, GenericFile>(converter) {
+        var converter = new FileStringConverter<F>();
+        nameColumn.setCellFactory(col -> new TextFieldTableCell<F, F>(converter) {
 
             @Override
-            public void updateItem(GenericFile file, boolean empty) {
+            public void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
                 if (file == null || empty) {
                     setGraphic(null);
@@ -103,13 +103,13 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public NamedTableColumn<GenericFile, GenericFile> buildSizeColumn() {
-        var sizeColumn = new NamedTableColumn<GenericFile, GenericFile>(FileColumns.SIZE, "Size");
+    public <F extends GenericFile> NamedTableColumn<F, F> buildSizeColumn() {
+        var sizeColumn = new NamedTableColumn<F, F>(FileColumns.SIZE, "Size");
         sizeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
-        sizeColumn.setCellFactory(callBack -> new TableCell<GenericFile, GenericFile>() {
+        sizeColumn.setCellFactory(callBack -> new TableCell<F, F>() {
 
                 @Override
-                protected void updateItem(GenericFile file, boolean empty) {
+                protected void updateItem(F file, boolean empty) {
                     super.updateItem(file, empty);
                     if (file == null || file.getSize() == null || empty) {
                         setText(null);
@@ -130,16 +130,16 @@ public class FileColumnBuilder {
      * Builds last modified column.
      * @return
      */
-    public NamedTableColumn<GenericFile, GenericFile> buildLastModifiedColumn() {
+    public <F extends GenericFile> NamedTableColumn<F, F> buildLastModifiedColumn() {
         var lastModifiedColumn =
-                new NamedTableColumn<GenericFile, GenericFile>(FileColumns.LAST_MODIFIED, "Modified");
+                new NamedTableColumn<F, F>(FileColumns.LAST_MODIFIED, "Modified");
         lastModifiedColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         final DateTimeFormatter currentYearformatter = DateTimeFormatter.ofPattern("MMM dd HH:mm");
         final DateTimeFormatter otherYearformatter = DateTimeFormatter.ofPattern("MMM dd yyyy");
         final int currentYear = Year.now().getValue();
-        lastModifiedColumn.setCellFactory(col -> new TableCell<GenericFile, GenericFile>() {
+        lastModifiedColumn.setCellFactory(col -> new TableCell<F, F>() {
             @Override
-            protected void updateItem(GenericFile file, boolean empty) {
+            protected void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
                 if (file == null || file.getLastModified() == null || empty) {
                     setText(null);
