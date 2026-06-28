@@ -18,12 +18,43 @@ package com.techsenger.shellfx.storage;
 
 import com.techsenger.toolkit.core.function.Factory;
 import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.filechooser.FileSystemView;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class UnixFileStorage<T extends DefaultGenericFile> extends AbstractDefaultFileStorage<T> {
+
+    /**
+     * Discovers and returns all default storages available on the current Unix machine.
+     *
+     * <p>Each root directory reported by the default {@link FileSystem} is wrapped in a
+     * {@link UnixFileStorage} instance with type {@link FileStorageType#BASE}. The display name
+     * is obtained from {@link FileSystemView#getSystemDisplayName(java.io.File)}.
+     *
+     * @param fileFactory the factory used to create file entries, must not be {@code null}
+     * @return a mutable list of default storages, never {@code null}, may be empty
+     */
+    public static List<FileStorage<GenericFile>> createDefaultStorages(
+            Factory<? extends DefaultGenericFile> fileFactory) {
+        List<FileStorage<GenericFile>> result = new ArrayList<>();
+        FileSystemView fsv = FileSystemView.getFileSystemView();
+        FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
+            @SuppressWarnings("unchecked")
+            var storage = (FileStorage<GenericFile>) (FileStorage<?>) new UnixFileStorage<>(
+                    FileStorageType.BASE,
+                    fsv.getSystemDisplayName(rootPath.toFile()),
+                    rootPath.toUri(),
+                    fileFactory);
+            result.add(storage);
+        });
+        return result;
+    }
 
     public UnixFileStorage(FileStorageType type, String displayName, URI rootUri, Factory<T> fileFactory) {
         super(type, displayName, rootUri, fileFactory);

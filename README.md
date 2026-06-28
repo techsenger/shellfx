@@ -60,7 +60,6 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [EnvironmentTab](#devtools-environment-tab)
 * [Extension Registries](#registries)
     * [Control Registry](#registries-control)
-    * [Storage Registry](#registries-storage)
 * [Naming Convention](#naming-convention)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
@@ -548,14 +547,6 @@ to manage Shell’s main menu.
 However, this registry does not assemble final UI controls. For example, it does not create a `ToolBar`. Instead, it
 only stores metadata about elements that can later be used to construct UI components such as toolbars. The assembly of
 final control elements is handled by user-defined or default builders, such as `MenuBuilder.
-
-### Storage Registry <a name="registries-storage"></a>
-
-The `FileChooser` dialog is designed to work with different `FileStorage` implementations, such as Google Drive. The
-`StorageRegistry` keeps track of all available (registered) `FileStorage` instances.
-
-Both the `FileChooser` dialog and the `StorageRegistry` are optional components so `StorageRegistry` is not
-part of the `ShellContext`.
 
 ## Naming Convention <a name="naming-convention"></a>
 

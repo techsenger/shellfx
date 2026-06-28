@@ -16,14 +16,59 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.sun.jna.platform.win32.Kernel32;
 import com.techsenger.toolkit.core.function.Factory;
 import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.filechooser.FileSystemView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WindowsFileStorage<T extends DefaultGenericFile> extends AbstractDefaultFileStorage<T>  {
+public class WindowsFileStorage<T extends DefaultGenericFile> extends AbstractDefaultFileStorage<T> {
+
+    /**
+     * Discovers and returns all default storages available on the current Windows machine.
+     *
+     * <p>Each root directory reported by the default {@link FileSystem} is wrapped in a
+     * {@link WindowsFileStorage} instance. The storage type is determined by the Windows drive
+     * type via {@code Kernel32.GetDriveType}:
+     * <ul>
+     *   <li>{@code 2} → {@link FileStorageType#FLOPPY}</li>
+     *   <li>{@code 4} → {@link FileStorageType#NETWORK}</li>
+     *   <li>{@code 5} → {@link FileStorageType#OPTICAL}</li>
+     *   <li>any other value → {@link FileStorageType#BASE}</li>
+     * </ul>
+     * The display name is obtained from {@link FileSystemView#getSystemDisplayName(java.io.File)}.
+     *
+     * @param fileFactory the factory used to create file entries, must not be {@code null}
+     * @return a mutable list of default storages, never {@code null}, may be empty
+     */
+    public static List<FileStorage<GenericFile>> createDefaultStorages(
+            Factory<? extends DefaultGenericFile> fileFactory) {
+        List<FileStorage<GenericFile>> result = new ArrayList<>();
+        FileSystemView fsv = FileSystemView.getFileSystemView();
+        FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
+            FileStorageType type = switch (Kernel32.INSTANCE.GetDriveType(rootPath.toString())) {
+                case 2 -> FileStorageType.FLOPPY;
+                case 4 -> FileStorageType.NETWORK;
+                case 5 -> FileStorageType.OPTICAL;
+                default -> FileStorageType.BASE;
+            };
+            @SuppressWarnings("unchecked")
+            var storage = (FileStorage<GenericFile>) (FileStorage<?>) new WindowsFileStorage<>(
+                    type,
+                    fsv.getSystemDisplayName(rootPath.toFile()),
+                    rootPath.toUri(),
+                    fileFactory);
+            result.add(storage);
+        });
+        return result;
+    }
 
     public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri, Factory<T> fileFactory) {
         super(type, displayName, rootUri, fileFactory);

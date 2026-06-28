@@ -40,7 +40,7 @@ public interface GenericFile {
      *
      * @return the storage, never {@code null}
      */
-    FileStorage getStorage();
+    FileStorage<?> getStorage();
 
     /**
      * Returns the structural type of this file system entry (regular file, directory, symbolic link, etc.).

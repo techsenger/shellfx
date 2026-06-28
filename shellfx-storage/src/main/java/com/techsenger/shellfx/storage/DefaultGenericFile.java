@@ -61,7 +61,7 @@ public class DefaultGenericFile implements GenericFile {
     }
 
     @Override
-    public FileStorage getStorage() {
+    public FileStorage<?> getStorage() {
         return storage;
     }
 
@@ -147,7 +147,7 @@ public class DefaultGenericFile implements GenericFile {
      *
      * @param storage the storage, must not be {@code null}
      */
-    protected void setStorage(FileStorage storage) {
+    protected void setStorage(FileStorage<?> storage) {
         this.storage = storage;
     }
 

@@ -33,11 +33,14 @@ import com.techsenger.shellfx.dialogs.file.FileChooserDialogButtons;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
 import com.techsenger.shellfx.dialogs.file.FileChooserType;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueButtons;
-import com.techsenger.shellfx.storage.DefaultFileStorageRegistry;
 import com.techsenger.shellfx.storage.DefaultGenericFile;
-import com.techsenger.shellfx.storage.FileStorageRegistry;
+import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.UnixFileStorage;
+import com.techsenger.shellfx.storage.WindowsFileStorage;
+import com.techsenger.toolkit.core.os.OsUtils;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -51,8 +54,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
 
     private final HistoryManager historyManager;
 
-    private final FileStorageRegistry<GenericFile> storageRegistry =
-            new DefaultFileStorageRegistry(DefaultGenericFile::new);
+    private final List<? extends FileStorage<GenericFile>> storages;
 
     private WindowType selectedWindowType;
 
@@ -97,6 +99,11 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         super(view, params);
         this.settings = params.getSettings();
         this.historyManager = params.getManager();
+        if (OsUtils.isWindows()) {
+            this.storages = WindowsFileStorage.createDefaultStorages(DefaultGenericFile::new);
+        } else {
+            this.storages = UnixFileStorage.createDefaultStorages(DefaultGenericFile::new);
+        }
     }
 
     @Override
@@ -141,9 +148,8 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
     }
 
     private void showFileChooserDialog(FileChooserType type) {
-        this.storageRegistry.refreshDefaultStorages();
-        var params = new FileChooserDialogParams<>(selectedWindowType, settings,
-                type, this.storageRegistry.getAllStorages(), historyManager);
+        var params = new FileChooserDialogParams<GenericFile>(selectedWindowType, settings,
+                type, this.storages, historyManager);
         var dialog = getView().getComposer().openFileChooserDialog(params);
         dialog.setOnResult((buttonName) -> {
             if (buttonName == FileChooserDialogButtons.OK) {
