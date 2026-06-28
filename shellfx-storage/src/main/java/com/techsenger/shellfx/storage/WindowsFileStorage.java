@@ -29,7 +29,7 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author Pavel Castornii
  */
-public class WindowsFileStorage<T extends DefaultGenericFile> extends AbstractDefaultFileStorage<T> {
+public class WindowsFileStorage<T extends GenericFile> extends AbstractDefaultFileStorage<T> {
 
     /**
      * Discovers and returns all default storages available on the current Windows machine.
@@ -70,7 +70,8 @@ public class WindowsFileStorage<T extends DefaultGenericFile> extends AbstractDe
         return result;
     }
 
-    public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri, Factory<T> fileFactory) {
+    public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri,
+            Factory<? extends DefaultGenericFile> fileFactory) {
         super(type, displayName, rootUri, fileFactory);
     }
 

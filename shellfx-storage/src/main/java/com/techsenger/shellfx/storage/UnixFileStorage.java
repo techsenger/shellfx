@@ -28,7 +28,7 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author Pavel Castornii
  */
-public class UnixFileStorage<T extends DefaultGenericFile> extends AbstractDefaultFileStorage<T> {
+public class UnixFileStorage<T extends GenericFile> extends AbstractDefaultFileStorage<T> {
 
     /**
      * Discovers and returns all default storages available on the current Unix machine.
@@ -56,7 +56,8 @@ public class UnixFileStorage<T extends DefaultGenericFile> extends AbstractDefau
         return result;
     }
 
-    public UnixFileStorage(FileStorageType type, String displayName, URI rootUri, Factory<T> fileFactory) {
+    public UnixFileStorage(FileStorageType type, String displayName, URI rootUri,
+            Factory<? extends DefaultGenericFile> fileFactory) {
         super(type, displayName, rootUri, fileFactory);
     }
 
