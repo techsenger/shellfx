@@ -16,15 +16,10 @@
 
 package com.techsenger.shellfx.material.icon;
 
-import javafx.scene.image.Image;
-
 /**
  *
  * @author Pavel Castornii
  */
-public final class ImageIcon extends AbstractIcon<Image> implements GenericImageIcon<Image> {
+public interface ImageIcon<T> extends Icon<T> {
 
-    public ImageIcon(Image content) {
-        super(content);
-    }
 }

@@ -20,11 +20,11 @@ package com.techsenger.shellfx.material.icon;
  *
  * @author Pavel Castornii
  */
-abstract class AbstractIcon<T> implements Icon<T> {
+public abstract class AbstractIcon<T> implements Icon<T> {
 
     private final T content;
 
-    AbstractIcon(T content) {
+    public AbstractIcon(T content) {
         this.content = content;
     }
 

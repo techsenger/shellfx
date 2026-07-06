@@ -21,7 +21,7 @@ package com.techsenger.shellfx.material.icon;
  *
  * @author Pavel Castornii
  */
-public final class StyleImageIcon extends AbstractIcon<String> implements GenericImageIcon<String> {
+public final class StyleImageIcon extends AbstractImageIcon<String> {
 
     public StyleImageIcon(String content) {
         super(content);

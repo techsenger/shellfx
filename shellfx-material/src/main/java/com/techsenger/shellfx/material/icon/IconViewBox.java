@@ -46,11 +46,11 @@ public class IconViewBox extends HBox {
         icon.addListener((ov, oldV, newV) -> {
             getChildren().clear();
             if (newV != null) {
-                if (newV instanceof GenericFontIcon) {
-                    var view = new FontIconView((GenericFontIcon) newV);
+                if (newV instanceof FontIcon fi) {
+                    var view = new FontIconView(fi);
                     getChildren().add(view);
-                } else if (newV instanceof GenericImageIcon)  {
-                    var view = new ImageIconView((GenericImageIcon) newV);
+                } else if (newV instanceof ImageIcon ii)  {
+                    var view = new ImageIconView(ii);
                     getChildren().add(view);
                 } else {
                     throw new AssertionError();

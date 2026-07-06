@@ -20,6 +20,9 @@ package com.techsenger.shellfx.material.icon;
  *
  * @author Pavel Castornii
  */
-public interface GenericImageIcon<T> extends Icon<T> {
+public final class PlainFontIcon extends AbstractFontIcon<Integer> {
 
+    public PlainFontIcon(Integer content) {
+        super(content);
+    }
 }

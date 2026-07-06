@@ -23,7 +23,7 @@ import com.techsenger.shellfx.demo.main.TestInterface;
 import com.techsenger.shellfx.layout.dockhost.DockHostFxView;
 import com.techsenger.shellfx.layout.dockhost.TabDockFxView;
 import com.techsenger.shellfx.layout.dockhost.UtilityDockContainerFxView;
-import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.material.icon.PlainFontIcon;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import javafx.geometry.Insets;
@@ -102,9 +102,9 @@ public class BrowserMainTabFxView extends AbstractHostTabFxView<BrowserMainTabPr
     @Override
     protected void build() {
         super.build();
-        var removeButton = new Button(null, new FontIconView(new FontIcon(983924)));
+        var removeButton = new Button(null, new FontIconView(new PlainFontIcon(983924)));
         removeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.SIZE_L);
-        var addButton = new Button(null, new FontIconView(new FontIcon(984085)));
+        var addButton = new Button(null, new FontIconView(new PlainFontIcon(984085)));
         addButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, StyleClasses.SIZE_L);
         addButton.setOnAction((e) -> {
             removeButton.setVisible(!removeButton.isVisible());

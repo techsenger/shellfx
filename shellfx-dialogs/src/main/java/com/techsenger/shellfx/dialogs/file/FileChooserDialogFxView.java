@@ -27,7 +27,6 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.icon.GenericFontIcon;
 import com.techsenger.shellfx.material.list.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
@@ -69,6 +68,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
+import com.techsenger.shellfx.material.icon.FontIcon;
 
 /**
  * There two modes - details and list. As both modes require sorting we use table and its sorting in both modes. But
@@ -227,7 +227,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
 
     private AppearanceSettings settings;
 
-    private Function<T, GenericFontIcon<?>> iconProvider =
+    private Function<T, FontIcon<?>> iconProvider =
             (f) -> f.isDirectory() ? DialogIcons.DIRECTORY : DialogIcons.FILE;
 
     public FileChooserDialogFxView() {
@@ -359,11 +359,11 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
         this.filterComboBox.getSelectionModel().select(filter);
     }
 
-    public Function<T, GenericFontIcon<?>> getIconProvider() {
+    public Function<T, FontIcon<?>> getIconProvider() {
         return iconProvider;
     }
 
-    public void setIconProvider(Function<T, GenericFontIcon<?>> iconProvider) {
+    public void setIconProvider(Function<T, FontIcon<?>> iconProvider) {
         this.iconProvider = iconProvider;
     }
 

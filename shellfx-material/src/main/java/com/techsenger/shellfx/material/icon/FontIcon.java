@@ -17,13 +17,9 @@
 package com.techsenger.shellfx.material.icon;
 
 /**
- * Font icon has either a codePoint or styleClass. This icon will be displayed in {@link FontIconView}.
  *
  * @author Pavel Castornii
  */
-public final class FontIcon extends AbstractIcon<Integer> implements GenericFontIcon<Integer> {
+public interface FontIcon<T> extends Icon<T> {
 
-    public FontIcon(Integer content) {
-        super(content);
-    }
 }

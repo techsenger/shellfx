@@ -17,12 +17,12 @@
 package com.techsenger.shellfx.core.menu.manager;
 
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.icon.GenericFontIcon;
-import com.techsenger.shellfx.material.icon.GenericImageIcon;
 import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.shellfx.material.icon.IconViewBox;
 import com.techsenger.shellfx.material.icon.ImageIconView;
 import javafx.scene.control.MenuItem;
+import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.material.icon.ImageIcon;
 
 /**
  *
@@ -36,9 +36,9 @@ final class IconUtils {
             return;
         }
         if (graphic instanceof ImageIconView view) {
-            view.setIcon((GenericImageIcon<?>) icon);
+            view.setIcon((ImageIcon<?>) icon);
         } else if (graphic instanceof FontIconView view) {
-            view.setIcon((GenericFontIcon<?>) icon);
+            view.setIcon((FontIcon<?>) icon);
         } else if (graphic instanceof IconViewBox box) {
             box.setIcon(icon);
         }

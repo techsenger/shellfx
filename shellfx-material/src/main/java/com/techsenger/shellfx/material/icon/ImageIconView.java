@@ -26,9 +26,9 @@ import javafx.scene.image.ImageView;
  */
 public class ImageIconView extends ImageView {
 
-    private final ObjectProperty<GenericImageIcon<?>> icon = new SimpleObjectProperty<>();
+    private final ObjectProperty<ImageIcon<?>> icon = new SimpleObjectProperty<>();
 
-    public ImageIconView(GenericImageIcon<?> icon) {
+    public ImageIconView(ImageIcon<?> icon) {
         this();
         setIcon(icon);
     }
@@ -37,34 +37,32 @@ public class ImageIconView extends ImageView {
         getStyleClass().addAll("image-icon-view", "icon-view");
         this.icon.addListener((ov, oldV, newV) -> {
             if (oldV != null) {
-                if (oldV instanceof StyleImageIcon) {
-                    var i = (StyleImageIcon) oldV;
-                    getStyleClass().remove(i.getContent());
+                if (oldV instanceof StyleImageIcon sii) {
+                    getStyleClass().remove(sii.getContent());
                 } else {
                     setImage(null);
                 }
             }
             if (newV != null) {
-                if (newV instanceof StyleImageIcon) {
-                    var i = (StyleImageIcon) newV;
-                    getStyleClass().add(i.getContent());
+                if (newV instanceof StyleImageIcon sii) {
+                    getStyleClass().add(sii.getContent());
                 } else {
-                    var i = (ImageIcon) newV;
+                    var i = (PlainImageIcon) newV;
                     setImage(i.getContent());
                 }
             }
         });
     }
 
-    public ObjectProperty<GenericImageIcon<?>> iconProperty() {
+    public ObjectProperty<ImageIcon<?>> iconProperty() {
         return this.icon;
     }
 
-    public GenericImageIcon<?> getIcon() {
+    public ImageIcon<?> getIcon() {
         return this.icon.get();
     }
 
-    public void setIcon(GenericImageIcon<?> icon) {
+    public void setIcon(ImageIcon<?> icon) {
         this.icon.set(icon);
     }
 

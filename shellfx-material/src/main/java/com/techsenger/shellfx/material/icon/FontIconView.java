@@ -57,9 +57,9 @@ public class FontIconView extends Text {
     private final StyleableIntegerProperty codePoint =
             new SimpleStyleableIntegerProperty(Css.CODE_POINT, this, "codePoint");
 
-    private final ObjectProperty<GenericFontIcon<?>> icon = new SimpleObjectProperty<>();
+    private final ObjectProperty<FontIcon<?>> icon = new SimpleObjectProperty<>();
 
-    public FontIconView(GenericFontIcon<?> icon) {
+    public FontIconView(FontIcon<?> icon) {
         this();
         setIcon(icon);
     }
@@ -76,19 +76,17 @@ public class FontIconView extends Text {
         });
         this.icon.addListener((ov, oldV, newV) -> {
             if (oldV != null) {
-                if (oldV instanceof StyleFontIcon) {
-                    var i = (StyleFontIcon) oldV;
-                    getStyleClass().remove(i.getContent());
+                if (oldV instanceof StyleFontIcon sfi) {
+                    getStyleClass().remove(sfi.getContent());
                 } else {
                     setCodePoint(0);
                 }
             }
             if (newV != null) {
-                if (newV instanceof StyleFontIcon) {
-                    var i = (StyleFontIcon) newV;
-                    getStyleClass().add(i.getContent());
+                if (newV instanceof StyleFontIcon sfi) {
+                    getStyleClass().add(sfi.getContent());
                 } else {
-                    var i = (FontIcon) newV;
+                    var i = (PlainFontIcon) newV;
                     setCodePoint(i.getContent());
                 }
             }
@@ -112,15 +110,15 @@ public class FontIconView extends Text {
         this.codePoint.set(codePoint);
     }
 
-    public ObjectProperty<GenericFontIcon<?>> iconProperty() {
+    public ObjectProperty<FontIcon<?>> iconProperty() {
         return this.icon;
     }
 
-    public GenericFontIcon<?> getIcon() {
+    public FontIcon<?> getIcon() {
         return this.icon.get();
     }
 
-    public void setIcon(GenericFontIcon<?> icon) {
+    public void setIcon(FontIcon<?> icon) {
         this.icon.set(icon);
     }
 }

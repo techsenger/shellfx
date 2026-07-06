@@ -17,13 +17,12 @@
 package com.techsenger.shellfx.material.icon;
 
 /**
- * This class uses style class as content.
  *
  * @author Pavel Castornii
  */
-public final class StyleFontIcon extends AbstractFontIcon<String> {
+public abstract class AbstractFontIcon<T> extends AbstractIcon<T> implements FontIcon<T> {
 
-    public StyleFontIcon(String content) {
+    public AbstractFontIcon(T content) {
         super(content);
     }
 }

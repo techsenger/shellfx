@@ -23,7 +23,7 @@ import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.settings.Density;
 import com.techsenger.shellfx.demo.DemoComponents;
-import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.material.icon.PlainFontIcon;
 import com.techsenger.shellfx.material.theme.Theme;
 import java.util.function.Consumer;
 
@@ -66,7 +66,7 @@ public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDia
     protected void postInitialize() {
         super.postInitialize();
         setTitle("Settings");
-        setIcon(new FontIcon(0xF08BB));
+        setIcon(new PlainFontIcon(0xF08BB));
         setWidth(500);
         setResizable(false);
         setSelectedTheme(settings.getTheme());

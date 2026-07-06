@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.icon.GenericFontIcon;
 import com.techsenger.shellfx.material.table.NamedTableColumn;
 import com.techsenger.shellfx.material.table.TextFieldTableCell;
 import com.techsenger.toolkit.core.file.FileUtils;
@@ -31,6 +30,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
+import com.techsenger.shellfx.material.icon.FontIcon;
 
 /**
  *
@@ -49,7 +49,7 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public <F extends GenericFile> NamedTableColumn<F, F> buildNameColumn(Function<F, GenericFontIcon<?>>
+    public <F extends GenericFile> NamedTableColumn<F, F> buildNameColumn(Function<F, FontIcon<?>>
             iconProvider) {
         var nameColumn = new NamedTableColumn<F, F>(FileColumns.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
