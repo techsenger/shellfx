@@ -27,6 +27,7 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.icon.FontIconView;
+import com.techsenger.shellfx.material.icon.GenericFontIcon;
 import com.techsenger.shellfx.material.list.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
@@ -42,6 +43,7 @@ import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -219,6 +221,9 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
 
     private AppearanceSettings settings;
 
+    private Function<T, GenericFontIcon<?>> iconProvider =
+            (f) -> f.isDirectory() ? DialogIcons.DIRECTORY : DialogIcons.FILE;
+
     public FileChooserDialogFxView() {
         super();
     }
@@ -348,6 +353,14 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
         this.filterComboBox.getSelectionModel().select(filter);
     }
 
+    public Function<T, GenericFontIcon<?>> getIconProvider() {
+        return iconProvider;
+    }
+
+    public void setIconProvider(Function<T, GenericFontIcon<?>> iconProvider) {
+        this.iconProvider = iconProvider;
+    }
+
     @Override
     protected Composer createComposer() {
         return new FileChooserDialogFxView.Composer();
@@ -372,7 +385,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
 
         var columnBuilder = new FileColumnBuilder(settings.getRegularFont());
         this.fileColumnManager.registerColumnFactory(FileColumns.NAME, () -> {
-            var column = columnBuilder.buildNameColumn(DialogIcons.DIRECTORY, DialogIcons.FILE);
+            var column = columnBuilder.buildNameColumn(iconProvider);
             column.setEditable(false);
             column.setOnEditCancel(e -> {
                 var file = (T) e.getOldValue();

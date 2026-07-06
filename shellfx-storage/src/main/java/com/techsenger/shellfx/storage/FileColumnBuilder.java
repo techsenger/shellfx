@@ -26,6 +26,7 @@ import java.time.Year;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.function.Function;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.Node;
 import javafx.scene.control.TableCell;
@@ -49,8 +50,8 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public <F extends GenericFile> NamedTableColumn<F, F> buildNameColumn(GenericFontIcon<?> dirIcon,
-            GenericFontIcon fileIcon) {
+    public <F extends GenericFile> NamedTableColumn<F, F> buildNameColumn(Function<F, GenericFontIcon<?>>
+            iconProvider) {
         var nameColumn = new NamedTableColumn<F, F>(FileColumns.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         var converter = new FileStringConverter<F>();
@@ -87,11 +88,11 @@ public class FileColumnBuilder {
                 }
             }
 
-            private Node buildIcon(GenericFile file) {
+            private Node buildIcon(F file) {
                 if (file.getEntryType() == null) {
                     return null;
                 }
-                return new FontIconView(file.isDirectory() ? dirIcon : fileIcon);
+                return new FontIconView(iconProvider.apply(file));
             }
         });
         nameColumn.setComparator(Comparator.comparing(GenericFile::getName, String.CASE_INSENSITIVE_ORDER));
