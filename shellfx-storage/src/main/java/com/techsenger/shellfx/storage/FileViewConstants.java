@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.dialogs.file;
-
-import com.techsenger.shellfx.material.list.ColumnListView;
-import com.techsenger.shellfx.storage.GenericFile;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ContextMenu;
+package com.techsenger.shellfx.storage;
 
 /**
  *
  * @author Pavel Castornii
  */
-class FileListView<T extends GenericFile> extends ColumnListView<T> {
+public final class FileViewConstants {
 
-    FileListView(ObservableList<T> files, ContextMenu cellContextMenu) {
-        setItems(files);
-        setManualRefresh(true);
-        setEditable(true);
+    public static final double HIDDEN_FILE_OPACITY = 0.5;
+
+    private FileViewConstants() {
+        // empty
     }
 }

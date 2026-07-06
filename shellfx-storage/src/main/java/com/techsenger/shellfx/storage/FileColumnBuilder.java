@@ -28,7 +28,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.function.Function;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.scene.Node;
 import javafx.scene.control.TableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
@@ -57,6 +56,8 @@ public class FileColumnBuilder {
         var converter = new FileStringConverter<F>();
         nameColumn.setCellFactory(col -> new TextFieldTableCell<F, F>(converter) {
 
+            private final FontIconView iconView = new FontIconView();
+
             @Override
             public void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
@@ -64,18 +65,20 @@ public class FileColumnBuilder {
                     setGraphic(null);
                     setText(null);
                 } else {
-                    setGraphic(buildIcon(file));
+                    if (file.isHidden()) {
+                        iconView.setOpacity(FileViewConstants.HIDDEN_FILE_OPACITY);
+                    } else {
+                        iconView.setOpacity(1.0);
+                    }
+                    iconView.setIcon(iconProvider.apply(file));
+                    setGraphic(iconView);
                     setText(file.getName());
                 }
             }
 
             @Override
             protected HBox buildEditGraphic() {
-                var icon = buildIcon(getItem());
-                var box = new HBox(getTextField());
-                if (icon != null) {
-                    box.getChildren().add(0, icon);
-                }
+                var box = new HBox(iconView, getTextField());
                 return box;
             }
 
@@ -83,16 +86,9 @@ public class FileColumnBuilder {
             protected void updateDisplay() {
                 var file = getItem();
                 if (file != null) {
-                    setGraphic(buildIcon(file));
+                    setGraphic(iconView);
                     setText(file.getName());
                 }
-            }
-
-            private Node buildIcon(F file) {
-                if (file.getEntryType() == null) {
-                    return null;
-                }
-                return new FontIconView(iconProvider.apply(file));
             }
         });
         nameColumn.setComparator(Comparator.comparing(GenericFile::getName, String.CASE_INSENSITIVE_ORDER));

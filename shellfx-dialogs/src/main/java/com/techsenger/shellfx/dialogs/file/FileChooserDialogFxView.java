@@ -38,6 +38,7 @@ import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileColumnBuilder;
 import com.techsenger.shellfx.storage.FileColumns;
 import com.techsenger.shellfx.storage.FileStringConverter;
+import com.techsenger.shellfx.storage.FileViewConstants;
 import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.Comparator;
@@ -124,6 +125,8 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
 
     private final class DialogTextFieldColumnListCell extends TextFieldColumnListCell<T> {
 
+        private final FontIconView iconView = new FontIconView();
+
         private DialogTextFieldColumnListCell(StringConverter converter) {
             super(converter);
             addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
@@ -156,7 +159,13 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
             } else {
                 if (item.getEntryType() != null) {
                     var icon = iconProvider.apply(item);
-                    setGraphic(new FontIconView(icon));
+                    iconView.setIcon(icon);
+                    if (item.isHidden()) {
+                        iconView.setOpacity(FileViewConstants.HIDDEN_FILE_OPACITY);
+                    } else {
+                        iconView.setOpacity(1.0);
+                    }
+                    setGraphic(iconView);
                 } else {
                     setGraphic(null);
                 }
