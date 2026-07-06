@@ -259,6 +259,7 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
         var file = fileFactory.create();
         file.setStorage(this);
         file.setName(path.getFileName().toString());
+        file.setHidden(isHidden(path));
         file.setUri(uri);
         file.setLastModified(attrs.lastModifiedTime().toMillis());
         if (attrs.isDirectory()) {
@@ -273,5 +274,13 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
         }
         file.setVirtual(false);
         return (T) file;
+    }
+
+    private boolean isHidden(Path path) {
+        try {
+            return Files.isHidden(path);
+        } catch (IOException ex) {
+            return false;
+        }
     }
 }

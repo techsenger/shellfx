@@ -51,6 +51,8 @@ public class DefaultGenericFile implements GenericFile {
 
     private @Nullable Long lastModified;
 
+    private boolean hidden;
+
     private boolean virtual;
 
     /**
@@ -88,6 +90,11 @@ public class DefaultGenericFile implements GenericFile {
     @Override
     public @Nullable Long getLastModified() {
         return lastModified;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden;
     }
 
     @Override
@@ -194,6 +201,15 @@ public class DefaultGenericFile implements GenericFile {
      */
     protected void setLastModified(@Nullable Long lastModified) {
         this.lastModified = lastModified;
+    }
+
+    /**
+     * Sets whether this entry is hidden.
+     *
+     * @param hidden {@code true} if this entry is hidden
+     */
+    protected void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     /**

@@ -82,8 +82,14 @@ public interface GenericFile {
     @Nullable Long getLastModified();
 
     /**
+     * Returns {@code true} if this entry is hidden, and {@code false} otherwise.
+     */
+    boolean isHidden();
+
+    /**
      * Returns {@code true} if this entry is virtual, i.e. it was constructed programmatically without a corresponding
-     * real entry on the underlying storage.
+     * real entry on the underlying storage. As a result, virtual entries generally do not have all metadata
+     * (such as size, hidden status, etc.).
      *
      * <p>Virtual entries are used as placeholders — for example, a parent directory inferred from a child's URI, or a
      * root entry that does not physically exist on the backend.
