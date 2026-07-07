@@ -16,13 +16,26 @@
 
 package com.techsenger.shellfx.material.icon;
 
+import com.techsenger.annotations.Nullable;
+
 /**
  *
  * @author Pavel Castornii
  */
 public final class PlainFontIcon extends AbstractFontIcon<Integer> {
 
+    private final @Nullable String font;
+
     public PlainFontIcon(Integer content) {
+        this(content, null);
+    }
+
+    public PlainFontIcon(Integer content, @Nullable String font) {
         super(content);
+        this.font = font;
+    }
+
+    public @Nullable String getFont() {
+        return font;
     }
 }

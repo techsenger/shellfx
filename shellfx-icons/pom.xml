@@ -23,6 +23,10 @@
             <artifactId>shellfx-material</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.annotations</groupId>
             <artifactId>annotations</artifactId>
         </dependency>

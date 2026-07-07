@@ -31,9 +31,11 @@ import com.techsenger.shellfx.demo.menu.window.WindowMenuRegistrar;
 import com.techsenger.shellfx.demo.settings.DemoSettings;
 import com.techsenger.shellfx.demo.styles.StylesTabFxView;
 import com.techsenger.shellfx.demo.styles.StylesTabPresenter;
+import com.techsenger.shellfx.icons.MdiIconFont;
 import com.techsenger.shellfx.icons.IconStylesheetFactory;
 import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
+import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
@@ -100,6 +102,7 @@ public class Demo extends Application {
 
     private ShellFxView<?> createShell(ApplicationType appType) {
         // use default icons
+        FontIconView.setDefaultIconFont(MdiIconFont.INSTANCE.getFamily());
         IconStylesheets.addAll(IconStylesheetFactory.forAll());
 
         // creating component

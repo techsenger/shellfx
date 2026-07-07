@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-module com.techsenger.shellfx.icons {
-    requires org.slf4j;
-    requires com.techsenger.shellfx.material;
-    requires com.techsenger.annotations;
-    requires javafx.graphics;
+package com.techsenger.shellfx.icons;
 
-    exports com.techsenger.shellfx.icons;
+import javafx.scene.text.Font;
 
-    opens com.techsenger.shellfx.icons;
-    opens com.techsenger.shellfx.icons.font;
+/**
+ *
+ * @author Pavel Castornii
+ */
+public final class MdiIconFont {
+
+    public static final Font INSTANCE =
+            Font.loadFont(MdiIconFont.class.getResourceAsStream("font/materialdesignicons-webfont.ttf"), 12);
+
+    private MdiIconFont() {
+        // empty
+    }
 }

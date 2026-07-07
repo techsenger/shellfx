@@ -17,20 +17,25 @@
 /*
     Author: Pavel Castornii
 */
+
+@font-face {
+    src: url('font/materialdesignicons-webfont.ttf');
+}
+
 .font-icon-view.window-minimize-icon {
-    -fx-code-point: 984496; /* window-minimize */
+    -fx-icon-code: 984496; /* window-minimize */
 }
 
 .font-icon-view.window-maximize-icon {
-    -fx-code-point: 984495; /* window-maximize */
+    -fx-icon-code: 984495; /* window-maximize */
 }
 
 .font-icon-view.window-restore-icon {
-    -fx-code-point: 984498; /* window-restore */
+    -fx-icon-code: 984498; /* window-restore */
 }
 
 .font-icon-view.window-close-icon {
-    -fx-code-point: 984493; /* window-close */
+    -fx-icon-code: 984493; /* window-close */
 }
 
 

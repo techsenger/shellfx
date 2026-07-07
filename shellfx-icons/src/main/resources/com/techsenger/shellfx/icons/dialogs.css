@@ -23,70 +23,70 @@
 }
 
 .font-icon-view.info-icon {
-    -fx-code-point: 983805; /* information-outline */
+    -fx-icon-code: 983805; /* information-outline */
 }
 
 .font-icon-view.error-icon {
-    -fx-code-point: 986342; /* alert-octagon-outline */
+    -fx-icon-code: 986342; /* alert-octagon-outline */
 }
 
 .font-icon-view.warning-icon {
-    -fx-code-point: 983082; /* alert-outline */
+    -fx-icon-code: 983082; /* alert-outline */
 }
 
 .font-icon-view.question-icon {
-    -fx-code-point: 986022; /* help-rhombus-outline */
+    -fx-icon-code: 986022; /* help-rhombus-outline */
 }
 
 .font-icon-view.directory-up-icon {
-    -fx-code-point: 989683; /* folder-arrow-up-outline */
+    -fx-icon-code: 989683; /* folder-arrow-up-outline */
 }
 
 .font-icon-view.home-icon {
-    -fx-code-point: 984737; /* home-outline */
+    -fx-icon-code: 984737; /* home-outline */
 }
 
 .font-icon-view.add-directory-icon {
-    -fx-code-point: 986013; /* folder-plus-outline */
+    -fx-icon-code: 986013; /* folder-plus-outline */
 }
 
 .font-icon-view.list-view-icon {
-    -fx-code-point: 988299; /* view-list-outline */
+    -fx-icon-code: 988299; /* view-list-outline */
 }
 
 .font-icon-view.grid-view-icon {
-    -fx-code-point: 987609; /* view-grid-outline */
+    -fx-icon-code: 987609; /* view-grid-outline */
 }
 
 .font-icon-view.disc-icon {
-    -fx-code-point: 984558; /* disc */
+    -fx-icon-code: 984558; /* disc */
 }
 
 .font-icon-view.floppy-icon {
-    -fx-code-point: 983625; /* floppy */
+    -fx-icon-code: 983625; /* floppy */
 }
 
 .font-icon-view.base-disk-icon {
     /* view-agenda-outline, harddisk, table-row */
-    -fx-code-point: 990362; /* server-outline */
+    -fx-icon-code: 990362; /* server-outline */
 }
 
 .font-icon-view.network-disk-icon {
-    -fx-code-point: 990361; /* server-network-outline */
+    -fx-icon-code: 990361; /* server-network-outline */
 }
 
 .font-icon-view.open-icon {
-    -fx-code-point: 986575; /* folder-open-outline */
+    -fx-icon-code: 986575; /* folder-open-outline */
 }
 
 .font-icon-view.save-as-icon {
-    -fx-code-point: 986364; /* content-save-edit-outline */
+    -fx-icon-code: 986364; /* content-save-edit-outline */
 }
 
 .font-icon-view.directory-icon {
-    -fx-code-point: 983627; /* folder */
+    -fx-icon-code: 983627; /* folder */
 }
 
 .font-icon-view.file-icon {
-    -fx-code-point: 983588; /* file-outline */
+    -fx-icon-code: 983588; /* file-outline */
 }
