@@ -29,6 +29,7 @@ import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.DemoComponents;
 import com.techsenger.shellfx.demo.dialogs.DemoResultButtons;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
+import com.techsenger.shellfx.material.icon.PlainFontIcon;
 import java.util.function.Consumer;
 
 /**
@@ -93,7 +94,8 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setTitle("Main Tab");
+        setTitle("Main Tab");
+        setIcon(new PlainFontIcon(0xF04E9));
     }
 
     @Override

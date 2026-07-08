@@ -22,6 +22,7 @@ import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.tab.AbstractHostTabPresenter;
 import com.techsenger.shellfx.core.tab.HostTabView;
 import com.techsenger.shellfx.demo.DemoComponents;
+import com.techsenger.shellfx.material.icon.PlainFontIcon;
 import java.util.function.Consumer;
 
 /**
@@ -52,7 +53,8 @@ public class BrowserMainTabPresenter extends AbstractHostTabPresenter<HostTabVie
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setTitle("Main Tab");
+        setTitle("Main Tab");
+        setIcon(new PlainFontIcon(0xF04E9));
     }
 
     @Override
