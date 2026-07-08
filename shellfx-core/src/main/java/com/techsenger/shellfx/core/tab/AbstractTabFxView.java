@@ -158,6 +158,10 @@ public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> exten
         return contentBox;
     }
 
+    protected IconViewBox getIconViewBox() {
+        return iconViewBox;
+    }
+
     @Override
     protected void build() {
         super.build();
