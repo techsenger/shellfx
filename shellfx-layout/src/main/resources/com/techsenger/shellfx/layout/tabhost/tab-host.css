@@ -23,7 +23,7 @@
 }
 
 .tab-pane-pro.workspace > .tab-header-area > .headers-region > .tab .font-icon-view {
-    -fx-font-size: 1.6em;
+    -fx-icon-size: 1.6em;
     -fx-padding: 0;
 }
 
