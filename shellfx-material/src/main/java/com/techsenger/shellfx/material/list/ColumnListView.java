@@ -291,6 +291,10 @@ public class ColumnListView<T> extends Region {
         VIRTUAL_FLOW_HEIGHT
     }
 
+    private enum RefreshType {
+        PRIMARY, SECONDARY
+    }
+
     /**
      * Always fixed height of the row.
      */
@@ -341,15 +345,22 @@ public class ColumnListView<T> extends Region {
     private int editingCellIndex = -1;
 
     /**
-     * Guard flag to prevent reentrant calls to {@link #updateOffsets}. Without this flag, changing {@code rowCount}
-     * or {@code columnCount} inside {@link #updateOffsets} fires their change listeners, which call {@link #refresh},
-     * which calls {@link #updateOffsets} again, causing infinite recursion and eventually {@link OutOfMemoryError}.
+     * Tracks whether a refresh is currently in progress and prevents reentrant refreshes.
+     *
+     * <p>Without this guard, changing {@code rowCount} or {@code columnCount} inside {@link #updateOffsets(int,
+     * RefreshTrigger)} fires their change listeners, which invoke {@link #refresh(RefreshTrigger, RefreshType)} again,
+     * causing infinite recursion and eventually an {@link OutOfMemoryError}.
+     *
+     * <p>If another refresh is requested while a primary refresh is executing, the request is postponed and executed
+     * once as a secondary refresh after the current refresh completes.
      */
-    private boolean updatingOffsets = false;
+    private RefreshType currentType;
 
-    private final ListChangeListener<T> changeListener = (change) -> {
+    private RefreshTrigger secondRefreshTrigger = null;
+
+    private final ListChangeListener<T> itemsChangeListener = (change) -> {
         if (!isManualRefresh()) {
-            refresh(RefreshTrigger.ITEMS);
+            refresh(RefreshTrigger.ITEMS, RefreshType.PRIMARY);
         }
     };
 
@@ -368,11 +379,11 @@ public class ColumnListView<T> extends Region {
         });
         getChildren().add(this.virtualFlow);
         this.rowHeight.set(-1);
-        this.rowHeight.addListener((ov, oldV, newV) -> refresh(RefreshTrigger.ROW_HEIGHT));
+        this.rowHeight.addListener((ov, oldV, newV) -> refresh(RefreshTrigger.ROW_HEIGHT, RefreshType.PRIMARY));
         this.virtualFlow.getHBar().heightProperty()
-                .addListener((ov, oldV, newV) -> refresh(RefreshTrigger.SCROLL_BAR_HEIGHT));
+                .addListener((ov, oldV, newV) -> refresh(RefreshTrigger.SCROLL_BAR_HEIGHT, RefreshType.PRIMARY));
         this.virtualFlow.getHBar().visibleProperty()
-                .addListener((ov, oldV, newV) -> refresh(RefreshTrigger.SCROLL_BAR_VISIBILITY));
+                .addListener((ov, oldV, newV) -> refresh(RefreshTrigger.SCROLL_BAR_VISIBILITY, RefreshType.PRIMARY));
         //firstVisibleCellIndex is set via onResizeStarted.
         this.virtualFlow.heightProperty()
                 .addListener((ov, oldV, newV) -> savePositionAndRefreshView(RefreshTrigger.VIRTUAL_FLOW_HEIGHT));
@@ -444,14 +455,14 @@ public class ColumnListView<T> extends Region {
 
     public void setItems(ObservableList<T> items) {
         if (this.items != null) {
-            this.items.removeListener(changeListener);
+            this.items.removeListener(itemsChangeListener);
         }
         this.items = items;
         if (this.items != null) {
-            this.items.addListener(changeListener);
+            this.items.addListener(itemsChangeListener);
         }
         if (!isManualRefresh()) {
-            refresh(RefreshTrigger.ITEMS);
+            refresh(RefreshTrigger.ITEMS, RefreshType.PRIMARY);
         }
     }
 
@@ -491,7 +502,7 @@ public class ColumnListView<T> extends Region {
      * This method is called when manual refresh is enabled.
      */
     public void refresh() {
-        refresh(RefreshTrigger.ITEMS);
+        refresh(RefreshTrigger.ITEMS, RefreshType.PRIMARY);
     }
 
     /**
@@ -726,7 +737,7 @@ public class ColumnListView<T> extends Region {
 
     private void savePositionAndRefreshView(RefreshTrigger refreshTrigger) {
         this.firstVisibleCellIndex = resolveFirstVisibleCellIndex();
-        refresh(refreshTrigger);
+        refresh(refreshTrigger, RefreshType.PRIMARY);
         this.firstVisibleCellIndex = 0;
     }
 
@@ -749,7 +760,8 @@ public class ColumnListView<T> extends Region {
      *
      * @param refreshTrigger
      */
-    private void refresh(RefreshTrigger refreshTrigger) {
+    private void refresh(RefreshTrigger refreshTrigger, RefreshType type) {
+        logger.debug("Refresh request, trigger: {}, type: {}", refreshTrigger, type);
         if (this.items == null) {
             return;
         }
@@ -775,17 +787,36 @@ public class ColumnListView<T> extends Region {
         if (rowCount <= 0) {
             return;
         }
-        if (refreshTrigger == RefreshTrigger.ITEMS) {
-            if (getSelectionModel().getSelectedIndex() != -1) {
-                getSelectionModel().clearSelection();
-            }
-            this.editingCellIndex = -1;
-            updateOffsets(rowCount, refreshTrigger);
-            scrollToFirstColumn(firstVisibleCellIndex);
-        } else {
-            if (getRowCount() != rowCount) {
+        if (type == RefreshType.PRIMARY && currentType != null) {
+            secondRefreshTrigger = refreshTrigger; // there can be multiple attempt, so the last one is saved
+            logger.debug("Refresh request saved and postponed, trigger: {}, type: {}", refreshTrigger, type);
+            return;
+        }
+        try {
+            currentType = type;
+            if (refreshTrigger == RefreshTrigger.ITEMS) {
+                if (getSelectionModel().getSelectedIndex() != -1) {
+                    getSelectionModel().clearSelection();
+                }
+                this.editingCellIndex = -1;
                 updateOffsets(rowCount, refreshTrigger);
                 scrollToFirstColumn(firstVisibleCellIndex);
+            } else {
+                if (getRowCount() != rowCount) {
+                    updateOffsets(rowCount, refreshTrigger);
+                    scrollToFirstColumn(firstVisibleCellIndex);
+                }
+            }
+            logger.debug("Refreshed, trigger: {}, type: {}, itemsCount: {}", refreshTrigger, type, items.size());
+            if (type == RefreshType.PRIMARY && secondRefreshTrigger != null) {
+                refresh(secondRefreshTrigger, RefreshType.SECONDARY);
+                secondRefreshTrigger = null;
+            }
+        } finally {
+            if (type == RefreshType.SECONDARY) {
+                currentType = RefreshType.PRIMARY;
+            } else {
+                currentType = null;
             }
         }
     }
@@ -797,27 +828,18 @@ public class ColumnListView<T> extends Region {
     }
 
     private void updateOffsets(int rowCount, RefreshTrigger refreshTrigger) {
-        if (updatingOffsets) {
-            return;
+        this.rowCount.set(rowCount);
+        int columnCount = (int) Math.ceil((double) this.items.size() / rowCount);
+        this.columnCount.set(columnCount);
+        List<Integer> offs = new ArrayList<>();
+        for (int i = 0; i < columnCount; i++) {
+            offs.add(i * rowCount);
         }
-        updatingOffsets = true;
-        try {
-            logger.debug("Refreshing, reason: {} changed", refreshTrigger);
-            this.rowCount.set(rowCount);
-            int columnCount = (int) Math.ceil((double) this.items.size() / rowCount);
-            this.columnCount.set(columnCount);
-            List<Integer> offs = new ArrayList<>();
-            for (int i = 0; i < columnCount; i++) {
-                offs.add(i * rowCount);
-            }
-            this.offsets.clear();
-            this.offsets.addAll(offs);
-            for (var c : virtualFlow.getCells()) {
-                c.requestLayout();
-            }
-            virtualFlow.setCellCount(this.offsets.size());
-        } finally {
-            updatingOffsets = false;
+        this.offsets.clear();
+        this.offsets.addAll(offs);
+        for (var c : virtualFlow.getCells()) {
+            c.requestLayout();
         }
+        virtualFlow.setCellCount(this.offsets.size());
     }
 }
