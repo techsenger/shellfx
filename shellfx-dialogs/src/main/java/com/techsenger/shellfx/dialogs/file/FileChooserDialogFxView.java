@@ -26,6 +26,7 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.list.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -68,7 +69,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import com.techsenger.shellfx.material.icon.FontIcon;
 
 /**
  * There two modes - details and list. As both modes require sorting we use table and its sorting in both modes. But
