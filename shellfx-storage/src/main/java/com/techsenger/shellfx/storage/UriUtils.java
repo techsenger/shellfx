@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.annotations.Nullable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
@@ -77,7 +78,7 @@ public final class UriUtils {
      * @return the parent URI, the file storage URI if there is only one level, or {@code null} if the URI matches
      * the file storage URI exactly
      */
-    public static URI getParentUri(URI fileStorageUri, URI uri) {
+    public static @Nullable URI getParentUri(URI fileStorageUri, URI uri) {
         var segments = UriUtils.getPathSegments(fileStorageUri, uri);
         return getParentUri(fileStorageUri, uri, segments);
     }
@@ -96,7 +97,7 @@ public final class UriUtils {
      * @return the parent URI, the file storage URI if there is only one level, or {@code null} if the URI matches
      * the file storage URI exactly
      */
-    public static URI getParentUri(URI fileStorageUri, URI uri, List<String> segments) {
+    public static @Nullable URI getParentUri(URI fileStorageUri, URI uri, List<String> segments) {
         if (segments.isEmpty()) {
             return null;
         }
