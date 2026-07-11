@@ -28,8 +28,6 @@ public interface DockHostView extends AreaView {
 
     interface Composer extends AreaView.Composer {
 
-        SplitSpacePort getRootPort();
-
         AreaPort getMainPort();
 
         void showBar(Side side);

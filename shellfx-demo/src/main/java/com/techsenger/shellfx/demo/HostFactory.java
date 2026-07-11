@@ -31,7 +31,6 @@ import com.techsenger.shellfx.layout.dockhost.SideBarPolicy;
 import com.techsenger.shellfx.layout.dockhost.TabDockFxView;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.layout.tabhost.TabHostPresenter;
-import javafx.geometry.Orientation;
 
 /**
  *
@@ -50,24 +49,37 @@ public final class HostFactory {
 
     public static DockHostFxView<?> createDockHost(ShellFxView<?> shell,
             HistoryProvider<DockHostHistory> historyProvider) {
-        var view = new DockHostFxView<>();
+        var view = new DockHostFxView<>() {
+            public class Composer extends DockHostFxView<?>.Composer {
+
+                @Override
+                public TabDockFxView<?> createTabDock() {
+                    var tabDock = super.createTabDock();
+                    tabDock.getPresenter().setMinimizable(true);
+                    return tabDock;
+                }
+            }
+
+            @Override
+            protected DockHostFxView.Composer createComposer() {
+                return new Composer();
+            }
+        };
         var params = new DockHostParams(historyProvider);
         params.setHistoryPolicy(HistoryPolicy.NONE);
         var presenter = new DockHostPresenter<>(view, params);
         presenter.initialize();
         view.getComposer().setBottomBarPolicy(SideBarPolicy.EXISTS_ALWAYS);
+        return view;
+    }
 
-        var leftTabDock = view.getComposer().createTabDock();
+    public static TabDockFxView<?> createLeftTabDock(ShellFxView<?> shell, DockHostFxView<?> dockHost) {
+        var leftTabDock = dockHost.getComposer().createTabDock();
         leftTabDock.getPresenter().setDraggable(true);
         leftTabDock.getPresenter().setMinimizable(true);
         fillTabs(shell, leftTabDock);
         leftTabDock.selectTab(0);
-
-        var splitSpace = view.getComposer().createSplitSpace();
-        splitSpace.getPresenter().setOrientation(Orientation.HORIZONTAL);
-        view.getComposer().setRoot(splitSpace);
-        splitSpace.getComposer().addChild(leftTabDock);
-        return view;
+        return leftTabDock;
     }
 
     private static void fillTabs(ShellFxView<?> shell, TabDockFxView<?> tabDock) {

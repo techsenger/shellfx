@@ -16,12 +16,22 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.shellfx.core.area.AreaView;
-
 /**
+ * A node in a docking layout tree, describing a {code SplitPane} or a single {@code SplitPane} section.
+ * <p>
+ * A node is either an {@link AreaModelNode} (a leaf holding an area) or a {@link SplitModelNode} (a nested split
+ * holding further nodes). Only one {@link AreaModelNode} in the whole tree cab be the main area — see
+ * {@link AreaModelNode#isMain()}.
  *
  * @author Pavel Castornii
  */
-public interface SplitSpaceView extends AreaView, SplitSpaceShared {
+public sealed interface ModelNode permits AreaModelNode, SplitModelNode  {
 
+    /**
+     * Returns this node's relative size among its siblings.
+     *
+     * @return a value between {@code 0} and {@code 1}, or
+     *         {@link ModelNodeBuilder#UNSET_PROPORTION}
+     */
+    double getProportion();
 }

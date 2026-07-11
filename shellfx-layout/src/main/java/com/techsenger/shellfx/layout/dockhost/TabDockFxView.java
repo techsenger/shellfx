@@ -17,14 +17,15 @@
 package com.techsenger.shellfx.layout.dockhost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabpanepro.core.TabEvent;
-import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.shellfx.core.tab.TabFxView;
 import com.techsenger.shellfx.layout.style.LayoutIcons;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.tabpanepro.core.TabEvent;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import java.util.List;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -152,7 +153,8 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
 
         var tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.setTabDragCursor(Cursor.CLOSED_HAND);
-        tabHeaderArea.setTabDragContentFactory((s) -> getComposer().getDockHost().createTabDragContent(s));
+        tabHeaderArea.setTabDragContentFactory((s) -> getComposer().getDockHost()
+                .getDragAndDropHandler().createTabDragContent(s));
         tabHeaderArea.setTabDragScrollStep(10.0);
 
     }
@@ -160,9 +162,10 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        dragIconView.setOnDragDetected(e -> getComposer().getDockHost().onDockDragDetected(this, dragIconView, e));
-        dragIconView.setOnMouseDragged(e -> getComposer().getDockHost().onDockMouseDragged(this, dragIconView, e));
-        dragIconView.setOnMouseReleased(e -> getComposer().getDockHost().onDockMouseReleased(this, dragIconView, e));
+        DockHostFxView.DragAndDropHandler dragAndDropHandler = provideDragAndDropHandler();
+        dragIconView.setOnDragDetected(e -> dragAndDropHandler.onDockDragDetected(this, dragIconView, e));
+        dragIconView.setOnMouseDragged(e -> dragAndDropHandler.onDockMouseDragged(this, dragIconView, e));
+        dragIconView.setOnMouseReleased(e -> dragAndDropHandler.onDockMouseReleased(this, dragIconView, e));
         minimizeButton.setOnAction(e -> {
             getPresenter().onMinimize();
             getComposer().getDockHost().getComposer().minimizeTabDock(this);
@@ -173,20 +176,20 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         var tabPane = getNode();
         tabPane.addEventHandler(TabEvent.TAB_DRAG_STARTED, (e) -> {
             if (e.getTarget() == getNode()) {
-                getComposer().getDockHost().onTabDrag(e.getTab());
+                dragAndDropHandler.onTabDrag(e.getTab());
                 e.consume();
             }
         });
         // this handler is called when mouse is over TabHeaderArea
         tabPane.addEventHandler(TabEvent.TAB_DROPPED, (e) -> {
             if (e.getTarget() == getNode()) {
-                getComposer().getDockHost().onTabDrop(e.getTab());
+                dragAndDropHandler.onTabDrop(e.getTab());
                 e.consume();
             }
         });
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
-                e -> getComposer().getDockHost().onTabHeaderAreaMouseDragOver(tabPane, e));
+                e -> dragAndDropHandler.onTabHeaderAreaMouseDragOver(tabPane, e));
     }
 
     protected Button getMinimizeButton() {
@@ -217,4 +220,13 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     protected int getDragIconViewIndex() {
         return 0;
     }
+
+    private @Nullable DockHostFxView.DragAndDropHandler provideDragAndDropHandler() {
+        if (getComposer().getDockHost() != null) {
+            return getComposer().getDockHost().getDragAndDropHandler();
+        } else {
+            return null;
+        }
+    }
+
 }

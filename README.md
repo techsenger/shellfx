@@ -430,9 +430,6 @@ tab ports, and more.
 `DockHost` is the main component of the docking layout and one of the most complex components in the platform.
 Before describing how it works, let’s examine its child components.
 
-`SplitSpace` is a component that extends `Area`. It internally contains a `SplitPane` node and is responsible for
-arranging child components either vertically or horizontally.
-
 `TabDock` extends `TabHost`, meaning it can contain tabs. In addition, it introduces docking-specific functionality
 such as dragging an entire `TabDock` from one layout position to another, collapsing it into a `SideBar`, and
 similar behaviors.
@@ -441,15 +438,24 @@ similar behaviors.
 be shown even when it contains no collapsed `TabDock` components, using `SideBarPolicy`. This is useful when the
 `SideBar` is intended to host additional UI elements besides collapsed `TabDock`s.
 
-Now that the components are introduced, let’s outline how everything works together. A docking layout is always
-represented as a tree. Therefore, the layout must be constructed using `SplitSpace` nodes. A `SplitSpace` can contain
-other `SplitSpace` instances (to change orientation), `TabDock` instances (to host `Tab`s), or any `Area`-based
-component as a leaf node. After constructing the component tree, the method `Composer#setRoot(SplitSpaceFxView<?>)`
-must be called.
+Now that the components are introduced, let’s outline how everything works together. DockHost provides two complementary
+APIs for working with docking layouts.
 
-In addition to building the component tree, `DockHost` requires specifying the main component — the component relative
-to which all other components are positioned. The main component can be an `Area` or any class derived from it
-(including `TabDock` and `SplitSpace`). It is set using the method `Composer#setMain(AreaFxView<?>)`.
+The first is the model-based API, which is intended for complete layout construction, restoration, and serialization.
+A docking layout is described as an immutable `ModelNode` tree. Each node represents either a split or a leaf component.
+Split nodes define the layout orientation (`HORIZONTAL` or `VERTICAL`), while leaf nodes contain `Area`-based components
+ displayed in the workspace. The layout model is created using `ModelNodeBuilder` and applied to `DockHost` using
+`Composer#applyModel(ModelNode)`. The current layout can be obtained using `Composer#captureModel()`. This approach is
+recommended when initializing a workspace, restoring a previously saved layout, or persisting the current layout state.
+
+The second is the anchor-based API, which is intended for incremental runtime modifications. Instead of rebuilding the
+entire layout model, it performs targeted operations relative to an existing anchor component. This API is used for
+operations such as adding a new area next to an existing area, replacing a component, removing a component, or
+performing docking operations initiated by the user.
+
+In addition to defining the layout structure, `DockHost` can have a main component — the component relative to which
+ all other components are positioned. The main component can be any `Area`-based component and is defined in the model
+using `ModelNodeBuilder#mainArea(...)`.
 
 ### PageHost <a name="layout-page-host"></a>
 

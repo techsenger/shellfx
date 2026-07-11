@@ -31,9 +31,10 @@ import com.techsenger.shellfx.demo.menu.window.WindowMenuRegistrar;
 import com.techsenger.shellfx.demo.settings.DemoSettings;
 import com.techsenger.shellfx.demo.styles.StylesTabFxView;
 import com.techsenger.shellfx.demo.styles.StylesTabPresenter;
-import com.techsenger.shellfx.icons.MdiIconFont;
 import com.techsenger.shellfx.icons.IconStylesheetFactory;
+import com.techsenger.shellfx.icons.MdiIconFont;
 import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
+import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.IconStylesheets;
@@ -43,6 +44,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -135,10 +137,15 @@ public class Demo extends Application {
             case IDE -> {
                 var dockHost = HostFactory.createDockHost(shellView, () -> context.getHistoryManager()
                         .getOrCreateHistory(DockHostHistory.class, DockHostHistory::new));
-                var rightTabDock = dockHost.getComposer().createTabDock();
-                dockHost.getComposer().getRoot().getComposer().addChild(rightTabDock);
-                dockHost.getComposer().setMain(rightTabDock);
                 workspace = dockHost;
+                var leftTabDock = HostFactory.createLeftTabDock(shellView, dockHost);
+                var rightTabDock = dockHost.getComposer().createTabDock();
+
+                var modelRoot = ModelNodeBuilder.root(Orientation.HORIZONTAL, s -> s
+                        .area(leftTabDock)
+                        .mainArea(rightTabDock));
+                dockHost.getComposer().applyModel(modelRoot);
+
             }
             case MDI -> {
                 workspace = null;

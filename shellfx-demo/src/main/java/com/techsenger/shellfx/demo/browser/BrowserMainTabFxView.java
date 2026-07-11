@@ -21,6 +21,7 @@ import com.techsenger.shellfx.core.tab.AbstractHostTabFxView;
 import com.techsenger.shellfx.demo.HostFactory;
 import com.techsenger.shellfx.demo.main.TestInterface;
 import com.techsenger.shellfx.layout.dockhost.DockHostFxView;
+import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
 import com.techsenger.shellfx.layout.dockhost.TabDockFxView;
 import com.techsenger.shellfx.layout.dockhost.UtilityDockContainerFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
@@ -52,16 +53,20 @@ public class BrowserMainTabFxView extends AbstractHostTabFxView<BrowserMainTabPr
         public void compose() {
             super.compose();
             var historyManager = getShell().getPresenter().getContext().getHistoryManager();
-            var dockHost = HostFactory
-                    .createDockHost(getShell(),
-                            () -> historyManager.getHistory(BrowserMainTabHistory.class).getDockHost());
+            var dockHost = HostFactory.createDockHost(getShell(),
+                    () -> historyManager.getHistory(BrowserMainTabHistory.class).getDockHost());
             getModifiableChildren().add(dockHost);
             view.dockHost = dockHost;
             view.addLayout();
 
+            var leftTabDock = HostFactory.createLeftTabDock(getShell(), dockHost);
             var textViewer = createTextViewer();
-            dockHost.getComposer().setMain(textViewer);
-            dockHost.getComposer().getRoot().getComposer().addChild(textViewer);
+
+            var modelRoot = ModelNodeBuilder.root(Orientation.HORIZONTAL, s -> s
+                        .area(leftTabDock)
+                        .mainArea(textViewer));
+
+            dockHost.getComposer().applyModel(modelRoot);
         }
 
         @Override
