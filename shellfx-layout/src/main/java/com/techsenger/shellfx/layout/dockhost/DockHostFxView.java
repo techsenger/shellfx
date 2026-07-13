@@ -2227,12 +2227,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         return container;
     }
 
-    private static void destroyContainer(AbstractContainer container) {
-        // it is necessary to remove the component node from the container
-        // because we will continue to use the component, but not the container
-        container.getChildren().clear();
-    }
-
     /**
      * Returns the existing container node for a component that is currently on the scene.
      * @param view
