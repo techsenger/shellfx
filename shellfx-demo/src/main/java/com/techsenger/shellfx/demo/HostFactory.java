@@ -56,6 +56,7 @@ public final class HostFactory {
                 public TabDockFxView<?> createTabDock() {
                     var tabDock = super.createTabDock();
                     tabDock.getPresenter().setMinimizable(true);
+                    tabDock.getPresenter().setDraggable(true);
                     return tabDock;
                 }
             }
