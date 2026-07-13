@@ -19,14 +19,14 @@ package com.techsenger.shellfx.layout.dockhost;
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.FxViewUtils;
-import com.techsenger.tabpanepro.core.TabPanePro;
-import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
-import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.shellfx.core.area.AbstractAreaFxView;
 import com.techsenger.shellfx.core.tab.TabFxView;
 import com.techsenger.shellfx.layout.style.LayoutIcons;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -434,7 +434,7 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
                 return i;
             }
             var tabDock = getComposer().tabDocks.get(i);
-            index += tabDock.getComposer().getTabPorts().size();
+            index += tabDock.getComposer().getDetachedTabs().size();
         }
         return -1;
     }
