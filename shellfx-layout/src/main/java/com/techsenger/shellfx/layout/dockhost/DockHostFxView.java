@@ -1538,7 +1538,12 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             if (logger.isDebugEnabled()) {
                 logger.debug("{} Wrapped {} into {}", dockHost.getDescriptor().getLogPrefix(),
                         container.getChildFullName(), newSplitPane.getFullName());
+                dockHost.printTreeDebugInfo();
             }
+            // force CSS/layout so SplitPane's skin actually reparents `container`, otherwise container.getParent()
+            // (and getParentSplitPane()) may still be null right after this call, if the new SplitPane's skin hasn't
+            // been created yet
+            refresh();
 
             return newSplitPaneContainer;
         }
@@ -1593,6 +1598,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                     }
                 } // otherwise there is a splitSpace with one main component
             }
+            dockHost.printTreeDebugInfo();
         }
 
         /**
