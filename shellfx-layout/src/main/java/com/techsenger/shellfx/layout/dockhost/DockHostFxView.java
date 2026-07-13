@@ -2514,12 +2514,35 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             return getLeftPopup() == null ? null : getLeftPopup().getPresenter();
         }
 
+        /**
+         * Identifies which of the docking layout's children is the main area.
+         * <p>
+         * Setting this property does not change the layout's structure — it does not move, add, or remove any area
+         * from the tree. It only tells the system which existing area is considered main, which is used, for example,
+         * to determine the side a {@link TabDockFxView} should be minimized to relative to it.
+         *
+         * @return the main area property
+         */
+        public final ObjectProperty<AreaFxView<?>> mainProperty() {
+            return main;
+        }
+
+        /**
+         * Returns the value of {@link #mainProperty()}.
+         *
+         * @return the main area
+         */
         public final AreaFxView<?> getMain() {
             return main.get();
         }
 
-        public final ObjectProperty<AreaFxView<?>> mainProperty() {
-            return main;
+        /**
+         * Sets the value of {@link #mainProperty()}.
+         *
+         * @param value the main area
+         */
+        public void setMain(AreaFxView<?> value) {
+            this.main.set(value);
         }
 
         public final SideBarFxView<?> getRightBar() {
@@ -2714,10 +2737,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private void setLeftPopup(TabPopupFxView<?> value) {
             this.leftPopup.set(value);
-        }
-
-        private void setMain(AreaFxView<?> value) {
-            this.main.set(value);
         }
     }
 

@@ -438,6 +438,16 @@ similar behaviors.
 be shown even when it contains no collapsed `TabDock` components, using `SideBarPolicy`. This is useful when the
 `SideBar` is intended to host additional UI elements besides collapsed `TabDock`s.
 
+When a `TabDock` is minimized to a `SideBar`, any of its minimized tabs can be previewed in a `TabPopup` component,
+which allows its width to be resized.
+
+In addition to defining the layout structure, a `DockHost` must have a main component — the component relative to
+which all other components are positioned. The main component can be any `Area`-based component and is specified in
+the model using `ModelNodeBuilder#mainArea(...)` or dynamically via `Composer`.
+
+If no main component is defined, minimizing a `TabDock` to a `SideBar` will not work correctly, as the system will be
+unable to determine which `SideBar` the `TabDock` should be minimized to.
+
 Now that the components are introduced, let’s outline how everything works together. DockHost provides two complementary
 APIs for working with docking layouts.
 
@@ -452,10 +462,6 @@ The second is the anchor-based API, which is intended for incremental runtime mo
 entire layout model, it performs targeted operations relative to an existing anchor component. This API is used for
 operations such as adding a new area next to an existing area, replacing a component, removing a component, or
 performing docking operations initiated by the user.
-
-In addition to defining the layout structure, `DockHost` can have a main component — the component relative to which
- all other components are positioned. The main component can be any `Area`-based component and is defined in the model
-using `ModelNodeBuilder#mainArea(...)`.
 
 ### PageHost <a name="layout-page-host"></a>
 
