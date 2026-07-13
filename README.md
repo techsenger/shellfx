@@ -250,7 +250,7 @@ TabContainer <|.. TabHost
 WindowContainer <|.. AbstractHostWindow
 WindowContainer <|.. AbstractHostTab
 
-%% composition: 0..N TabDock inside TabDockHost
+%% composition: 0..N TabDock inside DockHost
 DockHost "1" o-- "0..*" TabDock
 AbstractArea <|-- DockHost
 ```
@@ -443,10 +443,10 @@ which allows its width to be resized.
 
 In addition to defining the layout structure, a `DockHost` must have a main component — the component relative to
 which all other components are positioned. The main component can be any `Area`-based component and is specified in
-the model using `ModelNodeBuilder#mainArea(...)` or dynamically via `Composer`.
-
-If no main component is defined, minimizing a `TabDock` to a `SideBar` will not work correctly, as the system will be
-unable to determine which `SideBar` the `TabDock` should be minimized to.
+the model using `ModelNodeBuilder#mainArea(...)` or dynamically via `Composer`. The main component is required for
+minimizing a `TabDock` to a `SideBar`, since the system relies on it to determine which side, and therefore which
+`SideBar`, the `TabDock` should be minimized to; attempting this operation without a main component results in an
+exception.
 
 Now that the components are introduced, let’s outline how everything works together. DockHost provides two complementary
 APIs for working with docking layouts.
@@ -455,8 +455,9 @@ The first is the model-based API, which is intended for complete layout construc
 A docking layout is described as an immutable `ModelNode` tree. Each node represents either a split or a leaf component.
 Split nodes define the layout orientation (`HORIZONTAL` or `VERTICAL`), while leaf nodes contain `Area`-based components
  displayed in the workspace. The layout model is created using `ModelNodeBuilder` and applied to `DockHost` using
-`Composer#applyModel(ModelNode)`. The current layout can be obtained using `Composer#captureModel()`. This approach is
-recommended when initializing a workspace, restoring a previously saved layout, or persisting the current layout state.
+`Composer#applyModel(SplitModelNode)`. The current layout can be obtained using `Composer#captureModel()`. This approach
+is recommended when initializing a workspace, restoring a previously saved layout, or persisting the current layout
+state.
 
 The second is the anchor-based API, which is intended for incremental runtime modifications. Instead of rebuilding the
 entire layout model, it performs targeted operations relative to an existing anchor component. This API is used for
@@ -529,8 +530,23 @@ provides information about the class hierarchy of the selected component.
 
 ### NodeTab <a name="devtools-node-tab"></a>
 
-`NodeTab` is a tool for analyzing the JavaFX scene graph. It allows traversing the node tree and inspecting node
-properties. The component also enables opening reference documentation (Javadoc) for both classes and their properties.
+NodeTab is an interactive inspector for the JavaFX scene graph. It allows developers to explore the node hierarchy,
+inspect JavaFX properties, and modify supported property values at runtime without restarting the application.
+The component also enables opening reference documentation (Javadoc) for both classes and their properties.
+
+When working with JavaFX properties, the right panel provides the ability to inspect property values and edit them
+using dedicated dialogs, which can be opened by right-clicking a `Property` in the panel.
+
+`ViewDialog` displays the full value of a property. This is particularly useful when the value is too long to fit
+within the property table.
+
+`TextEditorDialog`, `EnumEditorDialog`, and `InsetsEditorDialog` allow editing different types of properties.
+`TextEditorDialog` supports properties whose values can be represented as text (such as `Number`, `Boolean`, `String`,
+and similar types), `EnumEditorDialog` is intended for properties backed by enumerations, and `InsetsEditorDialog`
+is used for properties of type `Insets`.
+
+Being able to modify property values without restarting the application greatly simplifies debugging and makes it
+much easier to experiment with and determine the appropriate values for JavaFX node properties.
 
 ### EventTab <a name="devtools-event-tab"></a>
 
