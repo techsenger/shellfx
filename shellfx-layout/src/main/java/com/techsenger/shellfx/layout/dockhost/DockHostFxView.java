@@ -121,10 +121,10 @@ import org.slf4j.LoggerFactory;
  * <p>Containers have two elements: indicator, which highlights the new tab position, and eventPane, which tracks
  * mouse movement inside the component during a drag-and-drop operation.
  *
- * <p>How it works. When the user starts a drag-and-drop operation and moves the mouse, an instance of {@link DropPosition}
- * is created. If the user releases the mouse, the data in this object is used to perform the relocation of either a Tab
- * or a TabDock. The reason for creating this object so early is that, while the user is moving the mouse, a potential
- * drop position needs to be highlighted, and that also requires a {@link DropPosition}.
+ * <p>How it works. When the user starts a drag-and-drop operation and moves the mouse, an instance of
+ * {@link DropPosition} is created. If the user releases the mouse, the data in this object is used to perform the
+ * relocation of either a Tab or a TabDock. The reason for creating this object so early is that, while the user is
+ * moving the mouse, a potential drop position needs to be highlighted, and that also requires a {@link DropPosition}.
  *
  * <p>The user can move either a single Tab or an entire existing TabDock. It is important to note that drag-and-drop
  * support for Tab is already implemented in TabPanePro, whereas the drag-and-drop functionality for TabDock is
@@ -364,7 +364,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
         }
 
-        private void handleMouseDragOverOnTabHeaderArea(MousePosition mousePosition, TabDockContainer tabDockContainer) {
+        private void handleMouseDragOverOnTabHeaderArea(MousePosition mousePosition,
+                TabDockContainer tabDockContainer) {
             hideIndicator();
             dockHost.dropPosition =
                     dockHost.dropPositionResolver.provideTabAreaPosition(mousePosition, tabDockContainer);
@@ -476,11 +477,11 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         CLOSE, MOVE, MINIMIZE
     }
 
-    private static abstract class AbstractContainer extends StackPane {
+    private abstract static class AbstractContainer extends StackPane {
 
         private final DockHostFxView<?> dockHost;
 
-        public AbstractContainer(DockHostFxView<?> dockHost) {
+        AbstractContainer(DockHostFxView<?> dockHost) {
             this.dockHost = dockHost;
         }
 
@@ -1121,7 +1122,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private final Transformer transformer;
 
-        public DropPositionResolver(DockHostFxView<?> dockHost) {
+        DropPositionResolver(DockHostFxView<?> dockHost) {
             this.dockHost = dockHost;
             this.transformer = dockHost.transformer;
         }
@@ -1438,8 +1439,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             if (dockHost.dragAndDropHandler.dragDock != null) {
                 var dragDockContainer = getContainer(dockHost.dragAndDropHandler.dragDock);
                 DockSplitPane splitPane = dragDockContainer.getParentSplitPane();
-                if (info.getEventPosition().getContainer().getParentSplitPane() ==
-                        dragDockContainer.getParentSplitPane()) {
+                if (info.getEventPosition().getContainer().getParentSplitPane()
+                        == dragDockContainer.getParentSplitPane()) {
                     var dragDockPos = dragDockContainer.resolvePosition();
                     var dragDockIndex = dragDockPos.getIndex();
                     var eventIndex = info.getEventPosition().getIndex();
@@ -1497,7 +1498,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private final DockHostFxView<?>.Composer composer;
 
-        public Transformer(DockHostFxView<?> dockHost) {
+        Transformer(DockHostFxView<?> dockHost) {
             this.dockHost = dockHost;
             this.composer = dockHost.getComposer();
         }
@@ -1733,8 +1734,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * @param sideShouldBeChecked
          * @param size
          */
-        private void addTabDock(double[] grandParentPositions, SplitPaneContainer parentContainer, TabDockFxView<?> dock,
-                int index, Side side, boolean sideShouldBeChecked, double size) {
+        private void addTabDock(double[] grandParentPositions, SplitPaneContainer parentContainer,
+                TabDockFxView<?> dock, int index, Side side, boolean sideShouldBeChecked, double size) {
             dock.getComposer().setDockHost(dockHost);
             if (sideShouldBeChecked && !checkNewSide(parentContainer, index, side)) {
                 boolean wrapParent = false;
@@ -1794,7 +1795,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          *
          * @param tabDockInfo
          */
-        private void removeTabDock(ContainerPosition parent, ContainerPosition tabDockInfo, TabDockOperation operation) {
+        private void removeTabDock(ContainerPosition parent, ContainerPosition tabDockInfo,
+                TabDockOperation operation) {
             TabDockContainer tabDockContainer = (TabDockContainer) tabDockInfo.getContainer();
             AreaFxView<?> componentToRemove = tabDockContainer.getArea();
             var splitPaneContainer = ((SplitPaneContainer) parent.getContainer());
@@ -1931,8 +1933,9 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                                     updateUuidInPositions(oldParentUuid, parent.getChildUuid());
                                 }
                             }
-                            logger.debug("{} Original parent split pane not available; nearest living ancestor {} is used",
-                                    dockHost.getDescriptor().getLogPrefix(), parent.getChildFullName());
+                            logger.debug("{} Original parent split pane not available; "
+                                    + "nearest living ancestor {} is used", dockHost.getDescriptor().getLogPrefix(),
+                                    parent.getChildFullName());
                             break;
                         }
                     }
@@ -2029,8 +2032,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("{} If tabDock is added into {} at {} its side will be {}, when {} is required",
-                        dockHost.getDescriptor().getLogPrefix(), parentContainer.getChildFullName(), index, resolvedSide,
-                        side);
+                        dockHost.getDescriptor().getLogPrefix(), parentContainer.getChildFullName(), index,
+                        resolvedSide, side);
             }
             return resolvedSide == side;
         }

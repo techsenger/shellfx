@@ -45,7 +45,7 @@ class DockSplitPane extends SplitPane {
 
     private final String fullName;
 
-    public DockSplitPane(String logPrefix) {
+    DockSplitPane(String logPrefix) {
         this.logPrefix = logPrefix;
         this.shortUuid = uuid.toString().substring(0, 8);
         this.fullName = getClass().getSimpleName() + "@" + shortUuid;
