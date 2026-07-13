@@ -1954,11 +1954,19 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 logger.debug("{} Minimized position: {}", dockHost.getDescriptor().getLogPrefix(), position);
             }
 
-            var splitPane = parent.getSplitPane();
-            var dockSize = position.getWidth();
-            if (splitPane.getOrientation() == Orientation.VERTICAL) {
-                dockSize = position.getHeight();
-            }
+            // IMPORTANT: the dock's target size (width or height) must be picked based on `side`, not on the current
+            // orientation of `parent`'s split pane. `parent` here is only a *candidate* destination — `addTabDock` may
+            // still wrap it in a new split pane with the opposite orientation if `checkNewSide` rejects it (this is
+            // exactly what happens when attempt 2 falls back to the root and the root's orientation doesn't match
+            // `side`). If we read the orientation from `parent` at this point, we may pick the wrong dimension: e.g.
+            // `side == BOTTOM` requires height, but if `parent`'s split pane still shows HORIZONTAL orientation because
+            // it hasn't been wrapped yet, we'd wrongly take width instead.
+            //
+            // The side-to-orientation mapping, unlike `parent`'s orientation, is a fixed invariant: LEFT/RIGHT always
+            // end up in a HORIZONTAL split (so width matters), TOP/BOTTOM always end up in a VERTICAL split (so height
+            // matters) - regardless of what `addTabDock` does with `parent` afterward.
+            var dockSize = (side == Side.LEFT || side == Side.RIGHT) ? position.getWidth() : position.getHeight();
+
             addTabDock(grandParentPositions, parent, dock, index, side, sideShouldBeChecked, dockSize);
         }
 
