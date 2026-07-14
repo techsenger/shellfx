@@ -18,17 +18,16 @@ package com.techsenger.shellfx.layout.dockhost;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.tabpanepro.core.TabPanePro;
-import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.shellfx.core.area.AbstractAreaFxView;
 import com.techsenger.shellfx.core.tab.TabFxView;
 import com.techsenger.shellfx.core.tab.TabPort;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Dimension2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import static javafx.geometry.Side.BOTTOM;
@@ -104,12 +103,9 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
 
     private boolean isResizing = false;
 
-    private final Dimension2D centerDimension;
-
-    public TabPopupFxView(SideBarFxView<?> sideBar, Dimension2D centerDimension) {
+    public TabPopupFxView(SideBarFxView<?> sideBar) {
         super();
         getComposer().sideBar = sideBar;
-        this.centerDimension = centerDimension;
     }
 
     @Override
@@ -120,6 +116,20 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
     @Override
     public Region getNode() {
         return this.node;
+    }
+
+    @Override
+    public void setHeight(double height) {
+        node.setPrefHeight(height);
+        node.setMinHeight(height);
+        node.setMaxHeight(height);
+    }
+
+    @Override
+    public void setWidth(double width) {
+        node.setPrefWidth(width);
+        node.setMinWidth(width);
+        node.setMaxWidth(width);
     }
 
     @Override
@@ -147,7 +157,19 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
         hBox.setMaxHeight(HBox.USE_PREF_SIZE);
         lastArea.getChildren().add(hBox);
 
-        setInitialSizeAndPosition();
+        switch (getPresenter().getSide()) {
+            case RIGHT:
+                StackPane.setAlignment(node, Pos.TOP_RIGHT);
+                break;
+            case BOTTOM:
+                StackPane.setAlignment(node, Pos.BOTTOM_LEFT);
+                break;
+            case LEFT:
+                StackPane.setAlignment(node, Pos.TOP_LEFT);
+                break;
+            default:
+                throw new AssertionError();
+        }
         var css = TabPopupFxView.class.getResource("tab-popup.css").toExternalForm();
         this.getNode().getStylesheets().add(css);
     }
@@ -213,29 +235,29 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
         return tabPane;
     }
 
-    void updateSize(double centerWidth, double centerHeight) {
-        double width = this.node.getWidth();
-        double height = this.node.getHeight();
-        switch (getPresenter().getSide()) {
-            case RIGHT:
-                width = Math.min(centerWidth, width);
-                height = centerHeight;
-                break;
-            case BOTTOM:
-                height = Math.min(centerHeight, height);
-                width = centerWidth;
-                break;
-            case LEFT:
-                width = Math.min(centerWidth, width);
-                height = centerHeight;
-                break;
-            default:
-                throw new AssertionError();
-        }
-        node.setPrefSize(width, height);
-        node.setMinSize(width, height);
-        node.setMaxSize(width, height);
-    }
+//    void updateSize(double centerWidth, double centerHeight) {
+//        double width = this.node.getWidth();
+//        double height = this.node.getHeight();
+//        switch (getPresenter().getSide()) {
+//            case RIGHT:
+//                width = Math.min(centerWidth, width);
+//                height = centerHeight;
+//                break;
+//            case BOTTOM:
+//                height = Math.min(centerHeight, height);
+//                width = centerWidth;
+//                break;
+//            case LEFT:
+//                width = Math.min(centerWidth, width);
+//                height = centerHeight;
+//                break;
+//            default:
+//                throw new AssertionError();
+//        }
+//        node.setPrefSize(width, height);
+//        node.setMinSize(width, height);
+//        node.setMaxSize(width, height);
+//    }
 
     private void setResizeCursor() {
         switch (getPresenter().getSide()) {
@@ -255,31 +277,6 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
 
     private void restoreCursor() {
         this.node.setCursor(Cursor.DEFAULT);
-    }
-
-    private void setInitialSizeAndPosition() {
-        double width = centerDimension.getWidth();
-        double height = centerDimension.getHeight();
-        var presenter = getPresenter();
-        switch (presenter.getSide()) {
-            case RIGHT:
-                width = Math.min(presenter.getOldWidth(), width);
-                StackPane.setAlignment(node, Pos.TOP_RIGHT);
-                break;
-            case BOTTOM:
-                height = Math.min(presenter.getOldHeight(), height);
-                StackPane.setAlignment(node, Pos.BOTTOM_LEFT);
-                break;
-            case LEFT:
-                width = Math.min(presenter.getOldWidth(), width);
-                StackPane.setAlignment(node, Pos.TOP_LEFT);
-                break;
-            default:
-                throw new AssertionError();
-        }
-        node.setPrefSize(width, height);
-        node.setMinSize(width, height);
-        node.setMaxSize(width, height);
     }
 
     private boolean hasMouseMovedToSideBar(MouseEvent e) {

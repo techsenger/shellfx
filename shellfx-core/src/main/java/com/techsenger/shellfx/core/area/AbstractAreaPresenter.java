@@ -55,4 +55,12 @@ public abstract class AbstractAreaPresenter<V extends AreaView>
     protected void onHeightChanged(double height) {
         this.height = height;
     }
+
+    protected void setWidth(double width) {
+        this.width = width;
+    }
+
+    protected void setHeight(double height) {
+        this.height = height;
+    }
 }

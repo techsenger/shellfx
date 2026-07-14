@@ -2113,14 +2113,23 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private final ReadOnlyObjectWrapper<SideBarFxView<?>> rightBar = new ReadOnlyObjectWrapper<>();
 
+        /**
+         * Popups are DockHost children because they are added to DockHost center pane.
+         */
         private final ReadOnlyObjectWrapper<TabPopupFxView<?>> rightPopup = new ReadOnlyObjectWrapper<>();
 
         private final ReadOnlyObjectWrapper<SideBarFxView<?>> bottomBar = new ReadOnlyObjectWrapper<>();
 
+        /**
+         * Popups are DockHost children because they are added to DockHost center pane.
+         */
         private final ReadOnlyObjectWrapper<TabPopupFxView<?>> bottomPopup = new ReadOnlyObjectWrapper<>();
 
         private final ReadOnlyObjectWrapper<SideBarFxView<?>> leftBar = new ReadOnlyObjectWrapper<>();
 
+        /**
+         * Popups are DockHost children because they are added to DockHost center pane.
+         */
         private final ReadOnlyObjectWrapper<TabPopupFxView<?>> leftPopup = new ReadOnlyObjectWrapper<>();
 
         private final ObjectProperty<SideBarPolicy> rightBarPolicy =
@@ -2644,18 +2653,12 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     protected void addListeners() {
         super.addListeners();
         centerStackPane.widthProperty().addListener((ov2, oldV2, newV2) -> {
-            var w = centerStackPane.getWidth();
-            var h = centerStackPane.getHeight();
-            updatePopupSize(getComposer().getRightBar(), w, h);
-            updatePopupSize(getComposer().getBottomBar(), w, h);
-            updatePopupSize(getComposer().getLeftBar(), w, h);
+            getPresenter().onCenterWidthChanged(newV2.doubleValue());
+
         });
         centerStackPane.heightProperty().addListener((ov2, oldV2, newV2) -> {
-            var w = centerStackPane.getWidth();
-            var h = centerStackPane.getHeight();
-            updatePopupSize(getComposer().getRightBar(), w, h);
-            updatePopupSize(getComposer().getBottomBar(), w, h);
-            updatePopupSize(getComposer().getLeftBar(), w, h);
+            getPresenter().onCenterHeightChanged(newV2.doubleValue());
+
         });
     }
 
@@ -2673,15 +2676,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
     private AbstractAreaContainer<?> createContainer(AreaFxView<?> child) {
         return createContainer(this, child);
-    }
-
-    private void updatePopupSize(SideBarFxView<?> sideBar, double width, double height) {
-        if (sideBar != null) {
-            var popup = getPopup(sideBar.getPresenter().getSide());
-            if (popup != null) {
-                popup.updateSize(width, height);
-            }
-        }
     }
 
     private ReadOnlyObjectWrapper<TabPopupFxView<?>> resolvePopup(Side side) {

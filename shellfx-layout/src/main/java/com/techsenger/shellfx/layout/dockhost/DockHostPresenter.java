@@ -19,12 +19,17 @@ package com.techsenger.shellfx.layout.dockhost;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.area.AbstractAreaPresenter;
 import com.techsenger.shellfx.layout.LayoutComponents;
+import java.util.Arrays;
 
 /**
  *
  * @author Pavel Castornii
  */
 public class DockHostPresenter<V extends DockHostView> extends AbstractAreaPresenter<V> implements DockHostPort {
+
+    private double centerWidth;
+
+    private double centerHeight;
 
     public DockHostPresenter(V view, DockHostParams params) {
         super(view, params);
@@ -38,5 +43,29 @@ public class DockHostPresenter<V extends DockHostView> extends AbstractAreaPrese
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(LayoutComponents.DOCK_HOST);
+    }
+
+    protected void onCenterWidthChanged(double width) {
+        this.centerWidth = width;
+        var composer = getView().getComposer();
+        var popups = Arrays.asList(composer.getRightPopupPort(), composer.getBottomPopupPort(),
+                composer.getLeftPopupPort());
+        for (var popup :popups) {
+            if (popup != null) {
+                popup.onCenterWidthChanged(width);
+            }
+        }
+    }
+
+    protected void onCenterHeightChanged(double height) {
+        this.centerHeight = height;
+        var composer = getView().getComposer();
+        var popups = Arrays.asList(composer.getRightPopupPort(), composer.getBottomPopupPort(),
+                composer.getLeftPopupPort());
+        for (var popup :popups) {
+            if (popup != null) {
+                popup.onCenterHeightChanged(height);
+            }
+        }
     }
 }

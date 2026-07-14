@@ -38,6 +38,7 @@ public class SideBarPresenter<V extends SideBarView> extends AbstractAreaPresent
         return side;
     }
 
+    @Override
     public SideBarHistory getHistory() {
         return (SideBarHistory) super.getHistory();
     }

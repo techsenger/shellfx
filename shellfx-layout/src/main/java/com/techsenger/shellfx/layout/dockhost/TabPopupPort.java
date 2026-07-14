@@ -45,4 +45,8 @@ public interface TabPopupPort extends AreaPort {
     ViewAccess getViewAccess();
 
     Side getSide();
+
+    void onCenterWidthChanged(double width);
+
+    void onCenterHeightChanged(double height);
 }

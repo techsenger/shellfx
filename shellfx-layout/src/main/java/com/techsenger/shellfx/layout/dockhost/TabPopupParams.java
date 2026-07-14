@@ -30,14 +30,29 @@ public class TabPopupParams extends AreaParams {
 
     private final Side side;
 
-    public TabPopupParams(Side side, HistoryProvider<? extends TabPopupHistory> historyProvider) {
+    private final double centerWidth;
+
+    private final double centerHeight;
+
+    public TabPopupParams(Side side, double centerWidth, double centerHeight,
+            HistoryProvider<? extends TabPopupHistory> historyProvider) {
         this.side = side;
+        this.centerWidth = centerWidth;
+        this.centerHeight = centerHeight;
         setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(historyProvider);
     }
 
     public Side getSide() {
         return side;
+    }
+
+    public double getCenterWidth() {
+        return centerWidth;
+    }
+
+    public double getCenterHeight() {
+        return centerHeight;
     }
 
     @Override
