@@ -16,14 +16,17 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
+import com.techsenger.annotations.Unmodifiable;
 import static com.techsenger.shellfx.layout.dockhost.DockConstants.ONE_THIRD;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.LEFT;
+import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Region;
 import org.slf4j.Logger;
@@ -36,6 +39,13 @@ import org.slf4j.LoggerFactory;
 class DockSplitPane extends SplitPane {
 
     private static final Logger logger = LoggerFactory.getLogger(DockSplitPane.class);
+
+    /**
+     * The canonical, logical order of this split's children — both those currently live in {@link #getItems()}
+     * and those temporarily minimized (removed from {@link #getItems()} but still logically belonging here).
+     * This order never changes on minimize/restore, only on genuine structural changes (insert/remove/wrap/unwrap).
+     */
+    private final List<Node> logicalItems = new ArrayList<>();
 
     private final UUID uuid = UUID.randomUUID();
 
@@ -51,15 +61,90 @@ class DockSplitPane extends SplitPane {
         this.fullName = getClass().getSimpleName() + "@" + shortUuid;
     }
 
-    public UUID getUuid() {
+    /**
+     * Returns an unmodifiable view of all logical children — live and minimized alike, in canonical order.
+     */
+    @Unmodifiable List<Node> getLogicalItems() {
+        return Collections.unmodifiableList(logicalItems);
+    }
+
+    boolean isLive(Node node) {
+        return getItems().contains(node);
+    }
+
+    /**
+     * Inserts a brand-new child into both the live items and the canonical logical order.
+     *
+     * @param liveIndex the index among the currently-live items to insert at
+     * @param node the child to insert
+     */
+    void insertNew(int liveIndex, Node node) {
+        getItems().add(liveIndex, node);
+        logicalItems.add(resolveLogicalIndexForLiveIndex(liveIndex), node);
+    }
+
+    /**
+     * Replaces a brand-new child into both the live items and the canonical logical order.
+     *
+     * @param liveIndex the index among the currently-live items to insert at
+     * @param node the child to replace
+     */
+    void replace(int liveIndex, Node node) {
+        getItems().set(liveIndex, node);
+        logicalItems.set(resolveLogicalIndexForLiveIndex(liveIndex), node);
+    }
+
+    /**
+     * Removes a child entirely, from both live items and canonical order. Used when a child is permanently
+     * removed (e.g. a TabDock is closed), never when it is only minimized.
+     */
+    void removePermanently(Node node) {
+        getItems().remove(node);
+        logicalItems.remove(node);
+    }
+
+    /**
+     * Removes a child from the live items only, keeping it in the canonical logical order so it can later be
+     * restored at the correct position. Used when minimizing a TabDock to the SideBar.
+     */
+    void minimize(Node node) {
+        if (!logicalItems.contains(node)) {
+            throw new IllegalArgumentException("Node is not a logical child of this split");
+        }
+        getItems().remove(node);
+    }
+
+    /**
+     * Re-inserts a previously minimized child back into the live items, at the position implied by its place in
+     * the canonical logical order relative to the other currently-live children.
+     */
+    void restore(Node node) {
+        if (!logicalItems.contains(node)) {
+            throw new IllegalArgumentException("Node is not a logical child of this split");
+        }
+        if (isLive(node)) {
+            throw new IllegalStateException("Node is already live");
+        }
+        getItems().add(resolveLiveInsertIndex(node), node);
+    }
+
+    /**
+     * Returns true if this split has at most one logical child left — i.e. it should be unwrapped, whether or
+     * not that one remaining child is currently live.
+     */
+    boolean shouldBeNormalized() {
+        return logicalItems.size() <= 1;
+    }
+
+    UUID getUuid() {
         return uuid;
     }
 
-    public String getShortUuid() {
+    String getShortUuid() {
         return shortUuid;
     }
 
-    public String getFullName() {
+    String getFullName() {
         return fullName;
     }
 
@@ -718,6 +803,32 @@ class DockSplitPane extends SplitPane {
         double dividerSize = totalDividersSize / (getItems().size() - 1);
         logger.debug("{} Computed dividerSize: {}", logPrefix, dividerSize);
         return dividerSize;
+    }
+
+    int resolveLiveInsertIndex(Node node) {
+        int liveIndex = 0;
+        for (var n : logicalItems) {
+            if (n == node) {
+                return liveIndex;
+            }
+            if (isLive(n)) {
+                liveIndex++;
+            }
+        }
+        throw new IllegalStateException("Node not found in logical items");
+    }
+
+    int resolveLogicalIndexForLiveIndex(int liveIndex) {
+        int seenLive = 0;
+        for (int i = 0; i < logicalItems.size(); i++) {
+            if (seenLive == liveIndex) {
+                return i;
+            }
+            if (isLive(logicalItems.get(i))) {
+                seenLive++;
+            }
+        }
+        return logicalItems.size();
     }
 
     /**

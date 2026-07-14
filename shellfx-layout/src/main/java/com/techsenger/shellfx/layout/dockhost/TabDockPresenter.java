@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
         implements TabDockPort, CloseAwarePresenter<V>  {
 
-    private ComponentPosition minimizedPosition;
+    private MinimizedPosition minimizedPosition;
 
     private TabDockState state = TabDockState.DETACHED;
 
@@ -53,7 +53,7 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
     }
 
     @Override
-    public ComponentPosition getMinimizedPosition() {
+    public MinimizedPosition getMinimizedPosition() {
         return this.minimizedPosition;
     }
 
@@ -133,7 +133,7 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    protected void setMinimizedPosition(ComponentPosition position) {
+    protected void setMinimizedPosition(MinimizedPosition position) {
         this.minimizedPosition = position;
     }
 

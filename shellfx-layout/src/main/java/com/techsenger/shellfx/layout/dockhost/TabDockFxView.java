@@ -162,10 +162,9 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        DockHostFxView.DragAndDropHandler dragAndDropHandler = provideDragAndDropHandler();
-        dragIconView.setOnDragDetected(e -> dragAndDropHandler.onDockDragDetected(this, dragIconView, e));
-        dragIconView.setOnMouseDragged(e -> dragAndDropHandler.onDockMouseDragged(this, dragIconView, e));
-        dragIconView.setOnMouseReleased(e -> dragAndDropHandler.onDockMouseReleased(this, dragIconView, e));
+        dragIconView.setOnDragDetected(e -> provideDragAndDropHandler().onDockDragDetected(this, dragIconView, e));
+        dragIconView.setOnMouseDragged(e -> provideDragAndDropHandler().onDockMouseDragged(this, dragIconView, e));
+        dragIconView.setOnMouseReleased(e -> provideDragAndDropHandler().onDockMouseReleased(this, dragIconView, e));
         minimizeButton.setOnAction(e -> {
             getPresenter().onMinimize();
             getComposer().getDockHost().getComposer().minimizeTabDock(this);
@@ -176,20 +175,20 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         var tabPane = getNode();
         tabPane.addEventHandler(TabEvent.TAB_DRAG_STARTED, (e) -> {
             if (e.getTarget() == getNode()) {
-                dragAndDropHandler.onTabDrag(e.getTab());
+                provideDragAndDropHandler().onTabDrag(e.getTab());
                 e.consume();
             }
         });
         // this handler is called when mouse is over TabHeaderArea
         tabPane.addEventHandler(TabEvent.TAB_DROPPED, (e) -> {
             if (e.getTarget() == getNode()) {
-                dragAndDropHandler.onTabDrop(e.getTab());
+                provideDragAndDropHandler().onTabDrop(e.getTab());
                 e.consume();
             }
         });
         TabPaneProSkin.TabHeaderArea tabHeaderArea = getTabHeaderArea();
         tabHeaderArea.addEventFilter(MouseDragEvent.MOUSE_DRAG_OVER,
-                e -> dragAndDropHandler.onTabHeaderAreaMouseDragOver(tabPane, e));
+                e -> provideDragAndDropHandler().onTabHeaderAreaMouseDragOver(tabPane, e));
     }
 
     protected Button getMinimizeButton() {

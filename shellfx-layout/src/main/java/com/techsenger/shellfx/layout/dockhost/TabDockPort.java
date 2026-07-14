@@ -29,10 +29,10 @@ public interface TabDockPort extends TabHostPort, TabDockShared {
      * to the SideBar. This position is used to restore the component to its original place when expanded
      * from the SideBar.
      *
-     * @return the original {@link ComponentPosition} of this component before it was minimized to the SideBar,
+     * @return the original {@link MinimizedPosition} of this component before it was minimized to the SideBar,
      *         or {@code null} if the component is not minimized.
      */
-    ComponentPosition getMinimizedPosition();
+    MinimizedPosition getMinimizedPosition();
 
     TabDockState getState();
 
