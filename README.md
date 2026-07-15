@@ -441,15 +441,18 @@ be shown even when it contains no collapsed `TabDock` components, using `SideBar
 When a `TabDock` is minimized to a `SideBar`, any of its minimized tabs can be previewed in a `TabPopup` component,
 which allows its width to be resized.
 
-In addition to defining the layout structure, a `DockHost` must have a main component — the component relative to
-which all other components are positioned. The main component can be any `Area`-based component and is specified in
-the model using `ModelNodeBuilder#mainArea(...)` or dynamically via `Composer`. The main component is required for
-minimizing a `TabDock` to a `SideBar`, since the system relies on it to determine which side, and therefore which
-`SideBar`, the `TabDock` should be minimized to; attempting this operation without a main component results in an
-exception.
+In addition to defining the layout structure, a `DockHost` can have a main component. The main component is intended
+to host the primary application content, while `TabDock`s typically contain auxiliary tools and supporting
+components. The main component can be any `Area`-based component and is specified in the model using
+`ModelNodeBuilder#mainArea(...)`. The defining characteristic of the main component is that it remains part of the
+docking layout for the entire lifetime of the `DockHost` and cannot be minimized to a `SideBar`. When a main
+component is present, it is used as the reference for determining the target `SideBar` when minimizing a `TabDock`.
 
-Now that the components are introduced, let’s outline how everything works together. DockHost provides two complementary
-APIs for working with docking layouts.
+If no main component is defined, `DockHost` falls back to determining the target side based on the position of the
+`TabDock` within the docking layout.
+
+Now that the components are introduced, let’s outline how everything works together. `DockHost` provides two
+complementary APIs for working with docking layouts.
 
 The first is the model-based API, which is intended for complete layout construction, restoration, and serialization.
 A docking layout is described as an immutable `ModelNode` tree. Each node represents either a split or a leaf component.

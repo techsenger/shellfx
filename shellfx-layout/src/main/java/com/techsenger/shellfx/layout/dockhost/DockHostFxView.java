@@ -1994,15 +1994,24 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             return -1;
         }
 
+        private Side resolveSide(TabDockContainer tabDockContainer) {
+            return resolveSide((AbstractContainer) tabDockContainer);
+        }
+
+        private Side resolveSide(AbstractContainer container) {
+            if (composer.getMain() == null) {
+                return resolveSideWithoutMain(dockHost.centerStackPane, container);
+            } else {
+                return resolveSideWithMain(container);
+            }
+        }
+
         /**
          * Resolves the side of the given container relative to the main area. Unchanged algorithm — operates on live
          * containers only (the container being resolved is always live at the point this is called).
          */
-        private Side resolveSide(AbstractContainer container) {
+        private Side resolveSideWithMain(AbstractContainer container) {
             var main = composer.getMain();
-            if (main == null) {
-                throw new IllegalStateException("Cannot resolve side without a main area");
-            }
             var mainContainer = getContainer(main);
             if (container == mainContainer) {
                 throw new IllegalArgumentException("Cannot resolve the side of the main area itself");
@@ -2032,15 +2041,61 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 result = isBeforeMain ? TOP : BOTTOM;
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("{} Resolved side for {} is {}; lowest common ancestor: {}",
+                logger.debug("{} Resolved side with main for {} is {}; lowest common ancestor: {}",
                         dockHost.getDescriptor().getLogPrefix(), container.getChildFullName(), result,
                         lca.getChildFullName());
             }
             return result;
         }
 
-        private Side resolveSide(TabDockContainer tabDockContainer) {
-            return resolveSide((AbstractContainer) tabDockContainer);
+        /**
+         * Resolves the side of a {@code TabDock} when the docking layout does not contain a main area.
+         *
+         * <p>The algorithm compares the center of the {@code TabDock} with the center of the docking area.
+         * The {@code TabDock} bounds are converted into the coordinate space of the supplied
+         * {@code centerStackPane}, ensuring that both centers are measured relative to the same origin.
+         *
+         * <p>The horizontal and vertical offsets are normalized independently to the range {@code [-1, 1]}
+         * so that layouts with different aspect ratios are handled consistently. The axis with the greater
+         * absolute normalized offset determines the resulting side:
+         *
+         * <ul>
+         *     <li>negative X → {@link Side#LEFT}</li>
+         *     <li>positive X → {@link Side#RIGHT}</li>
+         *     <li>negative Y → {@link Side#TOP}</li>
+         *     <li>positive Y → {@link Side#BOTTOM}</li>
+         * </ul>
+         *
+         * <p>This approach avoids arbitrary quadrant boundaries and instead selects the direction in which
+         * the {@code TabDock} is furthest displaced from the center of the docking area.
+         *
+         * @param centerStackPane the container representing the entire docking area
+         * @param tabDockPane the {@code TabPane} of the {@code TabDock}
+         * @return the resolved side
+         */
+        private Side resolveSideWithoutMain(StackPane centerStackPane, AbstractContainer container) {
+            var layoutCenterX = centerStackPane.getWidth() / 2.0;
+            var layoutCenterY = centerStackPane.getHeight() / 2.0;
+
+            var bounds = centerStackPane.sceneToLocal(container.localToScene(container.getBoundsInLocal()));
+
+            var tabCenterX = bounds.getMinX() + bounds.getWidth() / 2.0;
+            var tabCenterY = bounds.getMinY() + bounds.getHeight() / 2.0;
+
+            var dx = (tabCenterX - layoutCenterX) / layoutCenterX;
+            var dy = (tabCenterY - layoutCenterY) / layoutCenterY;
+
+            Side result = null;
+            if (Math.abs(dx) >= Math.abs(dy)) {
+                result = dx < 0 ? Side.LEFT : Side.RIGHT;
+            } else {
+                result = dy < 0 ? Side.TOP : Side.BOTTOM;
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} Resolved side wihout main for {} is {};",
+                        dockHost.getDescriptor().getLogPrefix(), container.getChildFullName(), result);
+            }
+            return result;
         }
     }
 
@@ -2109,7 +2164,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private SplitPaneContainer rootContainer = null;
 
-        private final ObjectProperty<AreaFxView<?>> main = new SimpleObjectProperty<>();
+        private final ReadOnlyObjectWrapper<AreaFxView<?>> main = new ReadOnlyObjectWrapper<>();
 
         private final ReadOnlyObjectWrapper<SideBarFxView<?>> rightBar = new ReadOnlyObjectWrapper<>();
 
@@ -2362,8 +2417,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          *
          * @return the main area property
          */
-        public final ObjectProperty<AreaFxView<?>> mainProperty() {
-            return main;
+        public final ReadOnlyObjectProperty<AreaFxView<?>> mainProperty() {
+            return main.getReadOnlyProperty();
         }
 
         /**
@@ -2373,15 +2428,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          */
         public final AreaFxView<?> getMain() {
             return main.get();
-        }
-
-        /**
-         * Sets the value of {@link #mainProperty()}.
-         *
-         * @param value the main area
-         */
-        public void setMain(AreaFxView<?> value) {
-            this.main.set(value);
         }
 
         public final SideBarFxView<?> getRightBar() {
@@ -2477,6 +2523,15 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         void minimizeTabDock(TabDockFxView<?> tabDock) {
             view.transformer.minimizeTabDock(tabDock);
+        }
+
+        /**
+         * Sets the value of {@link #mainProperty()}.
+         *
+         * @param value the main area
+         */
+        private void setMain(AreaFxView<?> value) {
+            this.main.set(value);
         }
 
         private AbstractContainer build(ModelNode node) {
