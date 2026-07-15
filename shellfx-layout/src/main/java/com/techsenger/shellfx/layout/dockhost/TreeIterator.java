@@ -31,7 +31,7 @@ class TreeIterator implements Iterator<ModelNode> {
 
     private ModelNode next;
 
-    TreeIterator(SplitModelNode root) {
+    TreeIterator(GroupModelNode root) {
         next = root;
         stack.push(root.getChildren().iterator());
     }
@@ -59,7 +59,7 @@ class TreeIterator implements Iterator<ModelNode> {
 
             if (iterator.hasNext()) {
                 ModelNode child = iterator.next();
-                if (child instanceof SplitModelNode smn) {
+                if (child instanceof GroupModelNode smn) {
                     stack.push(smn.getChildren().iterator());
                 }
                 return child;

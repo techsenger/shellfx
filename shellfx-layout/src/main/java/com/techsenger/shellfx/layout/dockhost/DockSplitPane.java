@@ -291,7 +291,7 @@ class DockSplitPane extends SplitPane {
         }
         setDividerPositions(newPositions);
         logger.debug("{} Updated dividers on insert between; oldPositions: {}, newPositions: {}", logPrefix,
-                logPrefix, oldPositions, newPositions);
+                oldPositions, newPositions);
     }
 
     /**

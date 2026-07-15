@@ -2221,7 +2221,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
         }
 
-        public void applyModel(SplitModelNode root) {
+        public void applyModel(GroupModelNode root) {
             var rootContainer = (SplitPaneContainer) build(root);
             setRoot(rootContainer);
             view.printTreeDebugInfo();
@@ -2543,15 +2543,15 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 } else {
                     return new TabDockContainer(view, (TabDockFxView<?>) areaNode.getArea());
                 }
-            } else if (node instanceof SplitModelNode splitNode) {
+            } else if (node instanceof GroupModelNode groupNode) {
                 var splitPane = new DockSplitPane(getDescriptor().getLogPrefix());
                 var splitPaneContainer = new SplitPaneContainer(view, splitPane);
-                splitPane.setOrientation(splitNode.getOrientation());
-                for (ModelNode child : splitNode.getChildren()) {
+                splitPane.setOrientation(groupNode.getOrientation());
+                for (ModelNode child : groupNode.getChildren()) {
                     var childContainer = build(child);
                     splitPaneContainer.insertNew(splitPane.getItems().size(), childContainer);
                 }
-                applyDividerPositions(splitPane, splitNode.getChildren());
+                applyDividerPositions(splitPane, groupNode.getChildren());
                 return splitPaneContainer;
             } else {
                 throw new IllegalArgumentException("Unknown node type: " + node.getClass());

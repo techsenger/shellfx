@@ -22,12 +22,12 @@ import java.util.List;
 import javafx.geometry.Orientation;
 
 /**
- * A split node representing a nested {@code SplitPane} along {@code orientation}, with {@code children} describing its
- * sections in order.
+ * A group node representing a nested set of {@link ModelNode}s (areas and/or nested groups) arranged along
+ * {@code orientation}, with {@code children} describing its sections in order.
  *
  * @author Pavel Castornii
  */
-public final class SplitModelNode implements ModelNode, Iterable<ModelNode> {
+public final class GroupModelNode implements ModelNode, Iterable<ModelNode> {
 
     private final Orientation orientation;
 
@@ -36,23 +36,23 @@ public final class SplitModelNode implements ModelNode, Iterable<ModelNode> {
     private final double proportion;
 
     /**
-     * Creates a new split node.
+     * Creates a new group node.
      *
-     * @param orientation the orientation of the split
+     * @param orientation the orientation of the group
      * @param children this node's sections, in order
      * @param proportion this node's relative size among its siblings, a value between {@code 0} and {@code 1}, or
      *         {@link ModelNodeBuilder#UNSET_PROPORTION}
      */
-    public SplitModelNode(Orientation orientation, List<ModelNode> children, double proportion) {
+    public GroupModelNode(Orientation orientation, List<ModelNode> children, double proportion) {
         this.orientation = orientation;
         this.children = List.copyOf(children);
         this.proportion = proportion;
     }
 
     /**
-     * Returns the orientation of this split.
+     * Returns the orientation of this group.
      *
-     * @return the split orientation
+     * @return the group orientation
      */
     public Orientation getOrientation() {
         return orientation;
@@ -61,7 +61,7 @@ public final class SplitModelNode implements ModelNode, Iterable<ModelNode> {
     /**
      * Returns an unmodifiable list of this node's sections, in order.
      *
-     * @return the child nodes of this split
+     * @return the child nodes of this group
      */
     public @Unmodifiable List<ModelNode> getChildren() {
         return children;

@@ -19,13 +19,13 @@ package com.techsenger.shellfx.layout.dockhost;
 /**
  * A node in a docking layout tree, describing a {code SplitPane} or a single {@code SplitPane} section.
  * <p>
- * A node is either an {@link AreaModelNode} (a leaf holding an area) or a {@link SplitModelNode} (a nested split
+ * A node is either an {@link AreaModelNode} (a leaf holding an area) or a {@link GroupModelNode} (a nested split
  * holding further nodes). Only one {@link AreaModelNode} in the whole tree cab be the main area — see
  * {@link AreaModelNode#isMain()}.
  *
  * @author Pavel Castornii
  */
-public sealed interface ModelNode permits AreaModelNode, SplitModelNode  {
+public sealed interface ModelNode permits AreaModelNode, GroupModelNode  {
 
     /**
      * Returns this node's relative size among its siblings.

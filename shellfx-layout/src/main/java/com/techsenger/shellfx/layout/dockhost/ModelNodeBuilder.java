@@ -27,8 +27,8 @@ import javafx.geometry.Orientation;
  * A builder for constructing immutable {@link ModelNode} trees.
  * <p>
  * Use {@link #root(Orientation, Consumer)} to start building the tree, then {@link #area(AbstractAreaFxView, double)}
- * / {@link #mainArea(AbstractAreaFxView, double)} for leaf nodes and {@link #split(Orientation, double, Consumer)}
- * for nested splits within the given callbacks. Overloads without a {@code proportion} use {@link #UNSET_PROPORTION},
+ * / {@link #mainArea(AbstractAreaFxView, double)} for leaf nodes and {@link #group(Orientation, double, Consumer)}
+ * for nested groups within the given callbacks. Overloads without a {@code proportion} use {@link #UNSET_PROPORTION},
  * leaving the actual size to be distributed automatically among siblings.
  * <p>
  * At most one {@link #mainArea(AbstractAreaFxView, double)} may be added across the whole tree — a tree may have zero
@@ -54,29 +54,29 @@ public final class ModelNodeBuilder {
     }
 
     /**
-     * Creates the root split node representing the top-level {@code SplitPane}, with an automatically distributed
-     * proportion. Its children are added by invoking the given callback on the new node's builder.
+     * Creates the root group node representing the top-level group, with an automatically distributed proportion.
+     * Its children are added by invoking the given callback on the new node's builder.
      *
-     * @param orientation the orientation of the split
+     * @param orientation the orientation of the group
      * @param children callback that adds the node's children
      * @return the resulting node
      */
-    public static SplitModelNode root(Orientation orientation, Consumer<ModelNodeBuilder> children) {
+    public static GroupModelNode root(Orientation orientation, Consumer<ModelNodeBuilder> children) {
         return root(orientation, UNSET_PROPORTION, children);
     }
 
     /**
-     * Creates the root split node representing the top-level {@code SplitPane}. Its children are added by invoking
-     * the given callback on the new node's builder.
+     * Creates the root group node representing the top-level group. Its children are added by invoking the given
+     * callback on the new node's builder.
      *
-     * @param orientation the orientation of the split
+     * @param orientation the orientation of the group
      * @param proportion this node's relative size, a value between {@code 0} and {@code 1}, or
      *          {@link #UNSET_PROPORTION}
      * @param children callback that adds the node's children
      * @return the resulting node
      * @throws IllegalStateException if no children were added within the callback
      */
-    public static SplitModelNode root(Orientation orientation, double proportion, Consumer<ModelNodeBuilder> children) {
+    public static GroupModelNode root(Orientation orientation, double proportion, Consumer<ModelNodeBuilder> children) {
         var root = new ModelNodeBuilder(orientation, null, false, proportion, new MainTracker());
         children.accept(root);
         return root.build();
@@ -162,29 +162,29 @@ public final class ModelNodeBuilder {
     }
 
     /**
-     * Adds a split node representing a nested {@code SplitPane}, with an automatically distributed proportion.
-     * Its children are added by invoking the given callback on the new node's builder.
+     * Adds a group node representing a nested group, with an automatically distributed proportion. Its children
+     * are added by invoking the given callback on the new node's builder.
      *
-     * @param orientation the orientation of the nested split
+     * @param orientation the orientation of the nested group
      * @param children callback that adds the node's children
      * @return this builder
      */
-    public ModelNodeBuilder split(Orientation orientation, Consumer<ModelNodeBuilder> children) {
-        return split(orientation, UNSET_PROPORTION, children);
+    public ModelNodeBuilder group(Orientation orientation, Consumer<ModelNodeBuilder> children) {
+        return group(orientation, UNSET_PROPORTION, children);
     }
 
     /**
-     * Adds a split node representing a nested {@code SplitPane}. Its children are added by invoking the given callback
-     * on the new node's builder.
+     * Adds a group node representing a nested group. Its children are added by invoking the given callback on the
+     * new node's builder.
      *
-     * @param orientation the orientation of the nested split
+     * @param orientation the orientation of the nested group
      * @param proportion this node's relative size among its siblings, a value between {@code 0} and {@code 1}, or
      *         {@link #UNSET_PROPORTION}
      * @param children callback that adds the node's children
      * @return this builder
      * @throws IllegalArgumentException if {@code orientation} equals this node's orientation
      */
-    public ModelNodeBuilder split(Orientation orientation, double proportion, Consumer<ModelNodeBuilder> children) {
+    public ModelNodeBuilder group(Orientation orientation, double proportion, Consumer<ModelNodeBuilder> children) {
         if (orientation == this.orientation) {
             throw new IllegalArgumentException("Child orientation must differ from parent orientation");
         }
@@ -194,14 +194,14 @@ public final class ModelNodeBuilder {
         return this;
     }
 
-    private SplitModelNode build() {
+    private GroupModelNode build() {
         // orientation is always non-null here — root(...) is the only entry point,
         // and its orientation parameter is non-null.
         if (children.isEmpty()) {
-            throw new IllegalStateException("A split node must have at least one child");
+            throw new IllegalStateException("A group node must have at least one child");
         }
         var builtChildren = children.stream().map(ModelNodeBuilder::buildNode).toList();
-        return new SplitModelNode(orientation, builtChildren, proportion);
+        return new GroupModelNode(orientation, builtChildren, proportion);
     }
 
     private ModelNode buildNode() {
@@ -209,9 +209,9 @@ public final class ModelNodeBuilder {
             return new AreaModelNode(area, main, proportion);
         }
         if (children.isEmpty()) {
-            throw new IllegalStateException("A split node must have at least one child");
+            throw new IllegalStateException("A group node must have at least one child");
         }
         var builtChildren = children.stream().map(ModelNodeBuilder::buildNode).toList();
-        return new SplitModelNode(orientation, builtChildren, proportion);
+        return new GroupModelNode(orientation, builtChildren, proportion);
     }
 }

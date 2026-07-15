@@ -455,10 +455,10 @@ Now that the components are introduced, let’s outline how everything works tog
 complementary APIs for working with docking layouts.
 
 The first is the model-based API, which is intended for complete layout construction, restoration, and serialization.
-A docking layout is described as an immutable `ModelNode` tree. Each node represents either a split or a leaf component.
-Split nodes define the layout orientation (`HORIZONTAL` or `VERTICAL`), while leaf nodes contain `Area`-based components
+A docking layout is described as an immutable `ModelNode` tree. Each node represents either a group or a leaf component.
+Group nodes define the layout orientation (`HORIZONTAL` or `VERTICAL`), while leaf nodes contain `Area`-based components
  displayed in the workspace. The layout model is created using `ModelNodeBuilder` and applied to `DockHost` using
-`Composer#applyModel(SplitModelNode)`. The current layout can be obtained using `Composer#captureModel()`. This approach
+`Composer#applyModel(GroupModelNode)`. The current layout can be obtained using `Composer#captureModel()`. This approach
 is recommended when initializing a workspace, restoring a previously saved layout, or persisting the current layout
 state.
 
