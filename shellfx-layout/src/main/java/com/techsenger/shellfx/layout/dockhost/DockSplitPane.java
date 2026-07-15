@@ -699,6 +699,9 @@ class DockSplitPane extends SplitPane {
      */
     void updateDividersOnRemoveWithoutMain(double oldSize, double[] oldPositions, double dividerSize,
             int removedChildIndex) {
+        if (getItems().isEmpty()) {
+            return;
+        }
         // Calculate original node sizes in absolute units
         int oldNodeCount = oldPositions.length + 1;
         double[] oldSizes = new double[oldNodeCount];
