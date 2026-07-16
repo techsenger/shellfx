@@ -25,6 +25,7 @@ import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.tabpanepro.core.TabEvent;
+import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import java.util.List;
 import javafx.scene.Cursor;
@@ -142,6 +143,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
         var tabPane = getNode();
         tabPane.setTabDragEnabled(true);
         tabPane.setTabDropEnabled(true);
+        getTabHeaderArea().setPolicy(TabHeaderAreaPolicy.ALWAYS_VISIBLE);
 
         this.dragIconView.getStyleClass().add(StyleClasses.SIZE_S);
         minimizeButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);

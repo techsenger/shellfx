@@ -187,7 +187,7 @@ public class SideBarFxView<P extends SideBarPresenter<?>> extends AbstractAreaFx
         }
 
         private TabPopupFxView<?> getPopup() {
-            return dockHost.getPopup(getPresenter().getSide());
+            return dockHost.getComposer().getPopup(getPresenter().getSide());
         }
 
         void addTabDock(TabDockFxView<?> tabDock) {

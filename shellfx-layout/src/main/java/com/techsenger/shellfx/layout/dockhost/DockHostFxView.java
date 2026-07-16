@@ -36,6 +36,7 @@ import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
 import com.techsenger.toolkit.core.Pair;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -94,17 +95,6 @@ import org.slf4j.LoggerFactory;
  * <p>There are two types of components: MainComponent — contains the main component, and TabDock — contains a TabPane.
  * MainComponent and TabDock always acts as a leaf. The main component can never be closed or minimized into a
  * SideBar by the user while TabDock can be both closed and minimized.
- *
- * <p>Model-based API is intended for complete layout construction, restoration, and serialization. A layout is
- * described as an immutable {@link ModelNode} tree, which can be applied to the docking layout or generated from its
- * current state.
- *
- * <p>In general, use the model-based API when creating, restoring, or persisting a layout, and use the anchor-based
- * API for runtime layout modifications initiated by the application or user interactions.
- *
- * <p>Anchor-based API is intended for incremental modifications of an existing layout. Instead of rebuilding the
- * entire model, it performs targeted operations relative to an existing anchor component, such as inserting, replacing,
- * or removing areas.
  *
  * All SplitPane nodes and nodes of area components are placed inside specialized containers based on SplitPane. The use
  * of these containers is required for the following reasons:
@@ -398,7 +388,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                     dropPos.getTransformation().accept(composer.placeholder);
 
                     // removing tabDock
-                    var oldContainer = getContainer(dragDock);
+                    var oldContainer = ContainerUtils.getContainer(dragDock);
 
                     // it is necessary to create a new position with a new index for example,
                     // if there are new children, besides the old parent should be used
@@ -406,13 +396,13 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                     dockHost.transformer.removeTabDock(oldContainer, TabDockOperation.MOVE);
 
                     // finally replacing the placeholder
-                    var placeholderContainer = getContainer(composer.placeholder);
+                    var placeholderContainer = ContainerUtils.getContainer(composer.placeholder);
                     var newParentContainer = placeholderContainer.getLogicalParent();
                     DockSplitPane newParent = newParentContainer.getSplitPane();
                     // it is not possible to use dropPosition.getNewPosition().getIndex()
                     // because after removing tabDock indexes have changed
                     var placeholderPos = placeholderContainer.resolvePosition();
-                    var dragDockContainer = createContainer(dockHost, dragDock);
+                    var dragDockContainer = ContainerUtils.createContainer(dockHost, dragDock);
                     newParentContainer.replace(placeholderPos.getIndex(), dragDockContainer);
                     logger.debug("{} Replaced {} with {}", dockHost.getDescriptor().getLogPrefix(),
                             composer.placeholder.getDescriptor().getFullName(),
@@ -429,7 +419,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 return;
             }
             this.dragInProgress = value;
-            traverse(composer.rootContainer, 0, (c, level) -> {
+            ContainerUtils.traverse(composer.rootContainer, 0, (c, level) -> {
                 if (c instanceof AbstractAreaContainer<?> aac) {
                     aac.updateDragInProgress(value, type);
                 } else if (c instanceof SplitPaneContainer spc) {
@@ -751,6 +741,143 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             TabPaneProSkin sourceSkin = (TabPaneProSkin) tabPane.getSkin();
             TabPaneProSkin.TabHeaderArea tabHeaderArea = sourceSkin.getTabHeaderArea();
             return new Insets(tabHeaderArea.getHeight(), 0, 0, 0);
+        }
+    }
+
+    private static final class ContainerUtils {
+
+        /**
+         * Returns the path from the root container to the given container, inclusive of both ends. Used only for
+         * live containers (main area, currently-live TabDocks) — walks the actual JavaFX scene graph, so it does not
+         * (and must not) apply to minimized containers, which have no scene-graph parent.
+         *
+         * @param start the container to start from
+         * @return the path, ordered from the root container to {@code start}
+         */
+        private static List<AbstractContainer> toRoot(AbstractContainer start) {
+            var dockHost = start.getDockHost();
+            var result = new ArrayList<AbstractContainer>();
+            AbstractContainer current = start;
+            while (current != null) {
+                result.add(0, current);
+                if (current == dockHost.getComposer().rootContainer) {
+                    break;
+                }
+                current = current.getLogicalParent();
+            }
+            if (logger.isTraceEnabled()) {
+                var names = result.stream().map(AbstractContainer::getChildFullName).collect(Collectors.joining(", "));
+                logger.trace("{} {} path to root: {}", dockHost.getDescriptor().getLogPrefix(),
+                        start.getChildFullName(), names);
+            }
+            return result;
+        }
+
+        private static SplitPaneContainer createContainer(DockHostFxView<?> dockHost, DockSplitPane splitPane) {
+            var container = new SplitPaneContainer(dockHost, splitPane);
+            SplitPane.setResizableWithParent(container, false);
+            return container;
+        }
+
+        private static AbstractAreaContainer<?> createContainer(DockHostFxView<?> dockHost, AreaFxView<?> child) {
+            AbstractAreaContainer<?> container;
+            if (child instanceof TabDockFxView<?>) {
+                var tabDock = (TabDockFxView<?>) child;
+                container = new TabDockContainer(dockHost, tabDock);
+                SplitPane.setResizableWithParent(container, false);
+            } else {
+                container = new MainAreaContainer(dockHost, child);
+                SplitPane.setResizableWithParent(container, true);
+            }
+            return container;
+        }
+
+        /**
+         * Returns the existing container node for a component that is currently on the scene.
+         * @param view
+         * @return
+         */
+        private static AbstractAreaContainer<?> getContainer(AreaFxView<?> view) {
+            return (AbstractAreaContainer<?>) view.getNode().getParent();
+        }
+
+        private static boolean hasContainer(AreaFxView<?> view) {
+            return view.getNode().getParent() instanceof  AbstractAreaContainer<?>;
+        }
+
+        private static TabDockContainer getContainer(TabDockFxView<?> view) {
+            return (TabDockContainer) view.getNode().getParent();
+        }
+
+        private static SplitPaneContainer getContainer(SplitPane splitPane) {
+            return (SplitPaneContainer) splitPane.getParent();
+        }
+
+        /**
+         * Resolves a {@link ModelNode} to the live container it corresponds to in this docking layout.
+         * <p>
+         * Only nodes obtained from {@link Composer#getModelNode(AreaFxView)} — or reached from it by navigating via
+         * {@link ModelNode#getParent()} or {@link GroupNode#getChildren()} — correspond to an actual live position and
+         * can be resolved. Nodes built via {@link ModelNodeBuilder} are independent, unattached snapshots and have no
+         * corresponding live container.
+         *
+         * @param node the node to resolve
+         * @return the live container the node corresponds to
+         * @throws IllegalArgumentException if {@code node} is not a live node obtained from this docking layout
+         */
+        private static AbstractContainer resolveContainer(ModelNode node) {
+            if (node instanceof AreaNodeImpl a) {
+                return a.getContainer();
+            } else if (node instanceof GroupNodeImpl g) {
+                return g.getContainer();
+            } else {
+                throw new IllegalArgumentException("node must be a live node obtained from "
+                        + "Composer#getModelNode(AreaFxView) (or reached by navigating from it via "
+                        + "ModelNode#getParent() or GroupNode#getChildren()); nodes built via ModelNodeBuilder do not "
+                        + "correspond to a live position in the docking layout");
+            }
+        }
+
+        private static void traverse(SplitPaneContainer splitPaneContainer, int level,
+                BiConsumer<AbstractContainer, Integer> visitor) {
+            visitor.accept(splitPaneContainer, level);
+            var splitPane = splitPaneContainer.getSplitPane();
+            for (Node item : splitPane.getItems()) {
+                if (item instanceof SplitPaneContainer nestedContainer) {
+                    traverse(nestedContainer, level + 1, visitor);
+                } else {
+                    visitor.accept((AbstractContainer) item, level + 1);
+                }
+            }
+        }
+
+        /**
+         * Computes the given container's current relative size among its siblings, based on its live bounds and its
+         * parent split pane's orientation and size.
+         *
+         * @param container the container to compute the proportion for
+         * @return a value between {@code 0} and {@code 1}, or {@link ModelNodeBuilder#UNSET_PROPORTION} if the
+         *         container is currently the root (it has no siblings to be proportional to) or its parent's size is
+         *         not yet known
+         */
+        private static double resolveProportion(AbstractContainer container) {
+            var parent = container.getLogicalParent();
+            if (parent == null) {
+                return ModelNodeBuilder.UNSET_PROPORTION;
+            }
+            var splitPane = parent.getSplitPane();
+            var totalSize = splitPane.getOrientation() == Orientation.HORIZONTAL
+                    ? splitPane.getWidth() : splitPane.getHeight();
+            if (totalSize <= 0) {
+                return ModelNodeBuilder.UNSET_PROPORTION;
+            }
+            var containerSize = splitPane.getOrientation() == Orientation.HORIZONTAL
+                    ? container.getWidth() : container.getHeight();
+            return containerSize / totalSize;
+        }
+
+        private ContainerUtils() {
+            // empty
         }
     }
 
@@ -1172,7 +1299,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var indicatorBounds = createTabPaneIndicatorBounds(mousePos, tabDockContainer);
             dropPosition.setIndicatorBounds(indicatorBounds);
             DockSplitPane splitPane = tabDockContainer.getLogicalParent().getSplitPane();
-            SplitPaneContainer splitPaneContainer = getContainer(splitPane);
+            SplitPaneContainer splitPaneContainer = ContainerUtils.getContainer(splitPane);
             dropPosition.setIndicatorPosition(splitPaneContainer.resolvePosition());
             dropPosition.setValid(true);
             return dropPosition;
@@ -1457,7 +1584,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         private void validate(DropPosition info) {
             info.setValid(true);
             if (dockHost.dragAndDropHandler.dragDock != null) {
-                var dragDockContainer = getContainer(dockHost.dragAndDropHandler.dragDock);
+                var dragDockContainer = ContainerUtils.getContainer(dockHost.dragAndDropHandler.dragDock);
                 DockSplitPane splitPane = dragDockContainer.getLogicalParent().getSplitPane();
                 if (info.getEventPosition().getContainer().getLogicalParent().getSplitPane()
                         == dragDockContainer.getLogicalParent().getSplitPane()) {
@@ -1488,33 +1615,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
     private static final class Transformer {
 
-        /**
-         * Returns the path from the root container to the given container, inclusive of both ends. Used only for
-         * live containers (main area, currently-live TabDocks) — walks the actual JavaFX scene graph, so it does not
-         * (and must not) apply to minimized containers, which have no scene-graph parent.
-         *
-         * @param start the container to start from
-         * @return the path, ordered from the root container to {@code start}
-         */
-        private static List<AbstractContainer> toRoot(AbstractContainer start) {
-            var dockHost = start.getDockHost();
-            var result = new ArrayList<AbstractContainer>();
-            AbstractContainer current = start;
-            while (current != null) {
-                result.add(0, current);
-                if (current == dockHost.getComposer().rootContainer) {
-                    break;
-                }
-                current = current.getLogicalParent();
-            }
-            if (logger.isTraceEnabled()) {
-                var names = result.stream().map(AbstractContainer::getChildFullName).collect(Collectors.joining(", "));
-                logger.trace("{} {} path to root: {}", dockHost.getDescriptor().getLogPrefix(),
-                        start.getChildFullName(), names);
-            }
-            return result;
-        }
-
         private final DockHostFxView<?> dockHost;
 
         private final DockHostFxView<?>.Composer composer;
@@ -1543,7 +1643,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                     currentOrientation == Orientation.HORIZONTAL ? Orientation.VERTICAL : Orientation.HORIZONTAL;
             var newSplitPane = new DockSplitPane(dockHost.getDescriptor().getLogPrefix());
             newSplitPane.setOrientation(newOrientation);
-            var newSplitPaneContainer = createContainer(dockHost, newSplitPane);
+            var newSplitPaneContainer = ContainerUtils.createContainer(dockHost, newSplitPane);
 
             double[] parentOldPositions = null;
             if (oldLogicalParent == null) {
@@ -1654,7 +1754,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * the dock as a logical (just non-live) child of its parent instead.
          */
         private void removeTabDock(TabDockFxView<?> tabDock, TabDockOperation operation) {
-            var tabDockContainer = getContainer(tabDock);
+            var tabDockContainer = ContainerUtils.getContainer(tabDock);
             removeTabDock(tabDockContainer, operation);
         }
 
@@ -1706,7 +1806,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 ContainerPosition newInfo, TabDockFxView<?> newTabDock) {
             newTabDock.getComposer().setDockHost(dockHost);
             var newSplitPaneContainer = wrap(anchorInfo.getContainer(), anchorInfo.getIndex());
-            newSplitPaneContainer.insertNew(newInfo.getIndex(), createContainer(dockHost, newTabDock));
+            newSplitPaneContainer.insertNew(newInfo.getIndex(), ContainerUtils.createContainer(dockHost, newTabDock));
             if (newInfo.getFraction() == ONE_THIRD) {
                 var splitPane = newSplitPaneContainer.getSplitPane();
                 if (newOrientation == Orientation.HORIZONTAL) {
@@ -1735,7 +1835,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var parentContainer = anchorInfo.getContainer().getLogicalParent();
             var splitPane = parentContainer.getSplitPane();
             double[] oldPositions = splitPane.getDividerPositions();
-            parentContainer.insertNew(newInfo.getIndex(), createContainer(dockHost, newTabDock));
+            parentContainer.insertNew(newInfo.getIndex(), ContainerUtils.createContainer(dockHost, newTabDock));
             if (siblingInfo == null) {
                 if (newInfo.getFraction() == ONE_HALF) {
                     splitPane.updateDividersOnHalfSplit(anchorInfo.getIndex(), oldPositions);
@@ -1760,6 +1860,66 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             if (logger.isDebugEnabled()) {
                 logger.debug("{} Added {} into {}", dockHost.getDescriptor().getLogPrefix(),
                         newTabDock.getDescriptor().getFullName(), splitPane.getFullName());
+            }
+        }
+
+        /**
+         * Adds a new TabDock at the given side of an existing container, which may be either a leaf ({@link
+         * AbstractAreaContainer}) or a group ({@link SplitPaneContainer}).
+         * <p>
+         * If the container's logical parent already has the orientation implied by {@code side} (e.g. a {@code LEFT} or
+         * {@code RIGHT} side against a {@code HORIZONTAL} parent), the new TabDock is inserted as a direct sibling next
+         * to the container within that same parent. Otherwise, the container is first
+         * {@linkplain #wrap(AbstractContainer, int) wrapped} in a new group with the orientation {@code side} implies,
+         * and the new TabDock is inserted into that new group instead — mirroring the wrap-or-insert decision the
+         * drag-and-drop cases 1–12 make from mouse geometry, but driven here by an explicit side rather than cursor
+         * position.
+         *
+         * @param anchorContainer the container to add the new TabDock next to; must currently be live
+         * @param side the side of {@code anchorContainer} the new TabDock should occupy
+         * @param dock the TabDock to add
+         * @param size the desired size (width for {@code LEFT}/{@code RIGHT}, height for {@code TOP}/{@code BOTTOM}) of
+         *         the new TabDock
+         */
+        private void addTabDock(AbstractContainer anchorContainer, Side side, TabDockFxView<?> dock, double size) {
+            dock.getComposer().setDockHost(dockHost);
+            var neededOrientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
+            var parentContainer = anchorContainer.getLogicalParent();
+            SplitPaneContainer targetParent;
+            int index;
+            if (parentContainer != null && parentContainer.getSplitPane().getOrientation() == neededOrientation) {
+                targetParent = parentContainer;
+                var anchorIndex = targetParent.getSplitPane().getItems().indexOf(anchorContainer);
+                index = (side == LEFT || side == TOP) ? anchorIndex : anchorIndex + 1;
+            } else {
+                var anchorIndex = anchorContainer.resolvePosition().getIndex();
+                targetParent = wrap(anchorContainer, anchorIndex);
+                // let the freshly created group pick up the anchor's current size before we measure it below
+                refresh();
+                index = (side == LEFT || side == TOP) ? 0 : 1;
+            }
+            var splitPane = targetParent.getSplitPane();
+            var oldSplitPaneSize = splitPane.getOrientation() == Orientation.HORIZONTAL
+                    ? splitPane.getWidth() : splitPane.getHeight();
+            var dividerSize = splitPane.computeDividerSize();
+            var oldPositions = splitPane.getDividerPositions();
+            var dockContainer = ContainerUtils.createContainer(dockHost, dock);
+            targetParent.insertNew(index, dockContainer);
+            refresh();
+            if (dividerSize < 0) {
+                dividerSize = splitPane.computeDividerSize();
+            }
+            var mainIndex = indexOfMain(targetParent);
+            if (mainIndex >= 0) {
+                splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex, index,
+                        size);
+            } else {
+                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, size);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} Added {} at {} of {}", dockHost.getDescriptor().getLogPrefix(),
+                        dock.getDescriptor().getFullName(), side, anchorContainer.getChildFullName());
+                dockHost.printTreeDebugInfo();
             }
         }
 
@@ -1792,7 +1952,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
             var dividerSize = splitPane.computeDividerSize();
             var oldPositions = splitPane.getDividerPositions();
-            var dockContainer = createContainer(dockHost, dock);
+            var dockContainer = ContainerUtils.createContainer(dockHost, dock);
             parentContainer.insertNew(index, dockContainer);
             refresh();
             if (dividerSize < 0) {
@@ -1830,7 +1990,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * can be restored later without needing to reconstruct its position.
          */
         private void minimizeTabDock(TabDockFxView<?> dock) {
-            var tabDockContainer = getContainer(dock);
+            var tabDockContainer = ContainerUtils.getContainer(dock);
             var side = resolveSide(tabDockContainer);
 
             var pos = new MinimizedPosition(side, dock.getNode().getWidth(), dock.getNode().getHeight());
@@ -1867,7 +2027,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
 
             composer.showBar(side);
-            var sideBar = dockHost.resolveBar(side).get();
+            var sideBar = dockHost.getComposer().resolveBarWrapper(side).get();
             dock.getComposer().detachTabs();
             sideBar.getComposer().addTabDock(dock);
             dockHost.printTreeDebugInfo();
@@ -1952,7 +2112,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var child = (AbstractContainer) items.get(tempIndex);
             Side resolvedSide;
             var main = composer.getMain();
-            var mainContainer = main != null ? getContainer(main) : null;
+            var mainContainer = main != null ? ContainerUtils.getContainer(main) : null;
             if (child == mainContainer) {
                 var orientation = parentContainer.getSplitPane().getOrientation();
                 if (orientation == Orientation.HORIZONTAL) {
@@ -1981,8 +2141,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             if (main == null) {
                 return -1;
             }
-            var mainContainer = getContainer(main);
-            var path = toRoot(mainContainer);
+            var mainContainer = ContainerUtils.getContainer(main);
+            var path = ContainerUtils.toRoot(mainContainer);
             var pathSet = new HashSet<AbstractContainer>(path);
             var items = splitPaneContainer.getSplitPane().getItems();
             for (var i = 0; i < items.size(); i++) {
@@ -2012,12 +2172,12 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          */
         private Side resolveSideWithMain(AbstractContainer container) {
             var main = composer.getMain();
-            var mainContainer = getContainer(main);
+            var mainContainer = ContainerUtils.getContainer(main);
             if (container == mainContainer) {
                 throw new IllegalArgumentException("Cannot resolve the side of the main area itself");
             }
-            var componentPath = toRoot(container);
-            var mainPath = toRoot(mainContainer);
+            var componentPath = ContainerUtils.toRoot(container);
+            var mainPath = ContainerUtils.toRoot(mainContainer);
             AbstractContainer lca = null;
             int i = 0;
             while (i < componentPath.size() && i < mainPath.size() && componentPath.get(i) == mainPath.get(i)) {
@@ -2099,56 +2259,95 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
     }
 
-    private static SplitPaneContainer createContainer(DockHostFxView<?> dockHost, DockSplitPane splitPane) {
-        var container = new SplitPaneContainer(dockHost, splitPane);
-        SplitPane.setResizableWithParent(container, false);
-        return container;
-    }
+    /**
+     * Live {@link AreaNode} implementation backed directly by the docking layout's actual current state. Every method
+     * call is resolved afresh against the live tree — nothing is cached — so results always reflect the tree as it is
+     * at the moment of the call, not a snapshot taken earlier.
+     *
+     * @see DockHostFxView.Composer#getModelNode(AreaFxView)
+     */
+    private static final class AreaNodeImpl implements AreaNode {
 
-    private static AbstractAreaContainer<?> createContainer(DockHostFxView<?> dockHost, AreaFxView<?> child) {
-        AbstractAreaContainer<?> container;
-        if (child instanceof TabDockFxView<?>) {
-            var tabDock = (TabDockFxView<?>) child;
-            container = new TabDockContainer(dockHost, tabDock);
-            SplitPane.setResizableWithParent(container, false);
-        } else {
-            container = new MainAreaContainer(dockHost, child);
-            SplitPane.setResizableWithParent(container, true);
+        private final AbstractAreaContainer<?> container;
+
+        AreaNodeImpl(AbstractAreaContainer<?> container) {
+            this.container = container;
         }
-        return container;
+
+        @Override
+        public AreaFxView<?> getArea() {
+            return container.getArea();
+        }
+
+        @Override
+        public boolean isMain() {
+            return container instanceof MainAreaContainer;
+        }
+
+        @Override
+        public double getProportion() {
+            return ContainerUtils.resolveProportion(container);
+        }
+
+        @Override
+        public @Nullable GroupNode getParent() {
+            var parent = container.getLogicalParent();
+            return parent == null ? null : new GroupNodeImpl(parent);
+        }
+
+        AbstractAreaContainer<?> getContainer() {
+            return container;
+        }
     }
 
     /**
-     * Returns the existing container node for a component that is currently on the scene.
-     * @param view
-     * @return
+     * Live {@link GroupNode} implementation backed directly by the docking layout's actual current state. Every method
+     * call is resolved afresh against the live tree — nothing is cached — so results always reflect the tree as it is
+     * at the moment of the call, not a snapshot taken earlier. In particular, two calls to {@link #getChildren()} on
+     * the same instance may return different results if the tree changed in between.
+     *
+     * @see DockHostFxView.Composer#getModelNode(AreaFxView)
      */
-    private static AbstractAreaContainer<?> getContainer(AreaFxView<?> view) {
-        return (AbstractAreaContainer<?>) view.getNode().getParent();
-    }
+    private static final class GroupNodeImpl implements GroupNode {
 
-    private static boolean hasContainer(AreaFxView<?> view) {
-        return view.getNode().getParent() instanceof  AbstractAreaContainer<?>;
-    }
+        private final SplitPaneContainer container;
 
-    private static TabDockContainer getContainer(TabDockFxView<?> view) {
-        return (TabDockContainer) view.getNode().getParent();
-    }
+        GroupNodeImpl(SplitPaneContainer container) {
+            this.container = container;
+        }
 
-    private static SplitPaneContainer getContainer(SplitPane splitPane) {
-        return (SplitPaneContainer) splitPane.getParent();
-    }
+        @Override
+        public Orientation getOrientation() {
+            return container.getSplitPane().getOrientation();
+        }
 
-    private static void traverse(SplitPaneContainer splitPaneContainer, int level,
-            BiConsumer<AbstractContainer, Integer> visitor) {
-        visitor.accept(splitPaneContainer, level);
-        var splitPane = splitPaneContainer.getSplitPane();
-        for (Node item : splitPane.getItems()) {
-            if (item instanceof SplitPaneContainer nestedContainer) {
-                traverse(nestedContainer, level + 1, visitor);
-            } else {
-                visitor.accept((AbstractContainer) item, level + 1);
-            }
+        @Override
+        public List<ModelNode> getChildren() {
+            return container.getLogicalItems().stream()
+                    .<ModelNode>map(c -> c instanceof SplitPaneContainer spc
+                            ? new GroupNodeImpl(spc)
+                            : new AreaNodeImpl((AbstractAreaContainer<?>) c))
+                    .toList();
+        }
+
+        @Override
+        public double getProportion() {
+            return ContainerUtils.resolveProportion(container);
+        }
+
+        @Override
+        public @Nullable GroupNode getParent() {
+            var parent = container.getLogicalParent();
+            return parent == null ? null : new GroupNodeImpl(parent);
+        }
+
+        @Override
+        public Iterator<ModelNode> iterator() {
+            return getChildren().iterator();
+        }
+
+        SplitPaneContainer getContainer() {
+            return container;
         }
     }
 
@@ -2221,18 +2420,87 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
         }
 
-        public void applyModel(GroupModelNode root) {
+        /**
+         * Applies the given model, replacing the docking layout's current structure entirely.
+         * <p>
+         * The tree is walked recursively: each {@link GroupNode} becomes a nested group in the live layout, arranged
+         * along its {@linkplain GroupNode#getOrientation() orientation}, and each {@link AreaNode} contributes its
+         * {@linkplain AreaNode#getArea() area} as a leaf, added as this docking layout's main area if
+         * {@linkplain AreaNode#isMain() marked as main}. Relative sizes are taken from
+         * {@link ModelNode#getProportion()} where set; children without an explicit proportion have their space
+         * distributed automatically.
+         * <p>
+         * Use this method when initializing a workspace, restoring a previously saved layout, or otherwise replacing
+         * the layout wholesale. For incremental changes to an already-live layout, use the anchor-based API instead
+         * (see {@link #getModelNode(AreaFxView)}).
+         *
+         * @param root the root node of the model to apply
+         */
+        public void applyModel(GroupNode root) {
             var rootContainer = (SplitPaneContainer) build(root);
             setRoot(rootContainer);
             view.printTreeDebugInfo();
         }
 
-        public ModelNode captureModel() {
+        /**
+         * Captures the docking layout's current structure as an immutable model tree, suitable for persisting and later
+         * restoring via {@link #applyModel(GroupNode)}.
+         * <p>
+         * Unlike the live nodes returned by {@link #getModelNode(AreaFxView)}, the returned tree is an independent
+         * snapshot: it does not change if the docking layout is subsequently modified, and does not support the
+         * {@link ModelNode#getParent()} navigation live nodes provide beyond the root, which has no parent.
+         *
+         * @return the root node of the captured model
+         */
+        public GroupNode captureModel() {
             return null;
         }
 
+        /**
+         * Returns a live view of the given area's position in the docking layout, as an {@link AreaNode}.
+         * <p>
+         * Unlike a node obtained from {@link #captureModel()} or built via {@link ModelNodeBuilder}, the returned node
+         * is not an independent snapshot: {@link AreaNode#getParent()}, and any {@link GroupNode#getChildren()} reached
+         * by navigating from it, are resolved afresh against the docking layout's actual current state on every call.
+         * This makes it suitable for anchor-based navigation — for example, walking upward via repeated
+         * {@link ModelNode#getParent()} calls to locate an ancestor group to pass to an anchor-based
+         * {@code addTabDock(...)} overload.
+         * <p>
+         * The returned node should not be held onto across structural changes to the layout — request a fresh one via
+         * this method instead.
+         *
+         * @param area the area to get the node for; must currently be part of this docking layout
+         * @return a live node representing the area's current position in the docking layout
+         * @throws ClassCastException if {@code area} is not currently part of this docking layout
+         */
+        public AreaNode getModelNode(AreaFxView<?> area) {
+            return new AreaNodeImpl(ContainerUtils.getContainer(area));
+        }
+
+        /**
+         * Identifies which of the docking layout's children is the main area.
+         * <p>
+         * Setting this property does not change the layout's structure — it does not move, add, or remove any area
+         * from the tree. It only tells the system which existing area is considered main, which is used, for example,
+         * to determine the side a {@link TabDockFxView} should be minimized to relative to it.
+         *
+         * @return the main area property
+         */
+        public final ReadOnlyObjectProperty<AreaFxView<?>> mainProperty() {
+            return main.getReadOnlyProperty();
+        }
+
+        /**
+         * Returns the value of {@link #mainProperty()}.
+         *
+         * @return the main area
+         */
+        public final @Nullable AreaFxView<?> getMain() {
+            return main.get();
+        }
+
         @Override
-        public AreaPort getMainPort() {
+        public @Nullable AreaPort getMainPort() {
             return getMain() == null ? null : getMain().getPresenter();
         }
 
@@ -2253,9 +2521,35 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * @param size
          */
         public void addTabDock(TabDockFxView<?> dock, Side side, double size) {
+            getModifiableChildren().add(dock);
             dock.getComposer().setDockHost(view);
             var index = view.transformer.resolveNewIndex(rootContainer, side);
             view.transformer.addTabDock(rootContainer, dock, index, side, true, size);
+        }
+
+        /**
+         * Adds a new TabDock at the given side of an existing node, with the specified size.
+         * <p>
+         * {@code node} identifies the anchor — either a single area or an entire group — next to which the new TabDock
+         * is placed. Pass a leaf {@link AreaNode} to add relative to one specific area, or a {@link GroupNode} (for
+         * example, one reached via repeated {@link ModelNode#getParent()} calls) to add relative to an entire nested
+         * group instead, regardless of how deeply that group is nested in the layout.
+         * <p>
+         * {@code node} must be a live node — obtained from {@link #getModelNode(AreaFxView)}, or reached from it via
+         * {@link ModelNode#getParent()} or {@link GroupNode#getChildren()} — since it must correspond to an actual
+         * current position in this docking layout. A node built via {@link ModelNodeBuilder} does not qualify.
+         *
+         * @param tabDock the TabDock to add
+         * @param node the live node to add the new TabDock next to
+         * @param side the side of {@code node} the new TabDock should occupy
+         * @param size the desired size (width for {@code LEFT}/{@code RIGHT}, height for {@code TOP}/{@code BOTTOM}) of
+         *         the new TabDock
+         * @throws IllegalArgumentException if {@code node} is not a live node obtained from this docking layout
+         */
+        public void addTabDock(TabDockFxView<?> tabDock, ModelNode node, Side side, double size) {
+            getModifiableChildren().add(tabDock);
+            var anchorContainer = ContainerUtils.resolveContainer(node);
+            view.transformer.addTabDock(anchorContainer, side, tabDock, size);
         }
 
         public void removeTabDock(TabDockFxView<?> dock) {
@@ -2317,28 +2611,61 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         @Override
-        public SideBarPort getRightBarPort() {
+        public @Nullable SideBarPort getRightBarPort() {
             return getRightBar() == null ? null : getRightBar().getPresenter();
         }
 
+        public final @Nullable SideBarFxView<?> getRightBar() {
+            return rightBar.get();
+        }
+
+        public final ReadOnlyObjectProperty<SideBarFxView<?>> rightBarProperty() {
+            return rightBar.getReadOnlyProperty();
+        }
+
         @Override
-        public SideBarPort getBottomBarPort() {
+        public @Nullable SideBarPort getBottomBarPort() {
             return getBottomBar() == null ? null : getBottomBar().getPresenter();
         }
 
-        @Override
-        public SideBarPort getLeftBarPort() {
-            return getLeftBar() == null ? null : getLeftBar().getPresenter();
+        public final @Nullable SideBarFxView<?> getBottomBar() {
+            return bottomBar.get();
+        }
+
+        public final ReadOnlyObjectProperty<SideBarFxView<?>> bottomBarProperty() {
+            return bottomBar.getReadOnlyProperty();
         }
 
         @Override
-        public SideBarPort getBarPort(Side side) {
-            var barFxView = view.resolveBar(side).get();
+        public @Nullable SideBarPort getLeftBarPort() {
+            return getLeftBar() == null ? null : getLeftBar().getPresenter();
+        }
+
+        public final @Nullable SideBarFxView<?> getLeftBar() {
+            return leftBar.get();
+        }
+
+        public final ReadOnlyObjectProperty<SideBarFxView<?>> leftBarProperty() {
+            return leftBar.getReadOnlyProperty();
+        }
+
+        @Override
+        public @Nullable SideBarPort getBarPort(Side side) {
+            var barFxView = view.getComposer().resolveBarWrapper(side).get();
             if (barFxView != null) {
                 return barFxView.getPresenter();
             } else {
                 return null;
             }
+        }
+
+        public final @Nullable SideBarFxView<?> getBar(Side side) {
+            var wrapper = resolveBarWrapper(side);
+            return wrapper.get();
+        }
+
+        public ReadOnlyObjectProperty<SideBarFxView<?>> resolveBarProperty(Side side) {
+            return resolveBarWrapper(side).getReadOnlyProperty();
         }
 
         public ObjectProperty<SideBarPolicy> rightBarPolicyProperty() {
@@ -2394,51 +2721,21 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         @Override
-        public TabPopupPort getRightPopupPort() {
+        public @Nullable TabPopupPort getRightPopupPort() {
             return getRightPopup() == null ? null : getRightPopup().getPresenter();
         }
 
         @Override
-        public TabPopupPort getBottomPopupPort() {
+        public @Nullable TabPopupPort getBottomPopupPort() {
             return getBottomPopup() == null ? null : getBottomPopup().getPresenter();
         }
 
         @Override
-        public TabPopupPort getLeftPopupPort() {
+        public @Nullable TabPopupPort getLeftPopupPort() {
             return getLeftPopup() == null ? null : getLeftPopup().getPresenter();
         }
 
-        /**
-         * Identifies which of the docking layout's children is the main area.
-         * <p>
-         * Setting this property does not change the layout's structure — it does not move, add, or remove any area
-         * from the tree. It only tells the system which existing area is considered main, which is used, for example,
-         * to determine the side a {@link TabDockFxView} should be minimized to relative to it.
-         *
-         * @return the main area property
-         */
-        public final ReadOnlyObjectProperty<AreaFxView<?>> mainProperty() {
-            return main.getReadOnlyProperty();
-        }
-
-        /**
-         * Returns the value of {@link #mainProperty()}.
-         *
-         * @return the main area
-         */
-        public final AreaFxView<?> getMain() {
-            return main.get();
-        }
-
-        public final SideBarFxView<?> getRightBar() {
-            return rightBar.get();
-        }
-
-        public final ReadOnlyObjectProperty<SideBarFxView<?>> rightBarProperty() {
-            return rightBar.getReadOnlyProperty();
-        }
-
-        public final TabPopupFxView<?> getRightPopup() {
+        public final @Nullable TabPopupFxView<?> getRightPopup() {
             return rightPopup.get();
         }
 
@@ -2446,15 +2743,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             return rightPopup.getReadOnlyProperty();
         }
 
-        public final SideBarFxView<?> getBottomBar() {
-            return bottomBar.get();
-        }
-
-        public final ReadOnlyObjectProperty<SideBarFxView<?>> bottomBarProperty() {
-            return bottomBar.getReadOnlyProperty();
-        }
-
-        public final TabPopupFxView<?> getBottomPopup() {
+        public final @Nullable TabPopupFxView<?> getBottomPopup() {
             return bottomPopup.get();
         }
 
@@ -2462,20 +2751,27 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             return bottomPopup.getReadOnlyProperty();
         }
 
-        public final SideBarFxView<?> getLeftBar() {
-            return leftBar.get();
-        }
-
-        public final ReadOnlyObjectProperty<SideBarFxView<?>> leftBarProperty() {
-            return leftBar.getReadOnlyProperty();
-        }
-
-        public final TabPopupFxView<?> getLeftPopup() {
+        public final @Nullable TabPopupFxView<?> getLeftPopup() {
             return leftPopup.get();
         }
 
         public final ReadOnlyObjectProperty<TabPopupFxView<?>> leftPopupProperty() {
             return leftPopup.getReadOnlyProperty();
+        }
+
+        public final @Nullable TabPopupFxView<?> getPopup(Side side) {
+            var wrapper = resolvePopupWrapper(side);
+            return wrapper.get();
+        }
+
+        public ReadOnlyObjectProperty<TabPopupFxView<?>> resolvePopupProperty(Side side) {
+            return resolvePopupWrapper(side).getReadOnlyProperty();
+        }
+
+        @Override
+        public TabPopupPort getPopupPort(Side side) {
+            var popup = getPopup(side);
+            return popup == null ? null : popup.getPresenter();
         }
 
         protected SideBarFxView<?> createBar(Side side, SideBarHistory history) {
@@ -2502,12 +2798,12 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             getModifiableChildren().add(popup);
             var popupNode = popup.getNode();
             view.centerStackPane.getChildren().add(popupNode);
-            var wrapper = view.resolvePopup(popup.getPresenter().getSide());
+            var wrapper = view.getComposer().resolvePopupWrapper(popup.getPresenter().getSide());
             wrapper.set(popup);
         }
 
         void closeTabPopup(Side side) {
-            var wrapper = view.resolvePopup(side);
+            var wrapper = view.getComposer().resolvePopupWrapper(side);
             var popup = wrapper.get();
             if (popup != null) {
                 view.centerStackPane.getChildren().remove(popup.getNode());
@@ -2518,7 +2814,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         void restoreTabDock(TabDockFxView<?> tabDock) {
-            view.transformer.restoreTabDock(getContainer(tabDock));
+            view.transformer.restoreTabDock(ContainerUtils.getContainer(tabDock));
         }
 
         void minimizeTabDock(TabDockFxView<?> tabDock) {
@@ -2535,7 +2831,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         private AbstractContainer build(ModelNode node) {
-            if (node instanceof AreaModelNode areaNode) {
+            if (node instanceof AreaNode areaNode) {
                 getModifiableChildren().add(areaNode.getArea());
                 if (areaNode.isMain()) {
                     setMain(areaNode.getArea());
@@ -2543,7 +2839,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 } else {
                     return new TabDockContainer(view, (TabDockFxView<?>) areaNode.getArea());
                 }
-            } else if (node instanceof GroupModelNode groupNode) {
+            } else if (node instanceof GroupNode groupNode) {
                 var splitPane = new DockSplitPane(getDescriptor().getLogPrefix());
                 var splitPaneContainer = new SplitPaneContainer(view, splitPane);
                 splitPane.setOrientation(groupNode.getOrientation());
@@ -2597,11 +2893,11 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         private void addListenerToBarPolicy(ObjectProperty<SideBarPolicy> policy, Side side) {
             policy.addListener((ov, oldV, newV) -> {
                 if (newV == SideBarPolicy.EXISTS_ALWAYS) {
-                    if (view.resolveBar(side).get() == null) {
+                    if (view.getComposer().resolveBarWrapper(side).get() == null) {
                         showBar(side);
                     }
                 } else if (newV == SideBarPolicy.EXISTS_WHEN_TABS_PRESENT) {
-                    var bar = view.resolveBar(side).get();
+                    var bar = view.getComposer().resolveBarWrapper(side).get();
                     if (bar != null && bar.getComposer().getTabDockPorts().isEmpty()) {
                         hideBar(side);
                     }
@@ -2633,6 +2929,24 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private void setLeftPopup(TabPopupFxView<?> value) {
             this.leftPopup.set(value);
+        }
+
+        private ReadOnlyObjectWrapper<TabPopupFxView<?>> resolvePopupWrapper(Side side) {
+            return switch (side) {
+                case RIGHT -> rightPopup;
+                case BOTTOM -> bottomPopup;
+                case LEFT -> leftPopup;
+                default -> throw new AssertionError();
+            };
+        }
+
+        private ReadOnlyObjectWrapper<SideBarFxView<?>> resolveBarWrapper(Side side) {
+            return switch (side) {
+                case RIGHT -> rightBar;
+                case BOTTOM -> bottomBar;
+                case LEFT -> leftBar;
+                default -> throw new AssertionError();
+            };
         }
     }
 
@@ -2672,11 +2986,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
-    }
-
-    public final TabPopupFxView<?> getPopup(Side side) {
-        var wrapper = resolvePopup(side);
-        return wrapper.get();
     }
 
     @Override
@@ -2726,29 +3035,11 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     }
 
     private SplitPaneContainer createContainer(DockSplitPane splitPane) {
-        return createContainer(this, splitPane);
+        return ContainerUtils.createContainer(this, splitPane);
     }
 
     private AbstractAreaContainer<?> createContainer(AreaFxView<?> child) {
-        return createContainer(this, child);
-    }
-
-    private ReadOnlyObjectWrapper<TabPopupFxView<?>> resolvePopup(Side side) {
-        return switch (side) {
-            case RIGHT -> getComposer().rightPopup;
-            case BOTTOM -> getComposer().bottomPopup;
-            case LEFT -> getComposer().leftPopup;
-            default -> throw new AssertionError();
-        };
-    }
-
-    private ReadOnlyObjectWrapper<SideBarFxView<?>> resolveBar(Side side) {
-        return switch (side) {
-            case RIGHT -> getComposer().rightBar;
-            case BOTTOM -> getComposer().bottomBar;
-            case LEFT -> getComposer().leftBar;
-            default -> throw new AssertionError();
-        };
+        return ContainerUtils.createContainer(this, child);
     }
 
     private void printTreeDebugInfo() {
@@ -2759,7 +3050,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
     private String getTreeDebugInfo() {
         StringBuilder builder = new StringBuilder();
-        traverse(getComposer().rootContainer, 0, (container, level) -> {
+        ContainerUtils.traverse(getComposer().rootContainer, 0, (container, level) -> {
             builder.append("\n");
             builder.append("    ".repeat(level));
             builder.append(container.getChildName());

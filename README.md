@@ -454,18 +454,22 @@ If no main component is defined, `DockHost` falls back to determining the target
 Now that the components are introduced, let’s outline how everything works together. `DockHost` provides two
 complementary APIs for working with docking layouts.
 
-The first is the model-based API, which is intended for complete layout construction, restoration, and serialization.
-A docking layout is described as an immutable `ModelNode` tree. Each node represents either a group or a leaf component.
-Group nodes define the layout orientation (`HORIZONTAL` or `VERTICAL`), while leaf nodes contain `Area`-based components
- displayed in the workspace. The layout model is created using `ModelNodeBuilder` and applied to `DockHost` using
-`Composer#applyModel(GroupModelNode)`. The current layout can be obtained using `Composer#captureModel()`. This approach
-is recommended when initializing a workspace, restoring a previously saved layout, or persisting the current layout
-state.
+The first is the whole-tree API, which is intended for complete layout construction, restoration, and serialization.
+A docking layout is described as a `ModelNode` tree. Each node represents either a group or a leaf component. Group
+nodes (`GroupNode`) define the layout orientation (`HORIZONTAL` or `VERTICAL`) and their children, while leaf nodes
+(`AreaNode`) contain `Area`-based components displayed in the workspace. An immutable model tree is created using
+`ModelNodeBuilder` and applied to `DockHost` using `Composer#applyModel(GroupNode)`. The current layout can be
+captured as such an immutable tree using `Composer#captureModel()`. This approach is recommended when initializing a
+workspace, restoring a previously saved layout, or persisting the current layout state.
 
-The second is the anchor-based API, which is intended for incremental runtime modifications. Instead of rebuilding the
-entire layout model, it performs targeted operations relative to an existing anchor component. This API is used for
+The second is the partial-tree API, which is intended for incremental runtime modifications. Instead of rebuilding
+the entire layout, it performs targeted operations relative to an existing anchor component. This API is used for
 operations such as adding a new area next to an existing area, replacing a component, removing a component, or
-performing docking operations initiated by the user.
+performing docking operations initiated by the user. Anchors are addressed the same way as in the whole-tree API —
+via `ModelNode` — but obtained live from the current layout using `Composer#getModelNode(AreaFxView)` rather than
+built by hand. A node obtained this way is not a snapshot: navigating it via `ModelNode#getParent()` or
+`GroupNode#getChildren()` always reflects the layout's actual current state, which lets an anchor be resolved to any
+ancestor group regardless of nesting depth.
 
 ### PageHost <a name="layout-page-host"></a>
 

@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.area.AreaView;
 import javafx.geometry.Side;
@@ -28,19 +29,19 @@ public interface DockHostView extends AreaView {
 
     interface Composer extends AreaView.Composer {
 
-        AreaPort getMainPort();
+        @Nullable AreaPort getMainPort();
 
         void showBar(Side side);
 
         void hideBar(Side side);
 
-        SideBarPort getRightBarPort();
+        @Nullable SideBarPort getRightBarPort();
 
-        SideBarPort getBottomBarPort();
+        @Nullable SideBarPort getBottomBarPort();
 
-        SideBarPort getLeftBarPort();
+        @Nullable SideBarPort getLeftBarPort();
 
-        SideBarPort getBarPort(Side side);
+        @Nullable SideBarPort getBarPort(Side side);
 
         SideBarPolicy getRightBarPolicy();
 
@@ -56,11 +57,13 @@ public interface DockHostView extends AreaView {
 
         SideBarPolicy getBarPolicy(Side side);
 
-        TabPopupPort getRightPopupPort();
+        @Nullable TabPopupPort getRightPopupPort();
 
-        TabPopupPort getBottomPopupPort();
+        @Nullable TabPopupPort getBottomPopupPort();
 
-        TabPopupPort getLeftPopupPort();
+        @Nullable TabPopupPort getLeftPopupPort();
+
+        @Nullable TabPopupPort getPopupPort(Side side);
     }
 
     @Override

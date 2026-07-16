@@ -18,7 +18,9 @@ package com.techsenger.shellfx.layout.dockhost;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AbstractAreaFxView;
+import com.techsenger.shellfx.core.area.AreaFxView;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import javafx.geometry.Orientation;
@@ -54,6 +56,95 @@ public final class ModelNodeBuilder {
     }
 
     /**
+     * Immutable {@link AreaNode} implementation built by {@link ModelNodeBuilder}. Its parent is fixed once, when
+     * the enclosing group is built, and never changes afterward.
+     */
+    private static final class AreaNodeImpl implements AreaNode {
+
+        private final AreaFxView<?> area;
+        private final boolean main;
+        private final double proportion;
+        private @Nullable GroupNode parent;
+
+        AreaNodeImpl(AreaFxView<?> area, boolean main, double proportion) {
+            this.area = area;
+            this.main = main;
+            this.proportion = proportion;
+        }
+
+        @Override
+        public AreaFxView<?> getArea() {
+            return area;
+        }
+
+        @Override
+        public boolean isMain() {
+            return main;
+        }
+
+        @Override
+        public double getProportion() {
+            return proportion;
+        }
+
+        @Override
+        public @Nullable GroupNode getParent() {
+            return parent;
+        }
+
+        void setParent(GroupNode parent) {
+            this.parent = parent;
+        }
+    }
+
+    /**
+     * Immutable {@link GroupNode} implementation built by {@link ModelNodeBuilder}. Its children and parent are
+     * fixed once, at construction time, and never change afterward.
+     */
+    private static final class GroupNodeImpl implements GroupNode {
+
+        private final Orientation orientation;
+        private final List<ModelNode> children;
+        private final double proportion;
+        private @Nullable GroupNode parent;
+
+        GroupNodeImpl(Orientation orientation, List<ModelNode> children, double proportion) {
+            this.orientation = orientation;
+            this.children = List.copyOf(children);
+            this.proportion = proportion;
+        }
+
+        @Override
+        public Orientation getOrientation() {
+            return orientation;
+        }
+
+        @Override
+        public List<ModelNode> getChildren() {
+            return children;
+        }
+
+        @Override
+        public double getProportion() {
+            return proportion;
+        }
+
+        @Override
+        public @Nullable GroupNode getParent() {
+            return parent;
+        }
+
+        void setParent(GroupNode parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public Iterator<ModelNode> iterator() {
+            return children.iterator();
+        }
+    }
+
+    /**
      * Creates the root group node representing the top-level group, with an automatically distributed proportion.
      * Its children are added by invoking the given callback on the new node's builder.
      *
@@ -61,7 +152,7 @@ public final class ModelNodeBuilder {
      * @param children callback that adds the node's children
      * @return the resulting node
      */
-    public static GroupModelNode root(Orientation orientation, Consumer<ModelNodeBuilder> children) {
+    public static GroupNode root(Orientation orientation, Consumer<ModelNodeBuilder> children) {
         return root(orientation, UNSET_PROPORTION, children);
     }
 
@@ -76,7 +167,7 @@ public final class ModelNodeBuilder {
      * @return the resulting node
      * @throws IllegalStateException if no children were added within the callback
      */
-    public static GroupModelNode root(Orientation orientation, double proportion, Consumer<ModelNodeBuilder> children) {
+    public static GroupNode root(Orientation orientation, double proportion, Consumer<ModelNodeBuilder> children) {
         var root = new ModelNodeBuilder(orientation, null, false, proportion, new MainTracker());
         children.accept(root);
         return root.build();
@@ -89,15 +180,10 @@ public final class ModelNodeBuilder {
     public static final double UNSET_PROPORTION = -1;
 
     private final @Nullable Orientation orientation;
-
     private final List<ModelNodeBuilder> children = new ArrayList<>();
-
     private final @Nullable AbstractAreaFxView<?> area;
-
     private final boolean main;
-
     private final double proportion;
-
     private final MainTracker mainTracker;
 
     private ModelNodeBuilder(@Nullable Orientation orientation, @Nullable AbstractAreaFxView<?> area, boolean main,
@@ -194,24 +280,38 @@ public final class ModelNodeBuilder {
         return this;
     }
 
-    private GroupModelNode build() {
+    private GroupNode build() {
         // orientation is always non-null here — root(...) is the only entry point,
         // and its orientation parameter is non-null.
         if (children.isEmpty()) {
             throw new IllegalStateException("A group node must have at least one child");
         }
         var builtChildren = children.stream().map(ModelNodeBuilder::buildNode).toList();
-        return new GroupModelNode(orientation, builtChildren, proportion);
+        var node = new GroupNodeImpl(orientation, builtChildren, proportion);
+        linkParent(builtChildren, node);
+        return node;
     }
 
     private ModelNode buildNode() {
         if (orientation == null) {
-            return new AreaModelNode(area, main, proportion);
+            return new AreaNodeImpl(area, main, proportion);
         }
         if (children.isEmpty()) {
             throw new IllegalStateException("A group node must have at least one child");
         }
         var builtChildren = children.stream().map(ModelNodeBuilder::buildNode).toList();
-        return new GroupModelNode(orientation, builtChildren, proportion);
+        var node = new GroupNodeImpl(orientation, builtChildren, proportion);
+        linkParent(builtChildren, node);
+        return node;
+    }
+
+    private static void linkParent(List<ModelNode> children, GroupNodeImpl parent) {
+        for (var child : children) {
+            if (child instanceof AreaNodeImpl a) {
+                a.setParent(parent);
+            } else if (child instanceof GroupNodeImpl g) {
+                g.setParent(parent);
+            }
+        }
     }
 }
