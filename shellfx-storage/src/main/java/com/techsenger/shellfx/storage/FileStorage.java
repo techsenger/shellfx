@@ -75,6 +75,17 @@ public interface FileStorage<T extends GenericFile> {
     boolean isDefault();
 
     /**
+     * Returns the direct subdirectories of the directory identified by {@code uri}, excluding regular files.
+     *
+     * @param uri the URI of the directory to list
+     * @return a list of direct subdirectories, never {@code null}, may be empty
+     * @throws NoSuchFileException   if no directory exists at {@code uri}
+     * @throws AccessDeniedException if the caller lacks read permission for the directory
+     * @throws IOException           if an I/O error occurs
+     */
+    List<T> getDirectories(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+
+    /**
      * Returns the direct children of the directory identified by {@code uri}.
      *
      * @param uri the URI of the directory to list

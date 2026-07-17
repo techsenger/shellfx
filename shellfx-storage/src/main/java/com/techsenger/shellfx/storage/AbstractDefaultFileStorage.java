@@ -57,6 +57,30 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
     }
 
     @Override
+    public List<T> getDirectories(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+        var result = new ArrayList<T>();
+        var path = toPath(uri);
+        checkIfExists(path);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+            for (Path childPath : stream) {
+                try {
+                    var attrs = Files.readAttributes(childPath, BasicFileAttributes.class);
+                    if (attrs.isDirectory()) {
+                        result.add(createFile(childPath, attrs, childPath.toUri()));
+                    }
+                } catch (InvalidFileException ex) {
+                    logger.error("Couldn't create GenericFile from {}", childPath, ex);
+                } catch (IOException ex) {
+                    logger.error("Couldn't read attributes for {}", childPath, ex);
+                }
+            }
+        } catch (SecurityException | AccessDeniedException e) {
+            throw new AccessDeniedException("No access to directory: " + path);
+        }
+        return result;
+    }
+
+    @Override
     public List<T> getFiles(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
         var result = new ArrayList<T>();
         var path = toPath(uri);
