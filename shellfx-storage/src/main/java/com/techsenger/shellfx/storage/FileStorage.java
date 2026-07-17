@@ -34,7 +34,7 @@ import java.util.List;
  * which allows storage-specific implementations to return richer subclasses of
  * {@link GenericFile} without requiring callers to cast.
  *
- * <p>Every storage has a single root URI returned by {@link #getRootUri()}. All URIs passed to
+ * <p>Every storage has a single root URI returned by {@link #getUri()}. All URIs passed to
  * or returned by this interface must be within that root.
  *
  * @param <T> the concrete file entry type produced by this storage
@@ -55,7 +55,7 @@ public interface FileStorage<T extends GenericFile> {
      *
      * @return the root URI, never {@code null}
      */
-    URI getRootUri();
+    URI getUri();
 
     /**
      * Returns a human-readable name for this storage suitable for display in the UI.
@@ -77,9 +77,8 @@ public interface FileStorage<T extends GenericFile> {
     /**
      * Returns the root directory entry of this storage.
      *
-     * <p>The root may be either a real directory (e.g. on a network drive) or a virtual
-     * placeholder (e.g. a local file system root that does not physically exist as a standalone
-     * directory entry).
+     * <p>The root may be either a real directory (e.g. on a network drive) or a virtual placeholder (e.g. a local
+     * file system root that does not physically exist as a standalone directory entry).
      *
      * @return the root entry, never {@code null}
      */
@@ -138,14 +137,17 @@ public interface FileStorage<T extends GenericFile> {
 
     /**
      * Returns the parent directory of the given file entry with full metadata loaded from storage.
+     * <p>
+     * If the given file represents the storage root directory, {@code null} is returned.
+     * </p>
      *
-     * @param file the file whose parent to retrieve
-     * @return the parent entry, never {@code null}
-     * @throws NoSuchFileException   if the parent directory does not exist
+     * @param file the file whose parent directory to retrieve
+     * @return the parent directory, or {@code null} if {@code file} is the storage root directory
+     * @throws NoSuchFileException if the parent directory does not exist
      * @throws AccessDeniedException if the caller lacks read permission
-     * @throws IOException           if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
-    T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException;
+    @Nullable T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Creates a new directory at the given URI. Only one directory level is created; the parent

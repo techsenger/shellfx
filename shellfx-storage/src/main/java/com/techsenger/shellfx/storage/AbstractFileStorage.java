@@ -29,7 +29,7 @@ public abstract class AbstractFileStorage<T extends GenericFile> implements File
 
     private final String displayName;
 
-    private final URI rootUri;
+    private final URI uri;
 
     private final boolean isDefault;
 
@@ -37,11 +37,11 @@ public abstract class AbstractFileStorage<T extends GenericFile> implements File
         this(type, displayName, rootUri, false);
     }
 
-    AbstractFileStorage(FileStorageType type, String displayName, URI rootUri, boolean isDefault) {
+    AbstractFileStorage(FileStorageType type, String displayName, URI uri, boolean isDefault) {
         this.type = type;
         this.displayName = displayName;
-        var normalized = rootUri.normalize();
-        this.rootUri = normalized;
+        var normalized = uri.normalize();
+        this.uri = normalized;
         this.isDefault = isDefault;
     }
 
@@ -61,8 +61,8 @@ public abstract class AbstractFileStorage<T extends GenericFile> implements File
     }
 
     @Override
-    public URI getRootUri() {
-        return rootUri;
+    public URI getUri() {
+        return uri;
     }
 
     @Override
@@ -70,7 +70,7 @@ public abstract class AbstractFileStorage<T extends GenericFile> implements File
         int hash = 7;
         hash = 79 * hash + Objects.hashCode(this.type);
         hash = 79 * hash + Objects.hashCode(this.displayName);
-        hash = 79 * hash + Objects.hashCode(this.rootUri.toString());
+        hash = 79 * hash + Objects.hashCode(this.uri.toString());
         hash = 79 * hash + (this.isDefault ? 1 : 0);
         return hash;
     }
@@ -93,7 +93,7 @@ public abstract class AbstractFileStorage<T extends GenericFile> implements File
         if (!Objects.equals(this.displayName, other.displayName)) {
             return false;
         }
-        if (!Objects.equals(this.rootUri.toString(), other.rootUri.toString())) {
+        if (!Objects.equals(this.uri.toString(), other.uri.toString())) {
             return false;
         }
         return this.type == other.type;

@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
+import static com.techsenger.shellfx.storage.UriUtils.getParentUri;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
@@ -145,14 +146,18 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
     }
 
     @Override
-    public T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException {
-        var parentUri = UriUtils.getParentUri(getRootUri(), file.getUri());
+    public @Nullable T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException {
+        var segments = UriUtils.getPathSegments(getUri(), file.getUri());
+        var parentUri = getParentUri(getUri(), file.getUri(), segments);
         if (parentUri == null) {
+            return null;
+        } else if (segments.size() == 1) {
             return getRootDirectory();
+        } else {
+            var path = toPath(parentUri);
+            checkIfExists(path);
+            return createFile(path, parentUri);
         }
-        var path = toPath(parentUri);
-        checkIfExists(path);
-        return createFile(path, parentUri);
     }
 
     @Override
@@ -161,7 +166,7 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
         var file = fileFactory.create();
         file.setVirtual(true);
         file.setEntryType(FileEntryType.DIRECTORY);
-        file.setUri(getRootUri());
+        file.setUri(getUri());
         file.setStorage(this);
         file.setName(getDisplayName());
         return (T) file;

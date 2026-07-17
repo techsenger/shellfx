@@ -131,6 +131,6 @@ public interface GenericFile {
      * @return {@code true} if this entry is a directory whose URI equals the storage root URI
      */
     default boolean isRoot() {
-        return isDirectory() && Objects.equals(getUri(), getStorage().getRootUri());
+        return isDirectory() && Objects.equals(getUri(), getStorage().getUri());
     }
 }

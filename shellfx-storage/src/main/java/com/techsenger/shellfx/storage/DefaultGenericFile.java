@@ -222,7 +222,7 @@ public class DefaultGenericFile implements GenericFile {
     }
 
     private List<DefaultGenericFile> buildParents(int limit) {
-        var rootUri = storage.getRootUri();
+        var rootUri = storage.getUri();
         var segments = UriUtils.getPathSegments(rootUri, this.uri);
         var parents = new ArrayList<DefaultGenericFile>(Math.min(segments.size(), limit));
         for (int i = segments.size() - 1; i >= 1 && parents.size() < limit; i--) {

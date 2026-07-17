@@ -378,11 +378,11 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
             var storageLocation = createLocation(storage);
             locations.add(storageLocation);
             if (this.storage == storage && this.directory != null) {
-                var segments = UriUtils.getPathSegments(storage.getRootUri(), directory);
+                var segments = UriUtils.getPathSegments(storage.getUri(), directory);
                 if (segments.isEmpty()) {
                     selectedLocation = storageLocation;
                 }
-                var previousUri = storage.getRootUri();
+                var previousUri = storage.getUri();
                 for (var i = 0; i < segments.size(); i++) {
                     var segment = segments.get(i);
                     var segmentUri = UriUtils.resolvePath(previousUri, segment);
@@ -416,7 +416,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
         if (storage == null || directory == null) {
             return;
         }
-        var parentUri = UriUtils.getParentUri(storage.getRootUri(), directory);
+        var parentUri = UriUtils.getParentUri(storage.getUri(), directory);
         if (parentUri == null) {
             return;
         }
@@ -626,7 +626,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
             this.storage = s.get();
         }
         if (this.storage != null) {
-            this.directory = this.storage.getRootUri();
+            this.directory = this.storage.getUri();
         }
     }
 
@@ -640,7 +640,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     }
 
     private void updateLocation() {
-        var segments = UriUtils.getPathSegments(this.storage.getRootUri(), directory);
+        var segments = UriUtils.getPathSegments(this.storage.getUri(), directory);
         Location location = null;
         if (segments.isEmpty()) {
             location = createLocation(storage);
@@ -667,7 +667,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
                 storage.getDisplayName(),
                 0,
                 storage,
-                storage.getRootUri());
+                storage.getUri());
         return location;
     }
 

@@ -78,7 +78,7 @@ public class WindowsFileStorage<T extends GenericFile> extends AbstractDefaultFi
     @Override
     public boolean refersToStorage(URI uri) {
         String givenRoot = uri.getPath().substring(0, Math.min(uri.getPath().length(), 3));
-        String storageRoot = getRootUri().getPath().substring(0, 3);
+        String storageRoot = getUri().getPath().substring(0, 3);
         return givenRoot.equalsIgnoreCase(storageRoot);
     }
 }
