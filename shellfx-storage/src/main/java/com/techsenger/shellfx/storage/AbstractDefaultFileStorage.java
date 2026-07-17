@@ -148,7 +148,7 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
     public T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException {
         var parentUri = UriUtils.getParentUri(getRootUri(), file.getUri());
         if (parentUri == null) {
-            return getRoot();
+            return getRootDirectory();
         }
         var path = toPath(parentUri);
         checkIfExists(path);
@@ -157,7 +157,7 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
 
     @Override
     @SuppressWarnings("unchecked")
-    public T getRoot() {
+    public T getRootDirectory() {
         var file = fileFactory.create();
         file.setVirtual(true);
         file.setEntryType(FileEntryType.DIRECTORY);

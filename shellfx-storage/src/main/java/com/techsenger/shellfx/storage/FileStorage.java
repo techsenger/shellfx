@@ -75,6 +75,17 @@ public interface FileStorage<T extends GenericFile> {
     boolean isDefault();
 
     /**
+     * Returns the root directory entry of this storage.
+     *
+     * <p>The root may be either a real directory (e.g. on a network drive) or a virtual
+     * placeholder (e.g. a local file system root that does not physically exist as a standalone
+     * directory entry).
+     *
+     * @return the root entry, never {@code null}
+     */
+    T getRootDirectory();
+
+    /**
      * Returns the direct subdirectories of the directory identified by {@code uri}, excluding regular files.
      *
      * @param uri the URI of the directory to list
@@ -135,17 +146,6 @@ public interface FileStorage<T extends GenericFile> {
      * @throws IOException           if an I/O error occurs
      */
     T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException;
-
-    /**
-     * Returns the root directory entry of this storage.
-     *
-     * <p>The root may be either a real directory (e.g. on a network drive) or a virtual
-     * placeholder (e.g. a local file system root that does not physically exist as a standalone
-     * directory entry).
-     *
-     * @return the root entry, never {@code null}
-     */
-    T getRoot();
 
     /**
      * Creates a new directory at the given URI. Only one directory level is created; the parent

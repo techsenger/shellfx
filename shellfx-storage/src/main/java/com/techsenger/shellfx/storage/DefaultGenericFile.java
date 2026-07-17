@@ -236,7 +236,7 @@ public class DefaultGenericFile implements GenericFile {
             parents.add(parent);
         }
         if (parents.size() < limit) {
-            parents.add((DefaultGenericFile) storage.getRoot());
+            parents.add((DefaultGenericFile) storage.getRootDirectory());
         }
         return parents;
     }
