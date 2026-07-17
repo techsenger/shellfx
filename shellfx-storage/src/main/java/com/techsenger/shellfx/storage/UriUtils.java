@@ -20,7 +20,6 @@ import com.techsenger.annotations.Nullable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,16 +103,30 @@ public final class UriUtils {
         if (segments.size() == 1) {
             return fileStorageUri;
         }
-        StringBuilder pathBuilder = new StringBuilder();
-        for (int i = 0; i < segments.size() - 1; i++) {
-            if (i > 0) {
-                pathBuilder.append('/');
-            }
-            pathBuilder.append(segments.get(i));
+
+        String joined = String.join("/", segments.subList(0, segments.size() - 1));
+
+        String basePath = fileStorageUri.getPath();
+        if (!basePath.endsWith("/")) {
+            basePath += "/";
         }
-        String joined = pathBuilder.toString();
-        var encoded = URLEncoder.encode(joined, StandardCharsets.UTF_8).replace("+", "%20");
-        return fileStorageUri.resolve(encoded);
+
+        String parentPath = basePath + joined + "/";
+
+        try {
+            // Don't use URI.resolve() here because it normalizes file URIs and may remove
+            // the trailing slash from directory URIs. Construct the URI explicitly to
+            // preserve the directory path semantics.
+            return new URI(
+                    fileStorageUri.getScheme(),
+                    fileStorageUri.getAuthority(),
+                    parentPath,
+                    fileStorageUri.getQuery(),
+                    fileStorageUri.getFragment()
+            );
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Couldn't build parent URI", e);
+        }
     }
 
     /**
