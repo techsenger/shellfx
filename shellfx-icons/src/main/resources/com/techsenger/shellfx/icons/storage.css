@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-module com.techsenger.shellfx.storage {
-    requires org.slf4j;
-    requires com.techsenger.annotations;
-    requires com.techsenger.toolkit.core;
-    requires com.techsenger.shellfx.material;
-    requires com.techsenger.shellfx.core;
-    requires javafx.controls;
-    requires javafx.swing;
-    requires com.sun.jna;
-    requires com.sun.jna.platform;
+/*
+    Author: Pavel Castornii
+*/
 
-    exports com.techsenger.shellfx.storage;
-    exports com.techsenger.shellfx.storage.style;
+@font-face {
+    src: url('font/materialdesignicons-webfont.ttf');
+}
 
+.font-icon-view.disc-icon {
+    -fx-icon-code: 984558; /* disc */
+}
+
+.font-icon-view.floppy-icon {
+    -fx-icon-code: 983625; /* floppy */
+}
+
+.font-icon-view.base-disk-icon {
+    /* view-agenda-outline, harddisk, table-row */
+    -fx-icon-code: 990362; /* server-outline */
+}
+
+.font-icon-view.network-disk-icon {
+    -fx-icon-code: 990361; /* server-network-outline */
 }

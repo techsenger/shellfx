@@ -42,14 +42,6 @@ public interface DialogIcons {
 
     StyleFontIcon GRID_VIEW = new StyleFontIcon("grid-view-icon");
 
-    StyleFontIcon DISC = new StyleFontIcon("disc-icon");
-
-    StyleFontIcon FLOPPY = new StyleFontIcon("floppy-icon");
-
-    StyleFontIcon BASE_DISK = new StyleFontIcon("base-disk-icon");
-
-    StyleFontIcon NETWORK_DISK = new StyleFontIcon("network-disk-icon");
-
     StyleFontIcon OPEN = new StyleFontIcon("open-icon");
 
     StyleFontIcon SAVE_AS = new StyleFontIcon("save-as-icon");
@@ -57,7 +49,6 @@ public interface DialogIcons {
     StyleFontIcon DIRECTORY = new StyleFontIcon("directory-icon");
 
     StyleFontIcon FILE = new StyleFontIcon("file-icon");
-
 }
 
 

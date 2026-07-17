@@ -62,6 +62,13 @@ public final class IconStylesheetFactory {
     }
 
     /**
+     * Creates and returns the stylesheet with icons for the 'storage' module.
+     */
+    public static Stylesheet forStorage() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("storage.css"));
+    }
+
+    /**
      * Creates and returns an unmodifiable list with icon stylesheet for the all modules.
      */
     public static @Unmodifiable List<Stylesheet> forAll() {
@@ -70,7 +77,8 @@ public final class IconStylesheetFactory {
                 forShared(),
                 forLayout(),
                 forDialogs(),
-                forDevTools());
+                forDevTools(),
+                forStorage());
     }
 
     private IconStylesheetFactory() {

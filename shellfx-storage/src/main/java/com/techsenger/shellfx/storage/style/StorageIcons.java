@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-module com.techsenger.shellfx.storage {
-    requires org.slf4j;
-    requires com.techsenger.annotations;
-    requires com.techsenger.toolkit.core;
-    requires com.techsenger.shellfx.material;
-    requires com.techsenger.shellfx.core;
-    requires javafx.controls;
-    requires javafx.swing;
-    requires com.sun.jna;
-    requires com.sun.jna.platform;
+package com.techsenger.shellfx.storage.style;
 
-    exports com.techsenger.shellfx.storage;
-    exports com.techsenger.shellfx.storage.style;
+import com.techsenger.shellfx.material.icon.StyleFontIcon;
 
+/**
+ *
+ * @author Pavel Castornii
+ */
+public interface StorageIcons {
+
+    StyleFontIcon DISC = new StyleFontIcon("disc-icon");
+
+    StyleFontIcon FLOPPY = new StyleFontIcon("floppy-icon");
+
+    StyleFontIcon BASE_DISK = new StyleFontIcon("base-disk-icon");
+
+    StyleFontIcon NETWORK_DISK = new StyleFontIcon("network-disk-icon");
 }

@@ -36,12 +36,10 @@ import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileColumns;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileStorage;
-import static com.techsenger.shellfx.storage.FileStorageType.BASE;
-import static com.techsenger.shellfx.storage.FileStorageType.NETWORK;
-import static com.techsenger.shellfx.storage.FileStorageType.OPTICAL;
 import com.techsenger.shellfx.storage.FileStorageUtils;
 import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.shellfx.storage.UriUtils;
+import com.techsenger.shellfx.storage.style.StorageIconProvider;
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -663,23 +661,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     }
 
     private Location createLocation(FileStorage storage) {
-        StyleFontIcon icon = null;
-        switch (storage.getType()) {
-            case BASE:
-                icon = DialogIcons.BASE_DISK;
-                break;
-            case NETWORK:
-                icon = DialogIcons.NETWORK_DISK;
-                break;
-            case FLOPPY:
-                icon = DialogIcons.FLOPPY;
-                break;
-            case OPTICAL:
-                icon = DialogIcons.DISC;
-                break;
-            default:
-                throw new AssertionError();
-        }
+        StyleFontIcon icon = StorageIconProvider.INSTANCE.apply(storage.getType());
         var location = new Location(
                 icon,
                 storage.getDisplayName(),
