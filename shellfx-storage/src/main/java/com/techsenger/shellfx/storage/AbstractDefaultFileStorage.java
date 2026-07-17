@@ -146,9 +146,9 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
     }
 
     @Override
-    public @Nullable T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException {
-        var segments = UriUtils.getPathSegments(getUri(), file.getUri());
-        var parentUri = getParentUri(getUri(), file.getUri(), segments);
+    public T getParent(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+        var segments = UriUtils.getPathSegments(getUri(), uri);
+        var parentUri = getParentUri(getUri(), uri, segments);
         if (parentUri == null) {
             return null;
         } else if (segments.size() == 1) {
@@ -158,6 +158,11 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
             checkIfExists(path);
             return createFile(path, parentUri);
         }
+    }
+
+    @Override
+    public @Nullable T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException {
+        return getParent(file.getUri());
     }
 
     @Override

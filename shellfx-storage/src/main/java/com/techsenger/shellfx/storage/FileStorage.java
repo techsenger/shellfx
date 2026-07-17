@@ -150,6 +150,20 @@ public interface FileStorage<T extends GenericFile> {
     @Nullable T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
+     * Returns the parent directory of the file identified by the given URI with full metadata loaded from storage.
+     * <p>
+     * If the given URI represents the storage root directory, {@code null} is returned.
+     * </p>
+     *
+     * @param uri the URI of the file whose parent directory to retrieve
+     * @return the parent directory, or {@code null} if the given URI represents the storage root directory
+     * @throws NoSuchFileException if the parent directory does not exist
+     * @throws AccessDeniedException if the caller lacks read permission
+     * @throws IOException if an I/O error occurs
+     */
+    @Nullable T getParent(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+
+    /**
      * Creates a new directory at the given URI. Only one directory level is created; the parent
      * directory must already exist.
      *
