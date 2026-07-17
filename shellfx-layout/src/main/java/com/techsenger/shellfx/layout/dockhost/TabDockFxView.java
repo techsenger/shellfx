@@ -52,7 +52,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
             super.removeTab(tab);
             if (view.getNode().getTabs().isEmpty()
                     && getPresenter().getTransitionState() != TabDockTransitionState.TO_MINIMIZED) {
-                dockHost.getComposer().closeTabDock(view);
+                view.getPresenter().close();
             }
         }
 
