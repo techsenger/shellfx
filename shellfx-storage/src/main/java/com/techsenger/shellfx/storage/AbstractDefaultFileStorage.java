@@ -139,6 +139,7 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
         file.setEntryType(FileEntryType.DIRECTORY);
         file.setUri(getRootUri());
         file.setStorage(this);
+        file.setName(getDisplayName());
         return (T) file;
     }
 
