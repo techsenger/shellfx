@@ -20,6 +20,7 @@ import com.techsenger.annotations.Nullable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,6 +148,36 @@ public class DefaultGenericFile implements GenericFile {
         child.uri = UriUtils.resolvePath(this.uri, childName);
         child.virtual = true;
         return child;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.storage);
+        hash = 29 * hash + Objects.hashCode(this.entryType);
+        hash = 29 * hash + Objects.hashCode(this.uri);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DefaultGenericFile other = (DefaultGenericFile) obj;
+        if (!Objects.equals(this.storage, other.storage)) {
+            return false;
+        }
+        if (this.entryType != other.entryType) {
+            return false;
+        }
+        return Objects.equals(this.uri, other.uri);
     }
 
     /**
