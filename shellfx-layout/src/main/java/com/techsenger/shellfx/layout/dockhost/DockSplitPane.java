@@ -183,13 +183,23 @@ class DockSplitPane extends SplitPane {
 
     /**
      * Replaces a brand-new child into both the live items and the canonical logical order.
+     * <p>
+     * Divider positions are explicitly saved before and restored after the underlying {@code items.set(...)} call.
+     * Unlike {@link #insertNew} and {@link #removePermanently}, which change the item count and are handled
+     * correctly by {@code SplitPaneSkin}, replacing an item in place via {@link List#set} does not reliably
+     * preserve existing divider positions — this is the step used when a dragged TabDock is dropped in place of
+     * the placeholder that reserved its target position.
      *
      * @param liveIndex the index among the currently-live items to insert at
      * @param node the child to replace
      */
     void replace(int liveIndex, Node node) {
+        double[] positions = getDividerPositions();
         getItems().set(liveIndex, node);
         logicalItems.set(resolveLogicalIndexForLiveIndex(liveIndex), node);
+        if (positions.length > 0) {
+            setDividerPositions(positions);
+        }
     }
 
     /**
