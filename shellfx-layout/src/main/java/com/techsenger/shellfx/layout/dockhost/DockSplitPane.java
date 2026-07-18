@@ -21,8 +21,14 @@ import static com.techsenger.shellfx.layout.dockhost.DockConstants.ONE_THIRD;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.LEFT;
@@ -37,6 +43,98 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 class DockSplitPane extends SplitPane {
+
+    /**
+     * Splits {@code neededSize} among the given donors, proportionally to each donor's current size relative to
+     * the combined size of all donors in {@code donorIndices}. For example, if two donors have sizes 1000 and 500
+     * and {@code neededSize} is 300, the first donor contributes 200 and the second 100 — proportional to their
+     * 2:1 size ratio.
+     * <p>
+     * No donor is reduced below {@link TabDockFxView#MIN_SIZE}. If a donor's proportional share would push it
+     * below that floor, its contribution is capped there instead, and the shortfall is redistributed among the
+     * remaining donors, proportionally to their own sizes, repeating until either the full {@code neededSize} has
+     * been distributed or every donor has hit the floor — in which case the new child ends up smaller than
+     * requested.
+     *
+     * @param oldSizes current absolute sizes of every item in the SplitPane, indexed as before insertion
+     * @param donorIndices indices into {@code oldSizes} of the items that donate space; must be non-empty
+     * @param neededSize the total space requested for the new child
+     * @return a map from donor index to the absolute amount that donor contributes; keys are exactly
+     *         {@code donorIndices}
+     */
+    private static Map<Integer, Double> distributeDonation(double[] oldSizes, Set<Integer> donorIndices,
+            double neededSize) {
+        var remaining = new HashSet<>(donorIndices);
+        var contribution = new HashMap<Integer, Double>();
+        for (int i : donorIndices) {
+            contribution.put(i, 0.0);
+        }
+        double toDistribute = neededSize;
+        for (int pass = 0; pass < donorIndices.size() && toDistribute > 0 && !remaining.isEmpty(); pass++) {
+            double totalRemainingSize = remaining.stream().mapToDouble(i -> oldSizes[i]).sum();
+            if (totalRemainingSize <= 0) {
+                break;
+            }
+            var floored = new HashSet<Integer>();
+            double distributedThisPass = 0;
+            for (int i : remaining) {
+                double share = toDistribute * (oldSizes[i] / totalRemainingSize);
+                double available = Math.max(oldSizes[i] - TabDockFxView.MIN_SIZE, 0) - contribution.get(i);
+                double taken = Math.max(Math.min(share, available), 0);
+                if (taken < share) {
+                    floored.add(i);
+                }
+                contribution.merge(i, taken, Double::sum);
+                distributedThisPass += taken;
+            }
+            toDistribute -= distributedThisPass;
+            remaining.removeAll(floored);
+            if (floored.isEmpty()) {
+                break; // everyone received their exact proportional share
+            }
+        }
+        return contribution;
+    }
+
+    /**
+     * Resolves {@code donor} into concrete old-space indices — indices into the pre-insertion {@code oldSizes}
+     * array used by {@link #distributeDonation} — for a new child being inserted at {@code newChildIndex} into a
+     * SplitPane that had {@code oldItemCount} items before insertion.
+     *
+     * @param donor the donor choice to resolve; the caller guarantees it is actually available at this insertion
+     *         point (see {@code Transformer#resolveDonorOptions})
+     * @param newChildIndex the index (in the post-insertion array) the new child will occupy
+     * @param oldItemCount the number of items in the SplitPane before insertion
+     * @return the old-space indices of the donor(s)
+     */
+    private static Set<Integer> resolveDonorIndices(SpaceDonor donor, int newChildIndex, int oldItemCount) {
+        int previousIndex = newChildIndex - 1;
+        int nextIndex = newChildIndex;
+        return switch (donor) {
+            case PREVIOUS_SIBLING -> Set.of(previousIndex);
+            case NEXT_SIBLING -> Set.of(nextIndex);
+            case NEAREST_SIBLINGS -> {
+                var indices = new HashSet<Integer>();
+                if (previousIndex >= 0) {
+                    indices.add(previousIndex);
+                }
+                if (nextIndex < oldItemCount) {
+                    indices.add(nextIndex);
+                }
+                yield indices;
+            }
+            case ALL_SIBLINGS -> IntStream.range(0, oldItemCount).boxed().collect(Collectors.toSet());
+        };
+    }
+
+    /**
+     * Maps an old-space index (into the pre-insertion items) to its corresponding index in the post-insertion
+     * array, where the new child occupies {@code newChildIndex} and every old-space index at or after it shifts
+     * by one.
+     */
+    private static int mapToNewIndex(int oldIndex, int newChildIndex) {
+        return oldIndex < newChildIndex ? oldIndex : oldIndex + 1;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(DockSplitPane.class);
 
@@ -341,112 +439,77 @@ class DockSplitPane extends SplitPane {
     }
 
     /**
-     * Updates divider positions after SplitPane resize and node insertion.
-     *
-     * <p>This function calculates new divider positions when the SplitPane size changes (width for horizontal,
-     * height for vertical) and a new node is inserted.
-     *
-     * <p>The algorithm ensures that all nodes maintain their original size except for one flexible node, which
-     * sacrifices part of its size to accommodate the new node and absorbs the remaining size change.
+     * Updates divider positions after SplitPane resize and node insertion, when this SplitPane has a main area.
+     * <p>
+     * Two concerns are handled independently:
+     * <ul>
+     *     <li>The SplitPane's own resize delta (the difference between {@code oldSize} and its current size) is
+     *     always absorbed entirely by {@code flexibleChildIndex} — the main area — regardless of {@code donor}.</li>
+     *     <li>The space for the new child ({@code newChildSize}) is taken from the sibling(s) identified by
+     *     {@code donor}, proportionally to their current size — see {@link #distributeDonation}. These donors may
+     *     or may not include {@code flexibleChildIndex}; if they do, both effects apply on top of each other.</li>
+     * </ul>
      *
      * @param oldSize the original size of the SplitPane before changes
      * @param oldPositions array of divider positions (0.0 to 1.0) before changes
-     * @param flexibleChildIndex index of the flexible node that will absorb size changes
-     * @param newChildIndex index where the new node will be inserted
+     * @param flexibleChildIndex index (in the post-insertion array) of the main area, which absorbs the SplitPane's
+     *         own resize delta
+     * @param newChildIndex index (in the post-insertion array) where the new node is inserted
      * @param newChildSize the desired size for the new node
+     * @param donor identifies which existing sibling(s) donate {@code newChildSize} to the new node
      */
     void updateDividersOnAddWithMain(double oldSize, double[] oldPositions, double dividerSize, int flexibleChildIndex,
-            int newChildIndex, double newChildSize) {
+            int newChildIndex, double newChildSize, SpaceDonor donor) {
         oldSize = computeOldSize(oldSize, oldPositions, dividerSize);
         var newSize = computeNewSize(dividerSize);
-
-        // If oldSize is 0 (initial state), use simple distribution
         if (oldSize <= 0) {
-            // Initial setup with two nodes
             double[] newPositions = new double[1];
-
-            if (newChildIndex == 0) {
-                // New node at beginning, flexible node takes remaining space
-                newPositions[0] = newChildSize / newSize;
-            } else {
-                // New node at end, flexible node takes remaining space
-                newPositions[0] = (newSize - newChildSize) / newSize;
-            }
-
-            // Ensure valid range
+            newPositions[0] = newChildIndex == 0 ? newChildSize / newSize : (newSize - newChildSize) / newSize;
             newPositions[0] = Math.max(0.0, Math.min(1.0, newPositions[0]));
-
             logger.debug("{} Initial dividers setup with main; newSize: {}, flexibleChildIndex: {}, "
                     + "newChildIndex: {}, newChildSize: {}, newPositions: {}", logPrefix,
                     newSize, flexibleChildIndex, newChildIndex, newChildSize, newPositions);
             setDividerPositions(newPositions);
             return;
         }
-
-        // Calculate original node sizes in absolute units
         int oldNodeCount = oldPositions.length + 1;
         double[] oldSizes = new double[oldNodeCount];
-
         if (oldPositions.length == 0) {
-            // Only one node exists - it takes the entire space
             oldSizes[0] = oldSize;
         } else {
-            // First node
             oldSizes[0] = oldPositions[0] * oldSize;
-
-            // Middle nodes
             for (int i = 1; i < oldNodeCount - 1; i++) {
                 oldSizes[i] = (oldPositions[i] - oldPositions[i - 1]) * oldSize;
             }
-
-            // Last node
             oldSizes[oldNodeCount - 1] = (1.0 - oldPositions[oldPositions.length - 1]) * oldSize;
         }
-
-        // Create new sizes array with space for the new node
         int newNodeCount = oldNodeCount + 1;
         double[] newSizes = new double[newNodeCount];
-
-        // Copy old sizes to new array, inserting the new node at the specified position
         for (int i = 0, j = 0; i < newNodeCount; i++) {
-            if (i == newChildIndex) {
-                newSizes[i] = newChildSize;
-            } else {
-                newSizes[i] = oldSizes[j++];
-            }
+            newSizes[i] = (i == newChildIndex) ? 0 : oldSizes[j++];
         }
-
-        // Apply SplitPane size change directly to flexible node
+        // resize delta is always absorbed by main alone, independently of the donor(s) below
         double sizeChange = newSize - oldSize;
         newSizes[flexibleChildIndex] += sizeChange;
-
-        // Now flexible node sacrifices space for the new node
-        double sacrificeNeeded = newChildSize;
-        double availableForSacrifice = newSizes[flexibleChildIndex] - TabDockFxView.MIN_SIZE;
-
-        if (availableForSacrifice >= sacrificeNeeded) {
-            // Flexible node can provide all space needed for new node
-            newSizes[flexibleChildIndex] -= sacrificeNeeded;
-        } else {
-            // Flexible node gives all it can, reduce new node size
-            newSizes[flexibleChildIndex] = TabDockFxView.MIN_SIZE;
-            newSizes[newChildIndex] = availableForSacrifice;
+        var donorIndices = resolveDonorIndices(donor, newChildIndex, oldNodeCount);
+        var contribution = distributeDonation(oldSizes, donorIndices, newChildSize);
+        double actualNewChildSize = 0;
+        for (var entry : contribution.entrySet()) {
+            int newIndex = mapToNewIndex(entry.getKey(), newChildIndex);
+            newSizes[newIndex] -= entry.getValue();
+            actualNewChildSize += entry.getValue();
         }
-
-        // Calculate new divider positions
+        newSizes[newChildIndex] = actualNewChildSize;
         double[] newPositions = new double[newNodeCount - 1];
         double cumulativeSize = 0.0;
-
         for (int i = 0; i < newNodeCount - 1; i++) {
             cumulativeSize += newSizes[i];
             newPositions[i] = cumulativeSize / newSize;
         }
-
         logger.debug("{} Updated dividers on add with main; oldSize: {}, newSize: {}, flexibleChildIndex: {}, "
-                + "newChildIndex: {}, newChildSize: {}, oldPositions: {}, newPositions: {}",
-                logPrefix, oldSize, newSize, flexibleChildIndex, newChildIndex, newChildSize,
+                + "newChildIndex: {}, newChildSize: {}, donor: {}, oldPositions: {}, newPositions: {}",
+                logPrefix, oldSize, newSize, flexibleChildIndex, newChildIndex, newChildSize, donor,
                 oldPositions, newPositions);
-
         setDividerPositions(newPositions);
     }
 
@@ -518,163 +581,74 @@ class DockSplitPane extends SplitPane {
     }
 
     /**
-     * Updates divider positions after SplitPane resize and node insertion.
-     *
-     * <p>This function calculates new divider positions when the SplitPane size changes (width for horizontal,
-     * height for vertical) and a new node is inserted.
-     *
-     * <p>The redistribution logic depends on the insertion position of the new node:
-     * <ul>
-     *   <li>If the new node is inserted at the first or last position, it takes the requested size from
-     *       the immediate neighbor. The neighbor also absorbs the SplitPane size change.</li>
-     *   <li>If the new node is inserted in the middle, it takes the requested size proportionally from
-     *       its left and right neighbors, who also absorb the SplitPane size change proportionally.</li>
-     * </ul>
-     *
-     * <p>Nodes cannot be reduced below MINIMAL_NODE_SIZE. If the requested size cannot be fully allocated,
-     * neighbors contribute what they can until reaching MINIMAL_NODE_SIZE, and the new node receives
-     * the maximum possible size.
+     * Updates divider positions after SplitPane resize and node insertion, when this SplitPane has no main area.
+     * <p>
+     * Both the SplitPane's own resize delta and the space for the new child ({@code newChildSize}) are taken from
+     * the sibling(s) identified by {@code donor} — see {@link #distributeDonation}. Unlike
+     * {@link #updateDividersOnAddWithMain}, there is no separate flexible node to absorb the resize delta on its
+     * own; each donor absorbs a share of it proportional to its share of the donation.
      *
      * @param oldSize the original size of the SplitPane before changes
      * @param oldPositions array of divider positions (0.0 to 1.0) before changes
-     * @param newChildIndex index where the new node will be inserted
+     * @param newChildIndex index (in the post-insertion array) where the new node is inserted
      * @param newChildSize the desired size for the new node
+     * @param donor identifies which existing sibling(s) donate {@code newChildSize} (and the resize delta) to the
+     *         new node
      */
     void updateDividersOnAddWithoutMain(double oldSize, double[] oldPositions, double dividerSize, int newChildIndex,
-            double newChildSize) {
+            double newChildSize, SpaceDonor donor) {
         oldSize = computeOldSize(oldSize, oldPositions, dividerSize);
         var newSize = computeNewSize(dividerSize);
-
-        // If oldSize is 0 (initial state), use equal distribution
         if (oldSize <= 0) {
-            // Initial setup with two nodes
             double[] newPositions = new double[1];
-            if (newChildIndex == 0) {
-                // New node at beginning, existing node takes remaining space
-                newPositions[0] = newChildSize / newSize;
-            } else {
-                // New node at end, existing node takes remaining space
-                newPositions[0] = (newSize - newChildSize) / newSize;
-            }
-
-            // Ensure valid range
+            newPositions[0] = newChildIndex == 0 ? newChildSize / newSize : (newSize - newChildSize) / newSize;
             newPositions[0] = Math.max(0.0, Math.min(1.0, newPositions[0]));
-
             logger.debug("{} Initial dividers setup; newSize: {}, newChildIndex: {}, newChildSize: {}, "
                     + "newPositions: {}", logPrefix, newSize, newChildIndex, newChildSize, newPositions);
-
             setDividerPositions(newPositions);
             return;
         }
-
-        // Calculate original node sizes in absolute units
         int oldNodeCount = oldPositions.length + 1;
         double[] oldSizes = new double[oldNodeCount];
-
         if (oldPositions.length == 0) {
-            // Only one node exists - it takes the entire space
             oldSizes[0] = oldSize;
         } else {
-            // First node
             oldSizes[0] = oldPositions[0] * oldSize;
-
-            // Middle nodes
             for (int i = 1; i < oldNodeCount - 1; i++) {
                 oldSizes[i] = (oldPositions[i] - oldPositions[i - 1]) * oldSize;
             }
-
-            // Last node
             oldSizes[oldNodeCount - 1] = (1.0 - oldPositions[oldPositions.length - 1]) * oldSize;
         }
-
         double sizeChange = newSize - oldSize;
-
-        // Create new sizes array with space for the new node
         int newNodeCount = oldNodeCount + 1;
         double[] newSizes = new double[newNodeCount];
-
-        // Copy old sizes to new array, inserting 0 for the new node
         for (int i = 0, j = 0; i < newNodeCount; i++) {
-            if (i == newChildIndex) {
-                newSizes[i] = 0;
-            } else {
-                newSizes[i] = oldSizes[j++];
-            }
+            newSizes[i] = (i == newChildIndex) ? 0 : oldSizes[j++];
         }
-
-        // Calculate space allocation
-        if (newChildIndex == 0) {
-            // Insert at beginning
-            double neighborSize = newSizes[1];
-            double availableFromNeighbor = Math.max(neighborSize - TabDockFxView.MIN_SIZE, 0);
-            double actualSpace = Math.min(newChildSize, availableFromNeighbor);
-
-            newSizes[1] = neighborSize - actualSpace + sizeChange;
-            newSizes[0] = actualSpace;
-
-        } else if (newChildIndex == newNodeCount - 1) {
-            // Insert at end
-            double neighborSize = newSizes[newNodeCount - 2];
-            double availableFromNeighbor = Math.max(neighborSize - TabDockFxView.MIN_SIZE, 0);
-            double actualSpace = Math.min(newChildSize, availableFromNeighbor);
-
-            newSizes[newNodeCount - 2] = neighborSize - actualSpace + sizeChange;
-            newSizes[newNodeCount - 1] = actualSpace;
-
-        } else {
-            // Insert in middle
-            int leftNeighborIndex = newChildIndex - 1;
-            int rightNeighborIndex = newChildIndex + 1;
-
-            double leftNeighborSize = newSizes[leftNeighborIndex];
-            double rightNeighborSize = newSizes[rightNeighborIndex];
-
-            double availableFromLeft = Math.max(leftNeighborSize - TabDockFxView.MIN_SIZE, 0);
-            double availableFromRight = Math.max(rightNeighborSize - TabDockFxView.MIN_SIZE, 0);
-            double totalAvailable = availableFromLeft + availableFromRight;
-
-            double actualSpace = Math.min(newChildSize, totalAvailable);
-
-            if (actualSpace > 0) {
-                // Distribute proportionally based on available space
-                double leftRatio = availableFromLeft / totalAvailable;
-                double rightRatio = availableFromRight / totalAvailable;
-
-                double leftContribution = actualSpace * leftRatio;
-                double rightContribution = actualSpace * rightRatio;
-
-                newSizes[leftNeighborIndex] = leftNeighborSize - leftContribution;
-                newSizes[rightNeighborIndex] = rightNeighborSize - rightContribution;
-                newSizes[newChildIndex] = actualSpace;
-            }
-
-            // Distribute size change proportionally
-            double totalNeighborSize = newSizes[leftNeighborIndex] + newSizes[rightNeighborIndex];
-            if (totalNeighborSize > 0) {
-                double leftRatio = newSizes[leftNeighborIndex] / totalNeighborSize;
-                double rightRatio = newSizes[rightNeighborIndex] / totalNeighborSize;
-
-                newSizes[leftNeighborIndex] += sizeChange * leftRatio;
-                newSizes[rightNeighborIndex] += sizeChange * rightRatio;
-            } else {
-                newSizes[leftNeighborIndex] += sizeChange / 2;
-                newSizes[rightNeighborIndex] += sizeChange / 2;
-            }
+        var donorIndices = resolveDonorIndices(donor, newChildIndex, oldNodeCount);
+        var contribution = distributeDonation(oldSizes, donorIndices, newChildSize);
+        double totalDonorOldSize = donorIndices.stream().mapToDouble(i -> oldSizes[i]).sum();
+        double actualNewChildSize = 0;
+        for (int oldIndex : donorIndices) {
+            int newIndex = mapToNewIndex(oldIndex, newChildIndex);
+            double donated = contribution.get(oldIndex);
+            // the resize delta follows the same proportions as the donation itself among the chosen donors —
+            // mirrors the pre-donor-choice behavior, where the resize delta always followed whichever neighbor(s)
+            // happened to donate
+            double sizeChangeShare = totalDonorOldSize > 0 ? sizeChange * (oldSizes[oldIndex] / totalDonorOldSize) : 0;
+            newSizes[newIndex] = newSizes[newIndex] - donated + sizeChangeShare;
+            actualNewChildSize += donated;
         }
-
-        // Calculate new divider positions
+        newSizes[newChildIndex] = actualNewChildSize;
         double[] newPositions = new double[newNodeCount - 1];
         double cumulativeSize = 0.0;
-
         for (int i = 0; i < newNodeCount - 1; i++) {
             cumulativeSize += newSizes[i];
             newPositions[i] = cumulativeSize / newSize;
         }
-
-        logger.debug("{} Updated dividers on resize and add without main; oldSize: {}, newSize: {}, "
-                + "newChildIndex: {}, newChildSize: {}, oldPositions: {}, newPositions: {}",
-                logPrefix, oldSize, newSize, newChildIndex, newChildSize, oldPositions, newPositions);
-
+        logger.debug("{} Updated dividers on add without main; oldSize: {}, newSize: {}, newChildIndex: {}, "
+                + "newChildSize: {}, donor: {}, oldPositions: {}, newPositions: {}",
+                logPrefix, oldSize, newSize, newChildIndex, newChildSize, donor, oldPositions, newPositions);
         setDividerPositions(newPositions);
     }
 

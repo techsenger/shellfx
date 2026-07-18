@@ -35,12 +35,15 @@ import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
 import com.techsenger.toolkit.core.Pair;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -1615,6 +1618,45 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
     private static final class Transformer {
 
+        /**
+         * Computes the set of donor choices actually available for inserting a TabDock at {@code side} of an anchor,
+         * given whether the insertion requires wrapping the anchor into a new SplitPane.
+         * <p>
+         * When wrapping is required, the wrapped anchor is the sole possible donor — the returned set always has
+         * exactly one element, labeled {@link SpaceDonor#PREVIOUS_SIBLING} or {@link SpaceDonor#NEXT_SIBLING} depending
+         * on which side of the new TabDock the anchor ends up on after wrapping.
+         * <p>
+         * When inserting directly as a sibling (no wrap), the set reflects which neighbors actually exist at the
+         * insertion point: a single neighbor at the edge of the SplitPane yields a single-element set;
+         * {@link SpaceDonor#NEAREST_SIBLINGS} is offered only when both neighbors exist, and
+         * {@link SpaceDonor#ALL_SIBLINGS} only when the target SplitPane has more than two items — with exactly two
+         * items it would be identical to {@code NEAREST_SIBLINGS}.
+         *
+         * @param wraps whether this insertion requires wrapping the anchor
+         * @param side the side of the anchor the new TabDock will occupy
+         * @param newChildIndex the live index the new TabDock will be inserted at within the target SplitPane
+         * @param oldItemCount the number of items in the target SplitPane before insertion
+         * @return the set of donor choices available for this insertion; never empty
+         */
+        private static Set<SpaceDonor> resolveDonorOptions(boolean wraps, Side side, int newChildIndex,
+                int oldItemCount) {
+            if (wraps) {
+                boolean anchorIsPrevious = side == RIGHT || side == BOTTOM;
+                return Set.of(anchorIsPrevious ? SpaceDonor.PREVIOUS_SIBLING : SpaceDonor.NEXT_SIBLING);
+            }
+            boolean hasPrevious = newChildIndex > 0;
+            boolean hasNext = newChildIndex < oldItemCount;
+            if (hasPrevious && hasNext) {
+                var opts = EnumSet.of(SpaceDonor.PREVIOUS_SIBLING, SpaceDonor.NEXT_SIBLING,
+                        SpaceDonor.NEAREST_SIBLINGS);
+                if (oldItemCount > 2) {
+                    opts.add(SpaceDonor.ALL_SIBLINGS);
+                }
+                return opts;
+            }
+            return Set.of(hasPrevious ? SpaceDonor.PREVIOUS_SIBLING : SpaceDonor.NEXT_SIBLING);
+        }
+
         private final DockHostFxView<?> dockHost;
 
         private final DockHostFxView<?>.Composer composer;
@@ -1871,34 +1913,52 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * {@code RIGHT} side against a {@code HORIZONTAL} parent), the new TabDock is inserted as a direct sibling next
          * to the container within that same parent. Otherwise, the container is first
          * {@linkplain #wrap(AbstractContainer, int) wrapped} in a new group with the orientation {@code side} implies,
-         * and the new TabDock is inserted into that new group instead — mirroring the wrap-or-insert decision the
-         * drag-and-drop cases 1–12 make from mouse geometry, but driven here by an explicit side rather than cursor
-         * position.
+         * and the new TabDock is inserted into that new group instead.
+         * <p>
+         * The space for the new TabDock (and, when this SplitPane has no main area, its own resize delta) is taken from
+         * one or more existing siblings, chosen via {@code donorResolver}. The resolver is invoked only when the
+         * insertion point actually offers more than one possible donor — see {@link #resolveDonorOptions}. When
+         * wrapping is required, or the insertion point sits at the edge of its SplitPane with a single neighbor, there
+         * is no real choice and {@code donorResolver} is never called.
          *
          * @param anchorContainer the container to add the new TabDock next to; must currently be live
          * @param side the side of {@code anchorContainer} the new TabDock should occupy
          * @param dock the TabDock to add
          * @param size the desired size (width for {@code LEFT}/{@code RIGHT}, height for {@code TOP}/{@code BOTTOM}) of
          *         the new TabDock
+         * @param donorResolver called with the set of available donor choices when more than one exists; must return
+         *         one of the offered values
+         * @throws IllegalArgumentException if {@code donorResolver} returns a value not present in the set it was
+         *         offered
          */
-        private void addTabDock(AbstractContainer anchorContainer, Side side, TabDockFxView<?> dock, double size) {
+        private void addTabDock(AbstractContainer anchorContainer, Side side, TabDockFxView<?> dock, double size,
+                Function<Set<SpaceDonor>, SpaceDonor> donorResolver) {
             dock.getComposer().setDockHost(dockHost);
             var neededOrientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
             var parentContainer = anchorContainer.getLogicalParent();
             SplitPaneContainer targetParent;
             int index;
+            boolean wraps;
             if (parentContainer != null && parentContainer.getSplitPane().getOrientation() == neededOrientation) {
                 targetParent = parentContainer;
                 var anchorIndex = targetParent.getSplitPane().getItems().indexOf(anchorContainer);
                 index = (side == LEFT || side == TOP) ? anchorIndex : anchorIndex + 1;
+                wraps = false;
             } else {
                 var anchorIndex = anchorContainer.resolvePosition().getIndex();
                 targetParent = wrap(anchorContainer, anchorIndex);
-                // let the freshly created group pick up the anchor's current size before we measure it below
                 refresh();
                 index = (side == LEFT || side == TOP) ? 0 : 1;
+                wraps = true;
             }
             var splitPane = targetParent.getSplitPane();
+            var oldItemCount = splitPane.getItems().size();
+            var options = resolveDonorOptions(wraps, side, index, oldItemCount);
+            var donor = options.size() == 1 ? options.iterator().next() : donorResolver.apply(options);
+            if (!options.contains(donor)) {
+                throw new IllegalArgumentException(
+                        "donorResolver returned " + donor + ", but only " + options + " were offered");
+            }
             var oldSplitPaneSize = splitPane.getOrientation() == Orientation.HORIZONTAL
                     ? splitPane.getWidth() : splitPane.getHeight();
             var dividerSize = splitPane.computeDividerSize();
@@ -1912,13 +1972,14 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var mainIndex = indexOfMain(targetParent);
             if (mainIndex >= 0) {
                 splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex, index,
-                        size);
+                        size, donor);
             } else {
-                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, size);
+                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
+                        size, donor);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("{} Added {} at {} of {}", dockHost.getDescriptor().getLogPrefix(),
-                        dock.getDescriptor().getFullName(), side, anchorContainer.getChildFullName());
+                logger.debug("{} Added {} at {} of {} with donor {}", dockHost.getDescriptor().getLogPrefix(),
+                        dock.getDescriptor().getFullName(), side, anchorContainer.getChildFullName(), donor);
                 dockHost.printTreeDebugInfo();
             }
         }
@@ -1960,10 +2021,12 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
             var mainIndex = indexOfMain(parentContainer);
             if (mainIndex >= 0) {
-                splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize,
-                        mainIndex, index, size);
+                // no donor choice exposed on this call path; matches prior behavior
+                splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex,
+                        index, size, SpaceDonor.NEAREST_SIBLINGS);
             } else {
-                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, size);
+                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, size,
+                        SpaceDonor.NEAREST_SIBLINGS);
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("{} Added {} into {}", dockHost.getDescriptor().getLogPrefix(),
@@ -2069,9 +2132,10 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var mainIndex = indexOfMain(parentContainer);
             if (mainIndex >= 0) {
                 splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex, index,
-                        dockSize);
+                        dockSize, SpaceDonor.NEAREST_SIBLINGS);
             } else {
-                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, dockSize);
+                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, dockSize,
+                        SpaceDonor.NEAREST_SIBLINGS);
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("{} Restored {} into {}", dockHost.getDescriptor().getLogPrefix(),
@@ -2538,18 +2602,28 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * {@code node} must be a live node — obtained from {@link #getModelNode(AreaFxView)}, or reached from it via
          * {@link ModelNode#getParent()} or {@link GroupNode#getChildren()} — since it must correspond to an actual
          * current position in this docking layout. A node built via {@link ModelNodeBuilder} does not qualify.
+         * <p>
+         * The space for the new TabDock is taken from one or more of its existing siblings. When the insertion point
+         * offers more than one possible donor, {@code donorResolver} is called with the available choices and must
+         * return one of them — see {@link SpaceDonor}. When there is only one possible donor (insertion requires
+         * wrapping the anchor, or the anchor sits at the edge of its SplitPane), {@code donorResolver} is not called
+         * at all.
          *
          * @param tabDock the TabDock to add
          * @param node the live node to add the new TabDock next to
          * @param side the side of {@code node} the new TabDock should occupy
          * @param size the desired size (width for {@code LEFT}/{@code RIGHT}, height for {@code TOP}/{@code BOTTOM}) of
          *         the new TabDock
-         * @throws IllegalArgumentException if {@code node} is not a live node obtained from this docking layout
+         * @param donorResolver called with the set of available donor choices when more than one exists; must return
+         *         one of the offered values
+         * @throws IllegalArgumentException if {@code node} is not a live node obtained from this docking layout, or if
+         *         {@code donorResolver} returns a value it was not offered
          */
-        public void addTabDock(TabDockFxView<?> tabDock, ModelNode node, Side side, double size) {
+        public void addTabDock(TabDockFxView<?> tabDock, ModelNode node, Side side, double size,
+                Function<Set<SpaceDonor>, SpaceDonor> donorResolver) {
             getModifiableChildren().add(tabDock);
             var anchorContainer = ContainerUtils.resolveContainer(node);
-            view.transformer.addTabDock(anchorContainer, side, tabDock, size);
+            view.transformer.addTabDock(anchorContainer, side, tabDock, size, donorResolver);
         }
 
         public void removeTabDock(TabDockFxView<?> dock) {
