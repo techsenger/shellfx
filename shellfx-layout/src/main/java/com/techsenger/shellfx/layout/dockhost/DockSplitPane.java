@@ -901,34 +901,67 @@ class DockSplitPane extends SplitPane {
 
     /**
      * Snaps each divider fraction in {@code positions} to the pixel grid, using this SplitPane's current size in
-     * its own orientation.
+     * its own orientation — while preserving the invariant that item sizes derived from the snapped positions sum
+     * exactly to the pane's total pixel width/height.
      * <p>
-     * Divider fractions computed purely in floating-point arithmetic virtually never land exactly on a whole
-     * pixel. When {@link #setDividerPositions} is applied, {@code SplitPaneSkin} snaps each divider to the
-     * nearest whole pixel anyway (subject to {@link #isSnapToPixel()}) — but only once this pane is actually laid
-     * out on screen, which can happen well after this method returns. Every method in this class that reads
-     * {@code oldPositions} on a subsequent call sees whatever was last stored via {@link #setDividerPositions} —
-     * if that was an un-snapped fraction, it silently diverges from the pixel grid the user actually sees, and
-     * that divergence compounds across repeated add/remove/minimize/restore cycles on the same SplitPane (verified
-     * empirically: without this step, two equal siblings around a repeatedly minimized/restored middle TabDock
-     * visibly drift apart by a few pixels after a handful of cycles). Snapping here, before the fraction is ever
-     * stored, keeps what this class computes and what the skin will render in agreement, eliminating that drift.
+     * An earlier version of this method snapped each divider fraction independently via {@link #snapSize(double)}
+     * (ceiling semantics). That approach does not preserve the sum-to-total invariant: rounding each divider up in
+     * isolation can silently inflate (or, depending on rounding direction, starve) whichever item sits between two
+     * independently-rounded boundaries. In practice this showed up as a slow, one-directional drift — verified
+     * empirically across repeated minimize/restore cycles of the same TabDock, sandwiched between two siblings
+     * where only one sibling ever participates as a resolved donor/receiver: the untouched sibling's boundary
+     * crept a fraction of a pixel further every cycle (never reconciled by any donor/receiver exchange), and the
+     * TabDock's own live width measurably shrank by exactly 1px per cycle as a direct consequence.
      * <p>
-     * Uses {@link #snapSize(double)} (ceiling semantics, matching what {@code SplitPaneSkin} itself uses), so
-     * this is a no-op when {@link #isSnapToPixel()} is {@code false}. Also a no-op if this pane's current size in
-     * its orientation is not yet known (0 or unset) — dividing by an unknown size would be meaningless.
+     * This version instead converts the fractions to absolute item sizes, floors each one, and distributes the
+     * few leftover whole pixels (the gap between the sum of the floored sizes and the pane's actual whole-pixel
+     * width) one at a time to the items with the largest fractional remainder — the "largest remainder method".
+     * This guarantees the resulting whole-pixel sizes always sum exactly to the pane's total width, with no
+     * systematic bias toward any particular item, and is idempotent: once sizes are already whole pixels summing
+     * to the total, this method changes nothing.
+     * <p>
+     * A no-op if {@link #isSnapToPixel()} is {@code false}, or if this pane's current size in its orientation is
+     * not yet known (0 or unset) — dividing by an unknown size would be meaningless.
      *
      * @param positions divider fractions (0.0 to 1.0), in order
-     * @return {@code positions}, each snapped to the nearest whole pixel; the same array instance, mutated in
-     *         place, returned only for call-site convenience
+     * @return {@code positions}, adjusted so the item sizes they imply are whole pixels summing exactly to this
+     *         pane's total size; the same array instance, mutated in place, returned only for call-site convenience
      */
     private double[] snapPositions(double[] positions) {
+        if (!isSnapToPixel()) {
+            return positions;
+        }
         double totalSize = getOrientation() == Orientation.HORIZONTAL ? getWidth() : getHeight();
         if (totalSize <= 0) {
             return positions;
         }
+        int totalPixels = (int) Math.round(totalSize);
+        int itemCount = positions.length + 1;
+        double[] rawSizes = computeOldSizes(totalSize, positions);
+        int[] flooredSizes = new int[itemCount];
+        double[] remainders = new double[itemCount];
+        int flooredSum = 0;
+        for (int i = 0; i < itemCount; i++) {
+            flooredSizes[i] = (int) Math.floor(rawSizes[i]);
+            remainders[i] = rawSizes[i] - flooredSizes[i];
+            flooredSum += flooredSizes[i];
+        }
+        int leftoverPixels = totalPixels - flooredSum;
+        // distribute the leftover pixels to the items with the largest fractional remainder first (largest
+        // remainder method); ties broken by index for determinism, though in practice ties are exceedingly rare
+        // with floating-point remainders
+        Integer[] indicesByRemainderDesc = new Integer[itemCount];
+        for (int i = 0; i < itemCount; i++) {
+            indicesByRemainderDesc[i] = i;
+        }
+        Arrays.sort(indicesByRemainderDesc, (a, b) -> Double.compare(remainders[b], remainders[a]));
+        for (int i = 0; i < leftoverPixels && i < itemCount; i++) {
+            flooredSizes[indicesByRemainderDesc[i]]++;
+        }
+        double cumulative = 0.0;
         for (int i = 0; i < positions.length; i++) {
-            positions[i] = snapSize(positions[i] * totalSize) / totalSize;
+            cumulative += flooredSizes[i];
+            positions[i] = cumulative / totalPixels;
         }
         return positions;
     }
