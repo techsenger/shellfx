@@ -28,6 +28,8 @@ import com.techsenger.tabpanepro.core.TabEvent;
 import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import java.util.List;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
@@ -45,7 +47,21 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
 
         private final TabDockFxView<P> view = TabDockFxView.this;
 
+        private final ObjectProperty<SpaceResolver> spaceResolver = new SimpleObjectProperty<>(SpaceResolver.nearest());
+
         private DockHostFxView<?> dockHost;
+
+        public ObjectProperty<SpaceResolver> spaceResolverProperty() {
+            return spaceResolver;
+        }
+
+        public SpaceResolver getSpaceResolver() {
+            return spaceResolver.get();
+        }
+
+        public void setSpaceResolver(SpaceResolver resolver) {
+            spaceResolver.set(resolver);
+        }
 
         @Override
         public void removeTab(TabFxView<?> tab) {

@@ -35,15 +35,14 @@ import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
 import com.techsenger.toolkit.core.Pair;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -396,7 +395,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                     // it is necessary to create a new position with a new index for example,
                     // if there are new children, besides the old parent should be used
                     // var oldPosition = oldContainer.resolvePosition(oldParent);
-                    dockHost.transformer.removeTabDock(oldContainer, TabDockOperation.MOVE);
+                    dockHost.transformer.removeTabDock(oldContainer, TabDockOperation.DEPART);
 
                     // finally replacing the placeholder
                     var placeholderContainer = ContainerUtils.getContainer(composer.placeholder);
@@ -463,10 +462,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
             this.dragDockPopup = null;
         }
-    }
-
-    private enum TabDockOperation {
-        CLOSE, MOVE, MINIMIZE
     }
 
     private abstract static class AbstractContainer extends StackPane {
@@ -1089,13 +1084,11 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         private static Bounds createHalfIndicatorBounds(Side side, ContainerPosition anchorPos) {
             var anchorContainer = anchorPos.getContainer();
             var ratio = ONE_HALF;
-
             double width;
             double height;
             var anchorSceneXY = getSceneXY(anchorContainer);
             double x = anchorSceneXY.getFirst();
             double y = anchorSceneXY.getSecond();
-
             switch (side) {
                 case TOP:
                     width = anchorContainer.getWidth();
@@ -1127,14 +1120,12 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var anchorContainer = anchorPos.getContainer();
             var ancestorContainer = ancestorPos.getContainer();
             var ratio = ONE_THIRD;
-
             double width;
             double height;
             var anchorSceneXY = getSceneXY(anchorContainer);
             var ancestorSceneXY = getSceneXY(ancestorContainer);
             double x = ancestorSceneXY.getFirst();
             double y = ancestorSceneXY.getSecond();
-
             switch (side) {
                 case TOP:
                     width = ancestorContainer.getWidth();
@@ -1167,26 +1158,21 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             SplitPaneContainer splitSpaceContainer = (SplitPaneContainer) parentPos.getContainer();
             var splitPane = splitSpaceContainer.getSplitPane();
             var anchorContainer = anchorPos.getContainer();
-
             double width;
             double height;
             var anchorSceneXY = getSceneXY(anchorContainer);
             double x = anchorSceneXY.getFirst();
             double y = anchorSceneXY.getSecond();
-
             AbstractContainer siblingContainer = siblingPos.getContainer();
             double anchorHeight = splitPane.snapSizeY(anchorContainer.getHeight());
             double siblingHeight = splitPane.snapSizeY(siblingContainer.getHeight());
             double anchorWidth = splitPane.snapSizeX(anchorContainer.getWidth());
             double siblingtWidth = splitPane.snapSizeX(siblingContainer.getWidth());
-
             switch (side) {
                 case TOP:
                     width = anchorContainer.getWidth();
                     height = computeIntermediateContainerSize(anchorHeight, siblingHeight);
                     height = splitPane.snapSizeY(height);
-                    // Due to the divider, the position is calculated based on the adjacent panel, so that when
-                    // the left/right side is the same, the result is consistent.
                     var siblingSceneXY = getSceneXY(siblingContainer);
                     y = siblingSceneXY.getSecond() + siblingContainer.getHeight()
                             - (height * siblingPos.getFraction());
@@ -1207,8 +1193,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                     height = anchorContainer.getHeight();
                     width = computeIntermediateContainerSize(anchorWidth, siblingtWidth);
                     width = splitPane.snapSizeX(width);
-                    // Due to the divider, the position is calculated based on the adjacent panel, so that when
-                    // the left/right side is the same, the result is consistent.
                     siblingSceneXY = getSceneXY(siblingContainer);
                     x = siblingSceneXY.getFirst() + siblingContainer.getWidth()
                             - (width * siblingPos.getFraction());
@@ -1229,7 +1213,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             double siblingContainerFraction = 0.0;
             var anchorContainer = anchorPos.getContainer();
             var siblingContainer = siblingPos.getContainer();
-
             if (side.isHorizontal()) {
                 anchorContainerSize = anchorContainer.getHeight();
                 siblingContainerSize = siblingContainer.getHeight();
@@ -1240,7 +1223,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             double totalSize = anchorContainerSize + siblingContainerSize;
             anchorContainerFraction = anchorContainerSize / totalSize;
             siblingContainerFraction = siblingContainerSize / totalSize;
-
             anchorPos.setFraction(anchorContainerFraction);
             siblingPos.setFraction(siblingContainerFraction);
         }
@@ -1272,6 +1254,20 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         DropPositionResolver(DockHostFxView<?> dockHost) {
             this.dockHost = dockHost;
             this.transformer = dockHost.transformer;
+        }
+
+        /**
+         * Resolves the {@link TabDockOperation} to attach to the transformation about to be prepared, for logging
+         * purposes only.
+         * <p>
+         * Whether the user is dragging a single Tab (which will become a brand-new TabDock, {@link
+         * TabDockOperation#ADD}) or an existing TabDock (which is being relocated, {@link TabDockOperation#ARRIVE})
+         * is already known via {@link DragAndDropHandler#dragDock} at this point in the gesture. Neither value
+         * causes {@link SpaceResolver} to be consulted here — see {@link TabDockOperation} and {@link SpaceResolver}
+         * for the full rule.
+         */
+        private TabDockOperation resolveOperation() {
+            return dockHost.dragAndDropHandler.dragDock == null ? TabDockOperation.ADD : TabDockOperation.ARRIVE;
         }
 
         /**
@@ -1332,26 +1328,20 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         private DropPosition createBasePosition(MousePosition position) {
             DropPosition dropPos = new DropPosition();
             dropPos.setMousePosition(position);
-
             AbstractAreaContainer<?> eventContainer = (AbstractAreaContainer<?>) position.getEventContainer();
             var eventPosition = eventContainer.resolvePosition();
             dropPos.setEventPosition(eventPosition);
-
             var parentContainer = eventPosition.getContainer().getLogicalParent();
             var parentSplitPane = parentContainer.getSplitPane();
             var parentPosition = parentContainer.resolvePosition();
-
             DockSplitPane grandparentSplitPane = null;
             ContainerPosition grandparentPosition = null;
-
             DockSplitPane greatGrandparentSplitPane = null;
             ContainerPosition greatGrandparentPosition = null;
-
             if (parentPosition.getContainer() != dockHost.getComposer().rootContainer) {
                 var grandparentContainer = parentContainer.getLogicalParent();
                 grandparentSplitPane = grandparentContainer.getSplitPane();
                 grandparentPosition = grandparentContainer.resolvePosition();
-
                 if (grandparentPosition.getContainer() != dockHost.getComposer().rootContainer) {
                     var greatGrandparentContainer = grandparentContainer.getLogicalParent();
                     greatGrandparentSplitPane = greatGrandparentContainer.getSplitPane();
@@ -1361,7 +1351,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             dropPos.setParentPosition(parentPosition);
             dropPos.setGrandparentPosition(grandparentPosition);
             dropPos.setGreatGrandparentPosition(greatGrandparentPosition);
-
             if (parentSplitPane.getOrientation() == Orientation.HORIZONTAL) {
                 prepareForHorizontalSpace(dropPos);
             } else {
@@ -1464,8 +1453,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private void prepareForSameOrientationOnEdge(DropPosition dropPos, Side side) {
             boolean isFirst = side == Side.TOP || side == Side.LEFT;
-
             var eventPosition = dropPos.getEventPosition();
+            var operation = resolveOperation();
             Consumer<TabDockFxView<?>> transformation = null;
             boolean isBoundary = isFirst ? eventPosition.isFirst() : eventPosition.isLast();
             int indexDelta = isFirst ? 0 : 1;
@@ -1474,7 +1463,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             if (isBoundary) {
                 if (dropPos.getGrandparentPosition() == null) {
                     transformation = (newTabDock) -> {
-                        transformer.addTabDock(side, eventPosition, null, dropPos.getNewPosition(), newTabDock);
+                        transformer.addTabDock(side, eventPosition, null, dropPos.getNewPosition(), newTabDock,
+                                operation);
                     };
                     dropPos.setNewPosition(new ContainerPosition(eventPosition.getIndex() + indexDelta, ONE_THIRD));
                     dropPos.setIndicatorPosition(dropPos.getParentPosition());
@@ -1486,7 +1476,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                         Orientation orientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
                         transformation = (tabDock) -> {
                             transformer.wrapAndAddTabDock(orientation, dropPos.getGrandparentPosition(),
-                                    dropPos.getNewPosition(), tabDock);
+                                    dropPos.getNewPosition(), tabDock, operation);
                         };
                         dropPos.setNewPosition(new ContainerPosition(isFirst ? 0 : 1, ONE_THIRD));
                         dropPos.setIndicatorPosition(dropPos.getGrandparentPosition());
@@ -1494,9 +1484,9 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                                 dropPos.getGrandparentPosition()));
                         caseIndex = 1;
                     } else {
-                        transformation = (tabDock) -> {
+                        transformation = (newTabDock) -> {
                             transformer.addTabDock(side, dropPos.getGrandparentPosition(), null,
-                                    dropPos.getNewPosition(), tabDock);
+                                    dropPos.getNewPosition(), newTabDock, operation);
                         };
                         dropPos.setNewPosition(new ContainerPosition(dropPos.getGrandparentPosition().getIndex()
                                 + indexDelta, ONE_THIRD));
@@ -1515,7 +1505,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                         eventPosition, siblingPosition));
                 dropPos.setNewPosition(new ContainerPosition(eventPosition.getIndex() + indexDelta, ONE_THIRD));
                 transformation = (newTabDock) -> {
-                    transformer.addTabDock(side, eventPosition, siblingPosition, dropPos.getNewPosition(), newTabDock);
+                    transformer.addTabDock(side, eventPosition, siblingPosition, dropPos.getNewPosition(), newTabDock,
+                            operation);
                 };
                 caseIndex = 3;
             }
@@ -1527,8 +1518,8 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         private void prepareForOppositeOrientationOnEdge(DropPosition dropPos, Side side) {
             boolean isFirst = side == Side.TOP || side == Side.LEFT;
             var eventPosition = dropPos.getEventPosition();
+            var operation = resolveOperation();
             Consumer<TabDockFxView<?>> transformation = null;
-
             dropPos.setIndicatorPosition(dropPos.getParentPosition());
             dropPos.setIndicatorBounds(createThirdIndicatorBounds(side, eventPosition, dropPos.getParentPosition()));
             int caseIndex;
@@ -1537,7 +1528,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 Orientation orientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
                 transformation = (tabDock) -> {
                     transformer.wrapAndAddTabDock(orientation, dropPos.getParentPosition(), dropPos.getNewPosition(),
-                            tabDock);
+                            tabDock, operation);
                 };
                 dropPos.setNewPosition(new ContainerPosition(isFirst ? 0 : 1, ONE_THIRD));
             } else {
@@ -1545,7 +1536,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 int index = dropPos.getParentPosition().getIndex() + (isFirst ? 0 : 1);
                 transformation = (newTabDock) -> {
                     transformer.addTabDock(side, dropPos.getParentPosition(), null, dropPos.getNewPosition(),
-                            newTabDock);
+                            newTabDock, operation);
                 };
                 dropPos.setNewPosition(new ContainerPosition(index, ONE_THIRD));
             }
@@ -1556,13 +1547,12 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private void prepareForSameOrientationOffEdge(DropPosition dropPos, Side side) {
             boolean isFirst = side == Side.TOP || side == Side.LEFT;
-
+            var operation = resolveOperation();
             Consumer<TabDockFxView<?>> transformation = (newTabDock) -> {
                 transformer.addTabDock(dropPos.getMousePosition().getSide(), dropPos.getEventPosition(), null,
-                        dropPos.getNewPosition(), newTabDock);
+                        dropPos.getNewPosition(), newTabDock, operation);
             };
             dropPos.setTransformation(transformation);
-
             int index = dropPos.getEventPosition().getIndex() + (isFirst ? 0 : 1);
             dropPos.setNewPosition(new ContainerPosition(index, ONE_HALF));
             logger.trace("{} Prepared drop position for same orientation off edge; side: {}, position: {}",
@@ -1571,13 +1561,13 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         private void prepareForOppositeOrientationOffEdge(DropPosition dropPos, Side side) {
             boolean isFirst = side == Side.TOP || side == Side.LEFT;
+            var operation = resolveOperation();
             Orientation orientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
             Consumer<TabDockFxView<?>> transformation = (tabDock) -> {
                 transformer.wrapAndAddTabDock(orientation, dropPos.getEventPosition(), dropPos.getNewPosition(),
-                        tabDock);
+                        tabDock, operation);
             };
             dropPos.setTransformation(transformation);
-
             int index = isFirst ? 0 : 1;
             dropPos.setNewPosition(new ContainerPosition(index, ONE_HALF));
             logger.trace("{} Prepared drop position for opposite orientation off edge; side: {}, position: {}",
@@ -1596,7 +1586,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                     var eventIndex = info.getEventPosition().getIndex();
                     var side = info.getMousePosition().getSide();
                     var edgeMd = info.getMousePosition().isEdgeMode();
-
                     var same = dragDockIndex == eventIndex;
                     same = same && ((splitPane.getOrientation() == Orientation.HORIZONTAL && side.isVertical())
                             || (splitPane.getOrientation() == Orientation.HORIZONTAL && side.isHorizontal() && !edgeMd)
@@ -1619,42 +1608,21 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
     private static final class Transformer {
 
         /**
-         * Computes the set of donor choices actually available for inserting a TabDock at {@code side} of an anchor,
-         * given whether the insertion requires wrapping the anchor into a new SplitPane.
-         * <p>
-         * When wrapping is required, the wrapped anchor is the sole possible donor — the returned set always has
-         * exactly one element, labeled {@link SpaceDonor#PREVIOUS_SIBLING} or {@link SpaceDonor#NEXT_SIBLING} depending
-         * on which side of the new TabDock the anchor ends up on after wrapping.
-         * <p>
-         * When inserting directly as a sibling (no wrap), the set reflects which neighbors actually exist at the
-         * insertion point: a single neighbor at the edge of the SplitPane yields a single-element set;
-         * {@link SpaceDonor#NEAREST_SIBLINGS} is offered only when both neighbors exist, and
-         * {@link SpaceDonor#ALL_SIBLINGS} only when the target SplitPane has more than two items — with exactly two
-         * items it would be identical to {@code NEAREST_SIBLINGS}.
-         *
-         * @param wraps whether this insertion requires wrapping the anchor
-         * @param side the side of the anchor the new TabDock will occupy
-         * @param newChildIndex the live index the new TabDock will be inserted at within the target SplitPane
-         * @param oldItemCount the number of items in the target SplitPane before insertion
-         * @return the set of donor choices available for this insertion; never empty
+         * Converts a live container into the {@link ModelNode} that represents it — an {@link AreaNode} for a leaf,
+         * or a {@link GroupNode} for a nested SplitPane.
          */
-        private static Set<SpaceDonor> resolveDonorOptions(boolean wraps, Side side, int newChildIndex,
-                int oldItemCount) {
-            if (wraps) {
-                boolean anchorIsPrevious = side == RIGHT || side == BOTTOM;
-                return Set.of(anchorIsPrevious ? SpaceDonor.PREVIOUS_SIBLING : SpaceDonor.NEXT_SIBLING);
+        private static ModelNode toModelNode(AbstractContainer container) {
+            return container instanceof SplitPaneContainer spc
+                    ? new GroupNodeImpl(spc)
+                    : new AreaNodeImpl((AbstractAreaContainer<?>) container);
+        }
+
+        private static Set<Integer> toOldIndices(List<AbstractContainer> chosen, List<Node> oldOrder) {
+            var indices = new HashSet<Integer>();
+            for (var c : chosen) {
+                indices.add(oldOrder.indexOf(c));
             }
-            boolean hasPrevious = newChildIndex > 0;
-            boolean hasNext = newChildIndex < oldItemCount;
-            if (hasPrevious && hasNext) {
-                var opts = EnumSet.of(SpaceDonor.PREVIOUS_SIBLING, SpaceDonor.NEXT_SIBLING,
-                        SpaceDonor.NEAREST_SIBLINGS);
-                if (oldItemCount > 2) {
-                    opts.add(SpaceDonor.ALL_SIBLINGS);
-                }
-                return opts;
-            }
-            return Set.of(hasPrevious ? SpaceDonor.PREVIOUS_SIBLING : SpaceDonor.NEXT_SIBLING);
+            return indices;
         }
 
         private final DockHostFxView<?> dockHost;
@@ -1686,7 +1654,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var newSplitPane = new DockSplitPane(dockHost.getDescriptor().getLogPrefix());
             newSplitPane.setOrientation(newOrientation);
             var newSplitPaneContainer = ContainerUtils.createContainer(dockHost, newSplitPane);
-
             double[] parentOldPositions = null;
             if (oldLogicalParent == null) {
                 composer.setRoot(newSplitPaneContainer);
@@ -1720,18 +1687,12 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         private void unwrap(SplitPaneContainer splitPaneContainer) {
             var logicalItems = splitPaneContainer.getLogicalItems();
             AbstractContainer onlyChild = logicalItems.isEmpty() ? null : logicalItems.get(0);
-
             if (splitPaneContainer != composer.rootContainer) {
                 var grandparentContainer = splitPaneContainer.getLogicalParent();
                 var grandparentSplitPane = grandparentContainer.getSplitPane();
                 var index = grandparentContainer.getLogicalItems().indexOf(splitPaneContainer);
-
                 List<AbstractContainer> spliced;
                 double[] childPositions;
-                // The split pane that actually owned `spliced`'s live/minimized state before splicing — needed to
-                // correctly tell which spliced children were live vs. minimized. This is NOT always
-                // `splitPaneContainer`'s own split pane: when the only remaining child is itself a nested split, the
-                // spliced children came from THAT nested split, not from `splitPaneContainer`.
                 DockSplitPane sourceSplitPane;
                 if (onlyChild == null) {
                     spliced = List.of();
@@ -1746,12 +1707,10 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                     childPositions = new double[0];
                     sourceSplitPane = splitPaneContainer.getSplitPane();
                 }
-
                 var oldPositions = grandparentSplitPane.getDividerPositions();
                 grandparentContainer.removePermanently(splitPaneContainer);
                 for (var i = 0; i < spliced.size(); i++) {
                     var child = spliced.get(i);
-                    // capture live status BEFORE inserting — once inserted, the child trivially becomes live
                     var wasLive = sourceSplitPane.isLive(child);
                     grandparentContainer.insertNew(index + i, child);
                     if (!wasLive) {
@@ -1769,10 +1728,9 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 if (onlyChild instanceof SplitPaneContainer spc) {
                     spc.setLogicalParent(null);
                     composer.setRoot(spc);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{} Unwrapped {} and set it as a root", dockHost.getDescriptor().getLogPrefix(),
-                                spc.getChildFullName());
-                    }
+                    logger.debug("{} Unwrapped {} and set it as a root", dockHost.getDescriptor().getLogPrefix(),
+                            spc.getChildFullName());
+
                 }
             }
             dockHost.printTreeDebugInfo();
@@ -1792,87 +1750,68 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         /**
-         * The start point for permanently removing a TabDock (close or move) — not used for minimizing, which keeps
-         * the dock as a logical (just non-live) child of its parent instead.
+         * Resolves which container(s) participate in a space change, consulting {@code dock}'s {@link SpaceResolver}
+         * only when more than one candidate exists among {@code previousItems}/{@code nextItems}.
+         * <p>
+         * Not called at all for {@link TabDockOperation#ADD}/{@link TabDockOperation#ARRIVE} when the insertion
+         * position was determined by a drag-and-drop drop indicator — those call sites keep the donor implied by
+         * the indicator geometry instead. See {@link SpaceResolver} for the full rule.
+         *
+         * @param operation why space is being resolved; passed through to the resolver and used for logging
+         * @param dock the TabDock (or, for donation, the area being added) whose {@link SpaceResolver} governs this
+         *         resolution
+         * @param previousItems live siblings before the insertion/removal point, in order
+         * @param nextItems live siblings after the insertion/removal point, in order
+         * @return the chosen container(s); empty only if both {@code previousItems} and {@code nextItems} are empty
+         * @throws IllegalArgumentException if the resolver returns an empty list, a duplicate, or a node not offered
          */
-        private void removeTabDock(TabDockFxView<?> tabDock, TabDockOperation operation) {
-            var tabDockContainer = ContainerUtils.getContainer(tabDock);
-            removeTabDock(tabDockContainer, operation);
-        }
-
-        private void removeTabDock(TabDockContainer tabDockContainer, TabDockOperation operation) {
-            var parentContainer = tabDockContainer.getLogicalParent();
-            var splitPane = parentContainer.getSplitPane();
-            var index = splitPane.getItems().indexOf(tabDockContainer);
-            var componentToRemove = tabDockContainer.getArea();
-
-            var oldPositions = splitPane.getDividerPositions();
-            var oldSplitPaneSize = splitPane.getWidth();
-            var removedChildSize = componentToRemove.getNode().getWidth();
-            if (splitPane.getOrientation() == Orientation.VERTICAL) {
-                oldSplitPaneSize = splitPane.getHeight();
-                removedChildSize = componentToRemove.getNode().getHeight();
+        private List<AbstractContainer> resolveParticipants(TabDockOperation operation, TabDockFxView<?> dock,
+                List<AbstractContainer> previousItems, List<AbstractContainer> nextItems) {
+            if (previousItems.isEmpty() && nextItems.isEmpty()) {
+                return List.of(); // nothing to donate/receive from — e.g. the very first item in an empty SplitPane
             }
-            logger.debug("{} Removing tabDock; operation: {}", dockHost.getDescriptor().getLogPrefix(), operation);
-
-            parentContainer.removePermanently(tabDockContainer);
-            if (operation == TabDockOperation.CLOSE) {
-                componentToRemove.getPresenter().deinitializeTree();
-                composer.getModifiableChildren().remove(componentToRemove);
+            if (previousItems.size() + nextItems.size() == 1) {
+                return previousItems.isEmpty() ? nextItems : previousItems;
             }
-
-            var dividerSize = splitPane.computeDividerSize();
-            refresh();
-            if (dividerSize < 0) {
-                dividerSize = splitPane.computeDividerSize();
+            var previousNodes = previousItems.stream().map(Transformer::toModelNode).toList();
+            var nextNodes = nextItems.stream().map(Transformer::toModelNode).toList();
+            var resolver = dock.getComposer().getSpaceResolver();
+            var chosen = resolver.resolve(operation, previousNodes, nextNodes);
+            if (chosen.isEmpty()) {
+                throw new IllegalArgumentException("SpaceResolver for " + operation + " on "
+                        + dock.getDescriptor().getFullName() + " returned an empty list");
             }
-            var mainChildIndex = indexOfMain(parentContainer);
-            if (mainChildIndex != -1) {
-                splitPane.updateDividersOnRemoveWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainChildIndex,
-                        index);
-            } else {
-                splitPane.updateDividersOnRemoveWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index);
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Removed {} from {}", dockHost.getDescriptor().getLogPrefix(),
-                        componentToRemove.getDescriptor().getFullName(), parentContainer.getChildFullName());
-            }
-
-            normalizeUpward(parentContainer);
-        }
-
-        /**
-         * This method adds a new TabDock when the user drops it via drag-and-drop.
-         */
-        private TabDockFxView<?> wrapAndAddTabDock(Orientation newOrientation, ContainerPosition anchorInfo,
-                ContainerPosition newInfo, TabDockFxView<?> newTabDock) {
-            newTabDock.getComposer().setDockHost(dockHost);
-            var newSplitPaneContainer = wrap(anchorInfo.getContainer(), anchorInfo.getIndex());
-            newSplitPaneContainer.insertNew(newInfo.getIndex(), ContainerUtils.createContainer(dockHost, newTabDock));
-            if (newInfo.getFraction() == ONE_THIRD) {
-                var splitPane = newSplitPaneContainer.getSplitPane();
-                if (newOrientation == Orientation.HORIZONTAL) {
-                    var pos = dockHost.dropPosition.getIndicatorBounds().getWidth()
-                            / anchorInfo.getContainer().getWidth();
-                    splitPane.setDividerPositions(newInfo.getIndex() == 0 ? pos : 1 - pos);
-                } else {
-                    var pos = dockHost.dropPosition.getIndicatorBounds().getHeight()
-                            / anchorInfo.getContainer().getHeight();
-                    splitPane.setDividerPositions(newInfo.getIndex() == 0 ? pos : 1 - pos);
+            var offered = new LinkedHashSet<AbstractContainer>();
+            offered.addAll(previousItems);
+            offered.addAll(nextItems);
+            var seen = new HashSet<AbstractContainer>();
+            var result = new ArrayList<AbstractContainer>(chosen.size());
+            for (var node : chosen) {
+                var container = ContainerUtils.resolveContainer(node);
+                if (!offered.contains(container)) {
+                    throw new IllegalArgumentException("SpaceResolver for " + operation + " on "
+                            + dock.getDescriptor().getFullName() + " returned a node that was not offered: "
+                            + container.getChildFullName());
                 }
+                if (!seen.add(container)) {
+                    throw new IllegalArgumentException("SpaceResolver for " + operation + " on "
+                            + dock.getDescriptor().getFullName() + " returned a duplicate node: "
+                            + container.getChildFullName());
+                }
+                result.add(container);
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Added {} to {}", dockHost.getDescriptor().getLogPrefix(),
-                        newTabDock.getDescriptor().getFullName(), newSplitPaneContainer.getChildFullName());
-            }
-            return newTabDock;
+            return result;
         }
 
         /**
          * This method adds a new TabDock when the user selects the area using mouse.
+         * <p>
+         * The donor is fully determined by the drop indicator geometry already shown to the user — {@link
+         * SpaceResolver} is never consulted here. {@code operation} is passed through only for logging. See {@link
+         * SpaceResolver} for the full rule.
          */
         private void addTabDock(Side side, ContainerPosition anchorInfo, ContainerPosition siblingInfo,
-                ContainerPosition newInfo, TabDockFxView<?> newTabDock) {
+                ContainerPosition newInfo, TabDockFxView<?> newTabDock, TabDockOperation operation) {
             newTabDock.getComposer().setDockHost(dockHost);
             var parentContainer = anchorInfo.getContainer().getLogicalParent();
             var splitPane = parentContainer.getSplitPane();
@@ -1899,66 +1838,54 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 splitPane.updateDividersOnInsertBetween(newInfo.getIndex(), beforeProportion, afterProportion,
                         oldPositions);
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Added {} into {}", dockHost.getDescriptor().getLogPrefix(),
-                        newTabDock.getDescriptor().getFullName(), splitPane.getFullName());
-            }
+
+            logger.debug("{} Added {} into {}; operation: {}", dockHost.getDescriptor().getLogPrefix(),
+                    newTabDock.getDescriptor().getFullName(), splitPane.getFullName(), operation);
+
         }
 
         /**
          * Adds a new TabDock at the given side of an existing container, which may be either a leaf ({@link
          * AbstractAreaContainer}) or a group ({@link SplitPaneContainer}).
          * <p>
-         * If the container's logical parent already has the orientation implied by {@code side} (e.g. a {@code LEFT} or
-         * {@code RIGHT} side against a {@code HORIZONTAL} parent), the new TabDock is inserted as a direct sibling next
-         * to the container within that same parent. Otherwise, the container is first
-         * {@linkplain #wrap(AbstractContainer, int) wrapped} in a new group with the orientation {@code side} implies,
-         * and the new TabDock is inserted into that new group instead.
-         * <p>
-         * The space for the new TabDock (and, when this SplitPane has no main area, its own resize delta) is taken from
-         * one or more existing siblings, chosen via {@code donorResolver}. The resolver is invoked only when the
-         * insertion point actually offers more than one possible donor — see {@link #resolveDonorOptions}. When
-         * wrapping is required, or the insertion point sits at the edge of its SplitPane with a single neighbor, there
-         * is no real choice and {@code donorResolver} is never called.
+         * If the container's logical parent already has the orientation implied by {@code side}, the new TabDock is
+         * inserted as a direct sibling next to the container within that same parent. Otherwise, the container is
+         * first {@linkplain #wrap(AbstractContainer, int) wrapped} in a new group with the orientation {@code side}
+         * implies, and the new TabDock is inserted into that new group instead — in which case the wrapped anchor
+         * ends up as the sole live sibling in the target SplitPane, so {@link #resolveParticipants} resolves to it
+         * directly without consulting {@link SpaceResolver}.
          *
          * @param anchorContainer the container to add the new TabDock next to; must currently be live
          * @param side the side of {@code anchorContainer} the new TabDock should occupy
          * @param dock the TabDock to add
-         * @param size the desired size (width for {@code LEFT}/{@code RIGHT}, height for {@code TOP}/{@code BOTTOM}) of
-         *         the new TabDock
-         * @param donorResolver called with the set of available donor choices when more than one exists; must return
-         *         one of the offered values
-         * @throws IllegalArgumentException if {@code donorResolver} returns a value not present in the set it was
-         *         offered
+         * @param size the desired size (width for {@code LEFT}/{@code RIGHT}, height for {@code TOP}/{@code BOTTOM})
+         *         of the new TabDock
+         * @param operation why this TabDock is being added; passed to {@link SpaceResolver} and used for logging
          */
         private void addTabDock(AbstractContainer anchorContainer, Side side, TabDockFxView<?> dock, double size,
-                Function<Set<SpaceDonor>, SpaceDonor> donorResolver) {
+                TabDockOperation operation) {
             dock.getComposer().setDockHost(dockHost);
             var neededOrientation = side.isVertical() ? Orientation.HORIZONTAL : Orientation.VERTICAL;
             var parentContainer = anchorContainer.getLogicalParent();
             SplitPaneContainer targetParent;
             int index;
-            boolean wraps;
             if (parentContainer != null && parentContainer.getSplitPane().getOrientation() == neededOrientation) {
                 targetParent = parentContainer;
                 var anchorIndex = targetParent.getSplitPane().getItems().indexOf(anchorContainer);
                 index = (side == LEFT || side == TOP) ? anchorIndex : anchorIndex + 1;
-                wraps = false;
             } else {
                 var anchorIndex = anchorContainer.resolvePosition().getIndex();
                 targetParent = wrap(anchorContainer, anchorIndex);
+                // let the freshly created group pick up the anchor's current size before we measure it below
                 refresh();
                 index = (side == LEFT || side == TOP) ? 0 : 1;
-                wraps = true;
             }
             var splitPane = targetParent.getSplitPane();
-            var oldItemCount = splitPane.getItems().size();
-            var options = resolveDonorOptions(wraps, side, index, oldItemCount);
-            var donor = options.size() == 1 ? options.iterator().next() : donorResolver.apply(options);
-            if (!options.contains(donor)) {
-                throw new IllegalArgumentException(
-                        "donorResolver returned " + donor + ", but only " + options + " were offered");
-            }
+            var oldItems = List.copyOf(splitPane.getItems());
+            var previousItems = (List<AbstractContainer>) (List<?>) oldItems.subList(0, index);
+            var nextItems = (List<AbstractContainer>) (List<?>) oldItems.subList(index, oldItems.size());
+            var participants = resolveParticipants(operation, dock, previousItems, nextItems);
+            var donorIndices = toOldIndices(participants, oldItems);
             var oldSplitPaneSize = splitPane.getOrientation() == Orientation.HORIZONTAL
                     ? splitPane.getWidth() : splitPane.getHeight();
             var dividerSize = splitPane.computeDividerSize();
@@ -1972,14 +1899,16 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var mainIndex = indexOfMain(targetParent);
             if (mainIndex >= 0) {
                 splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex, index,
-                        size, donor);
+                        size, donorIndices);
             } else {
-                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
-                        size, donor);
+                splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, size,
+                        donorIndices);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("{} Added {} at {} of {} with donor {}", dockHost.getDescriptor().getLogPrefix(),
-                        dock.getDescriptor().getFullName(), side, anchorContainer.getChildFullName(), donor);
+                logger.debug("{} Added {} at {} of {}; donors: {}, operation: {}",
+                        dockHost.getDescriptor().getLogPrefix(), dock.getDescriptor().getFullName(), side,
+                        anchorContainer.getChildFullName(),
+                        participants.stream().map(AbstractContainer::getChildFullName).toList(), operation);
                 dockHost.printTreeDebugInfo();
             }
         }
@@ -1988,7 +1917,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * This method adds a new TabDock during restoring or adding a tab dock to a specific side.
          */
         private void addTabDock(SplitPaneContainer parentContainer, TabDockFxView<?> dock, int index, Side side,
-                boolean sideShouldBeChecked, double size) {
+                boolean sideShouldBeChecked, double size, TabDockOperation operation) {
             dock.getComposer().setDockHost(dockHost);
             if (sideShouldBeChecked && !checkNewSide(parentContainer, index, side)) {
                 boolean wrapParent = false;
@@ -2007,6 +1936,13 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 }
             }
             final var splitPane = parentContainer.getSplitPane();
+            var oldItems = List.copyOf(splitPane.getItems());
+            var previousItems = (List<AbstractContainer>)
+                    (List<?>) oldItems.subList(0, Math.min(index, oldItems.size()));
+            var nextItems = (List<AbstractContainer>) (List<?>) oldItems.subList(Math.min(index, oldItems.size()),
+                    oldItems.size());
+            var participants = resolveParticipants(operation, dock, previousItems, nextItems);
+            var donorIndices = toOldIndices(participants, oldItems);
             var oldSplitPaneSize = splitPane.getWidth();
             if (splitPane.getOrientation() == Orientation.VERTICAL) {
                 oldSplitPaneSize = splitPane.getHeight();
@@ -2021,18 +1957,110 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             }
             var mainIndex = indexOfMain(parentContainer);
             if (mainIndex >= 0) {
-                // no donor choice exposed on this call path; matches prior behavior
-                splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex,
-                        index, size, SpaceDonor.NEAREST_SIBLINGS);
+                splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex, index,
+                        size, donorIndices);
             } else {
                 splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, size,
-                        SpaceDonor.NEAREST_SIBLINGS);
+                        donorIndices);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("{} Added {} into {}", dockHost.getDescriptor().getLogPrefix(),
-                        dock.getDescriptor().getFullName(), dockContainer.getLogicalParent().getChildFullName());
+                logger.debug("{} Added {} into {}; donors: {}, operation: {}", dockHost.getDescriptor().getLogPrefix(),
+                        dock.getDescriptor().getFullName(), dockContainer.getLogicalParent().getChildFullName(),
+                        participants.stream().map(AbstractContainer::getChildFullName).toList(), operation);
                 dockHost.printTreeDebugInfo();
             }
+        }
+
+        /**
+         * This method adds a new TabDock when the user drops it via drag-and-drop and insertion requires wrapping.
+         * <p>
+         * The wrapped anchor is always the sole donor, and the split fraction is fully determined by the drop
+         * indicator geometry already shown to the user — {@link SpaceResolver} is never consulted here. {@code
+         * operation} is passed through only for logging. See {@link SpaceResolver} for the full rule.
+         */
+        private TabDockFxView<?> wrapAndAddTabDock(Orientation newOrientation, ContainerPosition anchorInfo,
+                ContainerPosition newInfo, TabDockFxView<?> newTabDock, TabDockOperation operation) {
+            newTabDock.getComposer().setDockHost(dockHost);
+            var newSplitPaneContainer = wrap(anchorInfo.getContainer(), anchorInfo.getIndex());
+            newSplitPaneContainer.insertNew(newInfo.getIndex(), ContainerUtils.createContainer(dockHost, newTabDock));
+            if (newInfo.getFraction() == ONE_THIRD) {
+                var splitPane = newSplitPaneContainer.getSplitPane();
+                if (newOrientation == Orientation.HORIZONTAL) {
+                    var pos = dockHost.dropPosition.getIndicatorBounds().getWidth()
+                            / anchorInfo.getContainer().getWidth();
+                    splitPane.setDividerPositions(newInfo.getIndex() == 0 ? pos : 1 - pos);
+                } else {
+                    var pos = dockHost.dropPosition.getIndicatorBounds().getHeight()
+                            / anchorInfo.getContainer().getHeight();
+                    splitPane.setDividerPositions(newInfo.getIndex() == 0 ? pos : 1 - pos);
+                }
+            }
+
+            logger.debug("{} Added {} to {}; wrap, sole donor: {}, operation: {}",
+                    dockHost.getDescriptor().getLogPrefix(), newTabDock.getDescriptor().getFullName(),
+                    newSplitPaneContainer.getChildFullName(), anchorInfo.getContainer().getChildFullName(),
+                    operation);
+
+            return newTabDock;
+        }
+
+        /**
+         * The start point for permanently removing a TabDock (close or move-departure) — not used for minimizing,
+         * which keeps the dock as a logical (just non-live) child of its parent instead.
+         *
+         * @param operation must be {@link TabDockOperation#REMOVE} or {@link TabDockOperation#DEPART}
+         */
+        private void removeTabDock(TabDockFxView<?> tabDock, TabDockOperation operation) {
+            var tabDockContainer = ContainerUtils.getContainer(tabDock);
+            removeTabDock(tabDockContainer, operation);
+        }
+
+        private void removeTabDock(TabDockContainer tabDockContainer, TabDockOperation operation) {
+            if (operation != TabDockOperation.REMOVE && operation != TabDockOperation.DEPART) {
+                throw new AssertionError("removeTabDock only handles REMOVE or DEPART, got: " + operation);
+            }
+            var parentContainer = tabDockContainer.getLogicalParent();
+            var splitPane = parentContainer.getSplitPane();
+            var oldItems = List.copyOf(splitPane.getItems());
+            var index = oldItems.indexOf(tabDockContainer);
+            var componentToRemove = tabDockContainer.getArea();
+            var previousItems = (List<AbstractContainer>) (List<?>) oldItems.subList(0, index);
+            var nextItems = (List<AbstractContainer>) (List<?>) oldItems.subList(index + 1, oldItems.size());
+            var participants = resolveParticipants(operation, componentToRemove, previousItems, nextItems);
+            var receiverIndices = toOldIndices(participants, oldItems);
+            var oldPositions = splitPane.getDividerPositions();
+            var oldSplitPaneSize = splitPane.getWidth();
+            if (splitPane.getOrientation() == Orientation.VERTICAL) {
+                oldSplitPaneSize = splitPane.getHeight();
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} Removing {}; receivers: {}, operation: {}", dockHost.getDescriptor().getLogPrefix(),
+                    componentToRemove.getDescriptor().getFullName(),
+                    participants.stream().map(AbstractContainer::getChildFullName).toList(), operation);
+            }
+            parentContainer.removePermanently(tabDockContainer);
+            if (operation == TabDockOperation.REMOVE) {
+                componentToRemove.getPresenter().deinitializeTree();
+                composer.getModifiableChildren().remove(componentToRemove);
+            }
+            var dividerSize = splitPane.computeDividerSize();
+            refresh();
+            if (dividerSize < 0) {
+                dividerSize = splitPane.computeDividerSize();
+            }
+            var mainChildIndex = indexOfMain(parentContainer);
+            if (mainChildIndex != -1) {
+                splitPane.updateDividersOnRemoveWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainChildIndex,
+                        index, receiverIndices);
+            } else {
+                splitPane.updateDividersOnRemoveWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
+                        receiverIndices);
+            }
+
+            logger.debug("{} Removed {} from {}; operation: {}", dockHost.getDescriptor().getLogPrefix(),
+                    componentToRemove.getDescriptor().getFullName(), parentContainer.getChildFullName(), operation);
+
+            normalizeUpward(parentContainer);
         }
 
         private void moveTab(TabDockFxView<?> newTabDock) {
@@ -2053,29 +2081,29 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * can be restored later without needing to reconstruct its position.
          */
         private void minimizeTabDock(TabDockFxView<?> dock) {
+            var operation = TabDockOperation.MINIMIZE;
             var tabDockContainer = ContainerUtils.getContainer(dock);
             var side = resolveSide(tabDockContainer);
-
             var pos = new MinimizedPosition(side, dock.getNode().getWidth(), dock.getNode().getHeight());
             dock.getPresenter().setMinimizedPosition(pos);
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Minimized position: {}", dockHost.getDescriptor().getLogPrefix(), pos);
-            }
+
+            logger.debug("{} Minimized position for {}: {}; operation: {}", dockHost.getDescriptor().getLogPrefix(),
+                    dock.getDescriptor().getFullName(), pos, operation);
 
             var parentContainer = tabDockContainer.getLogicalParent();
             var splitPane = parentContainer.getSplitPane();
-            var index = splitPane.getItems().indexOf(tabDockContainer);
-
+            var oldItems = List.copyOf(splitPane.getItems());
+            var index = oldItems.indexOf(tabDockContainer);
+            var previousItems = (List<AbstractContainer>) (List<?>) oldItems.subList(0, index);
+            var nextItems = (List<AbstractContainer>) (List<?>) oldItems.subList(index + 1, oldItems.size());
+            var participants = resolveParticipants(operation, dock, previousItems, nextItems);
+            var receiverIndices = toOldIndices(participants, oldItems);
             var oldPositions = splitPane.getDividerPositions();
             var oldSplitPaneSize = splitPane.getWidth();
-            var removedChildSize = dock.getNode().getWidth();
             if (splitPane.getOrientation() == Orientation.VERTICAL) {
                 oldSplitPaneSize = splitPane.getHeight();
-                removedChildSize = dock.getNode().getHeight();
             }
-
             parentContainer.minimizeChild(tabDockContainer);
-
             var dividerSize = splitPane.computeDividerSize();
             refresh();
             if (dividerSize < 0) {
@@ -2084,15 +2112,20 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var mainChildIndex = indexOfMain(parentContainer);
             if (mainChildIndex != -1) {
                 splitPane.updateDividersOnRemoveWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainChildIndex,
-                        index);
+                        index, receiverIndices);
             } else {
-                splitPane.updateDividersOnRemoveWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index);
+                splitPane.updateDividersOnRemoveWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
+                        receiverIndices);
             }
-
             composer.showBar(side);
             var sideBar = dockHost.getComposer().resolveBarWrapper(side).get();
             dock.getComposer().detachTabs();
             sideBar.getComposer().addTabDock(dock);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} Minimized {}; receivers: {}, operation: {}", dockHost.getDescriptor().getLogPrefix(),
+                        dock.getDescriptor().getFullName(),
+                        participants.stream().map(AbstractContainer::getChildFullName).toList(), operation);
+            }
             dockHost.printTreeDebugInfo();
         }
 
@@ -2102,28 +2135,33 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * with no need to search for a surviving ancestor or verify the resulting side.
          */
         private void restoreTabDock(TabDockContainer tabDockContainer) {
+            var operation = TabDockOperation.RESTORE;
             var dock = tabDockContainer.getArea();
             dock.getComposer().attachTabs();
-
             var position = dock.getPresenter().getMinimizedPosition();
             dock.getPresenter().setMinimizedPosition(null);
-
             var parentContainer = tabDockContainer.getLogicalParent();
-            var side = position.getSide();
-            // side, not the parent's current orientation, determines which dimension to use — see restoreTabDock's
-            // prior fix: parent's orientation could still change later via wrap, but that no longer happens here
-            // since parentContainer is always the true original parent now.
-            var dockSize = (side == Side.LEFT || side == Side.RIGHT) ? position.getWidth() : position.getHeight();
-
             var splitPane = parentContainer.getSplitPane();
+            // The dimension to restore is dictated by the immediate parent SplitPane's own orientation, not by
+            // position.getSide() — that side identifies which global SideBar (LEFT/RIGHT/BOTTOM) the dock was
+            // minimized into, which is a window-relative direction and can diverge from the local parent's
+            // orientation once TabDocks are nested more than one level deep (e.g. a VERTICAL split that itself sits
+            // as the leftmost item of an outer HORIZONTAL split resolves to a LEFT SideBar globally, even though its
+            // own children only ever vary in height).
+            var dockSize = splitPane.getOrientation() == Orientation.HORIZONTAL
+                    ? position.getWidth() : position.getHeight();
+            var oldItems = List.copyOf(splitPane.getItems());
+            var index = parentContainer.splitPane.resolveLiveInsertIndex(tabDockContainer);
+            var previousItems = (List<AbstractContainer>) (List<?>) oldItems.subList(0, index);
+            var nextItems = (List<AbstractContainer>) (List<?>) oldItems.subList(index, oldItems.size());
+            var participants = resolveParticipants(operation, dock, previousItems, nextItems);
+            var donorIndices = toOldIndices(participants, oldItems);
             var oldSplitPaneSize = splitPane.getWidth();
             if (splitPane.getOrientation() == Orientation.VERTICAL) {
                 oldSplitPaneSize = splitPane.getHeight();
             }
             var dividerSize = splitPane.computeDividerSize();
             var oldPositions = splitPane.getDividerPositions();
-            var index = parentContainer.splitPane.resolveLiveInsertIndex(tabDockContainer);
-
             parentContainer.restoreChild(tabDockContainer);
             refresh();
             if (dividerSize < 0) {
@@ -2132,14 +2170,16 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             var mainIndex = indexOfMain(parentContainer);
             if (mainIndex >= 0) {
                 splitPane.updateDividersOnAddWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainIndex, index,
-                        dockSize, SpaceDonor.NEAREST_SIBLINGS);
+                        dockSize, donorIndices);
             } else {
                 splitPane.updateDividersOnAddWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index, dockSize,
-                        SpaceDonor.NEAREST_SIBLINGS);
+                        donorIndices);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("{} Restored {} into {}", dockHost.getDescriptor().getLogPrefix(),
-                        dock.getDescriptor().getFullName(), parentContainer.getChildFullName());
+                logger.debug("{} Restored {} into {}; donors: {}, operation: {}",
+                        dockHost.getDescriptor().getLogPrefix(), dock.getDescriptor().getFullName(),
+                        parentContainer.getChildFullName(),
+                        participants.stream().map(AbstractContainer::getChildFullName).toList(), operation);
                 dockHost.printTreeDebugInfo();
             }
         }
@@ -2162,8 +2202,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
         /**
          * Checks whether inserting a new child at {@code index} within {@code parentContainer}'s live items would
-         * actually place it on {@code side} relative to the main area. See the original Javadoc for the full
-         * rationale — unchanged by the logical-items work.
+         * actually place it on {@code side} relative to the main area.
          */
         private boolean checkNewSide(SplitPaneContainer parentContainer, int index, Side side) {
             var items = parentContainer.getSplitPane().getItems();
@@ -2187,18 +2226,17 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             } else {
                 resolvedSide = resolveSide(child);
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} If tabDock is added into {} at {} its side will be {}, when {} is required",
-                        dockHost.getDescriptor().getLogPrefix(), parentContainer.getChildFullName(), index,
-                        resolvedSide, side);
-            }
+
+            logger.debug("{} If tabDock is added into {} at {} its side will be {}, when {} is required",
+                    dockHost.getDescriptor().getLogPrefix(), parentContainer.getChildFullName(), index,
+                    resolvedSide, side);
+
             return resolvedSide == side;
         }
 
         /**
          * Finds the index of the child of the specified split pane container that contains the main area in its
-         * hierarchy. Unchanged — operates on live items and the live scene-graph path, since the main area is
-         * always live.
+         * hierarchy.
          */
         private int indexOfMain(SplitPaneContainer splitPaneContainer) {
             var main = composer.getMain();
@@ -2231,8 +2269,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         /**
-         * Resolves the side of the given container relative to the main area. Unchanged algorithm — operates on live
-         * containers only (the container being resolved is always live at the point this is called).
+         * Resolves the side of the given container relative to the main area.
          */
         private Side resolveSideWithMain(AbstractContainer container) {
             var main = composer.getMain();
@@ -2264,61 +2301,35 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             } else {
                 result = isBeforeMain ? TOP : BOTTOM;
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Resolved side with main for {} is {}; lowest common ancestor: {}",
-                        dockHost.getDescriptor().getLogPrefix(), container.getChildFullName(), result,
-                        lca.getChildFullName());
-            }
+
+            logger.debug("{} Resolved side with main for {} is {}; lowest common ancestor: {}",
+                    dockHost.getDescriptor().getLogPrefix(), container.getChildFullName(), result,
+                    lca.getChildFullName());
+
             return result;
         }
 
         /**
          * Resolves the side of a {@code TabDock} when the docking layout does not contain a main area.
-         *
-         * <p>The algorithm compares the center of the {@code TabDock} with the center of the docking area.
-         * The {@code TabDock} bounds are converted into the coordinate space of the supplied
-         * {@code centerStackPane}, ensuring that both centers are measured relative to the same origin.
-         *
-         * <p>The horizontal and vertical offsets are normalized independently to the range {@code [-1, 1]}
-         * so that layouts with different aspect ratios are handled consistently. The axis with the greater
-         * absolute normalized offset determines the resulting side:
-         *
-         * <ul>
-         *     <li>negative X → {@link Side#LEFT}</li>
-         *     <li>positive X → {@link Side#RIGHT}</li>
-         *     <li>negative Y → {@link Side#TOP}</li>
-         *     <li>positive Y → {@link Side#BOTTOM}</li>
-         * </ul>
-         *
-         * <p>This approach avoids arbitrary quadrant boundaries and instead selects the direction in which
-         * the {@code TabDock} is furthest displaced from the center of the docking area.
-         *
-         * @param centerStackPane the container representing the entire docking area
-         * @param tabDockPane the {@code TabPane} of the {@code TabDock}
-         * @return the resolved side
          */
         private Side resolveSideWithoutMain(StackPane centerStackPane, AbstractContainer container) {
             var layoutCenterX = centerStackPane.getWidth() / 2.0;
             var layoutCenterY = centerStackPane.getHeight() / 2.0;
-
             var bounds = centerStackPane.sceneToLocal(container.localToScene(container.getBoundsInLocal()));
-
             var tabCenterX = bounds.getMinX() + bounds.getWidth() / 2.0;
             var tabCenterY = bounds.getMinY() + bounds.getHeight() / 2.0;
-
             var dx = (tabCenterX - layoutCenterX) / layoutCenterX;
             var dy = (tabCenterY - layoutCenterY) / layoutCenterY;
-
             Side result = null;
             if (Math.abs(dx) >= Math.abs(dy)) {
                 result = dx < 0 ? Side.LEFT : Side.RIGHT;
             } else {
                 result = dy < 0 ? Side.TOP : Side.BOTTOM;
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Resolved side wihout main for {} is {};",
-                        dockHost.getDescriptor().getLogPrefix(), container.getChildFullName(), result);
-            }
+
+            logger.debug("{} Resolved side wihout main for {} is {};", dockHost.getDescriptor().getLogPrefix(),
+                    container.getChildFullName(), result);
+
             return result;
         }
     }
@@ -2579,16 +2590,21 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         /**
          * Adds a new TabDock to one of the sides of the layout with the specified width/height. For example, this
          * method can be used to add some tools to the bottom of the layout.
+         * <p>
+         * The space for {@code dock} is taken from siblings resolved via {@code dock}'s {@link SpaceResolver},
+         * consulted only if the target position offers more than one candidate — see {@link SpaceResolver} for the
+         * full rule.
          *
-         * @param dock
-         * @param side
-         * @param size
+         * @param dock the TabDock to add
+         * @param side the side of the layout to add it to
+         * @param size the desired size (width for {@code LEFT}/{@code RIGHT}, height for {@code TOP}/{@code BOTTOM}) of
+         *         the new TabDock
          */
         public void addTabDock(TabDockFxView<?> dock, Side side, double size) {
             getModifiableChildren().add(dock);
             dock.getComposer().setDockHost(view);
             var index = view.transformer.resolveNewIndex(rootContainer, side);
-            view.transformer.addTabDock(rootContainer, dock, index, side, true, size);
+            view.transformer.addTabDock(rootContainer, dock, index, side, true, size, TabDockOperation.ADD);
         }
 
         /**
@@ -2603,38 +2619,45 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
          * {@link ModelNode#getParent()} or {@link GroupNode#getChildren()} — since it must correspond to an actual
          * current position in this docking layout. A node built via {@link ModelNodeBuilder} does not qualify.
          * <p>
-         * The space for the new TabDock is taken from one or more of its existing siblings. When the insertion point
-         * offers more than one possible donor, {@code donorResolver} is called with the available choices and must
-         * return one of them — see {@link SpaceDonor}. When there is only one possible donor (insertion requires
-         * wrapping the anchor, or the anchor sits at the edge of its SplitPane), {@code donorResolver} is not called
-         * at all.
+         * The space for {@code tabDock} is taken from siblings resolved via {@code tabDock}'s {@link SpaceResolver},
+         * consulted only if the anchor position offers more than one candidate — see {@link SpaceResolver} for the full
+         * rule.
          *
          * @param tabDock the TabDock to add
          * @param node the live node to add the new TabDock next to
          * @param side the side of {@code node} the new TabDock should occupy
          * @param size the desired size (width for {@code LEFT}/{@code RIGHT}, height for {@code TOP}/{@code BOTTOM}) of
          *         the new TabDock
-         * @param donorResolver called with the set of available donor choices when more than one exists; must return
-         *         one of the offered values
-         * @throws IllegalArgumentException if {@code node} is not a live node obtained from this docking layout, or if
-         *         {@code donorResolver} returns a value it was not offered
+         * @throws IllegalArgumentException if {@code node} is not a live node obtained from this docking layout
          */
-        public void addTabDock(TabDockFxView<?> tabDock, ModelNode node, Side side, double size,
-                Function<Set<SpaceDonor>, SpaceDonor> donorResolver) {
+        public void addTabDock(TabDockFxView<?> tabDock, ModelNode node, Side side, double size) {
             getModifiableChildren().add(tabDock);
             var anchorContainer = ContainerUtils.resolveContainer(node);
-            view.transformer.addTabDock(anchorContainer, side, tabDock, size, donorResolver);
+            view.transformer.addTabDock(anchorContainer, side, tabDock, size, TabDockOperation.ADD);
         }
 
+        /**
+         * Removes {@code dock} from the layout without closing it — used when the TabDock is departing as part of a
+         * move rather than being permanently discarded. The space it freed is given to siblings resolved via
+         * {@code dock}'s {@link SpaceResolver}, consulted only if the removal point offers more than one candidate.
+         *
+         * @param dock the TabDock to remove
+         */
         public void removeTabDock(TabDockFxView<?> dock) {
-            view.transformer.removeTabDock(dock, TabDockOperation.MOVE);
+            view.transformer.removeTabDock(dock, TabDockOperation.DEPART);
             view.printTreeDebugInfo();
             dock.getComposer().setDockHost(null);
             logger.debug("{} Removed TabDock", getDescriptor().getLogPrefix());
         }
 
+        /**
+         * Permanently closes {@code dock}, deinitializing it. The space it freed is given to siblings resolved via
+         * {@code dock}'s {@link SpaceResolver}, consulted only if the removal point offers more than one candidate.
+         *
+         * @param dock the TabDock to close
+         */
         public void closeTabDock(TabDockFxView<?> dock) {
-            view.transformer.removeTabDock(dock, TabDockOperation.CLOSE);
+            view.transformer.removeTabDock(dock, TabDockOperation.REMOVE);
             view.printTreeDebugInfo();
             logger.debug("{} Closed TabDock", getDescriptor().getLogPrefix());
         }
