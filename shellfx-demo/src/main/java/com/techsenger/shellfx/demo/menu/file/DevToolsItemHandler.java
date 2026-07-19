@@ -37,10 +37,10 @@ import javafx.geometry.Side;
  *
  * @author Pavel Castornii
  */
-public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> {
+public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
 
-    public DevToolsItemHandler(ManagedMenuItem item, ShellFxView<?> component) {
-        super(item, component);
+    public DevToolsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+        super(component, item);
     }
 
     @Override

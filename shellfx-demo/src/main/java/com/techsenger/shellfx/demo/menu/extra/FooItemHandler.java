@@ -25,10 +25,10 @@ import com.techsenger.shellfx.material.menu.ManagedMenuItem;
  *
  * @author Pavel Castornii
  */
-public class FooItemHandler extends AbstractMenuItemHandler<ShellFxView<?>> {
+public class FooItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
 
-    public FooItemHandler(ManagedMenuItem item, ShellFxView<?> component) {
-        super(item, component);
+    public FooItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+        super(component, item);
     }
 
     @Override

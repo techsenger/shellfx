@@ -21,8 +21,8 @@ import com.techsenger.shellfx.core.MenuAwarePort;
 import com.techsenger.shellfx.core.menu.Handler;
 import com.techsenger.shellfx.core.menu.MenuHandler;
 import com.techsenger.shellfx.core.menu.MenuItemHandler;
+import com.techsenger.shellfx.material.menu.ManagedItem;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -41,6 +41,11 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Only {@code initializeMenu(ManagedMenu) } and {@code deinitializeMenu(ManagedMenu)} methods are recursive.
  *
+ * <p>Menu items are handled uniformly through {@link MenuItem} and {@link ManagedItem}. This class has no
+ * knowledge of concrete managed item types ({@code ManagedMenuItem}, {@code ManagedCheckMenuItem},
+ * {@code ManagedRadioMenuItem}, etc.) — any item that is both a {@link MenuItem} and a {@link ManagedItem} with a
+ * registered {@link MenuItemHandler} is dispatched the same way.
+ *
  * @author Pavel Castornii
  */
 public class MenuManager {
@@ -48,14 +53,10 @@ public class MenuManager {
     private static final Logger logger = LoggerFactory.getLogger(MenuManager.class);
 
     private final DefaultShellFxView<?> shellView;
-
     private final MenuBar menuBar;
-
     private final ListChangeListener<MenuItem> menuItemsListener =
             (ListChangeListener.Change<? extends MenuItem> c) -> processMenuListChange(c);
-
     private long lastKeyPressedTime;
-
     private long lastMouseClickTime;
 
     public MenuManager(DefaultShellFxView<?> shellView, MenuBar menuBar) {
@@ -110,7 +111,8 @@ public class MenuManager {
 
     /**
      * Recursively initializes all menus.
-     * @param menu
+     *
+     * @param managedMenu
      */
     private void initializeMenu(ManagedMenu managedMenu) {
         //listener if menu/items are added/removed dinamically to/from menu(!)
@@ -121,8 +123,9 @@ public class MenuManager {
         for (var m : managedMenu.getItems()) {
             if (m instanceof ManagedMenu menu) {
                 this.initializeMenu(menu);
-            }  else if (m instanceof ManagedMenuItem item) {
-                var handler = MenuItemHandler.getHandler(item);
+            } else if (m instanceof MenuItem item && item instanceof ManagedItem) {
+                var managedItem = (MenuItem & ManagedItem) item;
+                var handler = MenuItemHandler.getHandler(managedItem);
                 if (handler != null) {
                     item.setOnAction(e -> {
                         if (lastMouseClickTime > lastKeyPressedTime) {
@@ -152,6 +155,7 @@ public class MenuManager {
 
     /**
      * Recursively deinitializes menu and all nested menus.
+     *
      * @param managedMenu
      */
     private void deinitializeMenu(ManagedMenu managedMenu) {
@@ -162,7 +166,7 @@ public class MenuManager {
         for (var m : managedMenu.getItems()) {
             if (m instanceof ManagedMenu menu) {
                 this.deinitializeMenu(menu);
-            } else if (m instanceof ManagedMenuItem item) {
+            } else if (m instanceof MenuItem item) {
                 item.setOnAction(null);
             }
         }
@@ -185,17 +189,7 @@ public class MenuManager {
                 if (managedMenu.isVisible()) {
                     visibleItemsPresent = true;
                 }
-            } else if (item instanceof ManagedMenuItem managedItem)  {
-                var handler = MenuItemHandler.getHandler(managedItem);
-                if (handler != null) {
-                    handler.onShowing();
-                    handler.onUpdate();
-                }
-                if (managedItem.isVisible()) {
-                    visibleItemsPresent = true;
-                }
-            } else if (item instanceof SeparatorMenuItem) {
-                var separator = (SeparatorMenuItem) item;
+            } else if (item instanceof SeparatorMenuItem separator) {
                 //there are three variants - first separator, somewhere in the middle, last separator
                 if (previousVisibleSeparator == null) {
                     //first separator
@@ -215,6 +209,16 @@ public class MenuManager {
                     previousVisibleSeparator = separator;
                     visibleItemsPresent = false;
                 }
+            } else if (item instanceof ManagedItem) {
+                var managedItem = (MenuItem & ManagedItem) item;
+                var handler = MenuItemHandler.getHandler(managedItem);
+                if (handler != null) {
+                    handler.onShowing();
+                    handler.onUpdate();
+                }
+                if (item.isVisible()) {
+                    visibleItemsPresent = true;
+                }
             }
         }
         //last separator - hide if there weren't visible items after separator
@@ -228,9 +232,9 @@ public class MenuManager {
         for (var item : menu.getItems()) {
             Handler handler = null;
             if (item instanceof ManagedMenu managedMenu) {
-                handler =  MenuHandler.getHandler(managedMenu);
-            } else if (item instanceof ManagedMenuItem managedItem)  {
-                handler = MenuItemHandler.getHandler(managedItem);
+                handler = MenuHandler.getHandler(managedMenu);
+            } else if (item instanceof MenuItem mi && mi instanceof ManagedItem) {
+                handler = MenuItemHandler.getHandler((MenuItem & ManagedItem) mi);
             }
             if (handler != null) {
                 handler.onHiding();

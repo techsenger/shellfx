@@ -33,8 +33,8 @@ public class PageItemHandler extends AbstractContainerItemHandler {
 
     private final PageMenuType menuType;
 
-    public PageItemHandler(ManagedMenuItem item, ShellFxView<?> component, PageMenuType menuType) {
-        super(item, component);
+    public PageItemHandler(ShellFxView<?> component, ManagedMenuItem item, PageMenuType menuType) {
+        super(component, item);
         this.menuType = menuType;
     }
 

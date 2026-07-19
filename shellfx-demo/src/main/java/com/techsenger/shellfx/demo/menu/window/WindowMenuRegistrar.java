@@ -71,7 +71,7 @@ public class WindowMenuRegistrar extends AbstractControlRegistrar {
     protected void registerWindowsItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Create Windows", 0);
-            MenuItemHandler.setHandler(item, new WindowsItemHandler(item, shell));
+            MenuItemHandler.setHandler(item, new WindowsItemHandler(shell, item));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(WindowMenu.DEFAULT_GROUP, f));
@@ -80,7 +80,7 @@ public class WindowMenuRegistrar extends AbstractControlRegistrar {
     protected void registerCascadeItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Cascade", 0);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>>(item, shell) {
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.CASCADE);
@@ -94,7 +94,7 @@ public class WindowMenuRegistrar extends AbstractControlRegistrar {
     protected void registerTileVerticalItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Tile Vertically", 100);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>>(item, shell) {
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_VERTICAL);
@@ -108,7 +108,7 @@ public class WindowMenuRegistrar extends AbstractControlRegistrar {
     protected void registerTileHorizontalItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Tile Horizontally", 200);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>>(item, shell) {
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_HORIZONTAL);
@@ -122,7 +122,7 @@ public class WindowMenuRegistrar extends AbstractControlRegistrar {
     protected void registerTileGridItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Tile Grid", 300);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>>(item, shell) {
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_GRID);

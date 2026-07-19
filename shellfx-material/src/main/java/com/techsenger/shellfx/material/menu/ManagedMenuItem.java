@@ -16,9 +16,7 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.shellfx.material.Positioned;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 
@@ -27,11 +25,9 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public class ManagedMenuItem extends MenuItem implements Positioned {
+public class ManagedMenuItem extends MenuItem implements ManagedItem {
 
-    private final int position;
-
-    private final ObjectProperty<ManagedMenuGroup> group = new SimpleObjectProperty<>();
+    private final ManagedItemSupport support;
 
     public ManagedMenuItem(int position) {
         this(null, null, position);
@@ -41,40 +37,18 @@ public class ManagedMenuItem extends MenuItem implements Positioned {
         this(string, null, position);
     }
 
-    public ManagedMenuItem(String string, Node node, int position) {
-        super(string, node);
-        this.position = position;
+    public ManagedMenuItem(String text, Node node, int position) {
+        super(text, node);
+        this.support = new ManagedItemSupport(position);
     }
 
     @Override
     public int getPosition() {
-        return position;
+        return support.getPosition();
     }
 
-    /**
-     * Returns the group this menu belongs to or null.
-     *
-     * @return
-     */
+    @Override
     public ObjectProperty<ManagedMenuGroup> groupProperty() {
-        return this.group;
-    }
-
-    /**
-     * Returns the group this menu belongs to or null.
-     *
-     * @return
-     */
-    public ManagedMenuGroup getGroup() {
-        return group.get();
-    }
-
-    /**
-     * Sets the group this menu belongs to or null.
-     *
-     * @return
-     */
-    public void setGroup(ManagedMenuGroup group) {
-        this.group.set(group);
+        return support.groupProperty();
     }
 }

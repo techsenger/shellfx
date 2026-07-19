@@ -17,23 +17,24 @@
 package com.techsenger.shellfx.core.menu;
 
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import com.techsenger.shellfx.material.menu.ManagedItem;
+import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractMenuItemHandler<T extends ParentFxView<?>> extends AbstractHandler<T>
-        implements MenuItemHandler<T> {
+public abstract class AbstractMenuItemHandler<T extends ParentFxView<?>, I extends MenuItem & ManagedItem>
+        extends AbstractHandler<T> implements MenuItemHandler<T> {
 
-    private final ManagedMenuItem item;
+    private final I item;
 
-    public AbstractMenuItemHandler(ManagedMenuItem item, T component) {
+    protected AbstractMenuItemHandler(T component, I item) {
         super(component);
         this.item = item;
     }
 
-    protected ManagedMenuItem getItem() {
+    protected I getItem() {
         return item;
     }
 }

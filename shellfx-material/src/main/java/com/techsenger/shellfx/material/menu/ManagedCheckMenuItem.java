@@ -16,39 +16,29 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.shellfx.material.Named;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.CheckMenuItem;
 
 /**
- * All handlers for managed menu are set by external manager.
+ * All handlers for managed menu items are set by external manager.
  *
  * @author Pavel Castornii
  */
-public class ManagedMenu extends Menu implements Named, ManagedItem {
-
-    private final MenuName name;
+public class ManagedCheckMenuItem extends CheckMenuItem implements ManagedItem {
     private final ManagedItemSupport support;
 
-    public ManagedMenu(MenuName name, String text, int position) {
-        this(name, text, null, position, null);
+    public ManagedCheckMenuItem(int position) {
+        this(null, null, position);
     }
 
-    public ManagedMenu(MenuName name, String text, Node node, int position) {
-        this(name, text, node, position, null);
+    public ManagedCheckMenuItem(String string, int position) {
+        this(string, null, position);
     }
 
-    public ManagedMenu(MenuName name, String text, Node node, int position, MenuItem... mis) {
-        super(text, node, mis);
-        this.name = name;
+    public ManagedCheckMenuItem(String text, Node node, int position) {
+        super(text, node);
         this.support = new ManagedItemSupport(position);
-    }
-
-    @Override
-    public MenuName getName() {
-        return name;
     }
 
     @Override
@@ -61,3 +51,4 @@ public class ManagedMenu extends Menu implements Named, ManagedItem {
         return support.groupProperty();
     }
 }
+

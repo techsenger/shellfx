@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.material.menu.ManagedItem;
-import com.techsenger.shellfx.material.menu.MenuGroupName;
-import javafx.scene.control.MenuItem;
+import javafx.beans.property.ObjectProperty;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuItemRegistration<T extends ParentFxView<?>, I extends MenuItem & ManagedItem>
-        extends AbstractMenuRegistration<T, I> {
+public interface Groupable {
 
-    private final MenuGroupName groupKey;
+    ObjectProperty<ManagedMenuGroup> groupProperty();
 
-    MenuItemRegistration(MenuGroupName groupKey, ControlFactory<T, I> factory) {
-        super(MenuElementType.ITEM, factory);
-        this.groupKey = groupKey;
+    default ManagedMenuGroup getGroup() {
+        return groupProperty().get();
     }
 
-    public MenuGroupName getGroupKey() {
-        return groupKey;
+    default void setGroup(ManagedMenuGroup group) {
+        groupProperty().set(group);
     }
 }

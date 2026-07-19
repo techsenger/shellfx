@@ -74,6 +74,6 @@ public class ManagedMenuGroup implements Named, Positioned {
      */
     public void sort() {
         Collections.sort(items, (o1, o2) ->
-                Integer.compare(((Positioned) o1).getPosition(), ((Positioned) o2).getPosition()));
+                Integer.compare(((ManagedItem) o1).getPosition(), ((ManagedItem) o2).getPosition()));
     }
 }

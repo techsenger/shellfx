@@ -21,9 +21,9 @@ import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.shellfx.core.CoreComponents;
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.core.menu.MainMenu;
+import com.techsenger.shellfx.material.menu.ManagedItem;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
 import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import com.techsenger.shellfx.material.menu.MenuGroupName;
 import com.techsenger.shellfx.material.menu.MenuName;
 import com.techsenger.toolkit.core.Pair;
@@ -75,7 +75,7 @@ public class MenuBuilder {
 
         private final Map<MenuGroupName, GroupDescriptor> groupsByName = new HashMap<>();
 
-        private final Map<MenuGroupName, Set<ManagedMenuItem>> itemsByGroup = new HashMap<>();
+        private final Map<MenuGroupName, Set<MenuItem>> itemsByGroup = new HashMap<>();
     }
 
     private final ControlRegistry registry;
@@ -98,10 +98,8 @@ public class MenuBuilder {
         }
         var ctx = new BuildContext();
         buildElements(shell, new ArrayList<>(registrations), ctx);
-
         List<ManagedMenu> topMenus = new ArrayList<>();
         Map<MenuName, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
-
         // Distribute menus — top-level ones go to the result list, nested ones are added to their parent group
         for (var entry : ctx.menusByName.entrySet()) {
             var descriptor = entry.getValue();
@@ -116,9 +114,7 @@ public class MenuBuilder {
             }
             menusAndGroups.put(entry.getKey(), new Pair<>(descriptor.menu, new ArrayList<>()));
         }
-
         assembleMenus(ctx, menusAndGroups);
-
         Collections.sort(topMenus, (p1, p2) -> Integer.compare(p1.getPosition(), p2.getPosition()));
         removeEmptyMenus(topMenus);
         return (List) topMenus;
@@ -141,12 +137,10 @@ public class MenuBuilder {
         }
         var ctx = new BuildContext();
         buildElements(view, new ArrayList<>(registrations), ctx);
-
         var menuDescriptor = ctx.menusByName.get(menuName);
         if (menuDescriptor == null) {
             return null;
         }
-
         Map<MenuName, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
         for (var entry : ctx.menusByName.entrySet()) {
             var descriptor = entry.getValue();
@@ -159,7 +153,6 @@ public class MenuBuilder {
             }
             menusAndGroups.put(entry.getKey(), new Pair<>(descriptor.menu, new ArrayList<>()));
         }
-
         assembleMenus(ctx, menusAndGroups);
         if (removeEmptyMenus(menuDescriptor.menu)) {
             return null;
@@ -188,7 +181,7 @@ public class MenuBuilder {
                     ctx.groupsByName.put(group.getName(), new GroupDescriptor(gr.getMenuName(), group));
                     break;
                 case ITEM:
-                    var ir = (MenuItemRegistration<ParentFxView<?>>) r;
+                    var ir = (MenuItemRegistration<ParentFxView<?>, ?>) r;
                     var item = ir.getFactory().create(view);
                     ctx.itemsByGroup.computeIfAbsent(ir.getGroupKey(), k -> new HashSet<>()).add(item);
                     break;
@@ -200,9 +193,11 @@ public class MenuBuilder {
 
     /**
      * Assembles groups and items into their parent menus. Groups are sorted by position and separated by
-     * {@link SeparatorMenuItem}s. Empty groups are skipped.
+     * {@link SeparatorMenuItem}s. Empty groups are skipped. Any item or nested menu that implements
+     * {@link ManagedItem} has its group back-reference set; items of other kinds are still added to the menu but
+     * are not tracked as belonging to a group.
      *
-     * @param ctx           the build context containing all instantiated elements
+     * @param ctx            the build context containing all instantiated elements
      * @param menusAndGroups a map from menu name to its menu instance and the list of groups that belong to it
      */
     private void assembleMenus(BuildContext ctx,
@@ -213,7 +208,9 @@ public class MenuBuilder {
             if (groupDescriptor != null) {
                 for (var item : entry.getValue()) {
                     groupDescriptor.group.getItems().add(item);
-                    item.setGroup(groupDescriptor.group);
+                    if (item instanceof ManagedItem managedItem) {
+                        managedItem.setGroup(groupDescriptor.group);
+                    }
                 }
             }
         }

@@ -79,7 +79,7 @@ public class ExtraMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("_Foo", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
-            MenuItemHandler.setHandler(item, new FooItemHandler(item, v));
+            MenuItemHandler.setHandler(item, new FooItemHandler(v, item));
             return item;
 
         };
@@ -93,7 +93,7 @@ public class ExtraMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("_Bar", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
-            MenuItemHandler.setHandler(item, new BarItemHandler(item, v));
+            MenuItemHandler.setHandler(item, new BarItemHandler(v, item));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(ExtraMenu.BAR_GROUP, f));

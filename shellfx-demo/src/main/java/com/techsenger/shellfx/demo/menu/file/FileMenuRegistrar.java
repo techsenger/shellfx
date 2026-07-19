@@ -83,7 +83,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     protected void registerMainTabItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Main Tab", 100);
-            MenuItemHandler.setHandler(item, new MainTabItemHandler(item, shell));
+            MenuItemHandler.setHandler(item, new MainTabItemHandler(shell, item));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
@@ -92,7 +92,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     protected void registerPageTabItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Page Tab", 200);
-            MenuItemHandler.setHandler(item, new PageItemHandler(item, shell, PageMenuType.FLAT));
+            MenuItemHandler.setHandler(item, new PageItemHandler(shell, item, PageMenuType.FLAT));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
@@ -101,7 +101,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     protected void registerTreePageTabItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Tree Page Tab", 250);
-            MenuItemHandler.setHandler(item, new PageItemHandler(item, shell, PageMenuType.TREE));
+            MenuItemHandler.setHandler(item, new PageItemHandler(shell, item, PageMenuType.TREE));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
@@ -110,7 +110,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     protected void registerDialogsItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Dialogs", 300);
-            MenuItemHandler.setHandler(item, new DialogsItemHandler(item, shell));
+            MenuItemHandler.setHandler(item, new DialogsItemHandler(shell, item));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
@@ -119,7 +119,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     protected void registerDevToolsItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("DevTools", 400);
-            MenuItemHandler.setHandler(item, new DevToolsItemHandler(item, shell));
+            MenuItemHandler.setHandler(item, new DevToolsItemHandler(shell, item));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.DEMO_GROUP, f));
@@ -128,7 +128,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
     protected void registerSettingsItem() {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("_Settings", 100);
-            MenuItemHandler.setHandler(item, new SettingsItemHandler(item, shell));
+            MenuItemHandler.setHandler(item, new SettingsItemHandler(shell, item));
             return item;
         };
         addRegistration(getRegistry().mainMenu().registerMenuItem(FileMenu.APPEARANCE_GROUP, f));
@@ -138,7 +138,7 @@ public class FileMenuRegistrar extends AbstractControlRegistrar {
         ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("E_xit", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
-            MenuItemHandler.setHandler(item, new ExitItemHandler(item, shell));
+            MenuItemHandler.setHandler(item, new ExitItemHandler(shell, item));
             return item;
 
         };

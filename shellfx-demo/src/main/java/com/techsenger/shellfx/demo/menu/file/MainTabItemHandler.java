@@ -32,8 +32,8 @@ import com.techsenger.shellfx.material.menu.ManagedMenuItem;
  */
 public class MainTabItemHandler extends AbstractContainerItemHandler {
 
-    public MainTabItemHandler(ManagedMenuItem item, ShellFxView<?> component) {
-        super(item, component);
+    public MainTabItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+        super(component, item);
     }
 
     @Override

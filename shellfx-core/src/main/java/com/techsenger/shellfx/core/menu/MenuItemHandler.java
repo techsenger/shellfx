@@ -17,7 +17,8 @@
 package com.techsenger.shellfx.core.menu;
 
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import com.techsenger.shellfx.material.menu.ManagedItem;
+import javafx.scene.control.MenuItem;
 
 /**
  *
@@ -25,11 +26,11 @@ import com.techsenger.shellfx.material.menu.ManagedMenuItem;
  */
 public interface MenuItemHandler<T extends ParentFxView<?>> extends Handler {
 
-    static void setHandler(ManagedMenuItem item, MenuItemHandler<?> handler) {
-       item.getProperties().put(key(), handler);
+    static <T extends MenuItem & ManagedItem> void setHandler(T item, MenuItemHandler<?> handler) {
+        item.getProperties().put(key(), handler);
     }
 
-    static MenuItemHandler<?> getHandler(ManagedMenuItem item) {
+    static <T extends MenuItem & ManagedItem> MenuItemHandler<?> getHandler(T item) {
         return (MenuItemHandler<?>) item.getProperties().get(key());
     }
 

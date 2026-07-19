@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.menu.file;
+package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import com.techsenger.shellfx.material.Positioned;
 
 /**
+ * Marker interface for any menu element managed by ShellFX — combines the two capabilities
+ * required for participation in dynamic menu assembly: position within a group, and group
+ * membership itself.
  *
  * @author Pavel Castornii
  */
-public class ExitItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
-
-    public ExitItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
-        super(component, item);
-    }
-
-    @Override
-    public void onAction() {
-        getComponent().getPresenter().closeSafely();
-    }
+public interface ManagedItem extends Positioned, Groupable {
 
 }

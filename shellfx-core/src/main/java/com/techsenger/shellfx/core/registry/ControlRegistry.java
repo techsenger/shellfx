@@ -21,9 +21,9 @@ import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.shellfx.core.CoreComponents;
 import com.techsenger.shellfx.core.menu.MainMenu;
+import com.techsenger.shellfx.material.menu.ManagedItem;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
 import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import com.techsenger.shellfx.material.menu.MenuGroupName;
 import com.techsenger.shellfx.material.menu.MenuName;
 import java.util.Collections;
@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import javafx.scene.control.MenuItem;
 
 /**
  * Registry for UI controls such as menus, toolbars, context menus, etc. Allows components to contribute UI
@@ -115,14 +116,17 @@ public class ControlRegistry implements ExtensionRegistry {
         }
 
         /**
-         * Registers a menu item in the specified group.
+         * Registers a menu item in the specified group. Accepts a factory for any managed item type —
+         * {@code ManagedMenuItem}, {@code ManagedCheckMenuItem}, {@code ManagedRadioMenuItem}, or any future
+         * {@link ManagedItem} implementation — the concrete type is inferred from the factory.
          *
          * @param groupName the name of the group this item will belong to
          * @param factory   the factory used to create the menu item
+         * @param <I>       the concrete managed item type produced by the factory
          * @return a {@link Registration} that can be used to unregister this contribution
          */
-        public Registration registerMenuItem(MenuGroupName groupName,
-                ControlFactory<? extends ParentFxView<?>, ManagedMenuItem> factory) {
+        public <I extends MenuItem & ManagedItem> Registration registerMenuItem(MenuGroupName groupName,
+                ControlFactory<? extends ParentFxView<?>, I> factory) {
             var menus = getMenusFor(componentName);
             var reg = new MenuItemRegistration<>(groupName, factory);
             menus.add(reg);
