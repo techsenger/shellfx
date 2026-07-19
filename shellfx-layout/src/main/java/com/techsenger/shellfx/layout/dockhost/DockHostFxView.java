@@ -2033,9 +2033,13 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             if (splitPane.getOrientation() == Orientation.VERTICAL) {
                 oldSplitPaneSize = splitPane.getHeight();
             }
+            // measured before the item list is mutated, while bounds still reflect the current, laid-out state —
+            // measuring after removal but before refresh() would read stale bounds that still include the
+            // about-to-be-removed item's space, yielding a wildly inflated bogus divider size
+            var dividerSize = splitPane.computeDividerSize();
             if (logger.isDebugEnabled()) {
                 logger.debug("{} Removing {}; receivers: {}, operation: {}", dockHost.getDescriptor().getLogPrefix(),
-                    componentToRemove.getDescriptor().getFullName(),
+                        operation, componentToRemove.getDescriptor().getFullName(),
                     participants.stream().map(AbstractContainer::getChildFullName).toList(), operation);
             }
             parentContainer.removePermanently(tabDockContainer);
@@ -2043,7 +2047,6 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 componentToRemove.getPresenter().deinitializeTree();
                 composer.getModifiableChildren().remove(componentToRemove);
             }
-            var dividerSize = splitPane.computeDividerSize();
             refresh();
             if (dividerSize < 0) {
                 dividerSize = splitPane.computeDividerSize();
@@ -2056,10 +2059,10 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
                 splitPane.updateDividersOnRemoveWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
                         receiverIndices);
             }
-
-            logger.debug("{} Removed {} from {}; operation: {}", dockHost.getDescriptor().getLogPrefix(),
-                    componentToRemove.getDescriptor().getFullName(), parentContainer.getChildFullName(), operation);
-
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} Removed {} from {}; operation: {}", dockHost.getDescriptor().getLogPrefix(),
+                        componentToRemove.getDescriptor().getFullName(), parentContainer.getChildFullName(), operation);
+            }
             normalizeUpward(parentContainer);
         }
 
@@ -2075,59 +2078,64 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
             tabHeaderArea.cleanupAfterDrop();
         }
 
-        /**
-         * Minimizes a TabDock into its side bar. Unlike closing or moving a TabDock, this does not discard it from
-         * its parent's logical structure — it stays a logical child of {@code parent}, just no longer live, so it
-         * can be restored later without needing to reconstruct its position.
-         */
-        private void minimizeTabDock(TabDockFxView<?> dock) {
-            var operation = TabDockOperation.MINIMIZE;
-            var tabDockContainer = ContainerUtils.getContainer(dock);
-            var side = resolveSide(tabDockContainer);
-            var pos = new MinimizedPosition(side, dock.getNode().getWidth(), dock.getNode().getHeight());
-            dock.getPresenter().setMinimizedPosition(pos);
-
+    /**
+     * Minimizes a TabDock into its side bar. Unlike closing or moving a TabDock, this does not discard it from
+     * its parent's logical structure — it stays a logical child of {@code parent}, just no longer live, so it
+     * can be restored later without needing to reconstruct its position.
+     */
+    private void minimizeTabDock(TabDockFxView<?> dock) {
+        var operation = TabDockOperation.MINIMIZE;
+        var tabDockContainer = ContainerUtils.getContainer(dock);
+        var side = resolveSide(tabDockContainer);
+        var pos = new MinimizedPosition(side, dock.getNode().getWidth(), dock.getNode().getHeight());
+        dock.getPresenter().setMinimizedPosition(pos);
+        if (logger.isDebugEnabled()) {
             logger.debug("{} Minimized position for {}: {}; operation: {}", dockHost.getDescriptor().getLogPrefix(),
                     dock.getDescriptor().getFullName(), pos, operation);
-
-            var parentContainer = tabDockContainer.getLogicalParent();
-            var splitPane = parentContainer.getSplitPane();
-            var oldItems = List.copyOf(splitPane.getItems());
-            var index = oldItems.indexOf(tabDockContainer);
-            var previousItems = (List<AbstractContainer>) (List<?>) oldItems.subList(0, index);
-            var nextItems = (List<AbstractContainer>) (List<?>) oldItems.subList(index + 1, oldItems.size());
-            var participants = resolveParticipants(operation, dock, previousItems, nextItems);
-            var receiverIndices = toOldIndices(participants, oldItems);
-            var oldPositions = splitPane.getDividerPositions();
-            var oldSplitPaneSize = splitPane.getWidth();
-            if (splitPane.getOrientation() == Orientation.VERTICAL) {
-                oldSplitPaneSize = splitPane.getHeight();
-            }
-            parentContainer.minimizeChild(tabDockContainer);
-            var dividerSize = splitPane.computeDividerSize();
-            refresh();
-            if (dividerSize < 0) {
-                dividerSize = splitPane.computeDividerSize();
-            }
-            var mainChildIndex = indexOfMain(parentContainer);
-            if (mainChildIndex != -1) {
-                splitPane.updateDividersOnRemoveWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainChildIndex,
-                        index, receiverIndices);
-            } else {
-                splitPane.updateDividersOnRemoveWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
-                        receiverIndices);
-            }
-            composer.showBar(side);
-            var sideBar = dockHost.getComposer().resolveBarWrapper(side).get();
-            dock.getComposer().detachTabs();
-            sideBar.getComposer().addTabDock(dock);
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} Minimized {}; receivers: {}, operation: {}", dockHost.getDescriptor().getLogPrefix(),
-                        dock.getDescriptor().getFullName(),
-                        participants.stream().map(AbstractContainer::getChildFullName).toList(), operation);
-            }
-            dockHost.printTreeDebugInfo();
         }
+        var parentContainer = tabDockContainer.getLogicalParent();
+        var splitPane = parentContainer.getSplitPane();
+        var oldItems = List.copyOf(splitPane.getItems());
+        var index = oldItems.indexOf(tabDockContainer);
+        var previousItems = (List<AbstractContainer>) (List<?>) oldItems.subList(0, index);
+        var nextItems = (List<AbstractContainer>) (List<?>) oldItems.subList(index + 1, oldItems.size());
+        var participants = resolveParticipants(operation, dock, previousItems, nextItems);
+        var receiverIndices = toOldIndices(participants, oldItems);
+        var oldPositions = splitPane.getDividerPositions();
+        var oldSplitPaneSize = splitPane.getWidth();
+        if (splitPane.getOrientation() == Orientation.VERTICAL) {
+            oldSplitPaneSize = splitPane.getHeight();
+        }
+        var dividerSize = splitPane.computeDividerSize();
+        parentContainer.minimizeChild(tabDockContainer);
+        // showBar() is called here, before refresh(), so that the BorderPane-driven shrink of centerStackPane (the
+        // SideBar occupying LEFT/RIGHT/BOTTOM) is captured together with the item removal in a single layout pass.
+        // Computing newSize (inside updateDividersOnRemove*Main below) after showBar() rather than before it is
+        // what makes the resize-delta calculation see the pane's true final width instead of its stale,
+        // not-yet-shrunk one.
+        composer.showBar(side);
+        refresh();
+        if (dividerSize < 0) {
+            dividerSize = splitPane.computeDividerSize();
+        }
+        var mainChildIndex = indexOfMain(parentContainer);
+        if (mainChildIndex != -1) {
+            splitPane.updateDividersOnRemoveWithMain(oldSplitPaneSize, oldPositions, dividerSize, mainChildIndex, index,
+                    receiverIndices);
+        } else {
+            splitPane.updateDividersOnRemoveWithoutMain(oldSplitPaneSize, oldPositions, dividerSize, index,
+                    receiverIndices);
+        }
+        var sideBar = dockHost.getComposer().resolveBarWrapper(side).get();
+        dock.getComposer().detachTabs();
+        sideBar.getComposer().addTabDock(dock);
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} Minimized {}; receivers: {}, operation: {}", dockHost.getDescriptor().getLogPrefix(),
+                    dock.getDescriptor().getFullName(),
+                    participants.stream().map(AbstractContainer::getChildFullName).toList(), operation);
+        }
+        dockHost.printTreeDebugInfo();
+    }
 
         /**
          * Restores a minimized TabDock back into the live tree. Its logical parent was never lost — the container

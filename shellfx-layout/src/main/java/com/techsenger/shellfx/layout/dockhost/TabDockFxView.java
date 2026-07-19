@@ -77,6 +77,13 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
             dockHost.getComposer().closeTabDock(TabDockFxView.this);
         }
 
+        public void setDockHost(DockHostFxView<?> dockHost) {
+            if (this.dockHost == null) {
+                this.dockHost = dockHost;
+                getNode().setDragAndDropContext(dockHost.getDragAndDropContext());
+            }
+        }
+
         @Override
         protected @Unmodifiable List<? extends TabFxView<?>> getDetachedTabs() {
             return super.getDetachedTabs();
@@ -84,13 +91,6 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
 
         protected DockHostFxView<?> getDockHost() {
             return dockHost;
-        }
-
-        protected void setDockHost(DockHostFxView<?> dockHost) {
-            if (this.dockHost == null) {
-                this.dockHost = dockHost;
-                getNode().setDragAndDropContext(dockHost.getDragAndDropContext());
-            }
         }
     }
 

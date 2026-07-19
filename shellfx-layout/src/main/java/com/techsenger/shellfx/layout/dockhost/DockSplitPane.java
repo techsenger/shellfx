@@ -60,6 +60,100 @@ class DockSplitPane extends SplitPane {
         return result;
     }
 
+    /**
+     * Distributes {@code delta} — the SplitPane's own resize (e.g. a SideBar appearing or disappearing, shrinking
+     * or growing every sibling in this SplitPane regardless of which one is about to donate or receive space) —
+     * proportionally across every item in {@code oldSizes}, weighted by each item's own size.
+     * <p>
+     * Unlike {@link #distributeProportionally}, this always touches every item, not just a resolved donor/receiver
+     * subset — because JavaFX shrinks/grows every live sibling by its fractional share when the SplitPane's own
+     * width or height changes, independently of any donation logic layered on top.
+     *
+     * @param delta may be negative (the SplitPane got narrower) or positive (it got wider)
+     * @return each item's size after absorbing its proportional share of {@code delta}
+     */
+    private static double[] distributeResizeDelta(double[] oldSizes, double delta) {
+        double total = Arrays.stream(oldSizes).sum();
+        double[] adjusted = new double[oldSizes.length];
+        if (total <= 0) {
+            System.arraycopy(oldSizes, 0, adjusted, 0, oldSizes.length);
+            if (adjusted.length > 0) {
+                adjusted[adjusted.length - 1] += delta;
+            }
+            return adjusted;
+        }
+        for (int i = 0; i < oldSizes.length; i++) {
+            adjusted[i] = oldSizes[i] + delta * (oldSizes[i] / total);
+        }
+        return adjusted;
+    }
+
+    /**
+     * Splits {@code amount} among the given indices, proportionally to each one's current size relative to the
+     * combined size of all indices in {@code participantIndices}. For example, given sizes 1000 and 500 and an
+     * amount of 300, the first receives/gives 200 and the second 100 — proportional to their 2:1 size ratio.
+     * <p>
+     * When {@code isDonation} is {@code true}, no participant is reduced below {@link TabDockFxView#MIN_SIZE};
+     * if a participant's proportional share would push it below that floor, its contribution is capped there
+     * and the shortfall is redistributed among the remaining participants, repeating until either the full
+     * amount is distributed or every participant has hit the floor.
+     */
+    private static Map<Integer, Double> distributeProportionally(double[] oldSizes, Set<Integer> participantIndices,
+            double amount, boolean isDonation) {
+        var remaining = new HashSet<>(participantIndices);
+        var contribution = new HashMap<Integer, Double>();
+        for (int i : participantIndices) {
+            contribution.put(i, 0.0);
+        }
+        double toDistribute = amount;
+        for (int pass = 0; pass < participantIndices.size() && toDistribute > 0 && !remaining.isEmpty(); pass++) {
+            double totalRemainingSize = remaining.stream().mapToDouble(i -> oldSizes[i]).sum();
+            if (totalRemainingSize <= 0) {
+                break;
+            }
+            var floored = new HashSet<Integer>();
+            double distributedThisPass = 0;
+            for (int i : remaining) {
+                double share = toDistribute * (oldSizes[i] / totalRemainingSize);
+                double taken = share;
+                if (isDonation) {
+                    double available = Math.max(oldSizes[i] - TabDockFxView.MIN_SIZE, 0) - contribution.get(i);
+                    taken = Math.max(Math.min(share, available), 0);
+                    if (taken < share) {
+                        floored.add(i);
+                    }
+                }
+                contribution.merge(i, taken, Double::sum);
+                distributedThisPass += taken;
+            }
+            toDistribute -= distributedThisPass;
+            remaining.removeAll(floored);
+            if (floored.isEmpty()) {
+                break;
+            }
+        }
+        return contribution;
+    }
+
+    private static int mapToNewIndex(int oldIndex, int insertedAt) {
+        return oldIndex < insertedAt ? oldIndex : oldIndex + 1;
+    }
+
+    private static double[] computeOldSizes(double oldSize, double[] oldPositions) {
+        int oldNodeCount = oldPositions.length + 1;
+        double[] oldSizes = new double[oldNodeCount];
+        if (oldPositions.length == 0) {
+            oldSizes[0] = oldSize;
+        } else {
+            oldSizes[0] = oldPositions[0] * oldSize;
+            for (int i = 1; i < oldNodeCount - 1; i++) {
+                oldSizes[i] = (oldPositions[i] - oldPositions[i - 1]) * oldSize;
+            }
+            oldSizes[oldNodeCount - 1] = (1.0 - oldPositions[oldPositions.length - 1]) * oldSize;
+        }
+        return oldSizes;
+    }
+
     private final List<Node> logicalItems = new ArrayList<>();
 
     private final UUID uuid = UUID.randomUUID();
@@ -281,72 +375,6 @@ class DockSplitPane extends SplitPane {
     }
 
     /**
-     * Splits {@code amount} among the given indices, proportionally to each one's current size relative to the
-     * combined size of all indices in {@code participantIndices}. For example, given sizes 1000 and 500 and an
-     * amount of 300, the first receives/gives 200 and the second 100 — proportional to their 2:1 size ratio.
-     * <p>
-     * When {@code isDonation} is {@code true}, no participant is reduced below {@link TabDockFxView#MIN_SIZE};
-     * if a participant's proportional share would push it below that floor, its contribution is capped there
-     * and the shortfall is redistributed among the remaining participants, repeating until either the full
-     * amount is distributed or every participant has hit the floor.
-     */
-    private static Map<Integer, Double> distributeProportionally(double[] oldSizes, Set<Integer> participantIndices,
-            double amount, boolean isDonation) {
-        var remaining = new HashSet<>(participantIndices);
-        var contribution = new HashMap<Integer, Double>();
-        for (int i : participantIndices) {
-            contribution.put(i, 0.0);
-        }
-        double toDistribute = amount;
-        for (int pass = 0; pass < participantIndices.size() && toDistribute > 0 && !remaining.isEmpty(); pass++) {
-            double totalRemainingSize = remaining.stream().mapToDouble(i -> oldSizes[i]).sum();
-            if (totalRemainingSize <= 0) {
-                break;
-            }
-            var floored = new HashSet<Integer>();
-            double distributedThisPass = 0;
-            for (int i : remaining) {
-                double share = toDistribute * (oldSizes[i] / totalRemainingSize);
-                double taken = share;
-                if (isDonation) {
-                    double available = Math.max(oldSizes[i] - TabDockFxView.MIN_SIZE, 0) - contribution.get(i);
-                    taken = Math.max(Math.min(share, available), 0);
-                    if (taken < share) {
-                        floored.add(i);
-                    }
-                }
-                contribution.merge(i, taken, Double::sum);
-                distributedThisPass += taken;
-            }
-            toDistribute -= distributedThisPass;
-            remaining.removeAll(floored);
-            if (floored.isEmpty()) {
-                break;
-            }
-        }
-        return contribution;
-    }
-
-    private static int mapToNewIndex(int oldIndex, int insertedAt) {
-        return oldIndex < insertedAt ? oldIndex : oldIndex + 1;
-    }
-
-    private double[] computeOldSizes(double oldSize, double[] oldPositions) {
-        int oldNodeCount = oldPositions.length + 1;
-        double[] oldSizes = new double[oldNodeCount];
-        if (oldPositions.length == 0) {
-            oldSizes[0] = oldSize;
-        } else {
-            oldSizes[0] = oldPositions[0] * oldSize;
-            for (int i = 1; i < oldNodeCount - 1; i++) {
-                oldSizes[i] = (oldPositions[i] - oldPositions[i - 1]) * oldSize;
-            }
-            oldSizes[oldNodeCount - 1] = (1.0 - oldPositions[oldPositions.length - 1]) * oldSize;
-        }
-        return oldSizes;
-    }
-
-    /**
      * Updates divider positions after SplitPane resize and node insertion, when this SplitPane has a main area.
      * <p>
      * The SplitPane's own resize delta is always absorbed entirely by {@code flexibleChildIndex} (the main
@@ -400,11 +428,13 @@ class DockSplitPane extends SplitPane {
     /**
      * Updates divider positions after SplitPane resize and node insertion, when this SplitPane has no main area.
      * <p>
-     * Both the resize delta and {@code newChildSize} are taken from {@code donorIndices}, proportionally; the
-     * resize delta follows the same proportions as the donation among the chosen donors.
+     * The resize delta (e.g. a SideBar appearing/disappearing) is absorbed proportionally by every existing item —
+     * see {@link #distributeResizeDelta} — since JavaFX shrinks/grows all of them together regardless of donation.
+     * Only after that, {@code newChildSize} is taken from {@code donorIndices}, proportionally to their
+     * (already resize-adjusted) size — see {@link #distributeProportionally}.
      */
-    void updateDividersOnAddWithoutMain(double oldSize, double[] oldPositions, double dividerSize,
-            int newChildIndex, double newChildSize, Set<Integer> donorIndices) {
+    void updateDividersOnAddWithoutMain(double oldSize, double[] oldPositions, double dividerSize, int newChildIndex,
+            double newChildSize, Set<Integer> donorIndices) {
         oldSize = computeOldSize(oldSize, oldPositions, dividerSize);
         var newSize = computeNewSize(dividerSize);
         if (oldSize <= 0) {
@@ -417,20 +447,18 @@ class DockSplitPane extends SplitPane {
         }
         double[] oldSizes = computeOldSizes(oldSize, oldPositions);
         double sizeChange = newSize - oldSize;
+        double[] adjustedSizes = distributeResizeDelta(oldSizes, sizeChange);
         int newNodeCount = oldSizes.length + 1;
         double[] newSizes = new double[newNodeCount];
         for (int i = 0, j = 0; i < newNodeCount; i++) {
-            newSizes[i] = (i == newChildIndex) ? 0 : oldSizes[j++];
+            newSizes[i] = (i == newChildIndex) ? 0 : adjustedSizes[j++];
         }
-        var contribution = distributeProportionally(oldSizes, donorIndices, newChildSize, true);
-        double totalDonorOldSize = donorIndices.stream().mapToDouble(i -> oldSizes[i]).sum();
+        var contribution = distributeProportionally(adjustedSizes, donorIndices, newChildSize, true);
         double actualNewChildSize = 0;
-        for (int oldIndex : donorIndices) {
-            int newIndex = mapToNewIndex(oldIndex, newChildIndex);
-            double donated = contribution.get(oldIndex);
-            double sizeChangeShare = totalDonorOldSize > 0 ? sizeChange * (oldSizes[oldIndex] / totalDonorOldSize) : 0;
-            newSizes[newIndex] = newSizes[newIndex] - donated + sizeChangeShare;
-            actualNewChildSize += donated;
+        for (var entry : contribution.entrySet()) {
+            int newIndex = mapToNewIndex(entry.getKey(), newChildIndex);
+            newSizes[newIndex] -= entry.getValue();
+            actualNewChildSize += entry.getValue();
         }
         newSizes[newChildIndex] = actualNewChildSize;
         double[] newPositions = new double[newNodeCount - 1];
@@ -494,12 +522,12 @@ class DockSplitPane extends SplitPane {
     /**
      * Updates divider positions for a parent SplitPane with no main area, after a node is removed.
      * <p>
-     * Both the resize delta and the removed node's freed space go to {@code receiverIndices}, proportionally to
-     * their own size.
-     *
-     * @param removedChildIndex index (in the pre-removal array) of the node being removed
-     * @param receiverIndices pre-removal indices of the receiver(s) — mapped internally to the post-removal array
-     *         before use
+     * The resize delta is distributed proportionally across the FULL pre-removal set of sizes — including the item
+     * being removed — before that item's (now delta-adjusted) share is peeled off and handed to
+     * {@code receiverIndices}. Distributing the delta on the full set first, rather than on the already-reduced
+     * remaining set, is what keeps the split symmetric: two equally-sized siblings around a removed middle item
+     * stay exactly equal after the removed item's space is returned to one of them, instead of drifting apart by a
+     * few pixels on every minimize/restore cycle.
      */
     void updateDividersOnRemoveWithoutMain(double oldSize, double[] oldPositions, double dividerSize,
             int removedChildIndex, Set<Integer> receiverIndices) {
@@ -510,21 +538,22 @@ class DockSplitPane extends SplitPane {
         var newSize = computeNewSize(dividerSize);
         double[] oldSizes = computeOldSizes(oldSize, oldPositions);
         double sizeChange = newSize - oldSize;
-        double removedNodeSize = oldSizes[removedChildIndex];
+        double[] adjustedOldSizes = distributeResizeDelta(oldSizes, sizeChange);
+        double removedNodeAdjustedSize = adjustedOldSizes[removedChildIndex];
         int newNodeCount = oldSizes.length - 1;
         if (newNodeCount <= 0) {
             logger.debug("{} Updated dividers on remove without main; no items remain", logPrefix);
             return;
         }
         double[] newSizes = new double[newNodeCount];
-        for (int i = 0, j = 0; i < oldSizes.length; i++) {
+        for (int i = 0, j = 0; i < adjustedOldSizes.length; i++) {
             if (i != removedChildIndex) {
-                newSizes[j++] = oldSizes[i];
+                newSizes[j++] = adjustedOldSizes[i];
             }
         }
-        double totalToDistribute = sizeChange + removedNodeSize;
         var postRemovalReceiverIndices = toPostRemovalIndices(receiverIndices, removedChildIndex);
-        var contribution = distributeProportionally(newSizes, postRemovalReceiverIndices, totalToDistribute, false);
+        var contribution = distributeProportionally(newSizes, postRemovalReceiverIndices, removedNodeAdjustedSize,
+                false);
         for (var entry : contribution.entrySet()) {
             newSizes[entry.getKey()] += entry.getValue();
         }
@@ -535,9 +564,8 @@ class DockSplitPane extends SplitPane {
             newPositions[i] = cumulativeSize / newSize;
         }
         setDividerPositions(newPositions);
-        logger.debug("{} Updated dividers on remove without main; receiverIndices: {} (post-removal: {}), "
-                + "oldPositions: {}, newPositions: {}", logPrefix, receiverIndices, postRemovalReceiverIndices,
-                oldPositions, newPositions);
+        logger.debug("{} Updated dividers on remove without main; receiverIndices: {}, oldPositions: {}, "
+                + "newPositions: {}", logPrefix, receiverIndices, oldPositions, newPositions);
     }
 
     double computeDividerSize() {
@@ -601,10 +629,7 @@ class DockSplitPane extends SplitPane {
     }
 
     private double computeOldSize(double oldSize, double[] oldPositions, double dividerSize) {
-        var dividersCount = 0;
-        if (oldPositions.length > 0) {
-            dividersCount = getItems().size() - 1;
-        }
+        var dividersCount = oldPositions.length;
         var oldSizeWithoutDividers = oldSize - (dividersCount * dividerSize);
         logger.debug("{} SplitPane total old size: {}, without dividers: {}", logPrefix,
                 oldSize, oldSizeWithoutDividers);
