@@ -43,6 +43,8 @@ public interface TabContainerFxView<P extends TabContainerPresenter<?>> extends 
         @Unmodifiable List<? extends TabFxView<?>> getTabs();
 
         TabFxView<?> getSelectedTab();
+
+        void selectTab(TabFxView<?> tab);
     }
 
     @Override

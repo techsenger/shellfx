@@ -20,15 +20,15 @@ import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
-import com.techsenger.tabpanepro.core.TabEvent;
-import com.techsenger.tabpanepro.core.TabPanePro;
-import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.shellfx.core.area.AbstractAreaFxView;
 import com.techsenger.shellfx.core.tab.TabContainerFxView;
 import com.techsenger.shellfx.core.tab.TabFxView;
 import com.techsenger.shellfx.core.tab.TabPort;
 import com.techsenger.shellfx.layout.LayoutView;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.tabpanepro.core.TabEvent;
+import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
@@ -111,6 +111,11 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
             } else {
                 return null;
             }
+        }
+
+        @Override
+        public void selectTab(TabFxView<?> tab) {
+            view.tabPane.getSelectionModel().select(tab.getNode());
         }
 
         @Override
