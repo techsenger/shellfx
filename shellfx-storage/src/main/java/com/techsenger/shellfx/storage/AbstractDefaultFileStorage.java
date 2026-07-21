@@ -299,6 +299,8 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
         file.setLastModified(attrs.lastModifiedTime().toMillis());
         if (attrs.isDirectory()) {
             file.setEntryType(FileEntryType.DIRECTORY);
+        } else if (attrs.isOther()) {
+            file.setEntryType(FileEntryType.OTHER);
         } else {
             var entryType = FileEntryType.FILE;
             if (attrs.isSymbolicLink()) {

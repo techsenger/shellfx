@@ -17,10 +17,36 @@
 package com.techsenger.shellfx.storage;
 
 /**
+ * The structural type of a file system entry.
  *
  * @author Pavel Castornii
  */
 public enum FileEntryType {
 
-    DIRECTORY, FILE, SYMBOLIC_LINK
+    /**
+     * A directory.
+     */
+    DIRECTORY,
+
+    /**
+     * A regular file whose content can be safely read, written, or opened.
+     */
+    FILE,
+
+    /**
+     * A symbolic link.
+     */
+    SYMBOLIC_LINK,
+
+    /**
+     * An entry that is none of the above — a Unix domain socket, named pipe (FIFO), device file, or similar
+     * special file.
+     *
+     * <p>Such entries must never be opened for reading or writing: opening a FIFO for reading blocks
+     * indefinitely unless a writer is simultaneously connected on the other end, and other special files can
+     * have similarly unsafe or undefined open/read semantics. Callers that read file content, generate
+     * previews, or inspect file headers (e.g. for icon or type detection) must check for this type first and
+     * skip any such attempt.
+     */
+    OTHER
 }
