@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,8 @@ import org.slf4j.LoggerFactory;
  */
 public class StylesheetManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(StylesheetManager.class);
+
     private static String getThemedStylesheetUrl(String url, Theme theme) {
         int lastSlash = url.lastIndexOf('/');
         var fileName = url.substring(lastSlash + 1);
@@ -53,15 +56,19 @@ public class StylesheetManager {
         return newUrl;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(StylesheetManager.class);
-
-    private final Parent node;
+    /**
+     * Resolved lazily on every call, not cached — for a TOP_LEVEL window the target is the Scene's stylesheets
+     * (so that popups showing over the window, which only inherit Scene-level stylesheets, are styled
+     * correctly), and for a NESTED window it is the window's own root node's stylesheets, since a nested window
+     * has no Scene of its own.
+     */
+    private final Supplier<ObservableList<String>> targetSupplier;
 
     private final List<Stylesheet> stylesheets = new ArrayList<>();
 
     /**
-     * Set of stylesheet URLs currently applied to the node by this manager. Used for fast membership checks when
-     * removing stylesheets, to avoid touching unmanaged stylesheets that may also be present on the node.
+     * Set of stylesheet URLs currently applied to the target by this manager. Used for fast membership checks
+     * when removing stylesheets, to avoid touching unmanaged stylesheets that may also be present on the target.
      */
     private final Set<String> managedUrls = new HashSet<>();
 
@@ -69,13 +76,9 @@ public class StylesheetManager {
 
     private @Nullable Theme theme;
 
-    public StylesheetManager(Parent node, Supplier<@Nullable String> logPrefix) {
-        this.node = node;
+    public StylesheetManager(Supplier<ObservableList<String>> targetSupplier, Supplier<@Nullable String> logPrefix) {
+        this.targetSupplier = targetSupplier;
         this.logPrefix = logPrefix;
-    }
-
-    public Parent getNode() {
-        return node;
     }
 
     public Supplier<@Nullable String> getLogPrefix() {
@@ -88,7 +91,7 @@ public class StylesheetManager {
 
     /**
      * Sets the current theme and applies all queued stylesheets (including their theme-specific
-     * extensions) to the node. If stylesheets were added before this call, they are applied now.
+     * extensions) to the target. If stylesheets were added before this call, they are applied now.
      * Subsequent calls to {@link #addStylesheets(List)} will apply immediately.
      *
      * @param theme the theme to apply
@@ -103,7 +106,7 @@ public class StylesheetManager {
 
     /**
      * Adds the given stylesheets to this manager. If the theme is already set, the stylesheets
-     * (and any theme-specific extensions matching the current theme) are applied to the node
+     * (and any theme-specific extensions matching the current theme) are applied to the target
      * immediately. If the theme is not yet set, the stylesheets are queued and will be applied
      * when {@link #setTheme(Theme)} is called.
      *
@@ -113,15 +116,15 @@ public class StylesheetManager {
         this.stylesheets.addAll(sheets);
         if (this.theme != null) {
             for (var sheet : sheets) {
-                addToNode(sheet, this.theme);
+                addToTarget(sheet, this.theme);
             }
             logStylesheets();
         }
     }
 
     /**
-     * Removes the given stylesheets from this manager and from the node. Only URLs that were
-     * applied by this manager are removed; unmanaged stylesheets on the node are not affected.
+     * Removes the given stylesheets from this manager and from the target. Only URLs that were
+     * applied by this manager are removed; unmanaged stylesheets on the target are not affected.
      *
      * @param sheets the stylesheets to remove
      */
@@ -142,40 +145,41 @@ public class StylesheetManager {
         return Collections.unmodifiableList(stylesheets);
     }
 
-    private void addToNode(Stylesheet sheet, Theme theme) {
+    private void addToTarget(Stylesheet sheet, Theme theme) {
+        var target = targetSupplier.get();
         var urlStr = sheet.getUrl().toExternalForm();
         if (!managedUrls.contains(urlStr)) {
-            this.node.getStylesheets().add(urlStr);
+            target.add(urlStr);
             managedUrls.add(urlStr);
         }
         if (sheet.getExtensionThemes().contains(theme)) {
             var themedUrl = getThemedStylesheetUrl(urlStr, theme);
             if (!managedUrls.contains(themedUrl)) {
-                this.node.getStylesheets().add(themedUrl);
+                target.add(themedUrl);
                 managedUrls.add(themedUrl);
             }
         }
     }
 
     private void updateStylesheets() {
-        // remove all managed urls from node
-        this.node.getStylesheets().removeAll(managedUrls);
+        var target = targetSupplier.get();
+        target.removeAll(managedUrls);
         managedUrls.clear();
         for (var sheet : this.stylesheets) {
-            addToNode(sheet, this.theme);
+            addToTarget(sheet, this.theme);
         }
     }
 
     private void logStylesheets() {
         var prefix = this.logPrefix.get();
         if (logger.isDebugEnabled() && prefix != null) {
-            var nodeStylesheets = this.node.getStylesheets();
-            if (nodeStylesheets.isEmpty()) {
-                logger.debug("{} Stylesheets updated. No stylesheets applied to node", prefix);
+            var target = targetSupplier.get();
+            if (target.isEmpty()) {
+                logger.debug("{} Stylesheets updated. No stylesheets applied to target", prefix);
             } else {
                 var sb = new StringBuilder();
-                sb.append("{} Stylesheets updated. Current node stylesheets:");
-                for (var s : nodeStylesheets) {
+                sb.append("{} Stylesheets updated. Current target stylesheets:");
+                for (var s : target) {
                     sb.append(System.lineSeparator());
                     sb.append("    ");
                     sb.append(s);
