@@ -180,6 +180,13 @@ public class DefaultGenericFile implements GenericFile {
         return Objects.equals(this.uri, other.uri);
     }
 
+    @Override
+    public String toString() {
+        return "DefaultGenericFile[" + "storage=" + storage + ", entryType=" + entryType + ", uri=" + uri
+                + ", size=" + size + ", name=" + name + ", lastModified=" + lastModified + ", hidden=" + hidden
+                + ", virtual=" + virtual + ']';
+    }
+
     /**
      * Sets the storage that owns this entry.
      *

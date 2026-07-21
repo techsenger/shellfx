@@ -98,4 +98,10 @@ public abstract class AbstractFileStorage<T extends GenericFile> implements File
         }
         return this.type == other.type;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractFileStorage[" + "type=" + type + ", displayName=" + displayName + ", uri=" + uri
+                + ", isDefault=" + isDefault + ']';
+    }
 }
