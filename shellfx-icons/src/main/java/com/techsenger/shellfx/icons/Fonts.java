@@ -22,12 +22,16 @@ import javafx.scene.text.Font;
  *
  * @author Pavel Castornii
  */
-public final class MdiIconFont {
+public final class Fonts {
 
-    public static final Font INSTANCE =
-            Font.loadFont(MdiIconFont.class.getResourceAsStream("font/materialdesignicons-webfont.ttf"), 12);
+    public static final Font MATERIAL_DESIGN_ICONS =
+            Font.loadFont(Fonts.class.getResourceAsStream("font/materialdesignicons-webfont.ttf"), 12);
 
-    private MdiIconFont() {
+    public static final Font MATERIAL_DESIGN_ICONS_EXTENSION =
+            Font.loadFont(Fonts.class.getResourceAsStream("font/techsenger-mdi-extension.ttf"), 12);
+
+
+    private Fonts() {
         // empty
     }
 }
