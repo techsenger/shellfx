@@ -80,7 +80,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
             var environmentTab = createEnvironmentTab();
             addTab(environmentTab);
 
-            selectTab(0);
+            selectTab(componentTab);
         }
 
         protected ComponentTabFxView<?> createComponentTab() {
