@@ -471,6 +471,15 @@
 /*
     ListView
 */
+.list-view {
+
+    /* JavaFX incorrectly renders the height of a cell if it has a
+       fractional size, so there is an empty space between rows that
+       can be with different color. To prevent it default bg is added
+    */
+    -fx-background-color: -color-bg-default;
+}
+
 .density-m .list-view .list-cell {
     -fx-cell-size: 2em;
     -fx-padding: 0.4em 0.85em 0.3em 0.85em;
