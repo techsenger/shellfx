@@ -29,18 +29,22 @@ import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableDoubleProperty;
 import javafx.css.SimpleStyleableIntegerProperty;
 import javafx.css.SimpleStyleableStringProperty;
+import javafx.css.StyleOrigin;
 import javafx.css.StyleableDoubleProperty;
 import javafx.css.StyleableIntegerProperty;
+import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleablePropertyFactory;
 import javafx.css.StyleableStringProperty;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link Text} node that renders a single font-based icon, described by a {@link FontIcon}.
  *
  * <p>The icon's code point, font family and size are exposed as independent CSS-styleable properties
- * ({@code -fx-icon-code}, {@code -fx-icon-font}, {@code -fx-icon-size}) rather than through the inherited
+ * ({@code -fx-icon-code}, {@code -fx-icon-family}, {@code -fx-icon-size}) rather than through the inherited
  * {@code fontProperty()}. This avoids conflicts between manually assigned font families and CSS-driven font
  * sizes, since {@code -fx-font-*} sub-properties and this view's icon properties are resolved independently
  * by the CSS engine. Any stylesheet rule that still targets {@code -fx-font-size} on this view (or on the
@@ -51,7 +55,7 @@ import javafx.scene.text.Text;
  * <ul>
  *     <li>{@link PlainFontIcon} — carries an explicit code point and, optionally, a font family. Both are
  *     read directly from the icon instance in {@link #updateText()}/{@link #updateFont()}, bypassing the
- *     CSS-driven {@link #iconCode}/{@link #iconFont} properties entirely.</li>
+ *     CSS-driven {@link #iconCode}/{@link #iconFamily} properties entirely.</li>
  *     <li>{@link StyleFontIcon} — contributes only a style class; the code point, font and size are expected
  *     to be defined entirely in a stylesheet rule for that class.</li>
  * </ul>
@@ -65,22 +69,23 @@ public class FontIconView extends Text {
 
     private static final class Css {
         private static final CssMetaData<FontIconView, Number> ICON_SIZE;
-        private static final CssMetaData<FontIconView, String> ICON_FONT;
+        private static final CssMetaData<FontIconView, String> ICON_FAMILY;
         private static final CssMetaData<FontIconView, Number> ICON_CODE;
         private static final List<CssMetaData<?, ?>> META_DATA;
-
         static {
             var factory = new StyleablePropertyFactory<FontIconView>(Text.getClassCssMetaData());
             ICON_SIZE = factory.createSizeCssMetaData("-fx-icon-size", s -> s.iconSize, 14.0);
-            ICON_FONT = factory.createStringCssMetaData("-fx-icon-font", s -> s.iconFont, null);
+            ICON_FAMILY = factory.createStringCssMetaData("-fx-icon-family", s -> s.iconFamily, null);
             ICON_CODE = factory.createSizeCssMetaData("-fx-icon-code", s -> s.iconCode, 0);
             META_DATA = List.copyOf(factory.getCssMetaData());
         }
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(FontIconView.class);
+
     /**
      * The application-wide default font family used when an icon does not specify its own font, either via
-     * {@link PlainFontIcon#getFont()} or via the {@code -fx-icon-font} CSS property.
+     * {@link PlainFontIcon#getFont()} or via the {@code -fx-icon-family} CSS property.
      */
     private static final ObjectProperty<String> defaultIconFont =
             new SimpleObjectProperty<>(FontIconView.class, "defaultIconFont");
@@ -115,7 +120,7 @@ public class FontIconView extends Text {
 
     /**
      * Returns the CSS metadata for this class, including the inherited {@link Text} metadata and the
-     * {@code -fx-icon-size}, {@code -fx-icon-font} and {@code -fx-icon-code} properties.
+     * {@code -fx-icon-size}, {@code -fx-icon-family} and {@code -fx-icon-code} properties.
      *
      * @return the list of CSS metadata for this class
      */
@@ -150,8 +155,8 @@ public class FontIconView extends Text {
     private final StyleableDoubleProperty iconSize =
             new SimpleStyleableDoubleProperty(Css.ICON_SIZE, this, "iconSize", 14.0);
 
-    private final StyleableStringProperty iconFont =
-            new SimpleStyleableStringProperty(Css.ICON_FONT, this, "iconFont", null);
+    private final StyleableStringProperty iconFamily =
+            new SimpleStyleableStringProperty(Css.ICON_FAMILY, this, "iconFamily", null);
 
     private final StyleableIntegerProperty iconCode =
             new SimpleStyleableIntegerProperty(Css.ICON_CODE, this, "iconCode", 0);
@@ -177,19 +182,16 @@ public class FontIconView extends Text {
      */
     public FontIconView() {
         getStyleClass().addAll("font-icon-view", "icon-view");
-
+        fontProperty().addListener((ov, oldV, newV) -> checkFontOriginConflict());
         // Only relevant for StyleFontIcon, whose code/font come entirely from a stylesheet rule.
         // PlainFontIcon bypasses these two properties entirely; see updateText()/updateFont().
         iconCode.addListener((ov, oldV, newV) -> updateText());
-        iconFont.addListener((ov, oldV, newV) -> updateFont());
-
+        iconFamily.addListener((ov, oldV, newV) -> updateFont());
         iconSize.addListener((ov, oldV, newV) -> {
             updateFont();
             freezeResolvedSize(newV.doubleValue());
         });
-
         defaultIconFont.addListener(new WeakChangeListener<>(defaultFontListener));
-
         icon.addListener((ov, oldV, newV) -> {
             if (oldV instanceof StyleFontIcon sfi) {
                 getStyleClass().remove(sfi.getContent());
@@ -200,7 +202,6 @@ public class FontIconView extends Text {
             updateText();
             updateFont();
         });
-
         updateText();
         updateFont();
     }
@@ -274,15 +275,15 @@ public class FontIconView extends Text {
     }
 
     /**
-     * Returns the styleable property holding the icon's font family, backed by the {@code -fx-icon-font}
+     * Returns the styleable property holding the icon's font family, backed by the {@code -fx-icon-family}
      * CSS property. A {@code null} value means the {@link #defaultIconFontProperty() default icon font}
      * is used instead. Only used for a {@link StyleFontIcon}; a {@link PlainFontIcon}'s font is read
      * directly from the icon instance instead.
      *
-     * @return the icon font property
+     * @return the icon font family property
      */
-    public StringProperty iconFontProperty() {
-        return iconFont;
+    public StringProperty iconFamilyProperty() {
+        return iconFamily;
     }
 
     /**
@@ -290,17 +291,17 @@ public class FontIconView extends Text {
      *
      * @return the current font family, or {@code null} if none is explicitly set
      */
-    public String getIconFont() {
-        return iconFont.get();
+    public String getIconFamily() {
+        return iconFamily.get();
     }
 
     /**
      * Sets the icon's font family. Only meaningful for a {@link StyleFontIcon}.
      *
-     * @param font the font family to use, or {@code null} to fall back to the default icon font
+     * @param family the font family to use, or {@code null} to fall back to the default icon font
      */
-    public void setIconFont(String font) {
-        iconFont.set(font);
+    public void setIconFamily(String family) {
+        iconFamily.set(family);
     }
 
     /**
@@ -387,15 +388,29 @@ public class FontIconView extends Text {
 
     /**
      * Resolves the font to apply: read directly from a {@link PlainFontIcon} (falling back to the default
-     * icon font), or from the CSS-driven {@link #iconFont} for a {@link StyleFontIcon}.
+     * icon font), or from the CSS-driven {@link #iconFamily} for a {@link StyleFontIcon}.
      */
     private void updateFont() {
         String family;
         if (icon.get() instanceof PlainFontIcon pfi) {
             family = pfi.getFont() != null ? pfi.getFont() : defaultIconFont.get();
         } else {
-            family = iconFont.get() != null ? iconFont.get() : defaultIconFont.get();
+            family = iconFamily.get() != null ? iconFamily.get() : defaultIconFont.get();
         }
         setFont(family != null ? Font.font(family, iconSize.get()) : Font.font(iconSize.get()));
+    }
+
+    /**
+     * Detects CSS rules that target the inherited {@code -fx-font-*} properties on this view instead of the
+     * dedicated {@code -fx-icon-family}/{@code -fx-icon-size} properties, and logs a warning. Such rules
+     * silently fight with {@link #updateFont()} on every CSS pass (e.g. on pseudo-class changes like
+     * {@code :hover} or {@code :focused}), causing the icon's font family or size to jump unexpectedly.
+     */
+    private void checkFontOriginConflict() {
+        var fontProp = (StyleableObjectProperty<Font>) fontProperty();
+        if (fontProp.getStyleOrigin() == StyleOrigin.AUTHOR) {
+            logger.warn("FontIconView '{}' (classes: {}): -fx-font-* rules are used instead of -fx-icon-*",
+                    this, getStyleClass());
+        }
     }
 }
