@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.settings;
-
-import com.techsenger.shellfx.material.style.StyleClasses;
+package com.techsenger.shellfx.material.style;
 
 /**
  *

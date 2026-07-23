@@ -23,7 +23,7 @@ import com.techsenger.patternfx.mvp.AbstractChildFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.shellfx.core.dialog.DialogResizeEvent;
-import com.techsenger.shellfx.core.settings.Density;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.core.style.CoreIcons;
 import com.techsenger.shellfx.core.style.CssAnchor;
 import com.techsenger.shellfx.material.icon.FontIconView;

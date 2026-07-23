@@ -18,7 +18,7 @@ package com.techsenger.shellfx.demo.settings;
 
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.settings.DefaultAppearanceSettings;
-import com.techsenger.shellfx.core.settings.Density;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.material.theme.AtlantaFxTheme;
 import javafx.scene.text.Font;

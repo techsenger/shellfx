@@ -18,7 +18,7 @@ package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ChildView;
-import com.techsenger.shellfx.core.settings.Density;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.theme.Theme;
 import javafx.scene.text.Font;
 

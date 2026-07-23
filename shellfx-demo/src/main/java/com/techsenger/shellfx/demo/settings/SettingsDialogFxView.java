@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.settings;
 
 import com.techsenger.shellfx.core.dialog.AbstractDialogFxView;
-import com.techsenger.shellfx.core.settings.Density;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.theme.AtlantaFxTheme;

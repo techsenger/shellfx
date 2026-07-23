@@ -21,7 +21,7 @@ import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
-import com.techsenger.shellfx.core.settings.Density;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.demo.DemoComponents;
 import com.techsenger.shellfx.material.icon.PlainFontIcon;
 import com.techsenger.shellfx.material.theme.Theme;

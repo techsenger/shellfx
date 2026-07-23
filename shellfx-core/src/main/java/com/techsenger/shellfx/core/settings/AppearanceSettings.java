@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.settings;
 
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.theme.Theme;
 import javafx.scene.text.Font;
