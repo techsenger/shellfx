@@ -63,10 +63,6 @@
     -fx-border-radius: 0px 6px 6px 0px, 0px 5px 5px 0px;
 }
 
-.toggle-button.flat:selected, .toggle-button.flat:selected:focused {
-    -fx-background-color: -color-base-6;
-}
-
 .column-list-view .column .cell:selected {
     -fx-background-color: -color-base-6;
 }
