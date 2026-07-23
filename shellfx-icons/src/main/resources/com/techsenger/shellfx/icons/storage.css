@@ -36,10 +36,10 @@
 
 .font-icon-view.base-disk-icon {
     -fx-icon-code: 57349;
-    -fx-icon-font: 'Techsenger MDI Extension';
+    -fx-icon-family: 'Techsenger MDI Extension';
 }
 
 .font-icon-view.network-disk-icon {
     -fx-icon-code: 57350;
-    -fx-icon-font: 'Techsenger MDI Extension';
+    -fx-icon-family: 'Techsenger MDI Extension';
 }
