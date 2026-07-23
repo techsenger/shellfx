@@ -82,3 +82,12 @@
 .shadow {
     -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 6px, 0.3, 0, 2);
 }
+
+.list-view.accent-list-view .list-cell:filled:hover {
+    -fx-background-color: -color-base-1;
+    -fx-text-fill: -color-fg-default;
+}
+
+.list-view.accent-list-view .list-cell:filled:hover .font-icon-view {
+    -fx-fill: -color-fg-default;
+}

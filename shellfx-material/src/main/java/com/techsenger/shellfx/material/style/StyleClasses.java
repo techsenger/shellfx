@@ -194,4 +194,12 @@ public interface StyleClasses {
      * (e.g. CheckBox).
      */
     String READ_ONLY = "read-only";
+
+    /**
+     * Style class for a {@code ListView} whose cells are highlighted with the theme's accent color on hover,
+     * rather than the default neutral highlight. Intended for menu-like lists where a click immediately selects
+     * an item and closes the containing popup (e.g. the {@code LocationBar} segment/storage popups), as opposed
+     * to persistent-selection data lists such as file or directory listings.
+     */
+    String ACCENT_LIST_VIEW = "accent-list-view";
 }
