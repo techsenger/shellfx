@@ -68,12 +68,15 @@
 */
 
 /*****************  density-s - size-xxl  ******************/
-.density-s .button.size-xxl.iconed,
-.density-s .toggle-button.size-xxl.iconed {
-    -fx-padding: 0;
+.density-s .button.size-xxl,
+.density-s .toggle-button.size-xxl {
     -fx-min-height: 2.65em;
     -fx-max-height: 2.65em;
     -fx-pref-height: 2.65em;
+}
+.density-s .button.size-xxl.iconed,
+.density-s .toggle-button.size-xxl.iconed {
+    -fx-padding: 0;
     -fx-min-width: 2.65em;
     -fx-max-width: 2.65em;
     -fx-pref-width: 2.65em;
@@ -84,12 +87,15 @@
     -fx-icon-size: 2.05em;
 }
 /*****************  density-s - size-xl  ******************/
-.density-s .button.size-xl.iconed,
-.density-s .toggle-button.size-xl.iconed {
-    -fx-padding: 0;
+.density-s .button.size-xl,
+.density-s .toggle-button.size-xl {
     -fx-min-height: 2.40em;
     -fx-max-height: 2.40em;
     -fx-pref-height: 2.40em;
+}
+.density-s .button.size-xl.iconed,
+.density-s .toggle-button.size-xl.iconed {
+    -fx-padding: 0;
     -fx-min-width: 2.40em;
     -fx-max-width: 2.40em;
     -fx-pref-width: 2.40em;
@@ -100,12 +106,15 @@
     -fx-icon-size: 1.85em;
 }
 /*****************  density-s - size-l  ******************/
-.density-s .button.size-l.iconed,
-.density-s .toggle-button.size-l.iconed {
-    -fx-padding: 0;
+.density-s .button.size-l,
+.density-s .toggle-button.size-l {
     -fx-min-height: 2.15em;
     -fx-max-height: 2.15em;
     -fx-pref-height: 2.15em;
+}
+.density-s .button.size-l.iconed,
+.density-s .toggle-button.size-l.iconed {
+    -fx-padding: 0;
     -fx-min-width: 2.15em;
     -fx-max-width: 2.15em;
     -fx-pref-width: 2.15em;
@@ -116,12 +125,15 @@
     -fx-icon-size: 1.65em;
 }
 /*****************  density-s - size-m  ******************/
-.density-s .button.size-m.iconed,
-.density-s .toggle-button.size-m.iconed {
-    -fx-padding: 0;
+.density-s .button.size-m,
+.density-s .toggle-button.size-m {
     -fx-min-height: 1.90em;
     -fx-max-height: 1.90em;
     -fx-pref-height: 1.90em;
+}
+.density-s .button.size-m.iconed,
+.density-s .toggle-button.size-m.iconed {
+    -fx-padding: 0;
     -fx-min-width: 1.90em;
     -fx-max-width: 1.90em;
     -fx-pref-width: 1.90em;
@@ -132,12 +144,16 @@
     -fx-icon-size: 1.45em;
 }
 /*****************  density-s - size-s  ******************/
-.density-s .button.size-s.iconed,
-.density-s .toggle-button.size-s.iconed {
-    -fx-padding: 0;
+.density-s .button.size-s,
+.density-s .toggle-button.size-s {
+    -fx-padding: 0px 6px 2px 6px;
     -fx-min-height: 1.60em;
     -fx-max-height: 1.60em;
     -fx-pref-height: 1.60em;
+}
+.density-s .button.size-s.iconed,
+.density-s .toggle-button.size-s.iconed {
+    -fx-padding: 0;
     -fx-min-width: 1.60em;
     -fx-max-width: 1.60em;
     -fx-pref-width: 1.60em;
@@ -148,12 +164,15 @@
     -fx-icon-size: 1.25em;
 }
 /*****************  density-s - size-xs  ******************/
-.density-s .button.size-xs.iconed,
-.density-s .toggle-button.size-xs.iconed {
-    -fx-padding: 0;
+.density-s .button.size-xs,
+.density-s .toggle-button.size-xs {
     -fx-min-height: 1.35em;
     -fx-max-height: 1.35em;
     -fx-pref-height: 1.35em;
+}
+.density-s .button.size-xs.iconed,
+.density-s .toggle-button.size-xs.iconed {
+    -fx-padding: 0;
     -fx-min-width: 1.35em;
     -fx-max-width: 1.35em;
     -fx-pref-width: 1.35em;
@@ -164,12 +183,15 @@
     -fx-icon-size: 1.05em;
 }
 /*****************  density-s - size-xxs  ******************/
-.density-s .button.size-xxs.iconed,
-.density-s .toggle-button.size-xxs.iconed {
-    -fx-padding: 0;
+.density-s .button.size-xxs,
+.density-s .toggle-button.size-xxs {
     -fx-min-height: 0.715em;
     -fx-max-height: 0.715em;
     -fx-pref-height: 0.715em;
+}
+.density-s .button.size-xxs.iconed,
+.density-s .toggle-button.size-xxs.iconed {
+    -fx-padding: 0;
     -fx-min-width: 0.715em;
     -fx-max-width: 0.715em;
     -fx-pref-width: 0.715em;
@@ -192,6 +214,10 @@
     -fx-cursor: hand;
     -fx-scale-x: 1.1;
     -fx-scale-y: 1.1;
+}
+
+.button.flat, .button.flat:hover, .toggle-button.flat, .toggle-button.flat:hover {
+    -fx-underline: false;
 }
 
 /*
