@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-module com.techsenger.shellfx.material {
+open module com.techsenger.shellfx.material {
     requires com.techsenger.annotations;
     requires com.techsenger.patternfx.core;
     requires com.techsenger.toolkit.core;
@@ -27,18 +27,7 @@ module com.techsenger.shellfx.material {
     requires com.helger.css;
     requires com.helger.commons;
 
-    exports com.techsenger.shellfx.material;
-    exports com.techsenger.shellfx.material.button;
-    exports com.techsenger.shellfx.material.icon;
-    exports com.techsenger.shellfx.material.layout;
-    exports com.techsenger.shellfx.material.list;
-    exports com.techsenger.shellfx.material.menu;
-    exports com.techsenger.shellfx.material.pane;
-    exports com.techsenger.shellfx.material.style;
-    exports com.techsenger.shellfx.material.table;
-    exports com.techsenger.shellfx.material.textarea;
-    exports com.techsenger.shellfx.material.theme;
-    exports com.techsenger.shellfx.material.toolbar;
-
-    opens com.techsenger.shellfx.material.style;
+    requires org.junit.jupiter.api;
+    requires org.assertj.core;
 }
+
