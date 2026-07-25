@@ -43,6 +43,7 @@ import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.utils.TableUtils;
 import com.techsenger.toolkit.fx.utils.TreeViewUtils;
+import com.techsenger.toolkit.fx.utils.VirtualFlowUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -640,7 +641,8 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
             if (afterDataUpdate) {
                 nodeTreeView.scrollTo(nodeTreeView.getSelectionModel().getSelectedIndex());
             } else {
-                TreeViewUtils.scrollToIfNeeded(nodeTreeView, nodeTreeView.getSelectionModel().getSelectedIndex());
+                TreeViewUtils.scrollToIfNeeded(nodeTreeView, nodeTreeView.getSelectionModel().getSelectedIndex(),
+                        VirtualFlowUtils.ScrollPosition.CENTER);
             }
         }
     }
