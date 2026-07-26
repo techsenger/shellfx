@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.material.toolbar;
 
 
-import javafx.application.Platform;
+import com.techsenger.toolkit.fx.FxPlatform;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
@@ -47,7 +47,7 @@ class NoOverflowToolBarSkinTest {
     static void initJavaFxToolkit() {
         try {
             System.setProperty("glass.platform", "Headless");
-            Platform.startup(() -> { });
+            FxPlatform.start();
         } catch (IllegalStateException alreadyStarted) {
             // toolkit already running in this JVM (e.g. started by another test class); nothing to do
         }

@@ -22,7 +22,8 @@ import javafx.scene.control.TreeTableColumn;
  *
  * @author Pavel Castornii
  */
-public class TreeTableColumnInfo extends AbstractTableColumnInfo {
+public class TreeTableColumnInfo extends AbstractTableColumnInfo
+        implements ColumnInfo<TreeTableColumnName, TreeTableColumn.SortType> {
 
     private Enum<?> name;
 

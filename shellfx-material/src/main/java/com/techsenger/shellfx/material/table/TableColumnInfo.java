@@ -22,7 +22,8 @@ import javafx.scene.control.TableColumn;
  *
  * @author Pavel Castornii
  */
-public class TableColumnInfo extends AbstractTableColumnInfo {
+public class TableColumnInfo extends AbstractTableColumnInfo
+        implements ColumnInfo<TableColumnName, TableColumn.SortType> {
 
     private Enum<?> name;
 

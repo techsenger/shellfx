@@ -211,7 +211,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
 
     private final TableView<T> fileTableView = new TableView<>(this.files);
 
-    private TableColumnManager fileColumnManager = new TableColumnManager(fileTableView);
+    private TableColumnManager<T> fileColumnManager = new TableColumnManager<>(fileTableView);
 
     private FileListView<T> fileListView;
 
@@ -406,12 +406,12 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
             return column;
         });
         this.fileColumnManager.registerColumnFactory(FileColumns.SIZE, () -> {
-            var column = columnBuilder.buildSizeColumn();
+            var column = columnBuilder.<T>buildSizeColumn();
             column.setEditable(false);
             return column;
         });
         this.fileColumnManager.registerColumnFactory(FileColumns.LAST_MODIFIED, () -> {
-            var column = columnBuilder.buildLastModifiedColumn();
+            var column = columnBuilder.<T>buildLastModifiedColumn();
             column.setEditable(false);
             return column;
         });

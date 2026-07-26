@@ -18,29 +18,31 @@ package com.techsenger.shellfx.material.table;
 
 import java.util.Objects;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
 
 /**
- * {@link TableView} instantiation of {@link AbstractTableColumnManager} &mdash; see that class for the shared
- * behavior (wiring, {@code addColumns()}, etc.). This class only supplies what's genuinely {@code TableView}/
- * {@code TableColumn}-specific: building a column from its factory and wiring its width/sort-type listeners.
+ * {@link TreeTableView} instantiation of {@link AbstractTableColumnManager} &mdash; see that class for the
+ * shared behavior (wiring, {@code addColumns()}, etc.). This class only supplies what's genuinely
+ * {@code TreeTableView}/{@code TreeTableColumn}-specific: building a column from its factory and wiring its
+ * width/sort-type listeners.
  *
- * @param <S> the row type of the {@code TableView} this manager was built for, e.g. the {@code Student} in
- *     {@code TableView<Student>}
+ * @param <S> the row type of the {@code TreeTableView} this manager was built for, e.g. the {@code Student} in
+ *     {@code TreeTableView<Student>}
  * @author Pavel Castornii
  */
-public final class TableColumnManager<S>
-        extends AbstractTableColumnManager<TableColumnName, NamedTableColumn<S, ?>, TableColumn.SortType> {
+public final class TreeTableColumnManager<S>
+        extends AbstractTableColumnManager<TreeTableColumnName, NamedTreeTableColumn<S, ?>, TreeTableColumn.SortType> {
 
     @SuppressWarnings("unchecked")
-    public TableColumnManager(TableView<S> tableView) {
-        super((ObservableList<NamedTableColumn<S, ?>>) (ObservableList<?>) tableView.getColumns(),
-                (ObservableList<NamedTableColumn<S, ?>>) (ObservableList<?>) tableView.getSortOrder());
+    public TreeTableColumnManager(TreeTableView<S> treeTableView) {
+        super((ObservableList<NamedTreeTableColumn<S, ?>>) (ObservableList<?>) treeTableView.getColumns(),
+                (ObservableList<NamedTreeTableColumn<S, ?>>) (ObservableList<?>) treeTableView.getSortOrder());
     }
 
     @Override
-    protected NamedTableColumn<S, ?> createColumn(TableColumnName name, Double width, TableColumn.SortType sortType) {
+    protected NamedTreeTableColumn<S, ?> createColumn(TreeTableColumnName name, Double width,
+            TreeTableColumn.SortType sortType) {
         var factory = getColumnFactoriesByName().get(name);
         Objects.requireNonNull(factory, "Factory for " + name + " is not registered");
         var column = factory.create();
@@ -56,7 +58,7 @@ public final class TableColumnManager<S>
     }
 
     @Override
-    protected TableColumnName getName(NamedTableColumn<S, ?> column) {
+    protected TreeTableColumnName getName(NamedTreeTableColumn<S, ?> column) {
         return column.getName();
     }
 }
