@@ -24,6 +24,10 @@ import java.io.Serializable;
  */
 public abstract class AbstractTableColumnInfo implements Serializable {
 
+    /**
+     * This column's position among the control's visible columns, or a negative value if the column is
+     * currently hidden. See {@link ColumnInfo#isVisible()}.
+     */
     private int index;
 
     private Double width;

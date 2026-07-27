@@ -32,6 +32,13 @@ interface ColumnInfo<N extends Name, ST> {
 
     N getName();
 
+    /**
+     * Returns this column's position among the control's visible columns, or a negative value if the column is
+     * currently hidden. The set of columns a control can show is closed and known upfront (e.g. every enum
+     * constant of a given {@link TableColumnName}), so &mdash; unlike the column itself, which is only built
+     * while shown &mdash; there is always exactly one info instance per column, for its entire lifetime; hiding
+     * a column never discards its info; it only stops the index from being non-negative.
+     */
     int getIndex();
 
     Double getWidth();
@@ -39,4 +46,11 @@ interface ColumnInfo<N extends Name, ST> {
     Integer getSortIndex();
 
     ST getSortType();
+
+    /**
+     * Returns whether this column is currently shown, i.e. {@link #getIndex()} is not negative.
+     */
+    default boolean isVisible() {
+        return getIndex() >= 0;
+    }
 }

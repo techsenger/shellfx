@@ -20,6 +20,7 @@ import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.core.Name;
 import com.techsenger.toolkit.core.function.Factory;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -263,6 +264,10 @@ public abstract class AbstractTableColumnManager<N extends Name, C extends Table
      * whatever order the sort happens to break the tie) and logged as a warning, rather than one silently
      * replacing the other.
      *
+     * <p>{@code infosByName} is expected to hold one entry per column the caller ever knows about, not just the
+     * currently visible ones (see {@link ColumnInfo#isVisible()}) &mdash; entries whose column is currently
+     * hidden are skipped and no column is built for them.
+     *
      * @param infosByName the persisted column state to apply, keyed by column name
      */
     public void addColumns(Map<N, ? extends ColumnInfo<N, ST>> infosByName) {
@@ -276,6 +281,9 @@ public abstract class AbstractTableColumnManager<N extends Name, C extends Table
         var entries = new ArrayList<Entry<N, C, ST>>();
         for (var mapEntry : infosByName.entrySet()) {
             var info = mapEntry.getValue();
+            if (!info.isVisible()) {
+                continue;
+            }
             var column = createColumn(mapEntry.getKey(), info.getWidth(), info.getSortType());
             modifiableColumnsByName.put(mapEntry.getKey(), column);
             entries.add(new Entry<>(info, column));
@@ -310,6 +318,58 @@ public abstract class AbstractTableColumnManager<N extends Name, C extends Table
 
         indexListenerDisabled = false;
         sortIndexListenerDisabled = false;
+    }
+
+    /**
+     * Builds one column for {@code name} (via {@link #createColumn}) and adds it as the last column of the
+     * control, applying {@code info}'s persisted width and sort type. Unlike {@link #addColumns}, this is for
+     * adding a single column after the control is already showing others &mdash; e.g. a "show column" menu
+     * action &mdash; so, unlike {@code addColumns}, listeners are not suppressed: the control's own column-list
+     * listener reports this column (and, harmlessly, every other already-positioned one) through
+     * {@link #getIndexListener()} exactly as it would for any other live change to the column list.
+     *
+     * @param name the column to add; must not already be present
+     * @param info the persisted width/sort-type to apply; its {@link ColumnInfo#getIndex() index} is ignored,
+     *     since the column is always appended at the end
+     * @return the newly built column
+     */
+    public C addColumn(N name, ColumnInfo<N, ST> info) {
+        var column = createColumn(name, info.getWidth(), info.getSortType());
+        modifiableColumnsByName.put(name, column);
+        columns.add(column);
+        if (info.getSortIndex() != null) {
+            Objects.requireNonNull(info.getSortType(), "No sort type for column " + name);
+            sortOrder.add(column);
+        }
+        return column;
+    }
+
+    /**
+     * Removes the column identified by {@code name} from the control, if it is currently shown. The remaining
+     * columns' indices (and, if applicable, sort indices) are updated through the usual listeners, since removal
+     * is a live change to the control's own column/sort-order lists.
+     *
+     * @param name the column to remove
+     */
+    public void removeColumn(N name) {
+        var column = modifiableColumnsByName.remove(name);
+        if (column == null) {
+            return;
+        }
+        columns.remove(column);
+        sortOrder.remove(column);
+    }
+
+    /**
+     * Removes every column identified by {@code names} that is currently shown, via repeated {@link #removeColumn}
+     * calls &mdash; the counterpart to {@link #addColumns} for tearing down more than one column at once.
+     *
+     * @param names the columns to remove
+     */
+    public void removeColumns(Collection<N> names) {
+        for (var name : names) {
+            removeColumn(name);
+        }
     }
 
     /**
