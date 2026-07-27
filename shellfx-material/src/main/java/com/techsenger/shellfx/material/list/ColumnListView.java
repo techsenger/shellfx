@@ -775,10 +775,14 @@ public class ColumnListView<T> extends Region {
 
     private void selectRight() {
         var selectedIndex = getSelectionModel().getSelectedIndex();
-        var newSelectedIndex = selectedIndex + getRowCount();
-        if (newSelectedIndex < getItems().size()) {
-            selectNext(selectedIndex, newSelectedIndex);
+        if (resolveColumnIndex(selectedIndex) >= getColumnCount() - 1) {
+            return;
         }
+        var newSelectedIndex = selectedIndex + getRowCount();
+        var lastIndex = getItems().size() - 1;
+        // The last column may hold fewer than getRowCount() rows, so the same-row target in it can be past
+        // the last real item - land on the last item instead of refusing to move right at all.
+        selectNext(selectedIndex, Math.min(newSelectedIndex, lastIndex));
     }
 
     private void selectPrevious(int selectedIndex, int newSelectedIndex) {
