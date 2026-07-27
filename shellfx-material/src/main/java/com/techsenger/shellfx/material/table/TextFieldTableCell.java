@@ -27,7 +27,13 @@ import javafx.scene.layout.Priority;
 import javafx.util.StringConverter;
 
 /**
+ * A {@link TableCell} that edits its value in place with a {@link TextField}, converting to/from the cell's
+ * value type via a {@link StringConverter}. Unlike JavaFX's own built-in {@code TextFieldTableCell}, the edit
+ * graphic and non-editing display are both overridable hooks ({@link #buildEditGraphic()},
+ * {@link #updateDisplay()}), so a subclass can add icons or other nodes alongside the text field/text.
  *
+ * @param <S> the row type of the {@code TableView} this cell belongs to
+ * @param <T> the cell's value type
  * @author Pavel Castornii
  */
 public class TextFieldTableCell<S, T> extends TableCell<S, T> {
@@ -38,11 +44,20 @@ public class TextFieldTableCell<S, T> extends TableCell<S, T> {
 
     private TextField textField;
 
+    /**
+     * Creates a cell that converts its value to/from text via {@code converter}.
+     *
+     * @param converter the converter used to display and parse the cell's value
+     */
     public TextFieldTableCell(StringConverter<T> converter) {
         this.converter = converter;
         getStyleClass().add("text-field-table-cell");
     }
 
+    /**
+     * Enters editing mode: lazily creates the text field (committing on Enter, cancelling on Escape), seeds it
+     * with the current value, and shows {@link #buildEditGraphic()} in place of the plain display.
+     */
     @Override
     public void startEdit() {
         super.startEdit();
@@ -67,6 +82,9 @@ public class TextFieldTableCell<S, T> extends TableCell<S, T> {
         pseudoClassStateChanged(EDITING, true);
     }
 
+    /**
+     * Cancels editing without committing, restoring the plain (non-editing) display.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
@@ -75,6 +93,9 @@ public class TextFieldTableCell<S, T> extends TableCell<S, T> {
         updateDisplay();
     }
 
+    /**
+     * Commits {@code t} as the cell's new value and restores the plain (non-editing) display.
+     */
     @Override
     public void commitEdit(T t) {
         super.commitEdit(t);
@@ -83,6 +104,10 @@ public class TextFieldTableCell<S, T> extends TableCell<S, T> {
         updateDisplay();
     }
 
+    /**
+     * Updates the cell for {@code item}, clearing text/graphic when empty and otherwise delegating to
+     * {@link #updateDisplay()}.
+     */
     @Override
     public void updateItem(T item, boolean empty) {
         super.updateItem(item, empty);
@@ -94,10 +119,20 @@ public class TextFieldTableCell<S, T> extends TableCell<S, T> {
         }
     }
 
+    /**
+     * Returns the text field currently in use for editing, or {@code null} when not currently editing.
+     *
+     * @return the active text field, or {@code null}
+     */
     protected @Nullable TextField getTextField() {
         return textField;
     }
 
+    /**
+     * Returns the converter used to display and parse the cell's value.
+     *
+     * @return the string converter
+     */
     protected StringConverter<T> getConverter() {
         return converter;
     }

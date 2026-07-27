@@ -19,6 +19,9 @@ package com.techsenger.shellfx.material.table;
 import com.techsenger.patternfx.core.AbstractName;
 
 /**
+ * A ready-to-use {@link TableColumnName} for callers that need a unique column identity without declaring a
+ * dedicated enum for it. Identity is by reference, not by any text (see {@link AbstractName}), so each instance
+ * is its own distinct column name regardless of how many others exist.
  *
  * @author Pavel Castornii
  */

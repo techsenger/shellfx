@@ -19,6 +19,10 @@ package com.techsenger.shellfx.material.table;
 import javafx.scene.control.TreeTableColumn;
 
 /**
+ * The persisted position/width/sort state of one {@code TreeTableView} column, identified by a
+ * {@link TreeTableColumnName}. Built and consumed by
+ * {@link TreeTableColumnManager}/{@link AbstractTableColumnManager}, and persisted across sessions via
+ * {@link TableHistory}.
  *
  * @author Pavel Castornii
  */
@@ -29,10 +33,20 @@ public class TreeTableColumnInfo extends AbstractTableColumnInfo
 
     private TreeTableColumn.SortType sortType;
 
+    /**
+     * Creates an instance with no name set yet. Intended for deserialization frameworks that require a public
+     * no-arg constructor; application code should prefer {@link #TreeTableColumnInfo(Enum)}, which sets the name
+     * up front.
+     */
     public TreeTableColumnInfo() {
 
     }
 
+    /**
+     * Creates an instance identified by {@code name}, with no position, width or sort state set yet.
+     *
+     * @param name the column's stable identity
+     */
     public <T extends Enum<T> & TreeTableColumnName> TreeTableColumnInfo(T name) {
         this.name = name;
     }
@@ -49,18 +63,38 @@ public class TreeTableColumnInfo extends AbstractTableColumnInfo
         this.sortType = other.sortType;
     }
 
+    /**
+     * Returns this column's sort direction. Only meaningful when {@link #getSortIndex()} is non-null.
+     *
+     * @return the column's sort direction
+     */
     public TreeTableColumn.SortType getSortType() {
         return sortType;
     }
 
+    /**
+     * Sets this column's sort direction.
+     *
+     * @param sortType the column's new sort direction
+     */
     public void setSortType(TreeTableColumn.SortType sortType) {
         this.sortType = sortType;
     }
 
+    /**
+     * Returns this column's stable identity.
+     *
+     * @return the column's name
+     */
     public TreeTableColumnName getName() {
         return (TreeTableColumnName) name;
     }
 
+    /**
+     * Sets this column's stable identity.
+     *
+     * @param name the column's new name
+     */
     public <T extends Enum<T> & TreeTableColumnName> void setName(T name) {
         this.name = name;
     }

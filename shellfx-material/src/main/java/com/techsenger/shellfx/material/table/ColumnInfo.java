@@ -30,6 +30,9 @@ import com.techsenger.patternfx.core.Name;
  */
 interface ColumnInfo<N extends Name, ST> {
 
+    /**
+     * Returns this column's stable identity.
+     */
     N getName();
 
     /**
@@ -41,10 +44,21 @@ interface ColumnInfo<N extends Name, ST> {
      */
     int getIndex();
 
+    /**
+     * Returns this column's persisted preferred width in pixels, or {@code null} if none was ever recorded
+     * (e.g. the column was never resized away from its factory's own default).
+     */
     Double getWidth();
 
+    /**
+     * Returns this column's position among the control's sort-order columns, or {@code null} if it is not
+     * currently part of the sort.
+     */
     Integer getSortIndex();
 
+    /**
+     * Returns this column's sort direction. Only meaningful when {@link #getSortIndex()} is non-null.
+     */
     ST getSortType();
 
     /**

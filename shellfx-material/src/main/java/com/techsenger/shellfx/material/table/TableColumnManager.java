@@ -33,6 +33,11 @@ import javafx.scene.control.TableView;
 public final class TableColumnManager<S>
         extends AbstractTableColumnManager<TableColumnName, NamedTableColumn<S, ?>, TableColumn.SortType> {
 
+    /**
+     * Creates a manager wired to {@code tableView}'s own column and sort-order lists.
+     *
+     * @param tableView the table whose columns this manager will build and track
+     */
     @SuppressWarnings("unchecked")
     public TableColumnManager(TableView<S> tableView) {
         super((ObservableList<NamedTableColumn<S, ?>>) (ObservableList<?>) tableView.getColumns(),

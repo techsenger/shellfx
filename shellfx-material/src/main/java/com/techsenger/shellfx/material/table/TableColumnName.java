@@ -19,6 +19,15 @@ package com.techsenger.shellfx.material.table;
 import com.techsenger.patternfx.core.Name;
 
 /**
+ * Identifies a {@code TableView} column independent of its current position, width or sort state &mdash; the
+ * {@code N} key type used throughout {@link TableColumnManager}/{@link AbstractTableColumnManager} and
+ * {@link TableColumnInfo}. Implementations are, by convention, enum constants (e.g. one enum per logical table,
+ * with one constant per column it can show), which is what lets a single {@link TableColumnInfo} instance be
+ * built straight from the constant (see {@link TableColumnInfo#TableColumnInfo(Enum)}).
+ *
+ * <p>A separate marker interface from {@link TreeTableColumnName} (rather than one shared name type for both
+ * column families) so a {@code TableView}'s columns and a {@code TreeTableView}'s columns can never be mixed up
+ * at compile time, e.g. passed to the wrong manager.
  *
  * @author Pavel Castornii
  */

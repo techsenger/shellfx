@@ -19,6 +19,9 @@ package com.techsenger.shellfx.material.table;
 import javafx.scene.control.TableColumn;
 
 /**
+ * The persisted position/width/sort state of one {@code TableView} column, identified by a {@link TableColumnName}.
+ * Built and consumed by {@link TableColumnManager}/{@link AbstractTableColumnManager}, and persisted across
+ * sessions via {@link TableHistory}.
  *
  * @author Pavel Castornii
  */
@@ -29,10 +32,20 @@ public class TableColumnInfo extends AbstractTableColumnInfo
 
     private TableColumn.SortType sortType;
 
+    /**
+     * Creates an instance with no name set yet. Intended for deserialization frameworks that require a public
+     * no-arg constructor; application code should prefer {@link #TableColumnInfo(Enum)}, which sets the name up
+     * front.
+     */
     public TableColumnInfo() {
 
     }
 
+    /**
+     * Creates an instance identified by {@code name}, with no position, width or sort state set yet.
+     *
+     * @param name the column's stable identity
+     */
     public <T extends Enum<T> & TableColumnName> TableColumnInfo(T name) {
         this.name = name;
     }
@@ -49,18 +62,38 @@ public class TableColumnInfo extends AbstractTableColumnInfo
         this.sortType = other.sortType;
     }
 
+    /**
+     * Returns this column's sort direction. Only meaningful when {@link #getSortIndex()} is non-null.
+     *
+     * @return the column's sort direction
+     */
     public TableColumn.SortType getSortType() {
         return sortType;
     }
 
+    /**
+     * Sets this column's sort direction.
+     *
+     * @param sortType the column's new sort direction
+     */
     public void setSortType(TableColumn.SortType sortType) {
         this.sortType = sortType;
     }
 
+    /**
+     * Returns this column's stable identity.
+     *
+     * @return the column's name
+     */
     public TableColumnName getName() {
         return (TableColumnName) name;
     }
 
+    /**
+     * Sets this column's stable identity.
+     *
+     * @param name the column's new name
+     */
     public <T extends Enum<T> & TableColumnName> void setName(T name) {
         this.name = name;
     }

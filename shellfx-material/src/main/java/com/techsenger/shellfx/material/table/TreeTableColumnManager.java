@@ -34,6 +34,11 @@ import javafx.scene.control.TreeTableView;
 public final class TreeTableColumnManager<S>
         extends AbstractTableColumnManager<TreeTableColumnName, NamedTreeTableColumn<S, ?>, TreeTableColumn.SortType> {
 
+    /**
+     * Creates a manager wired to {@code treeTableView}'s own column and sort-order lists.
+     *
+     * @param treeTableView the tree table whose columns this manager will build and track
+     */
     @SuppressWarnings("unchecked")
     public TreeTableColumnManager(TreeTableView<S> treeTableView) {
         super((ObservableList<NamedTreeTableColumn<S, ?>>) (ObservableList<?>) treeTableView.getColumns(),
