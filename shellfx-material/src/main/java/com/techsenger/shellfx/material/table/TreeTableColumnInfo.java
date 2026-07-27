@@ -37,6 +37,18 @@ public class TreeTableColumnInfo extends AbstractTableColumnInfo
         this.name = name;
     }
 
+    /**
+     * Copies {@code other}'s state into a new, independent instance &mdash; e.g. so a component can seed its own
+     * mutable column state from another component's snapshot without the two aliasing the same instances.
+     */
+    public TreeTableColumnInfo(TreeTableColumnInfo other) {
+        this.name = other.name;
+        setIndex(other.getIndex());
+        setWidth(other.getWidth());
+        setSortIndex(other.getSortIndex());
+        this.sortType = other.sortType;
+    }
+
     public TreeTableColumn.SortType getSortType() {
         return sortType;
     }
