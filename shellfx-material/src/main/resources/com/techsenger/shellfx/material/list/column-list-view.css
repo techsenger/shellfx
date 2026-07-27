@@ -23,17 +23,21 @@
     -fx-border-color: -color-border-default;
 }
 
+/*
+ * Width (-fx-min-width/-fx-pref-width/-fx-max-width) is deliberately not set here, neither for .column nor
+ * for its .cell children below: ColumnListView#columnWidth lets a consumer set a fixed, dynamically computed
+ * column width via a plain Java setter, not CSS. Once any stylesheet rule targets the same property, CSS
+ * reapplication (e.g. triggered by a pseudo-class change) overwrites that Java-set value on the very next
+ * pass, no matter the rule's specificity - a stylesheet rule always wins over a plain setter call once one
+ * exists for that property. So this file must stay silent on width to leave the API unopposed; a consumer
+ * that wants CSS-driven (content-based) width instead just never calls setColumnWidth().
+ */
 .column-list-view .column {
-    -fx-min-width: 15em;
-    -fx-pref-width: -1; /* use_comp_size */
-    -fx-max-width: 100000;
+
 }
 
 .column-list-view .column > .cell {
     -fx-text-fill: -color-fg-default;
-    -fx-min-width: 15em;
-    -fx-pref-width: -1; /* use_comp_size */
-    -fx-max-width: 100000;
 }
 
 .column-list-view .column > .cell > .box {

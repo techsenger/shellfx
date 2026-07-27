@@ -34,6 +34,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexedCell;
@@ -91,6 +92,8 @@ public class ColumnListView<T> extends Region {
 
     private static class ColumnListViewColumn<T> extends IndexedCell<Integer>  {
 
+        private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
+
         private final VBox node = new VBox();
 
         private final ColumnListView<T> listView;
@@ -124,10 +127,12 @@ public class ColumnListView<T> extends Region {
 
         @Override
         public void updateItem(Integer item, boolean empty) {
+            applyColumnWidth();
             if (item != null && item.equals(getItem()) && !empty && !dirty) {
                 return;
             }
             super.updateItem(item, empty);
+            node.pseudoClassStateChanged(EMPTY, empty);
             node.getChildren().clear();
             clearSelection();
             if (item != null) {
@@ -147,6 +152,32 @@ public class ColumnListView<T> extends Region {
         @Override
         protected Skin<?> createDefaultSkin() {
             return new CellSkinBase<>(this);
+        }
+
+        /**
+         * Applies {@link ColumnListView#columnWidth} to this column's node, if set (a negative value leaves
+         * width entirely to CSS, as before this feature existed).
+         */
+        private void applyColumnWidth() {
+            var width = listView.getColumnWidth();
+            if (width < 0) {
+                return;
+            }
+            node.setMinWidth(width);
+            node.setPrefWidth(width);
+            node.setMaxWidth(width);
+            // column-list-view.css gives every individual .cell its own, independent width (min 15em, max
+            // 100000, pref = content size) - column width alone doesn't constrain a cell with long content,
+            // it must be set on the cell itself too.
+            for (var cell : cachedCells) {
+                applyCellWidth(cell, width);
+            }
+        }
+
+        private void applyCellWidth(ColumnListCell<T> cell, double width) {
+            cell.setMinWidth(width);
+            cell.setPrefWidth(width);
+            cell.setMaxWidth(width);
         }
 
         private VBox getNode() {
@@ -196,6 +227,10 @@ public class ColumnListView<T> extends Region {
         private void createCell() {
             var cell = this.listView.getCellFactory().call((ColumnListView) this.listView);
             cell.setListView((ColumnListView) this.listView);
+            var width = listView.getColumnWidth();
+            if (width >= 0) {
+                applyCellWidth(cell, width);
+            }
             this.cachedCells.add(cell);
         }
 
@@ -301,6 +336,18 @@ public class ColumnListView<T> extends Region {
     private final DoubleProperty rowHeight = new SimpleDoubleProperty();
 
     /**
+     * Explicit, API-set width (in pixels) applied to every column, overriding whatever {@code -fx-min-width}/
+     * {@code -fx-pref-width}/{@code -fx-max-width} CSS would otherwise apply to the {@code .column} node. A
+     * negative value (the default) means "not set" &mdash; column width is left entirely to CSS, as before this
+     * property existed.
+     *
+     * <p>This is a pure view-level concern: changing it never touches {@link #items}, {@link #offsets}, or
+     * {@link #rowCount}/{@link #columnCount} &mdash; it only re-applies the new width to already-materialized
+     * column cells, via {@link #updateColumnWidths()}, independent of {@link #refresh(RefreshTrigger, RefreshType)}.
+     */
+    private final DoubleProperty columnWidth = new SimpleDoubleProperty();
+
+    /**
      * If true then data observable list changes are ignored and it is necessary to call refresh() method. The reason
      * is that same list can be used by tables and they can sort items.
      */
@@ -380,6 +427,8 @@ public class ColumnListView<T> extends Region {
         getChildren().add(this.virtualFlow);
         this.rowHeight.set(-1);
         this.rowHeight.addListener((ov, oldV, newV) -> refresh(RefreshTrigger.ROW_HEIGHT, RefreshType.PRIMARY));
+        this.columnWidth.set(-1);
+        this.columnWidth.addListener((ov, oldV, newV) -> updateColumnWidths());
         this.virtualFlow.getHBar().heightProperty()
                 .addListener((ov, oldV, newV) -> refresh(RefreshTrigger.SCROLL_BAR_HEIGHT, RefreshType.PRIMARY));
         this.virtualFlow.getHBar().visibleProperty()
@@ -492,6 +541,25 @@ public class ColumnListView<T> extends Region {
 
     public int getColumnCount() {
         return columnCount.get();
+    }
+
+    /**
+     * The explicit, API-set column width, in pixels &mdash; see {@link #columnWidth}.
+     */
+    public DoubleProperty columnWidthProperty() {
+        return columnWidth;
+    }
+
+    public double getColumnWidth() {
+        return columnWidth.get();
+    }
+
+    /**
+     * Sets every column's width to {@code columnWidth} pixels, overriding CSS. Pass a negative value to go
+     * back to CSS-driven width.
+     */
+    public void setColumnWidth(double columnWidth) {
+        this.columnWidth.set(columnWidth);
     }
 
     public SingleSelectionModel<T> getSelectionModel() {
@@ -753,6 +821,25 @@ public class ColumnListView<T> extends Region {
     private void scrollToCell(int cellIndex) {
         int columnIndex = cellIndex / getRowCount();
         scrollToFirstColumn(columnIndex);
+    }
+
+    /**
+     * Re-applies {@link #columnWidth} to every currently live column cell. Deliberately independent of
+     * {@link #refresh(RefreshTrigger, RefreshType)} &mdash; a column width change is a pure view-level resize,
+     * not a data change, so it must not touch {@link #offsets}/{@link #rowCount}/{@link #columnCount} or go
+     * through the refresh re-entrancy guard.
+     */
+    private void updateColumnWidths() {
+        var iterator = this.columns.iterator();
+        while (iterator.hasNext()) {
+            var ref = iterator.next();
+            var column = ref.get();
+            if (column == null) {
+                iterator.remove();
+            } else {
+                column.applyColumnWidth();
+            }
+        }
     }
 
     /**

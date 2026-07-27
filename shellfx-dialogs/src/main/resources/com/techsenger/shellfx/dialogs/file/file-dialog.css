@@ -19,8 +19,17 @@
     -fx-spacing: 0.25em;
 }
 
+.column-list-view .column {
+    -fx-min-width: 15em;
+    -fx-pref-width: -1;
+    -fx-max-width: 100000;
+}
+
 .column-list-view .column > .cell {
     -fx-graphic-text-gap: 0.4em;
+    -fx-min-width: 15em;
+    -fx-pref-width: -1;
+    -fx-max-width: 100000;
 }
 
 .table-view .table-row-cell {
