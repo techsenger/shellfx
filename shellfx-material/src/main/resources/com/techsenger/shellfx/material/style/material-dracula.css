@@ -68,6 +68,11 @@
     -fx-background-color: rgba(149, 128, 255, 0.623);
 }
 
+.column-tile-view .row .cell:selected {
+    /* it seems that -color-accent-subtle is used with some opacity ??? */
+    -fx-background-color: rgba(149, 128, 255, 0.623);
+}
+
 .search-field > .button.cross {
     -fx-background-color: -color-accent-fg;
 }

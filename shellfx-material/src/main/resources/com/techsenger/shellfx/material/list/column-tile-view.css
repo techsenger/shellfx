@@ -1,0 +1,66 @@
+/*
+ * Copyright 2024-2026 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+    Author     : Pavel Castornii
+*/
+
+.column-tile-view {
+    -fx-border-width: 1px;
+    -fx-border-color: -color-border-default;
+}
+
+/*
+ * .row's height and .cell's width are deliberately not set anywhere in this file: ColumnTileView computes
+ * and applies both internally via plain Java setters (row height on .row, see ColumnTileView#rowHeight; cell
+ * width on .cell, see ColumnTileView#computeCellWidth), re-applied on every cell recycle. Once any stylesheet
+ * rule targets the same property, CSS reapplication (e.g. triggered by a pseudo-class change on cell reuse)
+ * overwrites that Java-set value on the very next pass, no matter the rule's specificity - see
+ * column-list-view.css for the identical note on .column/.cell. Cell height, unlike row height, is NOT
+ * Java-owned - only the row as a whole has a fixed height - so it is set as plain CSS below, in the
+ * density-m/s/xs blocks.
+ */
+.column-tile-view .row {
+
+}
+
+.column-tile-view .row > .cell {
+    -fx-text-fill: -color-fg-default;
+}
+
+.density-m .column-tile-view .row > .cell {
+    -fx-cell-size: 2em;
+    -fx-pref-height: 2em;
+    -fx-max-height: 2em;
+    -fx-min-height: 2em;
+    -fx-padding: 0.4em 0.85em 0.3em 0.85em;
+}
+
+.density-s .column-tile-view .row > .cell {
+    -fx-cell-size: 1.8em;
+    -fx-pref-height: 1.8em;
+    -fx-max-height: 1.8em;
+    -fx-min-height: 1.8em;
+    -fx-padding: 0.2em 0.7em 0.2em 0.7em;
+}
+
+.density-xs .column-tile-view .row > .cell {
+    -fx-cell-size: 1.65em;
+    -fx-pref-height: 1.65em;
+    -fx-max-height: 1.65em;
+    -fx-min-height: 1.65em;
+    -fx-padding: 0.15em 0.6em 0.15em 0.6em;
+}

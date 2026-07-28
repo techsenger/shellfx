@@ -67,6 +67,10 @@
     -fx-background-color: -color-base-7;
 }
 
+.column-tile-view .row .cell:selected {
+    -fx-background-color: -color-base-7;
+}
+
 .search-field > .button.cross {
     -fx-background-color: -color-fg-muted;
 }
