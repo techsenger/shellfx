@@ -37,6 +37,7 @@ module com.techsenger.shellfx.material {
     exports com.techsenger.shellfx.material.style;
     exports com.techsenger.shellfx.material.table;
     exports com.techsenger.shellfx.material.textarea;
+    exports com.techsenger.shellfx.material.textfield;
     exports com.techsenger.shellfx.material.theme;
     exports com.techsenger.shellfx.material.toolbar;
 

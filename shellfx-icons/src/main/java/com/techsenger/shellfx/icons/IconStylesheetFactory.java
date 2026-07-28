@@ -48,6 +48,13 @@ public final class IconStylesheetFactory {
     }
 
     /**
+     * Creates and returns the stylesheet with icons for the 'material' module.
+     */
+    public static Stylesheet forMaterial() {
+        return new Stylesheet(IconStylesheetFactory.class.getResource("material.css"));
+    }
+
+    /**
      * Creates and returns the stylesheet with icons for the 'dialogs' module.
      */
     public static Stylesheet forDialogs() {
@@ -76,6 +83,7 @@ public final class IconStylesheetFactory {
                 forCore(),
                 forShared(),
                 forLayout(),
+                forMaterial(),
                 forDialogs(),
                 forDevTools(),
                 forStorage());
