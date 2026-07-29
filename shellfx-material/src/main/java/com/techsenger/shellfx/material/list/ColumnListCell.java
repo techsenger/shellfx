@@ -46,7 +46,6 @@ public class ColumnListCell<T> extends IndexedCell<T> {
                     listView.edit(getIndex());
                 }
             } else {
-                listView.setSelectedByAction(true);
                 listView.getSelectionModel().select(getIndex());
                 NodeUtils.requestFocus(this);
             }

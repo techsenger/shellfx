@@ -69,6 +69,7 @@ class DockSplitPaneTest {
     static void initJavaFxToolkit() {
         try {
             System.setProperty("glass.platform", "Headless");
+            System.setProperty("prism.order", "sw");
             Platform.startup(() -> { });
         } catch (IllegalStateException alreadyStarted) {
             // toolkit already running in this JVM (e.g. started by another test class); nothing to do

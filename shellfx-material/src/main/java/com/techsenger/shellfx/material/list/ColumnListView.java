@@ -109,20 +109,6 @@ public class ColumnListView<T> extends Region {
             node.getStyleClass().add("column");
             node.setAlignment(Pos.TOP_LEFT);
             setGraphic(node);
-            listView.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) -> {
-                clearSelection();
-                if (newV.intValue() != -1) {
-                    //scroll to selected to create it if it hasn't beed created yet
-                    var columnIndex = listView.resolveColumnIndex(newV.intValue());
-                    if (getIndex() == columnIndex) {
-                        var rowIndex = listView.resolveRowIndex(newV.intValue());
-                        if (rowIndex < cachedCells.size()) {
-                            setSelectedCell(cachedCells.get(rowIndex));
-
-                        }
-                    }
-                }
-            });
         }
 
         @Override
@@ -133,6 +119,14 @@ public class ColumnListView<T> extends Region {
             }
             super.updateItem(item, empty);
             node.pseudoClassStateChanged(EMPTY, empty);
+            // A cell about to be discarded here (e.g. a column recycled for a different offset after items
+            // shrank) can currently own scene focus. Removing a focused node from the scene graph does not
+            // reassign focus - Scene.getFocusOwner() is left pointing at a now-detached node, so no further
+            // key events (e.g. arrow-key navigation) are dispatched anywhere until something explicitly
+            // requests focus again. Move focus to the still-live container first.
+            if (node.isFocusWithin()) {
+                listView.requestFocus();
+            }
             node.getChildren().clear();
             clearSelection();
             if (item != null) {
@@ -192,8 +186,16 @@ public class ColumnListView<T> extends Region {
             } else if (item == (this.listView.getColumnCount() - 1) * this.listView.getRowCount()) {
                 node.getStyleClass().add("last");
             }
-            int endIndex = Math.min(item + this.listView.getRowCount(), this.listView.getItems().size());
-            var cellItems = this.listView.getItems().subList(item, endIndex);
+            var items = this.listView.getItems();
+            // item (this column's own offset) can be momentarily stale relative to a just-shrunk items list:
+            // refresh()'s reentrancy guard can postpone an ITEMS-triggered offsets rebuild behind another,
+            // unrelated trigger (see RefreshTrigger), and if that other trigger sees no rowCount change, its
+            // own updateOffsets() call is skipped too - leaving this column pointing past the end of the new
+            // list until the next refresh corrects it. Clamp instead of crashing; an empty column here
+            // self-heals on that next refresh.
+            var startIndex = Math.min(item, items.size());
+            int endIndex = Math.min(startIndex + this.listView.getRowCount(), items.size());
+            var cellItems = items.subList(startIndex, endIndex);
             var absentCells = cellItems.size() - this.cachedCells.size();
             for (var i = 0; i < absentCells; i++) {
                 createCell();
@@ -384,8 +386,6 @@ public class ColumnListView<T> extends Region {
 
     private int firstVisibleCellIndex = 0;
 
-    private boolean selectedByAction;
-
     /**
      * Always only one sell can be in edit mode.
      */
@@ -436,6 +436,12 @@ public class ColumnListView<T> extends Region {
         //firstVisibleCellIndex is set via onResizeStarted.
         this.virtualFlow.heightProperty()
                 .addListener((ov, oldV, newV) -> savePositionAndRefreshView(RefreshTrigger.VIRTUAL_FLOW_HEIGHT));
+        // A single listener here, instead of one per column (as before): a per-column listener on this
+        // long-lived view's own selectedIndexProperty would leak every column ever created for the lifetime
+        // of the view - the property's listener list holds a strong reference to each column, so none of them
+        // could ever be garbage collected even after being discarded/replaced by the virtual flow.
+        getSelectionModel().selectedIndexProperty()
+                .addListener((ov, oldV, newV) -> updateSelectedCellHighlight(newV.intValue()));
         virtualFlow.setCellFactory(vf -> new ColumnListViewColumn<>(this) {
 
             {
@@ -469,15 +475,6 @@ public class ColumnListView<T> extends Region {
             }
         });
 
-        this.selectionModel.selectedIndexProperty().addListener((ov, oldV, newV) -> {
-            //there can be two types of events - selection from code or selection from user; user selections are ignored
-            if (newV.intValue() != -1 && !selectedByAction) {
-                //scroll to selected to create it if it hasn't beed created yet
-                var columnIndex = resolveColumnIndex(newV.intValue());
-                scrollToFirstColumn(columnIndex);
-                this.selectedByAction = false;
-            }
-        });
         this.contextMenu.addListener((ov, oldV, newV) -> {
             if (newV == null) {
                 setOnContextMenuRequested(null);
@@ -733,10 +730,6 @@ public class ColumnListView<T> extends Region {
 
     }
 
-    void setSelectedByAction(boolean selectedByAction) {
-        this.selectedByAction = selectedByAction;
-    }
-
     private ColumnListCell<T> getCell(int columnIndex, int rowIndex) {
         ColumnListViewColumn column = this.virtualFlow.getCell(columnIndex);
         var cell = (ColumnListCell<T>) column.getNode().getChildren().get(rowIndex);
@@ -825,6 +818,24 @@ public class ColumnListView<T> extends Region {
     private void scrollToCell(int cellIndex) {
         int columnIndex = cellIndex / getRowCount();
         scrollToFirstColumn(columnIndex);
+    }
+
+    /**
+     * Clears the previously selected cell's highlight on every currently realized column and, if
+     * {@code selectedIndex} resolves to one of them, sets its new selected cell. Off-screen columns are not
+     * touched here - {@link ColumnListViewColumn#updateItem} already recomputes the correct selected cell from
+     * scratch whenever such a column is next reused, so there is nothing stale left for them to show once
+     * scrolled back into view.
+     */
+    private void updateSelectedCellHighlight(int selectedIndex) {
+        var columnIndex = selectedIndex == -1 ? -1 : resolveColumnIndex(selectedIndex);
+        var rowIndex = selectedIndex == -1 ? -1 : resolveRowIndex(selectedIndex);
+        for (var column : this.virtualFlow.getCells()) {
+            column.clearSelection();
+            if (column.getIndex() == columnIndex && rowIndex < column.cachedCells.size()) {
+                column.setSelectedCell(column.cachedCells.get(rowIndex));
+            }
+        }
     }
 
     /**

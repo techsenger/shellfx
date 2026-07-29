@@ -49,7 +49,6 @@ public class TileCell<T> extends IndexedCell<T> {
                     tileView.edit(getIndex());
                 }
             } else {
-                tileView.setSelectedByAction(true);
                 tileView.getSelectionModel().select(getIndex());
                 NodeUtils.requestFocus(this);
             }

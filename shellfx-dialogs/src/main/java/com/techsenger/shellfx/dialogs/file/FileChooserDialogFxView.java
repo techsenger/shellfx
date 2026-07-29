@@ -21,6 +21,7 @@ import com.techsenger.shellfx.core.dialog.AbstractDialogFxView;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.dialog.DialogResizeEvent;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogFxView;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogPresenter;
@@ -61,6 +62,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -111,7 +114,13 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
         public DialogPort addAlertDialog(AlertDialogParams params, String message) {
             var dialog = createAlertDialog(params);
             dialog.getPresenter().setMessage(message);
-            getContainer().getComposer().addDialog(dialog);
+            if (dialog.getPresenter().getWindowType() == WindowType.NESTED) {
+                getContainer().getComposer().addDialog(dialog);
+            } else {
+                dialog.getStage().initOwner(getNode().getScene().getWindow());
+                dialog.getStage().show();
+            }
+            dialog.requestFocus();
             return dialog.getPresenter();
         }
 
@@ -540,6 +549,28 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
         this.createButton.setOnAction(e -> presenter.onNewDirectory());
         this.listButton.setOnAction(e -> getPresenter().onList());
         this.detailsButton.setOnAction(e -> getPresenter().onDetails());
+        // Bubbling handlers (not filters): an in-progress rename's TextField already consumes ENTER/ESCAPE
+        // itself (see TextFieldColumnListCell), so these never see the key in that case. Only consumed here
+        // when the selected entry is a directory, so ENTER on a file still reaches the dialog's default (OK)
+        // button and confirms the selection as before.
+        this.fileListView.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                var file = this.fileListView.getSelectionModel().getSelectedItem();
+                if (file != null && file.isDirectory()) {
+                    e.consume();
+                    presenter.onNavigateDown(file);
+                }
+            }
+        });
+        this.fileTableView.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                var file = this.fileTableView.getSelectionModel().getSelectedItem();
+                if (file != null && file.isDirectory()) {
+                    e.consume();
+                    presenter.onNavigateDown(file);
+                }
+            }
+        });
         //when setOnShowing is used then popup height is calculated incorrectly
         //maybe because OnMousePressed handler is called before OnShowing handler.
         //another reason - update location property only after locations have been populated

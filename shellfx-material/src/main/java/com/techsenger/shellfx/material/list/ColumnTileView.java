@@ -111,19 +111,6 @@ public class ColumnTileView<T> extends Region {
             node.getStyleClass().add("row");
             node.setAlignment(Pos.CENTER_LEFT);
             setGraphic(node);
-            tileView.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) -> {
-                clearSelection();
-                if (newV.intValue() != -1) {
-                    //scroll to selected to create it if it hasn't beed created yet
-                    var rowIndex = tileView.resolveRowIndex(newV.intValue());
-                    if (getIndex() == rowIndex) {
-                        var columnIndex = tileView.resolveColumnIndex(newV.intValue());
-                        if (columnIndex < cachedCells.size()) {
-                            setSelectedCell(cachedCells.get(columnIndex));
-                        }
-                    }
-                }
-            });
         }
 
         @Override
@@ -135,6 +122,14 @@ public class ColumnTileView<T> extends Region {
             }
             super.updateItem(item, empty);
             node.pseudoClassStateChanged(EMPTY, empty);
+            // A cell about to be discarded here (e.g. a row recycled for a different offset after items
+            // shrank) can currently own scene focus. Removing a focused node from the scene graph does not
+            // reassign focus - Scene.getFocusOwner() is left pointing at a now-detached node, so no further
+            // key events (e.g. arrow-key navigation) are dispatched anywhere until something explicitly
+            // requests focus again. Move focus to the still-live container first.
+            if (node.isFocusWithin()) {
+                tileView.requestFocus();
+            }
             node.getChildren().clear();
             clearSelection();
             if (item != null) {
@@ -202,8 +197,16 @@ public class ColumnTileView<T> extends Region {
             } else if (item == (this.tileView.getRowCount() - 1) * this.tileView.getColumnCount()) {
                 node.getStyleClass().add("last");
             }
-            int endIndex = Math.min(item + this.tileView.getColumnCount(), this.tileView.getItems().size());
-            var cellItems = this.tileView.getItems().subList(item, endIndex);
+            var items = this.tileView.getItems();
+            // item (this row's own offset) can be momentarily stale relative to a just-shrunk items list:
+            // refresh()'s reentrancy guard can postpone an ITEMS-triggered offsets rebuild behind another,
+            // unrelated trigger (see RefreshTrigger), and if that other trigger sees no rowCount change, its
+            // own updateOffsets() call is skipped too - leaving this row pointing past the end of the new
+            // list until the next refresh corrects it. Clamp instead of crashing; an empty row here
+            // self-heals on that next refresh.
+            var startIndex = Math.min(item, items.size());
+            int endIndex = Math.min(startIndex + this.tileView.getColumnCount(), items.size());
+            var cellItems = items.subList(startIndex, endIndex);
             var absentCells = cellItems.size() - this.cachedCells.size();
             for (var i = 0; i < absentCells; i++) {
                 createCell();
@@ -392,8 +395,6 @@ public class ColumnTileView<T> extends Region {
 
     private int firstVisibleCellIndex = 0;
 
-    private boolean selectedByAction;
-
     /**
      * Always only one cell can be in edit mode.
      */
@@ -441,6 +442,12 @@ public class ColumnTileView<T> extends Region {
             savePositionAndRefreshView(RefreshTrigger.VIRTUAL_FLOW_WIDTH);
             updateCellWidths();
         });
+        // A single listener here, instead of one per row (as before): a per-row listener on this long-lived
+        // view's own selectedIndexProperty would leak every row ever created for the lifetime of the view -
+        // the property's listener list holds a strong reference to each row, so none of them could ever be
+        // garbage collected even after being discarded/replaced by the virtual flow.
+        getSelectionModel().selectedIndexProperty()
+                .addListener((ov, oldV, newV) -> updateSelectedCellHighlight(newV.intValue()));
         virtualFlow.setCellFactory(vf -> new ColumnTileViewRow<>(this) {
 
             {
@@ -474,15 +481,6 @@ public class ColumnTileView<T> extends Region {
             }
         });
 
-        this.selectionModel.selectedIndexProperty().addListener((ov, oldV, newV) -> {
-            //there can be two types of events - selection from code or selection from user; user selections are ignored
-            if (newV.intValue() != -1 && !selectedByAction) {
-                //scroll to selected to create it if it hasn't beed created yet
-                var rowIndex = resolveRowIndex(newV.intValue());
-                scrollToFirstRow(rowIndex);
-                this.selectedByAction = false;
-            }
-        });
         this.contextMenu.addListener((ov, oldV, newV) -> {
             if (newV == null) {
                 setOnContextMenuRequested(null);
@@ -695,6 +693,10 @@ public class ColumnTileView<T> extends Region {
         double width = getWidth();
         double height = getHeight();
         virtualFlow.resizeRelocate(0, 0, width, height);
+        // resizeRelocate() only triggers the flow's own layout when its size actually changes, so a scroll
+        // (a position/state change with no size change, e.g. from VirtualFlowUtils#scrollTo) would otherwise
+        // never get processed here at all - explicitly laying it out unconditionally covers that case too.
+        virtualFlow.layout();
     }
 
     void setEditingCellIndex(int editingCellIndex) {
@@ -713,10 +715,6 @@ public class ColumnTileView<T> extends Region {
         } else if (rowIndex == this.virtualFlow.getLastVisibleCell().getIndex()) {
             scrollToLastRow(rowIndex);
         }
-    }
-
-    void setSelectedByAction(boolean selectedByAction) {
-        this.selectedByAction = selectedByAction;
     }
 
     /**
@@ -813,6 +811,24 @@ public class ColumnTileView<T> extends Region {
                 iterator.remove();
             } else {
                 row.applyCellWidths();
+            }
+        }
+    }
+
+    /**
+     * Clears the previously selected cell's highlight on every currently realized row and, if
+     * {@code selectedIndex} resolves to one of them, sets its new selected cell. Off-screen rows are not
+     * touched here - {@link ColumnTileViewRow#updateItem} already recomputes the correct selected cell from
+     * scratch whenever such a row is next reused, so there is nothing stale left for them to show once
+     * scrolled back into view.
+     */
+    private void updateSelectedCellHighlight(int selectedIndex) {
+        var rowIndex = selectedIndex == -1 ? -1 : resolveRowIndex(selectedIndex);
+        var columnIndex = selectedIndex == -1 ? -1 : resolveColumnIndex(selectedIndex);
+        for (var row : this.virtualFlow.getCells()) {
+            row.clearSelection();
+            if (row.getIndex() == rowIndex && columnIndex < row.cachedCells.size()) {
+                row.setSelectedCell(row.cachedCells.get(columnIndex));
             }
         }
     }
