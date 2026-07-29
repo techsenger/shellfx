@@ -572,6 +572,9 @@ public class ColumnTileView<T> extends Region {
     }
 
     public int resolveColumnIndex(int cellIndex) {
+        if (getColumnCount() == 0) {
+            return -1;
+        }
         return cellIndex % getColumnCount();
     }
 

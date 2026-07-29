@@ -585,6 +585,9 @@ public class ColumnListView<T> extends Region {
     }
 
     public int resolveRowIndex(int cellIndex) {
+        if (getRowCount() == 0) {
+            return -1;
+        }
         var rowIndex = cellIndex % getRowCount();
         return rowIndex;
     }
