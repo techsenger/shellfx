@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.material.list;
 
 import com.techsenger.toolkit.fx.FxPlatform;
-import com.techsenger.toolkit.fx.utils.VirtualFlowUtils.ScrollPosition;
+import com.techsenger.toolkit.fx.utils.ScrollPosition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;

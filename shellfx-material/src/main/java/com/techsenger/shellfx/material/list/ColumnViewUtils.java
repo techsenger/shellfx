@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.material.list;
 
+import com.techsenger.toolkit.fx.utils.ScrollPosition;
 import com.techsenger.toolkit.fx.utils.VirtualFlowUtils;
-import com.techsenger.toolkit.fx.utils.VirtualFlowUtils.ScrollPosition;
 
 /**
  * Scroll-position utilities for {@link ColumnListView} and {@link ColumnTileView}, mirroring what
