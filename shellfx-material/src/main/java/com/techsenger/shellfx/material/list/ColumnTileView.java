@@ -38,6 +38,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexedCell;
 import javafx.scene.control.ScrollBar;
@@ -422,8 +423,17 @@ public class ColumnTileView<T> extends Region {
         setCellFactory(v -> new TileCell<>());
         setFocusTraversable(true);
         addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-            if ((e.getTarget() instanceof HBox) || (e.getTarget() instanceof TileCell)) {
-                requestFocus();
+            // Requests focus as early as press-time, before the click (and TileCell's own MOUSE_CLICKED-driven
+            // focus request) completes. e.getTarget() is often a node deep inside a cell (its text/graphic),
+            // not the cell itself - walk up the ancestor chain instead of a single instanceof check on the
+            // target.
+            var node = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
+            while (node != null && node != this) {
+                if (node instanceof HBox || node instanceof TileCell) {
+                    requestFocus();
+                    break;
+                }
+                node = node.getParent();
             }
         });
         getChildren().add(this.virtualFlow);
@@ -477,6 +487,18 @@ public class ColumnTileView<T> extends Region {
                 event.consume();
             } else if (event.getCode() == KeyCode.RIGHT) {
                 selectRight();
+                event.consume();
+            } else if (event.getCode() == KeyCode.HOME) {
+                selectHome();
+                event.consume();
+            } else if (event.getCode() == KeyCode.END) {
+                selectEnd();
+                event.consume();
+            } else if (event.getCode() == KeyCode.PAGE_UP) {
+                selectPageUp();
+                event.consume();
+            } else if (event.getCode() == KeyCode.PAGE_DOWN) {
+                selectPageDown();
                 event.consume();
             }
         });
@@ -734,12 +756,19 @@ public class ColumnTileView<T> extends Region {
         var newSelectedIndex = selectedIndex - getColumnCount();
         if (newSelectedIndex >= 0) {
             selectPrevious(selectedIndex, newSelectedIndex);
+        } else {
+            // Already in the first row - UP has nowhere else to go row-wise, so jump to the very first item
+            // overall instead of doing nothing (mirrors HOME).
+            selectHome();
         }
     }
 
     private void selectDown() {
         var selectedIndex = getSelectionModel().getSelectedIndex();
         if (resolveRowIndex(selectedIndex) >= getRowCount() - 1) {
+            // Already in the last row - DOWN has nowhere else to go row-wise, so jump to the very last item
+            // overall instead of doing nothing (mirrors END).
+            selectEnd();
             return;
         }
         var newSelectedIndex = selectedIndex + getColumnCount();
@@ -783,6 +812,134 @@ public class ColumnTileView<T> extends Region {
             scrollToLastRow(newRowIndex);
         }
         getSelectionModel().select(newSelectedIndex);
+    }
+
+    private void selectHome() {
+        if (this.items.isEmpty()) {
+            return;
+        }
+        scrollToFirstRow();
+        getSelectionModel().select(0);
+    }
+
+    private void selectEnd() {
+        if (this.items.isEmpty()) {
+            return;
+        }
+        scrollToLastRow();
+        getSelectionModel().select(this.items.size() - 1);
+    }
+
+    /**
+     * Mirrors how {@code TableView}/{@code ListView} page up/down: the whole item sequence is read in row
+     * order (left to right within a row, then the start of the next row), so "the current page" is every
+     * item whose row is currently, fully visible, and its end is the last item of the last fully visible row.
+     * If the selection isn't already sitting there, this lands on it without scrolling (it's already
+     * visible); only once the selection is already at that exact spot does this scroll to a genuinely new,
+     * non-overlapping page (starting right after the old last fully visible row, not repeating it) and select
+     * that new page's last item.
+     */
+    private void selectPageDown() {
+        var firstFullyVisibleRow = firstFullyVisibleRowIndex();
+        var lastFullyVisibleRow = lastFullyVisibleRowIndex();
+        if (lastFullyVisibleRow < 0) {
+            return;
+        }
+        var target = lastItemIndexInRow(lastFullyVisibleRow);
+        if (getSelectionModel().getSelectedIndex() == target) {
+            var nextRow = lastFullyVisibleRow + 1;
+            if (nextRow < getRowCount()) {
+                var pageHeight = lastFullyVisibleRow - firstFullyVisibleRow + 1;
+                // The new page's last row is computed from the still-current (stable) page's own height, not
+                // re-derived from geometry after scrolling: near the end of the items, a row with nothing
+                // after it can be reported as fully visible by VirtualFlow even when it doesn't actually fit
+                // the viewport height (nothing left to virtualize away), which would otherwise silently skip
+                // or misjudge the next page's boundary.
+                var newLastRow = Math.min(getRowCount() - 1, nextRow + pageHeight - 1);
+                forceScrollToFirstRow(nextRow);
+                target = lastItemIndexInRow(newLastRow);
+            }
+        }
+        getSelectionModel().select(target);
+    }
+
+    /**
+     * Mirrors {@link #selectPageDown} in the opposite direction: "the current page" starts at the first item
+     * of the first fully visible row. If the selection isn't already there, this lands on it without
+     * scrolling; only once already there does this scroll to a genuinely new, non-overlapping page (ending
+     * right before the old first fully visible row, not repeating it) and select that new page's first item.
+     */
+    private void selectPageUp() {
+        var firstFullyVisibleRow = firstFullyVisibleRowIndex();
+        var lastFullyVisibleRow = lastFullyVisibleRowIndex();
+        if (firstFullyVisibleRow < 0) {
+            return;
+        }
+        var target = firstFullyVisibleRow * getColumnCount();
+        if (getSelectionModel().getSelectedIndex() == target && firstFullyVisibleRow > 0) {
+            var pageHeight = lastFullyVisibleRow - firstFullyVisibleRow + 1;
+            var newFirstRow = Math.max(0, firstFullyVisibleRow - pageHeight);
+            // newFirstRow (not a fresh firstFullyVisibleRowIndex() read after scrolling) is used directly as
+            // the target - see selectPageDown for why re-deriving from post-scroll geometry is unreliable
+            // near a data boundary (here, the very first row).
+            forceScrollToFirstRow(newFirstRow);
+            target = newFirstRow * getColumnCount();
+        }
+        getSelectionModel().select(target);
+    }
+
+    /**
+     * Like {@link #scrollToFirstRow(int)}, but corrects for a real {@code VirtualFlow} behavior: scrolling a
+     * row near the end of the data to the viewport's leading edge can get pulled back to an earlier row so
+     * the viewport doesn't end up showing blank space past the last real row. If a pull-back is detected,
+     * this nudges the flow forward by the exact combined height of the skipped rows (all the same,
+     * fixed {@link #rowHeight}) to force the intended row to genuinely be first, blank space and all.
+     */
+    private void forceScrollToFirstRow(int rowIndex) {
+        scrollToFirstRow(rowIndex);
+        applyCss();
+        layout();
+        var first = this.virtualFlow.getFirstVisibleCell();
+        var actualFirst = first == null ? rowIndex : first.getIndex();
+        if (actualFirst < rowIndex) {
+            this.virtualFlow.scrollPixels((rowIndex - actualFirst) * this.rowHeight.get());
+            applyCss();
+            layout();
+        }
+    }
+
+    private int firstFullyVisibleRowIndex() {
+        var first = this.virtualFlow.getFirstVisibleCell();
+        if (first == null) {
+            return -1;
+        }
+        var index = first.getIndex();
+        // getFirstVisibleCell() can itself be only partially visible at the leading edge (e.g. right after
+        // the user drags the vertical scrollbar to an arbitrary, row-boundary-unaligned position) - the next
+        // row is the first genuinely fully visible one. Checked against the cell's own rendered bounds
+        // (translated into this view's coordinate space) rather than ColumnViewUtils.isFullyVisible: that
+        // helper derives visibility from VirtualFlow's own position/index bookkeeping, which can be thrown
+        // off after a manual, unaligned scroll - reading the already-laid-out geometry directly cannot be
+        // wrong the way an estimate can.
+        return isRowFullyVisible(first) ? index : index + 1;
+    }
+
+    private int lastFullyVisibleRowIndex() {
+        var last = this.virtualFlow.getLastVisibleCell();
+        if (last == null) {
+            return -1;
+        }
+        var index = last.getIndex();
+        return isRowFullyVisible(last) ? index : index - 1;
+    }
+
+    private boolean isRowFullyVisible(IndexedCell<?> row) {
+        var bounds = sceneToLocal(row.localToScene(row.getBoundsInLocal()));
+        return bounds != null && bounds.getMinY() >= -0.5 && bounds.getMaxY() <= getHeight() + 0.5;
+    }
+
+    private int lastItemIndexInRow(int rowIndex) {
+        return rowIndex * getColumnCount() + resolveColumnCount(rowIndex) - 1;
     }
 
     private void savePositionAndRefreshView(RefreshTrigger refreshTrigger) {

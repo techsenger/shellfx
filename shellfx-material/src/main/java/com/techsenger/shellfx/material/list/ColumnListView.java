@@ -23,11 +23,13 @@ import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,6 +38,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexedCell;
 import javafx.scene.control.ScrollBar;
@@ -60,6 +63,15 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The cell selection occurs in two stages: 1_ Marking the cell as selected and saving a reference to
  * it in the listView. 2) Updating the selectionModel. The only exception is changeListener for selectionModel.
+ *
+ * <p>{@link #columnWidth} and {@link #visibleColumnCount} are two mutually exclusive ways to size columns -
+ * setting one is meant to be used instead of the other, not alongside it (if both are set, the widths
+ * derived from {@link #visibleColumnCount} win; see that property's Javadoc for why). {@code columnWidth}
+ * picks a fixed pixel width and lets however many columns fit in the current width show (the count varies
+ * with the view's width). {@code visibleColumnCount} does the opposite: it picks a fixed count of columns to
+ * always show fully, and derives each column's width from the view's current width so that any
+ * {@code visibleColumnCount} consecutive columns - wherever the view happens to be scrolled to - sum to
+ * exactly that width, with no column ever showing partially.
  *
  * @author Pavel Castornii
  */
@@ -149,11 +161,18 @@ public class ColumnListView<T> extends Region {
         }
 
         /**
-         * Applies {@link ColumnListView#columnWidth} to this column's node, if set (a negative value leaves
-         * width entirely to CSS, as before this feature existed).
+         * Applies {@link ColumnListView#columnWidth}/{@link ColumnListView#visibleColumnCount} to this
+         * column's node, if either is set (a negative resolved width leaves width entirely to CSS, as before
+         * this feature existed). Resolves the width from {@link #getIndex()} - this column's position in the
+         * outer flow - not {@link #getItem()}: {@code getIndex()} is what a filler column (past the last real
+         * one, created by the flow itself to keep covering the viewport - see
+         * {@link ColumnListView#resolveColumnWidth}) has, even though it has no item/offset at all, and it is
+         * already up to date by the time this runs (unlike {@code getItem()}, which is only refreshed by
+         * {@code super.updateItem(...)}, called after this, so it would still read the previous, stale value
+         * while this column is being recycled for a different one).
          */
         private void applyColumnWidth() {
-            var width = listView.getColumnWidth();
+            var width = listView.resolveColumnWidth(getIndex());
             if (width < 0) {
                 return;
             }
@@ -341,13 +360,34 @@ public class ColumnListView<T> extends Region {
      * Explicit, API-set width (in pixels) applied to every column, overriding whatever {@code -fx-min-width}/
      * {@code -fx-pref-width}/{@code -fx-max-width} CSS would otherwise apply to the {@code .column} node. A
      * negative value (the default) means "not set" &mdash; column width is left entirely to CSS, as before this
-     * property existed.
+     * property existed. Ignored while {@link #visibleColumnCount} is set (see there) &mdash; the two are
+     * mutually exclusive ways to size columns.
      *
      * <p>This is a pure view-level concern: changing it never touches {@link #items}, {@link #offsets}, or
      * {@link #rowCount}/{@link #columnCount} &mdash; it only re-applies the new width to already-materialized
      * column cells, via {@link #updateColumnWidths()}, independent of {@link #refresh(RefreshTrigger, RefreshType)}.
      */
     private final DoubleProperty columnWidth = new SimpleDoubleProperty();
+
+    /**
+     * The fixed number of columns that should always be fully, simultaneously visible, mutually exclusive
+     * with {@link #columnWidth} (see the class Javadoc). A value &lt;= 0 (the default) means "not set" &mdash;
+     * {@link #columnWidth}/CSS decide column width instead, and however many columns happen to fit at that
+     * width are shown, including a partial one at the trailing edge.
+     *
+     * <p>When set to N &gt; 0, every column's width is derived from the view's own current width W as
+     * {@code base + (columnIndex % N < remainder ? 1 : 0)}, where {@code base = floor(W / N)} and
+     * {@code remainder = W - base * N}. This - not a single shared width like {@code columnWidth} - is what
+     * guarantees that any N <em>consecutive</em> columns, wherever the view is scrolled to, sum to exactly W:
+     * N consecutive integers always cover every residue mod N exactly once, so exactly {@code remainder} of
+     * them fall in the "+1" group regardless of which N-column window is currently showing. A single shared
+     * width cannot do this whenever W does not divide evenly by N, since {@code floor(W / N) * N < W} then,
+     * always leaving a leftover sliver of an extra column peeking in at one edge.
+     *
+     * <p>Recomputed (via {@link #updateColumnWidths()}) whenever this property or the view's own width
+     * changes, so it stays correct across resizes without the caller needing to recompute anything.
+     */
+    private final IntegerProperty visibleColumnCount = new SimpleIntegerProperty();
 
     /**
      * If true then data observable list changes are ignored and it is necessary to call refresh() method. The reason
@@ -420,8 +460,17 @@ public class ColumnListView<T> extends Region {
         setCellFactory(v -> new ColumnListCell<>());
         setFocusTraversable(true);
         addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-            if ((e.getTarget() instanceof VBox) || (e.getTarget() instanceof ColumnListCell)) {
-                requestFocus();
+            // Requests focus as early as press-time, before the click (and ColumnListCell's own
+            // MOUSE_CLICKED-driven focus request) completes. e.getTarget() is often a node deep inside a
+            // cell (its text/graphic), not the cell itself - walk up the ancestor chain instead of a single
+            // instanceof check on the target.
+            var node = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
+            while (node != null && node != this) {
+                if (node instanceof VBox || node instanceof ColumnListCell) {
+                    requestFocus();
+                    break;
+                }
+                node = node.getParent();
             }
         });
         getChildren().add(this.virtualFlow);
@@ -429,6 +478,13 @@ public class ColumnListView<T> extends Region {
         this.rowHeight.addListener((ov, oldV, newV) -> refresh(RefreshTrigger.ROW_HEIGHT, RefreshType.PRIMARY));
         this.columnWidth.set(-1);
         this.columnWidth.addListener((ov, oldV, newV) -> updateColumnWidths());
+        this.visibleColumnCount.set(-1);
+        this.visibleColumnCount.addListener((ov, oldV, newV) -> updateColumnWidths());
+        this.widthProperty().addListener((ov, oldV, newV) -> {
+            if (this.visibleColumnCount.get() > 0) {
+                updateColumnWidths();
+            }
+        });
         this.virtualFlow.getHBar().heightProperty()
                 .addListener((ov, oldV, newV) -> refresh(RefreshTrigger.SCROLL_BAR_HEIGHT, RefreshType.PRIMARY));
         this.virtualFlow.getHBar().visibleProperty()
@@ -471,6 +527,18 @@ public class ColumnListView<T> extends Region {
                 event.consume();
             } else if (event.getCode() == KeyCode.RIGHT) {
                 selectRight();
+                event.consume();
+            } else if (event.getCode() == KeyCode.HOME) {
+                selectHome();
+                event.consume();
+            } else if (event.getCode() == KeyCode.END) {
+                selectEnd();
+                event.consume();
+            } else if (event.getCode() == KeyCode.PAGE_UP) {
+                selectPageUp();
+                event.consume();
+            } else if (event.getCode() == KeyCode.PAGE_DOWN) {
+                selectPageDown();
                 event.consume();
             }
         });
@@ -557,6 +625,26 @@ public class ColumnListView<T> extends Region {
      */
     public void setColumnWidth(double columnWidth) {
         this.columnWidth.set(columnWidth);
+    }
+
+    /**
+     * The fixed number of always-fully-visible columns, in pixels &mdash; see {@link #visibleColumnCount}.
+     */
+    public IntegerProperty visibleColumnCountProperty() {
+        return visibleColumnCount;
+    }
+
+    public int getVisibleColumnCount() {
+        return visibleColumnCount.get();
+    }
+
+    /**
+     * Sizes columns so that exactly {@code visibleColumnCount} of them are always fully visible at once,
+     * overriding {@link #columnWidth}/CSS. Pass a value &lt;= 0 to go back to {@code columnWidth}/CSS-driven
+     * width instead - see {@link #visibleColumnCount} for the sizing formula and why it matters.
+     */
+    public void setVisibleColumnCount(int visibleColumnCount) {
+        this.visibleColumnCount.set(visibleColumnCount);
     }
 
     public SingleSelectionModel<T> getSelectionModel() {
@@ -766,12 +854,19 @@ public class ColumnListView<T> extends Region {
         var newSelectedIndex = selectedIndex - getRowCount();
         if (newSelectedIndex >= 0) {
             selectPrevious(selectedIndex, newSelectedIndex);
+        } else {
+            // Already in the first column - LEFT has nowhere else to go column-wise, so jump to the very
+            // first item overall instead of doing nothing (mirrors HOME).
+            selectHome();
         }
     }
 
     private void selectRight() {
         var selectedIndex = getSelectionModel().getSelectedIndex();
         if (resolveColumnIndex(selectedIndex) >= getColumnCount() - 1) {
+            // Already in the last column - RIGHT has nowhere else to go column-wise, so jump to the very
+            // last item overall instead of doing nothing (mirrors END).
+            selectEnd();
             return;
         }
         var newSelectedIndex = selectedIndex + getRowCount();
@@ -788,6 +883,12 @@ public class ColumnListView<T> extends Region {
         var firstVisibleColumnIndex = this.virtualFlow.getFirstVisibleCell().getIndex();
         if (newColumnIndex <= firstVisibleColumnIndex) {
             scrollToFirstColumn(newColumnIndex);
+            // Without forcing the scroll to actually be laid out here, select() below fires
+            // updateSelectedCellHighlight() while the target column is still the pre-scroll one as far as
+            // virtualFlow.getCells() is concerned, so nothing gets marked selected - the selection itself
+            // still moves, but no cell highlight shows until something else happens to force a layout.
+            applyCss();
+            layout();
         }
         getSelectionModel().select(newSelectedIndex);
     }
@@ -799,8 +900,155 @@ public class ColumnListView<T> extends Region {
         var lastVisibleColumnIndex = this.virtualFlow.getLastVisibleCell().getIndex();
         if (newColumnIndex >= lastVisibleColumnIndex) {
             scrollToLastColumn(newColumnIndex);
+            // See the identical comment in selectPrevious.
+            applyCss();
+            layout();
         }
         getSelectionModel().select(newSelectedIndex);
+    }
+
+    private void selectHome() {
+        if (this.items.isEmpty()) {
+            return;
+        }
+        scrollToFirstColumn();
+        getSelectionModel().select(0);
+    }
+
+    private void selectEnd() {
+        if (this.items.isEmpty()) {
+            return;
+        }
+        scrollToLastColumn();
+        getSelectionModel().select(this.items.size() - 1);
+    }
+
+    /**
+     * Mirrors how {@code TableView}/{@code ListView} page up/down: the whole item sequence is read in column
+     * order (top to bottom within a column, then the top of the next column), so "the current page" is every
+     * item whose column is currently, fully visible, and its end is the last item of the last fully visible
+     * column. If the selection isn't already sitting there, this lands on it without scrolling (it's already
+     * visible); only once the selection is already at that exact spot does this scroll to a genuinely new,
+     * non-overlapping page (starting right after the old last fully visible column, not repeating it) and
+     * select that new page's last item.
+     */
+    private void selectPageDown() {
+        var firstFullyVisibleColumn = firstFullyVisibleColumnIndex();
+        var lastFullyVisibleColumn = lastFullyVisibleColumnIndex();
+        if (lastFullyVisibleColumn < 0) {
+            return;
+        }
+        var target = lastItemIndexInColumn(lastFullyVisibleColumn);
+        if (getSelectionModel().getSelectedIndex() == target) {
+            var nextColumn = lastFullyVisibleColumn + 1;
+            if (nextColumn < getColumnCount()) {
+                // With visibleColumnCount set, it - not the current viewport's own fully-visible span - is
+                // the page width: right after a manual scrollbar drag, or on the very first page turn from an
+                // odd starting position, the current viewport may not yet be page-aligned, so
+                // lastFullyVisibleColumn - firstFullyVisibleColumn + 1 can under-count (e.g. report 2 columns
+                // even though visibleColumnCount guarantees 3 once aligned), landing the selection in the
+                // middle of the new page instead of at its genuine end.
+                var pageWidth = getVisibleColumnCount() > 0
+                        ? getVisibleColumnCount()
+                        : lastFullyVisibleColumn - firstFullyVisibleColumn + 1;
+                var newLastColumn = Math.min(getColumnCount() - 1, nextColumn + pageWidth - 1);
+                target = lastItemIndexInColumn(newLastColumn);
+                forceScrollToFirstColumn(nextColumn);
+            }
+        }
+        getSelectionModel().select(target);
+    }
+
+    /**
+     * Mirrors {@link #selectPageDown} in the opposite direction: "the current page" starts at the first item
+     * of the first fully visible column. If the selection isn't already there, this lands on it without
+     * scrolling; only once already there does this scroll to a genuinely new, non-overlapping page ending
+     * right before the old first fully visible column, not repeating it) and select that new page's first
+     * item.
+     */
+    private void selectPageUp() {
+        var firstFullyVisibleColumn = firstFullyVisibleColumnIndex();
+        var lastFullyVisibleColumn = lastFullyVisibleColumnIndex();
+        if (firstFullyVisibleColumn < 0) {
+            return;
+        }
+        var target = firstFullyVisibleColumn * getRowCount();
+        if (getSelectionModel().getSelectedIndex() == target && firstFullyVisibleColumn > 0) {
+            // See the matching comment in selectPageDown for why visibleColumnCount, when set, is used
+            // directly instead of the current viewport's own fully-visible span.
+            var pageWidth = getVisibleColumnCount() > 0
+                    ? getVisibleColumnCount()
+                    : lastFullyVisibleColumn - firstFullyVisibleColumn + 1;
+            var newFirstColumn = Math.max(0, firstFullyVisibleColumn - pageWidth);
+            // newFirstColumn (not a fresh firstFullyVisibleColumnIndex() read after scrolling) is used
+            // directly as the target - see selectPageDown for why re-deriving from post-scroll geometry is
+            // unreliable near a data boundary (here, the very first column).
+            target = newFirstColumn * getRowCount();
+            forceScrollToFirstColumn(newFirstColumn);
+        }
+        getSelectionModel().select(target);
+    }
+
+    /**
+     * Like {@link #scrollToFirstColumn(int)}, but corrects for a real {@code VirtualFlow} behavior: scrolling
+     * a column near the end of the data to the viewport's leading edge can get pulled back to an earlier
+     * column so the viewport doesn't end up showing blank space past the last real column - which is exactly
+     * what should happen with {@link #visibleColumnCount} unset, but not when it's set, since that feature's
+     * whole point is to always show that many columns (backed by filler cells) even past the end of the real
+     * data. If a pull-back is detected, this nudges the flow forward by the exact combined width of the
+     * skipped columns (computed from {@link #resolveColumnWidth}, which handles filler columns too) to force
+     * the intended column to genuinely be first, blank space and all.
+     */
+    private void forceScrollToFirstColumn(int columnIndex) {
+        scrollToFirstColumn(columnIndex);
+        applyCss();
+        layout();
+        var first = this.virtualFlow.getFirstVisibleCell();
+        var actualFirst = first == null ? columnIndex : first.getIndex();
+        if (actualFirst < columnIndex) {
+            var pixelsToNudge = 0.0;
+            for (var i = actualFirst; i < columnIndex; i++) {
+                pixelsToNudge += resolveColumnWidth(i);
+            }
+            this.virtualFlow.scrollPixels(pixelsToNudge);
+            applyCss();
+            layout();
+        }
+    }
+
+    private int firstFullyVisibleColumnIndex() {
+        var first = this.virtualFlow.getFirstVisibleCell();
+        if (first == null) {
+            return -1;
+        }
+        var index = first.getIndex();
+        // getFirstVisibleCell() can itself be only partially visible at the leading edge (e.g. right after
+        // the user drags the horizontal scrollbar to an arbitrary, column-boundary-unaligned position) - the
+        // next column is the first genuinely fully visible one. Checked against the cell's own rendered
+        // bounds (translated into this view's coordinate space) rather than ColumnViewUtils.isFullyVisible:
+        // that helper derives visibility from VirtualFlow's own position/index bookkeeping, which this
+        // control's remainder-distributed, not-quite-uniform column widths (see visibleColumnCount) can throw
+        // off after a manual, unaligned scroll - reading the already-laid-out geometry directly cannot be
+        // wrong the way an estimate can.
+        return isColumnFullyVisible(first) ? index : index + 1;
+    }
+
+    private int lastFullyVisibleColumnIndex() {
+        var last = this.virtualFlow.getLastVisibleCell();
+        if (last == null) {
+            return -1;
+        }
+        var index = last.getIndex();
+        return isColumnFullyVisible(last) ? index : index - 1;
+    }
+
+    private boolean isColumnFullyVisible(IndexedCell<?> column) {
+        var bounds = sceneToLocal(column.localToScene(column.getBoundsInLocal()));
+        return bounds != null && bounds.getMinX() >= -0.5 && bounds.getMaxX() <= getWidth() + 0.5;
+    }
+
+    private int lastItemIndexInColumn(int columnIndex) {
+        return columnIndex * getRowCount() + resolveRowCount(columnIndex) - 1;
     }
 
     private void savePositionAndRefreshView(RefreshTrigger refreshTrigger) {
@@ -842,10 +1090,10 @@ public class ColumnListView<T> extends Region {
     }
 
     /**
-     * Re-applies {@link #columnWidth} to every currently live column cell. Deliberately independent of
-     * {@link #refresh(RefreshTrigger, RefreshType)} &mdash; a column width change is a pure view-level resize,
-     * not a data change, so it must not touch {@link #offsets}/{@link #rowCount}/{@link #columnCount} or go
-     * through the refresh re-entrancy guard.
+     * Re-applies {@link #columnWidth}/{@link #visibleColumnCount} to every currently live column cell.
+     * Deliberately independent of {@link #refresh(RefreshTrigger, RefreshType)} &mdash; a column width change
+     * is a pure view-level resize, not a data change, so it must not touch {@link #offsets}/{@link #rowCount}/
+     * {@link #columnCount} or go through the refresh re-entrancy guard.
      */
     private void updateColumnWidths() {
         var iterator = this.columns.iterator();
@@ -858,6 +1106,27 @@ public class ColumnListView<T> extends Region {
                 column.applyColumnWidth();
             }
         }
+    }
+
+    /**
+     * Resolves the width to apply to the column at {@code columnIndex} - its position in the outer flow, i.e.
+     * {@code ColumnListViewColumn#getIndex()}, which a filler column past the last real one (created by the
+     * flow itself to keep covering the viewport, with no item/offset of its own at all) still has, so it gets
+     * sized exactly like a real column would &mdash; honoring {@link #visibleColumnCount}/{@link #columnWidth}'s
+     * mutual exclusivity (see the class Javadoc). Returns a negative value to mean "leave width to CSS",
+     * matching {@link #columnWidth}'s own sentinel.
+     */
+    private double resolveColumnWidth(int columnIndex) {
+        var desiredCount = visibleColumnCount.get();
+        if (desiredCount <= 0) {
+            return columnWidth.get();
+        }
+        if (columnIndex < 0) {
+            return -1;
+        }
+        var base = Math.floor(getWidth() / desiredCount);
+        var remainder = (int) (getWidth() - base * desiredCount);
+        return base + (columnIndex % desiredCount < remainder ? 1 : 0);
     }
 
     /**

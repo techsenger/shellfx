@@ -50,8 +50,12 @@ public class TileCell<T> extends IndexedCell<T> {
                 }
             } else {
                 tileView.getSelectionModel().select(getIndex());
-                NodeUtils.requestFocus(this);
             }
+            // Requested unconditionally, even when the cell was already selected (e.g. clicking the item left
+            // selected right after a mode switch) - otherwise a click on an already-selected cell never moves
+            // focus here, leaving it wherever it last was (commonly the surrounding tab dock), so arrow-key
+            // navigation stays dead no matter how many times that same cell is clicked.
+            NodeUtils.requestFocus(this);
             tileView.scrollToSelected();
         });
     }

@@ -19,10 +19,15 @@ package com.techsenger.shellfx.material.list;
 import com.techsenger.toolkit.fx.FxPlatform;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.scene.Scene;
+import javafx.scene.control.IndexedCell;
 import javafx.scene.control.skin.VirtualFlow;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,11 +49,7 @@ class ColumnTileViewTest {
     @BeforeAll
     static void initJavaFxToolkit() throws InterruptedException {
         FxTestSupport.start();
-        FxPlatform.runLaterAndWait(() -> {
-            stage = new Stage();
-            stage.setX(-3000);
-            stage.setY(-3000);
-        });
+        FxPlatform.runLaterAndWait(() -> stage = new Stage());
     }
 
     @AfterAll
@@ -60,6 +61,106 @@ class ColumnTileViewTest {
         Method method = ColumnTileView.class.getDeclaredMethod("computePrefHeight", double.class);
         method.setAccessible(true);
         return (double) method.invoke(tileView, -1.0);
+    }
+
+    /**
+     * Builds a {@code ColumnTileView} with {@code itemCount} string items and a fixed, explicit
+     * {@code columnCount}, makes it the content of {@link #stage}'s scene at {@code width}x{@code height},
+     * shows the stage (a no-op if already showing), forces a layout pass, and polls until row height has
+     * actually resolved (see {@code ColumnViewUtilsTest}'s class Javadoc for why that needs its own pulses).
+     */
+    private static ColumnTileView<String> newRealizedTileView(int itemCount, int columnCount, double width,
+            double height) throws InterruptedException {
+        var tileView = FxTestSupport.onFxThread(() -> {
+            var view = new ColumnTileView<String>();
+            view.setColumnCount(columnCount);
+            var items = FXCollections.<String>observableArrayList();
+            for (int i = 0; i < itemCount; i++) {
+                items.add("item-" + i);
+            }
+            view.setItems(items);
+            stage.setScene(new Scene(view, width, height));
+            if (!stage.isShowing()) {
+                stage.show();
+            }
+            view.applyCss();
+            view.layout();
+            return view;
+        });
+        for (var attempt = 0; attempt < 50 && tileView.getRowCount() <= 1; attempt++) {
+            FxTestSupport.onFxThread(() -> {
+                tileView.applyCss();
+                tileView.layout();
+                return null;
+            });
+        }
+        return tileView;
+    }
+
+    private static void pressKey(ColumnTileView<?> view, KeyCode code) throws InterruptedException {
+        FxTestSupport.onFxThread(() -> {
+            Event.fireEvent(view, new KeyEvent(KeyEvent.KEY_PRESSED, "", "", code, false, false, false, false));
+            view.applyCss();
+            view.layout();
+            return null;
+        });
+    }
+
+    /**
+     * Mirrors {@code ColumnTileView#lastFullyVisibleRowIndex} against the public API, to state expectations
+     * independently of that private implementation. "Fully visible" is checked against the cell's own
+     * rendered bounds (translated into the view's coordinate space), matching production - see
+     * {@code ColumnTileView#isRowFullyVisible}. Must only be called on the FX Application Thread (e.g. from
+     * within {@link FxTestSupport#onFxThread}) since it reads live scene-graph/layout state.
+     */
+    private static int lastFullyVisibleRowIndex(ColumnTileView<?> view) {
+        var flow = (VirtualFlow<?>) view.lookup(".virtual-flow");
+        var last = flow.getLastVisibleCell();
+        var index = last.getIndex();
+        return isRowFullyVisible(view, last) ? index : index - 1;
+    }
+
+    /**
+     * Must only be called on the FX Application Thread - see {@link #lastFullyVisibleRowIndex}.
+     */
+    private static int firstFullyVisibleRowIndex(ColumnTileView<?> view) {
+        var flow = (VirtualFlow<?>) view.lookup(".virtual-flow");
+        var first = flow.getFirstVisibleCell();
+        var index = first.getIndex();
+        return isRowFullyVisible(view, first) ? index : index + 1;
+    }
+
+    /**
+     * Must only be called on the FX Application Thread - see {@link #lastFullyVisibleRowIndex}.
+     */
+    private static boolean isRowFullyVisible(ColumnTileView<?> view, IndexedCell<?> row) {
+        var bounds = view.sceneToLocal(row.localToScene(row.getBoundsInLocal()));
+        return bounds != null && bounds.getMinY() >= -0.5 && bounds.getMaxY() <= view.getHeight() + 0.5;
+    }
+
+    /**
+     * Counts how many cells are currently showing the selected highlight across every row between the raw
+     * first and last visible ones (including any only partially visible), catching a stale highlight left
+     * behind on a scrolled-past-but-still-live row. Must only be called on the FX Application Thread.
+     */
+    private static int countHighlightedCellsInVisibleRange(ColumnTileView<?> view) {
+        var flow = (VirtualFlow<?>) view.lookup(".virtual-flow");
+        var first = flow.getFirstVisibleCell();
+        var last = flow.getLastVisibleCell();
+        if (first == null || last == null) {
+            return 0;
+        }
+        var count = 0;
+        for (var rowIndex = first.getIndex(); rowIndex <= last.getIndex(); rowIndex++) {
+            var row = flow.getCell(rowIndex);
+            var rowNode = (HBox) row.getGraphic();
+            for (var node : rowNode.getChildren()) {
+                if (((TileCell<?>) node).isSelected()) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     @Test
@@ -162,5 +263,158 @@ class ColumnTileViewTest {
 
         assertThat(FxTestSupport.onFxThread(tileView::isFocused)).isTrue();
         assertThat(FxTestSupport.onFxThread(focusedCell::isFocused)).isFalse();
+    }
+
+    // HOME / END / PAGE_UP / PAGE_DOWN
+
+    @Test
+    void selectHome_afterScrollingAway_selectsFirstItemAndScrollsToStart() throws InterruptedException {
+        var tileView = newRealizedTileView(200, 3, 300, 150);
+        pressKey(tileView, KeyCode.END);
+
+        pressKey(tileView, KeyCode.HOME);
+
+        FxTestSupport.onFxThread(() -> {
+            assertThat(tileView.getSelectionModel().getSelectedIndex()).isZero();
+            assertThat(firstFullyVisibleRowIndex(tileView)).isZero();
+            return null;
+        });
+    }
+
+    @Test
+    void selectEnd_fromStart_selectsLastItemAndScrollsToEnd() throws InterruptedException {
+        var tileView = newRealizedTileView(200, 3, 300, 150);
+
+        pressKey(tileView, KeyCode.END);
+
+        FxTestSupport.onFxThread(() -> {
+            assertThat(tileView.getSelectionModel().getSelectedIndex()).isEqualTo(199);
+            assertThat(ColumnViewUtils.isFullyVisible(tileView, 199)).isTrue();
+            return null;
+        });
+    }
+
+    @Test
+    void selectPageDown_selectionNotAtPageEnd_selectsLastFullyVisibleRowWithoutScrolling()
+            throws InterruptedException {
+        var tileView = newRealizedTileView(200, 3, 300, 150);
+        var before = FxTestSupport.onFxThread(() -> {
+            var firstRowBefore = firstFullyVisibleRowIndex(tileView);
+            var lastFullyVisibleRow = lastFullyVisibleRowIndex(tileView);
+            var expectedTarget = (lastFullyVisibleRow + 1) * tileView.getColumnCount() - 1;
+            return Map.entry(firstRowBefore, expectedTarget);
+        });
+
+        pressKey(tileView, KeyCode.PAGE_DOWN);
+
+        FxTestSupport.onFxThread(() -> {
+            assertThat(tileView.getSelectionModel().getSelectedIndex()).isEqualTo(before.getValue());
+            assertThat(firstFullyVisibleRowIndex(tileView)).isEqualTo(before.getKey());
+            return null;
+        });
+    }
+
+    @Test
+    void selectPageDown_selectionAlreadyAtPageEnd_scrollsForwardAndSelectsNewPageEnd() throws InterruptedException {
+        var tileView = newRealizedTileView(200, 3, 300, 150);
+        var firstRowBefore = FxTestSupport.onFxThread(() -> firstFullyVisibleRowIndex(tileView));
+        pressKey(tileView, KeyCode.PAGE_DOWN); // lands on the current page's last item, no scroll yet
+
+        pressKey(tileView, KeyCode.PAGE_DOWN); // already there - now it must scroll forward
+
+        FxTestSupport.onFxThread(() -> {
+            assertThat(firstFullyVisibleRowIndex(tileView)).isGreaterThan(firstRowBefore);
+            var lastFullyVisibleRow = lastFullyVisibleRowIndex(tileView);
+            var expectedTarget = (lastFullyVisibleRow + 1) * tileView.getColumnCount() - 1;
+            assertThat(tileView.getSelectionModel().getSelectedIndex()).isEqualTo(expectedTarget);
+            return null;
+        });
+    }
+
+    @Test
+    void selectPageUp_selectionNotAtPageStart_selectsFirstFullyVisibleRowWithoutScrolling()
+            throws InterruptedException {
+        var tileView = newRealizedTileView(200, 3, 300, 150);
+        pressKey(tileView, KeyCode.END);
+        var lastRowBefore = FxTestSupport.onFxThread(() -> lastFullyVisibleRowIndex(tileView));
+
+        pressKey(tileView, KeyCode.PAGE_UP);
+
+        FxTestSupport.onFxThread(() -> {
+            var firstFullyVisibleRow = firstFullyVisibleRowIndex(tileView);
+            assertThat(tileView.getSelectionModel().getSelectedIndex())
+                    .isEqualTo(firstFullyVisibleRow * tileView.getColumnCount());
+            assertThat(lastFullyVisibleRowIndex(tileView)).isEqualTo(lastRowBefore);
+            return null;
+        });
+    }
+
+    @Test
+    void selectPageUp_selectionAlreadyAtPageStart_scrollsBackAndSelectsNewPageStart() throws InterruptedException {
+        var tileView = newRealizedTileView(200, 3, 300, 150);
+        pressKey(tileView, KeyCode.END);
+        var lastRowBefore = FxTestSupport.onFxThread(() -> lastFullyVisibleRowIndex(tileView));
+        pressKey(tileView, KeyCode.PAGE_UP); // lands on the current page's first item, no scroll yet
+        var firstRowAfterFirstPress = FxTestSupport.onFxThread(() -> firstFullyVisibleRowIndex(tileView));
+
+        pressKey(tileView, KeyCode.PAGE_UP); // already there - now it must scroll back
+
+        FxTestSupport.onFxThread(() -> {
+            assertThat(lastFullyVisibleRowIndex(tileView)).isLessThan(lastRowBefore);
+            var firstFullyVisibleRow = firstFullyVisibleRowIndex(tileView);
+            assertThat(firstFullyVisibleRow).isLessThan(firstRowAfterFirstPress);
+            assertThat(tileView.getSelectionModel().getSelectedIndex())
+                    .isEqualTo(firstFullyVisibleRow * tileView.getColumnCount());
+            return null;
+        });
+    }
+
+    @Test
+    void selectPageDown_repeatedlyToEnd_neverLeavesMoreThanOneCellHighlighted() throws InterruptedException {
+        // Mirrors ColumnListViewTest's regression: a stale highlight was observed to remain on an old cell
+        // after PageDown, alongside the newly selected one - most easily reproduced near the tail of the
+        // data, where consecutive pages can end up overlapping by a repeated row whose cells aren't recycled,
+        // so they rely entirely on the centralized selection listener to have their old highlight cleared.
+        var itemCount = 149;
+        var tileView = newRealizedTileView(itemCount, 3, 300, 150);
+        for (var attempt = 0; attempt < 20; attempt++) {
+            pressKey(tileView, KeyCode.PAGE_DOWN);
+            var attemptNumber = attempt;
+            var reachedEnd = FxTestSupport.onFxThread(() -> {
+                assertThat(countHighlightedCellsInVisibleRange(tileView))
+                        .as("after PAGE_DOWN #" + attemptNumber)
+                        .isLessThanOrEqualTo(1);
+                return tileView.getSelectionModel().getSelectedIndex() == itemCount - 1;
+            });
+            if (reachedEnd) {
+                break;
+            }
+        }
+    }
+
+    @Test
+    void selectPageDown_fromPartiallyVisibleRow_neverLeavesMoreThanOneCellHighlighted() throws InterruptedException {
+        // Mirrors ColumnListViewTest's regression: the double-highlight was specifically observed only when
+        // some row was partially (not fully) visible at the moment PageDown was pressed - e.g. right after a
+        // manual scrollbar drag left the viewport mid-row rather than at a clean page-aligned position - so
+        // this repeatedly forces that exact starting condition before each press.
+        var tileView = newRealizedTileView(200, 3, 300, 150);
+        for (var attempt = 0; attempt < 10; attempt++) {
+            var attemptNumber = attempt;
+            FxTestSupport.onFxThread(() -> {
+                var flow = (VirtualFlow<?>) tileView.lookup(".virtual-flow");
+                flow.scrollPixels(5); // small, sub-row nudge - leaves a row only partially visible
+                tileView.applyCss();
+                tileView.layout();
+                return null;
+            });
+            pressKey(tileView, KeyCode.PAGE_DOWN);
+            FxTestSupport.onFxThread(() -> {
+                assertThat(countHighlightedCellsInVisibleRange(tileView))
+                        .as("after PAGE_DOWN #" + attemptNumber + ", from a partially visible row")
+                        .isLessThanOrEqualTo(1);
+                return null;
+            });
+        }
     }
 }
