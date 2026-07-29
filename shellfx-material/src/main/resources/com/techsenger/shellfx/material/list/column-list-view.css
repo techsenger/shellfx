@@ -23,6 +23,10 @@
     -fx-border-color: -color-border-default;
 }
 
+.column-list-view.edge-to-edge {
+  -fx-border-width: 0;
+}
+
 /*
  * Width (-fx-min-width/-fx-pref-width/-fx-max-width) is deliberately not set here, neither for .column nor
  * for its .cell children below: ColumnListView#columnWidth lets a consumer set a fixed, dynamically computed
