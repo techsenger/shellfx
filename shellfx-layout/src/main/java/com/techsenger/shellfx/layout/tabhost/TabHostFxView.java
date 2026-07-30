@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.layout.tabhost;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
@@ -34,6 +35,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -77,9 +80,21 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
         private final TabHostFxView<P> view = TabHostFxView.this;
 
+        private final ReadOnlyObjectWrapper<@Nullable TabFxView<?>> selectedTab = new ReadOnlyObjectWrapper<>();
+
         private List<? extends TabFxView<?>> detachedTabs = Collections.emptyList();
 
         private boolean tabsDetached;
+
+        public Composer() {
+            view.tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+                TabFxView<?> tab = null;
+                if (newV != null) {
+                    tab = (TabFxView<?>) FxViewUtils.getView(newV);
+                }
+                selectedTab.set(tab);
+            });
+        }
 
         @Override
         public @Unmodifiable List<? extends TabPort> getTabPorts() {
@@ -89,13 +104,13 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         }
 
         @Override
-        public TabFxView<?> getSelectedTab() {
-            var tab = view.tabPane.getSelectionModel().getSelectedItem();
-            if (tab != null) {
-                return (TabFxView<?>) FxViewUtils.getView(tab);
-            } else {
-                return null;
-            }
+        public @Nullable TabFxView<?> getSelectedTab() {
+            return this.selectedTab.get();
+        }
+
+        @Override
+        public ReadOnlyObjectProperty<TabFxView<?>> selectedTabProperty() {
+            return this.selectedTab.getReadOnlyProperty();
         }
 
         @Override
@@ -106,11 +121,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         @Override
         public TabPort getSelectedTabPort() {
             var tab = getSelectedTab();
-            if (tab != null) {
-                return tab.getPresenter();
-            } else {
-                return null;
-            }
+            return tab != null ? tab.getPresenter() : null;
         }
 
         @Override

@@ -16,9 +16,11 @@
 
 package com.techsenger.shellfx.core.tab;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import java.util.List;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.control.Tab;
 
 /**
@@ -42,7 +44,9 @@ public interface TabContainerFxView<P extends TabContainerPresenter<?>> extends 
          */
         @Unmodifiable List<? extends TabFxView<?>> getTabs();
 
-        TabFxView<?> getSelectedTab();
+        ReadOnlyObjectProperty<@Nullable TabFxView<?>> selectedTabProperty();
+
+        @Nullable TabFxView<?> getSelectedTab();
 
         void selectTab(TabFxView<?> tab);
     }
