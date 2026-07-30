@@ -86,7 +86,9 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
         private boolean tabsDetached;
 
-        public Composer() {
+        @Override
+        public void compose() {
+            super.compose();
             view.tabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
                 TabFxView<?> tab = null;
                 if (newV != null) {
