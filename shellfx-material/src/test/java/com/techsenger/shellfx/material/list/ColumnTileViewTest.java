@@ -29,6 +29,7 @@ import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -43,6 +44,16 @@ import org.junit.jupiter.api.Test;
  * @author Pavel Castornii
  */
 class ColumnTileViewTest {
+
+    /**
+     * Fixed pixel height forced on every cell (see {@link #newRealizedTileView}) so that row height - and
+     * everything paging/scrolling math derives from it - never depends on the font actually resolved on the
+     * machine running the test, which is why this test suite used to be flaky in CI (a different font
+     * substituted there produced a different row height than on a developer machine). Deliberately matches
+     * what the font-driven measurement already resolved to locally - not just any fixed value works, see
+     * {@code selectEnd_fromStart_selectsLastItemAndScrollsToEnd}'s history.
+     */
+    private static final double CELL_HEIGHT = 18;
 
     private static Stage stage;
 
@@ -74,6 +85,26 @@ class ColumnTileViewTest {
         var tileView = FxTestSupport.onFxThread(() -> {
             var view = new ColumnTileView<String>();
             view.setColumnCount(columnCount);
+            view.setCellFactory(v -> {
+                var cell = new TileCell<String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setGraphic(null);
+                        } else {
+                            var region = new Region();
+                            region.setMinSize(1, CELL_HEIGHT);
+                            region.setPrefSize(1, CELL_HEIGHT);
+                            region.setMaxSize(Double.MAX_VALUE, CELL_HEIGHT);
+                            setGraphic(region);
+                        }
+                    }
+                };
+                cell.setStyle("-fx-pref-height: " + CELL_HEIGHT + "px; -fx-min-height: " + CELL_HEIGHT
+                        + "px; -fx-max-height: " + CELL_HEIGHT + "px;");
+                return cell;
+            });
             var items = FXCollections.<String>observableArrayList();
             for (int i = 0; i < itemCount; i++) {
                 items.add("item-" + i);
