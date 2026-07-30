@@ -61,7 +61,7 @@ class ColumnListViewTest {
     }
 
     private static double computePrefWidth(ColumnListView<?> listView) throws ReflectiveOperationException {
-        Method method = ColumnListView.class.getDeclaredMethod("computePrefWidth", double.class);
+        Method method = AbstractColumnView.class.getDeclaredMethod("computePrefWidth", double.class);
         method.setAccessible(true);
         return (double) method.invoke(listView, -1.0);
     }

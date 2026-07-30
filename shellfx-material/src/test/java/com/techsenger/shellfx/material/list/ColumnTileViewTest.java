@@ -58,7 +58,7 @@ class ColumnTileViewTest {
     }
 
     private static double computePrefHeight(ColumnTileView<?> tileView) throws ReflectiveOperationException {
-        Method method = ColumnTileView.class.getDeclaredMethod("computePrefHeight", double.class);
+        Method method = AbstractColumnView.class.getDeclaredMethod("computePrefHeight", double.class);
         method.setAccessible(true);
         return (double) method.invoke(tileView, -1.0);
     }

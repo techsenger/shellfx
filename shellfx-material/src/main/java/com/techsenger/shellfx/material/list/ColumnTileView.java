@@ -21,35 +21,23 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.IndexedCell;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Skin;
 import javafx.scene.control.skin.CellSkinBase;
 import javafx.scene.control.skin.VirtualFlow;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,32 +54,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class ColumnTileView<T> extends Region {
+public class ColumnTileView<T> extends AbstractColumnView<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ColumnTileView.class);
-
-    private static class SingleSelectionModelImpl<T> extends SingleSelectionModel<T> {
-
-        private final ColumnTileView<T> tileView;
-
-        SingleSelectionModelImpl(ColumnTileView<T> tileView) {
-            this.tileView = tileView;
-        }
-
-        @Override
-        protected T getModelItem(int index) {
-            if (index >= 0 && index < this.tileView.items.size()) {
-                return this.tileView.items.get(index);
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        protected int getItemCount() {
-            return this.tileView.items.size();
-        }
-    }
 
     private static class ColumnTileViewRow<T> extends IndexedCell<Integer> {
 
@@ -223,7 +188,7 @@ public class ColumnTileView<T> extends Region {
                 if (cellIndex == tileView.getSelectionModel().getSelectedIndex() && cellIndex != -1) {
                     setSelectedCell(cell);
                 }
-                if (!cell.isEditing() && cell.isEditable() && cell.getIndex() == this.tileView.editingCellIndex) {
+                if (!cell.isEditing() && cell.isEditable() && cell.getIndex() == this.tileView.getEditingCellIndex()) {
                     cell.startEdit();
                 }
                 this.node.getChildren().add(cell);
@@ -357,10 +322,6 @@ public class ColumnTileView<T> extends Region {
         VIRTUAL_FLOW_WIDTH
     }
 
-    private enum RefreshType {
-        PRIMARY, SECONDARY
-    }
-
     /**
      * Always fixed height of the row, auto-measured the same way as {@link ColumnListView#rowHeight}.
      */
@@ -371,48 +332,16 @@ public class ColumnTileView<T> extends Region {
      */
     private final IntegerProperty columnCount = new SimpleIntegerProperty(1);
 
-    /**
-     * If true then data observable list changes are ignored and it is necessary to call refresh() method. The reason
-     * is that same list can be used by tables and they can sort items.
-     */
-    private final BooleanProperty manualRefresh = new SimpleBooleanProperty();
-
-    private final ObservableList<Integer> offsets = FXCollections.observableArrayList();
-
     private final ObjectProperty<Callback<ColumnTileView<T>, TileCell<T>>> cellFactory
             = new SimpleObjectProperty();
 
-    private final ReadOnlyIntegerWrapper rowCount = new ReadOnlyIntegerWrapper();
-
-    private final SingleSelectionModelImpl<T> selectionModel = new SingleSelectionModelImpl<>(this);
-
-    private final ObjectProperty<ContextMenu> contextMenu = new SimpleObjectProperty<>();
-
     private final TileVirtualFlow<T> virtualFlow = new TileVirtualFlow<>();
 
-    private final BooleanProperty editable = new SimpleBooleanProperty();
-
-    private ObservableList<T> items;
-
-    private int firstVisibleCellIndex = 0;
-
     /**
-     * Always only one cell can be in edit mode.
+     * The last-saved trigger for a refresh postponed behind an in-progress one; see
+     * {@link AbstractColumnView#getCurrentType()} for the reentrancy guard this is part of.
      */
-    private int editingCellIndex = -1;
-
-    /**
-     * See {@link ColumnListView#currentType} for why this guard exists.
-     */
-    private RefreshType currentType;
-
     private RefreshTrigger secondRefreshTrigger = null;
-
-    private final ListChangeListener<T> itemsChangeListener = (change) -> {
-        if (!isManualRefresh()) {
-            refresh(RefreshTrigger.ITEMS, RefreshType.PRIMARY);
-        }
-    };
 
     private final List<WeakReference<ColumnTileViewRow<?>>> rows = new LinkedList<>();
 
@@ -421,21 +350,6 @@ public class ColumnTileView<T> extends Region {
         getStyleClass().add("column-tile-view");
         //default cell factory
         setCellFactory(v -> new TileCell<>());
-        setFocusTraversable(true);
-        addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
-            // Requests focus as early as press-time, before the click (and TileCell's own MOUSE_CLICKED-driven
-            // focus request) completes. e.getTarget() is often a node deep inside a cell (its text/graphic),
-            // not the cell itself - walk up the ancestor chain instead of a single instanceof check on the
-            // target.
-            var node = e.getTarget() instanceof Node ? (Node) e.getTarget() : null;
-            while (node != null && node != this) {
-                if (node instanceof HBox || node instanceof TileCell) {
-                    requestFocus();
-                    break;
-                }
-                node = node.getParent();
-            }
-        });
         getChildren().add(this.virtualFlow);
         this.rowHeight.set(-1);
         this.rowHeight.addListener((ov, oldV, newV) -> refresh(RefreshTrigger.ROW_HEIGHT, RefreshType.PRIMARY));
@@ -452,12 +366,6 @@ public class ColumnTileView<T> extends Region {
             savePositionAndRefreshView(RefreshTrigger.VIRTUAL_FLOW_WIDTH);
             updateCellWidths();
         });
-        // A single listener here, instead of one per row (as before): a per-row listener on this long-lived
-        // view's own selectedIndexProperty would leak every row ever created for the lifetime of the view -
-        // the property's listener list holds a strong reference to each row, so none of them could ever be
-        // garbage collected even after being discarded/replaced by the virtual flow.
-        getSelectionModel().selectedIndexProperty()
-                .addListener((ov, oldV, newV) -> updateSelectedCellHighlight(newV.intValue()));
         virtualFlow.setCellFactory(vf -> new ColumnTileViewRow<>(this) {
 
             {
@@ -467,50 +375,11 @@ public class ColumnTileView<T> extends Region {
             @Override
             public void updateIndex(int index) {
                 super.updateIndex(index);
-                if (index >= 0 && index < offsets.size()) {
-                    updateItem(offsets.get(index), false);
+                if (index >= 0 && index < getOffsets().size()) {
+                    updateItem(getOffsets().get(index), false);
                 } else {
                     updateItem(null, true);
                 }
-            }
-        });
-
-        setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.UP) {
-                selectUp();
-                event.consume();
-            } else if (event.getCode() == KeyCode.DOWN) {
-                selectDown();
-                event.consume();
-            } else if (event.getCode() == KeyCode.LEFT) {
-                selectLeft();
-                event.consume();
-            } else if (event.getCode() == KeyCode.RIGHT) {
-                selectRight();
-                event.consume();
-            } else if (event.getCode() == KeyCode.HOME) {
-                selectHome();
-                event.consume();
-            } else if (event.getCode() == KeyCode.END) {
-                selectEnd();
-                event.consume();
-            } else if (event.getCode() == KeyCode.PAGE_UP) {
-                selectPageUp();
-                event.consume();
-            } else if (event.getCode() == KeyCode.PAGE_DOWN) {
-                selectPageDown();
-                event.consume();
-            }
-        });
-
-        this.contextMenu.addListener((ov, oldV, newV) -> {
-            if (newV == null) {
-                setOnContextMenuRequested(null);
-            } else {
-                setOnContextMenuRequested(event -> {
-                    newV.show(this, event.getScreenX(), event.getScreenY());
-                    event.consume();
-                });
             }
         });
     }
@@ -521,43 +390,6 @@ public class ColumnTileView<T> extends Region {
 
     public void setCellFactory(Callback<ColumnTileView<T>, TileCell<T>> cellFactory) {
         this.cellFactory.set(cellFactory);
-    }
-
-    public ObservableList<T> getItems() {
-        return items;
-    }
-
-    public void setItems(ObservableList<T> items) {
-        if (this.items != null) {
-            this.items.removeListener(itemsChangeListener);
-        }
-        this.items = items;
-        if (this.items != null) {
-            this.items.addListener(itemsChangeListener);
-        }
-        if (!isManualRefresh()) {
-            refresh(RefreshTrigger.ITEMS, RefreshType.PRIMARY);
-        }
-    }
-
-    public BooleanProperty manualRefreshProperty() {
-        return manualRefresh;
-    }
-
-    public boolean isManualRefresh() {
-        return manualRefresh.get();
-    }
-
-    public void setManualRefresh(boolean manualRefresh) {
-        this.manualRefresh.set(manualRefresh);
-    }
-
-    public ReadOnlyIntegerProperty rowCountProperty() {
-        return rowCount.getReadOnlyProperty();
-    }
-
-    public int getRowCount() {
-        return rowCount.get();
     }
 
     public IntegerProperty columnCountProperty() {
@@ -573,10 +405,6 @@ public class ColumnTileView<T> extends Region {
             throw new IllegalArgumentException("columnCount must be at least 1, got " + columnCount);
         }
         this.columnCount.set(columnCount);
-    }
-
-    public SingleSelectionModel<T> getSelectionModel() {
-        return this.selectionModel;
     }
 
     /**
@@ -608,7 +436,7 @@ public class ColumnTileView<T> extends Region {
      * @return
      */
     public int resolveColumnCount(int rowIndex) {
-        int totalItems = this.items.size();
+        int totalItems = this.getItems().size();
         int columnCount = getColumnCount();
         int fullRows = totalItems / columnCount;
         int remaining = totalItems % columnCount;
@@ -652,43 +480,11 @@ public class ColumnTileView<T> extends Region {
         this.virtualFlow.scrollTo(rowIndex);
     }
 
-    public void onResizeStarted() {
-        this.firstVisibleCellIndex = resolveFirstVisibleCellIndex();
-    }
-
-    public void onResizeFinished() {
-        this.firstVisibleCellIndex = 0;
-    }
-
-    public BooleanProperty editableProperty() {
-        return editable;
-    }
-
-    public boolean isEditable() {
-        return editable.get();
-    }
-
-    public void setEditable(boolean editable) {
-        this.editable.set(editable);
-    }
-
-    public void setContextMenu(ContextMenu menu) {
-        this.contextMenu.set(menu);
-    }
-
-    public ContextMenu getContextMenu() {
-        return this.contextMenu.get();
-    }
-
-    public ObjectProperty<ContextMenu> contextMenuProperty() {
-        return this.contextMenu;
-    }
-
     public void edit(int cellIndex) {
-        if (!isEditable() || this.editingCellIndex != -1) {
+        if (!isEditable() || getEditingCellIndex() != -1) {
             return;
         }
-        this.editingCellIndex = cellIndex;
+        setEditingCellIndex(cellIndex);
         var rowIndex = resolveRowIndex(cellIndex);
         ColumnTileViewRow<T> row = null;
         for (var r : this.virtualFlow.getCells()) {
@@ -704,16 +500,6 @@ public class ColumnTileView<T> extends Region {
     }
 
     @Override
-    protected double computePrefWidth(double height) {
-        return virtualFlow.prefWidth(-1);
-    }
-
-    @Override
-    protected double computePrefHeight(double width) {
-        return virtualFlow.prefHeight(-1);
-    }
-
-    @Override
     protected void layoutChildren() {
         double width = getWidth();
         double height = getHeight();
@@ -724,8 +510,38 @@ public class ColumnTileView<T> extends Region {
         virtualFlow.layout();
     }
 
-    void setEditingCellIndex(int editingCellIndex) {
-        this.editingCellIndex = editingCellIndex;
+    @Override
+    boolean isContainerOrCellNode(Node node) {
+        return node instanceof HBox || node instanceof TileCell;
+    }
+
+    @Override
+    VirtualFlow<ColumnTileViewRow<T>> getVirtualFlow() {
+        return virtualFlow;
+    }
+
+    @Override
+    void refreshItems() {
+        refresh(RefreshTrigger.ITEMS, RefreshType.PRIMARY);
+    }
+
+    /**
+     * Clears the previously selected cell's highlight on every currently realized row and, if
+     * {@code selectedIndex} resolves to one of them, sets its new selected cell. Off-screen rows are not
+     * touched here - {@link ColumnTileViewRow#updateItem} already recomputes the correct selected cell from
+     * scratch whenever such a row is next reused, so there is nothing stale left for them to show once
+     * scrolled back into view.
+     */
+    @Override
+    void updateSelectedCellHighlight(int selectedIndex) {
+        var rowIndex = selectedIndex == -1 ? -1 : resolveRowIndex(selectedIndex);
+        var columnIndex = selectedIndex == -1 ? -1 : resolveColumnIndex(selectedIndex);
+        for (var row : this.virtualFlow.getCells()) {
+            row.clearSelection();
+            if (row.getIndex() == rowIndex && columnIndex < row.cachedCells.size()) {
+                row.setSelectedCell(row.cachedCells.get(columnIndex));
+            }
+        }
     }
 
     /**
@@ -751,7 +567,8 @@ public class ColumnTileView<T> extends Region {
         return count > 0 ? virtualFlow.getViewportWidth() / count : -1;
     }
 
-    private void selectUp() {
+    @Override
+    void selectUp() {
         var selectedIndex = getSelectionModel().getSelectedIndex();
         var newSelectedIndex = selectedIndex - getColumnCount();
         if (newSelectedIndex >= 0) {
@@ -763,7 +580,8 @@ public class ColumnTileView<T> extends Region {
         }
     }
 
-    private void selectDown() {
+    @Override
+    void selectDown() {
         var selectedIndex = getSelectionModel().getSelectedIndex();
         if (resolveRowIndex(selectedIndex) >= getRowCount() - 1) {
             // Already in the last row - DOWN has nowhere else to go row-wise, so jump to the very last item
@@ -778,7 +596,8 @@ public class ColumnTileView<T> extends Region {
         selectNext(selectedIndex, Math.min(newSelectedIndex, lastIndex));
     }
 
-    private void selectLeft() {
+    @Override
+    void selectLeft() {
         var selectedIndex = getSelectionModel().getSelectedIndex();
         var newSelectedIndex = selectedIndex - 1;
         if (newSelectedIndex >= 0) {
@@ -786,7 +605,8 @@ public class ColumnTileView<T> extends Region {
         }
     }
 
-    private void selectRight() {
+    @Override
+    void selectRight() {
         var selectedIndex = getSelectionModel().getSelectedIndex();
         var newSelectedIndex = selectedIndex + 1;
         if (newSelectedIndex < getItems().size()) {
@@ -814,20 +634,22 @@ public class ColumnTileView<T> extends Region {
         getSelectionModel().select(newSelectedIndex);
     }
 
-    private void selectHome() {
-        if (this.items.isEmpty()) {
+    @Override
+    void selectHome() {
+        if (this.getItems().isEmpty()) {
             return;
         }
         scrollToFirstRow();
         getSelectionModel().select(0);
     }
 
-    private void selectEnd() {
-        if (this.items.isEmpty()) {
+    @Override
+    void selectEnd() {
+        if (this.getItems().isEmpty()) {
             return;
         }
         scrollToLastRow();
-        getSelectionModel().select(this.items.size() - 1);
+        getSelectionModel().select(this.getItems().size() - 1);
     }
 
     /**
@@ -839,7 +661,8 @@ public class ColumnTileView<T> extends Region {
      * non-overlapping page (starting right after the old last fully visible row, not repeating it) and select
      * that new page's last item.
      */
-    private void selectPageDown() {
+    @Override
+    void selectPageDown() {
         var firstFullyVisibleRow = firstFullyVisibleRowIndex();
         var lastFullyVisibleRow = lastFullyVisibleRowIndex();
         if (lastFullyVisibleRow < 0) {
@@ -869,7 +692,8 @@ public class ColumnTileView<T> extends Region {
      * scrolling; only once already there does this scroll to a genuinely new, non-overlapping page (ending
      * right before the old first fully visible row, not repeating it) and select that new page's first item.
      */
-    private void selectPageUp() {
+    @Override
+    void selectPageUp() {
         var firstFullyVisibleRow = firstFullyVisibleRowIndex();
         var lastFullyVisibleRow = lastFullyVisibleRowIndex();
         if (firstFullyVisibleRow < 0) {
@@ -943,18 +767,9 @@ public class ColumnTileView<T> extends Region {
     }
 
     private void savePositionAndRefreshView(RefreshTrigger refreshTrigger) {
-        this.firstVisibleCellIndex = resolveFirstVisibleCellIndex();
+        setFirstVisibleCellIndex(resolveFirstVisibleCellIndex());
         refresh(refreshTrigger, RefreshType.PRIMARY);
-        this.firstVisibleCellIndex = 0;
-    }
-
-    private int resolveFirstVisibleCellIndex() {
-        var cell = this.virtualFlow.getFirstVisibleCell();
-        if (cell == null) {
-            return 0;
-        } else {
-            return cell.getIndex();
-        }
+        setFirstVisibleCellIndex(0);
     }
 
     /**
@@ -975,23 +790,6 @@ public class ColumnTileView<T> extends Region {
         }
     }
 
-    /**
-     * Clears the previously selected cell's highlight on every currently realized row and, if
-     * {@code selectedIndex} resolves to one of them, sets its new selected cell. Off-screen rows are not
-     * touched here - {@link ColumnTileViewRow#updateItem} already recomputes the correct selected cell from
-     * scratch whenever such a row is next reused, so there is nothing stale left for them to show once
-     * scrolled back into view.
-     */
-    private void updateSelectedCellHighlight(int selectedIndex) {
-        var rowIndex = selectedIndex == -1 ? -1 : resolveRowIndex(selectedIndex);
-        var columnIndex = selectedIndex == -1 ? -1 : resolveColumnIndex(selectedIndex);
-        for (var row : this.virtualFlow.getCells()) {
-            row.clearSelection();
-            if (row.getIndex() == rowIndex && columnIndex < row.cachedCells.size()) {
-                row.setSelectedCell(row.cachedCells.get(columnIndex));
-            }
-        }
-    }
 
     /**
      * This method is called when view or data has been changed.
@@ -1000,7 +798,7 @@ public class ColumnTileView<T> extends Region {
      */
     private void refresh(RefreshTrigger refreshTrigger, RefreshType type) {
         logger.debug("Refresh request, trigger: {}, type: {}", refreshTrigger, type);
-        if (this.items == null) {
+        if (this.getItems() == null) {
             return;
         }
         if (getWidth() < 0.1) {
@@ -1021,57 +819,57 @@ public class ColumnTileView<T> extends Region {
             }
         }
 
-        if (type == RefreshType.PRIMARY && currentType != null) {
+        if (type == RefreshType.PRIMARY && getCurrentType() != null) {
             secondRefreshTrigger = refreshTrigger; // there can be multiple attempt, so the last one is saved
             logger.debug("Refresh request saved and postponed, trigger: {}, type: {}", refreshTrigger, type);
             return;
         }
         try {
-            currentType = type;
-            var newRowCount = (int) Math.ceil((double) this.items.size() / getColumnCount());
+            setCurrentType(type);
+            var newRowCount = (int) Math.ceil((double) this.getItems().size() / getColumnCount());
             if (refreshTrigger == RefreshTrigger.ITEMS) {
                 if (getSelectionModel().getSelectedIndex() != -1) {
                     getSelectionModel().clearSelection();
                 }
-                this.editingCellIndex = -1;
+                setEditingCellIndex(-1);
                 updateOffsets(newRowCount);
-                scrollToFirstRow(firstVisibleCellIndex);
+                scrollToFirstRow(getFirstVisibleCellIndex());
             } else {
                 if (getRowCount() != newRowCount) {
                     updateOffsets(newRowCount);
-                    scrollToFirstRow(firstVisibleCellIndex);
+                    scrollToFirstRow(getFirstVisibleCellIndex());
                 }
             }
-            logger.debug("Refreshed, trigger: {}, type: {}, itemsCount: {}", refreshTrigger, type, items.size());
+            logger.debug("Refreshed, trigger: {}, type: {}, itemsCount: {}", refreshTrigger, type, getItems().size());
             if (type == RefreshType.PRIMARY && secondRefreshTrigger != null) {
                 refresh(secondRefreshTrigger, RefreshType.SECONDARY);
                 secondRefreshTrigger = null;
             }
         } finally {
             if (type == RefreshType.SECONDARY) {
-                currentType = RefreshType.PRIMARY;
+                setCurrentType(RefreshType.PRIMARY);
             } else {
-                currentType = null;
+                setCurrentType(null);
             }
         }
     }
 
     private void prepareRowHeightResolving() {
-        this.rowCount.set(1);
-        this.offsets.setAll(List.of(0));
+        setRowCount(1);
+        this.getOffsets().setAll(List.of(0));
     }
 
     private void updateOffsets(int rowCount) {
-        this.rowCount.set(rowCount);
+        setRowCount(rowCount);
         List<Integer> offs = new ArrayList<>();
         for (int i = 0; i < rowCount; i++) {
             offs.add(i * getColumnCount());
         }
-        this.offsets.clear();
-        this.offsets.addAll(offs);
+        this.getOffsets().clear();
+        this.getOffsets().addAll(offs);
         for (var r : virtualFlow.getCells()) {
             r.requestLayout();
         }
-        virtualFlow.setCellCount(this.offsets.size());
+        virtualFlow.setCellCount(this.getOffsets().size());
     }
 }
