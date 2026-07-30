@@ -17,9 +17,6 @@
 package com.techsenger.shellfx.material;
 
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.skin.ListViewSkin;
-import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -28,20 +25,6 @@ import javafx.scene.input.KeyEvent;
  * @author Pavel Castornii
  */
 public final class FxUtils {
-
-    public static boolean isItemVisible(ListView listView, int itemIndex) {
-        if (itemIndex < 0) {
-            return false;
-        }
-        ListViewSkin<?> ts = (ListViewSkin<?>) listView.getSkin();
-        if (ts == null) {
-            return false;
-        }
-        VirtualFlow<?> vf = (VirtualFlow<?>) ts.getChildren().get(0);
-        int first = vf.getFirstVisibleCell().getIndex();
-        int last = vf.getLastVisibleCell().getIndex();
-        return first <= itemIndex && itemIndex <= last;
-    }
 
     /**
      * When user enters value in editable ComboBox and presses enter for default button action then ComboBox doesn't
