@@ -73,26 +73,24 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
 ## Demo <a name="demo"></a>
 
 ### Workspaces <a name="demo-workspaces"></a>
-
-![ShellFX Workspace](https://raw.githubusercontent.com/techsenger/demo-media/main/1/1.png)
-
-![ShellFX Workspace](https://raw.githubusercontent.com/techsenger/demo-media/main/1/2.png)
+<p><img width="1200" height="785" alt="ShellFX Browser Workspace" src="https://github.com/user-attachments/assets/01cb16d6-dd51-4139-9a93-acb46b167ff9" /></p>
+<p><img width="1200" height="785" alt="ShellFX IDE Workspace" src="https://github.com/user-attachments/assets/436ada94-c33d-46c2-89bb-0ff539a88c02" /></p>
 
 ### Pages <a name="demo-pages"></a>
 
-![ShellFX Pages](https://raw.githubusercontent.com/techsenger/demo-media/main/1/3.png)
+<img width="1200" height="784" alt="ShellFX Pages" src="https://github.com/user-attachments/assets/8811707e-1e9b-415a-b0e7-124b889e240f" />
 
 ### Dialogs <a name="demo-dialogs"></a>
 
-![ShellFX Pages](https://raw.githubusercontent.com/techsenger/demo-media/main/1/4.png)
+<img width="1200" height="785" alt="ShellFX Dialogs" src="https://github.com/user-attachments/assets/fb619502-44ad-4f23-a767-3d129368da9c" />
 
 ### DevTools <a name="demo-devtools"></a>
 
-![ShellFX DevTools Components](https://raw.githubusercontent.com/techsenger/demo-media/main/1/5.png)
+<p><img width="1200" height="785" alt="ShellFX DevTools Components" src="https://github.com/user-attachments/assets/613aed3a-96e3-4c2a-afa5-63e5db1aeee8" /></p>
 
-![ShellFX DevTools Nodes](https://raw.githubusercontent.com/techsenger/demo-media/main/1/6.png)
+<p><img width="1200" height="785" alt="ShellFX DevTools Nodes" src="https://github.com/user-attachments/assets/4c4e105c-9138-4318-afba-8003835e7b6c" /></p>
 
-![ShellFX DevTools Events](https://raw.githubusercontent.com/techsenger/demo-media/main/1/7.png)
+<p><img width="1200" height="785" alt="ShellFX DevTools Events" src="https://github.com/user-attachments/assets/d4c3c1be-02ff-4080-8d95-bbbb13abb38a" /></p>
 
 ## Features <a name="features"></a>
 
