@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.list;
+package com.techsenger.shellfx.material.column;
 
+import com.techsenger.annotations.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -90,6 +91,20 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
             setGraphic(node);
         }
 
+        /**
+         * {@code item} here is this column's own starting offset into {@link #getItems()} (see the class
+         * javadoc), not one of the actual items it displays &mdash; so the guard below is an <em>index</em>
+         * equality check ("this column already shows this same slice of the list, and nothing has marked it
+         * {@link #dirty}"), not a content check. It is exactly what makes normal recycling cheap: a column
+         * whose offset genuinely hasn't changed skips rebuilding its {@link #cachedCells} entirely.
+         *
+         * <p>The flip side: if one of those already-cached items mutates a field in place (with no change to
+         * the item list/order itself, so the offset stays the same), this guard has no way to notice and
+         * will keep skipping, leaving the mutation unrendered indefinitely. There is no by-item-content path
+         * around this that reaches an off-screen, already-cached column, other than forcing it &mdash; see
+         * {@link ColumnViewUtils#updateCell(ColumnListView, int)}/{@link ColumnViewUtils#updateCells(ColumnListView,
+         * boolean) updateCells(..., false)}.
+         */
         @Override
         public void updateItem(Integer item, boolean empty) {
             applyColumnWidth();
@@ -632,16 +647,68 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
 
     }
 
-    private ColumnListCell<T> getCell(int columnIndex, int rowIndex) {
+    private @Nullable ColumnListCell<T> getCell(int columnIndex, int rowIndex) {
         ColumnListViewColumn column = this.virtualFlow.getCell(columnIndex);
-        var cell = (ColumnListCell<T>) column.getNode().getChildren().get(rowIndex);
-        return cell;
+        if (column == null || column.isEmpty()) {
+            return null;
+        }
+        var children = column.getNode().getChildren();
+        return rowIndex >= 0 && rowIndex < children.size() ? (ColumnListCell<T>) children.get(rowIndex) : null;
     }
 
-    private ColumnListCell<T> getCell(int cellIndex) {
-        var columnIndex = resolveColumnIndex(cellIndex);
-        var rowIndex = resolveRowIndex(cellIndex);
+    /**
+     * Returns the currently realized cell showing {@code itemIndex}, or {@code null} if it isn't currently
+     * realized (e.g. scrolled far out of view) or {@code itemIndex} is out of range. Used by
+     * {@link ColumnViewUtils#updateCell(ColumnListView, int)} to force just that one cell to re-render from
+     * its current item, without touching any other cell.
+     */
+    @Nullable ColumnListCell<T> getCell(int itemIndex) {
+        if (itemIndex < 0 || itemIndex >= getItems().size()) {
+            return null;
+        }
+        var columnIndex = resolveColumnIndex(itemIndex);
+        var rowIndex = resolveRowIndex(itemIndex);
         return getCell(columnIndex, rowIndex);
+    }
+
+    /**
+     * Forces cells to re-derive their visual content from their current item, without touching this view's
+     * items/offset bookkeeping or scroll position/selection &mdash; the {@link ColumnListView} counterpart of
+     * {@code VirtualFlowUtils#updateCells}, reaching directly into each realized column's own cached cells
+     * instead of toggling the column's index (which would be the only option available to a generic,
+     * outside-the-package utility, since {@link ColumnListViewColumn}'s cached cells are a private
+     * implementation detail).
+     *
+     * @param onlyVisible whether to touch only the currently visible columns (cheap) or every column
+     *     (thorough) &mdash; see {@code VirtualFlowUtils#updateCells} for what each means
+     */
+    void forceUpdateCells(boolean onlyVisible) {
+        int first;
+        int last;
+        if (onlyVisible) {
+            var firstCell = this.virtualFlow.getFirstVisibleCell();
+            var lastCell = this.virtualFlow.getLastVisibleCell();
+            if (firstCell == null || lastCell == null) {
+                return;
+            }
+            first = firstCell.getIndex();
+            last = lastCell.getIndex();
+        } else {
+            first = 0;
+            last = this.virtualFlow.getCellCount() - 1;
+        }
+        for (var index = first; index <= last; index++) {
+            var column = this.virtualFlow.getCell(index);
+            if (column != null && !column.isEmpty()) {
+                for (var cell : column.cachedCells) {
+                    if (!cell.isEmpty()) {
+                        cell.updateItem(cell.getItem(), false);
+                    }
+                }
+            }
+        }
+        applyCss();
+        layout();
     }
 
     @Override

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.list;
+package com.techsenger.shellfx.material.column;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;

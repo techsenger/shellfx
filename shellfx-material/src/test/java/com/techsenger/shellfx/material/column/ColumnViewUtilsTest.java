@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.list;
+package com.techsenger.shellfx.material.column;
 
 import com.techsenger.toolkit.fx.FxPlatform;
 import com.techsenger.toolkit.fx.utils.ScrollPosition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
@@ -65,6 +66,29 @@ class ColumnViewUtilsTest {
         private Pair(A first, B second) {
             this.first = first;
             this.second = second;
+        }
+    }
+
+    /**
+     * A plain, non-observable holder — mutating {@link #setText} does not fire any change event, the same way
+     * a domain object's field can mutate without the cell showing it finding out on its own. Used by the
+     * {@code updateCell}/{@code updateCells} tests, which are specifically about forcing a redraw of such
+     * silently-mutated data.
+     */
+    private static final class MutableItem {
+
+        private String text;
+
+        private MutableItem(String text) {
+            this.text = text;
+        }
+
+        private String getText() {
+            return text;
+        }
+
+        private void setText(String text) {
+            this.text = text;
         }
     }
 
@@ -135,6 +159,98 @@ class ColumnViewUtilsTest {
             items.add(prefix + i);
         }
         return items;
+    }
+
+    /**
+     * Builds a {@code ColumnListView} of {@link MutableItem}s the same way {@link #newColumnListView} does for
+     * plain strings — see there for details. The cell factory renders each item's current text into a
+     * {@code Label} graphic, the same pattern {@code ColumnListViewTest} uses. Used by the
+     * {@code updateCell}/{@code updateCells} tests, which need an item whose displayed value can mutate
+     * without the items list itself changing.
+     */
+    private static ColumnListView<MutableItem> newMutableColumnListView(int itemCount, double columnWidth,
+            double width, double height) {
+        var listView = new ColumnListView<MutableItem>();
+        listView.setColumnWidth(columnWidth);
+        var items = FXCollections.<MutableItem>observableArrayList();
+        for (int i = 0; i < itemCount; i++) {
+            items.add(new MutableItem("item-" + i));
+        }
+        listView.setItems(items);
+        listView.setCellFactory(lv -> new ColumnListCell<MutableItem>() {
+            private final Label label = new Label();
+
+            {
+                setGraphic(label);
+            }
+
+            @Override
+            protected void updateItem(MutableItem item, boolean empty) {
+                super.updateItem(item, empty);
+                label.setText(empty || item == null ? null : item.getText());
+            }
+        });
+        stage.setScene(new Scene(listView, width, height));
+        if (!stage.isShowing()) {
+            stage.show();
+        }
+        listView.applyCss();
+        listView.layout();
+        return listView;
+    }
+
+    /**
+     * The {@link ColumnTileView} counterpart of {@link #newMutableColumnListView}.
+     */
+    private static ColumnTileView<MutableItem> newMutableColumnTileView(int itemCount, int columnCount,
+            double width, double height) {
+        var tileView = new ColumnTileView<MutableItem>();
+        tileView.setColumnCount(columnCount);
+        var items = FXCollections.<MutableItem>observableArrayList();
+        for (int i = 0; i < itemCount; i++) {
+            items.add(new MutableItem("item-" + i));
+        }
+        tileView.setItems(items);
+        tileView.setCellFactory(tv -> new TileCell<MutableItem>() {
+            private final Label label = new Label();
+
+            {
+                setGraphic(label);
+            }
+
+            @Override
+            protected void updateItem(MutableItem item, boolean empty) {
+                super.updateItem(item, empty);
+                label.setText(empty || item == null ? null : item.getText());
+            }
+        });
+        stage.setScene(new Scene(tileView, width, height));
+        if (!stage.isShowing()) {
+            stage.show();
+        }
+        tileView.applyCss();
+        tileView.layout();
+        return tileView;
+    }
+
+    /**
+     * Returns the currently rendered text of the cell showing {@code itemIndex}, or {@code null} if it isn't
+     * currently realized. Reads via {@link ColumnListView#getCell(int)} (package-private, this test is in the
+     * same package) rather than a CSS lookup: {@code .cell} matches both the outer flow cell (a whole column)
+     * and the inner item cells inside it, since both are plain {@code IndexedCell}s with no distinguishing
+     * style class of their own.
+     */
+    private static String cellText(ColumnListView<MutableItem> listView, int itemIndex) {
+        var cell = listView.getCell(itemIndex);
+        return cell == null ? null : ((Label) cell.getGraphic()).getText();
+    }
+
+    /**
+     * The {@link ColumnTileView} counterpart of {@link #cellText(ColumnListView, int)}.
+     */
+    private static String cellText(ColumnTileView<MutableItem> tileView, int itemIndex) {
+        var cell = tileView.getCell(itemIndex);
+        return cell == null ? null : ((Label) cell.getGraphic()).getText();
     }
 
     private static VirtualFlow<?> flowOf(Region owner) {
@@ -401,5 +517,141 @@ class ColumnViewUtilsTest {
         });
 
         assertThat(visible).isTrue();
+    }
+
+    // ColumnListView: updateCell
+
+    @Test
+    void updateCell_columnListView_itemMutatedInPlace_cellTextReflectsNewValue() throws InterruptedException {
+        var listView = FxTestSupport.onFxThread(() -> newMutableColumnListView(200, 80, 200, 300));
+        awaitCellsRealized(listView);
+
+        var result = FxTestSupport.onFxThread(() -> {
+            listView.getItems().get(5).setText("changed");
+            var stillStale = cellText(listView, 5);
+            ColumnViewUtils.updateCell(listView, 5);
+            return new Pair<>(stillStale, cellText(listView, 5));
+        });
+
+        assertThat(result.first).isEqualTo("item-5");
+        assertThat(result.second).isEqualTo("changed");
+    }
+
+    @Test
+    void updateCell_columnListView_indexOutOfRange_doesNotThrow() throws InterruptedException {
+        var listView = FxTestSupport.onFxThread(() -> newMutableColumnListView(200, 80, 200, 300));
+        awaitCellsRealized(listView);
+
+        FxTestSupport.onFxThread(() -> {
+            ColumnViewUtils.updateCell(listView, 999);
+            return null;
+        });
+    }
+
+    // ColumnListView: updateCells
+
+    @Test
+    void updateCells_columnListViewOnlyVisibleTrue_doesNotRealizeColumnsBeyondViewport() throws InterruptedException {
+        var listView = FxTestSupport.onFxThread(() -> newMutableColumnListView(200, 80, 200, 300));
+        awaitCellsRealized(listView);
+
+        var result = FxTestSupport.onFxThread(() -> {
+            listView.getItems().get(0).setText("changed-visible");
+            listView.getItems().get(199).setText("changed-far");
+            ColumnViewUtils.updateCells(listView, true);
+            // Read the visible-item text and the raw realized range, deliberately not cellText(listView, 199):
+            // ColumnListView#getCell (which cellText reads through) creates the target column on demand if
+            // it isn't already realized, so merely checking it would realize (and thus freshly render) it
+            // regardless of what updateCells(true) did — that would defeat the point of this assertion.
+            var stayedOutsideRealizedRange = flowOf(listView).getLastVisibleCell().getIndex()
+                    < listView.resolveColumnIndex(199);
+            return new Pair<>(cellText(listView, 0), stayedOutsideRealizedRange);
+        });
+
+        assertThat(result.first).isEqualTo("changed-visible");
+        // Column 12 (holding item 199) is nowhere near this: only columns up to roughly 2-3 fit in a 200px
+        // viewport at columnWidth=80, so updateCells(true) touching only the realized range never reaches it.
+        assertThat(result.second).isTrue();
+    }
+
+    @Test
+    void updateCells_columnListViewOnlyVisibleFalse_realizesAndUpdatesItemNeverScrolledTo()
+            throws InterruptedException {
+        var listView = FxTestSupport.onFxThread(() -> newMutableColumnListView(200, 80, 200, 300));
+        awaitCellsRealized(listView);
+
+        var text = FxTestSupport.onFxThread(() -> {
+            listView.getItems().get(199).setText("changed-far");
+            ColumnViewUtils.updateCells(listView, false);
+            return cellText(listView, 199);
+        });
+
+        assertThat(text).isEqualTo("changed-far");
+    }
+
+    // ColumnTileView: updateCell
+
+    @Test
+    void updateCell_columnTileView_itemMutatedInPlace_cellTextReflectsNewValue() throws InterruptedException {
+        var tileView = FxTestSupport.onFxThread(() -> newMutableColumnTileView(200, 3, 200, 300));
+        awaitCellsRealized(tileView);
+
+        var result = FxTestSupport.onFxThread(() -> {
+            tileView.getItems().get(5).setText("changed");
+            var stillStale = cellText(tileView, 5);
+            ColumnViewUtils.updateCell(tileView, 5);
+            return new Pair<>(stillStale, cellText(tileView, 5));
+        });
+
+        assertThat(result.first).isEqualTo("item-5");
+        assertThat(result.second).isEqualTo("changed");
+    }
+
+    @Test
+    void updateCell_columnTileView_indexOutOfRange_doesNotThrow() throws InterruptedException {
+        var tileView = FxTestSupport.onFxThread(() -> newMutableColumnTileView(200, 3, 200, 300));
+        awaitCellsRealized(tileView);
+
+        FxTestSupport.onFxThread(() -> {
+            ColumnViewUtils.updateCell(tileView, 999);
+            return null;
+        });
+    }
+
+    // ColumnTileView: updateCells
+
+    @Test
+    void updateCells_columnTileViewOnlyVisibleTrue_doesNotRealizeRowsBeyondViewport() throws InterruptedException {
+        var tileView = FxTestSupport.onFxThread(() -> newMutableColumnTileView(200, 3, 200, 300));
+        awaitCellsRealized(tileView);
+
+        var result = FxTestSupport.onFxThread(() -> {
+            tileView.getItems().get(0).setText("changed-visible");
+            tileView.getItems().get(199).setText("changed-far");
+            ColumnViewUtils.updateCells(tileView, true);
+            // Deliberately not cellText(tileView, 199) — see the identical ColumnListView test for why reading
+            // through ColumnTileView#getCell would realize (and thus freshly render) the target row itself.
+            var stayedOutsideRealizedRange = flowOf(tileView).getLastVisibleCell().getIndex()
+                    < tileView.resolveRowIndex(199);
+            return new Pair<>(cellText(tileView, 0), stayedOutsideRealizedRange);
+        });
+
+        assertThat(result.first).isEqualTo("changed-visible");
+        assertThat(result.second).isTrue();
+    }
+
+    @Test
+    void updateCells_columnTileViewOnlyVisibleFalse_realizesAndUpdatesItemNeverScrolledTo()
+            throws InterruptedException {
+        var tileView = FxTestSupport.onFxThread(() -> newMutableColumnTileView(200, 3, 200, 300));
+        awaitCellsRealized(tileView);
+
+        var text = FxTestSupport.onFxThread(() -> {
+            tileView.getItems().get(199).setText("changed-far");
+            ColumnViewUtils.updateCells(tileView, false);
+            return cellText(tileView, 199);
+        });
+
+        assertThat(text).isEqualTo("changed-far");
     }
 }

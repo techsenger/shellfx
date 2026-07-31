@@ -29,7 +29,7 @@ import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.list.TextFieldColumnListCell;
+import com.techsenger.shellfx.material.column.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.material.table.TableColumnInfo;

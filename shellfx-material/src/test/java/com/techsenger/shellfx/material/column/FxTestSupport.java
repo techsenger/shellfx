@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.list;
+package com.techsenger.shellfx.material.column;
 
 import atlantafx.base.theme.PrimerLight;
 import com.techsenger.toolkit.fx.FxPlatform;

@@ -29,9 +29,9 @@ module com.techsenger.shellfx.material {
 
     exports com.techsenger.shellfx.material;
     exports com.techsenger.shellfx.material.button;
+    exports com.techsenger.shellfx.material.column;
     exports com.techsenger.shellfx.material.icon;
     exports com.techsenger.shellfx.material.layout;
-    exports com.techsenger.shellfx.material.list;
     exports com.techsenger.shellfx.material.menu;
     exports com.techsenger.shellfx.material.pane;
     exports com.techsenger.shellfx.material.style;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.list;
+package com.techsenger.shellfx.material.column;
 
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import javafx.css.PseudoClass;
@@ -24,39 +24,36 @@ import javafx.scene.control.skin.CellSkinBase;
 import javafx.scene.input.MouseEvent;
 
 /**
- * The {@link ColumnTileView} counterpart of {@link ColumnListCell} &mdash; same click-to-select/
- * second-click-to-edit/scroll-into-view behavior, just tied to {@link ColumnTileView} directly instead of
- * sharing a type with {@link ColumnListView}'s cells.
  *
  * @author Pavel Castornii
  */
-public class TileCell<T> extends IndexedCell<T> {
+public class ColumnListCell<T> extends IndexedCell<T> {
 
     private static final PseudoClass EDITING = PseudoClass.getPseudoClass("editing");
 
-    private ColumnTileView<T> tileView;
+    private ColumnListView<T> listView;
 
     /**
-     * Set this flag to true when you want to start editing only via {@link ColumnTileView#edit(int)} method.
+     * Set this flag to true when you want to start editing only via {@link ColumnListView#edit(int)} method.
      */
     private boolean manualEdit = false;
 
-    public TileCell() {
+    public ColumnListCell() {
         setFocusTraversable(true);
         addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             if (isSelected() && e.getClickCount() == 1) {
                 if (!isEditing() && isEditable() && !manualEdit) {
-                    tileView.edit(getIndex());
+                    listView.edit(getIndex());
                 }
             } else {
-                tileView.getSelectionModel().select(getIndex());
+                listView.getSelectionModel().select(getIndex());
             }
             // Requested unconditionally, even when the cell was already selected (e.g. clicking the item left
             // selected right after a mode switch) - otherwise a click on an already-selected cell never moves
             // focus here, leaving it wherever it last was (commonly the surrounding tab dock), so arrow-key
             // navigation stays dead no matter how many times that same cell is clicked.
             NodeUtils.requestFocus(this);
-            tileView.scrollToSelected();
+            listView.scrollToSelected();
         });
     }
 
@@ -67,8 +64,16 @@ public class TileCell<T> extends IndexedCell<T> {
 
     @Override
     public void startEdit() {
-        // See ColumnListCell#startEdit for why focus is transferred before super.startEdit().
-        tileView.requestFocus();
+        // See the constructor of Cell (the link is split into two parts):
+        // https://github.com/openjdk/jfx/blob/277aec13d0879718a9ac2231402e19eed6f70d20/modules
+        // /javafx.controls/src/main/java/javafx/scene/control/Cell.java#L361
+        //
+        // When a cell has focus and loses it while editing, the edit is cancelled. To prevent this, we transfer
+        // focus to the list view before calling super.startEdit(). This way the cell is already unfocused when editing
+        // begins, so the listener in Cell cannot trigger cancelEdit(). Focus will then move naturally to the
+        // TextField once it is created. It is important to note, if a TextField is created on this pulse, it will get
+        // focus on the next one, so we can't use it now, before super.startEdit().
+        listView.requestFocus();
         super.startEdit();
         pseudoClassStateChanged(EDITING, true);
     }
@@ -76,14 +81,14 @@ public class TileCell<T> extends IndexedCell<T> {
     @Override
     public void commitEdit(T newValue) {
         super.commitEdit(newValue);
-        tileView.setEditingCellIndex(-1);
+        listView.setEditingCellIndex(-1);
         pseudoClassStateChanged(EDITING, false);
     }
 
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-        tileView.setEditingCellIndex(-1);
+        listView.setEditingCellIndex(-1);
         pseudoClassStateChanged(EDITING, false);
     }
 
@@ -100,11 +105,11 @@ public class TileCell<T> extends IndexedCell<T> {
         this.manualEdit = manualEdit;
     }
 
-    void setTileView(ColumnTileView<T> tileView) {
-        this.tileView = tileView;
+    void setListView(ColumnListView<T> listView) {
+        this.listView = listView;
     }
 
-    ColumnTileView<T> getTileView() {
-        return tileView;
+    ColumnListView<T> getListView() {
+        return listView;
     }
 }
