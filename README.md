@@ -86,11 +86,11 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
 
 ### DevTools <a name="demo-devtools"></a>
 
-<p><img width="1200" height="785" alt="ShellFX DevTools Components" src="https://github.com/user-attachments/assets/613aed3a-96e3-4c2a-afa5-63e5db1aeee8" /></p>
+<p><img width="1200" height="785" alt="ShellFX DevTools Components" src="https://github.com/user-attachments/assets/d4c3c1be-02ff-4080-8d95-bbbb13abb38a" /></p>
 
 <p><img width="1200" height="785" alt="ShellFX DevTools Nodes" src="https://github.com/user-attachments/assets/4c4e105c-9138-4318-afba-8003835e7b6c" /></p>
 
-<p><img width="1200" height="785" alt="ShellFX DevTools Events" src="https://github.com/user-attachments/assets/d4c3c1be-02ff-4080-8d95-bbbb13abb38a" /></p>
+<p><img width="1200" height="785" alt="ShellFX DevTools Events" src="https://github.com/user-attachments/assets/613aed3a-96e3-4c2a-afa5-63e5db1aeee8" /></p>
 
 ## Features <a name="features"></a>
 
