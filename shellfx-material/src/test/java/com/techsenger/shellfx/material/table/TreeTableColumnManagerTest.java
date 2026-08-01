@@ -18,9 +18,9 @@ package com.techsenger.shellfx.material.table;
 
 import com.techsenger.toolkit.fx.FxPlatform;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
@@ -99,24 +99,13 @@ class TreeTableColumnManagerTest {
         return info;
     }
 
-    // A plain Map.of(TestColumn.A, info) would have its key type inferred as TestColumn, not
-    // TreeTableColumnName, which addColumns()'s Map<TreeTableColumnName, ...> parameter does not accept
-    // (generics are invariant).
-    private Map<TreeTableColumnName, TreeTableColumnInfo> mapOf(TreeTableColumnInfo... infos) {
-        var map = new HashMap<TreeTableColumnName, TreeTableColumnInfo>();
-        for (var info : infos) {
-            map.put(info.getName(), info);
-        }
-        return map;
-    }
-
     @Test
     void addColumns_indicesOutOfMapOrder_columnsOrderedByIndex() {
         registerAllFactories();
-        var infos = new HashMap<TreeTableColumnName, TreeTableColumnInfo>();
-        infos.put(TestColumn.A, infoOf(TestColumn.A, 2));
-        infos.put(TestColumn.B, infoOf(TestColumn.B, 0));
-        infos.put(TestColumn.C, infoOf(TestColumn.C, 1));
+        var infos = new HashSet<TreeTableColumnInfo>();
+        infos.add(infoOf(TestColumn.A, 2));
+        infos.add(infoOf(TestColumn.B, 0));
+        infos.add(infoOf(TestColumn.C, 1));
 
         manager.addColumns(infos);
 
@@ -133,7 +122,7 @@ class TreeTableColumnManagerTest {
         info.setSortIndex(0);
         info.setSortType(TreeTableColumn.SortType.DESCENDING);
 
-        manager.addColumns(mapOf(info));
+        manager.addColumns(Set.of(info));
 
         var column = manager.getColumnsByName().get(TestColumn.A);
         assertThat(column.getPrefWidth()).isEqualTo(123.0);
@@ -151,7 +140,7 @@ class TreeTableColumnManagerTest {
         c.setSortIndex(0);
         c.setSortType(TreeTableColumn.SortType.ASCENDING);
 
-        manager.addColumns(mapOf(a, b, c));
+        manager.addColumns(Set.of(a, b, c));
 
         assertThat(treeTableView.getSortOrder().stream()
                 .map(sc -> ((NamedTreeTableColumn<?, ?>) sc).getName()).toList())
@@ -167,7 +156,7 @@ class TreeTableColumnManagerTest {
         a.setSortIndex(0);
         a.setSortType(TreeTableColumn.SortType.ASCENDING);
 
-        manager.addColumns(mapOf(a));
+        manager.addColumns(Set.of(a));
 
         assertThat(widthCalls).isEmpty();
         assertThat(indexCalls).isEmpty();
@@ -182,7 +171,7 @@ class TreeTableColumnManagerTest {
         var a = infoOf(TestColumn.A, 0);
         var b = infoOf(TestColumn.B, 0);
 
-        manager.addColumns(mapOf(a, b));
+        manager.addColumns(Set.of(a, b));
 
         assertThat(treeTableView.getColumns()).hasSize(2);
     }
@@ -198,7 +187,7 @@ class TreeTableColumnManagerTest {
         b.setSortIndex(0);
         b.setSortType(TreeTableColumn.SortType.ASCENDING);
 
-        manager.addColumns(mapOf(a, b));
+        manager.addColumns(Set.of(a, b));
 
         assertThat(treeTableView.getSortOrder()).hasSize(2);
     }
@@ -210,7 +199,7 @@ class TreeTableColumnManagerTest {
         a.setSortIndex(0);
         a.setSortType(TreeTableColumn.SortType.ASCENDING);
         var b = infoOf(TestColumn.B, 1);
-        manager.addColumns(mapOf(a, b));
+        manager.addColumns(Set.of(a, b));
         registerRecordingListeners();
 
         // Simulates what a single-column-sort header click does: the previously-sorted column drops out of
@@ -225,7 +214,7 @@ class TreeTableColumnManagerTest {
         registerAllFactories();
         var a = infoOf(TestColumn.A, 0);
         var b = infoOf(TestColumn.B, 1);
-        manager.addColumns(mapOf(a, b));
+        manager.addColumns(Set.of(a, b));
         registerRecordingListeners();
 
         // Simulates a drag-to-reorder: A and B swap places.
@@ -239,7 +228,7 @@ class TreeTableColumnManagerTest {
     @Test
     void widthListener_prefWidthChangedAfterBuild_listenerFires() {
         registerFactory(TestColumn.A);
-        manager.addColumns(mapOf(infoOf(TestColumn.A, 0)));
+        manager.addColumns(Set.of(infoOf(TestColumn.A, 0)));
         registerRecordingListeners();
 
         manager.getColumnsByName().get(TestColumn.A).setPrefWidth(77.0);
@@ -251,7 +240,7 @@ class TreeTableColumnManagerTest {
     void addColumns_noFactoryRegistered_throws() {
         var info = infoOf(TestColumn.A, 0);
 
-        assertThatThrownBy(() -> manager.addColumns(mapOf(info)))
+        assertThatThrownBy(() -> manager.addColumns(Set.of(info)))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("A");
     }
@@ -259,7 +248,7 @@ class TreeTableColumnManagerTest {
     @Test
     void getColumnsByName_attemptToModify_throwsUnsupportedOperationException() {
         registerFactory(TestColumn.A);
-        manager.addColumns(mapOf(infoOf(TestColumn.A, 0)));
+        manager.addColumns(Set.of(infoOf(TestColumn.A, 0)));
 
         assertThatThrownBy(() -> manager.getColumnsByName().clear())
                 .isInstanceOf(UnsupportedOperationException.class);

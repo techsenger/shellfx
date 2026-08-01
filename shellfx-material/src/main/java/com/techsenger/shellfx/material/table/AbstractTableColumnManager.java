@@ -268,9 +268,9 @@ public abstract class AbstractTableColumnManager<N extends Name, C extends Table
      * currently visible ones (see {@link ColumnInfo#isVisible()}) &mdash; entries whose column is currently
      * hidden are skipped and no column is built for them.
      *
-     * @param infosByName the persisted column state to apply, keyed by column name
+     * @param infos the persisted column state to apply, keyed by column name
      */
-    public void addColumns(Map<N, ? extends ColumnInfo<N, ST>> infosByName) {
+    public void addColumns(Collection<? extends ColumnInfo<N, ST>> infos) {
         indexListenerDisabled = true;
         sortIndexListenerDisabled = true;
 
@@ -279,13 +279,12 @@ public abstract class AbstractTableColumnManager<N extends Name, C extends Table
         record Entry<N extends Name, C, ST>(ColumnInfo<N, ST> info, C column) { }
 
         var entries = new ArrayList<Entry<N, C, ST>>();
-        for (var mapEntry : infosByName.entrySet()) {
-            var info = mapEntry.getValue();
+        for (var info : infos) {
             if (!info.isVisible()) {
                 continue;
             }
-            var column = createColumn(mapEntry.getKey(), info.getWidth(), info.getSortType());
-            modifiableColumnsByName.put(mapEntry.getKey(), column);
+            var column = createColumn(info.getName(), info.getWidth(), info.getSortType());
+            modifiableColumnsByName.put(info.getName(), column);
             entries.add(new Entry<>(info, column));
         }
 
@@ -333,12 +332,12 @@ public abstract class AbstractTableColumnManager<N extends Name, C extends Table
      *     since the column is always appended at the end
      * @return the newly built column
      */
-    public C addColumn(N name, ColumnInfo<N, ST> info) {
-        var column = createColumn(name, info.getWidth(), info.getSortType());
-        modifiableColumnsByName.put(name, column);
+    public C addColumn(ColumnInfo<N, ST> info) {
+        var column = createColumn(info.getName(), info.getWidth(), info.getSortType());
+        modifiableColumnsByName.put(info.getName(), column);
         columns.add(column);
         if (info.getSortIndex() != null) {
-            Objects.requireNonNull(info.getSortType(), "No sort type for column " + name);
+            Objects.requireNonNull(info.getSortType(), "No sort type for column " + info.getName());
             sortOrder.add(column);
         }
         return column;

@@ -27,14 +27,13 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogPresenter;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
+import com.techsenger.shellfx.material.column.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.column.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnManager;
-import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileColumnBuilder;
 import com.techsenger.shellfx.storage.FileColumns;
@@ -42,9 +41,9 @@ import com.techsenger.shellfx.storage.FileStringConverter;
 import com.techsenger.shellfx.storage.FileViewConstants;
 import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.toolkit.fx.value.ValueUtils;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -290,8 +289,8 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
     }
 
     @Override
-    public void addColumns(Map<TableColumnName, TableColumnInfo> infosByName) {
-        this.fileColumnManager.addColumns(infosByName);
+    public void addColumns(Collection<TableColumnInfo> infos) {
+        this.fileColumnManager.addColumns(infos);
     }
 
     @Override

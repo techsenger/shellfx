@@ -21,10 +21,9 @@ import com.techsenger.shellfx.core.dialog.DialogView;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
-import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.storage.GenericFile;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -42,7 +41,7 @@ public interface FileChooserDialogView<T extends GenericFile> extends DialogView
 
     void setAppearanceSettings(AppearanceSettings settings);
 
-    void addColumns(Map<TableColumnName, TableColumnInfo> infosByName);
+    void addColumns(Collection<TableColumnInfo> infos);
 
     void setFiles(List<T> files);
 

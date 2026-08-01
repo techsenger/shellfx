@@ -300,7 +300,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
         setWidth(800);
         setHeight(500);
         createInitialColumns();
-        getView().addColumns(columns);
+        getView().addColumns(columns.values());
         setMode(Mode.LIST);
     }
 
@@ -321,7 +321,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
         for (var c : history.getTable().getColumns()) {
             this.columns.put(c.getName(), c);
         }
-        getView().addColumns(this.columns);
+        getView().addColumns(this.columns.values());
     }
 
     @Override
