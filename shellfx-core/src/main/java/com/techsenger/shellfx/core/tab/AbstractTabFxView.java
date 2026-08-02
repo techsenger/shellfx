@@ -138,11 +138,6 @@ public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> exten
     }
 
     @Override
-    public boolean isSelected() {
-        return this.root.isSelected();
-    }
-
-    @Override
     public Composer getComposer() {
         return (Composer) super.getComposer();
     }

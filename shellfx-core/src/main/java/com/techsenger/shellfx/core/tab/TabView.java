@@ -53,6 +53,4 @@ public interface TabView extends ChildView, TabPort.ViewAccess {
     void setTitle(String title);
 
     void setTooltip(String tooltip);
-
-    boolean isSelected();
 }
