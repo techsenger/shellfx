@@ -25,6 +25,7 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.control.IndexedCell;
+import javafx.scene.control.Label;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -70,6 +71,12 @@ class ColumnTileViewTest {
 
     private static double computePrefHeight(ColumnTileView<?> tileView) throws ReflectiveOperationException {
         Method method = AbstractColumnView.class.getDeclaredMethod("computePrefHeight", double.class);
+        method.setAccessible(true);
+        return (double) method.invoke(tileView, -1.0);
+    }
+
+    private static double computePrefWidth(ColumnTileView<?> tileView) throws ReflectiveOperationException {
+        Method method = AbstractColumnView.class.getDeclaredMethod("computePrefWidth", double.class);
         method.setAccessible(true);
         return (double) method.invoke(tileView, -1.0);
     }
@@ -447,5 +454,67 @@ class ColumnTileViewTest {
                 return null;
             });
         }
+    }
+
+    @Test
+    void computePrefWidth_afterSettling_reusesActualWidthInsteadOfRescanningCellContent()
+            throws InterruptedException {
+        // Mirrors ColumnListViewTest's version of this test. AbstractColumnView#computePrefWidth() - the
+        // breadth axis for this vertical flow, as opposed to ColumnListView's horizontal flow, where it's
+        // height - used to delegate straight to the virtual flow's own prefWidth(), which realizes/recycles
+        // cells outside the visible range purely to measure them; in the real FileChooserDialog - shown inside
+        // a Priority.ALWAYS ancestor that re-queries this method on every idle layout pass - a recycled cell's
+        // Labeled text genuinely changing fired requestLayout(), re-arming the whole ancestor chain forever.
+        // That multi-pulse churn isn't reliably reproducible in headless glass, but the underlying defect
+        // doesn't need the full loop to observe: once the view has a real, already established width,
+        // computePrefWidth() should just report it, not recompute something else from realized cell content.
+        var view = FxTestSupport.onFxThread(() -> {
+            var v = new ColumnTileView<Integer>();
+            v.setColumnCount(3);
+            v.setCellFactory(lv -> new TileCell<Integer>() {
+                private final Label label = new Label();
+
+                {
+                    setGraphic(label);
+                }
+
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    label.setText(empty || item == null ? null : "Cell " + item);
+                }
+            });
+            var items = FXCollections.<Integer>observableArrayList();
+            for (int i = 0; i < 50; i++) {
+                items.add(i);
+            }
+            v.setItems(items);
+            stage.setScene(new Scene(v, 300, 150));
+            if (!stage.isShowing()) {
+                stage.show();
+            }
+            v.applyCss();
+            v.layout();
+            return v;
+        });
+        for (var attempt = 0; attempt < 50 && view.getRowCount() <= 1; attempt++) {
+            FxTestSupport.onFxThread(() -> {
+                view.applyCss();
+                view.layout();
+                return null;
+            });
+        }
+
+        var prefWidth = FxTestSupport.onFxThread(() -> {
+            try {
+                return computePrefWidth(view);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        assertThat(prefWidth)
+                .as("computePrefWidth() should report the view's actual, already-established width")
+                .isEqualTo(view.getWidth());
     }
 }

@@ -33,6 +33,8 @@ import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class factoring out the parts of {@link ColumnListView} and {@link ColumnTileView} that are identical
@@ -46,10 +48,6 @@ import javafx.scene.layout.Region;
  * @author Pavel Castornii
  */
 public abstract class AbstractColumnView<T> extends Region {
-
-    enum RefreshType {
-        PRIMARY, SECONDARY
-    }
 
     private static class SingleSelectionModelImpl<T> extends SingleSelectionModel<T> {
 
@@ -73,6 +71,8 @@ public abstract class AbstractColumnView<T> extends Region {
             return view.getItems().size();
         }
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractColumnView.class);
 
     private final BooleanProperty manualRefresh = new SimpleBooleanProperty();
 
@@ -102,16 +102,12 @@ public abstract class AbstractColumnView<T> extends Region {
     private int editingCellIndex = -1;
 
     /**
-     * Tracks whether a refresh is currently in progress and prevents reentrant refreshes.
-     *
-     * <p>Without this guard, changing a subclass's own derived state (e.g. {@code rowCount}/{@code columnCount})
-     * inside its {@code updateOffsets(...)} could fire change listeners that invoke {@code refresh(...)} again,
-     * causing infinite recursion and eventually an {@link OutOfMemoryError}.
-     *
-     * <p>If another refresh is requested while a primary refresh is executing, the request is postponed and
-     * executed once as a secondary refresh after the current refresh completes.
+     * Whether {@link #firstVisibleCellIndex} should be reset back to {@code 0} the next time a subclass's
+     * {@code layoutChildren()} consumes it &mdash; set by {@link #requestLayoutPreservingPosition()}, which
+     * captures the currently-first-visible cell right before a geometry-affecting change (e.g. the virtual
+     * flow's own width/height changing) so that change doesn't jump the scroll position back to the start.
      */
-    private RefreshType currentType;
+    private boolean resetFirstVisibleCellIndexAfterLayout;
 
     protected AbstractColumnView() {
         setFocusTraversable(true);
@@ -240,20 +236,33 @@ public abstract class AbstractColumnView<T> extends Region {
 
     public void onResizeStarted() {
         this.firstVisibleCellIndex = resolveFirstVisibleCellIndex();
-    }
-
-    @Override
-    protected double computePrefWidth(double height) {
-        return getVirtualFlow().prefWidth(-1);
-    }
-
-    @Override
-    protected double computePrefHeight(double width) {
-        return getVirtualFlow().prefHeight(-1);
+        logger.debug("onResizeStarted: firstVisibleCellIndex={}, height={}, width={}", this.firstVisibleCellIndex,
+                getHeight(), getWidth());
     }
 
     public void onResizeFinished() {
         this.firstVisibleCellIndex = 0;
+        logger.debug("onResizeFinished: height={}, width={}", getHeight(), getWidth());
+    }
+
+    @Override
+    protected double computePrefWidth(double height) {
+        // Once a real size is established, reuse it instead of asking the virtual flow to recompute its own
+        // preferred width: that recomputation realizes/recycles cells outside the visible range to measure
+        // them, and updateItem() on a recycled cell can itself trigger a requestLayout() (e.g. a Labeled's
+        // text metrics changing) - re-dirtying layout on every single pulse forever with nothing to show for
+        // it, since the resulting preferred width doesn't actually change.
+        return getWidth() > 0 ? getWidth() : getVirtualFlow().prefWidth(height);
+    }
+
+    @Override
+    protected double computePrefHeight(double width) {
+        return getHeight() > 0 ? getHeight() : getVirtualFlow().prefHeight(width);
+    }
+
+    void resolveGeometry() {
+        applyCss();
+        layout();
     }
 
     ObservableList<Integer> getOffsets() {
@@ -280,20 +289,41 @@ public abstract class AbstractColumnView<T> extends Region {
         this.editingCellIndex = editingCellIndex;
     }
 
-    RefreshType getCurrentType() {
-        return currentType;
-    }
-
-    void setCurrentType(RefreshType currentType) {
-        this.currentType = currentType;
-    }
-
     int resolveFirstVisibleCellIndex() {
         var cell = getVirtualFlow().getFirstVisibleCell();
         if (cell == null) {
             return 0;
         } else {
             return cell.getIndex();
+        }
+    }
+
+    /**
+     * Captures the currently-first-visible cell into {@link #firstVisibleCellIndex} and marks it for a
+     * one-shot reset back to {@code 0} (via {@link #consumeFirstVisibleCellIndexReset()}), then requests a
+     * layout pass &mdash; called by a subclass whenever its virtual flow's own width/height changes for a
+     * reason other than {@link #onResizeStarted()}/{@link #onResizeFinished()} bracketing a recognized
+     * external resize gesture (e.g. a scrollbar appearing/disappearing), so that change doesn't silently jump
+     * the scroll position back to the first column/row.
+     */
+    void requestLayoutPreservingPosition() {
+        this.firstVisibleCellIndex = resolveFirstVisibleCellIndex();
+        this.resetFirstVisibleCellIndexAfterLayout = true;
+        logger.debug("requestLayoutPreservingPosition: firstVisibleCellIndex={}, height={}, width={}",
+                this.firstVisibleCellIndex, getHeight(), getWidth());
+        requestLayout();
+    }
+
+    /**
+     * Called by a subclass's {@code layoutChildren()} once it has consumed {@link #firstVisibleCellIndex} for
+     * the current pass, resetting it back to {@code 0} if {@link #requestLayoutPreservingPosition()} asked for
+     * that reset - a no-op otherwise, so an unrelated layout pass (e.g. one driven only by
+     * {@link #onResizeStarted()}/{@link #onResizeFinished()}) doesn't clobber a value it didn't set.
+     */
+    void consumeFirstVisibleCellIndexReset() {
+        if (this.resetFirstVisibleCellIndexAfterLayout) {
+            this.firstVisibleCellIndex = 0;
+            this.resetFirstVisibleCellIndexAfterLayout = false;
         }
     }
 

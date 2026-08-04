@@ -26,6 +26,7 @@ import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.control.IndexedCell;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -62,6 +63,12 @@ class ColumnListViewTest {
 
     private static double computePrefWidth(ColumnListView<?> listView) throws ReflectiveOperationException {
         Method method = AbstractColumnView.class.getDeclaredMethod("computePrefWidth", double.class);
+        method.setAccessible(true);
+        return (double) method.invoke(listView, -1.0);
+    }
+
+    private static double computePrefHeight(ColumnListView<?> listView) throws ReflectiveOperationException {
+        Method method = AbstractColumnView.class.getDeclaredMethod("computePrefHeight", double.class);
         method.setAccessible(true);
         return (double) method.invoke(listView, -1.0);
     }
@@ -762,5 +769,204 @@ class ColumnListViewTest {
             assertThat(listView.isFocused()).isTrue();
             return null;
         });
+    }
+
+    @Test
+    void horizontalScrollbar_whenVisible_lastRowDoesNotOverlapIt() throws InterruptedException {
+        // Regression test: getRowCount() must be computed against the viewport height minus the horizontal
+        // scrollbar's own height (see ColumnListView#getViewportHeight()) once that scrollbar is actually
+        // showing - otherwise the last row of cells gets rendered underneath it.
+        var listView = newRealizedListView(200, 80, 250, 300);
+
+        FxTestSupport.onFxThread(() -> {
+            var hbar = (ScrollBar) listView.lookup(".scroll-bar:horizontal");
+            assertThat(hbar).as("a horizontal scrollbar should be showing").isNotNull();
+            assertThat(hbar.isVisible()).isTrue();
+            var hbarBounds = listView.sceneToLocal(hbar.localToScene(hbar.getBoundsInLocal()));
+            var flow = (VirtualFlow<?>) listView.lookup(".virtual-flow");
+            var column = flow.getFirstVisibleCell();
+            var columnNode = (VBox) column.getGraphic();
+            var lastCell = columnNode.getChildren().get(columnNode.getChildren().size() - 1);
+            var lastCellBounds = listView.sceneToLocal(lastCell.localToScene(lastCell.getBoundsInLocal()));
+            assertThat(lastCellBounds.getMaxY()).isLessThanOrEqualTo(hbarBounds.getMinY() + 0.5);
+            return null;
+        });
+    }
+
+    @Test
+    void horizontalScrollbar_afterManualRefreshOnAlreadyShownView_lastRowDoesNotOverlapIt()
+            throws InterruptedException {
+        // Mirrors shellfx-dialogs' FileListView: manualRefresh, no columnWidth/visibleColumnCount set (CSS/
+        // content-driven column width), starting small and growing via refresh() on an already-shown view -
+        // like navigating from a small folder into a much larger one.
+        var listView = FxTestSupport.onFxThread(() -> {
+            var view = new ColumnListView<String>();
+            view.setManualRefresh(true);
+            // The default ColumnListCell renders nothing (no setText/setGraphic), so columns would collapse
+            // to zero content-driven width and never need a horizontal scrollbar regardless of item count -
+            // a real cell factory (like FileListCell in shellfx-dialogs) is needed to reproduce this.
+            view.setCellFactory(lv -> new ColumnListCell<String>() {
+                private final Label label = new Label();
+
+                {
+                    setGraphic(label);
+                }
+
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    label.setText(empty ? null : item);
+                }
+            });
+            var items = FXCollections.<String>observableArrayList();
+            for (int i = 0; i < 5; i++) {
+                items.add("item-" + i);
+            }
+            view.setItems(items);
+            view.refresh();
+            // 306 = 17 * 18 (this view's row height, established empirically) - chosen so a naive
+            // height/rowHeight computation lands exactly on 17, while correctly subtracting the horizontal
+            // scrollbar's own ~8px height lands on 16 - the two disagree, so this test can actually tell
+            // whether the subtraction happens instead of both landing on the same floor()-truncated value.
+            stage.setScene(new Scene(view, 250, 306));
+            if (!stage.isShowing()) {
+                stage.show();
+            }
+            view.applyCss();
+            view.layout();
+            return view;
+        });
+        for (var attempt = 0; attempt < 50 && listView.getRowCount() <= 1; attempt++) {
+            FxTestSupport.onFxThread(() -> {
+                listView.applyCss();
+                listView.layout();
+                return null;
+            });
+        }
+
+        FxTestSupport.onFxThread(() -> {
+            var items = FXCollections.<String>observableArrayList();
+            for (int i = 0; i < 300; i++) {
+                items.add("some-fairly-long-file-name-" + i + ".txt");
+            }
+            listView.setItems(items);
+            listView.refresh();
+            listView.applyCss();
+            listView.layout();
+            return null;
+        });
+        for (var attempt = 0; attempt < 50; attempt++) {
+            FxTestSupport.onFxThread(() -> {
+                listView.applyCss();
+                listView.layout();
+                return null;
+            });
+        }
+
+        FxTestSupport.onFxThread(() -> {
+            var hbar = (ScrollBar) listView.lookup(".scroll-bar:horizontal");
+            assertThat(hbar).as("a horizontal scrollbar should be showing").isNotNull();
+            assertThat(hbar.isVisible()).isTrue();
+            var hbarBounds = listView.sceneToLocal(hbar.localToScene(hbar.getBoundsInLocal()));
+            var flow = (VirtualFlow<?>) listView.lookup(".virtual-flow");
+            var column = flow.getFirstVisibleCell();
+            var columnNode = (VBox) column.getGraphic();
+            var lastCell = columnNode.getChildren().get(columnNode.getChildren().size() - 1);
+            var lastCellBounds = listView.sceneToLocal(lastCell.localToScene(lastCell.getBoundsInLocal()));
+            assertThat(lastCellBounds.getMaxY()).isLessThanOrEqualTo(hbarBounds.getMinY() + 0.5);
+            return null;
+        });
+    }
+
+    @Test
+    void edit_unrelatedLayoutPassAfterwards_staysInEditingState() throws InterruptedException {
+        // Regression test: a real bug seen in FileChooser (which uses ColumnListView) - starting an edit
+        // (ColumnListCell#startEdit moves focus to the listView before creating the edit control) used to get
+        // immediately undone by the very next, otherwise unrelated layout pass (e.g. the one that focus change
+        // itself can trigger), because that pass used to unconditionally mark every column dirty, forcing the
+        // editing column to rebuild from scratch and discard its mid-edit cell.
+        var listView = newRealizedListView(20, 80, 250, 300);
+        FxTestSupport.onFxThread(() -> {
+            listView.setEditable(true);
+            listView.edit(0);
+            listView.applyCss();
+            listView.layout();
+            return null;
+        });
+
+        FxTestSupport.onFxThread(() -> {
+            listView.requestLayout();
+            listView.applyCss();
+            listView.layout();
+
+            var flow = (VirtualFlow<?>) listView.lookup(".virtual-flow");
+            var column = flow.getCell(0);
+            var columnNode = (VBox) column.getGraphic();
+            var cell0 = (ColumnListCell<?>) columnNode.getChildren().get(0);
+            assertThat(cell0.isEditing()).isTrue();
+            return null;
+        });
+    }
+
+    @Test
+    void computePrefHeight_afterSettling_reusesActualHeightInsteadOfRescanningCellContent()
+            throws InterruptedException {
+        // AbstractColumnView#computePrefHeight() used to delegate straight to the virtual flow's own
+        // prefHeight(), which realizes/recycles columns outside the visible range purely to measure them.
+        // Recycling a column reassigns its cells to different items via updateItem(), and in the real
+        // FileChooserDialog - shown inside a Priority.ALWAYS VBox that re-queries this method on every idle
+        // layout pass - a recycled cell's Labeled text genuinely changing fired textMetricsChanged() ->
+        // requestLayout(), re-arming the whole ancestor chain forever. That multi-pulse churn isn't reliably
+        // reproducible in headless glass (nor was it in a real, live one, despite extensive attempts), but the
+        // underlying defect doesn't need the full loop to observe: once the view has a real, already
+        // established height, computePrefHeight() should just report it, not recompute something else from
+        // realized cell content - which is exactly what it did before the fix (see the assertion below).
+        var view = FxTestSupport.onFxThread(() -> {
+            var v = new ColumnListView<Integer>();
+            v.setCellFactory(lv -> new ColumnListCell<Integer>() {
+                private final Label label = new Label();
+
+                {
+                    setGraphic(label);
+                }
+
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    label.setText(empty || item == null ? null : "Cell " + item);
+                }
+            });
+            var items = FXCollections.<Integer>observableArrayList();
+            for (int i = 0; i < 149; i++) {
+                items.add(i);
+            }
+            v.setItems(items);
+            stage.setScene(new Scene(v, 774, 289));
+            if (!stage.isShowing()) {
+                stage.show();
+            }
+            v.applyCss();
+            v.layout();
+            return v;
+        });
+        for (var attempt = 0; attempt < 50 && view.getRowCount() <= 1; attempt++) {
+            FxTestSupport.onFxThread(() -> {
+                view.applyCss();
+                view.layout();
+                return null;
+            });
+        }
+
+        var prefHeight = FxTestSupport.onFxThread(() -> {
+            try {
+                return computePrefHeight(view);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        assertThat(prefHeight)
+                .as("computePrefHeight() should report the view's actual, already-established height")
+                .isEqualTo(view.getHeight());
     }
 }

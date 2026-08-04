@@ -19,17 +19,13 @@ package com.techsenger.shellfx.material.column;
 import com.techsenger.annotations.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
-import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -57,7 +53,22 @@ import org.slf4j.LoggerFactory;
  */
 public class ColumnTileView<T> extends AbstractColumnView<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ColumnTileView.class);
+    /**
+     * Named reasons {@code layoutChildren()} can have work to do, recorded into {@link #pendingTriggers} by
+     * the specific listener/call site that noticed each one and logged (at debug level) so a layout pass that
+     * turns out to do nothing observable can still be told apart from one genuinely driven by one of these -
+     * see {@link #layoutChildren()}.
+     */
+    enum RequestLayoutTrigger {
+
+        ITEMS,
+
+        ROW_HEIGHT,
+
+        COLUMN_COUNT,
+
+        VIRTUAL_FLOW_WIDTH
+    }
 
     private static class ColumnTileViewRow<T> extends IndexedCell<Integer> {
 
@@ -114,13 +125,13 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
             node.getChildren().clear();
             clearSelection();
             if (item != null) {
-                if (tileView.rowHeight.get() > 0) {
+                if (tileView.rowHeight > 0) {
                     updateCells();
                     dirty = false;
                 } else {
                     addRowHeightCell();
                 }
-            } else if (tileView.rowHeight.get() > 0) {
+            } else if (tileView.rowHeight > 0) {
                 updateEmptyCells();
             }
         }
@@ -138,7 +149,7 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
          * Applies {@link ColumnTileView#rowHeight} to this row's node, if resolved yet.
          */
         private void applyRowHeight() {
-            var height = tileView.rowHeight.get();
+            var height = tileView.rowHeight;
             if (height > 0) {
                 node.setMinHeight(height);
                 node.setPrefHeight(height);
@@ -179,12 +190,10 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
                 node.getStyleClass().add("last");
             }
             var items = this.tileView.getItems();
-            // item (this row's own offset) can be momentarily stale relative to a just-shrunk items list:
-            // refresh()'s reentrancy guard can postpone an ITEMS-triggered offsets rebuild behind another,
-            // unrelated trigger (see RefreshTrigger), and if that other trigger sees no rowCount change, its
-            // own updateOffsets() call is skipped too - leaving this row pointing past the end of the new
-            // list until the next refresh corrects it. Clamp instead of crashing; an empty row here
-            // self-heals on that next refresh.
+            // item (this row's own offset) can be momentarily stale relative to a just-shrunk items list -
+            // e.g. items shrinking requests an ITEMS-triggered layout pass, but this row's own updateItem can
+            // still run once more (with its old offset) before that pass rebuilds offsets. Clamp instead of
+            // crashing; an empty row here self-heals on the next layout pass.
             var startIndex = Math.min(item, items.size());
             int endIndex = Math.min(startIndex + this.tileView.getColumnCount(), items.size());
             var cellItems = items.subList(startIndex, endIndex);
@@ -262,22 +271,26 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         }
 
         /**
-         * Empty cell is used to calculate row height.
+         * Empty cell is used to calculate row height. Measured synchronously - the cell is CSS-applied and
+         * autosized right here (it already has a live {@code Scene} through {@link #node}, so theme lookups
+         * resolve correctly) instead of waiting for an actual layout pass and a {@code heightProperty()}
+         * notification, so no pulse boundary needs to be crossed to know the result.
          */
         private void addRowHeightCell() {
             createCell();
             TileCell<T> cell = cachedCells.get(0);
-            ChangeListener<Number> listener = new ChangeListener<>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> ov, Number oldV, Number newV) {
-                    if (newV.doubleValue() > 1) {
-                        cell.heightProperty().removeListener(this);
-                        Platform.runLater(() -> tileView.rowHeight.set(newV.doubleValue()));
-                    }
-                }
-            };
-            cell.heightProperty().addListener(listener);
             this.node.getChildren().add(cell);
+            cell.applyCss();
+            cell.autosize();
+            // Rounded up to match how this row's container itself snaps each real child's height once
+            // actually laid out (pixel-snapping rounds a fractional pref height up) - using the raw, unsnapped
+            // value here would under-measure rowHeight, so rowCount ends up one row too many and the real
+            // rendered content overflows past the computed viewport height.
+            var height = Math.ceil(cell.getHeight());
+            if (height > 1) {
+                tileView.rowHeight = height;
+                tileView.requestLayout(RequestLayoutTrigger.ROW_HEIGHT);
+            }
         }
 
         private void markDirty() {
@@ -323,24 +336,16 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         }
     }
 
-    /**
-    * Triggers that cause a refresh when changed.
-    */
-    private enum RefreshTrigger {
-
-        ITEMS,
-
-        ROW_HEIGHT,
-
-        COLUMN_COUNT,
-
-        VIRTUAL_FLOW_WIDTH
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ColumnTileView.class);
 
     /**
-     * Always fixed height of the row, auto-measured the same way as {@link ColumnListView#rowHeight}.
+     * Always fixed height of the row, resolved once (synchronously, from a throwaway probe cell - see
+     * {@link ColumnTileViewRow#addRowHeightCell()}) and never reset afterward; {@code -1} means "not yet
+     * resolved". Not an observable property: nothing outside {@link ColumnTileViewRow#addRowHeightCell()}
+     * needs to react to it changing, since that method itself calls {@link #requestLayout()} right after
+     * setting it.
      */
-    private final DoubleProperty rowHeight = new SimpleDoubleProperty();
+    private double rowHeight = -1;
 
     /**
      * Fixed number of cells per row &mdash; the input this view is built around (see class javadoc).
@@ -353,10 +358,13 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
     private final TileVirtualFlow<T> virtualFlow = new TileVirtualFlow<>();
 
     /**
-     * The last-saved trigger for a refresh postponed behind an in-progress one; see
-     * {@link AbstractColumnView#getCurrentType()} for the reentrancy guard this is part of.
+     * Reasons pending for the next {@code layoutChildren()} pass, set by the specific listener/call site that
+     * noticed each one (see {@link #requestLayout(RequestLayoutTrigger)}) and consumed/cleared there - see
+     * {@link #layoutChildren()} for how {@link RequestLayoutTrigger#ITEMS} in particular changes its behavior
+     * (clearing selection/editing state, unconditionally recomputing offsets) versus every other trigger
+     * (which only recomputes when the resolved row count actually differs).
      */
-    private RefreshTrigger secondRefreshTrigger = null;
+    private final EnumSet<RequestLayoutTrigger> pendingTriggers = EnumSet.noneOf(RequestLayoutTrigger.class);
 
     private final List<WeakReference<ColumnTileViewRow<?>>> rows = new LinkedList<>();
 
@@ -366,19 +374,19 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         //default cell factory
         setCellFactory(v -> new TileCell<>());
         getChildren().add(this.virtualFlow);
-        this.rowHeight.set(-1);
-        this.rowHeight.addListener((ov, oldV, newV) -> refresh(RefreshTrigger.ROW_HEIGHT, RefreshType.PRIMARY));
-        this.columnCount.addListener((ov, oldV, newV) -> refresh(RefreshTrigger.COLUMN_COUNT, RefreshType.PRIMARY));
+        this.columnCount.addListener((ov, oldV, newV) -> requestLayout(RequestLayoutTrigger.COLUMN_COUNT));
         this.virtualFlow.getVBar().widthProperty().addListener((ov, oldV, newV) -> updateCellWidths());
         this.virtualFlow.getVBar().visibleProperty().addListener((ov, oldV, newV) -> updateCellWidths());
         //firstVisibleCellIndex is set via onResizeStarted.
         this.virtualFlow.widthProperty().addListener((ov, oldV, newV) -> {
-            // Not just a cosmetic width reapplication: the very first refresh() attempt (e.g. from
-            // setMode() right after this view is added to the scene) commonly runs before the virtual flow
-            // has a real width yet and bails out via refresh()'s own width guard, leaving rowHeight/offsets
+            // Not just a cosmetic width reapplication: the very first layout attempt (e.g. from setMode()
+            // right after this view is added to the scene) commonly runs before the virtual flow has a real
+            // width yet and bails out via layoutChildren()'s own width guard, leaving rowHeight/offsets
             // permanently unresolved unless something retries once a real width is known - this does that,
             // mirroring ColumnListView's own virtualFlow.heightProperty() recovery listener.
-            savePositionAndRefreshView(RefreshTrigger.VIRTUAL_FLOW_WIDTH);
+            pendingTriggers.add(RequestLayoutTrigger.VIRTUAL_FLOW_WIDTH);
+            logger.debug("Requesting layout, trigger: {}", RequestLayoutTrigger.VIRTUAL_FLOW_WIDTH);
+            requestLayoutPreservingPosition();
             updateCellWidths();
         });
         virtualFlow.setCellFactory(vf -> new ColumnTileViewRow<>(this) {
@@ -426,7 +434,8 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
      * This method is called when manual refresh is enabled.
      */
     public void refresh() {
-        refresh(RefreshTrigger.ITEMS, RefreshType.PRIMARY);
+        refreshItems();
+        resolveGeometry();
     }
 
     public int resolveRowIndex(int cellIndex) {
@@ -515,6 +524,65 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
     }
 
     /**
+     * The single place that recomputes offsets/row count from current items and column count &mdash; replaces
+     * the old, separately-triggered refresh dispatch. Every cause that needs a recompute (items changing, the
+     * row-height probe cell resolving, {@link #columnCount} changing, the virtual flow's own width changing)
+     * goes through {@link #requestLayout(RequestLayoutTrigger)} (see the constructor) and lets this - JavaFX's
+     * own non-reentrant layout-pass mechanism - pick it up; nothing here can recurse into itself the way a
+     * hand-rolled "postpone and retry" guard would have to defend against. {@link #pendingTriggers} is read
+     * and cleared unconditionally up front (not just when non-empty) so a pass with no pending trigger at all -
+     * i.e. one caused by something outside this class entirely, such as the virtual flow's own internal
+     * layout churn - is clearly visible as such in the log, rather than silently looking identical to one of
+     * ours.
+     */
+    @Override
+    protected void layoutChildren() {
+        if (getItems() != null && getWidth() >= 0.1) {
+            if (rowHeight < 0) {
+                prepareRowHeightResolving();
+                virtualFlow.resizeRelocate(0, 0, getWidth(), getHeight());
+                virtualFlow.applyCss();
+                virtualFlow.layout();
+            }
+            if (rowHeight >= 0) {
+                var triggers = EnumSet.copyOf(pendingTriggers);
+                pendingTriggers.clear();
+                var newRowCount = (int) Math.ceil((double) this.getItems().size() / getColumnCount());
+                logger.trace("layoutChildren: triggers={}, currentRowCount={}, newRowCount={}", triggers,
+                        getRowCount(), newRowCount);
+                var itemsTriggered = triggers.contains(RequestLayoutTrigger.ITEMS);
+                if (itemsTriggered || getRowCount() != newRowCount) {
+                    // Only marked dirty when a genuine geometry change is about to be applied - not on every
+                    // layoutChildren() pass (this now runs far more often than the old, separately-triggered
+                    // refresh() ever did, since any descendant's requestLayout() - e.g. edit()'s own, on just
+                    // one row - bubbles up here too). Sweeping unconditionally would force every row to
+                    // rebuild on passes that change nothing, discarding e.g. a cell mid-edit for no reason.
+                    var iterator = this.rows.iterator();
+                    while (iterator.hasNext()) {
+                        var ref = iterator.next();
+                        var row = ref.get();
+                        if (row == null) {
+                            iterator.remove();
+                        } else {
+                            row.markDirty();
+                        }
+                    }
+                    updateOffsets(newRowCount);
+                    scrollToFirstRow(getFirstVisibleCellIndex());
+                }
+                consumeFirstVisibleCellIndexReset();
+            }
+        }
+        double width = getWidth();
+        double height = getHeight();
+        virtualFlow.resizeRelocate(0, 0, width, height);
+        // resizeRelocate() only triggers the flow's own layout when its size actually changes, so a scroll
+        // (a position/state change with no size change, e.g. from VirtualFlowUtils#scrollTo) would otherwise
+        // never get processed here at all - explicitly laying it out unconditionally covers that case too.
+        virtualFlow.layout();
+    }
+
+    /**
      * Returns the currently realized cell showing {@code itemIndex}, or {@code null} if it isn't currently
      * realized (e.g. scrolled far out of view) or {@code itemIndex} is out of range. Used by
      * {@link ColumnViewUtils#updateCell(ColumnTileView, int)} to force just that one cell to re-render from
@@ -575,17 +643,6 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
     }
 
     @Override
-    protected void layoutChildren() {
-        double width = getWidth();
-        double height = getHeight();
-        virtualFlow.resizeRelocate(0, 0, width, height);
-        // resizeRelocate() only triggers the flow's own layout when its size actually changes, so a scroll
-        // (a position/state change with no size change, e.g. from VirtualFlowUtils#scrollTo) would otherwise
-        // never get processed here at all - explicitly laying it out unconditionally covers that case too.
-        virtualFlow.layout();
-    }
-
-    @Override
     boolean isContainerOrCellNode(Node node) {
         return node instanceof HBox || node instanceof TileCell;
     }
@@ -597,7 +654,16 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
 
     @Override
     void refreshItems() {
-        refresh(RefreshTrigger.ITEMS, RefreshType.PRIMARY);
+        // Cleared here, synchronously, the moment items actually change - not deferred into layoutChildren()'s
+        // own handling of the ITEMS trigger, since that can run much later (only on the next real layout
+        // pass), by which point a caller may have already set a brand new selection for the new items (e.g.
+        // FileTabFxView's setSelectedFile() right after refresh()) - clearing it there would wipe out that
+        // fresh selection, not just genuinely stale state left over from before the items changed.
+        if (getSelectionModel().getSelectedIndex() != -1) {
+            getSelectionModel().clearSelection();
+        }
+        setEditingCellIndex(-1);
+        requestLayout(RequestLayoutTrigger.ITEMS);
     }
 
     /**
@@ -689,26 +755,6 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         }
     }
 
-    private void selectPrevious(int selectedIndex, int newSelectedIndex) {
-        //firstly we provide the row (it can be absent)
-        var newRowIndex = resolveRowIndex(newSelectedIndex);
-        var firstVisibleRowIndex = this.virtualFlow.getFirstVisibleCell().getIndex();
-        if (newRowIndex <= firstVisibleRowIndex) {
-            scrollToFirstRow(newRowIndex);
-        }
-        getSelectionModel().select(newSelectedIndex);
-    }
-
-    private void selectNext(int selectedIndex, int newSelectedIndex) {
-        //firstly we provide the row (it can be absent)
-        var newRowIndex = resolveRowIndex(newSelectedIndex);
-        var lastVisibleRowIndex = this.virtualFlow.getLastVisibleCell().getIndex();
-        if (newRowIndex >= lastVisibleRowIndex) {
-            scrollToLastRow(newRowIndex);
-        }
-        getSelectionModel().select(newSelectedIndex);
-    }
-
     @Override
     void selectHome() {
         if (this.getItems().isEmpty()) {
@@ -787,6 +833,26 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         getSelectionModel().select(target);
     }
 
+    private void selectPrevious(int selectedIndex, int newSelectedIndex) {
+        //firstly we provide the row (it can be absent)
+        var newRowIndex = resolveRowIndex(newSelectedIndex);
+        var firstVisibleRowIndex = this.virtualFlow.getFirstVisibleCell().getIndex();
+        if (newRowIndex <= firstVisibleRowIndex) {
+            scrollToFirstRow(newRowIndex);
+        }
+        getSelectionModel().select(newSelectedIndex);
+    }
+
+    private void selectNext(int selectedIndex, int newSelectedIndex) {
+        //firstly we provide the row (it can be absent)
+        var newRowIndex = resolveRowIndex(newSelectedIndex);
+        var lastVisibleRowIndex = this.virtualFlow.getLastVisibleCell().getIndex();
+        if (newRowIndex >= lastVisibleRowIndex) {
+            scrollToLastRow(newRowIndex);
+        }
+        getSelectionModel().select(newSelectedIndex);
+    }
+
     /**
      * Like {@link #scrollToFirstRow(int)}, but corrects for a real {@code VirtualFlow} behavior: scrolling a
      * row near the end of the data to the viewport's leading edge can get pulled back to an earlier row so
@@ -801,7 +867,7 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         var first = this.virtualFlow.getFirstVisibleCell();
         var actualFirst = first == null ? rowIndex : first.getIndex();
         if (actualFirst < rowIndex) {
-            this.virtualFlow.scrollPixels((rowIndex - actualFirst) * this.rowHeight.get());
+            this.virtualFlow.scrollPixels((rowIndex - actualFirst) * this.rowHeight);
             applyCss();
             layout();
         }
@@ -841,16 +907,22 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         return rowIndex * getColumnCount() + resolveColumnCount(rowIndex) - 1;
     }
 
-    private void savePositionAndRefreshView(RefreshTrigger refreshTrigger) {
-        setFirstVisibleCellIndex(resolveFirstVisibleCellIndex());
-        refresh(refreshTrigger, RefreshType.PRIMARY);
-        setFirstVisibleCellIndex(0);
+    /**
+     * Records {@code trigger} as a reason {@link #layoutChildren()} has work to do and requests a layout pass
+     * - the named-trigger counterpart of a plain {@link #requestLayout()} call, used by every listener/call
+     * site that wants {@code layoutChildren()} to actually recompute geometry (as opposed to, e.g.
+     * {@link #edit(int)}, which only needs one row's own nested layout to run).
+     */
+    private void requestLayout(RequestLayoutTrigger trigger) {
+        pendingTriggers.add(trigger);
+        logger.trace("Requesting layout, trigger: {}", trigger);
+        requestLayout();
     }
 
     /**
      * Re-applies the current cell width to every currently live row's cells. Deliberately independent of
-     * {@link #refresh(RefreshTrigger, RefreshType)} &mdash; a width change is a pure view-level resize, not a
-     * data change (see {@link ColumnListView#updateColumnWidths()} for the equivalent reasoning there).
+     * {@code layoutChildren()}'s own geometry recompute &mdash; a width change is a pure view-level resize,
+     * not a data change (see {@link ColumnListView#updateColumnWidths()} for the equivalent reasoning there).
      */
     private void updateCellWidths() {
         var iterator = this.rows.iterator();
@@ -865,77 +937,22 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         }
     }
 
-
     /**
-     * This method is called when view or data has been changed.
-     *
-     * @param refreshTrigger
+     * Sets up the transient, single-cell placeholder geometry ({@link #getRowCount()}{@code  == 1}, one
+     * offset) used only to get a single real row realized so its probe cell can measure {@link #rowHeight}
+     * (see {@link ColumnTileViewRow#addRowHeightCell()}); idempotent, so calling it again on a later
+     * {@code layoutChildren()} pass (before row height actually resolves) is harmless.
      */
-    private void refresh(RefreshTrigger refreshTrigger, RefreshType type) {
-        logger.debug("Refresh request, trigger: {}, type: {}", refreshTrigger, type);
-        if (this.getItems() == null) {
-            return;
-        }
-        if (getWidth() < 0.1) {
-            return;
-        }
-        if (rowHeight.get() < 0) {
-            prepareRowHeightResolving();
-            return;
-        }
-        var iterator = this.rows.iterator();
-        while (iterator.hasNext()) {
-            var ref = iterator.next();
-            var row = ref.get();
-            if (row == null) {
-                iterator.remove();
-            } else {
-                row.markDirty();
-            }
-        }
-
-        if (type == RefreshType.PRIMARY && getCurrentType() != null) {
-            secondRefreshTrigger = refreshTrigger; // there can be multiple attempt, so the last one is saved
-            logger.debug("Refresh request saved and postponed, trigger: {}, type: {}", refreshTrigger, type);
-            return;
-        }
-        try {
-            setCurrentType(type);
-            var newRowCount = (int) Math.ceil((double) this.getItems().size() / getColumnCount());
-            if (refreshTrigger == RefreshTrigger.ITEMS) {
-                if (getSelectionModel().getSelectedIndex() != -1) {
-                    getSelectionModel().clearSelection();
-                }
-                setEditingCellIndex(-1);
-                updateOffsets(newRowCount);
-                scrollToFirstRow(getFirstVisibleCellIndex());
-            } else {
-                if (getRowCount() != newRowCount) {
-                    updateOffsets(newRowCount);
-                    scrollToFirstRow(getFirstVisibleCellIndex());
-                }
-            }
-            logger.debug("Refreshed, trigger: {}, type: {}, itemsCount: {}", refreshTrigger, type, getItems().size());
-            if (type == RefreshType.PRIMARY && secondRefreshTrigger != null) {
-                refresh(secondRefreshTrigger, RefreshType.SECONDARY);
-                secondRefreshTrigger = null;
-            }
-        } finally {
-            if (type == RefreshType.SECONDARY) {
-                setCurrentType(RefreshType.PRIMARY);
-            } else {
-                setCurrentType(null);
-            }
-        }
-    }
-
     private void prepareRowHeightResolving() {
         setRowCount(1);
         this.getOffsets().setAll(List.of(0));
+        virtualFlow.setCellCount(1);
     }
 
     private void updateOffsets(int rowCount) {
         setRowCount(rowCount);
+        logger.debug("updateOffsets: rowCount={}, columnCount={}, itemsCount={}", rowCount, getColumnCount(),
+                this.getItems().size());
         List<Integer> offs = new ArrayList<>();
         for (int i = 0; i < rowCount; i++) {
             offs.add(i * getColumnCount());
