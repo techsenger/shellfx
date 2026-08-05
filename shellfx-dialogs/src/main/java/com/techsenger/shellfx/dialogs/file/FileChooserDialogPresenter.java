@@ -387,7 +387,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
                     var segment = segments.get(i);
                     var segmentUri = UriUtils.resolvePath(previousUri, segment);
                     var directoryLocation = new Location(
-                            DialogIcons.DIRECTORY,
+                            DialogIcons.FOLDER,
                             segment,
                             i + 1,
                             storage,
@@ -646,7 +646,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
             location = createLocation(storage);
         } else {
             location = new Location(
-                    DialogIcons.DIRECTORY,
+                    DialogIcons.FOLDER,
                     segments.get(segments.size() - 1),
                     segments.size(),
                     storage,

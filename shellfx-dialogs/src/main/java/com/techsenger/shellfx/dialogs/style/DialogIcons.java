@@ -46,7 +46,7 @@ public interface DialogIcons {
 
     StyleFontIcon SAVE_AS = new StyleFontIcon("save-as-icon");
 
-    StyleFontIcon DIRECTORY = new StyleFontIcon("directory-icon");
+    StyleFontIcon FOLDER = new StyleFontIcon("folder-icon");
 
     StyleFontIcon FILE = new StyleFontIcon("file-icon");
 }

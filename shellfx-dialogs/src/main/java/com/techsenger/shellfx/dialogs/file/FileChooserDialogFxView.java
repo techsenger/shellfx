@@ -236,7 +236,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
     private AppearanceSettings settings;
 
     private Function<T, FontIcon<?>> iconProvider =
-            (f) -> f.isDirectory() ? DialogIcons.DIRECTORY : DialogIcons.FILE;
+            (f) -> f.isDirectory() ? DialogIcons.FOLDER : DialogIcons.FILE;
 
     public FileChooserDialogFxView() {
         super();

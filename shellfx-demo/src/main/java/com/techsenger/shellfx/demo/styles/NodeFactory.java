@@ -61,7 +61,7 @@ final class NodeFactory {
     }
 
     static Button createIconButton(String styleClass) {
-        var b = new Button(null, new FontIconView(DialogIcons.DIRECTORY));
+        var b = new Button(null, new FontIconView(DialogIcons.FOLDER));
         b.getStyleClass().add(StyleClasses.ICON_BUTTON);
         if (styleClass != null) {
             b.getStyleClass().add(styleClass);
