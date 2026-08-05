@@ -151,7 +151,7 @@ public class DefaultGenericFile implements GenericFile {
         child.storage = this.storage;
         child.entryType = childEntryType;
         child.name = childName;
-        child.uri = UriUtils.resolvePath(this.uri, childName);
+        child.uri = UriUtils.resolvePath(this.uri, childName, childEntryType == FileEntryType.DIRECTORY);
         child.virtual = true;
         return child;
     }
@@ -280,7 +280,7 @@ public class DefaultGenericFile implements GenericFile {
         var segments = UriUtils.getPathSegments(rootUri, this.uri);
         var parents = new ArrayList<DefaultGenericFile>(Math.min(segments.size(), limit));
         for (int i = segments.size() - 1; i >= 1 && parents.size() < limit; i--) {
-            var parentUri = UriUtils.resolvePath(rootUri, String.join("/", segments.subList(0, i)));
+            var parentUri = UriUtils.resolvePath(rootUri, String.join("/", segments.subList(0, i)), true);
             var parent = new DefaultGenericFile();
             parent.storage = this.storage;
             parent.entryType = FileEntryType.DIRECTORY;

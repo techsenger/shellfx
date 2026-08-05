@@ -385,7 +385,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
                 var previousUri = storage.getUri();
                 for (var i = 0; i < segments.size(); i++) {
                     var segment = segments.get(i);
-                    var segmentUri = UriUtils.resolvePath(previousUri, segment);
+                    var segmentUri = UriUtils.resolvePath(previousUri, segment, true);
                     var directoryLocation = new Location(
                             DialogIcons.FOLDER,
                             segment,
@@ -456,7 +456,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     protected void onEditCommitted(T file) {
         switch (editType) {
             case NEW_DIRECTORY -> {
-                var dirUri = UriUtils.resolvePath(directory, file.getName());
+                var dirUri = UriUtils.resolvePath(directory, file.getName(), true);
                 try {
                     this.storage.createDirectory(dirUri);
                     updateFiles(file);
@@ -727,7 +727,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
             showWarning("The file '" + fileName + "' does not exist.");
             return null;
         }
-        URI fileUri = UriUtils.resolvePath(getDirectory(), fileName);
+        URI fileUri = UriUtils.resolvePath(getDirectory(), fileName, false);
         var file = this.storage.createVirtual(null, fileName, fileUri);
         return file;
     }

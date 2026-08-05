@@ -137,11 +137,15 @@ public final class UriUtils {
      * @param baseUri the base URI (e.g., {@code "gs://bucket/folder/"}). Must not be {@code null}.
      * @param path the path to resolve against the base URI (e.g., {@code "file.txt"}). Leading/trailing slashes are
      * handled gracefully. Must not be {@code null}.
+     * @param isDirectory whether the resolved path denotes a directory; when {@code true}, a trailing slash is
+     * appended (if not already present) so the result matches the URI form a storage would report for that same
+     * directory once it exists (e.g. from a directory listing) &mdash; this matters when the caller resolves a
+     * path before the entry is created, so there is nothing on disk yet to derive the trailing slash from.
      * @return A new URI with the resolved path.
      * @throws IllegalArgumentException If {@code baseUri} or {@code path} is {@code null}, or if the resolved URI
      * is invalid.
      */
-    public static URI resolvePath(URI baseUri, String path) {
+    public static URI resolvePath(URI baseUri, String path, boolean isDirectory) {
         if (baseUri == null || path == null) {
             throw new IllegalArgumentException("URI and path must not be null");
         }
@@ -150,10 +154,22 @@ public final class UriUtils {
             basePath = "/";
         }
         String joinedPath = joinPaths(basePath, path);
+        if (isDirectory && !joinedPath.endsWith("/")) {
+            joinedPath = joinedPath + "/";
+        }
+        // URI#getAuthority() returns null both when the authority component is truly absent and when it is
+        // present but empty (e.g. "file:///path"). Passing that null straight to the URI constructor below
+        // would silently drop the "//" marker, turning "file:///path" into "file:/path" - a different URI
+        // string for the same file, which then fails equals() against URIs produced elsewhere (e.g. by
+        // listing the directory), even though both resolve to the same Path.
+        var authority = baseUri.getAuthority();
+        if (authority == null && baseUri.toString().startsWith(baseUri.getScheme() + "://")) {
+            authority = "";
+        }
         try {
             return new URI(
                 baseUri.getScheme(),
-                baseUri.getAuthority(),
+                authority,
                 joinedPath, //path passed to constructor can't be encoded
                 baseUri.getQuery(),
                 baseUri.getFragment()

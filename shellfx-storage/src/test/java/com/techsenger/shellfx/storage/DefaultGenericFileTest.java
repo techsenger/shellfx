@@ -71,8 +71,8 @@ public class DefaultGenericFileTest {
         var parent = child.getParent();
 
         URI expectedUri = IS_WINDOWS
-                ? URI.create("file:///C:/home/user/foo")
-                : URI.create("file:///home/user/foo");
+                ? URI.create("file:///C:/home/user/foo/")
+                : URI.create("file:///home/user/foo/");
 
         assertThat(parent.getUri()).isEqualTo(expectedUri);
         assertThat(parent.getName()).isEqualTo("foo");
@@ -103,14 +103,14 @@ public class DefaultGenericFileTest {
         var parents = child.getParents();
 
         URI fooUri = IS_WINDOWS
-                ? URI.create("file:///C:/home/user/foo")
-                : URI.create("file:///home/user/foo");
+                ? URI.create("file:///C:/home/user/foo/")
+                : URI.create("file:///home/user/foo/");
         URI userUri = IS_WINDOWS
-                ? URI.create("file:///C:/home/user")
-                : URI.create("file:///home/user");
+                ? URI.create("file:///C:/home/user/")
+                : URI.create("file:///home/user/");
         URI homeUri = IS_WINDOWS
-                ? URI.create("file:///C:/home")
-                : URI.create("file:///home");
+                ? URI.create("file:///C:/home/")
+                : URI.create("file:///home/");
 
         assertThat(parents).hasSize(4);
         assertThat(parents.get(0).getUri()).isEqualTo(fooUri);
