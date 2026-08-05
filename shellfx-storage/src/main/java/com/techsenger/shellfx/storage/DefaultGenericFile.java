@@ -50,7 +50,9 @@ public class DefaultGenericFile implements GenericFile {
 
     private String name;
 
-    private @Nullable Long lastModified;
+    private @Nullable Long modifiedTime;
+
+    private @Nullable Long createdTime;
 
     private boolean hidden;
 
@@ -89,8 +91,12 @@ public class DefaultGenericFile implements GenericFile {
     }
 
     @Override
-    public @Nullable Long getLastModified() {
-        return lastModified;
+    public @Nullable Long getModifiedTime() {
+        return modifiedTime;
+    }
+
+    public @Nullable Long getCreatedTime() {
+        return createdTime;
     }
 
     @Override
@@ -183,8 +189,8 @@ public class DefaultGenericFile implements GenericFile {
     @Override
     public String toString() {
         return "DefaultGenericFile[" + "storage=" + storage + ", entryType=" + entryType + ", uri=" + uri
-                + ", size=" + size + ", name=" + name + ", lastModified=" + lastModified + ", hidden=" + hidden
-                + ", virtual=" + virtual + ']';
+                + ", size=" + size + ", name=" + name + ", modifiedTime=" + modifiedTime
+                + ", createdTime=" + createdTime + ", hidden=" + hidden + ", virtual=" + virtual + ']';
     }
 
     /**
@@ -235,10 +241,20 @@ public class DefaultGenericFile implements GenericFile {
     /**
      * Sets the last-modified timestamp in milliseconds since the Unix epoch.
      *
-     * @param lastModified milliseconds since the Unix epoch, or {@code null} if unavailable
+     * @param modifiedTime milliseconds since the Unix epoch, or {@code null} if unavailable
      */
-    protected void setLastModified(@Nullable Long lastModified) {
-        this.lastModified = lastModified;
+    protected void setModifiedTime(@Nullable Long modifiedTime) {
+        this.modifiedTime = modifiedTime;
+    }
+
+    /**
+     * Sets the creation timestamp of this entry in milliseconds since the Unix epoch (January 1, 1970, 00:00:00 UTC).
+     *
+     * @param createdTime creation time in milliseconds since the Unix epoch,
+     *        or {@code null} if the value is unavailable
+     */
+    protected void setCreatedTime(@Nullable Long createdTime) {
+        this.createdTime = createdTime;
     }
 
     /**

@@ -138,10 +138,10 @@ public class FileColumnBuilder {
             @Override
             protected void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
-                if (file == null || file.getLastModified() == null || empty) {
+                if (file == null || file.getModifiedTime() == null || empty) {
                     setText(null);
                 } else {
-                    var zonedDateTime = Instant.ofEpochMilli(file.getLastModified()).atZone(ZoneId.systemDefault());
+                    var zonedDateTime = Instant.ofEpochMilli(file.getModifiedTime()).atZone(ZoneId.systemDefault());
                     if (currentYear == zonedDateTime.getYear()) {
                         setText(currentYearformatter.format(zonedDateTime));
                     } else {
@@ -150,7 +150,7 @@ public class FileColumnBuilder {
                 }
             }
         });
-        lastModifiedColumn.setComparator(Comparator.comparing(GenericFile::getLastModified,
+        lastModifiedColumn.setComparator(Comparator.comparing(GenericFile::getModifiedTime,
                 Comparator.nullsLast(Comparator.naturalOrder())));
         lastModifiedColumn.setMaxWidth(this.font.getSize() * 8);
         lastModifiedColumn.setMinWidth(this.font.getSize() * 8);

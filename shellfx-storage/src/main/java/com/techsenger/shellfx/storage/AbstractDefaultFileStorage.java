@@ -296,7 +296,8 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
         file.setName(path.getFileName().toString());
         file.setHidden(isHidden(path));
         file.setUri(uri);
-        file.setLastModified(attrs.lastModifiedTime().toMillis());
+        file.setModifiedTime(attrs.lastModifiedTime().toMillis());
+        file.setCreatedTime(attrs.creationTime().toMillis());
         if (attrs.isDirectory()) {
             file.setEntryType(FileEntryType.DIRECTORY);
         } else if (attrs.isOther()) {

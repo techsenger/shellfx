@@ -79,7 +79,18 @@ public interface GenericFile {
      *
      * @return last-modified time in milliseconds since the Unix epoch, or {@code null}
      */
-    @Nullable Long getLastModified();
+    @Nullable Long getModifiedTime();
+
+    /**
+     * Returns the creation timestamp of this entry in milliseconds since the Unix epoch
+     * (January 1, 1970, 00:00:00 UTC), or {@code null} if the value is unavailable.
+     *
+     * <p>Note that creation time is not supported by all file systems. If unavailable,
+     * this method returns {@code null}.
+     *
+     * @return creation time in milliseconds since the Unix epoch, or {@code null}
+     */
+    @Nullable Long getCreatedTime();
 
     /**
      * Returns {@code true} if this entry is hidden, and {@code false} otherwise.
