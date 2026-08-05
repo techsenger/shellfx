@@ -16,21 +16,18 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.table.NamedTableColumn;
 import com.techsenger.shellfx.material.table.TextFieldTableCell;
 import com.techsenger.toolkit.core.file.FileUtils;
-import java.time.Instant;
 import java.time.Year;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.function.Function;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
-import com.techsenger.shellfx.material.icon.FontIcon;
 
 /**
  *
@@ -131,9 +128,8 @@ public class FileColumnBuilder {
         var lastModifiedColumn =
                 new NamedTableColumn<F, F>(FileColumns.LAST_MODIFIED, "Modified");
         lastModifiedColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
-        final DateTimeFormatter currentYearformatter = DateTimeFormatter.ofPattern("MMM dd HH:mm");
-        final DateTimeFormatter otherYearformatter = DateTimeFormatter.ofPattern("MMM dd yyyy");
-        final int currentYear = Year.now().getValue();
+
+        final var currentYear = Year.now();
         lastModifiedColumn.setCellFactory(col -> new TableCell<F, F>() {
             @Override
             protected void updateItem(F file, boolean empty) {
@@ -141,12 +137,7 @@ public class FileColumnBuilder {
                 if (file == null || file.getModifiedTime() == null || empty) {
                     setText(null);
                 } else {
-                    var zonedDateTime = Instant.ofEpochMilli(file.getModifiedTime()).atZone(ZoneId.systemDefault());
-                    if (currentYear == zonedDateTime.getYear()) {
-                        setText(currentYearformatter.format(zonedDateTime));
-                    } else {
-                        setText(otherYearformatter.format(zonedDateTime));
-                    }
+                    setText(DateTimeUtils.format(file.getModifiedTime(), currentYear));
                 }
             }
         });
