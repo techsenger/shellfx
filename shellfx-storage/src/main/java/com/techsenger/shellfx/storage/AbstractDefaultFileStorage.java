@@ -142,6 +142,9 @@ public abstract class AbstractDefaultFileStorage<T extends GenericFile> extends 
     public T getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException {
         var path = toPath(uri);
         checkIfExists(path);
+        if (path.getFileName() == null) {
+            return getRootDirectory();
+        }
         return createFile(path, uri);
     }
 
