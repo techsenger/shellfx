@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.demo.styles;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.icon.FontIconView;
@@ -24,6 +25,7 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.shared.style.SharedIcons;
 import java.util.List;
+import java.util.stream.IntStream;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
@@ -32,11 +34,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -75,18 +80,17 @@ final class NodeFactory {
             toolbar.getStyleClass().add(toolBarStyleClass);
         }
         toolbar.getItems().addAll(
-                createToolBarButton(SharedIcons.HIGHLIGHT, buttonStyleClass),
-                createToolBarButton(SharedIcons.MATCH_CASE, buttonStyleClass),
+                createButton(SharedIcons.HIGHLIGHT, buttonStyleClass),
+                createButton(SharedIcons.MATCH_CASE, buttonStyleClass),
                 new Separator(Orientation.VERTICAL),
-                createToolBarButton(SharedIcons.WHOLE_WORD, buttonStyleClass),
-                new Separator(Orientation.VERTICAL),
-                createToolBarButton(SharedIcons.REG_EXP, buttonStyleClass),
-                createToolBarButton(DevToolsIcons.CLEAR, buttonStyleClass),
-                createToolBarButton(DevToolsIcons.EDIT, buttonStyleClass),
-                createToolBarButton(DevToolsIcons.REFRESH, buttonStyleClass),
-                createToolBarButton(DevToolsIcons.OPEN_IN_NEW, buttonStyleClass),
-                createToolBarButton(DevToolsIcons.TOOLS, buttonStyleClass),
-                createToolBarButton(DevToolsIcons.VIEW, buttonStyleClass));
+                createButton(DevToolsIcons.REFRESH, buttonStyleClass),
+                createButton(DevToolsIcons.OPEN_IN_NEW, buttonStyleClass),
+                createButton("Test pqjy", buttonStyleClass),
+                createToggleButton(DevToolsIcons.TOOLS, buttonStyleClass),
+                createToggleButton("Test pqjy", buttonStyleClass),
+                createMenuButton(DevToolsIcons.VIEW, buttonStyleClass),
+                createMenuButton("Test pqjy", buttonStyleClass));
+
         return toolbar;
     }
 
@@ -227,12 +231,61 @@ final class NodeFactory {
         return root;
     }
 
-    private static Button createToolBarButton(StyleFontIcon icon, String styleClass) {
+    private static Button createButton(StyleFontIcon icon, String styleClass) {
         var button = new Button(null, new FontIconView(icon));
         button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
         if (styleClass != null) {
             button.getStyleClass().add(styleClass);
         }
+        return button;
+    }
+
+    private static Button createButton(String text, @Nullable String styleClass) {
+        var button = new Button(text);
+        button.getStyleClass().addAll(Styles.FLAT);
+        if (styleClass != null) {
+            button.getStyleClass().add(styleClass);
+        }
+        return button;
+    }
+
+    private static ToggleButton createToggleButton(StyleFontIcon icon, String styleClass) {
+        var button = new ToggleButton(null, new FontIconView(icon));
+        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        if (styleClass != null) {
+            button.getStyleClass().add(styleClass);
+        }
+        return button;
+    }
+
+    private static ToggleButton createToggleButton(String text, @Nullable String styleClass) {
+        var button = new ToggleButton(text);
+        button.getStyleClass().addAll(Styles.FLAT);
+        if (styleClass != null) {
+            button.getStyleClass().add(styleClass);
+        }
+        return button;
+    }
+
+    private static MenuButton createMenuButton(StyleFontIcon icon, String styleClass) {
+        var button = new MenuButton(null, new FontIconView(icon));
+        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        if (styleClass != null) {
+            button.getStyleClass().add(styleClass);
+        }
+        var items = IntStream.range(0, 5).mapToObj(i -> new MenuItem("Item " + i)).toList();
+        button.getItems().addAll(items);
+        return button;
+    }
+
+    private static MenuButton createMenuButton(String text, @Nullable String styleClass) {
+        var button = new MenuButton(text);
+        button.getStyleClass().addAll(Styles.FLAT);
+        if (styleClass != null) {
+            button.getStyleClass().add(styleClass);
+        }
+        var items = IntStream.range(0, 5).mapToObj(i -> new MenuItem("Item " + i)).toList();
+        button.getItems().addAll(items);
         return button;
     }
 
