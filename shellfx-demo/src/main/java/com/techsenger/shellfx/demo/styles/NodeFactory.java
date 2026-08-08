@@ -67,7 +67,7 @@ final class NodeFactory {
 
     static Button createIconButton(String styleClass) {
         var b = new Button(null, new FontIconView(DialogIcons.FOLDER));
-        b.getStyleClass().add(StyleClasses.ICON_BUTTON);
+        b.getStyleClass().add(StyleClasses.SQUARE);
         if (styleClass != null) {
             b.getStyleClass().add(styleClass);
         }
@@ -233,7 +233,7 @@ final class NodeFactory {
 
     private static Button createButton(StyleFontIcon icon, String styleClass) {
         var button = new Button(null, new FontIconView(icon));
-        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        button.getStyleClass().add(Styles.FLAT);
         if (styleClass != null) {
             button.getStyleClass().add(styleClass);
         }
@@ -251,7 +251,7 @@ final class NodeFactory {
 
     private static ToggleButton createToggleButton(StyleFontIcon icon, String styleClass) {
         var button = new ToggleButton(null, new FontIconView(icon));
-        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        button.getStyleClass().add(Styles.FLAT);
         if (styleClass != null) {
             button.getStyleClass().add(styleClass);
         }
@@ -269,7 +269,7 @@ final class NodeFactory {
 
     private static MenuButton createMenuButton(StyleFontIcon icon, String styleClass) {
         var button = new MenuButton(null, new FontIconView(icon));
-        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT);
+        button.getStyleClass().add(Styles.FLAT);
         if (styleClass != null) {
             button.getStyleClass().add(styleClass);
         }

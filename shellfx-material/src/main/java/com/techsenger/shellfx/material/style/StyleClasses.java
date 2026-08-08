@@ -155,14 +155,18 @@ public interface StyleClasses {
     String SIZE_XXS = "size-xxs";
 
     /**
+     * Makes a node square by setting its width to match its height. Should only be applied when the node's content
+     * allows it to be displayed as a square, such as when it contains only an icon or a short text.
+     *
+     * <p>Must be used together with a size class, such as {@code SIZE_L}, which defines the node's height and,
+     * consequently, its square dimensions.
+     */
+    String SQUARE = "square";
+
+    /**
      * Class for a cross button.
      */
     String CROSS_BUTTON = "cross";
-
-    /**
-     * Button that has only icon and has no text. Iconed button has a square shape.
-     */
-    String ICON_BUTTON = "iconed";
 
     /**
      * Use this class for TabPanes to hide entire tab-header-area.

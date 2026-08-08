@@ -29,3 +29,7 @@
 .font-icon-view.copied-icon {
     -fx-icon-code: 983340; /* check */
 }
+
+.font-icon-view.dev-tools-icon {
+    -fx-icon-code: 987939; /* hammer-wrench */
+}

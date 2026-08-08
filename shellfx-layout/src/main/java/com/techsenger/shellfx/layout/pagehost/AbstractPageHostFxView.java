@@ -140,9 +140,9 @@ public abstract class AbstractPageHostFxView<P extends AbstractPageHostPresenter
         this.headerBox.getStyleClass().add("header-box");
         this.headerBox.setPadding(new Insets(0, Spacing.getHorizontal(), 0, Spacing.getHorizontal()));
 
-        backButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
+        backButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         backButton.setTooltip(new Tooltip("Back"));
-        forwardButton.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_S);
+        forwardButton.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_S);
         forwardButton.setTooltip(new Tooltip("Forward"));
 
         historyBox.setSpacing(Spacing.getHorizontal());

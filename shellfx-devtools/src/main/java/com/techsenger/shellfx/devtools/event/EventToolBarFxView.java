@@ -99,13 +99,13 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?>> extends Tool
     @Override
     protected void build() {
         super.build();
-        this.recordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.SIZE_M);
+        this.recordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         this.recordButton.setTooltip(new Tooltip("Start/Stop"));
-        this.clearButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.SIZE_M);
+        this.clearButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         this.clearButton.setTooltip(new Tooltip("Clear"));
-        this.filterButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.SIZE_M);
+        this.filterButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         this.filterButton.setTooltip(new Tooltip("Enable/Disable Filter"));
-        this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.ICON_BUTTON, StyleClasses.SIZE_M);
+        this.selectedOnlyButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         this.selectedOnlyButton.setTooltip(new Tooltip("Selected Node Only"));
 
         // selectedOnlyButton.setOnAction(e -> this.textArea.moveDocumentEnd());

@@ -94,7 +94,7 @@ public abstract class AbstractFindPanelFxView<P extends AbstractFindPanelPresent
 
         this.closeButton.setOnAction(e -> getPresenter().onClose());
         this.closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS,
-                StyleClasses.ICON_BUTTON);
+                StyleClasses.SQUARE);
         this.closeButton.setFocusTraversable(false);
 
         this.toolBox.getChildren().addAll(getFindPreviousButton(), getFindNextButton(), getMatchCaseButton(),

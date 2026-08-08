@@ -78,7 +78,7 @@ public class CopyableTextField extends TextField {
                 buttonPane.pseudoClassStateChanged(READONLY, !newV));
 
         button.setFocusTraversable(false);
-        button.getStyleClass().addAll(StyleClasses.ICON_BUTTON, Styles.FLAT, StyleClasses.SIZE_XS);
+        button.getStyleClass().addAll(StyleClasses.SQUARE, Styles.FLAT, StyleClasses.SIZE_XS);
         button.setOnAction(e -> copyAndConfirm());
         confirmationPause.setOnFinished(e -> {
             confirming.set(false);

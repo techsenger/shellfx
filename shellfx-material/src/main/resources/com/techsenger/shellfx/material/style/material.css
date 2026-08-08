@@ -75,13 +75,15 @@
     -fx-max-height: 2.65em;
     -fx-pref-height: 2.65em;
 }
-.density-s .button.size-xxl.iconed,
-.density-s .toggle-button.size-xxl.iconed {
+
+.density-s .button.size-xxl.square,
+.density-s .toggle-button.size-xxl.square {
     -fx-padding: 0;
     -fx-min-width: 2.65em;
     -fx-max-width: 2.65em;
     -fx-pref-width: 2.65em;
 }
+
 .density-s .button.size-xxl .font-icon-view,
 .density-s .toggle-button.size-xxl .font-icon-view,
 .density-s .menu-button.size-xxl .font-icon-view {
@@ -96,13 +98,15 @@
     -fx-max-height: 2.40em;
     -fx-pref-height: 2.40em;
 }
-.density-s .button.size-xl.iconed,
-.density-s .toggle-button.size-xl.iconed {
+
+.density-s .button.size-xl.square,
+.density-s .toggle-button.size-xl.square {
     -fx-padding: 0;
     -fx-min-width: 2.40em;
     -fx-max-width: 2.40em;
     -fx-pref-width: 2.40em;
 }
+
 .density-s .button.size-xl .font-icon-view,
 .density-s .toggle-button.size-xl .font-icon-view,
 .density-s .menu-button.size-xl .font-icon-view {
@@ -116,14 +120,27 @@
     -fx-min-height: 2.15em;
     -fx-max-height: 2.15em;
     -fx-pref-height: 2.15em;
+    -fx-padding: 0.25em 0.4em 0.25em 0.4em;
 }
-.density-s .button.size-l.iconed,
-.density-s .toggle-button.size-l.iconed {
+
+.density-s .menu-button.size-l {
+    -fx-graphic-text-gap: 0.2em;
+    -fx-padding: 0;
+}
+
+.density-s .menu-button.size-l > .label,
+.density-s .menu-button.size-l > .arrow-button {
+    -fx-padding: 0.25em 0.4em 0.25em 0.4em;
+}
+
+.density-s .button.size-l.square,
+.density-s .toggle-button.size-l.square {
     -fx-padding: 0;
     -fx-min-width: 2.15em;
     -fx-max-width: 2.15em;
     -fx-pref-width: 2.15em;
 }
+
 .density-s .button.size-l .font-icon-view,
 .density-s .toggle-button.size-l .font-icon-view,
 .density-s .menu-button.size-l .font-icon-view {
@@ -137,26 +154,27 @@
     -fx-min-height: 1.90em;
     -fx-max-height: 1.90em;
     -fx-pref-height: 1.90em;
-    -fx-padding: 0.25em 0.5em 0.25em 0.5em;
+    -fx-padding: 0.25em 0.4em 0.25em 0.4em;
 }
 
 .density-s .menu-button.size-m {
-    -fx-graphic-text-gap: 0.25em;
+    -fx-graphic-text-gap: 0.2em;
     -fx-padding: 0;
 }
 
 .density-s .menu-button.size-m > .label,
 .density-s .menu-button.size-m > .arrow-button {
-    -fx-padding: 0.25em 0.5em 0.25em 0.5em;
+    -fx-padding: 0.25em 0.4em 0.25em 0.4em;
 }
 
-.density-s .button.size-m.iconed,
-.density-s .toggle-button.size-m.iconed {
+.density-s .button.size-m.square,
+.density-s .toggle-button.size-m.square {
     -fx-padding: 0;
     -fx-min-width: 1.90em;
     -fx-max-width: 1.90em;
     -fx-pref-width: 1.90em;
 }
+
 .density-s .button.size-m .font-icon-view,
 .density-s .toggle-button.size-m .font-icon-view,
 .density-s .menu-button.size-m .font-icon-view {
@@ -172,13 +190,15 @@
     -fx-max-height: 1.60em;
     -fx-pref-height: 1.60em;
 }
-.density-s .button.size-s.iconed,
-.density-s .toggle-button.size-s.iconed {
+
+.density-s .button.size-s.square,
+.density-s .toggle-button.size-s.square {
     -fx-padding: 0;
     -fx-min-width: 1.60em;
     -fx-max-width: 1.60em;
     -fx-pref-width: 1.60em;
 }
+
 .density-s .button.size-s .font-icon-view,
 .density-s .toggle-button.size-s .font-icon-view,
 .density-s .menu-button.size-s .font-icon-view {
@@ -193,13 +213,15 @@
     -fx-max-height: 1.35em;
     -fx-pref-height: 1.35em;
 }
-.density-s .button.size-xs.iconed,
-.density-s .toggle-button.size-xs.iconed {
+
+.density-s .button.size-xs.square,
+.density-s .toggle-button.size-xs.square {
     -fx-padding: 0;
     -fx-min-width: 1.35em;
     -fx-max-width: 1.35em;
     -fx-pref-width: 1.35em;
 }
+
 .density-s .button.size-xs .font-icon-view,
 .density-s .toggle-button.size-xs .font-icon-view,
 .density-s .menu-button.size-xs .font-icon-view {
@@ -214,13 +236,15 @@
     -fx-max-height: 0.715em;
     -fx-pref-height: 0.715em;
 }
-.density-s .button.size-xxs.iconed,
-.density-s .toggle-button.size-xxs.iconed {
+
+.density-s .button.size-xxs.square,
+.density-s .toggle-button.size-xxs.square {
     -fx-padding: 0;
     -fx-min-width: 0.715em;
     -fx-max-width: 0.715em;
     -fx-pref-width: 0.715em;
 }
+
 .density-s .button.size-xxs .font-icon-view,
 .density-s .toggle-button.size-xxs .font-icon-view,
 .density-s .menu-button.size-xxs .font-icon-view {
@@ -244,11 +268,6 @@
 
 .button.flat, .button.flat:hover, .toggle-button.flat, .toggle-button.flat:hover {
     -fx-underline: false;
-}
-
-/***************** dev button ******************/
-.menu-button.dev-button {
-    -fx-background-color: ladder(-color-bg-default, -color-danger-7 49%, -color-danger-3 50%);
 }
 
 /*

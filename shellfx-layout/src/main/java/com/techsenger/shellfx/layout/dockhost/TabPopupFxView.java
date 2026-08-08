@@ -151,7 +151,7 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
 
         TabPaneProSkin tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
         var lastArea = tabPaneSkin.getTabHeaderArea().getLastArea();
-        closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS, StyleClasses.ICON_BUTTON);
+        closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS, StyleClasses.SQUARE);
         var hBox = new HBox(closeButton);
         hBox.setPadding(new Insets(0, Spacing.getHorizontalHalf(), 0, 0));
         hBox.setMaxHeight(HBox.USE_PREF_SIZE);
