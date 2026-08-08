@@ -519,14 +519,14 @@
 .density-s .tool-bar {
     -fx-padding: 4 4 5 4; /*bottom padding is 5 = 4 + 1 because of the botttom line */
     -fx-alignment: center-left;
-    -fx-spacing: 12px;
+    -fx-spacing: 6px;
 }
 
 .density-s .tool-bar.dense {
     -fx-min-height: -1;
     -fx-max-height: -1;
     -fx-padding: 1 4 2 4; /* 3 = 2(padding) + 1(bg-insetts) */
-    -fx-spacing: 6px;
+    -fx-spacing: 4px;
 }
 
 .density-s .tool-bar.inline {
