@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.style;
+/*
+    Author     : Pavel Castornii
+*/
 
-import com.techsenger.shellfx.material.icon.StyleFontIcon;
-
-/**
- *
- * @author Pavel Castornii
- */
-public interface MaterialIcons {
-
-    StyleFontIcon COPY = new StyleFontIcon("copy-icon");
-
-    StyleFontIcon COPIED = new StyleFontIcon("copied-icon");
-
-    StyleFontIcon DEV_TOOLS = new StyleFontIcon("dev-tools-icon");
+.menu-button.dev-tools-button {
+    -fx-background-color: ladder(-color-bg-default, -color-danger-7 49%, -color-danger-3 50%);
 }
