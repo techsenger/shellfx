@@ -27,6 +27,4 @@ public interface MaterialIcons {
     StyleFontIcon COPY = new StyleFontIcon("copy-icon");
 
     StyleFontIcon COPIED = new StyleFontIcon("copied-icon");
-
-    StyleFontIcon DEV_TOOLS = new StyleFontIcon("dev-tools-icon");
 }
