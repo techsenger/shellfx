@@ -119,21 +119,21 @@ public abstract class AbstractPageHostPresenter<V extends PageHostViewBase>
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         getView().setDividerPosition(0.2);
     }
 
     @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
+    protected void savePersistentState() {
+        super.savePersistentState();
         var history = getHistory();
         history.setDividerPosition(getDividerPosition());
     }
 
     @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
+    protected void restorePersistentState() {
+        super.restorePersistentState();
         var history = getHistory();
         setDividerPosition(history.getDividerPosition());
     }

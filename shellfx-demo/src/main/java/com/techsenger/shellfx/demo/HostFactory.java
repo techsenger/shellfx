@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.core.area.AreaParams;
@@ -41,7 +40,6 @@ public final class HostFactory {
     public static TabHostFxView<?> createTabHost() {
         var view = new TabHostFxView<>(true);
         var params = new AreaParams();
-        params.setHistoryPolicy(HistoryPolicy.NONE);
         var presenter = new TabHostPresenter<>(view, params);
         presenter.initialize();
         return view;
@@ -67,7 +65,6 @@ public final class HostFactory {
             }
         };
         var params = new DockHostParams(historyProvider);
-        params.setHistoryPolicy(HistoryPolicy.NONE);
         var presenter = new DockHostPresenter<>(view, params);
         presenter.initialize();
         view.getComposer().setBottomBarPolicy(SideBarPolicy.EXISTS_ALWAYS);

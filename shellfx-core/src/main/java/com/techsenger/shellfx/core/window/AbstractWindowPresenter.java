@@ -465,8 +465,8 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     }
 
     @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
+    protected void restorePersistentState() {
+        super.restorePersistentState();
         var h = getHistory();
         setMaximized(h.isMaximized());
         setHeight(h.getHeight());
@@ -474,8 +474,8 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     }
 
     @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
+    protected void savePersistentState() {
+        super.savePersistentState();
         var h = getHistory();
         h.setWidth(getWidth());
         h.setHeight(getHeight());

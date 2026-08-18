@@ -303,36 +303,24 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
+    protected void restorePersistentState() {
+        super.restorePersistentState();
         var h = getHistory();
         setMatchCaseSelected(h.isMatchCaseSelected());
         setWholeWordSelected(h.isWholeWordSelected());
         setRegExpSelected(h.isRegExpSelected());
         setHighlightSelected(h.isHighlightSelected());
+        setFindTexts(h.getFindTexts());
     }
 
     @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
+    protected void savePersistentState() {
+        super.savePersistentState();
         var h = getHistory();
         h.setMatchCaseSelected(isMatchCaseSelected());
         h.setWholeWordSelected(isWholeWordSelected());
         h.setRegExpSelected(isRegExpSelected());
         h.setHighlightSelected(isHighlightSelected());
-    }
-
-    @Override
-    protected void restoreData() {
-        super.restoreData();
-        var h = getHistory();
-        setFindTexts(h.getFindTexts());
-    }
-
-    @Override
-    protected void saveData() {
-        super.saveData();
-        var h = getHistory();
         h.setFindTexts(new ArrayList<>(getFindTexts()));
     }
 

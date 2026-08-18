@@ -71,8 +71,8 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractHostWind
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         setWidth(1200);
         setHeight(800);
     }

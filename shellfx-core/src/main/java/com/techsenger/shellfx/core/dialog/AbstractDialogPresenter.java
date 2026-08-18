@@ -151,8 +151,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
     }
 
     @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
+    protected void restorePersistentState() {
+        super.restorePersistentState();
         var h = getHistory();
         setWidth(h.getWidth());
         setHeight(h.getHeight());
@@ -165,8 +165,8 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
     }
 
     @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
+    protected void savePersistentState() {
+        super.savePersistentState();
         var h = getHistory();
         h.setWidth(getWidth());
         h.setHeight(getHeight());

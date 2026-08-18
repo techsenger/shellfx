@@ -56,12 +56,4 @@ public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView>
         setTitle("Demo Dialog");
         setRightButtons(DemoResultButtons.CANCEL, DemoResultButtons.OK);
     }
-
-    @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
-        //setWidth(500);
-    }
-
-
 }

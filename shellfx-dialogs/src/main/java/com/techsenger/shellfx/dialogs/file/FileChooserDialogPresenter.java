@@ -295,8 +295,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         setWidth(800);
         setHeight(500);
         createInitialColumns();
@@ -305,8 +305,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     }
 
     @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
+    protected void savePersistentState() {
+        super.savePersistentState();
         var history = getHistory();
         history.setMode(mode);
         var tableHistory = new TableHistory(this.columns.values().stream().toList());
@@ -314,8 +314,8 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     }
 
     @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
+    protected void restorePersistentState() {
+        super.restorePersistentState();
         var history = getHistory();
         setMode(history.getMode());
         for (var c : history.getTable().getColumns()) {

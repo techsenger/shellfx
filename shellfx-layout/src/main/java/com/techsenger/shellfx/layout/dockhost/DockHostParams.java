@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.area.AreaParams;
 
@@ -27,7 +26,6 @@ import com.techsenger.shellfx.core.area.AreaParams;
 public class DockHostParams extends AreaParams {
 
     public DockHostParams(HistoryProvider<? extends DockHostHistory> history) {
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(history);
     }
 }

@@ -126,10 +126,8 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         setWidth(600);
     }
-
-
 }

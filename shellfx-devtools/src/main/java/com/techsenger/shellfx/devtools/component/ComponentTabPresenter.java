@@ -126,8 +126,6 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
         tempItems.add(new InspectorItem(null, "Name", null, List.of(descriptor.getName().getText()), null));
         tempItems.add(new InspectorItem(null, "UUID", null, List.of(descriptor.getUuid().toString()), null));
         tempItems.add(new InspectorItem(null, "State", null, List.of(descriptor.getState().toString()), null));
-        tempItems.add(new InspectorItem(null, "HistoryPolicy", null, List.of(presenter.getHistoryPolicy().toString()),
-                null));
         for (var item : tempItems) {
             if (matcher == null || matcher.reset(item.name()).find()) {
                 items.add(item);

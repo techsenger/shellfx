@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.shellfx.core.window.WindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
@@ -32,7 +31,6 @@ public class DefaultShellParams extends WindowParams {
     public DefaultShellParams(ShellContext context) {
         super(WindowType.TOP_LEVEL, false, context.getSettings().getAppearance());
         this.context = context;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> context.getHistoryManager().getOrCreateHistory(ShellHistory.class, ShellHistory::new));
     }
 

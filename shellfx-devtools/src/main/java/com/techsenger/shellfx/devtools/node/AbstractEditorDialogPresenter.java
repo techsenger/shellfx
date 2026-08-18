@@ -84,8 +84,8 @@ public abstract class AbstractEditorDialogPresenter<V extends EditorDialogView> 
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         setWidth(600);
     }
 

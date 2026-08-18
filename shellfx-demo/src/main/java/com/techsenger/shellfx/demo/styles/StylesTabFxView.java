@@ -18,7 +18,6 @@ package com.techsenger.shellfx.demo.styles;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.core.page.DefaultPageDescriptor;
@@ -101,7 +100,6 @@ public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?>
                 }
             };
             var params = new PageHostParams(null);
-            params.setHistoryPolicy(HistoryPolicy.NONE);
             var hostPresenter = new PageHostPresenter<>(pageHost, params);
             hostPresenter.initialize();
             hostPresenter.setDividerPosition(0.275);

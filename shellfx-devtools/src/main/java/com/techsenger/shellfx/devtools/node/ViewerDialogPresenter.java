@@ -97,8 +97,8 @@ public class ViewerDialogPresenter<V extends ViewerDialogView>  extends Abstract
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         setWidth(600);
         setHeight(350);
     }

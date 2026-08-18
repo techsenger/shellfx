@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.layout.pagehost;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.area.AreaParams;
 
@@ -27,7 +26,6 @@ import com.techsenger.shellfx.core.area.AreaParams;
 public class TreePageHostParams extends AreaParams {
 
     public TreePageHostParams(HistoryProvider<PageHostHistoryBase> historyProvider) {
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(historyProvider);
     }
 }

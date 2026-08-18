@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.devtools;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.shellfx.core.area.AreaParams;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.ShellSettings;
@@ -40,7 +39,6 @@ public class DevToolsTabDockParams extends AreaParams {
         this.historyManager = historyManager;
         this.setHistoryProvider(() -> historyManager
                 .getOrCreateHistory(DevToolsTabDockHistory.class, DevToolsTabDockHistory::new));
-        this.setHistoryPolicy(HistoryPolicy.APPEARANCE);
     }
 
     public DevToolsHostType getHostType() {

@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.devtools;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowParams;
@@ -34,7 +33,6 @@ public class DevToolsWindowParams extends WindowParams {
     public DevToolsWindowParams(AppearanceSettings setting, HistoryManager historyManager) {
         super(WindowType.TOP_LEVEL, false, setting);
         this.historyManager = historyManager;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager
                 .getOrCreateHistory(DevToolsWindowHistory.class, DevToolsWindowHistory::new));
     }

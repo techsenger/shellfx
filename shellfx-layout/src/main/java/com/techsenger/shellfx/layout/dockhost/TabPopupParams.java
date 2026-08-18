@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.area.AreaParams;
 import java.util.Objects;
@@ -39,7 +38,6 @@ public class TabPopupParams extends AreaParams {
         this.side = side;
         this.centerWidth = centerWidth;
         this.centerHeight = centerHeight;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(historyProvider);
     }
 

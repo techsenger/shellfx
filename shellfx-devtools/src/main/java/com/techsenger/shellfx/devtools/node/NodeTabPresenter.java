@@ -254,8 +254,8 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         var catExpansion = new HashMap<AttributeCategory, Boolean>();
         Arrays.stream(AttributeCategory.values()).forEach(c -> catExpansion.put(c, Boolean.FALSE));
         setCategoryExpansion(catExpansion);

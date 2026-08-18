@@ -59,8 +59,8 @@ public class DevToolsWindowPresenter<V extends DevToolsWindowView> extends Abstr
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         setWidth(1000);
         setHeight(400);
     }

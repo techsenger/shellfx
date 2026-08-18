@@ -176,15 +176,15 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
     }
 
     @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
+    protected void savePersistentState() {
+        super.savePersistentState();
         var h = getHistory();
         h.setSelectionSelected(isSelectionSelected());
     }
 
     @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
+    protected void restorePersistentState() {
+        super.restorePersistentState();
         var h = getHistory();
         setSelectionSelected(h.isSelectionSelected());
     }

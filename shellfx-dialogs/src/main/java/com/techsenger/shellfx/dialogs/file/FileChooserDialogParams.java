@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
@@ -49,7 +48,6 @@ public class FileChooserDialogParams<T extends GenericFile> extends DialogParams
         this.chooserType = chooserType;
         this.storages = storages;
         this.historyManager = historyManager;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager.getOrCreateHistory(FileChooserDialogHistory.class,
                 FileChooserDialogHistory::new));
     }

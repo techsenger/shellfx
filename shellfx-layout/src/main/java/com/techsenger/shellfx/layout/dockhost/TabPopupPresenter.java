@@ -75,23 +75,23 @@ public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPrese
     }
 
     @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
+    protected void applyPersistentState() {
+        super.applyPersistentState();
         setWidth(validateWidth(DEFAULT_SIZE));
         setHeight(validateHeight(DEFAULT_SIZE));
     }
 
     @Override
-    protected void restoreAppearance() {
-        super.restoreAppearance();
+    protected void restorePersistentState() {
+        super.restorePersistentState();
         var h = getHistory();
         setWidth(validateWidth(h.getWidth()));
         setHeight(validateHeight(h.getHeight()));
     }
 
     @Override
-    protected void saveAppearance() {
-        super.saveAppearance();
+    protected void savePersistentState() {
+        super.savePersistentState();
         // If the user moves the mouse quickly, components may be created
         // and removed even before they have been rendered
         var h = getHistory();

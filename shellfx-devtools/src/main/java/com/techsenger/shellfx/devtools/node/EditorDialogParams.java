@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.devtools.node;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
@@ -34,7 +33,6 @@ public class EditorDialogParams extends DialogParams {
             HistoryManager historyManager) {
         super(windowType, settings);
         this.task = task;
-        setHistoryPolicy(HistoryPolicy.APPEARANCE);
         setHistoryProvider(() -> historyManager.getOrCreateHistory(EditorDialogHistory.class,
                 EditorDialogHistory::new));
     }

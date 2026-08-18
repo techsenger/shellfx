@@ -131,15 +131,6 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
             closeSafely();
         });
         setRightButtons(DialogsDialogButtons.CLOSE);
-//        setMinWidth(400);
-//        setMinHeight(200);
-    }
-
-    @Override
-    protected void applyAppearance() {
-        super.applyAppearance();
-//        setWidth(600);
-//        setHeight(300);
     }
 
     protected void onDialogClick(DialogType type) {

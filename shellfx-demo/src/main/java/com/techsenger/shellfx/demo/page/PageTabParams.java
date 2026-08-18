@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo.page;
 
-import com.techsenger.patternfx.core.HistoryPolicy;
 import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.tab.TabParams;
 import java.util.Objects;
@@ -32,7 +31,6 @@ public class PageTabParams extends TabParams {
     public PageTabParams(HistoryProvider<PageTabHistory> historyProvider, PageMenuType menuType) {
         this.menuType = menuType;
         setHistoryProvider(historyProvider);
-        setHistoryPolicy(HistoryPolicy.ALL);
     }
 
     public PageMenuType getMenuType() {
