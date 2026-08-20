@@ -535,8 +535,8 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                 sp.getWidth() - sp.getPadding().getLeft() - sp.getPadding().getRight(),
                 sp.getHeight() - sp.getPadding().getTop() - sp.getPadding().getBottom(),
                 window.getNode().getWidth(), window.getNode().getHeight());
-        window.setX(Math.round(coordinates.getX() + xOffset));
-        window.setY(Math.round(coordinates.getY() + yOffset));
+        window.getPresenter().setX(Math.round(coordinates.getX() + xOffset));
+        window.getPresenter().setY(Math.round(coordinates.getY() + yOffset));
     }
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractWindowManager.class);
@@ -579,8 +579,8 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                 window.getNode().getWidth(), window.getNode().getHeight(),
                 scene.getWidth(), scene.getHeight());
 
-        window.setX(Math.round(x));
-        window.setY(Math.round(y));
+        window.getPresenter().setX(Math.round(x));
+        window.getPresenter().setY(Math.round(y));
     }
 
     @Override
@@ -680,8 +680,8 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             } else {
                 window.getNode().setLayoutX(restoredBounds.x);
                 window.getNode().setLayoutY(restoredBounds.y);
-                window.setWidth(restoredBounds.width);
-                window.setHeight(restoredBounds.height);
+                window.getPresenter().setWidth(restoredBounds.width);
+                window.getPresenter().setHeight(restoredBounds.height);
             }
             if (info.state == SpecialState.MAXIMIZED) {
                 setMaximized(window, false);

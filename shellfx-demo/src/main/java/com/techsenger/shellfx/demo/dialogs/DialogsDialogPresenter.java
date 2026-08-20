@@ -126,7 +126,7 @@ public class DialogsDialogPresenter extends AbstractDialogPresenter<DialogsDialo
         super.postInitialize();
         var view = getView();
         setTitle("Dialogs");
-        view.setDialogTypes(Arrays.asList(DialogType.values()));
+        view.updateDialogTypes(Arrays.asList(DialogType.values()));
         setOnResult((result) -> {
             closeSafely();
         });

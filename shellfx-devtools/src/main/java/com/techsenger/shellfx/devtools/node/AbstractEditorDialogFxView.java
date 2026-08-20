@@ -75,7 +75,7 @@ public abstract class AbstractEditorDialogFxView<P extends AbstractEditorDialogP
     private final ResultButton okButton = new ResultButton(EditorDialogButtons.OK, "OK");
 
     @Override
-    public void setPropertyName(String name) {
+    public void updatePropertyName(String name) {
         this.propertyNameLabel.setText(name);
     }
 

@@ -18,6 +18,7 @@ package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.theme.Theme;
 import javafx.scene.text.Font;
@@ -26,7 +27,7 @@ import javafx.scene.text.Font;
  *
  * @author Pavel Castornii
  */
-public interface WindowView extends ChildView, WindowShared {
+public interface WindowView extends ChildView {
 
     interface Composer extends ChildView.Composer {
 
@@ -42,47 +43,59 @@ public interface WindowView extends ChildView, WindowShared {
     Composer getComposer();
 
     /**
-     * Sets whether this window is modal.
+     * Makes this window modal.
      *
-     * @param modal {@code true} to make the window modal; {@code false} otherwise
+     * <p>This is a one-time initialization command, not a live state update: modality can only be applied before
+     * the window is shown and cannot be changed or unset afterwards. Call this only once, when
+     * {@link WindowPort#isModal()} is {@code true}.
      */
-    void setModal(boolean modal);
+    void updateModal();
 
-    /**
-     * Sets the density of this window.
-     *
-     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @param density the density to apply
-     */
-    void setDensity(@Nullable Density density);
+    void updateAlwaysOnTop(boolean alwaysOnTop);
 
-    /**
-     * Sets the theme of this window.
-     *
-     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @param theme the theme to apply
-     */
-    void setTheme(Theme theme);
+    void updateTitle(String title);
 
-    /**
-     * Sets the regular font of this window.
-     *
-     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @param font the regular font to apply
-     */
-    void setRegularFont(Font font);
+    void updateIcon(Icon<?> icon);
 
-    /**
-     * Sets the monospace font of this window.
-     *
-     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
-     *
-     * @param font the monospace font to apply
-     */
-    void setMonospaceFont(Font font);
+    void updateWidth(double value);
+
+    void updateHeight(double value);
+
+    void updateMinWidth(double value);
+
+    void updateMinHeight(double value);
+
+    void updateMaxWidth(double value);
+
+    void updateMaxHeight(double value);
+
+    void updateMaximized(boolean value);
+
+    void updateMaximizable(boolean maximizable);
+
+    void updateMinimized(boolean minimized);
+
+    void updateMinimizable(boolean minimizable);
+
+    void updateClosable(boolean closable);
+
+    void updateBlocked(boolean blocked);
+
+    void updateOutOfBoundsAllowed(boolean outOfBoundsAllowed);
+
+    void updateResizable(boolean value);
+
+    void updateX(double x);
+
+    void updateY(double y);
+
+    void updateDensity(@Nullable Density density);
+
+    void updateTheme(Theme theme);
+
+    void updateRegularFont(Font font);
+
+    void updateMonospaceFont(Font font);
 
     /**
      * Closes the top level window.

@@ -80,6 +80,8 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
 
     private final Map<EnvironmentCategory, BooleanProperty> expandedByCategory;
 
+    private List<EnvironmentItem> items = List.of();
+
     public EnvironmentTabPresenter(V view, EnvironmentTabParams params) {
         super(view, params);
         this.tabDock = params.getTabDock();
@@ -95,6 +97,10 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public List<EnvironmentItem> getItems() {
+        return items;
     }
 
     @Override
@@ -127,7 +133,12 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
         } else {
             composer.getToolBarPort().hideFindResultInfo();
         }
-        getView().setItems(items);
+        setItems(items);
+    }
+
+    protected void setItems(List<EnvironmentItem> items) {
+        this.items = items;
+        getView().updateItems(items);
     }
 
     protected void onItemRequested(EnvironmentItem i) {

@@ -69,8 +69,11 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
 
     @Override
     public void setDraggable(boolean draggable) {
+        if (this.draggable == draggable) {
+            return;
+        }
         this.draggable = draggable;
-        getView().setDraggable(draggable);
+        getView().updateDraggable(draggable);
     }
 
     @Override
@@ -80,8 +83,11 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
 
     @Override
     public void setMinimizable(boolean minimizable) {
+        if (this.minimizable == minimizable) {
+            return;
+        }
         this.minimizable = minimizable;
-        getView().setMinimizable(minimizable);
+        getView().updateMinimizable(minimizable);
     }
 
     @Override
@@ -91,8 +97,11 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
 
     @Override
     public void setClosable(boolean closable) {
+        if (this.closable == closable) {
+            return;
+        }
         this.closable = closable;
-        getView().setClosable(closable);
+        getView().updateClosable(closable);
     }
 
     @Override

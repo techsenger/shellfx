@@ -285,7 +285,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
     }
 
     @Override
-    public void setRootComponent(ComponentItem item) {
+    public void updateRootComponent(ComponentItem item) {
         rebuildTree(item);
     }
 
@@ -327,7 +327,7 @@ public class ComponentTabFxView<P extends ComponentTabPresenter<?>> extends Abst
     }
 
     @Override
-    public void updateInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory) {
+    public void refreshInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory) {
         if (!items.isEmpty()) {
             var root = createRootItem(items, getPresenter(), expandedByCategory);
             inspectorTableView.setRoot(root);

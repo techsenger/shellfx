@@ -88,7 +88,7 @@ public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostP
         this.matchedItems = match(items, matcher, statistics);
         var findPanel = getView().getComposer().getFindPanelPort();
         findPanel.showFindResultInfo(statistics.getMatches());
-        getView().setMenu(matchedItems);
+        getView().refreshMenu(matchedItems);
         if (!matchedItems.isEmpty()) {
             if (!isCurrentPage(matchedItems.get(0))) {
                 selectPage(0);
@@ -105,8 +105,8 @@ public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostP
         addPageHistory(item);
         updateHistoryNavigation();
 
-        getView().setMenu(items);
-        getView().setPage(this.items.indexOf(item)); // just to select item in the menu
+        getView().refreshMenu(items);
+        getView().selectPage(this.items.indexOf(item)); // just to select item in the menu
     }
 
     @Override
@@ -132,7 +132,7 @@ public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostP
 
     void setPages(List<PageItem> items) {
         this.items = items;
-        getView().setMenu(items);
+        getView().refreshMenu(items);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostP
             currentPage.setSelected(false);
         }
         getView().getComposer().providePagePort(index);
-        getView().setPage(index);
+        getView().selectPage(index);
         currentPage = getView().getComposer().getSelectedPagePort();
         currentPage.setSelected(true);
     }

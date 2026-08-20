@@ -26,7 +26,7 @@ import com.techsenger.shellfx.material.theme.Theme;
  */
 public interface SettingsDialogView extends DialogView {
 
-    void setSelectedTheme(Theme theme);
+    void updateSelectedTheme(Theme theme);
 
-    void setSelectedDensity(Density density);
+    void updateSelectedDensity(Density density);
 }

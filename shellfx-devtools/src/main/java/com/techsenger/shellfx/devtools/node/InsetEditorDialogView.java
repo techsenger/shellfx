@@ -22,11 +22,11 @@ package com.techsenger.shellfx.devtools.node;
  */
 public interface InsetEditorDialogView extends EditorDialogView {
 
-    void setTop(String value);
+    void updateTop(String value);
 
-    void setRight(String value);
+    void updateRight(String value);
 
-    void setBottom(String value);
+    void updateBottom(String value);
 
-    void setLeft(String value);
+    void updateLeft(String value);
 }

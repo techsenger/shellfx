@@ -41,22 +41,22 @@ public class InsetEditorDialogFxView<P extends InsetEditorDialogPresenter<?>> ex
     }
 
     @Override
-    public void setTop(String value) {
+    public void updateTop(String value) {
         this.topTextField.setText(value);
     }
 
     @Override
-    public void setRight(String value) {
+    public void updateRight(String value) {
         this.rightTextField.setText(value);
     }
 
     @Override
-    public void setBottom(String value) {
+    public void updateBottom(String value) {
         this.bottomTextField.setText(value);
     }
 
     @Override
-    public void setLeft(String value) {
+    public void updateLeft(String value) {
         this.leftTextField.setText(value);
     }
 

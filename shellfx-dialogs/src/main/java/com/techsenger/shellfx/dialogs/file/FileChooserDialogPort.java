@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.shellfx.core.dialog.DialogPort;
+import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.storage.GenericFile;
 import java.net.URI;
 import java.util.List;
@@ -25,9 +26,11 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort, FileChooserDialogShared {
+public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort {
 
     T getResult();
+
+    AppearanceSettings getAppearanceSettings();
 
     FileChooserType getChooserType();
 
@@ -54,4 +57,18 @@ public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort
     List<ExtensionFilter> getExtensionFilters();
 
     String getLocationCaption();
+
+    void setLocationCaption(String value);
+
+    void setLocations(List<Location> locations);
+
+    void setLocation(Location value);
+
+    void setMode(Mode mode);
+
+    void setFileName(String fileName);
+
+    void setExtensionFilters(List<ExtensionFilter> filters);
+
+    void setExtensionFilter(ExtensionFilter filter);
 }

@@ -23,7 +23,7 @@ import com.techsenger.shellfx.core.area.AreaView;
  *
  * @author Pavel Castornii
  */
-public interface PopupView extends AreaView, PopupShared {
+public interface PopupView extends AreaView {
 
     interface Composer extends AreaView.Composer {
 
@@ -34,4 +34,10 @@ public interface PopupView extends AreaView, PopupShared {
 
     @Override
     Composer getComposer();
+
+    void updatePrefWidth(double value);
+
+    void updatePrefHeight(double value);
+
+    void updateWaiting(boolean waiting);
 }

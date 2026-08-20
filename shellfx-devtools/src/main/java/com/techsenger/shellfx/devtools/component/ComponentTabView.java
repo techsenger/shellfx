@@ -42,7 +42,7 @@ public interface ComponentTabView extends TabView {
     @Override
     Composer getComposer();
 
-    void setRootComponent(ComponentItem item);
+    void updateRootComponent(ComponentItem item);
 
     /**
      * Contains the indexes of the child nodes. The first index (0) is the root. The second index is the root child
@@ -57,5 +57,5 @@ public interface ComponentTabView extends TabView {
 
     void selectRootComponent();
 
-    void updateInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory);
+    void refreshInspector(List<InspectorItem> items, Map<InspectorCategory, Boolean> expandedByCategory);
 }

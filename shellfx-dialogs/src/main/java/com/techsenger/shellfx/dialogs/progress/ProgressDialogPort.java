@@ -22,11 +22,11 @@ import com.techsenger.shellfx.core.dialog.DialogPort;
  *
  * @author Pavel Castornii
  */
-public interface ProgressDialogPort extends DialogPort, ProgressDialogShared {
+public interface ProgressDialogPort extends DialogPort {
 
     String getMessage();
 
-    boolean isShowSteps();
+    boolean isStepsVisible();
 
     double getProgress();
 
@@ -37,4 +37,10 @@ public interface ProgressDialogPort extends DialogPort, ProgressDialogShared {
     void setCurrentStep(int step);
 
     int getCurrentStep();
+
+    void setMessage(String text);
+
+    void setStepsVisible(boolean value);
+
+    void setProgress(double value);
 }

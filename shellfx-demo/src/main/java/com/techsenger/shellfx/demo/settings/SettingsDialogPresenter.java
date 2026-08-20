@@ -21,9 +21,9 @@ import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
-import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.demo.DemoComponents;
 import com.techsenger.shellfx.material.icon.PlainFontIcon;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.theme.Theme;
 import java.util.function.Consumer;
 
@@ -36,7 +36,8 @@ public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDia
     private final AppearanceSettings settings;
 
     /**
-     * Important. WindowView has setDensity and setTheme methods.
+     * Important: distinct from {@code WindowView#applyTheme}/{@code applyDensity}, which style this dialog's own
+     * window chrome — this is the user's in-progress choice in the theme/density dropdowns.
      */
     private Theme selectedTheme;
 
@@ -71,7 +72,6 @@ public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDia
         setResizable(false);
         setSelectedTheme(settings.getTheme());
         setSelectedDensity(settings.getDensity());
-        getView().
         setRightButtons(SettingsDialogButtons.CANCEL, SettingsDialogButtons.OK);
         setButtonDefault(SettingsDialogButtons.OK, true);
         setOnResult((buttonName) -> {
@@ -91,12 +91,20 @@ public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDia
         this.selectedDensity = density;
     }
 
+    Theme getSelectedTheme() {
+        return selectedTheme;
+    }
+
+    Density getSelectedDensity() {
+        return selectedDensity;
+    }
+
     private void setSelectedTheme(Theme theme) {
         if (this.selectedTheme == theme) {
             return;
         }
         this.selectedTheme = theme;
-        getView().setSelectedTheme(theme);
+        getView().updateSelectedTheme(theme);
     }
 
     private void setSelectedDensity(Density density) {
@@ -104,6 +112,6 @@ public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDia
             return;
         }
         this.selectedDensity = density;
-        getView().setSelectedDensity(density);
+        getView().updateSelectedDensity(density);
     }
 }

@@ -19,6 +19,7 @@ package com.techsenger.shellfx.core.tab;
 import com.techsenger.patternfx.mvp.AbstractChildPresenter;
 import com.techsenger.shellfx.core.ShellContext;
 import com.techsenger.shellfx.material.icon.Icon;
+import java.util.Objects;
 
 /**
  *
@@ -67,8 +68,11 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     @Override
     public void setClosable(boolean closable) {
+        if (this.closable == closable) {
+            return;
+        }
         this.closable = closable;
-        getView().setClosable(closable);
+        getView().updateClosable(closable);
     }
 
     @Override
@@ -98,8 +102,11 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     @Override
     public void setWaiting(boolean waiting) {
+        if (this.waiting == waiting) {
+            return;
+        }
         this.waiting = waiting;
-        getView().setWaiting(waiting);
+        getView().updateWaiting(waiting);
     }
 
     @Override
@@ -109,8 +116,11 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     @Override
     public void setTooltip(String tooltip) {
+        if (Objects.equals(this.tooltip, tooltip)) {
+            return;
+        }
         this.tooltip = tooltip;
-        getView().setTooltip(tooltip);
+        getView().updateTooltip(tooltip);
     }
 
     @Override
@@ -120,8 +130,11 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     @Override
     public void setTitle(String title) {
+        if (Objects.equals(this.title, title)) {
+            return;
+        }
         this.title = title;
-        getView().setTitle(title);
+        getView().updateTitle(title);
     }
 
     @Override
@@ -136,8 +149,11 @@ public abstract class AbstractTabPresenter<V extends TabView>
 
     @Override
     public void setIcon(Icon<?> icon) {
+        if (Objects.equals(this.icon, icon)) {
+            return;
+        }
         this.icon = icon;
-        getView().setIcon(icon);
+        getView().updateIcon(icon);
     }
 
     @Override

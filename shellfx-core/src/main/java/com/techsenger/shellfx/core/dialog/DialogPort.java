@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public interface DialogPort extends DialogShared, WindowPort {
+public interface DialogPort extends WindowPort {
 
     /**
      * Returns the action to be executed when a result button is clicked.
@@ -83,4 +83,37 @@ public interface DialogPort extends DialogShared, WindowPort {
      *         or empty if the button does not exist
      */
     Optional<Boolean> getButtonDefault(ResultButtonName name);
+
+    /**
+     * Specifies the result buttons in the left side of the dialog's button bar or removes all of them.
+     *
+     * @param names the names of the result buttons to add; pass no arguments to remove all buttons.
+     */
+    void setLeftButtons(ResultButtonName... names);
+
+    /**
+     * Specifies the result buttons in the right side of the dialog's button bar or removes all of them.
+     *
+     * @param names the names of the result buttons to add; pass no arguments to remove all buttons.
+     */
+    void setRightButtons(ResultButtonName... names);
+
+    /**
+     * Sets the disabled state of the specified result button.
+     *
+     * @param name the name of the result button
+     * @param value {@code true} to disable the button, {@code false} to enable it
+     */
+    void setButtonDisabled(ResultButtonName name, boolean value);
+
+    /**
+     * Sets whether the specified result button is the default button for the dialog.
+     * <p>
+     * The default button is typically activated when the user presses Enter. Only one button should be marked
+     * as default at a time.
+     *
+     * @param name the name of the result button
+     * @param value {@code true} to make this button the default, {@code false} otherwise
+     */
+    void setButtonDefault(ResultButtonName name, boolean value);
 }

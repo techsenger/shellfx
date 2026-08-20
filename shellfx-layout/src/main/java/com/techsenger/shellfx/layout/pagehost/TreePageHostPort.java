@@ -19,6 +19,7 @@ package com.techsenger.shellfx.layout.pagehost;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.page.TreePageContainerPort;
+import com.techsenger.shellfx.core.page.TreePageItem;
 import java.util.List;
 
 /**
@@ -33,4 +34,18 @@ public interface TreePageHostPort extends AreaPort, TreePageContainerPort {
      * @return
      */
     @Unmodifiable List<PageBreadcrumb> getBreadcrumbs();
+
+    /**
+     * Returns the root item of the tree menu.
+     *
+     * @return the root item
+     */
+    TreePageItem getRootItem();
+
+    /**
+     * Returns whether the root item is shown in the tree menu.
+     *
+     * @return {@code true} if the root item is shown, {@code false} otherwise
+     */
+    boolean isShowRoot();
 }

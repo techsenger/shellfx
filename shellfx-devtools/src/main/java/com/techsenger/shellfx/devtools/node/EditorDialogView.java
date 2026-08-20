@@ -34,5 +34,5 @@ public interface EditorDialogView extends DialogView {
     @Override
     Composer getComposer();
 
-    void setPropertyName(String name);
+    void updatePropertyName(String name);
 }

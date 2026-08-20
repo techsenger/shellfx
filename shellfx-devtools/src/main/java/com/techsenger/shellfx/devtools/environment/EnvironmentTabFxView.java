@@ -115,7 +115,7 @@ public class EnvironmentTabFxView<P extends EnvironmentTabPresenter<?>> extends 
     }
 
     @Override
-    public void setItems(List<EnvironmentItem> items) {
+    public void updateItems(List<EnvironmentItem> items) {
         rebuildTree(items);
     }
 

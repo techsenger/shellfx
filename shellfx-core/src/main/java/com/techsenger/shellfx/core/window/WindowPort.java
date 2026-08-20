@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.window;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ChildPort;
 import com.techsenger.shellfx.core.CloseAwarePort;
 import com.techsenger.shellfx.core.traits.Blockable;
@@ -23,12 +24,15 @@ import com.techsenger.shellfx.core.traits.Closable;
 import com.techsenger.shellfx.core.traits.Iconed;
 import com.techsenger.shellfx.core.traits.Titled;
 import com.techsenger.shellfx.material.icon.Icon;
+import com.techsenger.shellfx.material.style.Density;
+import com.techsenger.shellfx.material.theme.Theme;
+import javafx.scene.text.Font;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowPort extends ChildPort, WindowShared, CloseAwarePort, Titled, Closable, Iconed, Blockable {
+public interface WindowPort extends ChildPort, CloseAwarePort, Titled, Closable, Iconed, Blockable {
 
     /**
      * Returns the type of this window.
@@ -194,4 +198,169 @@ public interface WindowPort extends ChildPort, WindowShared, CloseAwarePort, Tit
      * @return the y-coordinate of the window
      */
     double getY();
+
+    /**
+     * Returns the density applied to the window.
+     *
+     * <p>This state is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @return the density, or {@code null} if not set
+     */
+    @Nullable Density getDensity();
+
+    /**
+     * Returns the theme applied to the window.
+     *
+     * <p>This state is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @return the theme
+     */
+    Theme getTheme();
+
+    /**
+     * Returns the regular font applied to the window.
+     *
+     * <p>This state is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @return the regular font
+     */
+    Font getRegularFont();
+
+    /**
+     * Returns the monospace font applied to the window.
+     *
+     * <p>This state is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @return the monospace font
+     */
+    Font getMonospaceFont();
+
+    /**
+     * Sets whether this window is always on top.
+     *
+     * @param alwaysOnTop {@code true} to keep the window above other windows; {@code false} otherwise
+     */
+    void setAlwaysOnTop(boolean alwaysOnTop);
+
+    /**
+     * Sets the width of the window. Using this method is optional because, by default, the window width is
+     * based on the preferred width of its content.
+     *
+     * @param value the width in pixels
+     */
+    void setWidth(double value);
+
+    /**
+     * Sets the height of the window. Using this method is optional because, by default, the window height is
+     * based on the preferred height of its content.
+     *
+     * @param value the height in pixels
+     */
+    void setHeight(double value);
+
+    /**
+     * Sets the minimum width of the window.
+     *
+     * @param value the minimum width in pixels
+     */
+    void setMinWidth(double value);
+
+    /**
+     * Sets the minimum height of the window.
+     *
+     * @param value the minimum height in pixels
+     */
+    void setMinHeight(double value);
+
+    /**
+     * Sets the maximum width of the window.
+     *
+     * @param value the maximum width in pixels
+     */
+    void setMaxWidth(double value);
+
+    /**
+     * Sets the maximum height of the window.
+     *
+     * @param value the maximum height in pixels
+     */
+    void setMaxHeight(double value);
+
+    /**
+     * Sets whether the window is maximized.
+     *
+     * <p>Important: the {@code maximized} and {@code minimized} states are orthogonal and may be combined freely for
+     * {@link WindowType#TOP_LEVEL} windows. For {@link WindowType#NESTED} windows, however, these states are mutually
+     * exclusive - setting one to {@code true} resets the other to {@code false}.
+     *
+     * @param value {@code true} to maximize the window, {@code false} to restore it
+     */
+    void setMaximized(boolean value);
+
+    /**
+     * Sets whether the window can be maximized by the user.
+     *
+     * @param maximizable {@code true} to allow maximizing, {@code false} to prevent it
+     */
+    void setMaximizable(boolean maximizable);
+
+    /**
+     * Sets whether the window is minimized.
+     *
+     * <p>Important: the {@code maximized} and {@code minimized} states are orthogonal and may be combined freely for
+     * {@link WindowType#TOP_LEVEL} windows. For {@link WindowType#NESTED} windows, however, these states are mutually
+     * exclusive - setting one to {@code true} resets the other to {@code false}.
+     *
+     * @param minimized {@code true} to minimize the window, {@code false} to restore it
+     */
+    void setMinimized(boolean minimized);
+
+    /**
+     * Sets whether the window can be minimized by the user.
+     *
+     * @param minimizable {@code true} to allow minimizing, {@code false} to prevent it
+     */
+    void setMinimizable(boolean minimizable);
+
+    /**
+     * Sets whether the window is blocked, preventing user interaction.
+     *
+     * @param blocked {@code true} to block the window, {@code false} to unblock it
+     */
+    void setBlocked(boolean blocked);
+
+    /**
+     * Enables or disables the ability to move the dialog outside the bounds of its parent container.
+     *
+     * <p>This method is intended for {@link WindowType#NESTED} windows only.
+     *
+     * <p>
+     * When enabled, only a minimum top constraint may be applied.
+     * When disabled, dialog movement is fully constrained to the parent bounds.
+     *
+     * @param outOfBoundsAllowed {@code true} to allow moving outside parent bounds,
+     *                           {@code false} to restrict movement to the parent area
+     */
+    void setOutOfBoundsAllowed(boolean outOfBoundsAllowed);
+
+    /**
+     * Sets whether the window can be resized by the user.
+     *
+     * @param value {@code true} to make the window resizable, {@code false} to disable resizing
+     */
+    void setResizable(boolean value);
+
+    /**
+     * Sets the x-coordinate of the window.
+     *
+     * @param x the x-coordinate of the window
+     */
+    void setX(double x);
+
+    /**
+     * Sets the y-coordinate of the window.
+     *
+     * @param y the y-coordinate of the window
+     */
+    void setY(double y);
 }

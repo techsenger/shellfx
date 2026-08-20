@@ -37,12 +37,12 @@ public class EnumEditorDialogFxView<P extends EnumEditorDialogPresenter<?>> exte
     }
 
     @Override
-    public void setValue(String value) {
+    public void updateValue(String value) {
         this.comboBox.setValue((String) value);
     }
 
     @Override
-    public void setValues(List<String> values) {
+    public void updateValues(List<String> values) {
         this.comboBox.setItems(FXCollections.observableArrayList(values));
     }
 

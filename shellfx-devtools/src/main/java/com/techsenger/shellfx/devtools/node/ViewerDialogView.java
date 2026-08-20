@@ -24,15 +24,15 @@ import com.techsenger.shellfx.core.dialog.DialogView;
  */
 public interface ViewerDialogView extends DialogView {
 
-    void setName(String name);
+    void updateName(String name);
 
     void addNameUrl(String url);
 
-    void setValue(String value);
+    void updateValue(String value);
 
-    void setCss(String css);
+    void updateCss(String css);
 
     void addCssUrl(String url);
 
-    void setState(String state);
+    void updateState(String state);
 }

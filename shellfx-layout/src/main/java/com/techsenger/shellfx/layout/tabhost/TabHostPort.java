@@ -25,4 +25,7 @@ import com.techsenger.shellfx.core.tab.TabContainerPort;
  */
 public interface TabHostPort extends AreaPort, TabContainerPort {
 
+    boolean isTabHeaderAutoHide();
+
+    boolean isTabHeaderVisible();
 }

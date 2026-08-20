@@ -25,7 +25,7 @@ import com.techsenger.shellfx.material.icon.Icon;
  */
 public interface AlertDialogView extends DialogView {
 
-    void setMessage(String message);
+    void updateMessage(String message);
 
-    void setMessageIcon(Icon<?> icon);
+    void updateMessageIcon(Icon<?> icon);
 }

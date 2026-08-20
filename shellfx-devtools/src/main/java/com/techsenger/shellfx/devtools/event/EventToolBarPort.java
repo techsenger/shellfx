@@ -24,11 +24,13 @@ import java.util.Set;
  *
  * @author Pavel Castornii
  */
-public interface EventToolBarPort extends ToolBarPort, EventToolBarShared {
+public interface EventToolBarPort extends ToolBarPort {
 
     Set<Class<? extends ConnectorEvent>> getSelectedEventTypes();
 
     boolean isFilterSelected();
 
     boolean isSelectedNodeOnly();
+
+    void setStatistics(String text);
 }

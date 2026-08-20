@@ -59,7 +59,7 @@ public class InsetEditorDialogPresenter<V extends InsetEditorDialogView> extends
             return;
         }
         this.top = top;
-        getView().setTop(top);
+        getView().updateTop(top);
     }
 
     public String getRight() {
@@ -71,7 +71,7 @@ public class InsetEditorDialogPresenter<V extends InsetEditorDialogView> extends
             return;
         }
         this.right = right;
-        getView().setRight(right);
+        getView().updateRight(right);
     }
 
     public String getBottom() {
@@ -83,7 +83,7 @@ public class InsetEditorDialogPresenter<V extends InsetEditorDialogView> extends
             return;
         }
         this.bottom = bottom;
-        getView().setBottom(bottom);
+        getView().updateBottom(bottom);
     }
 
     public String getLeft() {
@@ -95,7 +95,7 @@ public class InsetEditorDialogPresenter<V extends InsetEditorDialogView> extends
             return;
         }
         this.left = left;
-        getView().setLeft(left);
+        getView().updateLeft(left);
     }
 
     protected void onTopChanged(String value) {

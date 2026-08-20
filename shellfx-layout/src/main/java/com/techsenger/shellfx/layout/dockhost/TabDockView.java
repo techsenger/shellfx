@@ -22,7 +22,7 @@ import com.techsenger.shellfx.layout.tabhost.TabHostView;
  *
  * @author Pavel Castornii
  */
-public interface TabDockView extends TabHostView, TabDockShared {
+public interface TabDockView extends TabHostView {
 
     interface Composer extends TabHostView.Composer {
 
@@ -31,4 +31,10 @@ public interface TabDockView extends TabHostView, TabDockShared {
 
     @Override
     Composer getComposer();
+
+    void updateDraggable(boolean value);
+
+    void updateMinimizable(boolean minimizable);
+
+    void updateClosable(boolean closable);
 }

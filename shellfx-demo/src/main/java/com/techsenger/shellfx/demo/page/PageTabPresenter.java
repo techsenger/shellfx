@@ -57,6 +57,6 @@ public class PageTabPresenter extends AbstractTabPresenter<PageTabView> {
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setTitle("Page Tab");
+        setTitle("Page Tab");
     }
 }

@@ -69,12 +69,12 @@ public class AlertDialogFxView<P extends AlertDialogPresenter<?>> extends Abstra
     }
 
     @Override
-    public void setMessage(String message) {
+    public void updateMessage(String message) {
         this.messageLabel.setText(message);
     }
 
     @Override
-    public void setMessageIcon(Icon<?> icon) {
+    public void updateMessageIcon(Icon<?> icon) {
         this.messageIconViewBox.setIcon(icon);
     }
 

@@ -119,12 +119,12 @@ public class PageHostFxView<P extends PageHostPresenter<?>> extends AbstractPage
     }
 
     @Override
-    public void setMenu(List<PageItem> items) {
+    public void refreshMenu(List<PageItem> items) {
         pageListView.setItems(FXCollections.observableArrayList((List<PageDescriptor>) (List<?>) items));
     }
 
     @Override
-    public void setPage(int index) {
+    public void selectPage(int index) {
         var descriptor = this.pageListView.getItems().get(index);
         var fxView = getComposer().pagesByItems.get(descriptor);
         setPage(fxView); // before selecting item

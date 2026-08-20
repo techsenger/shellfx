@@ -46,16 +46,16 @@ public class TextEditorDialogPresenter<V extends TextEditorDialogView> extends A
         });
     }
 
+    public String getValue() {
+        return value;
+    }
+
     protected void setValue(String value) {
         if (Objects.equals(this.value, value)) {
             return;
         }
         this.value = value;
-        getView().setValue(value);
-    }
-
-    protected String getValue() {
-        return value;
+        getView().updateValue(value);
     }
 
     @Override

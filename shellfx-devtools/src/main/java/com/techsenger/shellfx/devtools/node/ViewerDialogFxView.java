@@ -73,7 +73,7 @@ public class ViewerDialogFxView<P extends ViewerDialogPresenter<?>>  extends Abs
     }
 
     @Override
-    public void setName(String name) {
+    public void updateName(String name) {
         nameLabel.setText(name);
     }
 
@@ -89,12 +89,12 @@ public class ViewerDialogFxView<P extends ViewerDialogPresenter<?>>  extends Abs
     }
 
     @Override
-    public void setValue(String value) {
+    public void updateValue(String value) {
         valueTextArea.setText(value);
     }
 
     @Override
-    public void setCss(String css) {
+    public void updateCss(String css) {
         cssTextField.setText(css);
     }
 
@@ -110,7 +110,7 @@ public class ViewerDialogFxView<P extends ViewerDialogPresenter<?>>  extends Abs
     }
 
     @Override
-    public void setState(String state) {
+    public void updateState(String state) {
         stateTextField.setText(state);
     }
 

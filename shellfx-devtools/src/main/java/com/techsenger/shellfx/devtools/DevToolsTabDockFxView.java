@@ -157,7 +157,7 @@ public class DevToolsTabDockFxView<P extends DevToolsTabDockPresenter<?>> extend
     }
 
     @Override
-    public void setSelectionSelected(boolean value) {
+    public void updateSelectionSelected(boolean value) {
         this.selectionButton.setSelected(value);
     }
 

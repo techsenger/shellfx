@@ -25,35 +25,35 @@ import java.util.List;
  */
 public interface FindBaseView extends AreaView {
 
-    void setFindText(String text);
+    void updateFindText(String text);
 
-    void setFindTexts(List<String> texts);
+    void updateFindTexts(List<String> texts);
 
-    void setNotFound(boolean value);
+    void updateNotFound(boolean value);
 
-    void setMatchCaseSelected(boolean value);
+    void updateMatchCaseSelected(boolean value);
 
-    void setMatchCaseDisabled(boolean value);
+    void updateMatchCaseDisabled(boolean value);
 
-    void setMatchesText(String text);
+    void updateMatchesText(String text);
 
-    void setMatchesVisible(boolean visible);
+    void updateMatchesVisible(boolean visible);
 
-    void setClearVisible(boolean visible);
+    void updateClearVisible(boolean visible);
 
-    void setFindNextDisabled(boolean value);
+    void updateFindNextDisabled(boolean value);
 
-    void setFindPreviousDisabled(boolean value);
+    void updateFindPreviousDisabled(boolean value);
 
-    void setWholeWordSelected(boolean value);
+    void updateWholeWordSelected(boolean value);
 
-    void setWholeWordDisabled(boolean value);
+    void updateWholeWordDisabled(boolean value);
 
-    void setRegExpSelected(boolean value);
+    void updateRegExpSelected(boolean value);
 
-    void setRegExpDisabled(boolean value);
+    void updateRegExpDisabled(boolean value);
 
-    void setHighlightSelected(boolean value);
+    void updateHighlightSelected(boolean value);
 
-    void setHighlightDisabled(boolean value);
+    void updateHighlightDisabled(boolean value);
 }

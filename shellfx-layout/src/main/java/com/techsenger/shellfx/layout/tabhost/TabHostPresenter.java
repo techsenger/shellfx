@@ -51,22 +51,30 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
         this.selectedTabIndex = index;
     }
 
+    @Override
     public boolean isTabHeaderAutoHide() {
         return tabHeaderAutoHide;
     }
 
     public void setTabHeaderAutoHide(boolean tabHeaderAutoHide) {
+        if (this.tabHeaderAutoHide == tabHeaderAutoHide) {
+            return;
+        }
         this.tabHeaderAutoHide = tabHeaderAutoHide;
-        getView().setTabHeaderAutoHide(tabHeaderAutoHide);
+        getView().updateTabHeaderAutoHide(tabHeaderAutoHide);
     }
 
+    @Override
     public boolean isTabHeaderVisible() {
         return tabHeaderVisible;
     }
 
     public void setTabHeaderVisible(boolean tabHeaderVisible) {
+        if (this.tabHeaderVisible == tabHeaderVisible) {
+            return;
+        }
         this.tabHeaderVisible = tabHeaderVisible;
-        getView().setTabHeaderVisible(tabHeaderVisible);
+        getView().updateTabHeaderVisible(tabHeaderVisible);
     }
 
     @Override

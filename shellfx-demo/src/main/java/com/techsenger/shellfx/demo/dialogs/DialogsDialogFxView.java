@@ -117,7 +117,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
     }
 
     @Override
-    public void setDialogTypes(List<DialogType> types) {
+    public void updateDialogTypes(List<DialogType> types) {
         this.listView.setItems(FXCollections.observableArrayList(types));
     }
 

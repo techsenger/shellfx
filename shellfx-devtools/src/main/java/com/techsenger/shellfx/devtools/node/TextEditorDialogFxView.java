@@ -35,7 +35,7 @@ public class TextEditorDialogFxView<P extends TextEditorDialogPresenter<?>> exte
     }
 
     @Override
-    public void setValue(String value) {
+    public void updateValue(String value) {
         textField.setText(value);
     }
 

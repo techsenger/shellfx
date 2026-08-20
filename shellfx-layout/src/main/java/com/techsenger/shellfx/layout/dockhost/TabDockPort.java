@@ -22,7 +22,7 @@ import com.techsenger.shellfx.layout.tabhost.TabHostPort;
  *
  * @author Pavel Castornii
  */
-public interface TabDockPort extends TabHostPort, TabDockShared {
+public interface TabDockPort extends TabHostPort {
 
     /**
      * Returns the value that stores the original position of this component in the layout before it was minimized
@@ -66,4 +66,35 @@ public interface TabDockPort extends TabHostPort, TabDockShared {
      * @return {@code true} if this TabDock can be minimized, {@code false} otherwise
      */
     boolean isMinimizable();
+
+    /**
+     * Sets whether this TabDock can be dragged and repositioned within the docking layout.
+     * <p>
+     * When set to {@code true}, a drag handle is added to the TabDock's header, allowing the user to grab and move
+     * it to a different position in the layout. When set to {@code false}, the drag handle is removed and the
+     * TabDock remains fixed in place.
+     *
+     * @param value {@code true} to enable dragging and show the drag handle, {@code false} to disable it
+     */
+    void setDraggable(boolean value);
+
+    /**
+     * Sets whether this TabDock can be minimized into the sidebar.
+     * <p>
+     * When set to {@code true}, a minimize button is added to the TabDock's header, allowing the user to collapse
+     * it into the sidebar while keeping it accessible. When set to {@code false}, the minimize button is removed.
+     *
+     * @param minimizable {@code true} to enable minimizing and show the minimize button, {@code false} to disable it
+     */
+    void setMinimizable(boolean minimizable);
+
+    /**
+     * Sets whether this TabDock can be closed by the user.
+     * <p>
+     * When set to {@code true}, a close button is added to the TabDock's header, allowing the user to remove it
+     * from the layout entirely. When set to {@code false}, the close button is removed.
+     *
+     * @param closable {@code true} to enable closing and show the close button, {@code false} to disable it
+     */
+    void setClosable(boolean closable);
 }

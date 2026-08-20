@@ -62,12 +62,12 @@ public class SettingsDialogFxView extends AbstractDialogFxView<SettingsDialogPre
     }
 
     @Override
-    public void setSelectedTheme(Theme theme) {
+    public void updateSelectedTheme(Theme theme) {
         themeComboBox.getSelectionModel().select(theme);
     }
 
     @Override
-    public void setSelectedDensity(Density density) {
+    public void updateSelectedDensity(Density density) {
         densityComboBox.getSelectionModel().select(density);
     }
 

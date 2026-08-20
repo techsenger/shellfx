@@ -49,7 +49,7 @@ public class DemoPageFxView extends AbstractPageFxView<DemoPagePresenter> implem
     }
 
     @Override
-    public void setText(String text) {
+    public void updateText(String text) {
         textArea.setText(text);
     }
 

@@ -56,6 +56,6 @@ public class DockableTabPresenter extends AbstractTabPresenter<TabView> {
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setTitle("Tab " + index);
+        setTitle("Tab " + index);
     }
 }

@@ -90,7 +90,7 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
                 foundNames.add(name);
             }
         }
-        getView().setLeftButtons(foundNames.toArray(ResultButtonName[]::new));
+        getView().updateLeftButtons(foundNames.toArray(ResultButtonName[]::new));
     }
 
     @Override
@@ -104,24 +104,24 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
                 foundNames.add(name);
             }
         }
-        getView().setRightButtons(foundNames.toArray(ResultButtonName[]::new));
+        getView().updateRightButtons(foundNames.toArray(ResultButtonName[]::new));
     }
 
     @Override
     public void setButtonDisabled(ResultButtonName name, boolean value) {
         var button = this.buttonsByName.get(name);
-        if (button != null) {
+        if (button != null && button.isDisabled() != value) {
             button.setDisabled(value);
-            getView().setButtonDisabled(name, value);
+            getView().updateButtonDisabled(name, value);
         }
     }
 
     @Override
     public void setButtonDefault(ResultButtonName name, boolean value) {
         var button = this.buttonsByName.get(name);
-        if (button != null) {
+        if (button != null && button.isDefault() != value) {
             button.setDefault(value);
-            getView().setButtonDefault(name, value);
+            getView().updateButtonDefault(name, value);
         }
     }
 

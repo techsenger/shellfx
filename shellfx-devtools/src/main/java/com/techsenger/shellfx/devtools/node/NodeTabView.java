@@ -58,7 +58,7 @@ public interface NodeTabView extends TabView {
 
     void clearProperties();
 
-    void setReadOnlyByProperty(Map<String, Boolean> map);
+    void applyReadOnlyByProperty(Map<String, Boolean> map);
 
     void addProperties(AttributeCategory category, boolean expanded, List<PropertyItem> items);
 

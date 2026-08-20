@@ -126,7 +126,7 @@ public class Demo extends Application {
         var shellParams = new DefaultShellParams(context);
         var shellPresenter = new DefaultShellPresenter<>(shellView, shellParams);
         shellPresenter.initialize();
-        shellView.setTitle("ShellFX Demo");
+        shellPresenter.setTitle("ShellFX Demo");
 
         // creating workspace
         AreaFxView<?> workspace;

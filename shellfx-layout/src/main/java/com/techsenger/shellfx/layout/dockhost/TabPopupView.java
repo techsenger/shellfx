@@ -40,7 +40,7 @@ public interface TabPopupView extends AreaView, TabPopupPort.ViewAccess {
     @Override
     Composer getComposer();
 
-    void setHeight(double height);
+    void updateHeight(double height);
 
-    void setWidth(double width);
+    void updateWidth(double width);
 }

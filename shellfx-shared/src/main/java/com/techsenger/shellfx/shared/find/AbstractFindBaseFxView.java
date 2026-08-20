@@ -99,31 +99,31 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public void setFindText(String text) {
+    public void updateFindText(String text) {
         this.findComboBox.getEditor().textProperty().set(text);
     }
 
     @Override
-    public void setMatchCaseSelected(boolean value) {
+    public void updateMatchCaseSelected(boolean value) {
         if (this.matchCaseButton != null) {
             this.matchCaseButton.setSelected(value);
         }
     }
 
     @Override
-    public void setMatchCaseDisabled(boolean value) {
+    public void updateMatchCaseDisabled(boolean value) {
         if (this.matchCaseButton != null) {
             this.matchCaseButton.setDisable(value);
         }
     }
 
     @Override
-    public void setMatchesText(String text) {
+    public void updateMatchesText(String text) {
         this.matchesLabel.textProperty().set(text);
     }
 
     @Override
-    public void setMatchesVisible(boolean visible) {
+    public void updateMatchesVisible(boolean visible) {
         var visibleNow = this.matchesLabel.getParent() != null;
         if (visible && !visibleNow) {
             this.findRightBox.getChildren().add(this.matchesLabel);
@@ -134,7 +134,7 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public void setClearVisible(boolean visible) {
+    public void updateClearVisible(boolean visible) {
         var visibleNow = this.clearButton.getParent() != null;
         if (visible && !visibleNow) {
             this.findRightBox.getChildren().add(0, this.clearButton);
@@ -145,67 +145,67 @@ public abstract class AbstractFindBaseFxView<P extends AbstractFindBasePresenter
     }
 
     @Override
-    public void setFindTexts(List<String> texts) {
+    public void updateFindTexts(List<String> texts) {
         this.findComboBox.getItems().clear();
         this.findComboBox.getItems().addAll(texts);
     }
 
     @Override
-    public void setNotFound(boolean value) {
+    public void updateNotFound(boolean value) {
         this.notFound.set(value);
     }
 
     @Override
-    public void setFindNextDisabled(boolean value) {
+    public void updateFindNextDisabled(boolean value) {
         if (this.findNextButton != null) {
             this.findNextButton.setDisable(value);
         }
     }
 
     @Override
-    public void setFindPreviousDisabled(boolean value) {
+    public void updateFindPreviousDisabled(boolean value) {
         if (this.findPreviousButton != null) {
             this.findPreviousButton.setDisable(value);
         }
     }
 
     @Override
-    public void setWholeWordSelected(boolean value) {
+    public void updateWholeWordSelected(boolean value) {
         if (this.wholeWordButton != null) {
             this.wholeWordButton.setSelected(value);
         }
     }
 
     @Override
-    public void setWholeWordDisabled(boolean value) {
+    public void updateWholeWordDisabled(boolean value) {
         if (this.wholeWordButton != null) {
             this.wholeWordButton.setDisable(value);
         }
     }
 
     @Override
-    public void setRegExpSelected(boolean value) {
+    public void updateRegExpSelected(boolean value) {
         if (this.regExpButton != null) {
             this.regExpButton.setSelected(value);
         }
     }
 
     @Override
-    public void setRegExpDisabled(boolean value) {
+    public void updateRegExpDisabled(boolean value) {
         if (this.regExpButton != null) {
             this.regExpButton.setDisable(value);
         }
     }
 
     @Override
-    public void setHighlightSelected(boolean value) {
+    public void updateHighlightSelected(boolean value) {
         if (this.highlightButton != null) {
             this.highlightButton.setSelected(value);
         }
     }
 
     @Override
-    public void setHighlightDisabled(boolean value) {
+    public void updateHighlightDisabled(boolean value) {
         if (this.highlightButton != null) {
             this.highlightButton.setDisable(value);
         }

@@ -56,13 +56,17 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
         this.selector = new Selector(view.getConnector(), getDescriptor().getLogPrefix());
     }
 
+    @Override
     public boolean isSelectionSelected() {
         return selectionSelected;
     }
 
     public void setSelectionSelected(boolean selectionSelected) {
+        if (this.selectionSelected == selectionSelected) {
+            return;
+        }
         this.selectionSelected = selectionSelected;
-        getView().setSelectionSelected(selectionSelected);
+        getView().updateSelectionSelected(selectionSelected);
         this.selector.setSelectionVisible(selectionSelected);
     }
 

@@ -151,7 +151,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends Abst
     }
 
     @Override
-    public void setMenu(TreePageItem root, boolean showRoot) {
+    public void updateMenu(TreePageItem root, boolean showRoot) {
         treeItemsByPageItem.clear();
         pageTreeView.setRoot(null);
         pageTreeView.setShowRoot(showRoot);
@@ -162,7 +162,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends Abst
     }
 
     @Override
-    public void setMenu(FilteredTreePageItem root, boolean showRoot) {
+    public void refreshMenu(FilteredTreePageItem root, boolean showRoot) {
         treeItemsByPageItem.clear();
         pageTreeView.setRoot(null);
         pageTreeView.setShowRoot(showRoot);
@@ -173,7 +173,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends Abst
     }
 
     @Override
-    public void setPage(TreePageItem item) {
+    public void selectPage(TreePageItem item) {
         var fxView = getComposer().pagesByItems.get(item);
         var treeItem = treeItemsByPageItem.get(item);
         setPage(fxView); // before selecting treeItem
@@ -184,7 +184,7 @@ public class TreePageHostFxView<P extends TreePageHostPresenter<?>> extends Abst
     }
 
     @Override
-    public void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs) {
+    public void updateBreadcrumbs(List<PageBreadcrumb> breadcrumbs) {
         this.breadcrumbsBox.getChildren().clear();
         for (var i = 0; i < breadcrumbs.size(); i++) {
             var b = breadcrumbs.get(i);

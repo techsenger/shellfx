@@ -34,6 +34,7 @@ import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.ToolBarPresenter;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -85,13 +86,19 @@ public class EventToolBarPresenter<V extends EventToolBarView> extends ToolBarPr
     }
 
     public void setFilterSelected(boolean filterSelected) {
+        if (this.filterSelected == filterSelected) {
+            return;
+        }
         this.filterSelected = filterSelected;
-        getView().setFilterSelected(filterSelected);
+        getView().updateFilterSelected(filterSelected);
     }
 
     public void setSelectedNodeOnly(boolean selectedNodeOnly) {
+        if (this.selectedNodeOnly == selectedNodeOnly) {
+            return;
+        }
         this.selectedNodeOnly = selectedNodeOnly;
-        getView().setSelectedNodeOnly(selectedNodeOnly);
+        getView().updateSelectedNodeOnly(selectedNodeOnly);
     }
 
     @Override
@@ -101,8 +108,11 @@ public class EventToolBarPresenter<V extends EventToolBarView> extends ToolBarPr
 
     @Override
     public void setStatistics(String text) {
+        if (Objects.equals(this.statistics, text)) {
+            return;
+        }
         this.statistics = text;
-        getView().setStatistics(text);
+        getView().updateStatistics(text);
     }
 
     @Override
@@ -113,7 +123,7 @@ public class EventToolBarPresenter<V extends EventToolBarView> extends ToolBarPr
     @Override
     protected void preInitialize() {
         super.preInitialize();
-        getView().setEventTypes(eventTypesByClass);
+        getView().applyEventTypes(eventTypesByClass);
     }
 
     @Override

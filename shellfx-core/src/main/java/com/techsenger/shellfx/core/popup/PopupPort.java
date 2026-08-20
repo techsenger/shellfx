@@ -24,7 +24,7 @@ import com.techsenger.shellfx.core.traits.Waitable;
  *
  * @author Pavel Castornii
  */
-public interface PopupPort extends AreaPort, PopupShared, CloseAwarePort, Waitable {
+public interface PopupPort extends AreaPort, CloseAwarePort, Waitable {
 
     /**
      * Returns {@code true} if the popup blocks interaction with underlying content (modal) and {@code false} otherwise.
@@ -36,4 +36,8 @@ public interface PopupPort extends AreaPort, PopupShared, CloseAwarePort, Waitab
     double getPrefWidth();
 
     double getPrefHeight();
+
+    void setPrefWidth(double value);
+
+    void setPrefHeight(double value);
 }

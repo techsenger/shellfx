@@ -253,22 +253,22 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
     }
 
     @Override
-    public void setAppearanceSettings(AppearanceSettings settings) {
+    public void updateAppearanceSettings(AppearanceSettings settings) {
         this.settings = settings;
     }
 
     @Override
-    public void setLocations(List<Location> locations) {
+    public void updateLocations(List<Location> locations) {
         locationComboBox.setItems(FXCollections.observableArrayList(locations));
     }
 
     @Override
-    public void setLocation(Location value) {
+    public void updateLocation(Location value) {
         this.locationComboBox.getSelectionModel().select(value);
     }
 
     @Override
-    public void setMode(Mode mode) {
+    public void updateMode(Mode mode) {
         if (mode == Mode.LIST) {
             updateFileBox(this.fileListView);
             this.fileListView.refresh();
@@ -284,7 +284,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
     }
 
     @Override
-    public void setLocationCaption(String value) {
+    public void updateLocationCaption(String value) {
         this.locationLabel.setText(value);
     }
 
@@ -294,7 +294,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
     }
 
     @Override
-    public void setFiles(List<T> files) {
+    public void updateFiles(List<T> files) {
         this.files.clear();
         this.files.addAll(files);
         if (this.listButton.isSelected()) {
@@ -353,17 +353,17 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
     }
 
     @Override
-    public void setFileName(String fileName) {
+    public void updateFileName(String fileName) {
         this.fileNameTextField.setText(fileName);
     }
 
     @Override
-    public void setExtensionFilters(List<ExtensionFilter> filters) {
+    public void updateExtensionFilters(List<ExtensionFilter> filters) {
         this.filterComboBox.setItems(FXCollections.observableArrayList(filters));
     }
 
     @Override
-    public void setExtensionFilter(ExtensionFilter filter) {
+    public void updateExtensionFilter(ExtensionFilter filter) {
         this.filterComboBox.getSelectionModel().select(filter);
     }
 

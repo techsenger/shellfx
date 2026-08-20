@@ -18,6 +18,7 @@ package com.techsenger.shellfx.demo.page;
 
 import com.techsenger.shellfx.core.page.AbstractPagePresenter;
 import com.techsenger.shellfx.core.page.PageParams;
+import java.util.Objects;
 
 /**
  *
@@ -25,13 +26,27 @@ import com.techsenger.shellfx.core.page.PageParams;
  */
 public abstract class DemoPagePresenter extends AbstractPagePresenter<DemoPageView> {
 
+    private String text;
+
     public DemoPagePresenter(DemoPageView view, PageParams params) {
         super(view, params);
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        if (Objects.equals(this.text, text)) {
+            return;
+        }
+        this.text = text;
+        getView().updateText(text);
     }
 
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        getView().setText(getItem().getText() + " - " + Text.INSTANCE);
+        setText(getItem().getText() + " - " + Text.INSTANCE);
     }
 }

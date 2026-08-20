@@ -228,12 +228,12 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
     }
 
     @Override
-    public void setTabHeaderAutoHide(boolean value) {
+    public void updateTabHeaderAutoHide(boolean value) {
         this.tabHeaderAutoHide.set(value);
     }
 
     @Override
-    public void setTabHeaderVisible(boolean value) {
+    public void updateTabHeaderVisible(boolean value) {
         this.tabHeaderVisible.set(value);
     }
 
@@ -512,9 +512,9 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
     private void resolveTabHeaderVisibility() {
         if (this.tabHeaderAutoHide.get() && this.tabPane.getTabs().size() == 1) {
-            setTabHeaderVisible(false);
+            updateTabHeaderVisible(false);
         } else {
-            setTabHeaderVisible(true);
+            updateTabHeaderVisible(true);
         }
     }
 }

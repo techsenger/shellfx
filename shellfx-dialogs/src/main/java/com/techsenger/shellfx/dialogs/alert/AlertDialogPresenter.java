@@ -26,6 +26,7 @@ import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.INFO;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.WARNING;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.icon.Icon;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -68,8 +69,11 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
 
     @Override
     public void setMessage(String message) {
+        if (Objects.equals(this.message, message)) {
+            return;
+        }
         this.message = message;
-        getView().setMessage(message);
+        getView().updateMessage(message);
     }
 
     @Override
@@ -79,8 +83,11 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
 
     @Override
     public void setMessageIcon(Icon<?> messageIcon) {
+        if (Objects.equals(this.messageIcon, messageIcon)) {
+            return;
+        }
         this.messageIcon = messageIcon;
-        getView().setMessageIcon(messageIcon);
+        getView().updateMessageIcon(messageIcon);
     }
 
     @Override

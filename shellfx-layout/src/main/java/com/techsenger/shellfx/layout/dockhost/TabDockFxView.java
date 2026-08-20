@@ -105,7 +105,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     }
 
     @Override
-    public void setDraggable(boolean value) {
+    public void updateDraggable(boolean value) {
         if (value) {
             if (dragIconView.getParent() == null) {
                 getTabHeaderFirstBox().getChildren().add(getDragIconViewIndex(), dragIconView);
@@ -118,7 +118,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     }
 
     @Override
-    public void setMinimizable(boolean minimizable) {
+    public void updateMinimizable(boolean minimizable) {
         if (minimizable) {
             if (this.minimizeButton.getParent() == null) {
                 getTabHeaderLastBox().getChildren().add(getMinimizeButtonIndex(), this.minimizeButton);
@@ -131,7 +131,7 @@ public class TabDockFxView<P extends TabDockPresenter<?>> extends TabHostFxView<
     }
 
     @Override
-    public void setClosable(boolean closable) {
+    public void updateClosable(boolean closable) {
         if (closable) {
             if (this.closeButton.getParent() == null) {
                 getTabHeaderLastBox().getChildren().add(getCloseButtonIndex(), this.closeButton);

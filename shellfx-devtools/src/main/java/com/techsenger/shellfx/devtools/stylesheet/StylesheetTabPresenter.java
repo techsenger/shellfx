@@ -95,6 +95,8 @@ public class StylesheetTabPresenter<V extends StylesheetTabView> extends Abstrac
 
     private final DevToolsTabDockPort tabDock;
 
+    private List<StylesheetItem> items = List.of();
+
     public StylesheetTabPresenter(V view, StylesheetTabParams params) {
         super(view, params);
         this.tabDock = params.getTabDock();
@@ -112,6 +114,10 @@ public class StylesheetTabPresenter<V extends StylesheetTabView> extends Abstrac
 
     public void refresh() {
         rebuildTree();
+    }
+
+    public List<StylesheetItem> getItems() {
+        return items;
     }
 
     @Override
@@ -183,7 +189,12 @@ public class StylesheetTabPresenter<V extends StylesheetTabView> extends Abstrac
         } else {
             getView().getComposer().getToolBarPort().hideFindResultInfo();
         }
-        getView().setItems(items);
+        setItems(items);
+    }
+
+    protected void setItems(List<StylesheetItem> items) {
+        this.items = items;
+        getView().updateItems(items);
     }
 
     protected StylesheetItem filterAndCreateStylesheet(Element el, Matcher matcher) {

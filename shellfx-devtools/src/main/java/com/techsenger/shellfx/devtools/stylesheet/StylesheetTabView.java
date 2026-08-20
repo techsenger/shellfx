@@ -38,5 +38,5 @@ public interface StylesheetTabView extends TabView {
      * Flat list of items representing a tree structure. The hierarchy is encoded via
      * {@link StylesheetItem#depth() } and the actual TreeItems are rebuilt in the View on each refresh.
      */
-    void setItems(List<StylesheetItem> items);
+    void updateItems(List<StylesheetItem> items);
 }

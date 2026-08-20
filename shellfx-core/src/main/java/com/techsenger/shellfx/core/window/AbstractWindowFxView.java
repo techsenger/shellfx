@@ -313,14 +313,14 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setModal(boolean modal) {
+    public void updateModal() {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.initModality(Modality.WINDOW_MODAL);
         }
     }
 
     @Override
-    public void setAlwaysOnTop(boolean alwaysOnTop) {
+    public void updateAlwaysOnTop(boolean alwaysOnTop) {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.setAlwaysOnTop(alwaysOnTop);
         } else if (this.windowManager != null) {
@@ -329,7 +329,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMaximized(boolean maximized) {
+    public void updateMaximized(boolean maximized) {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.setMaximized(maximized);
         } else {
@@ -343,7 +343,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMaximizable(boolean maximizable) {
+    public void updateMaximizable(boolean maximizable) {
         if (maximizable) {
             if (this.maximizeButton.getParent() == null) {
                 rightBox.getChildren().add(getMaximizeButtonIndex(), this.maximizeButton);
@@ -362,7 +362,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMinimized(boolean minimized) {
+    public void updateMinimized(boolean minimized) {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.setIconified(minimized);
         } else {
@@ -376,7 +376,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMinimizable(boolean minimizable) {
+    public void updateMinimizable(boolean minimizable) {
         if (minimizable) {
             if (this.minimizeButton.getParent() == null) {
                 rightBox.getChildren().add(getMinimizeButtonIndex(), this.minimizeButton);
@@ -389,12 +389,12 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setClosable(boolean closable) {
+    public void updateClosable(boolean closable) {
         this.closeButton.setDisable(!closable);
     }
 
     @Override
-    public void setWidth(double value) {
+    public void updateWidth(double value) {
         if (this.stage == null) {
             this.windowNode.setMinWidth(value);
             this.windowNode.setMaxWidth(value);
@@ -404,7 +404,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setHeight(double value) {
+    public void updateHeight(double value) {
         if (this.stage == null) {
             this.windowNode.setMinHeight(value);
             this.windowNode.setMaxHeight(value);
@@ -414,7 +414,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMinWidth(double value) {
+    public void updateMinWidth(double value) {
         if (this.stage == null) {
             this.minWidth.set(value);
         } else {
@@ -423,7 +423,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMinHeight(double value) {
+    public void updateMinHeight(double value) {
         if (this.stage == null) {
             this.minHeight.set(value);
         } else {
@@ -432,7 +432,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMaxWidth(double value) {
+    public void updateMaxWidth(double value) {
         if (this.stage == null) {
             this.maxWidth.set(value);
         } else {
@@ -441,7 +441,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setMaxHeight(double value) {
+    public void updateMaxHeight(double value) {
         if (this.stage == null) {
             this.maxHeight.set(value);
         } else {
@@ -450,12 +450,12 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setIcon(Icon<?> icon) {
+    public void updateIcon(Icon<?> icon) {
         iconViewBox.setIcon(icon);
     }
 
     @Override
-    public void setTitle(String title) {
+    public void updateTitle(String title) {
         this.titleLabel.setText(title);
     }
 
@@ -481,7 +481,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setDensity(@Nullable Density density) {
+    public void updateDensity(@Nullable Density density) {
         checkIfTopLevel();
         if (this.density != null) {
             this.stage.getScene().getRoot().getStyleClass().remove(this.density.getStyleClass());
@@ -493,7 +493,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setTheme(Theme theme) {
+    public void updateTheme(Theme theme) {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
         }
@@ -501,19 +501,19 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setRegularFont(Font font) {
+    public void updateRegularFont(Font font) {
         checkIfTopLevel();
         this.fontApplier.setRegularFont(font);
     }
 
     @Override
-    public void setMonospaceFont(Font font) {
+    public void updateMonospaceFont(Font font) {
         checkIfTopLevel();
         this.fontApplier.setMonospaceFont(font);
     }
 
     @Override
-    public void setBlocked(boolean blocked) {
+    public void updateBlocked(boolean blocked) {
         if (blocked) {
             this.blockPane = new Pane();
             this.blockPane.setMouseTransparent(false);
@@ -525,12 +525,12 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setOutOfBoundsAllowed(boolean outOfBoundsAllowed) {
+    public void updateOutOfBoundsAllowed(boolean outOfBoundsAllowed) {
         this.outOfBoundsAllowed = outOfBoundsAllowed;
     }
 
     @Override
-    public void setResizable(boolean value) {
+    public void updateResizable(boolean value) {
         if (this.stage == null) {
             this.resizable.set(value);
         } else {
@@ -549,7 +549,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setX(double x) {
+    public void updateX(double x) {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.setX(x);
         } else {
@@ -558,7 +558,7 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     @Override
-    public void setY(double y) {
+    public void updateY(double y) {
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.setY(y);
         } else {
@@ -627,8 +627,8 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
                         this.windowNode.fireEvent(event);
                         calculateMinSize();
                         // it is necessary to set sizes for both sides, as we don't know which side the user will resize
-                        setWidth(windowNode.getWidth());
-                        setHeight(windowNode.getHeight());
+                        updateWidth(windowNode.getWidth());
+                        updateHeight(windowNode.getHeight());
                     },
                     (e) -> {
                         var event = new DialogResizeEvent(DialogResizeEvent.DIALOG_RESIZE_FINISHED, e);

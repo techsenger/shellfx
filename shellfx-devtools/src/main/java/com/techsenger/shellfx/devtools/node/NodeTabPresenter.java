@@ -334,7 +334,7 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         super.postInitialize();
         setTitle("Nodes");
         setClosable(false);
-        getView().setReadOnlyByProperty(readOnlyByProperty);
+        getView().applyReadOnlyByProperty(readOnlyByProperty);
     }
 
     @Override

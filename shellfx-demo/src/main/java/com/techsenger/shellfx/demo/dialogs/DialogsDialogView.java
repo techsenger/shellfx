@@ -49,5 +49,5 @@ public interface DialogsDialogView extends DialogView {
     @Override
     Composer getComposer();
 
-    void setDialogTypes(List<DialogType> types);
+    void updateDialogTypes(List<DialogType> types);
 }

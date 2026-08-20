@@ -16,11 +16,16 @@
 
 package com.techsenger.shellfx.core.window;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.AbstractChildPresenter;
 import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.settings.SettingsSubscription;
 import com.techsenger.shellfx.material.icon.Icon;
+import com.techsenger.shellfx.material.style.Density;
+import com.techsenger.shellfx.material.theme.Theme;
+import java.util.Objects;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -64,6 +69,14 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     private boolean blocked;
 
     private Icon<?> icon;
+
+    private Density density;
+
+    private Theme theme;
+
+    private Font regularFont;
+
+    private Font monospaceFont;
 
     private final AppearanceSettings appearanceSettings;
 
@@ -115,7 +128,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.alwaysOnTop = alwaysOnTop;
-        getView().setAlwaysOnTop(alwaysOnTop);
+        getView().updateAlwaysOnTop(alwaysOnTop);
     }
 
     @Override
@@ -130,8 +143,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setWidth(double width) {
+        if (this.width == width) {
+            return;
+        }
         this.width = width;
-        getView().setWidth(width);
+        getView().updateWidth(width);
     }
 
     @Override
@@ -141,8 +157,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setHeight(double height) {
+        if (this.height == height) {
+            return;
+        }
         this.height = height;
-        getView().setHeight(height);
+        getView().updateHeight(height);
     }
 
     @Override
@@ -152,8 +171,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setTitle(String title) {
+        if (Objects.equals(this.title, title)) {
+            return;
+        }
         this.title = title;
-        getView().setTitle(title);
+        getView().updateTitle(title);
     }
 
     @Override
@@ -163,8 +185,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setIcon(Icon<?> icon) {
+        if (Objects.equals(this.icon, icon)) {
+            return;
+        }
         this.icon = icon;
-        getView().setIcon(icon);
+        getView().updateIcon(icon);
     }
 
     @Override
@@ -178,7 +203,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.maximized = maximized;
-        getView().setMaximized(maximized);
+        getView().updateMaximized(maximized);
     }
 
     @Override
@@ -192,7 +217,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.maximizable = maximizable;
-        getView().setMaximizable(maximizable);
+        getView().updateMaximizable(maximizable);
     }
 
     @Override
@@ -206,7 +231,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.minimized = minimized;
-        getView().setMinimized(minimized);
+        getView().updateMinimized(minimized);
     }
 
     @Override
@@ -220,7 +245,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.minimizable = minimizable;
-        getView().setMinimizable(minimizable);
+        getView().updateMinimizable(minimizable);
     }
 
     @Override
@@ -234,7 +259,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.closable = closable;
-        getView().setClosable(closable);
+        getView().updateClosable(closable);
     }
 
     @Override
@@ -273,7 +298,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.blocked = blocked;
-        getView().setBlocked(blocked);
+        getView().updateBlocked(blocked);
     }
 
     @Override
@@ -294,7 +319,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.outOfBoundsAllowed = outOfBoundsAllowed;
-        getView().setOutOfBoundsAllowed(outOfBoundsAllowed);
+        getView().updateOutOfBoundsAllowed(outOfBoundsAllowed);
     }
 
     @Override
@@ -315,8 +340,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setMinWidth(double minWidth) {
+        if (this.minWidth == minWidth) {
+            return;
+        }
         this.minWidth = minWidth;
-        getView().setMinWidth(minWidth);
+        getView().updateMinWidth(minWidth);
     }
 
     @Override
@@ -326,8 +354,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setMinHeight(double minHeight) {
+        if (this.minHeight == minHeight) {
+            return;
+        }
         this.minHeight = minHeight;
-        getView().setMinHeight(minHeight);
+        getView().updateMinHeight(minHeight);
     }
 
     @Override
@@ -337,8 +368,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setMaxWidth(double maxWidth) {
+        if (this.maxWidth == maxWidth) {
+            return;
+        }
         this.maxWidth = maxWidth;
-        getView().setMaxWidth(maxWidth);
+        getView().updateMaxWidth(maxWidth);
     }
 
     @Override
@@ -348,8 +382,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setMaxHeight(double maxHeight) {
+        if (this.maxHeight == maxHeight) {
+            return;
+        }
         this.maxHeight = maxHeight;
-        getView().setMaxHeight(maxHeight);
+        getView().updateMaxHeight(maxHeight);
     }
 
     @Override
@@ -359,8 +396,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     @Override
     public void setResizable(boolean resizable) {
+        if (this.resizable == resizable) {
+            return;
+        }
         this.resizable = resizable;
-        getView().setResizable(resizable);
+        getView().updateResizable(resizable);
     }
 
     @Override
@@ -374,15 +414,41 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     }
 
     @Override
+    public @Nullable Density getDensity() {
+        return this.density;
+    }
+
+    @Override
+    public Theme getTheme() {
+        return this.theme;
+    }
+
+    @Override
+    public Font getRegularFont() {
+        return this.regularFont;
+    }
+
+    @Override
+    public Font getMonospaceFont() {
+        return this.monospaceFont;
+    }
+
+    @Override
     public void setX(double x) {
+        if (this.x == x) {
+            return;
+        }
         this.x = x;
-        getView().setX(x);
+        getView().updateX(x);
     }
 
     @Override
     public void setY(double y) {
+        if (this.y == y) {
+            return;
+        }
         this.y = y;
-        getView().setY(y);
+        getView().updateY(y);
     }
 
     protected void onCloseRequest() {
@@ -403,20 +469,20 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     protected void postInitialize() {
         super.postInitialize();
         if (this.windowType == WindowType.TOP_LEVEL) {
-            getView().setDensity(this.appearanceSettings.getDensity());
-            getView().setRegularFont(this.appearanceSettings.getRegularFont());
-            getView().setMonospaceFont(this.appearanceSettings.getMonospaceFont());
+            setDensity(this.appearanceSettings.getDensity());
+            setRegularFont(this.appearanceSettings.getRegularFont());
+            setMonospaceFont(this.appearanceSettings.getMonospaceFont());
             this.densitySubscription =
-                    this.appearanceSettings.onDensityChanged((oldV, newV) -> getView().setDensity(newV));
+                    this.appearanceSettings.onDensityChanged((oldV, newV) -> setDensity(newV));
             this.monospaceFontSubscription =
-                    this.appearanceSettings.onMonospaceFontChanged((oldV, newV) -> getView().setMonospaceFont(newV));
+                    this.appearanceSettings.onMonospaceFontChanged((oldV, newV) -> setMonospaceFont(newV));
             this.regularFontSubscription =
-                    this.appearanceSettings.onRegularFontChanged((oldV, newV) -> getView().setRegularFont(newV));
+                    this.appearanceSettings.onRegularFontChanged((oldV, newV) -> setRegularFont(newV));
         }
-        getView().setTheme(this.appearanceSettings.getTheme());
-        this.themeSubscription = this.appearanceSettings.onThemeChanged((oldV, newV) -> getView().setTheme(newV));
+        setTheme(this.appearanceSettings.getTheme());
+        this.themeSubscription = this.appearanceSettings.onThemeChanged((oldV, newV) -> setTheme(newV));
         if (modal) {
-            getView().setModal(modal); // it is not possible to set modality for the primary stage
+            getView().updateModal(); // it is not possible to set modality for the primary stage
         }
     }
 
@@ -484,6 +550,38 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     protected AppearanceSettings getAppearanceSettings() {
         return appearanceSettings;
+    }
+
+    protected void setDensity(@Nullable Density density) {
+        if (Objects.equals(this.density, density)) {
+            return;
+        }
+        this.density = density;
+        getView().updateDensity(density);
+    }
+
+    protected void setTheme(Theme theme) {
+        if (Objects.equals(this.theme, theme)) {
+            return;
+        }
+        this.theme = theme;
+        getView().updateTheme(theme);
+    }
+
+    protected void setRegularFont(Font font) {
+        if (Objects.equals(this.regularFont, font)) {
+            return;
+        }
+        this.regularFont = font;
+        getView().updateRegularFont(font);
+    }
+
+    protected void setMonospaceFont(Font font) {
+        if (Objects.equals(this.monospaceFont, font)) {
+            return;
+        }
+        this.monospaceFont = font;
+        getView().updateMonospaceFont(font);
     }
 
     private void checkIfNested() {

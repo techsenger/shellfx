@@ -22,7 +22,15 @@ import com.techsenger.shellfx.core.dialog.DialogView;
  *
  * @author Pavel Castornii
  */
-public interface ProgressDialogView extends DialogView, ProgressDialogShared {
+public interface ProgressDialogView extends DialogView {
 
-    void showSteps(int currentStep, int stepCount);
+    void updateMessage(String text);
+
+    void updateStepsVisible(boolean value);
+
+    void updateCurrentStep(int currentStep);
+
+    void updateStepCount(int stepCount);
+
+    void updateProgress(double value);
 }

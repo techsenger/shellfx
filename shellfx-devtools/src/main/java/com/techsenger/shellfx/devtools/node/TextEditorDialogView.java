@@ -22,5 +22,5 @@ package com.techsenger.shellfx.devtools.node;
  */
 public interface TextEditorDialogView extends EditorDialogView {
 
-    void setValue(String value);
+    void updateValue(String value);
 }

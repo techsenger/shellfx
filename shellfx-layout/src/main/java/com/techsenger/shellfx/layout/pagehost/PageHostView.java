@@ -35,7 +35,7 @@ public interface PageHostView extends PageHostViewBase, PageContainerView {
     @Override
     Composer getComposer();
 
-    void setMenu(List<PageItem> items);
+    void refreshMenu(List<PageItem> items);
 
-    void setPage(int index);
+    void selectPage(int index);
 }

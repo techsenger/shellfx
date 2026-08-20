@@ -66,6 +66,23 @@ public class ViewerDialogPresenter<V extends ViewerDialogView>  extends Abstract
         return item;
     }
 
+    public String getName() {
+        return item.getAttribute().name();
+    }
+
+    public String getValue() {
+        return item.getValueData().text();
+    }
+
+    public String getCss() {
+        var css = item.getAttribute().cssProperty();
+        return css != null ? css : "-";
+    }
+
+    public String getState() {
+        return item.getAttribute().valueState().name();
+    }
+
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(DevToolsComponents.VIEWER_DIALOG);
@@ -76,22 +93,18 @@ public class ViewerDialogPresenter<V extends ViewerDialogView>  extends Abstract
         super.postInitialize();
         setIcon(DevToolsIcons.VIEW);
         setTitle("Property Viewer");
-        getView().setName(item.getAttribute().name());
+        getView().updateName(getName());
         var nameUrl = resolveNameUrl();
         if (nameUrl != null) {
             getView().addNameUrl(nameUrl);
         }
-        getView().setValue(item.getValueData().text());
-        if (item.getAttribute().cssProperty() != null) {
-            getView().setCss(item.getAttribute().cssProperty());
-        } else {
-            getView().setCss("-");
-        }
+        getView().updateValue(getValue());
+        getView().updateCss(getCss());
         var cssUrl = resolveCssPropertyUrl();
         if (cssUrl != null) {
             getView().addCssUrl(cssUrl);
         }
-        getView().setState(item.getAttribute().valueState().name());
+        getView().updateState(getState());
         setOnResult((button) -> closeSafely());
         setRightButtons(ViewerDialogButtons.OK);
     }

@@ -58,21 +58,21 @@ public class EnumEditorDialogPresenter<V extends EnumEditorDialogView> extends A
         setValue(e.name());
     }
 
+    public List<String> getValues() {
+        return values;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
     protected void onValueSelected(String value) {
         this.value = value;
     }
 
     protected void setValues(List<String> values) {
         this.values = values;
-        getView().setValues(values);
-    }
-
-    protected List<String> getValues() {
-        return values;
-    }
-
-    protected String getValue() {
-        return value;
+        getView().updateValues(values);
     }
 
     protected void setValue(String value) {
@@ -80,6 +80,6 @@ public class EnumEditorDialogPresenter<V extends EnumEditorDialogView> extends A
             return;
         }
         this.value = value;
-        getView().setValue(value);
+        getView().updateValue(value);
     }
 }

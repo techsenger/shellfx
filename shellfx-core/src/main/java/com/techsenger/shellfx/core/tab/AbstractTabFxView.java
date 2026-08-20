@@ -103,17 +103,17 @@ public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> exten
     }
 
     @Override
-    public void setTooltip(String tooltip) {
+    public void updateTooltip(String tooltip) {
         this.root.setTooltip(new Tooltip(tooltip));
     }
 
     @Override
-    public void setClosable(boolean closable) {
+    public void updateClosable(boolean closable) {
         this.root.setClosable(closable);
     }
 
     @Override
-    public void setWaiting(boolean waiting) {
+    public void updateWaiting(boolean waiting) {
         if (waiting) {
             if (bgPane.getParent() == null) {
                 bgPane.setMouseTransparent(false);
@@ -128,12 +128,12 @@ public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> exten
     }
 
     @Override
-    public void setIcon(Icon<?> icon) {
+    public void updateIcon(Icon<?> icon) {
         iconViewBox.setIcon(icon);
     }
 
     @Override
-    public void setTitle(String title) {
+    public void updateTitle(String title) {
         this.root.setText(title);
     }
 

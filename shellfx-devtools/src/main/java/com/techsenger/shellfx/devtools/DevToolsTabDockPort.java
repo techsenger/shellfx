@@ -33,4 +33,6 @@ public interface DevToolsTabDockPort extends TabDockPort {
     HistoryManager getHistoryManager();
 
     DevToolsHostType getHostType();
+
+    boolean isSelectionSelected();
 }

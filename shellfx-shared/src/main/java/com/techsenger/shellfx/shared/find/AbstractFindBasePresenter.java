@@ -22,6 +22,7 @@ import com.techsenger.shellfx.core.history.HistoryUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -71,8 +72,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setFindText(String findText) {
+        if (Objects.equals(this.findText, findText)) {
+            return;
+        }
         this.findText = findText;
-        getView().setFindText(findText);
+        getView().updateFindText(findText);
     }
 
     public List<String> getFindTexts() {
@@ -81,11 +85,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
 
     public void setFindTexts(List<String> findTexts) {
         this.findTexts = findTexts;
-        getView().setFindTexts(findTexts);
+        getView().updateFindTexts(findTexts);
     }
 
     protected void onClearFindText() {
-        getView().setFindText(null);
+        setFindText(null);
     }
 
     public boolean isNotFound() {
@@ -93,8 +97,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setNotFound(boolean notFound) {
+        if (this.notFound == notFound) {
+            return;
+        }
         this.notFound = notFound;
-        getView().setNotFound(notFound);
+        getView().updateNotFound(notFound);
     }
 
     public boolean isMatchCaseSelected() {
@@ -102,8 +109,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setMatchCaseSelected(boolean matchCaseSelected) {
+        if (this.matchCaseSelected == matchCaseSelected) {
+            return;
+        }
         this.matchCaseSelected = matchCaseSelected;
-        getView().setMatchCaseSelected(matchCaseSelected);
+        getView().updateMatchCaseSelected(matchCaseSelected);
     }
 
     public boolean isMatchCaseDisabled() {
@@ -111,8 +121,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setMatchCaseDisabled(boolean matchCaseDisabled) {
+        if (this.matchCaseDisabled == matchCaseDisabled) {
+            return;
+        }
         this.matchCaseDisabled = matchCaseDisabled;
-        getView().setMatchCaseDisabled(matchCaseDisabled);
+        getView().updateMatchCaseDisabled(matchCaseDisabled);
     }
 
     public String getMatchesText() {
@@ -120,8 +133,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setMatchesText(String matchesText) {
+        if (Objects.equals(this.matchesText, matchesText)) {
+            return;
+        }
         this.matchesText = matchesText;
-        getView().setMatchesText(matchesText);
+        getView().updateMatchesText(matchesText);
     }
 
     public boolean isMatchesVisible() {
@@ -129,8 +145,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setMatchesVisible(boolean matchesVisible) {
+        if (this.matchesVisible == matchesVisible) {
+            return;
+        }
         this.matchesVisible = matchesVisible;
-        getView().setMatchesVisible(matchesVisible);
+        getView().updateMatchesVisible(matchesVisible);
     }
 
     protected void onMatchCase(boolean selected) {
@@ -142,8 +161,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setClearVisible(boolean clearVisible) {
+        if (this.clearVisible == clearVisible) {
+            return;
+        }
         this.clearVisible = clearVisible;
-        getView().setClearVisible(clearVisible);
+        getView().updateClearVisible(clearVisible);
     }
 
     public boolean isFindNextDisabled() {
@@ -151,8 +173,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setFindNextDisabled(boolean findNextDisabled) {
+        if (this.findNextDisabled == findNextDisabled) {
+            return;
+        }
         this.findNextDisabled = findNextDisabled;
-        getView().setFindNextDisabled(findNextDisabled);
+        getView().updateFindNextDisabled(findNextDisabled);
     }
 
     public boolean isFindPreviousDisabled() {
@@ -160,8 +185,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setFindPreviousDisabled(boolean findPreviousDisabled) {
+        if (this.findPreviousDisabled == findPreviousDisabled) {
+            return;
+        }
         this.findPreviousDisabled = findPreviousDisabled;
-        getView().setFindPreviousDisabled(findPreviousDisabled);
+        getView().updateFindPreviousDisabled(findPreviousDisabled);
     }
 
     public boolean isWholeWordSelected() {
@@ -169,8 +197,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setWholeWordSelected(boolean wholeWordSelected) {
+        if (this.wholeWordSelected == wholeWordSelected) {
+            return;
+        }
         this.wholeWordSelected = wholeWordSelected;
-        getView().setWholeWordSelected(wholeWordSelected);
+        getView().updateWholeWordSelected(wholeWordSelected);
     }
 
     public boolean isWholeWordDisabled() {
@@ -178,8 +209,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setWholeWordDisabled(boolean wholeWordDisabled) {
+        if (this.wholeWordDisabled == wholeWordDisabled) {
+            return;
+        }
         this.wholeWordDisabled = wholeWordDisabled;
-        getView().setWholeWordDisabled(wholeWordDisabled);
+        getView().updateWholeWordDisabled(wholeWordDisabled);
     }
 
     public boolean isRegExpSelected() {
@@ -187,8 +221,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setRegExpSelected(boolean regExpSelected) {
+        if (this.regExpSelected == regExpSelected) {
+            return;
+        }
         this.regExpSelected = regExpSelected;
-        getView().setRegExpSelected(regExpSelected);
+        getView().updateRegExpSelected(regExpSelected);
     }
 
     public boolean isRegExpDisabled() {
@@ -196,8 +233,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setRegExpDisabled(boolean regExpDisabled) {
+        if (this.regExpDisabled == regExpDisabled) {
+            return;
+        }
         this.regExpDisabled = regExpDisabled;
-        getView().setRegExpDisabled(regExpDisabled);
+        getView().updateRegExpDisabled(regExpDisabled);
     }
 
     public boolean isHighlightSelected() {
@@ -205,8 +245,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setHighlightSelected(boolean highlightSelected) {
+        if (this.highlightSelected == highlightSelected) {
+            return;
+        }
         this.highlightSelected = highlightSelected;
-        getView().setHighlightSelected(highlightSelected);
+        getView().updateHighlightSelected(highlightSelected);
     }
 
     public boolean isHighlightDisabled() {
@@ -214,8 +257,11 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     }
 
     public void setHighlightDisabled(boolean highlightDisabled) {
+        if (this.highlightDisabled == highlightDisabled) {
+            return;
+        }
         this.highlightDisabled = highlightDisabled;
-        getView().setHighlightDisabled(highlightDisabled);
+        getView().updateHighlightDisabled(highlightDisabled);
     }
 
     /**
@@ -327,7 +373,7 @@ public abstract class AbstractFindBasePresenter<V extends FindBaseView>
     protected void saveFindTextToHistory() {
         var texts = getFindTexts();
         HistoryUtils.addFirst(texts, getFindText());
-        getView().setFindTexts(texts);
+        setFindTexts(texts);
     }
 
     @Override

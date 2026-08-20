@@ -35,9 +35,14 @@ public class ProgressDialogFxView extends AbstractDialogFxView<ProgressDialogPre
 
     private final Label messageLabel = new Label();
 
-    private final Label stepLabel = new Label();
+    private final Label currentStepLabel = new Label();
 
-    private final HBox textBox = new HBox(messageLabel, new Spacer(Orientation.HORIZONTAL), stepLabel);
+    private final Label stepCountLabel = new Label();
+
+    private final HBox stepBox = new HBox(new Label("["), currentStepLabel, new Label(" / "), stepCountLabel,
+            new Label("]"));
+
+    private final HBox textBox = new HBox(messageLabel, new Spacer(Orientation.HORIZONTAL));
 
     private final ProgressBar progressBar = new ProgressBar();
 
@@ -51,27 +56,31 @@ public class ProgressDialogFxView extends AbstractDialogFxView<ProgressDialogPre
     }
 
     @Override
-    public void setMessage(String text) {
+    public void updateMessage(String text) {
         messageLabel.setText(text);
     }
 
     @Override
-    public void showSteps(int currentStep, int stepCount) {
-        var text = "[" + String.valueOf(currentStep) + " / " + String.valueOf(stepCount) + "]";
-        stepLabel.setText(text);
+    public void updateCurrentStep(int currentStep) {
+        currentStepLabel.setText(String.valueOf(currentStep));
     }
 
     @Override
-    public void setShowSteps(boolean value) {
-        if (value && stepLabel.getParent() == null) {
-            textBox.getChildren().add(stepLabel);
-        } else if (!value && stepLabel.getParent() != null) {
-            textBox.getChildren().remove(stepLabel);
+    public void updateStepCount(int stepCount) {
+        stepCountLabel.setText(String.valueOf(stepCount));
+    }
+
+    @Override
+    public void updateStepsVisible(boolean value) {
+        if (value && stepBox.getParent() == null) {
+            textBox.getChildren().add(stepBox);
+        } else if (!value && stepBox.getParent() != null) {
+            textBox.getChildren().remove(stepBox);
         }
     }
 
     @Override
-    public void setProgress(double value) {
+    public void updateProgress(double value) {
         progressBar.setProgress(value);
     }
 
@@ -87,8 +96,16 @@ public class ProgressDialogFxView extends AbstractDialogFxView<ProgressDialogPre
         return messageLabel;
     }
 
-    protected Label getStepLabel() {
-        return stepLabel;
+    protected Label getCurrentStepLabel() {
+        return currentStepLabel;
+    }
+
+    protected Label getStepCountLabel() {
+        return stepCountLabel;
+    }
+
+    protected HBox getStepBox() {
+        return stepBox;
     }
 
     protected HBox getTextBox() {

@@ -64,22 +64,22 @@ public class NameValueDialogFxView<P extends NameValueDialogPresenter<?>>
     }
 
     @Override
-    public void setName(String name) {
+    public void updateName(String name) {
         this.nameTextField.setText(name);
     }
 
     @Override
-    public void setNameEditable(boolean value) {
+    public void updateNameEditable(boolean value) {
         this.nameTextField.setEditable(value);
     }
 
     @Override
-    public void setValue(String value) {
+    public void updateValue(String value) {
         this.valueTextArea.setText(value);
     }
 
     @Override
-    public void setValueEditable(boolean value) {
+    public void updateValueEditable(boolean value) {
         this.valueTextArea.setEditable(value);
     }
 

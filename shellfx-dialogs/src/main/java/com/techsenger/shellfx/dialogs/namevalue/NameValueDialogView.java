@@ -22,6 +22,13 @@ import com.techsenger.shellfx.core.dialog.DialogView;
  *
  * @author Pavel Castornii
  */
-public interface NameValueDialogView extends NameValueDialogShared, DialogView {
+public interface NameValueDialogView extends DialogView {
 
+    void updateName(String name);
+
+    void updateNameEditable(boolean value);
+
+    void updateValue(String value);
+
+    void updateValueEditable(boolean value);
 }

@@ -129,6 +129,14 @@ selectionsByType`, `getSelectionsByType()`/`setSelectionsByType(...)`), not `<ke
 `typeSelections`). The `by`-form reads directly as "which value, keyed by which type of key" at the
 declaration site, without having to look at the generic type arguments to tell which side is the key.
 
+`View` methods follow a naming convention that distinguishes two kinds of methods:
+
+1. State methods — methods that mirror state owned by the `Presenter`. The `Presenter` has the corresponding
+state and a `getX`/`isX` and/or `setX` accessor for it. The corresponding `View` method always starts with
+`update`, e.g. `updateTitle`, `updateModal`, `updateDensity`.
+2. Command methods — all other methods that perform an action rather than mirror `Presenter` state. They use an
+appropriate action verb, such as `showX`, `hideX`, `scrollToFile`, `selectFile`, `clearX`, or `refreshMenu`.
+
 ## Javadoc
 
 Document the contract — what the member does and why a caller would use it — never how it's implemented.

@@ -65,7 +65,7 @@ public class ToolBarPresenter<V extends ToolBarView> extends AbstractFindBasePre
     @Override
     protected void onFindTextChanged(String text) {
         super.onFindTextChanged(text);
-        getView().setNotFound(false);
+        setNotFound(false);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ToolBarPresenter<V extends ToolBarView> extends AbstractFindBasePre
     @Override
     protected void onMatchCase(boolean selected) {
         super.onMatchCase(selected);
-        getView().setNotFound(false);
+        setNotFound(false);
         this.toolBarAware.onMatchCase(selected);
     }
 

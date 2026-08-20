@@ -75,17 +75,17 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
     }
 
     @Override
-    public void setPrefWidth(double value) {
+    public void updatePrefWidth(double value) {
         stackPane.setPrefWidth(value);
     }
 
     @Override
-    public void setPrefHeight(double value) {
+    public void updatePrefHeight(double value) {
         stackPane.setPrefHeight(value);
     }
 
     @Override
-    public void setWaiting(boolean waiting) {
+    public void updateWaiting(boolean waiting) {
         if (waiting) {
             stackPane.getChildren().add(waitingPane);
         } else {

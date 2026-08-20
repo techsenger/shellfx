@@ -60,7 +60,7 @@ public abstract class AbstractEditorDialogPresenter<V extends EditorDialogView> 
             return;
         }
         this.propertyName = propertyName;
-        getView().setPropertyName(propertyName);
+        getView().updatePropertyName(propertyName);
     }
 
     @Override
@@ -93,7 +93,8 @@ public abstract class AbstractEditorDialogPresenter<V extends EditorDialogView> 
         return task;
     }
 
-    protected String getPropertyName() {
+    @Override
+    public String getPropertyName() {
         return propertyName;
     }
 

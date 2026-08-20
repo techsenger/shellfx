@@ -105,7 +105,7 @@ public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPrese
             return;
         }
         super.setWidth(width);
-        getView().setWidth(width);
+        getView().updateWidth(width);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPrese
             return;
         }
         super.setHeight(height);
-        getView().setHeight(height);
+        getView().updateHeight(height);
     }
 
     @Override

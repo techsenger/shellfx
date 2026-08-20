@@ -67,22 +67,22 @@ public class EventToolBarFxView<P extends EventToolBarPresenter<?>> extends Tool
     }
 
     @Override
-    public void setStatistics(String text) {
+    public void updateStatistics(String text) {
          statisticsDataLabel.setText(text);
     }
 
     @Override
-    public void setFilterSelected(boolean value) {
+    public void updateFilterSelected(boolean value) {
         this.filterButton.setSelected(value);
     }
 
     @Override
-    public void setSelectedNodeOnly(boolean value) {
+    public void updateSelectedNodeOnly(boolean value) {
         this.selectedOnlyButton.setSelected(value);
     }
 
     @Override
-    public void setEventTypes(Map<Class<? extends ConnectorEvent>, AtomicBoolean> eventTypesByClass) {
+    public void applyEventTypes(Map<Class<? extends ConnectorEvent>, AtomicBoolean> eventTypesByClass) {
         List<MenuItem> items = new ArrayList<>();
         eventTypesByClass.entrySet().forEach(e -> {
             var menuItem = new CheckMenuItem(e.getKey().getSimpleName());

@@ -311,6 +311,10 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
         return selectedComponent;
     }
 
+    public ComponentItem getRootComponent() {
+        return rootComponent;
+    }
+
     @Override
     public void onAdded() {
         refreshComponents();
@@ -326,7 +330,7 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
             if (oldUid != newUid) {
                 var component = service.getComponent(newUid);
                 if (component != null) {
-                    getView().setRootComponent(component);
+                    getView().updateRootComponent(component);
                 }
             }
             if (newNode != null) {
@@ -388,7 +392,7 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
 
     protected void refreshComponents() {
         this.rootComponent = this.service.getShellComponent();
-        getView().setRootComponent(rootComponent);
+        getView().updateRootComponent(rootComponent);
         clearFoundComponents();
         findComponents();
         if (selectedComponent != null && this.componentMatches.isEmpty()) { // restoring selected item
@@ -453,14 +457,14 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
                     this.componentFxComposerClass,
                     this.componentPresenter,
                     matcher);
-            getView().updateInspector(result.items, expandedByCategory);
+            getView().refreshInspector(result.items, expandedByCategory);
             if (matcher != null) {
                 composer.getInspectorToolBarPort().showFindResultInfo(result.totalMatches);
             } else {
                 composer.getInspectorToolBarPort().hideFindResultInfo();
             }
         } else {
-            getView().updateInspector(Collections.emptyList(), expandedByCategory);
+            getView().refreshInspector(Collections.emptyList(), expandedByCategory);
             composer.getInspectorToolBarPort().hideFindResultInfo();
         }
     }

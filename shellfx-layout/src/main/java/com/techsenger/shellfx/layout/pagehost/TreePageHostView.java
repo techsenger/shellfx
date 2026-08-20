@@ -35,11 +35,11 @@ public interface TreePageHostView extends PageHostViewBase, TreePageContainerVie
     @Override
     Composer getComposer();
 
-    void setMenu(TreePageItem root, boolean showRoot);
+    void updateMenu(TreePageItem root, boolean showRoot);
 
-    void setMenu(FilteredTreePageItem root, boolean showRoot);
+    void refreshMenu(FilteredTreePageItem root, boolean showRoot);
 
-    void setPage(TreePageItem item);
+    void selectPage(TreePageItem item);
 
-    void setBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
+    void updateBreadcrumbs(List<PageBreadcrumb> breadcrumbs);
 }

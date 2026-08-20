@@ -17,11 +17,19 @@
 package com.techsenger.shellfx.core.dialog;
 
 import com.techsenger.shellfx.core.window.WindowView;
+import com.techsenger.shellfx.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogView extends WindowView, DialogShared {
+public interface DialogView extends WindowView {
 
+    void updateLeftButtons(ResultButtonName... names);
+
+    void updateRightButtons(ResultButtonName... names);
+
+    void updateButtonDisabled(ResultButtonName name, boolean value);
+
+    void updateButtonDefault(ResultButtonName name, boolean value);
 }

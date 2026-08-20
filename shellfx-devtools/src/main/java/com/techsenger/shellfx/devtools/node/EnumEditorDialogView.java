@@ -24,7 +24,7 @@ import java.util.List;
  */
 public interface EnumEditorDialogView extends EditorDialogView {
 
-    void setValues(List<String> values);
+    void updateValues(List<String> values);
 
-    void setValue(String value);
+    void updateValue(String value);
 }

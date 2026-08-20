@@ -61,19 +61,19 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
             () -> getDescriptor().getLogPrefix());
 
     @Override
-    public void setLeftButtons(ResultButtonName... names) {
+    public void updateLeftButtons(ResultButtonName... names) {
         removeButtons(leftBottomBox);
         addButtons(leftBottomBox, names);
     }
 
     @Override
-    public void setRightButtons(ResultButtonName... names) {
+    public void updateRightButtons(ResultButtonName... names) {
         removeButtons(rightBottomBox);
         addButtons(rightBottomBox, names);
     }
 
     @Override
-    public void setButtonDisabled(ResultButtonName name, boolean value) {
+    public void updateButtonDisabled(ResultButtonName name, boolean value) {
         var button = this.buttonsByName.get(name);
         if (button != null) {
             button.setDisable(value);
@@ -81,7 +81,7 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
     }
 
     @Override
-    public void setButtonDefault(ResultButtonName name, boolean value) {
+    public void updateButtonDefault(ResultButtonName name, boolean value) {
         var button = this.buttonsByName.get(name);
         if (button != null) {
             button.setDefaultButton(value);

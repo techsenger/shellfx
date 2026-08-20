@@ -142,6 +142,7 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
         return Collections.unmodifiableList(breadcrumbs);
     }
 
+    @Override
     public boolean isShowRoot() {
         return showRoot;
     }
@@ -155,7 +156,7 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
         var matchedItem = match(rootItem, matcher, statistics);
         var findPanel = getView().getComposer().getFindPanelPort();
         findPanel.showFindResultInfo(statistics.getMatches());
-        getView().setMenu(matchedItem, showRoot);
+        getView().refreshMenu(matchedItem, showRoot);
         if (matchedItem != null) {
             var item = findFirstMatched(matchedItem).getOriginal();
             if (!isCurrentPage(item)) {
@@ -174,8 +175,8 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
         addPageHistory(pageItem);
         updateHistoryNavigation();
 
-        getView().setMenu(rootItem, showRoot);
-        getView().setPage(pageItem); // just to select item in the menu
+        getView().updateMenu(rootItem, showRoot);
+        getView().selectPage(pageItem); // just to select item in the menu
     }
 
     @Override
@@ -183,7 +184,8 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
         return new ComponentDescriptor(LayoutComponents.TREE_PAGE_HOST);
     }
 
-    protected TreePageItem getRootItem() {
+    @Override
+    public TreePageItem getRootItem() {
         return rootItem;
     }
 
@@ -210,9 +212,12 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
     }
 
     void setPages(TreePageItem rootItem, boolean showRoot) {
+        if (Objects.equals(this.rootItem, rootItem) && this.showRoot == showRoot) {
+            return;
+        }
         this.rootItem = rootItem;
-        this.showRoot = false;
-        getView().setMenu(rootItem, showRoot);
+        this.showRoot = showRoot;
+        getView().updateMenu(rootItem, showRoot);
     }
 
     @Override
@@ -232,8 +237,8 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
         }
         composer.providePagePort(item);
         this.breadcrumbs = breadcrumbs;
-        getView().setBreadcrumbs(breadcrumbs);
-        getView().setPage(item);
+        getView().updateBreadcrumbs(breadcrumbs);
+        getView().selectPage(item);
         currentPage = composer.getSelectedPagePort();
         currentPage.setSelected(true);
     }

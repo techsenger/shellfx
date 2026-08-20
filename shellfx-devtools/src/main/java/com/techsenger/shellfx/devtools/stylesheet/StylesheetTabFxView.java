@@ -94,7 +94,7 @@ public class StylesheetTabFxView<P extends StylesheetTabPresenter<?>> extends Ab
     }
 
     @Override
-    public void setItems(List<StylesheetItem> items) {
+    public void updateItems(List<StylesheetItem> items) {
         rebuildTree(items);
     }
 

@@ -22,6 +22,7 @@ import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.dialogs.DialogComponents;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -65,8 +66,11 @@ public class NameValueDialogPresenter<V extends NameValueDialogView> extends Abs
 
     @Override
     public void setName(String name) {
+        if (Objects.equals(this.name, name)) {
+            return;
+        }
         this.name = name;
-        getView().setName(name);
+        getView().updateName(name);
     }
 
     @Override
@@ -76,8 +80,11 @@ public class NameValueDialogPresenter<V extends NameValueDialogView> extends Abs
 
     @Override
     public void setNameEditable(boolean nameEditable) {
+        if (this.nameEditable == nameEditable) {
+            return;
+        }
         this.nameEditable = nameEditable;
-        getView().setNameEditable(valueEditable);
+        getView().updateNameEditable(nameEditable);
     }
 
     @Override
@@ -87,8 +94,11 @@ public class NameValueDialogPresenter<V extends NameValueDialogView> extends Abs
 
     @Override
     public void setValue(String value) {
+        if (Objects.equals(this.value, value)) {
+            return;
+        }
         this.value = value;
-        getView().setValue(value);
+        getView().updateValue(value);
     }
 
     @Override
@@ -98,8 +108,11 @@ public class NameValueDialogPresenter<V extends NameValueDialogView> extends Abs
 
     @Override
     public void setValueEditable(boolean valueEditable) {
+        if (this.valueEditable == valueEditable) {
+            return;
+        }
         this.valueEditable = valueEditable;
-        getView().setValueEditable(valueEditable);
+        getView().updateValueEditable(valueEditable);
     }
 
     @Override

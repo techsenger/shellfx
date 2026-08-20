@@ -119,14 +119,14 @@ public class TabPopupFxView<P extends TabPopupPresenter<?>> extends AbstractArea
     }
 
     @Override
-    public void setHeight(double height) {
+    public void updateHeight(double height) {
         node.setPrefHeight(height);
         node.setMinHeight(height);
         node.setMaxHeight(height);
     }
 
     @Override
-    public void setWidth(double width) {
+    public void updateWidth(double width) {
         node.setPrefWidth(width);
         node.setMinWidth(width);
         node.setMaxWidth(width);

@@ -671,7 +671,7 @@ public class NodeTabFxView<P extends NodeTabPresenter<?>> extends AbstractTabFxV
     }
 
     @Override
-    public void setReadOnlyByProperty(Map<String, Boolean> map) {
+    public void applyReadOnlyByProperty(Map<String, Boolean> map) {
         this.readOnlyByProperty = map;
     }
 

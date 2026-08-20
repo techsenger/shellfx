@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogView<T extends GenericFile> extends DialogView, FileChooserDialogShared {
+public interface FileChooserDialogView<T extends GenericFile> extends DialogView {
 
     interface Composer extends DialogView.Composer {
 
@@ -39,11 +39,11 @@ public interface FileChooserDialogView<T extends GenericFile> extends DialogView
     @Override
     Composer getComposer();
 
-    void setAppearanceSettings(AppearanceSettings settings);
+    void updateAppearanceSettings(AppearanceSettings settings);
 
     void addColumns(Collection<TableColumnInfo> infos);
 
-    void setFiles(List<T> files);
+    void updateFiles(List<T> files);
 
     void addFile(int index, T file);
 
@@ -54,4 +54,18 @@ public interface FileChooserDialogView<T extends GenericFile> extends DialogView
     void scrollToFile(int index);
 
     void editFile(int index);
+
+    void updateLocationCaption(String value);
+
+    void updateLocations(List<Location> locations);
+
+    void updateLocation(Location value);
+
+    void updateMode(Mode mode);
+
+    void updateFileName(String fileName);
+
+    void updateExtensionFilters(List<ExtensionFilter> filters);
+
+    void updateExtensionFilter(ExtensionFilter filter);
 }

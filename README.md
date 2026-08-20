@@ -617,6 +617,14 @@ Examples of `Composer` methods using `open*` and `close*`:
 | Page      | `openPage(params)`   | `closePage(page)`     | `addPage(page)`     | `removePage(page)`     |
 | Area      | `openArea(params)`   | `closeArea(area)`     | `addArea(area)`     | `removeArea(area)`     |
 
+`View` methods also follow a naming convention that distinguishes two kinds of methods:
+
+1. State methods — methods that mirror state owned by the `Presenter`. The `Presenter` has the corresponding state and
+a `getX`/`isX` and/or `setX` accessor for it. The corresponding `View` method always starts with `update`, e.g.
+`updateTitle`, `updateModal`, `updateDensity`.
+2. Command methods — all other methods that perform an action rather than mirror `Presenter` state. They use an
+appropriate action verb, such as `showX`, `hideX`, `scrollToFile`, `selectFile`, `clearX`, or `refreshMenu`.
+
 ## Quick Start <a name="quick-start"></a>
 
 To get started with ShellFX, it is recommended to follow these steps:

@@ -39,18 +39,13 @@ public interface TabView extends ChildView, TabPort.ViewAccess {
     @Override
     Composer getComposer();
 
-    /**
-     * Sets whether the component can be closed.
-     *
-     * @param closable true to allow closing the tab, false to prevent it
-     */
-    void setClosable(boolean closable);
+    void updateClosable(boolean closable);
 
-    void setWaiting(boolean waiting);
+    void updateWaiting(boolean waiting);
 
-    void setIcon(Icon<?> icon);
+    void updateIcon(Icon<?> icon);
 
-    void setTitle(String title);
+    void updateTitle(String title);
 
-    void setTooltip(String tooltip);
+    void updateTooltip(String tooltip);
 }

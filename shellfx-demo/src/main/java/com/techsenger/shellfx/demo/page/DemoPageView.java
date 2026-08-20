@@ -24,5 +24,5 @@ import com.techsenger.shellfx.core.page.PageView;
  */
 public interface DemoPageView extends PageView {
 
-    void setText(String text);
+    void updateText(String text);
 }

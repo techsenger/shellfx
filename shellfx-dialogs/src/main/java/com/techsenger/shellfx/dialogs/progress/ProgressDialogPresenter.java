@@ -22,6 +22,7 @@ import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.dialogs.DialogComponents;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -30,7 +31,7 @@ import java.util.function.Consumer;
  */
 public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDialogView> implements ProgressDialogPort {
 
-    private boolean showSteps;
+    private boolean stepsVisible;
 
     private int stepCount;
 
@@ -60,14 +61,17 @@ public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDia
     }
 
     @Override
-    public boolean isShowSteps() {
-        return showSteps;
+    public boolean isStepsVisible() {
+        return stepsVisible;
     }
 
     @Override
-    public void setShowSteps(boolean showSteps) {
-        this.showSteps = showSteps;
-        getView().setShowSteps(showSteps);
+    public void setStepsVisible(boolean stepsVisible) {
+        if (this.stepsVisible == stepsVisible) {
+            return;
+        }
+        this.stepsVisible = stepsVisible;
+        getView().updateStepsVisible(stepsVisible);
     }
 
     @Override
@@ -77,8 +81,11 @@ public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDia
 
     @Override
     public void setStepCount(int stepCount) {
+        if (this.stepCount == stepCount) {
+            return;
+        }
         this.stepCount = stepCount;
-        getView().showSteps(currentStep, stepCount);
+        getView().updateStepCount(stepCount);
     }
 
     @Override
@@ -88,8 +95,11 @@ public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDia
 
     @Override
     public void setCurrentStep(int currentStep) {
+        if (this.currentStep == currentStep) {
+            return;
+        }
         this.currentStep = currentStep;
-        getView().showSteps(currentStep, stepCount);
+        getView().updateCurrentStep(currentStep);
     }
 
     @Override
@@ -99,8 +109,11 @@ public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDia
 
     @Override
     public void setMessage(String message) {
+        if (Objects.equals(this.message, message)) {
+            return;
+        }
         this.message = message;
-        getView().setMessage(message);
+        getView().updateMessage(message);
     }
 
     @Override
@@ -110,8 +123,11 @@ public class ProgressDialogPresenter extends AbstractDialogPresenter<ProgressDia
 
     @Override
     public void setProgress(double progress) {
+        if (this.progress == progress) {
+            return;
+        }
         this.progress = progress;
-        getView().setProgress(progress);
+        getView().updateProgress(progress);
     }
 
     @Override

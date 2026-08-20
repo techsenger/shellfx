@@ -25,4 +25,6 @@ import com.techsenger.shellfx.core.dialog.DialogPort;
 public interface EditorDialogPort extends DialogPort {
 
     boolean isPropertyUpdated();
+
+    String getPropertyName();
 }

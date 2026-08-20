@@ -67,14 +67,20 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
 
     @Override
     public void setPrefWidth(double prefWidth) {
+        if (this.prefWidth == prefWidth) {
+            return;
+        }
         this.prefWidth = prefWidth;
-        getView().setPrefWidth(prefWidth);
+        getView().updatePrefWidth(prefWidth);
     }
 
     @Override
     public void setPrefHeight(double prefHeight) {
+        if (this.prefHeight == prefHeight) {
+            return;
+        }
         this.prefHeight = prefHeight;
-        getView().setPrefHeight(prefHeight);
+        getView().updatePrefHeight(prefHeight);
     }
 
     @Override
@@ -88,7 +94,7 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
             return;
         }
         this.waiting = waiting;
-        getView().setWaiting(waiting);
+        getView().updateWaiting(waiting);
     }
 
     @Override

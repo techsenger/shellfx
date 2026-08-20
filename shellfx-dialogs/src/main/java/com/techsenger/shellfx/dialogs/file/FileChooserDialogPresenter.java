@@ -21,6 +21,7 @@ import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
+import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.dialogs.DialogComponents;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
@@ -174,7 +175,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     @Override
     public void setLocations(List<Location> locations) {
         this.locations = locations;
-        getView().setLocations(locations);
+        getView().updateLocations(locations);
     }
 
     @Override
@@ -184,8 +185,11 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
 
     @Override
     public void setLocation(Location location) {
+        if (Objects.equals(this.location, location)) {
+            return;
+        }
         this.location = location;
-        getView().setLocation(location);
+        getView().updateLocation(location);
     }
 
     @Override
@@ -199,10 +203,15 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
             return;
         }
         this.mode = mode;
-        getView().setMode(mode);
+        getView().updateMode(mode);
         if (this.selectedFileIndex >= 0) {
             getView().scrollToFile(selectedFileIndex);
         }
+    }
+
+    @Override
+    public AppearanceSettings getAppearanceSettings() {
+        return super.getAppearanceSettings();
     }
 
     @Override
@@ -231,8 +240,11 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
 
     @Override
     public void setExtensionFilter(ExtensionFilter extensionFilter) {
+        if (Objects.equals(this.extensionFilter, extensionFilter)) {
+            return;
+        }
         this.extensionFilter = extensionFilter;
-        getView().setExtensionFilter(extensionFilter);
+        getView().updateExtensionFilter(extensionFilter);
         updateFiles(getSelectedFile());
     }
 
@@ -243,8 +255,11 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
 
     @Override
     public void setFileName(String fileName) {
+        if (Objects.equals(this.fileName, fileName)) {
+            return;
+        }
         this.fileName = fileName;
-        getView().setFileName(fileName);
+        getView().updateFileName(fileName);
     }
 
     @Override
@@ -255,7 +270,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     @Override
     public void setExtensionFilters(List<ExtensionFilter> extensionFilters) {
         this.extensionFilters = extensionFilters;
-        getView().setExtensionFilters(extensionFilters);
+        getView().updateExtensionFilters(extensionFilters);
         updateFiles(getSelectedFile());
     }
 
@@ -275,7 +290,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
             return;
         }
         this.locationCaption = locationCaption;
-        getView().setLocationCaption(locationCaption);
+        getView().updateLocationCaption(locationCaption);
     }
 
     @Override
@@ -291,7 +306,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
     @Override
     protected void preInitialize() {
         super.preInitialize();
-        getView().setAppearanceSettings(getAppearanceSettings());
+        getView().updateAppearanceSettings(getAppearanceSettings());
     }
 
     @Override
@@ -349,7 +364,7 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
 
     protected void setFiles(List<T> files) {
         this.files = files;
-        getView().setFiles(files);
+        getView().updateFiles(files);
     }
 
     protected URI getDirectory() {

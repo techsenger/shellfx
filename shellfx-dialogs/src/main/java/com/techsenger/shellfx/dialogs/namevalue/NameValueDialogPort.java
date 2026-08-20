@@ -23,7 +23,7 @@ import com.techsenger.shellfx.material.button.ResultButtonName;
  *
  * @author Pavel Castornii
  */
-public interface NameValueDialogPort extends DialogPort, NameValueDialogShared {
+public interface NameValueDialogPort extends DialogPort {
 
     void setTitle(String title);
 
@@ -36,4 +36,12 @@ public interface NameValueDialogPort extends DialogPort, NameValueDialogShared {
     boolean isValueEditable();
 
     void setRightButtons(ResultButtonName... buttons);
+
+    void setName(String name);
+
+    void setNameEditable(boolean value);
+
+    void setValue(String value);
+
+    void setValueEditable(boolean value);
 }

@@ -42,5 +42,5 @@ public interface EnvironmentTabView extends TabView {
      * Flat list of items representing a tree structure. The hierarchy is encoded via
      * {@link EnvironmentItem#getDepth()} and the actual TreeItems are rebuilt in the View on each refresh.
      */
-    void setItems(List<EnvironmentItem> items);
+    void updateItems(List<EnvironmentItem> items);
 }
