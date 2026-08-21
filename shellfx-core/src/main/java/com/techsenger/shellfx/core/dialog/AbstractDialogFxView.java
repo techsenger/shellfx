@@ -45,9 +45,11 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
 
     private final HBox leftBottomBox = new HBox();
 
+    private final Spacer bottomSpacer = new Spacer(Orientation.HORIZONTAL);
+
     private final HBox rightBottomBox = new HBox();
 
-    private final HBox bottomBox = new HBox(leftBottomBox, new Spacer(Orientation.HORIZONTAL), rightBottomBox);
+    private final HBox bottomBox = new HBox(leftBottomBox, bottomSpacer, rightBottomBox);
 
     /**
      * Trap for focus dialog. This trap should always be activated after adding all controls to dialog. Otherwise
@@ -195,6 +197,13 @@ public abstract class AbstractDialogFxView<P extends AbstractDialogPresenter<?>>
      */
     protected HBox getLeftBottomBox() {
         return leftBottomBox;
+    }
+
+    /**
+     * Returns the bottom spacer between {@link #getLeftBottomBox()} and * {@link #getRightBottomBox()}.
+     */
+    protected Spacer getBottomSpacer() {
+        return bottomSpacer;
     }
 
     /**
