@@ -650,9 +650,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         super.addListeners();
         if (getPresenter().getWindowType() == WindowType.TOP_LEVEL) {
             this.stage.widthProperty()
-                    .addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue()));
+                    .addListener((ov, oldV, newV) -> getPresenter().onWidthChanged(newV.doubleValue(), true));
             this.stage.heightProperty()
-                    .addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue()));
+                    .addListener((ov, oldV, newV) -> getPresenter().onHeightChanged(newV.doubleValue(), true));
             this.stage.maximizedProperty().addListener((ov, oldV, newV) -> {
                 getPresenter().onMaximized(newV);
                 this.maximized.set(newV);
@@ -662,11 +662,11 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             this.stage.yProperty().addListener((ov, oldV, newV) -> getPresenter().onYChanged(newV.doubleValue()));
         } else {
             windowNode.widthProperty().addListener((ov, oldV, newV) -> {
-                getPresenter().onWidthChanged(newV.doubleValue());
+                getPresenter().onWidthChanged(newV.doubleValue(), resizingInProgress);
                 checkContentFits();
             });
             windowNode.heightProperty().addListener((ov, oldV, newV) -> {
-                getPresenter().onHeightChanged(newV.doubleValue());
+                getPresenter().onHeightChanged(newV.doubleValue(), resizingInProgress);
                 checkContentFits();
             });
             windowNode.layoutXProperty().addListener((ov, oldV, newV) -> getPresenter().onXChanged(newV.doubleValue()));

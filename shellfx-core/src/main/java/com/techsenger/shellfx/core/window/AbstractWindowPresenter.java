@@ -44,6 +44,10 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
 
     private double height;
 
+    private boolean widthManuallySet;
+
+    private boolean heightManuallySet;
+
     private double minWidth;
 
     private double minHeight;
@@ -147,6 +151,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.width = width;
+        this.widthManuallySet = true;
         getView().updateWidth(width);
     }
 
@@ -161,6 +166,7 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
             return;
         }
         this.height = height;
+        this.heightManuallySet = true;
         getView().updateHeight(height);
     }
 
@@ -497,12 +503,36 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         this.themeSubscription.unsubscribe();
     }
 
-    protected void onWidthChanged(double width) {
+    /**
+     * Reflects a width change reported by the view, e.g. from layout or a user resize.
+     *
+     * @param width the new width in pixels
+     * @param isResizing {@code true} if the change is known to come from a user-driven resize. For
+     *     {@link WindowType#NESTED} windows this is accurate; for {@link WindowType#TOP_LEVEL} windows it is
+     *     always {@code true} until JDK-8202890 makes detecting {@code Stage} resizing possible, so sizes for
+     *     such windows are normally set explicitly.
+     */
+    protected void onWidthChanged(double width, boolean isResizing) {
         this.width = width;
+        if (isResizing) {
+            this.widthManuallySet = true;
+        }
     }
 
-    protected void onHeightChanged(double height) {
+    /**
+     * Reflects a height change reported by the view, e.g. from layout or a user resize.
+     *
+     * @param height the new height in pixels
+     * @param isResizing {@code true} if the change is known to come from a user-driven resize. For
+     *     {@link WindowType#NESTED} windows this is accurate; for {@link WindowType#TOP_LEVEL} windows it is
+     *     always {@code true} until JDK-8202890 makes detecting {@code Stage} resizing possible, so sizes for
+     *     such windows are normally set explicitly.
+     */
+    protected void onHeightChanged(double height, boolean isResizing) {
         this.height = height;
+        if (isResizing) {
+            this.heightManuallySet = true;
+        }
     }
 
     protected void onMaximized(boolean maximized) {
@@ -535,16 +565,24 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
         super.restorePersistentState();
         var h = getHistory();
         setMaximized(h.isMaximized());
-        setHeight(h.getHeight());
-        setWidth(h.getWidth());
+        if (h.getHeight() >= 0) {
+            setHeight(h.getHeight());
+        }
+        if (h.getWidth() >= 0) {
+            setWidth(h.getWidth());
+        }
     }
 
     @Override
     protected void savePersistentState() {
         super.savePersistentState();
         var h = getHistory();
-        h.setWidth(getWidth());
-        h.setHeight(getHeight());
+        if (widthManuallySet) {
+            h.setWidth(getWidth());
+        }
+        if (heightManuallySet) {
+            h.setHeight(getHeight());
+        }
         h.setMaximized(isMaximized());
     }
 

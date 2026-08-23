@@ -24,9 +24,9 @@ import com.techsenger.patternfx.mvp.ComponentHistory;
  */
 public class WindowHistory extends ComponentHistory {
 
-    private double width;
+    private double width = -1;
 
-    private double height;
+    private double height = -1;
 
     private boolean maximized;
 
@@ -34,6 +34,9 @@ public class WindowHistory extends ComponentHistory {
 
     }
 
+    /**
+     * @return the persisted width in pixels, or {@code -1} if no width has been persisted
+     */
     public double getWidth() {
         return width;
     }
@@ -42,6 +45,9 @@ public class WindowHistory extends ComponentHistory {
         this.width = width;
     }
 
+    /**
+     * @return the persisted height in pixels, or {@code -1} if no height has been persisted
+     */
     public double getHeight() {
         return height;
     }

@@ -150,26 +150,10 @@ public abstract class AbstractDialogPresenter<V extends DialogView>
         return (DialogHistory) super.getHistory();
     }
 
-    @Override
-    protected void restorePersistentState() {
-        super.restorePersistentState();
-        var h = getHistory();
-        setWidth(h.getWidth());
-        setHeight(h.getHeight());
-    }
-
     protected void onResult(ResultButtonName name) {
         if (this.onResult != null) {
             this.onResult.accept(name);
         }
-    }
-
-    @Override
-    protected void savePersistentState() {
-        super.savePersistentState();
-        var h = getHistory();
-        h.setWidth(getWidth());
-        h.setHeight(getHeight());
     }
 
     void onButtonRegistered(ResultButtonName name, boolean isDefault, boolean disabled) {

@@ -246,6 +246,8 @@ public interface WindowPort extends ChildPort, CloseAwarePort, Titled, Closable,
      * Sets the width of the window. Using this method is optional because, by default, the window width is
      * based on the preferred width of its content.
      *
+     * <p>An explicitly set width persists across sessions; an auto-computed width does not.
+     *
      * @param value the width in pixels
      */
     void setWidth(double value);
@@ -253,6 +255,8 @@ public interface WindowPort extends ChildPort, CloseAwarePort, Titled, Closable,
     /**
      * Sets the height of the window. Using this method is optional because, by default, the window height is
      * based on the preferred height of its content.
+     *
+     * <p>An explicitly set height persists across sessions; an auto-computed height does not.
      *
      * @param value the height in pixels
      */
