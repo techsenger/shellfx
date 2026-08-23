@@ -23,12 +23,12 @@ import com.techsenger.patternfx.mvp.AbstractChildFxView;
 import com.techsenger.patternfx.mvp.FxViewUtils;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.shellfx.core.dialog.DialogResizeEvent;
-import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.core.style.CoreIcons;
 import com.techsenger.shellfx.core.style.CssAnchor;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.shellfx.material.icon.IconViewBox;
+import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
@@ -951,10 +951,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
     }
 
     private void calculateMinSize() {
-        var width = contentPane.minWidth(-1) + windowNode.getPadding().getLeft() + windowNode.getPadding().getRight();
+        var width = windowBox.minWidth(-1) + windowNode.getPadding().getLeft() + windowNode.getPadding().getRight();
         this.calculatedMinWidth.set(width);
-        var height = contentPane.minHeight(-1) + windowNode.getPadding().getTop() + windowNode.getPadding().getBottom()
-                + titlePane.getHeight();
+        var height = windowBox.minHeight(-1) + windowNode.getPadding().getTop() + windowNode.getPadding().getBottom();
         this.calculatedMinHeight.set(height);
     }
 }
