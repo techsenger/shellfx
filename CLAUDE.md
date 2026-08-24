@@ -12,6 +12,16 @@ MVP — do not propose MVVM, StateFX, or property-binding patterns for presenter
 
 Requires Java 25 and JavaFX 26. Multi-module Maven build, parent POM inherits from `com.techsenger.maven.root`.
 
+## Scope of work
+
+It is strictly forbidden to operate outside the project directory. This applies absolutely, to every kind
+of operation — including read-only ones like `find` or search/grep — not just edits.
+
+The only exception: the developer may explicitly name a directory outside the project directory for a
+specific task. In that case, work must stay confined to the project directory plus exactly the
+directory/directories the developer named — nothing else. Proactively suggesting or using any other
+outside directory on your own is strictly forbidden.
+
 ## Commands
 
 ```
