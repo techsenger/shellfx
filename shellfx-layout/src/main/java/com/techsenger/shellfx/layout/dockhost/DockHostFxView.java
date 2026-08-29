@@ -26,7 +26,6 @@ import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.tab.TabFxView;
 import static com.techsenger.shellfx.layout.dockhost.DockConstants.ONE_HALF;
 import static com.techsenger.shellfx.layout.dockhost.DockConstants.ONE_THIRD;
-import com.techsenger.shellfx.layout.dockhost.DockHostFxView.Composer;
 import com.techsenger.shellfx.layout.style.LayoutIcons;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
