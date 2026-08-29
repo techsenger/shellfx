@@ -26,11 +26,13 @@ import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.tab.TabFxView;
 import static com.techsenger.shellfx.layout.dockhost.DockConstants.ONE_HALF;
 import static com.techsenger.shellfx.layout.dockhost.DockConstants.ONE_THIRD;
+import com.techsenger.shellfx.layout.dockhost.DockHostFxView.Composer;
 import com.techsenger.shellfx.layout.style.LayoutIcons;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.tabpanepro.core.TabPanePro;
 import com.techsenger.tabpanepro.core.skin.DragAndDropContext;
+import com.techsenger.tabpanepro.core.skin.DragAndDropUtils;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin.TabHeaderArea;
 import com.techsenger.toolkit.core.Pair;
@@ -84,7 +86,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Popup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,17 +198,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
         }
 
         protected Node createTabDragContent(TabPaneProSkin.TabHeaderSkin tabHeader) {
-            var tabParams = new SnapshotParameters();
-            WritableImage tabImage = tabHeader.snapshot(tabParams, null);
-            ImageView dragView = new ImageView(tabImage);
-            var tab = tabHeader.getContext().getTab();
-            if (tab.getTabPane().getSide() == Side.BOTTOM) {
-                Rotate rotate = new Rotate(180, tabImage.getWidth() / 2, tabImage.getHeight() / 2);
-                dragView.getTransforms().add(rotate);
-            }
-            var container = new VBox(dragView);
-            //container.getStyleClass().add("tab-drag-content");
-            return container;
+            return DragAndDropUtils.createTabDragContent(tabHeader);
         }
 
         protected Node createTabDockDragContent(TabPaneProSkin.TabHeaderArea tabHeaderArea) {
@@ -3065,7 +3056,7 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
      */
     private final BorderPane node = new BorderPane();
 
-    private final DragAndDropContext dragAndDropContext = new DragAndDropContext();
+    private final DragAndDropContext dragAndDropContext = createDragAndDropContext();
 
     private final Transformer transformer = new Transformer(this);
 
@@ -3104,6 +3095,13 @@ public class DockHostFxView<P extends DockHostPresenter<?>> extends AbstractArea
 
     protected DragAndDropHandler createDragAndDropHandler() {
         return new DragAndDropHandler(this);
+    }
+
+    /**
+     * Creates the {@code DragAndDropContext} used by this {@link DockHostFxView}.
+     */
+    protected DragAndDropContext createDragAndDropContext() {
+        return new DragAndDropContext();
     }
 
     @Override
