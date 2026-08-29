@@ -81,15 +81,14 @@ final class NodeFactory {
         }
         toolbar.getItems().addAll(
                 createButton(SharedIcons.HIGHLIGHT, buttonStyleClass),
-                createButton(SharedIcons.MATCH_CASE, buttonStyleClass),
                 new Separator(Orientation.VERTICAL),
                 createButton(DevToolsIcons.REFRESH, buttonStyleClass),
-                createButton(DevToolsIcons.OPEN_IN_NEW, buttonStyleClass),
                 createButton("Test pqjy", buttonStyleClass),
                 createToggleButton(DevToolsIcons.TOOLS, buttonStyleClass),
-                createToggleButton("Test pqjy", buttonStyleClass),
                 createMenuButton(DevToolsIcons.VIEW, buttonStyleClass),
-                createMenuButton("Test pqjy", buttonStyleClass));
+                new Separator(Orientation.VERTICAL),
+                createTextField("Search"),
+                createComboBox(List.of("One", "Two", "Three")));
 
         return toolbar;
     }

@@ -65,7 +65,6 @@ public class ToolBarFxView<P extends ToolBarPresenter<?>> extends AbstractFindBa
         this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         this.refreshButton.setTooltip(new Tooltip("Refresh"));
 
-        this.toolBar.getStyleClass().add(Styles.DENSE);
         this.toolBar.getItems().addAll(getFindComboBoxWrapper());
         if (this.findNavigation) {
             this.toolBar.getItems().addAll(getFindPreviousButton(), getFindNextButton());

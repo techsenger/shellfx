@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo.styles;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.page.AbstractPageFxView;
 import static com.techsenger.shellfx.demo.styles.StylePageData.PERSONS;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -62,8 +61,8 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
     }
 
     private static VBox createLeftBox(String styleClass) {
-        var defToolBar = NodeFactory.createToolBar(null, StyleClasses.SIZE_L);
-        var denseToolBar = NodeFactory.createToolBar(Styles.DENSE, StyleClasses.SIZE_M);
+        var prominentToolBar = NodeFactory.createToolBar(StyleClasses.PROMINENT, StyleClasses.SIZE_L);
+        var defToolBar = NodeFactory.createToolBar(null, StyleClasses.SIZE_M);
         GridPane grid = new GridPane();
         grid.setHgap(Spacing.getHorizontal());
         grid.setVgap(Spacing.getVertical());
@@ -126,7 +125,7 @@ public class SetPageFxView extends AbstractPageFxView<SetPagePresenter> implemen
         buttonBar.getChildren().add(0, spacer);
 
         // Root
-        var root = new VBox(defToolBar, denseToolBar, grid, listView, treeView, buttonBar);
+        var root = new VBox(prominentToolBar, defToolBar, grid, listView, treeView, buttonBar);
         VBox.setVgrow(grid, Priority.ALWAYS);
         root.setSpacing(Spacing.getVertical());
         return root;

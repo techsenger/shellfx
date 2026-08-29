@@ -206,4 +206,12 @@ public interface StyleClasses {
      * to persistent-selection data lists such as file or directory listings.
      */
     String ACCENT_LIST_VIEW = "accent-list-view";
+
+    /**
+     * Style class for a {@code ToolBar} that should stand out as larger than a regular one (e.g. a top-level
+     * action bar, as opposed to a tool's own inline toolbar) &mdash; a fixed, non-standard variant, unlike
+     * {@code SIZE_L}/{@code SIZE_XL}, which grade a single control along the regular size scale. Its buttons,
+     * text fields and combo boxes are sized to match {@code SIZE_L} buttons.
+     */
+    String PROMINENT = "prominent";
 }

@@ -34,10 +34,6 @@
     -fx-text-fill: -color-fg-emphasis;
 }
 
-.button.dense {
-    -fx-padding: 3px 6px 3px 6px; /* standard button half */
-}
-
 .corners-all {
     -fx-background-radius: 6px, 5px;
     -fx-border-radius: 6px, 5px;

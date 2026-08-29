@@ -67,6 +67,197 @@
     container there.
 */
 
+/*
+    Each size is styled for all three densities (density-m, density-s, density-xs), in that order: the Icon
+    Button demo section (and anything else using .size-*) shows all seven sizes for all three densities, so
+    leaving any one of them undefined means it silently falls back to plain AtlantaFX sizing and breaks the
+    ladder (a size ends up bigger than its unstyled neighbors). density-m/density-xs values are density-s's
+    own scaled by the same ratio already established by text-field/combo-box (2.1 / 1.9 / 1.7em).
+*/
+/*****************  density-m - size-xxl  ******************/
+.density-m .button.size-xxl,
+.density-m .toggle-button.size-xxl,
+.density-m .menu-button.size-xxl {
+    -fx-min-height: 2.93em;
+    -fx-max-height: 2.93em;
+    -fx-pref-height: 2.93em;
+}
+
+.density-m .button.size-xxl.square,
+.density-m .toggle-button.size-xxl.square {
+    -fx-padding: 0;
+    -fx-min-width: 2.93em;
+    -fx-max-width: 2.93em;
+    -fx-pref-width: 2.93em;
+}
+
+.density-m .button.size-xxl .font-icon-view,
+.density-m .toggle-button.size-xxl .font-icon-view,
+.density-m .menu-button.size-xxl .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 2.27em;
+}
+/*****************  density-m - size-xl  ******************/
+.density-m .button.size-xl,
+.density-m .toggle-button.size-xl,
+.density-m .menu-button.size-xl {
+    -fx-min-height: 2.65em;
+    -fx-max-height: 2.65em;
+    -fx-pref-height: 2.65em;
+}
+
+.density-m .button.size-xl.square,
+.density-m .toggle-button.size-xl.square {
+    -fx-padding: 0;
+    -fx-min-width: 2.65em;
+    -fx-max-width: 2.65em;
+    -fx-pref-width: 2.65em;
+}
+
+.density-m .button.size-xl .font-icon-view,
+.density-m .toggle-button.size-xl .font-icon-view,
+.density-m .menu-button.size-xl .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 2.05em;
+}
+/*****************  density-m - size-l  ******************/
+.density-m .button.size-l,
+.density-m .toggle-button.size-l,
+.density-m .menu-button.size-l {
+    -fx-min-height: 2.35em;
+    -fx-max-height: 2.35em;
+    -fx-pref-height: 2.35em;
+    -fx-padding: 0.35em 0.5em 0.35em 0.5em;
+}
+
+.density-m .menu-button.size-l {
+    -fx-graphic-text-gap: 0.2em;
+    -fx-padding: 0;
+}
+
+.density-m .menu-button.size-l > .label,
+.density-m .menu-button.size-l > .arrow-button {
+    -fx-padding: 0.35em 0.5em 0.35em 0.5em;
+}
+
+.density-m .button.size-l.square,
+.density-m .toggle-button.size-l.square {
+    -fx-padding: 0;
+    -fx-min-width: 2.35em;
+    -fx-max-width: 2.35em;
+    -fx-pref-width: 2.35em;
+}
+
+.density-m .button.size-l .font-icon-view,
+.density-m .toggle-button.size-l .font-icon-view,
+.density-m .menu-button.size-l .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.80em;
+}
+/*****************  density-m - size-m  ******************/
+.density-m .button.size-m,
+.density-m .toggle-button.size-m,
+.density-m .menu-button.size-m {
+    -fx-min-height: 2.10em;
+    -fx-max-height: 2.10em;
+    -fx-pref-height: 2.10em;
+    -fx-padding: 0.35em 0.5em 0.35em 0.5em;
+}
+
+.density-m .menu-button.size-m {
+    -fx-graphic-text-gap: 0.2em;
+    -fx-padding: 0;
+}
+
+.density-m .menu-button.size-m > .label,
+.density-m .menu-button.size-m > .arrow-button {
+    -fx-padding: 0.35em 0.5em 0.35em 0.5em;
+}
+
+.density-m .button.size-m.square,
+.density-m .toggle-button.size-m.square {
+    -fx-padding: 0;
+    -fx-min-width: 2.10em;
+    -fx-max-width: 2.10em;
+    -fx-pref-width: 2.10em;
+}
+
+.density-m .button.size-m .font-icon-view,
+.density-m .toggle-button.size-m .font-icon-view,
+.density-m .menu-button.size-m .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.60em;
+}
+/*****************  density-m - size-s  ******************/
+.density-m .button.size-s,
+.density-m .toggle-button.size-s,
+.density-m .menu-button.size-s {
+    -fx-padding: 0px 6px 2px 6px;
+    -fx-min-height: 1.77em;
+    -fx-max-height: 1.77em;
+    -fx-pref-height: 1.77em;
+}
+
+.density-m .button.size-s.square,
+.density-m .toggle-button.size-s.square {
+    -fx-padding: 0;
+    -fx-min-width: 1.77em;
+    -fx-max-width: 1.77em;
+    -fx-pref-width: 1.77em;
+}
+
+.density-m .button.size-s .font-icon-view,
+.density-m .toggle-button.size-s .font-icon-view,
+.density-m .menu-button.size-s .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.38em;
+}
+/*****************  density-m - size-xs  ******************/
+.density-m .button.size-xs,
+.density-m .toggle-button.size-xs,
+.density-m .menu-button.size-xs {
+    -fx-min-height: 1.49em;
+    -fx-max-height: 1.49em;
+    -fx-pref-height: 1.49em;
+}
+
+.density-m .button.size-xs.square,
+.density-m .toggle-button.size-xs.square {
+    -fx-padding: 0;
+    -fx-min-width: 1.49em;
+    -fx-max-width: 1.49em;
+    -fx-pref-width: 1.49em;
+}
+
+.density-m .button.size-xs .font-icon-view,
+.density-m .toggle-button.size-xs .font-icon-view,
+.density-m .menu-button.size-xs .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.16em;
+}
+/*****************  density-m - size-xxs  ******************/
+.density-m .button.size-xxs,
+.density-m .toggle-button.size-xxs,
+.density-m .menu-button.size-xxs {
+    -fx-min-height: 0.79em;
+    -fx-max-height: 0.79em;
+    -fx-pref-height: 0.79em;
+}
+
+.density-m .button.size-xxs.square,
+.density-m .toggle-button.size-xxs.square {
+    -fx-padding: 0;
+    -fx-min-width: 0.79em;
+    -fx-max-width: 0.79em;
+    -fx-pref-width: 0.79em;
+}
+
+.density-m .button.size-xxs .font-icon-view,
+.density-m .toggle-button.size-xxs .font-icon-view,
+.density-m .menu-button.size-xxs .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.11em;
+}
 /*****************  density-s - size-xxl  ******************/
 .density-s .button.size-xxl,
 .density-s .toggle-button.size-xxl,
@@ -251,6 +442,190 @@
     -fx-padding: 0;
     -fx-icon-size: 1.0em;
 }
+/*****************  density-xs - size-xxl  ******************/
+.density-xs .button.size-xxl,
+.density-xs .toggle-button.size-xxl,
+.density-xs .menu-button.size-xxl {
+    -fx-min-height: 2.37em;
+    -fx-max-height: 2.37em;
+    -fx-pref-height: 2.37em;
+}
+
+.density-xs .button.size-xxl.square,
+.density-xs .toggle-button.size-xxl.square {
+    -fx-padding: 0;
+    -fx-min-width: 2.37em;
+    -fx-max-width: 2.37em;
+    -fx-pref-width: 2.37em;
+}
+
+.density-xs .button.size-xxl .font-icon-view,
+.density-xs .toggle-button.size-xxl .font-icon-view,
+.density-xs .menu-button.size-xxl .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.83em;
+}
+/*****************  density-xs - size-xl  ******************/
+.density-xs .button.size-xl,
+.density-xs .toggle-button.size-xl,
+.density-xs .menu-button.size-xl {
+    -fx-min-height: 2.15em;
+    -fx-max-height: 2.15em;
+    -fx-pref-height: 2.15em;
+}
+
+.density-xs .button.size-xl.square,
+.density-xs .toggle-button.size-xl.square {
+    -fx-padding: 0;
+    -fx-min-width: 2.15em;
+    -fx-max-width: 2.15em;
+    -fx-pref-width: 2.15em;
+}
+
+.density-xs .button.size-xl .font-icon-view,
+.density-xs .toggle-button.size-xl .font-icon-view,
+.density-xs .menu-button.size-xl .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.66em;
+}
+/*****************  density-xs - size-l  ******************/
+.density-xs .button.size-l,
+.density-xs .toggle-button.size-l,
+.density-xs .menu-button.size-l {
+    -fx-min-height: 1.95em;
+    -fx-max-height: 1.95em;
+    -fx-pref-height: 1.95em;
+    -fx-padding: 0.2em 0.35em 0.2em 0.35em;
+}
+
+.density-xs .menu-button.size-l {
+    -fx-graphic-text-gap: 0.2em;
+    -fx-padding: 0;
+}
+
+.density-xs .menu-button.size-l > .label,
+.density-xs .menu-button.size-l > .arrow-button {
+    -fx-padding: 0.2em 0.35em 0.2em 0.35em;
+}
+
+.density-xs .button.size-l.square,
+.density-xs .toggle-button.size-l.square {
+    -fx-padding: 0;
+    -fx-min-width: 1.95em;
+    -fx-max-width: 1.95em;
+    -fx-pref-width: 1.95em;
+}
+
+.density-xs .button.size-l .font-icon-view,
+.density-xs .toggle-button.size-l .font-icon-view,
+.density-xs .menu-button.size-l .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.50em;
+}
+/*****************  density-xs - size-m  ******************/
+.density-xs .button.size-m,
+.density-xs .toggle-button.size-m,
+.density-xs .menu-button.size-m {
+    -fx-min-height: 1.70em;
+    -fx-max-height: 1.70em;
+    -fx-pref-height: 1.70em;
+    -fx-padding: 0.2em 0.35em 0.2em 0.35em;
+}
+
+.density-xs .menu-button.size-m {
+    -fx-graphic-text-gap: 0.2em;
+    -fx-padding: 0;
+}
+
+.density-xs .menu-button.size-m > .label,
+.density-xs .menu-button.size-m > .arrow-button {
+    -fx-padding: 0.2em 0.35em 0.2em 0.35em;
+}
+
+.density-xs .button.size-m.square,
+.density-xs .toggle-button.size-m.square {
+    -fx-padding: 0;
+    -fx-min-width: 1.70em;
+    -fx-max-width: 1.70em;
+    -fx-pref-width: 1.70em;
+}
+
+.density-xs .button.size-m .font-icon-view,
+.density-xs .toggle-button.size-m .font-icon-view,
+.density-xs .menu-button.size-m .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.30em;
+}
+/*****************  density-xs - size-s  ******************/
+.density-xs .button.size-s,
+.density-xs .toggle-button.size-s,
+.density-xs .menu-button.size-s {
+    -fx-padding: 0px 6px 2px 6px;
+    -fx-min-height: 1.43em;
+    -fx-max-height: 1.43em;
+    -fx-pref-height: 1.43em;
+}
+
+.density-xs .button.size-s.square,
+.density-xs .toggle-button.size-s.square {
+    -fx-padding: 0;
+    -fx-min-width: 1.43em;
+    -fx-max-width: 1.43em;
+    -fx-pref-width: 1.43em;
+}
+
+.density-xs .button.size-s .font-icon-view,
+.density-xs .toggle-button.size-s .font-icon-view,
+.density-xs .menu-button.size-s .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 1.12em;
+}
+/*****************  density-xs - size-xs  ******************/
+.density-xs .button.size-xs,
+.density-xs .toggle-button.size-xs,
+.density-xs .menu-button.size-xs {
+    -fx-min-height: 1.21em;
+    -fx-max-height: 1.21em;
+    -fx-pref-height: 1.21em;
+}
+
+.density-xs .button.size-xs.square,
+.density-xs .toggle-button.size-xs.square {
+    -fx-padding: 0;
+    -fx-min-width: 1.21em;
+    -fx-max-width: 1.21em;
+    -fx-pref-width: 1.21em;
+}
+
+.density-xs .button.size-xs .font-icon-view,
+.density-xs .toggle-button.size-xs .font-icon-view,
+.density-xs .menu-button.size-xs .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 0.94em;
+}
+/*****************  density-xs - size-xxs  ******************/
+.density-xs .button.size-xxs,
+.density-xs .toggle-button.size-xxs,
+.density-xs .menu-button.size-xxs {
+    -fx-min-height: 0.64em;
+    -fx-max-height: 0.64em;
+    -fx-pref-height: 0.64em;
+}
+
+.density-xs .button.size-xxs.square,
+.density-xs .toggle-button.size-xxs.square {
+    -fx-padding: 0;
+    -fx-min-width: 0.64em;
+    -fx-max-width: 0.64em;
+    -fx-pref-width: 0.64em;
+}
+
+.density-xs .button.size-xxs .font-icon-view,
+.density-xs .toggle-button.size-xxs .font-icon-view,
+.density-xs .menu-button.size-xxs .font-icon-view {
+    -fx-padding: 0;
+    -fx-icon-size: 0.89em;
+}
 
 /***************** cross button ******************/
 
@@ -284,14 +659,6 @@
     -fx-icon-size: 1.4em;
     -fx-padding: 0;
     -fx-fill: -color-fg-default;
-}
-
-.font-icon-view.dense {
-    -fx-icon-size: 1.3em;
-}
-
-.font-icon-view.compressed {
-    -fx-icon-size: 1.2em;
 }
 
 .font-icon-view.accent,
@@ -354,13 +721,6 @@
 */
 .menu-item {
     -fx-padding: 0.3em;
-}
-
-/*
-    MenuButton
-*/
-.menu-button.compressed > .label {
-  -fx-padding: 0.15em 0.6em 0.15em 0.6em;
 }
 
 /*
@@ -516,23 +876,127 @@
     -fx-padding: 2 0 2 0;
 }
 
-.density-s .tool-bar {
-    -fx-padding: 4 4 5 4; /*bottom padding is 5 = 4 + 1 because of the botttom line */
-    -fx-alignment: center-left;
-    -fx-spacing: 6px;
-}
-
-.density-s .tool-bar.dense {
+.density-m .tool-bar,
+.density-s .tool-bar,
+.density-xs .tool-bar {
     -fx-min-height: -1;
     -fx-max-height: -1;
     -fx-padding: 1 4 2 4; /* 3 = 2(padding) + 1(bg-insetts) */
     -fx-spacing: 4px;
+    -fx-alignment: center-left;
 }
 
 .density-s .tool-bar.inline {
     -fx-min-height: -1;
     -fx-max-height: -1;
     -fx-padding: 1 0 3 0;
+}
+
+.density-m .tool-bar.prominent,
+.density-s .tool-bar.prominent,
+.density-xs .tool-bar.prominent {
+    -fx-alignment: center-left;
+    -fx-padding: 4 4 5 4; /*bottom padding is 5 = 4 + 1 because of the botttom line */
+    -fx-spacing: 6px;
+}
+
+/*
+    Prominent toolbar - a fixed, non-standard "large" variant (e.g. a top-level action bar), as opposed to the
+    regular size-* scale. Its own buttons/toggle-buttons/menu-buttons are sized via the existing .size-l class;
+    the rules below bring text-field/combo-box up to that same height, one block per density (each reusing that
+    same density's own text-field/combo-box padding numbers - "prominent" looks like one density tier up).
+*/
+.density-m .tool-bar.prominent .text-field {
+    -fx-padding: 0.65em 1.0em 0.65em 1.0em;
+    -fx-min-height: 2.35em;
+    -fx-max-height: 2.35em;
+    -fx-pref-height: 2.35em;
+}
+
+.density-m .tool-bar.prominent .combo-box {
+    -fx-max-height: 2.35em;
+    -fx-pref-height: 2.35em;
+    -fx-min-height: 2.35em;
+    -fx-alignment: center;
+    -fx-padding: 0 0 0 1.0em;
+}
+
+.density-m .tool-bar.prominent .combo-box > .list-cell {
+    -fx-padding: 0;
+}
+
+.density-m .tool-bar.prominent .combo-box:editable {
+    -fx-padding: 0;
+}
+
+.density-m .tool-bar.prominent .combo-box-base:editable > .text-field {
+    -fx-padding: 0.55em 1.0em 0.55em 1.0em;
+}
+
+.density-m .tool-bar.prominent .combo-box .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-padding: 0.45em 0.55em 0.45em 0.55em;
+}
+
+.density-s .tool-bar.prominent .text-field {
+    -fx-padding: 0.5em 0.85em 0.5em 0.85em;
+    -fx-min-height: 2.15em;
+    -fx-max-height: 2.15em;
+    -fx-pref-height: 2.15em;
+}
+
+.density-s .tool-bar.prominent .combo-box {
+    -fx-max-height: 2.15em;
+    -fx-pref-height: 2.15em;
+    -fx-min-height: 2.15em;
+    -fx-alignment: center;
+    -fx-padding: 0 0 0 0.85em;
+}
+
+.density-s .tool-bar.prominent .combo-box > .list-cell { /* list cell is the container with up/down arrows */
+    -fx-padding: 0;
+}
+
+.density-s .tool-bar.prominent .combo-box:editable {
+    -fx-padding: 0;
+}
+
+.density-s .tool-bar.prominent .combo-box-base:editable > .text-field {
+    -fx-padding: 0.45em 0.85em 0.45em 0.85em;
+}
+
+.density-s .tool-bar.prominent .combo-box .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-padding: 0.35em 0.45em 0.35em 0.45em;
+}
+
+.density-xs .tool-bar.prominent .text-field {
+    -fx-padding: 0.35em 0.7em 0.35em 0.7em;
+    -fx-min-height: 1.95em;
+    -fx-max-height: 1.95em;
+    -fx-pref-height: 1.95em;
+}
+
+.density-xs .tool-bar.prominent .combo-box {
+    -fx-max-height: 1.95em;
+    -fx-pref-height: 1.95em;
+    -fx-min-height: 1.95em;
+    -fx-alignment: center;
+    -fx-padding: 0 0 0 0.7em;
+}
+
+.density-xs .tool-bar.prominent .combo-box > .list-cell {
+    -fx-padding: 0;
+}
+
+.density-xs .tool-bar.prominent .combo-box:editable {
+    -fx-padding: 0;
+}
+
+.density-xs .tool-bar.prominent .combo-box-base:editable > .text-field {
+    -fx-padding: 0.35em 0.7em 0.35em 0.7em;
+}
+
+.density-xs .tool-bar.prominent .combo-box .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-padding: 0.25em 0.35em 0.25em 0.35em;
 }
 
 /*

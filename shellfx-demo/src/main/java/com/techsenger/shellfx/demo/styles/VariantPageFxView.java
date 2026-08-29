@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo.styles;
 
-import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.page.AbstractPageFxView;
 import static com.techsenger.shellfx.demo.styles.StylePageData.DEFAULT_STYLE_NAME;
 import static com.techsenger.shellfx.demo.styles.StylePageData.PERSONS;
@@ -93,14 +92,17 @@ public class VariantPageFxView extends AbstractPageFxView<VariantPagePresenter> 
 
     private static VBox createToolBars() {
         var w0 = createToolBars(DEFAULT_STYLE_NAME);
-        var w1 = createToolBars(StyleClasses.DENSITY_S);
-        return new VBox(w0, w1);
+        var w1 = createToolBars(StyleClasses.DENSITY_M);
+        var w2 = createToolBars(StyleClasses.DENSITY_S);
+        var w3 = createToolBars(StyleClasses.DENSITY_XS);
+        return new VBox(Spacing.getVertical(), w0, w1, w2, w3);
     }
 
     private static VBox createToolBars(String densityStyleClass) {
-        var w0 = wrapWithName(NodeFactory.createToolBar(null, StyleClasses.SIZE_L), DEFAULT_STYLE_NAME);
-        var w1 = wrapWithName(NodeFactory.createToolBar(Styles.DENSE, StyleClasses.SIZE_M), Styles.DENSE);
-        var box = createSpacedHBox(w0, w1);
+        var prominent = wrapWithName(NodeFactory.createToolBar(StyleClasses.PROMINENT, StyleClasses.SIZE_L),
+                StyleClasses.PROMINENT);
+        var standard = wrapWithName(NodeFactory.createToolBar(null, StyleClasses.SIZE_M), DEFAULT_STYLE_NAME);
+        var box = createSpacedHBox(prominent, standard);
         return wrapWithName(box, densityStyleClass);
     }
 
