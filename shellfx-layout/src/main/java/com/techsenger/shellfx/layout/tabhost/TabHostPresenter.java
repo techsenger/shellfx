@@ -33,7 +33,7 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
 
     private boolean tabHeaderAutoHide;
 
-    private boolean tabHeaderVisible;
+    private boolean tabHeaderVisible = true;
 
     private int selectedTabIndex;
 

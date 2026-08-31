@@ -201,8 +201,6 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
      */
     private final BooleanProperty tabHeaderAutoHide = new SimpleBooleanProperty(false);
 
-    private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
-
     private final HBox tabHeaderFirstBox = new HBox();
 
     private final HBox tabHeaderLastBox = new HBox();
@@ -234,7 +232,11 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
     @Override
     public void updateTabHeaderVisible(boolean value) {
-        this.tabHeaderVisible.set(value);
+        if (value) {
+            this.tabPane.getStyleClass().remove(StyleClasses.HIDDEN_TABS);
+        } else {
+            this.tabPane.getStyleClass().add(StyleClasses.HIDDEN_TABS);
+        }
     }
 
     @Override
@@ -298,10 +300,6 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         return tabHeaderAutoHide;
     }
 
-    protected BooleanProperty tabHeaderVisibleProperty() {
-        return tabHeaderVisible;
-    }
-
     protected HBox getTabHeaderFirstBox() {
         return tabHeaderFirstBox;
     }
@@ -354,13 +352,6 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
     @Override
     protected void addListeners() {
         super.addListeners();
-        tabHeaderVisibleProperty().addListener((ov, oldV, newV) -> {
-            if (newV) {
-                this.tabPane.getStyleClass().remove(StyleClasses.HIDDEN_TABS);
-            } else {
-                this.tabPane.getStyleClass().add(StyleClasses.HIDDEN_TABS);
-            }
-        });
         this.tabHeaderAutoHide.addListener((ov, oldV, newV) -> {
             resolveTabHeaderVisibility();
         });
