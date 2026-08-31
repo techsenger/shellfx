@@ -19,8 +19,6 @@ package com.techsenger.shellfx.core.registry;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.core.CoreComponents;
-import com.techsenger.shellfx.core.menu.MainMenu;
 import com.techsenger.shellfx.material.menu.ManagedItem;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
 import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
@@ -137,41 +135,71 @@ public class ControlRegistry implements ExtensionRegistry {
 
     /**
      * Provides convenient access to the application main menu registrations. This is an alias for
-     * {@code component(CoreComponents.SHELL)} that scopes registrations to {@link MainMenu#GROUP} by
+     * {@code component(mainComponentName)} that scopes registrations to {@link #getMainMenuGroup()} by
      * default.
      */
     public final class MainMenuRegistry extends ComponentMenuRegistry {
 
-        private MainMenuRegistry() {
-            super(CoreComponents.SHELL);
+        private MainMenuRegistry(ComponentName mainComponentName) {
+            super(mainComponentName);
         }
 
         /**
-         * Registers a menu in {@link MainMenu#GROUP}.
+         * Registers a menu in {@link #getMainMenuGroup()}.
          *
          * @param factory the factory used to create the menu
          * @return a {@link Registration} that can be used to unregister this contribution
          */
         @Override
         public Registration registerMenu(ControlFactory<? extends ParentFxView<?>, ManagedMenu> factory) {
-            return registerMenu(MainMenu.GROUP, factory);
+            return registerMenu(mainMenuGroup, factory);
         }
     }
 
-    private final MainMenuRegistry mainMenu = new MainMenuRegistry();
+    private final ComponentName mainComponentName;
+
+    private final MenuGroupName mainMenuGroup;
+
+    private final MainMenuRegistry mainMenu;
 
     private final Map<ComponentName, Set<AbstractMenuRegistration<?, ?>>> menuRegistrationsByComponent =
             new ConcurrentHashMap<>();
 
     /**
+     * @param mainComponentName the component the application main menu is registered under.
+     * @param mainMenuGroup the default group {@link MainMenuRegistry#registerMenu(ControlFactory)} registers
+     *     into, and the group {@link ControlBuilder} treats as top-level when assembling the main menu.
+     */
+    public ControlRegistry(ComponentName mainComponentName, MenuGroupName mainMenuGroup) {
+        this.mainComponentName = mainComponentName;
+        this.mainMenuGroup = mainMenuGroup;
+        this.mainMenu = new MainMenuRegistry(mainComponentName);
+    }
+
+    /**
      * Returns the registry scoped to the application main menu. Equivalent to calling
-     * {@code component(CoreComponents.SHELL)} but with {@link MainMenu#GROUP} as the default group for
+     * {@code component(getMainComponentName())} but with {@link #getMainMenuGroup()} as the default group for
      * {@link ComponentMenuRegistry#registerMenu(ControlFactory)}.
      *
      * @return the main menu registry
      */
     public MainMenuRegistry mainMenu() {
         return mainMenu;
+    }
+
+    /**
+     * Returns the component the application main menu is registered under.
+     */
+    public ComponentName getMainComponentName() {
+        return mainComponentName;
+    }
+
+    /**
+     * Returns the group {@link #mainMenu()} registers into by default, and that {@link ControlBuilder} treats
+     * as top-level when assembling the main menu.
+     */
+    public MenuGroupName getMainMenuGroup() {
+        return mainMenuGroup;
     }
 
     /**

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.menu.manager;
+package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.shellfx.material.menu.ManagedMenu;
-import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;

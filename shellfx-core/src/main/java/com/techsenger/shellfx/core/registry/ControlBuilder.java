@@ -16,11 +16,11 @@
 
 package com.techsenger.shellfx.core.registry;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.core.CoreComponents;
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.menu.MainMenu;
+import com.techsenger.shellfx.material.menu.ContextMenuHandler;
+import com.techsenger.shellfx.material.menu.ManagedContextMenu;
 import com.techsenger.shellfx.material.menu.ManagedItem;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
 import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
@@ -43,7 +43,7 @@ import javafx.scene.control.SeparatorMenuItem;
  *
  * @author Pavel Castornii
  */
-public class MenuBuilder {
+public class ControlBuilder {
 
     private static class MenuDescriptor {
 
@@ -80,30 +80,31 @@ public class MenuBuilder {
 
     private final ControlRegistry registry;
 
-    public MenuBuilder(ControlRegistry registry) {
+    public ControlBuilder(ControlRegistry registry) {
         this.registry = registry;
     }
 
     /**
      * Builds the list of top-level menus for the application main menu. Only menus registered under
-     * {@link MainMenu#GROUP} are included as top-level entries. Empty menus are removed from the result.
+     * {@link ControlRegistry#getMainMenuGroup()} are included as top-level entries. Empty menus are removed
+     * from the result.
      *
      * @param shell the shell view passed to each control factory
      * @return a sorted list of top-level {@link Menu} instances ready to be added to the main {@code MenuBar}
      */
-    public List<Menu> buildMainMenus(ShellFxView<?> shell) {
-        var registrations = registry.getMenuRegistrations().get(CoreComponents.SHELL);
+    public List<Menu> buildBarMenus(ParentFxView<?> view) {
+        var registrations = registry.getMenuRegistrations().get(registry.getMainComponentName());
         if (registrations == null) {
             return List.of();
         }
         var ctx = new BuildContext();
-        buildElements(shell, new ArrayList<>(registrations), ctx);
+        buildElements(view, new ArrayList<>(registrations), ctx);
         List<ManagedMenu> topMenus = new ArrayList<>();
         Map<MenuName, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
         // Distribute menus — top-level ones go to the result list, nested ones are added to their parent group
         for (var entry : ctx.menusByName.entrySet()) {
             var descriptor = entry.getValue();
-            if (descriptor.groupName == MainMenu.GROUP) {
+            if (descriptor.groupName == registry.getMainMenuGroup()) {
                 topMenus.add(descriptor.menu);
             } else {
                 var groupDescriptor = ctx.groupsByName.get(descriptor.groupName);
@@ -130,7 +131,7 @@ public class MenuBuilder {
      * @return the assembled {@link Menu}, or {@code null} if no registration exists for the given component and
      *         menu name
      */
-    public Menu buildMenu(ParentFxView<?> view, ComponentName componentName, MenuName menuName) {
+    public @Nullable Menu buildMenu(ParentFxView<?> view, ComponentName componentName, MenuName menuName) {
         var registrations = registry.getMenuRegistrations().get(componentName);
         if (registrations == null) {
             return null;
@@ -158,6 +159,29 @@ public class MenuBuilder {
             return null;
         }
         return menuDescriptor.menu;
+    }
+
+    /**
+     * Builds a {@link ManagedContextMenu} for the given component and menu name. {@code ContextMenu} does not
+     * extend {@link Menu}, so it cannot be produced directly by {@link #buildMenu} - this materializes a fresh
+     * {@code ManagedContextMenu} from the same assembled root and copies its items over. Attach a
+     * {@link ContextMenuHandler} to the returned menu (before showing it) if whether to show the popup at all
+     * depends on something other than which items it ended up with.
+     *
+     * @param view          the component view passed to each control factory
+     * @param componentName the name of the component that owns the menu registrations
+     * @param menuName      the name of the menu to build
+     * @return the assembled menu, or {@code null} if no registration exists or it ended up empty
+     */
+    public @Nullable ManagedContextMenu buildContextMenu(ParentFxView<?> view, ComponentName componentName,
+            MenuName menuName) {
+        var menu = buildMenu(view, componentName, menuName);
+        if (menu == null) {
+            return null;
+        }
+        var contextMenu = new ManagedContextMenu();
+        contextMenu.getItems().setAll(menu.getItems());
+        return contextMenu;
     }
 
     /**

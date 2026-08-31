@@ -60,6 +60,8 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [EnvironmentTab](#devtools-environment-tab)
 * [Extension Registries](#registries)
     * [Control Registry](#registries-control)
+* [Managed Controls](#managed-controls)
+    * [Managed Menu](#managed-controls-menu)
 * [Naming Convention](#naming-convention)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
@@ -303,14 +305,15 @@ advance. This feature is crucial in cases where plugins/extensions are used, as 
 the user. Each plugin may introduce its own menu items and interact with existing menus. Therefore, it is impossible
 to predict the final structure of the menu that the user will work with.
 
-The implementation of this feature is structured as follows. There are three key elements: the menu, the group, and the
-item. Each element has its own name, which is used for identification. A menu consists of groups separated by a
-separator. Items are added to groups, and empty groups are ignored. The factories of all three elements are
-registered/unregistered in the `ControlRegistry`. When the menu needs to be updated, this `ControlRegistry` is used
-by `Shell` to construct the final menu. See [ControlRegistry](#registries-control) for details.
+The implementation of this feature is structured around the `ControlRegistry` (see
+[ControlRegistry](#registries-control)). Factories for the three key elements—the menu, the group, and the item
+(see [Managed Menu](#managed-controls-menu)) are registered with and unregistered from the `ControlRegistry`. When
+the menu needs to be updated, `Shell` uses `ControlBuilder` to read the registry and construct the final menu.
 
-The `MenuManager` is responsible for managing the state of menu elements and responding to their actions. It
-interacts with a component that provides a port implementing the `MenuAwarePort` interface.
+A menu consists of groups separated by separators. Items are added to groups, and empty groups are ignored. Each menu
+and group has its own name, which is used for identification. The `MenuBarManager` is responsible for managing the state
+of menu elements and responding to their actions. It interacts with a component that provides a port implementing the
+`MenuAwarePort` interface.
 
 The algorithm works as follows. First, the component that has focus is determined. The `Shell` tracks changes to
 the focused node using `Scene#focusOwnerProperty()`. When this property changes, the component that owns the node is
@@ -323,7 +326,8 @@ Therefore, after the focused component changes, `Shell` searches from the focuse
 tree — the Shell — for the first component whose port implements `MenuAwarePort`. Note that `Shell` can also form
 the main menu, but this is usually done only when the workspace is empty. See also `ShellFxView#menuAwareProperty()`.
 
-It is also important to remember that the `MenuManager` also interacts with `MenuAwarePort` when the user uses accelerators.
+It is also important to remember that the `MenuBarManager` also interacts with `MenuAwarePort` when the user uses
+accelerators.
 
 To gain a complete understanding of working with the menu, it is recommended to familiarize yourself with the
 `MenuAwarePort` interface, experiment with the menu in the demo, and pay attention to log messages at the debug level.
@@ -568,18 +572,71 @@ This component provides access to platform settings, system properties, and envi
 
 ## Extension Registries <a name="registries"></a>
 
-An extension registry is a runtime mechanism that allows components, plugins, and modules to dynamically contribute
-functionality to the platform without introducing direct compile-time dependencies between components. Extensions can
-be added or removed at runtime, and registrations may occur in any order.
+An extension registry provides a runtime mechanism for components, plugins, and modules to contribute functionality
+without introducing direct compile-time dependencies between them. Extensions can be added or removed at runtime, and
+registrations may occur in any order.
 
 ### Control Registry <a name="registries-control"></a>
 
-`ControlRegistry` manages UI control contributions such as menus, menu groups, and menu items. This registry is used
-to manage Shell’s main menu.
+`ControlRegistry` stores UI control contributions — menus, menu groups, and menu items — as `ControlFactory`
+instances, keyed by the component they are registered under. Registrations can be added or removed at any time and
+in any order, which is what makes the registry safe to use with dynamically loaded plugins. A `ControlFactory` is not
+invoked eagerly; it only runs once its contribution actually needs to be materialized. Shell's main menu is one
+particular consumer of this mechanism: `ControlRegistry#mainMenu()` is a convenience view scoped to the component and
+group Shell treats as its main menu, but it is only sugar over the general
+`ControlRegistry#component(ComponentName)` API — nothing prevents registering directly against that API instead.
 
-However, this registry does not assemble final UI controls. For example, it does not create a `ToolBar`. Instead, it
-only stores metadata about elements that can later be used to construct UI components such as toolbars. The assembly of
-final control elements is handled by user-defined or default builders, such as `MenuBuilder.
+`ControlRegistry` itself never assembles a final UI control; it only stores the metadata needed to build one later.
+Assembly is the job of `ControlBuilder`, which reads a registry's contributions for a given component, invokes each
+`ControlFactory`, groups and orders the results, and removes empty menus/groups. `ControlBuilder` exposes three build
+methods: `buildBarMenus` builds the full list of top-level menus for a `MenuBar` (this is what `Shell` uses for its
+main menu), `buildMenu` builds a single named menu and returns it as a `Menu`, and `buildContextMenu` does the same
+but returns a `ManagedContextMenu` — needed because `ContextMenu` does not extend `Menu`, so it cannot be produced by
+`buildMenu` directly. See [Managed Controls](#managed-controls) for what these builders actually produce.
+
+## Managed Controls <a name="managed-controls"></a>
+
+A managed control is a regular JavaFX control (`Menu`, `MenuItem`, `ContextMenu`, etc.) augmented with two things:
+identity/positioning metadata (a name, a position, an owning group) and pluggable behavior attached separately from
+the control itself, through a `Handler`. Behavior is kept off the control's own class hierarchy for two reasons.
+First, `Menu`, `MenuItem`, `CheckMenuItem`, and `RadioMenuItem` already form a fixed single-inheritance hierarchy
+that managed types must extend directly, leaving no room to also extend a shared behavioral base class. Second, a
+`Handler`'s lifecycle methods (`onUpdate`, `onShowing`, `onHiding`) are dispatched by the platform through JavaFX's
+own `onShowing`/`onHiding`/`onAction` properties; if handler logic were expressed through those same properties
+directly, code that called `setOnShowing`/`setOnAction` on a managed control would silently override that wiring
+instead of failing loudly.
+
+### Managed Menu <a name="managed-controls-menu"></a>
+
+The managed-menu primitives live in the `material` module, independently of `ControlRegistry`/`ControlBuilder`:
+
+* Menu — `ManagedMenu`, `ManagedMenuItem`, and `ManagedContextMenu` are the actual controls. `ManagedMenu` and
+`ManagedMenuItem` extend their JavaFX counterparts and add a name and a position. `ManagedContextMenu` extends
+`ContextMenu`, which has no `visible` property of its own, so it adds one — this is what lets a `ContextMenuHandler`
+decide whether the whole popup should be shown at all, the same way a menu-level `MenuHandler` can decide a nested
+menu's visibility.
+* Group — `ManagedMenuGroup` has no JavaFX equivalent; it exists purely so that items contributed by
+independent, mutually unaware sources can still be visually clustered and ordered together within one menu, with
+groups separated from each other by a separator. A group that ends up with no visible items, and the separator
+around it, are both hidden — see **Manager** below for how that stays correct as contributions change at runtime.
+* Handler — `Handler` declares `onUpdate`/`onShowing`/`onHiding`; `MenuItemHandler` adds `onAction` for leaf
+items. `MenuHandler` and `ContextMenuHandler` attach to a `ManagedMenu`/`ManagedContextMenu` respectively and decide
+that control's own visibility directly, without knowing anything about its children — which matters because a menu
+assembled from independent, mutually unaware contributors cannot know its own contributors in the first place.
+`AbstractHandler`, `AbstractMenuHandler`, `AbstractMenuItemHandler`, and `AbstractContextMenuHandler` provide the
+common no-op defaults.
+* Manager — `MenuBarManager` wires a `MenuBar`: it dispatches `onAction` (disambiguating a mouse click from a
+keyboard accelerator, since the same key combination can fire an item whether or not its menu is currently open),
+resolves visibility on showing (a menu with its own `MenuHandler` decides for itself; one without derives its
+visibility from whether at least one of its own items ends up visible, recursively), collapses separators around
+sections that ended up empty, and reacts to items being added or removed after the menu bar was already built and
+shown, since contributions can change at runtime. `ContextMenuManager` does the same for a single
+`ManagedContextMenu`, minus the accelerator disambiguation a one-off popup does not need.
+
+These primitives do not depend on `ControlRegistry`/`ControlFactory`/`ControlBuilder` at all — a `ManagedMenu` tree
+can be built by hand and handed straight to a `MenuBarManager` to get dynamic, handler-based behavior. The registry
+and builder solve a different, additional problem: composing contributions from many independent, mutually unaware
+plugins into one such tree in the first place. See [Control Registry](#registries-control) for that part.
 
 ## Naming Convention <a name="naming-convention"></a>
 

@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.demo;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.shellfx.core.CoreComponents;
 import com.techsenger.shellfx.core.DefaultShellContext;
 import com.techsenger.shellfx.core.DefaultShellFxView;
 import com.techsenger.shellfx.core.DefaultShellParams;
@@ -37,6 +38,7 @@ import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
 import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
+import com.techsenger.shellfx.material.menu.DefaultMenuGroupName;
 import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
@@ -108,7 +110,8 @@ public class Demo extends Application {
         IconStylesheets.addAll(IconStylesheetFactory.forAll());
 
         // creating component
-        var shellView = new DefaultShellFxView<>(this, null, new ControlRegistry()) {
+        var controlRegistry = new ControlRegistry(CoreComponents.SHELL, new DefaultMenuGroupName("MainMenuGroup"));
+        var shellView = new DefaultShellFxView<>(this, null, controlRegistry) {
             @Override
             protected void build() {
                 super.build();
@@ -160,8 +163,6 @@ public class Demo extends Application {
         }
 
         // adding menu
-        var controlRegistry = shellView.getControlRegistry();
-
         if (appType != ApplicationType.STYLES_ONLY) {
             var fmr = new FileMenuRegistrar(controlRegistry, appType, shellView);
             fmr.register();

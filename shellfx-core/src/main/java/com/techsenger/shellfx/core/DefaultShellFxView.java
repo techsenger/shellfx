@@ -20,10 +20,10 @@ import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.shellfx.core.area.AreaFxView;
 import com.techsenger.shellfx.core.area.AreaPort;
-import com.techsenger.shellfx.core.menu.manager.MenuManager;
+import com.techsenger.shellfx.core.registry.ControlBuilder;
 import com.techsenger.shellfx.core.registry.ControlRegistry;
-import com.techsenger.shellfx.core.registry.MenuBuilder;
 import com.techsenger.shellfx.core.window.AbstractHostWindowFxView;
+import com.techsenger.shellfx.material.menu.MenuBarManager;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import java.util.List;
 import java.util.Objects;
@@ -154,7 +154,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
 
     private final MenuBar menuBar = new MenuBar();
 
-    private final MenuManager menuManager;
+    private final MenuBarManager menuBarManager;
 
     private final ControlRegistry controlRegistry;
 
@@ -167,7 +167,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
         super(stage, stylesheets);
         Objects.requireNonNull(application, "Application can't be null");
         this.application = application;
-        this.menuManager = new MenuManager(this, this.menuBar);
+        this.menuBarManager = new MenuBarManager(this.menuBar);
         this.controlRegistry = controlRegistry;
     }
 
@@ -187,8 +187,8 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     @Override
     public void upgradeMenuBar() {
         this.menuBar.getMenus().clear();
-        var builder = new MenuBuilder(controlRegistry);
-        var menus = builder.buildMainMenus(this);
+        var builder = new ControlBuilder(controlRegistry);
+        var menus = builder.buildBarMenus(this);
         this.menuBar.getMenus().addAll(menus);
         logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());
         updateMenuBar();
@@ -196,7 +196,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
 
     @Override
     public void updateMenuBar() {
-        this.menuManager.updateMenuBar((MenuAwarePort) getComposer().getMenuAware().getPresenter());
+        this.menuBarManager.updateMenuBar();
         logger.debug("{} Menu bar updated", getDescriptor().getLogPrefix());
     }
 
@@ -227,7 +227,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     protected void addHandlers() {
         super.addHandlers();
         getStage().getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
-                e -> menuManager.setLastMouseClickTime(System.nanoTime()));
+                e -> menuBarManager.setLastMouseClickTime(System.nanoTime()));
     }
 
     @Override
@@ -237,7 +237,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
 
     @Override
     protected void fixAcceleratorKeyPressed(KeyEvent e) {
-        menuManager.setLastKeyPressedTime(System.nanoTime());
+        menuBarManager.setLastKeyPressedTime(System.nanoTime());
         super.fixAcceleratorKeyPressed(e);
     }
 }

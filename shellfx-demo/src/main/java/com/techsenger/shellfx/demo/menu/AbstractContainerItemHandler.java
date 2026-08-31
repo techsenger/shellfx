@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.menu;
 
 import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.menu.AbstractMenuItemHandler;
+import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.core.tab.TabContainerFxView;
 import com.techsenger.shellfx.layout.dockhost.DockHostFxView;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;

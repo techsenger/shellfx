@@ -27,6 +27,10 @@
             <artifactId>patternfx-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.patternfx</groupId>
+            <artifactId>patternfx-mvp</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.toolkit</groupId>
             <artifactId>toolkit-core</artifactId>
         </dependency>

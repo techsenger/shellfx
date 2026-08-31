@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.menu.manager;
+package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.shellfx.core.DefaultShellFxView;
-import com.techsenger.shellfx.core.MenuAwarePort;
-import com.techsenger.shellfx.core.menu.Handler;
-import com.techsenger.shellfx.core.menu.MenuHandler;
-import com.techsenger.shellfx.core.menu.MenuItemHandler;
-import com.techsenger.shellfx.material.menu.ManagedItem;
-import com.techsenger.shellfx.material.menu.ManagedMenu;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,19 +40,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class MenuManager {
+public class MenuBarManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(MenuManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(MenuBarManager.class);
 
-    private final DefaultShellFxView<?> shellView;
     private final MenuBar menuBar;
     private final ListChangeListener<MenuItem> menuItemsListener =
             (ListChangeListener.Change<? extends MenuItem> c) -> processMenuListChange(c);
     private long lastKeyPressedTime;
     private long lastMouseClickTime;
 
-    public MenuManager(DefaultShellFxView<?> shellView, MenuBar menuBar) {
-        this.shellView = shellView;
+    public MenuBarManager(MenuBar menuBar) {
         this.menuBar = menuBar;
         //listener if menus are added/removed dinamically to/from menu bar(!)
         this.menuBar.getMenus().addListener((ListChangeListener.Change<? extends Menu> c)  -> {
@@ -68,7 +58,7 @@ public class MenuManager {
         });
     }
 
-    public void updateMenuBar(MenuAwarePort menuAware) {
+    public void updateMenuBar() {
         for (var m : this.menuBar.getMenus()) {
             if (m instanceof ManagedMenu managedMenu) {
                 var handler = MenuHandler.getHandler(managedMenu);
@@ -176,70 +166,12 @@ public class MenuManager {
     }
 
     private void onMenuShowing(ManagedMenu menu) {
-        MenuAwarePort menuAware = (MenuAwarePort) this.shellView.getComposer().getMenuAware().getPresenter();
-        boolean visibleItemsPresent = false;
-        SeparatorMenuItem previousVisibleSeparator = null;
-        for (var item : menu.getItems()) {
-            if (item instanceof ManagedMenu managedMenu) {
-                var handler =  MenuHandler.getHandler(managedMenu);
-                if (handler != null) {
-                    handler.onShowing();
-                    handler.onUpdate();
-                }
-                if (managedMenu.isVisible()) {
-                    visibleItemsPresent = true;
-                }
-            } else if (item instanceof SeparatorMenuItem separator) {
-                //there are three variants - first separator, somewhere in the middle, last separator
-                if (previousVisibleSeparator == null) {
-                    //first separator
-                    if (!visibleItemsPresent) {
-                        separator.setVisible(false);
-                    } else {
-                        separator.setVisible(true);
-                        previousVisibleSeparator = separator;
-                        visibleItemsPresent = false;
-                    }
-                } else {
-                    //in the middle
-                    if (!visibleItemsPresent) {
-                        previousVisibleSeparator.setVisible(false);
-                    }
-                    separator.setVisible(true);
-                    previousVisibleSeparator = separator;
-                    visibleItemsPresent = false;
-                }
-            } else if (item instanceof ManagedItem) {
-                var managedItem = (MenuItem & ManagedItem) item;
-                var handler = MenuItemHandler.getHandler(managedItem);
-                if (handler != null) {
-                    handler.onShowing();
-                    handler.onUpdate();
-                }
-                if (item.isVisible()) {
-                    visibleItemsPresent = true;
-                }
-            }
-        }
-        //last separator - hide if there weren't visible items after separator
-        if (previousVisibleSeparator != null && !visibleItemsPresent) {
-            previousVisibleSeparator.setVisible(false);
-        }
+        MenuVisibility.resolveItems(menu.getItems());
+        MenuVisibility.collapseSeparators(menu.getItems());
     }
 
     private void onMenuHiding(ManagedMenu menu) {
-        var menuAware = (MenuAwarePort) this.shellView.getComposer().getMenuAware().getPresenter();
-        for (var item : menu.getItems()) {
-            Handler handler = null;
-            if (item instanceof ManagedMenu managedMenu) {
-                handler = MenuHandler.getHandler(managedMenu);
-            } else if (item instanceof MenuItem mi && mi instanceof ManagedItem) {
-                handler = MenuItemHandler.getHandler((MenuItem & ManagedItem) mi);
-            }
-            if (handler != null) {
-                handler.onHiding();
-            }
-        }
+        MenuVisibility.fireHiding(menu.getItems());
     }
 
     private String getMenuText(MenuItem keyedMenu) {

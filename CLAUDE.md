@@ -71,11 +71,16 @@ remember to add both the `exports` (and `opens` for CSS/FXML-loaded packages) in
 - **Core interfaces vs. base implementations.** Each component is an interface + a default `Abstract*`
   implementation (e.g. `ShellFxView` interface backing `Shell`). Code should reference the interface, not the
   concrete class, matching the platform's own convention (`ShellFxView`, not `DefaultShellFxView`).
-- **Menu system.** The main menu is assembled dynamically at runtime by `ControlRegistry` from
-  registered/unregistered menu, group, and item factories (supports plugin-style dynamic contribution).
-  `MenuManager` tracks the focused component via `Scene#focusOwnerProperty()`, walks up the component tree to
-  find the nearest ancestor implementing `MenuAwarePort`, and dispatches state/actions to it. A component that
-  should focus on click of an empty area must call `requestFocus()` explicitly.
+- **Menu system.** `ControlRegistry` (`shellfx-core`) stores menu/group/item contributions as `ControlFactory`
+  registrations, supporting plugin-style dynamic (un)registration in any order; it never assembles a control
+  itself. `ControlBuilder` reads a registry's contributions and assembles the final menu tree from them.
+  The managed controls that tree is built from (`ManagedMenu`, `ManagedMenuItem`, `ManagedMenuGroup`,
+  `ManagedContextMenu`), their `Handler` family, and the `MenuBarManager`/`ContextMenuManager` classes that
+  wire runtime behavior onto them, all live in `shellfx-material.menu` — independent of `ControlRegistry`, so
+  they can be used standalone too. `MenuBarManager` tracks the focused component via
+  `Scene#focusOwnerProperty()`, walks up the component tree to find the nearest ancestor implementing
+  `MenuAwarePort`, and dispatches state/actions to it. A component that should focus on click of an empty area
+  must call `requestFocus()` explicitly.
 - **Windows.** `Window` comes in `NESTED` (managed by `WindowManager`, hosted inside a `HostWindow` or
   `HostTab`) and `TOP_LEVEL` (own OS `Stage`) variants, both accessed through the same API — dialogs/wizards
   built on `Window` work unmodified in either mode.

@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.menu.extra;
 
 import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.menu.AbstractMenuHandler;
+import com.techsenger.shellfx.material.menu.AbstractMenuHandler;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
 

@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.menu.file;
 
 import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.menu.AbstractMenuItemHandler;
+import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.core.window.WindowContainerFxView;
 import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.DevToolsHostType;

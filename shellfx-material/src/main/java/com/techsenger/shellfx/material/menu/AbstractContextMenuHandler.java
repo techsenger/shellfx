@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.menu.file;
+package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import com.techsenger.patternfx.mvp.ParentFxView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ExitItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class AbstractContextMenuHandler<T extends ParentFxView<?>> extends AbstractHandler<T>
+        implements ContextMenuHandler<T> {
 
-    public ExitItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
-        super(component, item);
+    public AbstractContextMenuHandler(T component) {
+        super(component);
     }
-
-    @Override
-    public void onAction() {
-        getComponent().getPresenter().closeSafely();
-    }
-
 }

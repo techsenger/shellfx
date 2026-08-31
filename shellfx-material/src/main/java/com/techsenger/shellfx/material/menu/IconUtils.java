@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.menu.manager;
+package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.icon.Icon;

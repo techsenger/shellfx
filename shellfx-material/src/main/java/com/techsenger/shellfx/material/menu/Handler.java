@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.menu;
+package com.techsenger.shellfx.material.menu;
 
 /**
  * Represents behavior attached to a managed menu or menu item, kept as a plain object rather than being expressed

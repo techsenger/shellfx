@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.menu.file;
 
 import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.menu.MenuItemHandler;
+import com.techsenger.shellfx.material.menu.MenuItemHandler;
 import com.techsenger.shellfx.core.registry.AbstractControlRegistrar;
 import com.techsenger.shellfx.core.registry.ControlFactory;
 import com.techsenger.shellfx.core.registry.ControlRegistry;

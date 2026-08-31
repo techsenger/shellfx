@@ -14,32 +14,39 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.menu;
+package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.material.menu.ManagedItem;
-import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface MenuItemHandler<T extends ParentFxView<?>> extends Handler {
+public class AbstractHandler<T extends ParentFxView<?>> implements Handler {
 
-    static <T extends MenuItem & ManagedItem> void setHandler(T item, MenuItemHandler<?> handler) {
-        item.getProperties().put(key(), handler);
+    private final T component;
+
+    public AbstractHandler(T component) {
+        this.component = component;
     }
 
-    static <T extends MenuItem & ManagedItem> MenuItemHandler<?> getHandler(T item) {
-        return (MenuItemHandler<?>) item.getProperties().get(key());
+    @Override
+    public void onUpdate() {
+        // empty
     }
 
-    private static Object key() {
-        class KeyHolder {
-            private static final Object KEY = new Object();
-        }
-        return KeyHolder.KEY;
+    @Override
+    public void onShowing() {
+        // empty
     }
 
-    void onAction();
+    @Override
+    public void onHiding() {
+        // empty
+    }
+
+    protected T getComponent() {
+        return component;
+    }
+
 }
