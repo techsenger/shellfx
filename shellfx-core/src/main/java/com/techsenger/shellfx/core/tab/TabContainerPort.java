@@ -56,6 +56,13 @@ public interface TabContainerPort extends ParentPort {
     int getSelectedTabIndex();
 
     /**
+     * Returns the number of tabs currently contained in the tab container.
+     *
+     * @return number of tabs
+     */
+    int getTabCount();
+
+    /**
      * Selects the tab at the given index.
      *
      * @param tabIndex zero-based index of the tab to select

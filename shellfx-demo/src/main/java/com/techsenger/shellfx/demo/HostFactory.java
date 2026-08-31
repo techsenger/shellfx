@@ -40,8 +40,15 @@ public final class HostFactory {
     public static TabHostFxView<?> createTabHost() {
         var view = new TabHostFxView<>(true);
         var params = new AreaParams();
-        var presenter = new TabHostPresenter<>(view, params);
+        var presenter = new TabHostPresenter<>(view, params) {
+            @Override
+            protected void onTabCountChanged(int tabCount) {
+                super.onTabCountChanged(tabCount);
+                setTabHeaderVisible(tabCount > 0);
+            }
+        };
         presenter.initialize();
+        presenter.setTabHeaderVisible(false);
         return view;
     }
 

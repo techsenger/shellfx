@@ -29,15 +29,14 @@ import com.techsenger.shellfx.layout.LayoutView;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.tabpanepro.core.TabEvent;
 import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabHeaderAreaPolicy;
 import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -196,11 +195,6 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
 
     private int selectedIndex;
 
-    /**
-     * If true then tab header is hidden when tab count is 1.
-     */
-    private final BooleanProperty tabHeaderAutoHide = new SimpleBooleanProperty(false);
-
     private final HBox tabHeaderFirstBox = new HBox();
 
     private final HBox tabHeaderLastBox = new HBox();
@@ -223,11 +217,6 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
     @Override
     public TabPanePro getNode() {
         return this.tabPane;
-    }
-
-    @Override
-    public void updateTabHeaderAutoHide(boolean value) {
-        this.tabHeaderAutoHide.set(value);
     }
 
     @Override
@@ -296,10 +285,6 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         return new TabHostFxView.Composer();
     }
 
-    protected BooleanProperty tabHeaderAutoHideProperty() {
-        return tabHeaderAutoHide;
-    }
-
     protected HBox getTabHeaderFirstBox() {
         return tabHeaderFirstBox;
     }
@@ -315,6 +300,8 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
         tabHeaderLastBox.getStyleClass().add("tab-header-last-box");
         this.tabPane.getStylesheets().add(TabHostFxView.class.getResource("tab-host.css").toExternalForm());
         this.tabPane.getStyleClass().add(Styles.DENSE);
+        // Tab header should always be visible so that its visibility can be controlled manually via a style class.
+        getTabHeaderArea().setPolicy(TabHeaderAreaPolicy.ALWAYS_VISIBLE);
         getTabHeaderArea().getFirstArea().getChildren().add(tabHeaderFirstBox);
         getTabHeaderArea().getLastArea().getChildren().add(tabHeaderLastBox);
         VBox.setVgrow(this.tabPane, Priority.ALWAYS);
@@ -352,13 +339,9 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
     @Override
     protected void addListeners() {
         super.addListeners();
-        this.tabHeaderAutoHide.addListener((ov, oldV, newV) -> {
-            resolveTabHeaderVisibility();
-        });
         this.tabPane.getSelectionModel().selectedIndexProperty().addListener((ov, oldV, newV) ->
                 getPresenter().onSelectedTabChanged(newV.intValue()));
         tabPane.getTabs().addListener((ListChangeListener<? super Tab>) (change)  -> {
-            resolveTabHeaderVisibility();
             while (change.next()) {
                 if (change.wasAdded()) {
                     for (var tab : change.getAddedSubList()) {
@@ -378,6 +361,7 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
                     }
                 }
             }
+            getPresenter().onTabCountChanged(tabPane.getTabs().size());
         });
     }
 
@@ -499,13 +483,5 @@ public class TabHostFxView<P extends TabHostPresenter<?>> extends AbstractAreaFx
             }
         });
         return contextMenu;
-    }
-
-    private void resolveTabHeaderVisibility() {
-        if (this.tabHeaderAutoHide.get() && this.tabPane.getTabs().size() == 1) {
-            updateTabHeaderVisible(false);
-        } else {
-            updateTabHeaderVisible(true);
-        }
     }
 }

@@ -52,8 +52,6 @@ public interface TabHostView extends AreaView, TabContainerView {
     @Override
     Composer getComposer();
 
-    void updateTabHeaderAutoHide(boolean value);
-
     void updateTabHeaderVisible(boolean value);
 
     void updateRegularFont(Font font);

@@ -31,9 +31,9 @@ import java.util.List;
 public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresenter<V>
         implements TabContainerPresenter<V>, TabHostPort {
 
-    private boolean tabHeaderAutoHide;
-
     private boolean tabHeaderVisible = true;
+
+    private int tabCount;
 
     private int selectedTabIndex;
 
@@ -49,19 +49,6 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
     @Override
     public void onSelectedTabChanged(int index) {
         this.selectedTabIndex = index;
-    }
-
-    @Override
-    public boolean isTabHeaderAutoHide() {
-        return tabHeaderAutoHide;
-    }
-
-    public void setTabHeaderAutoHide(boolean tabHeaderAutoHide) {
-        if (this.tabHeaderAutoHide == tabHeaderAutoHide) {
-            return;
-        }
-        this.tabHeaderAutoHide = tabHeaderAutoHide;
-        getView().updateTabHeaderAutoHide(tabHeaderAutoHide);
     }
 
     @Override
@@ -83,6 +70,11 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
     }
 
     @Override
+    public int getTabCount() {
+        return this.tabCount;
+    }
+
+    @Override
     public void selectTab(int tabIndex) {
         getView().selectTab(tabIndex);
     }
@@ -90,6 +82,10 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
     @Override
     protected ComponentDescriptor createDescriptor() {
         return new ComponentDescriptor(LayoutComponents.TAB_HOST);
+    }
+
+    protected void onTabCountChanged(int tabCount) {
+        this.tabCount = tabCount;
     }
 
     protected void onCloseOtherTabs(TabPort tab) {
