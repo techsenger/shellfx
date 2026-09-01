@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.shellfx.core.CoreComponents;
+import com.techsenger.patternfx.core.DefaultComponentName;
 import com.techsenger.shellfx.core.DefaultShellContext;
 import com.techsenger.shellfx.core.DefaultShellFxView;
 import com.techsenger.shellfx.core.DefaultShellParams;
@@ -110,7 +110,8 @@ public class Demo extends Application {
         IconStylesheets.addAll(IconStylesheetFactory.forAll());
 
         // creating component
-        var controlRegistry = new ControlRegistry(CoreComponents.SHELL, new DefaultMenuGroupName("MainMenuGroup"));
+        var controlRegistry = new ControlRegistry(new DefaultComponentName("!"),
+                new DefaultMenuGroupName("MainMenuGroup"));
         var shellView = new DefaultShellFxView<>(this, null, controlRegistry) {
             @Override
             protected void build() {

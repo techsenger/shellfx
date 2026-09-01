@@ -17,13 +17,11 @@
 package com.techsenger.shellfx.devtools.environment;
 
 import com.techsenger.connectorfx.KeyValue;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.AbstractTabPresenter;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
 import com.techsenger.shellfx.devtools.ToolBarAwarePort;
@@ -101,11 +99,6 @@ public class EnvironmentTabPresenter<V extends EnvironmentTabView> extends Abstr
 
     public List<EnvironmentItem> getItems() {
         return items;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.ENVIRONMENT_TAB);
     }
 
     @Override

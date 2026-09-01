@@ -16,11 +16,9 @@
 
 package com.techsenger.shellfx.dialogs.alert;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
-import com.techsenger.shellfx.dialogs.DialogComponents;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.ERROR;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.INFO;
 import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.WARNING;
@@ -88,11 +86,6 @@ public class AlertDialogPresenter<V extends AlertDialogView> extends AbstractDia
         }
         this.messageIcon = messageIcon;
         getView().updateMessageIcon(messageIcon);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DialogComponents.ALERT_DIALOG);
     }
 
     @Override

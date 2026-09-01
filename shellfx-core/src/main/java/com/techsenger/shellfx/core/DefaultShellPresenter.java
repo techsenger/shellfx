@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.window.AbstractHostWindowPresenter;
 import com.techsenger.shellfx.core.window.WindowContainerPort;
 import java.util.function.Consumer;
@@ -63,11 +62,6 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractHostWind
     @Override
     protected ShellHistory getHistory() {
         return (ShellHistory) super.getHistory();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(CoreComponents.SHELL);
     }
 
     @Override

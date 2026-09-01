@@ -16,8 +16,6 @@
 
 package com.techsenger.shellfx.layout.pagehost;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
-import com.techsenger.shellfx.layout.LayoutComponents;
 import com.techsenger.shellfx.shared.find.AbstractFindBasePresenter;
 
 /**
@@ -41,10 +39,5 @@ public class FindPanelPresenter<V extends FindPanelView> extends AbstractFindBas
     @Override
     protected void onFindCleared() {
         pageHost.onFindCleared();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.PAGE_FIND_PANEL);
     }
 }

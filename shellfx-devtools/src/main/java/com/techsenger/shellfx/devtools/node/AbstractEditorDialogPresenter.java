@@ -16,11 +16,9 @@
 
 package com.techsenger.shellfx.devtools.node;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
@@ -66,11 +64,6 @@ public abstract class AbstractEditorDialogPresenter<V extends EditorDialogView> 
     @Override
     public boolean isPropertyUpdated() {
         return this.valueUpdated;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.EDITOR_DIALOG);
     }
 
     @Override

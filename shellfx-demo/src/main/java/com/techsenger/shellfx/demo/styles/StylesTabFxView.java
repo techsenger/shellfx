@@ -17,8 +17,6 @@
 package com.techsenger.shellfx.demo.styles;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.core.page.DefaultPageDescriptor;
 import com.techsenger.shellfx.core.page.PageDescriptor;
@@ -27,7 +25,6 @@ import com.techsenger.shellfx.core.page.PageFxView;
 import com.techsenger.shellfx.core.page.PageItem;
 import com.techsenger.shellfx.core.page.PageParams;
 import com.techsenger.shellfx.core.tab.AbstractTabFxView;
-import com.techsenger.shellfx.demo.DemoComponents;
 import com.techsenger.shellfx.devtools.stylesheet.StylesheetTabPresenter;
 import com.techsenger.shellfx.layout.pagehost.PageHostFxView;
 import com.techsenger.shellfx.layout.pagehost.PageHostParams;
@@ -60,22 +57,14 @@ public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?>
 
             private final String styleName;
 
-            private final ComponentName name;
-
-            SetPageFactory(String styleName, ComponentName name) {
+            SetPageFactory(String styleName) {
                 this.styleName = styleName;
-                this.name = name;
             }
 
             @Override
             public PageFxView<?> createAndInitialize(PageItem t) {
                 var view = new SetPageFxView(styleName);
-                var presenter = new SetPagePresenter(view, new PageParams(t)) {
-                    @Override
-                    protected ComponentDescriptor createDescriptor() {
-                        return new ComponentDescriptor(name);
-                    }
-                };
+                var presenter = new SetPagePresenter(view, new PageParams(t));
                 presenter.initialize();
                 return view;
             }
@@ -83,13 +72,10 @@ public class StylesTabFxView extends AbstractTabFxView<StylesheetTabPresenter<?>
 
         private final List<PageDescriptor> pages = List.of(
                 new DefaultPageDescriptor("Density Variants", new VariantPageFactory()),
-                new DefaultPageDescriptor("Default Set", new SetPageFactory(null, DemoComponents.SET_PAGE_1)),
-                new DefaultPageDescriptor("Medium Set",
-                        new SetPageFactory(StyleClasses.DENSITY_M, DemoComponents.SET_PAGE_2)),
-                new DefaultPageDescriptor("Small Set",
-                        new SetPageFactory(StyleClasses.DENSITY_S, DemoComponents.SET_PAGE_3)),
-                new DefaultPageDescriptor("Extra Small Set",
-                        new SetPageFactory(StyleClasses.DENSITY_XS, DemoComponents.SET_PAGE_4)));
+                new DefaultPageDescriptor("Default Set", new SetPageFactory(null)),
+                new DefaultPageDescriptor("Medium Set", new SetPageFactory(StyleClasses.DENSITY_M)),
+                new DefaultPageDescriptor("Small Set", new SetPageFactory(StyleClasses.DENSITY_S)),
+                new DefaultPageDescriptor("Extra Small Set", new SetPageFactory(StyleClasses.DENSITY_XS)));
 
         @Override
         public void compose() {

@@ -17,12 +17,10 @@
 package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
-import com.techsenger.shellfx.dialogs.DialogComponents;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
 import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
@@ -291,11 +289,6 @@ public class FileChooserDialogPresenter<V extends FileChooserDialogView<T>, T ex
         }
         this.locationCaption = locationCaption;
         getView().updateLocationCaption(locationCaption);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DialogComponents.FILE_CHOOSER_DIALOG);
     }
 
     @Override

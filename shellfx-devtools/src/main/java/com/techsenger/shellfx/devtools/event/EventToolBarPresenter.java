@@ -30,8 +30,6 @@ import com.techsenger.connectorfx.event.NodeVisibilityEvent;
 import com.techsenger.connectorfx.event.RootChangedEvent;
 import com.techsenger.connectorfx.event.WindowClosedEvent;
 import com.techsenger.connectorfx.event.WindowPropertiesEvent;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.ToolBarPresenter;
 import java.util.Map;
 import java.util.Objects;
@@ -113,11 +111,6 @@ public class EventToolBarPresenter<V extends EventToolBarView> extends ToolBarPr
         }
         this.statistics = text;
         getView().updateStatistics(text);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.EVENT_TOOL_BAR);
     }
 
     @Override

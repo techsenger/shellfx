@@ -21,13 +21,11 @@ import com.techsenger.connectorfx.event.ConnectorEvent;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.AddablePresenter;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.tab.AbstractTabPresenter;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
 import com.techsenger.shellfx.devtools.ToolBarAwarePort;
@@ -335,11 +333,6 @@ public class NodeTabPresenter<V extends NodeTabView> extends AbstractTabPresente
         setTitle("Nodes");
         setClosable(false);
         getView().applyReadOnlyByProperty(readOnlyByProperty);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.NODE_TAB);
     }
 
     protected DevToolsTabDockPort getTabDock() {

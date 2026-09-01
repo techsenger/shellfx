@@ -16,12 +16,10 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseAwarePresenter;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.area.AreaParams;
-import com.techsenger.shellfx.layout.LayoutComponents;
 import com.techsenger.shellfx.layout.tabhost.TabHostPresenter;
 import java.util.function.Consumer;
 
@@ -144,11 +142,6 @@ public class TabDockPresenter<V extends TabDockView> extends TabHostPresenter<V>
 
     protected void setMinimizedPosition(MinimizedPosition position) {
         this.minimizedPosition = position;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.TAB_DOCK);
     }
 
     protected void onMinimize() {

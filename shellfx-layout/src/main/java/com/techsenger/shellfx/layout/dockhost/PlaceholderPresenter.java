@@ -16,9 +16,7 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.area.AreaParams;
-import com.techsenger.shellfx.layout.LayoutComponents;
 
 /**
  * Placeholder is a temporary component inserted into the layout at the calculated drop position while the dock is
@@ -31,10 +29,5 @@ class PlaceholderPresenter extends TabDockPresenter<PlaceholderView> {
 
     PlaceholderPresenter(PlaceholderView view, AreaParams params) {
         super(view, params);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.PLACEHOLDER);
     }
 }

@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.devtools;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.shared.find.AbstractFindBasePresenter;
 import com.techsenger.shellfx.shared.find.FindNavigationAwarePort;
 import java.util.regex.Matcher;
@@ -103,11 +102,6 @@ public class ToolBarPresenter<V extends ToolBarView> extends AbstractFindBasePre
 
     protected void onRefresh() {
         this.toolBarAware.onRefresh();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.TOOL_BAR);
     }
 
     protected ToolBarAwarePort getToolBarAware() {

@@ -16,11 +16,9 @@
 
 package com.techsenger.shellfx.demo.shared;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.tab.AbstractTabPresenter;
 import com.techsenger.shellfx.core.tab.TabView;
-import com.techsenger.shellfx.demo.DemoComponents;
 import java.util.function.Consumer;
 
 /**
@@ -47,11 +45,6 @@ public class DockableTabPresenter extends AbstractTabPresenter<TabView> {
     }
 
 
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.DOCKABLE_TAB);
-    }
 
     @Override
     protected void postInitialize() {

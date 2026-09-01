@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo.ide;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.MenuAwarePort;
@@ -26,7 +25,6 @@ import com.techsenger.shellfx.core.popup.PopupContainerPresenter;
 import com.techsenger.shellfx.core.tab.AbstractTabPresenter;
 import com.techsenger.shellfx.core.tab.TabParams;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.demo.DemoComponents;
 import com.techsenger.shellfx.demo.dialogs.DemoResultButtons;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.material.icon.PlainFontIcon;
@@ -96,11 +94,6 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
         super.postInitialize();
         setTitle("Main Tab");
         setIcon(new PlainFontIcon(0xF04E9));
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.MAIN_TAB);
     }
 
     protected void onDialogOpen() {

@@ -18,7 +18,6 @@ package com.techsenger.shellfx.devtools;
 
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.SettingsSubscription;
 import com.techsenger.shellfx.core.settings.ShellSettings;
@@ -107,11 +106,6 @@ public class DevToolsTabDockPresenter<V extends DevToolsTabDockView>
             }
             default -> throw new AssertionError();
         }
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.TAB_DOCK);
     }
 
     protected void onSelect() {

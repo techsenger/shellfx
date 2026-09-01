@@ -16,10 +16,8 @@
 
 package com.techsenger.shellfx.demo.styles;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.page.AbstractPagePresenter;
 import com.techsenger.shellfx.core.page.PageParams;
-import com.techsenger.shellfx.demo.DemoComponents;
 
 /**
  *
@@ -30,10 +28,4 @@ public class VariantPagePresenter extends AbstractPagePresenter<VariantPageView>
     public VariantPagePresenter(VariantPageView view, PageParams params) {
         super(view, params);
     }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.VARIANT_PAGE);
-    }
-
 }

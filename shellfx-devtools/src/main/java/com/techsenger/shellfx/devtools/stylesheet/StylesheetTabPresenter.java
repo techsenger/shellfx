@@ -22,12 +22,10 @@ import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.MODAL;
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.POPUP;
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.STAGE;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.AddablePresenter;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.tab.AbstractTabPresenter;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
 import com.techsenger.shellfx.devtools.ElementUtils;
 import com.techsenger.shellfx.devtools.ToolBarAwarePort;
@@ -123,11 +121,6 @@ public class StylesheetTabPresenter<V extends StylesheetTabView> extends Abstrac
     @Override
     public void onAdded() {
         rebuildTree();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.STYLESHEET_TAB);
     }
 
     @Override

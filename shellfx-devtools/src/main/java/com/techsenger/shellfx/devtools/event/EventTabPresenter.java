@@ -19,12 +19,10 @@ package com.techsenger.shellfx.devtools.event;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.event.ConnectorEvent;
 import com.techsenger.connectorfx.event.ElementEvent;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.UiExecutor;
 import com.techsenger.shellfx.core.tab.AbstractTabPresenter;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.Selector;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -161,11 +159,6 @@ public class EventTabPresenter<V extends EventTabView> extends AbstractTabPresen
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.EVENT_TAB);
     }
 
     @Override

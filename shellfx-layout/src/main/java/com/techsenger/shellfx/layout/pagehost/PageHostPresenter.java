@@ -16,10 +16,8 @@
 
 package com.techsenger.shellfx.layout.pagehost;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.page.PageContainerPresenter;
 import com.techsenger.shellfx.core.page.PageItem;
-import com.techsenger.shellfx.layout.LayoutComponents;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -107,11 +105,6 @@ public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostP
 
         getView().refreshMenu(items);
         getView().selectPage(this.items.indexOf(item)); // just to select item in the menu
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.PAGE_HOST);
     }
 
     protected List<PageItem> getItems() {

@@ -17,9 +17,7 @@
 package com.techsenger.shellfx.demo.menu.file;
 
 import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.core.window.WindowContainerFxView;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockFxView;
 import com.techsenger.shellfx.devtools.DevToolsTabDockParams;
@@ -30,6 +28,7 @@ import com.techsenger.shellfx.devtools.DevToolsWindowPresenter;
 import com.techsenger.shellfx.layout.dockhost.DockHostFxView;
 import com.techsenger.shellfx.layout.dockhost.UtilityDockContainerFxView;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
+import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import javafx.geometry.Side;
 
@@ -53,7 +52,7 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>,
                     var iterator = tab.getComposer().depthFirstIterator();
                     boolean devToolsPresent = false;
                     while (iterator.hasNext()) {
-                        if (iterator.next().getDescriptor().getName() == DevToolsComponents.TAB_DOCK) {
+                        if (iterator.next() instanceof DevToolsTabDockFxView<?>) {
                             devToolsPresent = true;
                             break;
                         }

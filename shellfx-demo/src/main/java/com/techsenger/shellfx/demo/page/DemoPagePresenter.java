@@ -24,7 +24,7 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public abstract class DemoPagePresenter extends AbstractPagePresenter<DemoPageView> {
+public class DemoPagePresenter extends AbstractPagePresenter<DemoPageView> {
 
     private String text;
 

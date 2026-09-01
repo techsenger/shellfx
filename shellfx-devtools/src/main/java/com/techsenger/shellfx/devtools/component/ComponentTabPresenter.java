@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.devtools.component;
 
 import com.techsenger.connectorfx.scenegraph.Element;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.patternfx.mvp.ParentView;
 import com.techsenger.patternfx.mvp.Presenter;
 import com.techsenger.patternfx.mvp.View;
@@ -27,7 +26,6 @@ import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.AbstractTabPresenter;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
 import com.techsenger.shellfx.devtools.ToolBarAwarePort;
@@ -340,11 +338,6 @@ public class ComponentTabPresenter<V extends ComponentTabView> extends AbstractT
                 getView().selectRootComponent();
             }
         });
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.COMPONENT_TAB);
     }
 
     protected void onComponentSelected(ComponentItem component, Class<? extends View> fxViewClass,

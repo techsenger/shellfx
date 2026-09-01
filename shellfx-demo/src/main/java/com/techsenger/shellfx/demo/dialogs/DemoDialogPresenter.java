@@ -16,12 +16,10 @@
 
 package com.techsenger.shellfx.demo.dialogs;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.demo.DemoComponents;
 import java.util.function.Consumer;
 
 /**
@@ -42,11 +40,6 @@ public class DemoDialogPresenter extends AbstractDialogPresenter<DemoDialogView>
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.DEMO_DIALOG);
     }
 
     @Override

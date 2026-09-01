@@ -16,12 +16,10 @@
 
 package com.techsenger.shellfx.demo.settings;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
-import com.techsenger.shellfx.demo.DemoComponents;
 import com.techsenger.shellfx.material.icon.PlainFontIcon;
 import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.theme.Theme;
@@ -46,11 +44,6 @@ public class SettingsDialogPresenter extends AbstractDialogPresenter<SettingsDia
     public SettingsDialogPresenter(SettingsDialogView view, SettingsDialogParams params) {
         super(view, params);
         this.settings = params.getSettings();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.SETTINGS_DIALOG);
     }
 
     @Override

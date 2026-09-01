@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo.styles;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.page.AbstractPagePresenter;
 import com.techsenger.shellfx.core.page.PageParams;
 
@@ -28,10 +27,5 @@ public class SetPagePresenter extends AbstractPagePresenter<SetPageView> {
 
     public SetPagePresenter(SetPageView view, PageParams params) {
         super(view, params);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

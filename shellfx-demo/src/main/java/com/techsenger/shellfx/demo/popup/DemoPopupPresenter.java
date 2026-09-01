@@ -16,12 +16,10 @@
 
 package com.techsenger.shellfx.demo.popup;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.popup.AbstractPopupPresenter;
 import com.techsenger.shellfx.core.popup.PopupParams;
-import com.techsenger.shellfx.demo.DemoComponents;
 import java.util.function.Consumer;
 
 /**
@@ -32,11 +30,6 @@ public class DemoPopupPresenter extends AbstractPopupPresenter<DemoPopupView> {
 
     public DemoPopupPresenter(DemoPopupView view, PopupParams params) {
         super(view, params);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.DEMO_POPUP);
     }
 
     @Override

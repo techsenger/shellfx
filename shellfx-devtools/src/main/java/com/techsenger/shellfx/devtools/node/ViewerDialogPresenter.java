@@ -17,11 +17,9 @@
 package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.connectorfx.scenegraph.Element;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
-import com.techsenger.shellfx.devtools.DevToolsComponents;
 import com.techsenger.shellfx.devtools.UrlUtils;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import java.util.function.Consumer;
@@ -81,11 +79,6 @@ public class ViewerDialogPresenter<V extends ViewerDialogView>  extends Abstract
 
     public String getState() {
         return item.getAttribute().valueState().name();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DevToolsComponents.VIEWER_DIALOG);
     }
 
     @Override

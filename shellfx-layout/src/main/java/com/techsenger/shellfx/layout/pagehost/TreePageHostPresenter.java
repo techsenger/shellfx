@@ -17,10 +17,8 @@
 package com.techsenger.shellfx.layout.pagehost;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.page.TreePageContainerPresenter;
 import com.techsenger.shellfx.core.page.TreePageItem;
-import com.techsenger.shellfx.layout.LayoutComponents;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -177,11 +175,6 @@ public class TreePageHostPresenter<V extends TreePageHostView> extends AbstractP
 
         getView().updateMenu(rootItem, showRoot);
         getView().selectPage(pageItem); // just to select item in the menu
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.TREE_PAGE_HOST);
     }
 
     @Override

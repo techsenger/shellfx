@@ -16,9 +16,7 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.area.AbstractAreaPresenter;
-import com.techsenger.shellfx.layout.LayoutComponents;
 import java.util.Arrays;
 
 /**
@@ -38,11 +36,6 @@ public class DockHostPresenter<V extends DockHostView> extends AbstractAreaPrese
     @Override
     protected DockHostHistory getHistory() {
         return (DockHostHistory) super.getHistory();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.DOCK_HOST);
     }
 
     protected void onCenterWidthChanged(double width) {

@@ -16,9 +16,7 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.area.AbstractAreaPresenter;
-import com.techsenger.shellfx.layout.LayoutComponents;
 import javafx.geometry.Side;
 import static javafx.geometry.Side.BOTTOM;
 import static javafx.geometry.Side.LEFT;
@@ -115,11 +113,6 @@ public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPrese
         }
         super.setHeight(height);
         getView().updateHeight(height);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.TAB_POPUP);
     }
 
     boolean isClosing() {

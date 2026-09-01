@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.demo.page;
 
-import com.techsenger.patternfx.core.ComponentName;
+import com.techsenger.patternfx.core.DefaultComponentName;
 import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.page.DefaultPageDescriptor;
 import com.techsenger.shellfx.core.page.DefaultTreePageDescriptor;
@@ -26,7 +26,6 @@ import com.techsenger.shellfx.core.page.PageFxView;
 import com.techsenger.shellfx.core.page.PageItem;
 import com.techsenger.shellfx.core.page.PageParams;
 import com.techsenger.shellfx.core.page.TreePageDescriptor;
-import com.techsenger.shellfx.demo.DemoComponents;
 import com.techsenger.shellfx.material.style.Spacing;
 import java.util.List;
 import javafx.geometry.Insets;
@@ -45,11 +44,8 @@ final class MenuFactory {
 
         private final PageHostParent pageHostParent;
 
-        private final ComponentName name;
-
-        PageFactoryImpl(PageHostParent pageHostParent, ComponentName name) {
+        PageFactoryImpl(PageHostParent pageHostParent) {
             this.pageHostParent = pageHostParent;
-            this.name = name;
         }
 
         @Override
@@ -65,7 +61,7 @@ final class MenuFactory {
             var presenter = new DemoPagePresenter(view, params) {
                 @Override
                 protected ComponentDescriptor createDescriptor() {
-                    return new ComponentDescriptor(name);
+                    return new ComponentDescriptor(new DefaultComponentName(item.getText()));
                 }
             };
             presenter.initialize();
@@ -75,30 +71,30 @@ final class MenuFactory {
 
     static List<PageDescriptor> createMenu(PageHostParent parentType) {
         return List.of(
-                new DefaultPageDescriptor("Page 0", new PageFactoryImpl(parentType, DemoComponents.PAGE_0)),
-                new DefaultPageDescriptor("Page 1", new PageFactoryImpl(parentType, DemoComponents.PAGE_1)),
-                new DefaultPageDescriptor("Page 2", new PageFactoryImpl(parentType, DemoComponents.PAGE_2)),
-                new DefaultPageDescriptor("Page 3", new PageFactoryImpl(parentType, DemoComponents.PAGE_3)),
-                new DefaultPageDescriptor("Page 4", new PageFactoryImpl(parentType, DemoComponents.PAGE_4)),
-                new DefaultPageDescriptor("Page 5", new PageFactoryImpl(parentType, DemoComponents.PAGE_5))
+                new DefaultPageDescriptor("Page 0", new PageFactoryImpl(parentType)),
+                new DefaultPageDescriptor("Page 1", new PageFactoryImpl(parentType)),
+                new DefaultPageDescriptor("Page 2", new PageFactoryImpl(parentType)),
+                new DefaultPageDescriptor("Page 3", new PageFactoryImpl(parentType)),
+                new DefaultPageDescriptor("Page 4", new PageFactoryImpl(parentType)),
+                new DefaultPageDescriptor("Page 5", new PageFactoryImpl(parentType))
         );
     }
 
     static TreePageDescriptor createTreeMenu(PageHostParent parentType) {
         var root = new DefaultTreePageDescriptor();
-        var item0 = new DefaultTreePageDescriptor("Page 0", new PageFactoryImpl(parentType, DemoComponents.PAGE_0));
+        var item0 = new DefaultTreePageDescriptor("Page 0", new PageFactoryImpl(parentType));
         root.addChild(item0);
-        var item1 = new DefaultTreePageDescriptor("Page 1", new PageFactoryImpl(parentType, DemoComponents.PAGE_1));
+        var item1 = new DefaultTreePageDescriptor("Page 1", new PageFactoryImpl(parentType));
         item0.addChild(item1);
-        var item2 = new DefaultTreePageDescriptor("Page 2", new PageFactoryImpl(parentType, DemoComponents.PAGE_2));
+        var item2 = new DefaultTreePageDescriptor("Page 2", new PageFactoryImpl(parentType));
         item1.addChild(item2);
 
-        var item3 = new DefaultTreePageDescriptor("Page 3", new PageFactoryImpl(parentType, DemoComponents.PAGE_3));
+        var item3 = new DefaultTreePageDescriptor("Page 3", new PageFactoryImpl(parentType));
         root.addChild(item3);
-        var item4 = new DefaultTreePageDescriptor("Page 4", new PageFactoryImpl(parentType, DemoComponents.PAGE_4));
+        var item4 = new DefaultTreePageDescriptor("Page 4", new PageFactoryImpl(parentType));
         item3.addChild(item4);
 
-        var item5 = new DefaultTreePageDescriptor("Page 5", new PageFactoryImpl(parentType, DemoComponents.PAGE_5));
+        var item5 = new DefaultTreePageDescriptor("Page 5", new PageFactoryImpl(parentType));
         root.addChild(item5);
         return root;
     }

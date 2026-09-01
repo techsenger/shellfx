@@ -16,14 +16,12 @@
 
 package com.techsenger.shellfx.demo.browser;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.MenuAwarePort;
 import com.techsenger.shellfx.core.area.AbstractAreaPresenter;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.demo.DemoComponents;
 import com.techsenger.shellfx.demo.dialogs.DemoResultButtons;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 
@@ -60,11 +58,6 @@ public class MenuAwareAreaPresenter extends AbstractAreaPresenter<MenuAwareAreaV
     @Override
     public boolean isBarDisabled() {
         return barDisabled;
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.MENU_AWARE_AREA);
     }
 
     protected void onFooDisabledSelected(boolean value) {

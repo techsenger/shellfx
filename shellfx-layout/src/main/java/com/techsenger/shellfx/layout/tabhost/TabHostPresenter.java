@@ -16,12 +16,10 @@
 
 package com.techsenger.shellfx.layout.tabhost;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.area.AbstractAreaPresenter;
 import com.techsenger.shellfx.core.area.AreaParams;
 import com.techsenger.shellfx.core.tab.TabContainerPresenter;
 import com.techsenger.shellfx.core.tab.TabPort;
-import com.techsenger.shellfx.layout.LayoutComponents;
 import java.util.List;
 
 /**
@@ -77,11 +75,6 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
     @Override
     public void selectTab(int tabIndex) {
         getView().selectTab(tabIndex);
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.TAB_HOST);
     }
 
     protected void onTabCountChanged(int tabCount) {

@@ -16,9 +16,7 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.area.AbstractAreaPresenter;
-import com.techsenger.shellfx.layout.LayoutComponents;
 import javafx.geometry.Side;
 
 /**
@@ -46,10 +44,5 @@ public class SideBarPresenter<V extends SideBarView> extends AbstractAreaPresent
     @Override
     public ViewAccess getViewAccess() {
         return getView();
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(LayoutComponents.SIDE_BAR);
     }
 }

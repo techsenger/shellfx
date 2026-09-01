@@ -16,11 +16,9 @@
 
 package com.techsenger.shellfx.demo.page;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogPresenter;
-import com.techsenger.shellfx.demo.DemoComponents;
 import java.util.function.Consumer;
 
 /**
@@ -32,11 +30,6 @@ public class PageDialogPresenter extends AbstractDialogPresenter<PageDialogView>
     public PageDialogPresenter(PageDialogView view, PageDialogParams params) {
         super(view, params);
         getView().getComposer().setMenuType(params.getMenuType());
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.PAGE_DIALOG);
     }
 
     @Override

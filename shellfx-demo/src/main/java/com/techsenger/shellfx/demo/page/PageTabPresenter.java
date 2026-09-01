@@ -16,11 +16,9 @@
 
 package com.techsenger.shellfx.demo.page;
 
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
 import com.techsenger.shellfx.core.CloseCheckResult;
 import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.tab.AbstractTabPresenter;
-import com.techsenger.shellfx.demo.DemoComponents;
 import java.util.function.Consumer;
 
 /**
@@ -32,11 +30,6 @@ public class PageTabPresenter extends AbstractTabPresenter<PageTabView> {
     public PageTabPresenter(PageTabView view, PageTabParams params) {
         super(view, params);
         getView().getComposer().setMenuType(params.getMenuType());
-    }
-
-    @Override
-    protected ComponentDescriptor createDescriptor() {
-        return new ComponentDescriptor(DemoComponents.PAGE_TAB);
     }
 
     @Override
