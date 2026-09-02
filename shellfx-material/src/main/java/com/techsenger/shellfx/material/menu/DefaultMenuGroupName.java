@@ -16,16 +16,25 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.patternfx.core.AbstractName;
+import com.techsenger.patternfx.core.AbstractIdentityName;
+import com.techsenger.patternfx.mvp.ParentFxView;
 
 /**
  *
+ * @param <V> the view type of the component this group belongs to
  * @author Pavel Castornii
  */
-public class DefaultMenuGroupName extends AbstractName implements MenuGroupName {
+public class DefaultMenuGroupName<V extends ParentFxView<?>> extends AbstractIdentityName implements MenuGroupName<V> {
 
-    public DefaultMenuGroupName(String text) {
+    private final Class<?> componentClass;
+
+    public DefaultMenuGroupName(Class<?> componentClass, String text) {
         super(text);
+        this.componentClass = componentClass;
     }
 
+    @Override
+    public Class<?> getComponentClass() {
+        return componentClass;
+    }
 }

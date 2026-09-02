@@ -29,25 +29,25 @@ import javafx.scene.control.MenuItem;
  */
 public class ManagedMenu extends Menu implements Named, ManagedItem {
 
-    private final MenuName name;
+    private final MenuName<?> name;
     private final ManagedItemSupport support;
 
-    public ManagedMenu(MenuName name, String text, int position) {
+    public ManagedMenu(MenuName<?> name, String text, int position) {
         this(name, text, null, position, null);
     }
 
-    public ManagedMenu(MenuName name, String text, Node node, int position) {
+    public ManagedMenu(MenuName<?> name, String text, Node node, int position) {
         this(name, text, node, position, null);
     }
 
-    public ManagedMenu(MenuName name, String text, Node node, int position, MenuItem... mis) {
+    public ManagedMenu(MenuName<?> name, String text, Node node, int position, MenuItem... mis) {
         super(text, node, mis);
         this.name = name;
         this.support = new ManagedItemSupport(position);
     }
 
     @Override
-    public MenuName getName() {
+    public MenuName<?> getName() {
         return name;
     }
 

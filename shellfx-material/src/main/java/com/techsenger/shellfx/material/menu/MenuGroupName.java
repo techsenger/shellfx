@@ -17,11 +17,20 @@
 package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.mvp.ParentFxView;
 
 /**
+ * {@code V} is the view type a {@link com.techsenger.shellfx.core.registry.ControlFactory} registering a menu or
+ * an item into this group is invoked with, so a mismatched factory is rejected at compile time.
  *
+ * @param <V> the view type of the component this group belongs to
  * @author Pavel Castornii
  */
-public interface MenuGroupName extends Name {
+public interface MenuGroupName<V extends ParentFxView<?>> extends Name {
 
+    /**
+     * Returns the view class registrations targeting this group are filed under, and that a component's own class
+     * (plus its ancestors and interfaces) is matched against when its applicable controls are resolved.
+     */
+    Class<?> getComponentClass();
 }

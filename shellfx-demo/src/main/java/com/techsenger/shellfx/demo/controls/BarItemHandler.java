@@ -14,35 +14,36 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.menu.file;
+package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.demo.dialogs.DialogsDialogFxView;
-import com.techsenger.shellfx.demo.dialogs.DialogsDialogParams;
-import com.techsenger.shellfx.demo.dialogs.DialogsDialogPresenter;
+import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DialogsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class BarItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
 
-    public DialogsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public BarItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
     @Override
-    public void onAction() {
-        var shellV = getComponent();
-        var shellP = shellV.getPresenter();
-        var dialogView = new DialogsDialogFxView();
-        var dialogParams = new DialogsDialogParams(
-                shellP.getContext().getSettings().getAppearance(),
-                shellP.getContext().getHistoryManager());
-        var dialogPresenter = new DialogsDialogPresenter(dialogView, dialogParams);
-        dialogPresenter.initialize();
-        shellV.getComposer().addDialog(dialogView);
+    public void onUpdate() {
+        super.onUpdate();
+        var menuAware = getComponent().getComposer().getMenuAware();
+        if (menuAware.getPresenter() instanceof DemoMenuAwarePort port) {
+            getItem().setVisible(port.isBarIncluded());
+            getItem().setDisable(port.isBarDisabled());
+        }
     }
+
+    @Override
+    public void onAction() {
+        System.out.println("Bar Item");
+    }
+
 }

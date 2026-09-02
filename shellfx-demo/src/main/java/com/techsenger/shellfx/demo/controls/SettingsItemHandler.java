@@ -14,25 +14,34 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.menu.file;
+package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
+import com.techsenger.shellfx.core.window.WindowType;
+import com.techsenger.shellfx.demo.settings.SettingsDialogFxView;
+import com.techsenger.shellfx.demo.settings.SettingsDialogParams;
+import com.techsenger.shellfx.demo.settings.SettingsDialogPresenter;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ExitItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class SettingsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
 
-    public ExitItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public SettingsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
     @Override
     public void onAction() {
-        getComponent().getPresenter().closeSafely();
+        var shell = getComponent();
+        var appearance = shell.getPresenter().getContext().getSettings().getAppearance();
+        var view = new SettingsDialogFxView();
+        var params = new SettingsDialogParams(WindowType.NESTED, appearance);
+        var presenter = new SettingsDialogPresenter(view, params);
+        presenter.initialize();
+        shell.getComposer().addDialog(view);
     }
-
 }

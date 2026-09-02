@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.menu.window;
+package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.material.menu.DefaultMenuGroupName;
-import com.techsenger.shellfx.material.menu.DefaultMenuName;
-import com.techsenger.shellfx.material.menu.MenuGroupName;
-import com.techsenger.shellfx.material.menu.MenuName;
+import com.techsenger.shellfx.core.ShellFxView;
+import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
+import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public final class WindowMenu {
+public class ExitItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
 
-    public static final MenuName NAME = new DefaultMenuName();
-
-    public static final MenuGroupName DEFAULT_GROUP = new DefaultMenuGroupName("Default");
-
-    public static final MenuGroupName ARRANGE_GROUP = new DefaultMenuGroupName("Arrangement");
-
-    private WindowMenu() {
-        // empty
+    public ExitItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+        super(component, item);
     }
+
+    @Override
+    public void onAction() {
+        getComponent().getPresenter().closeSafely();
+    }
+
 }

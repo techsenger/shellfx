@@ -26,14 +26,14 @@ import com.techsenger.shellfx.material.menu.ManagedMenu;
  */
 class MenuRegistration<T extends ParentFxView<?>> extends AbstractMenuRegistration<T, ManagedMenu> {
 
-    private final MenuGroupName groupName;
+    private final MenuGroupName<?> groupName;
 
-    MenuRegistration(MenuGroupName groupKey, ControlFactory<T, ManagedMenu> factory) {
+    MenuRegistration(MenuGroupName<?> groupKey, ControlFactory<T, ManagedMenu> factory) {
         super(MenuElementType.MENU, factory);
         this.groupName = groupKey;
     }
 
-    public MenuGroupName getGroupName() {
+    public MenuGroupName<?> getGroupName() {
         return groupName;
     }
 }

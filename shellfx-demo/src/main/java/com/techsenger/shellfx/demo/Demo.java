@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.demo;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.patternfx.core.DefaultComponentName;
 import com.techsenger.shellfx.core.DefaultShellContext;
 import com.techsenger.shellfx.core.DefaultShellFxView;
 import com.techsenger.shellfx.core.DefaultShellParams;
@@ -25,10 +24,8 @@ import com.techsenger.shellfx.core.DefaultShellPresenter;
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.core.area.AreaFxView;
 import com.techsenger.shellfx.core.registry.ControlRegistry;
+import com.techsenger.shellfx.demo.controls.ModuleControlRegistrar;
 import com.techsenger.shellfx.demo.history.DemoHistoryManager;
-import com.techsenger.shellfx.demo.menu.extra.ExtraMenuRegistrar;
-import com.techsenger.shellfx.demo.menu.file.FileMenuRegistrar;
-import com.techsenger.shellfx.demo.menu.window.WindowMenuRegistrar;
 import com.techsenger.shellfx.demo.settings.DemoSettings;
 import com.techsenger.shellfx.demo.styles.StylesTabFxView;
 import com.techsenger.shellfx.demo.styles.StylesTabPresenter;
@@ -38,7 +35,6 @@ import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
 import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
 import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
 import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.material.menu.DefaultMenuGroupName;
 import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
@@ -110,9 +106,8 @@ public class Demo extends Application {
         IconStylesheets.addAll(IconStylesheetFactory.forAll());
 
         // creating component
-        var controlRegistry = new ControlRegistry(new DefaultComponentName("!"),
-                new DefaultMenuGroupName("MainMenuGroup"));
-        var shellView = new DefaultShellFxView<>(this, null, controlRegistry) {
+        var controlRegistry = new ControlRegistry();
+        var shellView = new DefaultShellFxView<>(this, null, ShellControls.MAIN_MENU_GROUP, controlRegistry) {
             @Override
             protected void build() {
                 super.build();
@@ -163,21 +158,9 @@ public class Demo extends Application {
             shellView.getComposer().addWorkspace(workspace);
         }
 
-        // adding menu
-        if (appType != ApplicationType.STYLES_ONLY) {
-            var fmr = new FileMenuRegistrar(controlRegistry, appType, shellView);
-            fmr.register();
-        }
-
-        if (appType == ApplicationType.BROWSER || appType == ApplicationType.IDE) {
-            var dmr = new ExtraMenuRegistrar(controlRegistry);
-            dmr.register();
-        }
-
-        if (appType == ApplicationType.MDI) {
-            var wmr = new WindowMenuRegistrar(controlRegistry, shellView);
-            wmr.register();
-        }
+        // adding menu; register() itself is a no-op for STYLES_ONLY, since no branch there matches it
+        var registrar = new ModuleControlRegistrar(appType, shellView);
+        registrar.register();
 
         shellView.upgradeMenuBar();
         shellView.getStage().show();

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.menu.extra;
+package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;

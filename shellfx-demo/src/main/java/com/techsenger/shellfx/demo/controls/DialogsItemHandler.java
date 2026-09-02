@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.menu.file;
+package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellFxView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.demo.settings.SettingsDialogFxView;
-import com.techsenger.shellfx.demo.settings.SettingsDialogParams;
-import com.techsenger.shellfx.demo.settings.SettingsDialogPresenter;
+import com.techsenger.shellfx.demo.dialogs.DialogsDialogFxView;
+import com.techsenger.shellfx.demo.dialogs.DialogsDialogParams;
+import com.techsenger.shellfx.demo.dialogs.DialogsDialogPresenter;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class SettingsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class DialogsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
 
-    public SettingsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public DialogsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
     @Override
     public void onAction() {
-        var shell = getComponent();
-        var appearance = shell.getPresenter().getContext().getSettings().getAppearance();
-        var view = new SettingsDialogFxView();
-        var params = new SettingsDialogParams(WindowType.NESTED, appearance);
-        var presenter = new SettingsDialogPresenter(view, params);
-        presenter.initialize();
-        shell.getComposer().addDialog(view);
+        var shellV = getComponent();
+        var shellP = shellV.getPresenter();
+        var dialogView = new DialogsDialogFxView();
+        var dialogParams = new DialogsDialogParams(
+                shellP.getContext().getSettings().getAppearance(),
+                shellP.getContext().getHistoryManager());
+        var dialogPresenter = new DialogsDialogPresenter(dialogView, dialogParams);
+        dialogPresenter.initialize();
+        shellV.getComposer().addDialog(dialogView);
     }
 }

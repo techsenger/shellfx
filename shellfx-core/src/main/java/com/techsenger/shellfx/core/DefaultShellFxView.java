@@ -24,6 +24,7 @@ import com.techsenger.shellfx.core.registry.ControlBuilder;
 import com.techsenger.shellfx.core.registry.ControlRegistry;
 import com.techsenger.shellfx.core.window.AbstractHostWindowFxView;
 import com.techsenger.shellfx.material.menu.MenuBarManager;
+import com.techsenger.shellfx.material.menu.MenuGroupName;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import java.util.List;
 import java.util.Objects;
@@ -156,18 +157,22 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
 
     private final MenuBarManager menuBarManager;
 
+    private final MenuGroupName<?> menuBarGroup;
+
     private final ControlRegistry controlRegistry;
 
-    public DefaultShellFxView(Application application, List<Stylesheet> stylesheets, ControlRegistry controlRegistry) {
-        this(application, new Stage(), stylesheets, controlRegistry);
+    public DefaultShellFxView(Application application, List<Stylesheet> stylesheets,
+            MenuGroupName<?> menuBarGroup, ControlRegistry controlRegistry) {
+        this(application, new Stage(), stylesheets, menuBarGroup, controlRegistry);
     }
 
     public DefaultShellFxView(Application application, Stage stage, List<Stylesheet> stylesheets,
-            ControlRegistry controlRegistry) {
+            MenuGroupName<?> menuBarGroup, ControlRegistry controlRegistry) {
         super(stage, stylesheets);
         Objects.requireNonNull(application, "Application can't be null");
         this.application = application;
         this.menuBarManager = new MenuBarManager(this.menuBar);
+        this.menuBarGroup = menuBarGroup;
         this.controlRegistry = controlRegistry;
     }
 
@@ -188,7 +193,7 @@ public class DefaultShellFxView<P extends DefaultShellPresenter<?>>
     public void upgradeMenuBar() {
         this.menuBar.getMenus().clear();
         var builder = new ControlBuilder(controlRegistry);
-        var menus = builder.buildBarMenus(this);
+        var menus = builder.buildMenus(menuBarGroup, this);
         this.menuBar.getMenus().addAll(menus);
         logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());
         updateMenuBar();

@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.core.ComponentName;
 import com.techsenger.patternfx.mvp.ParentFxView;
 import com.techsenger.shellfx.material.menu.ContextMenuHandler;
 import com.techsenger.shellfx.material.menu.ManagedContextMenu;
@@ -47,11 +46,11 @@ public class ControlBuilder {
 
     private static class MenuDescriptor {
 
-        private final MenuGroupName groupName;
+        private final MenuGroupName<?> groupName;
 
         private final ManagedMenu menu;
 
-        MenuDescriptor(MenuGroupName groupName, ManagedMenu menu) {
+        MenuDescriptor(MenuGroupName<?> groupName, ManagedMenu menu) {
             this.groupName = groupName;
             this.menu = menu;
         }
@@ -59,11 +58,11 @@ public class ControlBuilder {
 
     private static class GroupDescriptor {
 
-        private final MenuName menuName;
+        private final MenuName<?> menuName;
 
         private final ManagedMenuGroup group;
 
-        GroupDescriptor(MenuName menuName, ManagedMenuGroup group) {
+        GroupDescriptor(MenuName<?> menuName, ManagedMenuGroup group) {
             this.menuName = menuName;
             this.group = group;
         }
@@ -71,11 +70,11 @@ public class ControlBuilder {
 
     private static final class BuildContext {
 
-        private final Map<MenuName, MenuDescriptor> menusByName = new HashMap<>();
+        private final Map<MenuName<?>, MenuDescriptor> menusByName = new HashMap<>();
 
-        private final Map<MenuGroupName, GroupDescriptor> groupsByName = new HashMap<>();
+        private final Map<MenuGroupName<?>, GroupDescriptor> groupsByName = new HashMap<>();
 
-        private final Map<MenuGroupName, Set<MenuItem>> itemsByGroup = new HashMap<>();
+        private final Map<MenuGroupName<?>, Set<MenuItem>> itemsByGroup = new HashMap<>();
     }
 
     private final ControlRegistry registry;
@@ -85,26 +84,25 @@ public class ControlBuilder {
     }
 
     /**
-     * Builds the list of top-level menus for the application main menu. Only menus registered under
-     * {@link ControlRegistry#getMainMenuGroup()} are included as top-level entries. Empty menus are removed
-     * from the result.
+     * Builds every menu registered directly under {@code topLevelGroup} — typically the root group of one
+     * {@code MenuBar}, though nothing here depends on that; a program with several menu bars calls this once per
+     * bar, with each bar's own group. Empty menus are removed from the result.
      *
-     * @param shell the shell view passed to each control factory
-     * @return a sorted list of top-level {@link Menu} instances ready to be added to the main {@code MenuBar}
+     * @param topLevelGroup the group whose menus are built
+     * @param view          the component view passed to each control factory; its class (and ancestors/interfaces)
+     *     determines which registrations apply, see {@link ControlRegistry#getRegistrationsFor(Object)}
+     * @return a sorted list of the built {@link Menu} instances
      */
-    public List<Menu> buildBarMenus(ParentFxView<?> view) {
-        var registrations = registry.getMenuRegistrations().get(registry.getMainComponentName());
-        if (registrations == null) {
-            return List.of();
-        }
+    public List<Menu> buildMenus(MenuGroupName<?> topLevelGroup, ParentFxView<?> view) {
+        var registrations = registry.getRegistrationsFor(view);
         var ctx = new BuildContext();
         buildElements(view, new ArrayList<>(registrations), ctx);
         List<ManagedMenu> topMenus = new ArrayList<>();
-        Map<MenuName, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
+        Map<MenuName<?>, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
         // Distribute menus — top-level ones go to the result list, nested ones are added to their parent group
         for (var entry : ctx.menusByName.entrySet()) {
             var descriptor = entry.getValue();
-            if (descriptor.groupName == registry.getMainMenuGroup()) {
+            if (descriptor.groupName == topLevelGroup) {
                 topMenus.add(descriptor.menu);
             } else {
                 var groupDescriptor = ctx.groupsByName.get(descriptor.groupName);
@@ -122,27 +120,24 @@ public class ControlBuilder {
     }
 
     /**
-     * Builds a single {@link Menu} for the given component and menu name. All groups and items registered under
-     * the specified component are assembled into the menu. Empty menus are removed from the result.
+     * Builds a single {@link Menu} for the given component and menu name. All groups and items applicable to
+     * {@code view}'s class (see {@link ControlRegistry#getRegistrationsFor(Object)}) are assembled into the menu.
+     * Empty menus are removed from the result.
      *
-     * @param view          the component view passed to each control factory
-     * @param componentName the name of the component that owns the menu registrations
-     * @param menuName      the name of the menu to build
+     * @param menuName the name of the menu to build
+     * @param view     the component view passed to each control factory
      * @return the assembled {@link Menu}, or {@code null} if no registration exists for the given component and
      *         menu name
      */
-    public @Nullable Menu buildMenu(ParentFxView<?> view, ComponentName componentName, MenuName menuName) {
-        var registrations = registry.getMenuRegistrations().get(componentName);
-        if (registrations == null) {
-            return null;
-        }
+    public @Nullable Menu buildMenu(MenuName<?> menuName, ParentFxView<?> view) {
+        var registrations = registry.getRegistrationsFor(view);
         var ctx = new BuildContext();
         buildElements(view, new ArrayList<>(registrations), ctx);
         var menuDescriptor = ctx.menusByName.get(menuName);
         if (menuDescriptor == null) {
             return null;
         }
-        Map<MenuName, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
+        Map<MenuName<?>, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
         for (var entry : ctx.menusByName.entrySet()) {
             var descriptor = entry.getValue();
             if (descriptor.groupName != null) {
@@ -168,14 +163,12 @@ public class ControlBuilder {
      * {@link ContextMenuHandler} to the returned menu (before showing it) if whether to show the popup at all
      * depends on something other than which items it ended up with.
      *
-     * @param view          the component view passed to each control factory
-     * @param componentName the name of the component that owns the menu registrations
-     * @param menuName      the name of the menu to build
+     * @param menuName the name of the menu to build
+     * @param view     the component view passed to each control factory
      * @return the assembled menu, or {@code null} if no registration exists or it ended up empty
      */
-    public @Nullable ManagedContextMenu buildContextMenu(ParentFxView<?> view, ComponentName componentName,
-            MenuName menuName) {
-        var menu = buildMenu(view, componentName, menuName);
+    public @Nullable ManagedContextMenu buildContextMenu(MenuName<?> menuName, ParentFxView<?> view) {
+        var menu = buildMenu(menuName, view);
         if (menu == null) {
             return null;
         }
@@ -225,7 +218,7 @@ public class ControlBuilder {
      * @param menusAndGroups a map from menu name to its menu instance and the list of groups that belong to it
      */
     private void assembleMenus(BuildContext ctx,
-            Map<MenuName, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups) {
+            Map<MenuName<?>, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups) {
         // Assign items to their groups
         for (var entry : ctx.itemsByGroup.entrySet()) {
             var groupDescriptor = ctx.groupsByName.get(entry.getKey());

@@ -579,20 +579,32 @@ registrations may occur in any order.
 ### Control Registry <a name="registries-control"></a>
 
 `ControlRegistry` stores UI control contributions — menus, menu groups, and menu items — as `ControlFactory`
-instances, keyed by the component they are registered under. Registrations can be added or removed at any time and
-in any order, which is what makes the registry safe to use with dynamically loaded plugins. A `ControlFactory` is not
-invoked eagerly; it only runs once its contribution actually needs to be materialized. Shell's main menu is one
-particular consumer of this mechanism: `ControlRegistry#mainMenu()` is a convenience view scoped to the component and
-group Shell treats as its main menu, but it is only sugar over the general
-`ControlRegistry#component(ComponentName)` API — nothing prevents registering directly against that API instead.
+instances, keyed by the target component's own view class rather than by any per-component identity. A `MenuName<V>`/
+`MenuGroupName<V>` carries both a compile-time view type `V` — checked against the registered `ControlFactory<V, ?>`
+so a factory built for the wrong component is rejected at compile time — and a runtime `getComponentClass()`, which
+is the class the registration is filed under. Registrations can be added or removed at any time and in any order,
+which is what makes the registry safe to use with dynamically loaded plugins. A `ControlFactory` is not invoked
+eagerly; it only runs once its contribution actually needs to be materialized.
+
+Resolving the controls that apply to an actual component instance walks that instance's own class, its superclasses,
+and its interfaces, matching each against registered component classes — so a slot filed under a base view type
+(e.g. `TabHostFxView`) is automatically picked up by every subtype (`TabDockFxView`, and so on), without either side
+needing to know about the other in advance. The resolved set is cached, keyed by `Class#getName()` rather than by
+the `Class` object itself — holding the `Class` would also hold a strong reference to its defining `ClassLoader`
+and, transitively, everything else a plugin module loaded through it, leaking the whole module after it is meant to
+be unloaded. The cache is invalidated on every registration change, so it can never observe a stale set.
+
+`ControlRegistry` has no built-in notion of "the" main menu — `registerMenu`, `registerMenuGroup`, and
+`registerMenuItem` are the only entry points, and every registration is scoped by whichever `MenuGroupName`/
+`MenuName` it is registered under. Building Shell's own menu bar out of this is just one particular use: a caller
+like `DefaultShellFxView` picks a `MenuGroupName` to treat as its bar's root, registers/receives menus under that
+group like any other, and passes the same group to `ControlBuilder#buildMenus` when assembling. Since nothing here
+is main-menu-specific, one registry can just as well back several independent menu bars, each keyed by its own
+group.
 
 `ControlRegistry` itself never assembles a final UI control; it only stores the metadata needed to build one later.
 Assembly is the job of `ControlBuilder`, which reads a registry's contributions for a given component, invokes each
-`ControlFactory`, groups and orders the results, and removes empty menus/groups. `ControlBuilder` exposes three build
-methods: `buildBarMenus` builds the full list of top-level menus for a `MenuBar` (this is what `Shell` uses for its
-main menu), `buildMenu` builds a single named menu and returns it as a `Menu`, and `buildContextMenu` does the same
-but returns a `ManagedContextMenu` — needed because `ContextMenu` does not extend `Menu`, so it cannot be produced by
-`buildMenu` directly. See [Managed Controls](#managed-controls) for what these builders actually produce.
+`ControlFactory`, groups and orders the results, and removes empty menus/groups. See [Managed Controls](#managed-controls).
 
 ## Managed Controls <a name="managed-controls"></a>
 

@@ -17,12 +17,22 @@
 package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.patternfx.core.Name;
+import com.techsenger.patternfx.mvp.ParentFxView;
 
 /**
  * Although Menu extends MenuItem in JavaFX MenuName doesn't extend MenuItemName because name type must be unique.
  *
+ * <p>{@code V} is the view type a {@link com.techsenger.shellfx.core.registry.ControlFactory} registering a group
+ * into this menu is invoked with, so a mismatched factory is rejected at compile time.
+ *
+ * @param <V> the view type of the component this menu belongs to
  * @author Pavel Castornii
  */
-public interface MenuName extends Name {
+public interface MenuName<V extends ParentFxView<?>> extends Name {
 
+    /**
+     * Returns the view class registrations targeting this menu are filed under, and that a component's own class
+     * (plus its ancestors and interfaces) is matched against when its applicable controls are resolved.
+     */
+    Class<?> getComponentClass();
 }

@@ -29,7 +29,7 @@ import javafx.scene.control.MenuItem;
  */
 public class ManagedMenuGroup implements Named, Positioned {
 
-    private final MenuGroupName name;
+    private final MenuGroupName<?> name;
 
     private final int position;
 
@@ -40,13 +40,13 @@ public class ManagedMenuGroup implements Named, Positioned {
      *
      * @param name
      */
-    public ManagedMenuGroup(MenuGroupName name, int position) {
+    public ManagedMenuGroup(MenuGroupName<?> name, int position) {
         this.name = name;
         this.position = position;
     }
 
     @Override
-    public MenuGroupName getName() {
+    public MenuGroupName<?> getName() {
         return name;
     }
 

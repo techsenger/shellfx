@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.menu.file;
+package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.demo.menu.AbstractContainerItemHandler;
 import com.techsenger.shellfx.demo.page.PageMenuType;
 import com.techsenger.shellfx.demo.page.PageTabFxView;
 import com.techsenger.shellfx.demo.page.PageTabHistory;

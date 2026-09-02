@@ -28,14 +28,14 @@ import javafx.scene.control.MenuItem;
 class MenuItemRegistration<T extends ParentFxView<?>, I extends MenuItem & ManagedItem>
         extends AbstractMenuRegistration<T, I> {
 
-    private final MenuGroupName groupKey;
+    private final MenuGroupName<?> groupKey;
 
-    MenuItemRegistration(MenuGroupName groupKey, ControlFactory<T, I> factory) {
+    MenuItemRegistration(MenuGroupName<?> groupKey, ControlFactory<T, I> factory) {
         super(MenuElementType.ITEM, factory);
         this.groupKey = groupKey;
     }
 
-    public MenuGroupName getGroupKey() {
+    public MenuGroupName<?> getGroupKey() {
         return groupKey;
     }
 }
