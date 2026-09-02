@@ -31,16 +31,13 @@ public final class ShellControls {
 
     public static final class FileMenu {
 
-        public static final MenuName<ShellFxView<?>> NAME = new DefaultMenuName<>(ShellFxView.class);
+        public static final MenuName<ShellFxView<?>> NAME = createName();
 
-        public static final MenuGroupName<ShellFxView<?>> DEMO_GROUP = new DefaultMenuGroupName<>(ShellFxView.class,
-                "Demo");
+        public static final MenuGroupName<ShellFxView<?>> DEMO_GROUP = createGroupName("Demo");
 
-        public static final MenuGroupName<ShellFxView<?>> APPEARANCE_GROUP =
-                new DefaultMenuGroupName<>(ShellFxView.class, "Settings");
+        public static final MenuGroupName<ShellFxView<?>> APPEARANCE_GROUP = createGroupName("Settings");
 
-        public static final MenuGroupName<ShellFxView<?>> LAST_GROUP = new DefaultMenuGroupName<>(ShellFxView.class,
-                "Last");
+        public static final MenuGroupName<ShellFxView<?>> LAST_GROUP = createGroupName("Last");
 
         private FileMenu() {
             // empty
@@ -49,13 +46,11 @@ public final class ShellControls {
 
     public static final class WindowMenu {
 
-        public static final MenuName<ShellFxView<?>> NAME = new DefaultMenuName<>(ShellFxView.class);
+        public static final MenuName<ShellFxView<?>> NAME = createName();
 
-        public static final MenuGroupName<ShellFxView<?>> DEFAULT_GROUP =
-                new DefaultMenuGroupName<>(ShellFxView.class, "Default");
+        public static final MenuGroupName<ShellFxView<?>> DEFAULT_GROUP = createGroupName("Default");
 
-        public static final MenuGroupName<ShellFxView<?>> ARRANGEMENT_GROUP =
-                new DefaultMenuGroupName<>(ShellFxView.class, "Arrangement");
+        public static final MenuGroupName<ShellFxView<?>> ARRANGEMENT_GROUP = createGroupName("Arrangement");
 
         private WindowMenu() {
             // empty
@@ -64,13 +59,11 @@ public final class ShellControls {
 
     public static final class ExtraMenu {
 
-        public static final MenuName<ShellFxView<?>> NAME = new DefaultMenuName<>(ShellFxView.class);
+        public static final MenuName<ShellFxView<?>> NAME = createName();
 
-        public static final MenuGroupName<ShellFxView<?>> FOO_GROUP = new DefaultMenuGroupName<>(ShellFxView.class,
-                "Foo");
+        public static final MenuGroupName<ShellFxView<?>> FOO_GROUP = createGroupName("Foo");
 
-        public static final MenuGroupName<ShellFxView<?>> BAR_GROUP = new DefaultMenuGroupName<>(ShellFxView.class,
-                "Bar");
+        public static final MenuGroupName<ShellFxView<?>> BAR_GROUP = createGroupName("Bar");
 
         private ExtraMenu() {
             // empty
@@ -81,8 +74,15 @@ public final class ShellControls {
      * The group File/Window/Extra menus register into, and that {@link com.techsenger.shellfx.core.DefaultShellFxView}
      * treats as the top-level group of its own menu bar.
      */
-    public static final MenuGroupName<ShellFxView<?>> MAIN_MENU_GROUP = new DefaultMenuGroupName<>(ShellFxView.class,
-            "MainMenuGroup");
+    public static final MenuGroupName<ShellFxView<?>> MAIN_MENU_GROUP = createGroupName("MainMenuGroup");
+
+    private static MenuName<ShellFxView<?>> createName() {
+        return new DefaultMenuName<>(ShellFxView.class);
+    }
+
+    private static MenuGroupName<ShellFxView<?>> createGroupName(String text) {
+        return new DefaultMenuGroupName<>(ShellFxView.class, text);
+    }
 
     private ShellControls() {
         // empty

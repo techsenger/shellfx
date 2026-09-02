@@ -16,13 +16,13 @@
 
 package com.techsenger.shellfx.material.button;
 
-import com.techsenger.patternfx.core.AbstractName;
+import com.techsenger.patternfx.core.AbstractIdentityName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DefaultButtonName extends AbstractName implements ButtonName {
+public class DefaultButtonName extends AbstractIdentityName implements ButtonName {
 
     public DefaultButtonName() {
         super(null);
