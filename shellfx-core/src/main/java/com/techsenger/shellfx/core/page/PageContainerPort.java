@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface PageContainerPort extends ParentPort {
 
-    interface Composer {
+    interface ComposerAccess {
 
         /**
          * Returns a list of created and initialized pages.
@@ -38,12 +38,7 @@ public interface PageContainerPort extends ParentPort {
         PagePort getSelectedPagePort();
     }
 
-    interface ViewAccess {
-
-        Composer getComposer();
-    }
-
-    ViewAccess getViewAccess();
+    ComposerAccess getComposerAccess();
 
     void selectPage(PageItem item);
 

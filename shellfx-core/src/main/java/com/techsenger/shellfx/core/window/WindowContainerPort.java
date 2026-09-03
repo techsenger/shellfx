@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface WindowContainerPort extends PopupContainerPort {
 
-    interface Composer extends PopupContainerPort.Composer {
+    interface ComposerAccess extends PopupContainerPort.ComposerAccess {
 
         /**
          * Returns an unmodifiable list of windows. A new list instance is created on each call.
@@ -36,12 +36,6 @@ public interface WindowContainerPort extends PopupContainerPort {
         @Unmodifiable List<? extends WindowPort> getWindowPorts();
     }
 
-    interface ViewAccess extends PopupContainerPort.ViewAccess {
-
-        @Override
-        Composer getComposer();
-    }
-
     @Override
-    ViewAccess getViewAccess();
+    ComposerAccess getComposerAccess();
 }

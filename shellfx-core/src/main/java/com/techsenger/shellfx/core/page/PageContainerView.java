@@ -22,9 +22,9 @@ import com.techsenger.patternfx.mvp.ParentView;
  *
  * @author Pavel Castornii
  */
-public interface PageContainerView extends ParentView, PageContainerPort.ViewAccess {
+public interface PageContainerView extends ParentView {
 
-    interface Composer extends ParentView.Composer, PageContainerPort.Composer {
+    interface Composer extends ParentView.Composer, PageContainerPort.ComposerAccess {
 
     }
 

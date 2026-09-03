@@ -22,9 +22,9 @@ import com.techsenger.patternfx.mvp.ParentView;
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerView extends ParentView, PopupContainerPort.ViewAccess {
+public interface PopupContainerView extends ParentView {
 
-    interface Composer extends ParentView.Composer, PopupContainerPort.Composer {
+    interface Composer extends ParentView.Composer, PopupContainerPort.ComposerAccess {
 
     }
 

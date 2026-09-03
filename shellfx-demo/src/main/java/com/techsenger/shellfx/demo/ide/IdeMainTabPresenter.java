@@ -73,8 +73,8 @@ public class IdeMainTabPresenter<V extends IdeMainTabView> extends AbstractTabPr
     }
 
     @Override
-    public IdeMainTabPort.ViewAccess getViewAccess() {
-        return getView();
+    public IdeMainTabPort.ComposerAccess getComposerAccess() {
+        return getView().getComposer();
     }
 
     protected void onFooDisabledSelected(boolean value) {

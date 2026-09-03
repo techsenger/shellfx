@@ -45,8 +45,8 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractHostWind
     }
 
     @Override
-    public WindowContainerPort.ViewAccess getViewAccess() {
-        return getView();
+    public WindowContainerPort.ComposerAccess getComposerAccess() {
+        return getView().getComposer();
     }
 
     @Override

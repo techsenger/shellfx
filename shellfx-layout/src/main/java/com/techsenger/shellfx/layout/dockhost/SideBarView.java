@@ -24,9 +24,9 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface SideBarView extends AreaView, SideBarPort.ViewAccess {
+public interface SideBarView extends AreaView {
 
-    interface Composer extends AreaView.Composer, SideBarPort.Composer {
+    interface Composer extends AreaView.Composer, SideBarPort.ComposerAccess {
 
         /**
          * Returns an unmodifiable list of minimized tab docks.

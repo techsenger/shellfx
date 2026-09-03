@@ -51,8 +51,8 @@ public class TabPopupPresenter<V extends TabPopupView> extends AbstractAreaPrese
     }
 
     @Override
-    public ViewAccess getViewAccess() {
-        return getView();
+    public ComposerAccess getComposerAccess() {
+        return getView().getComposer();
     }
 
     @Override

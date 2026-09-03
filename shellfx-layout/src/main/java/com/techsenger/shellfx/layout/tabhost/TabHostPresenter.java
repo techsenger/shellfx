@@ -40,8 +40,8 @@ public class TabHostPresenter<V extends TabHostView> extends AbstractAreaPresent
     }
 
     @Override
-    public ViewAccess getViewAccess() {
-        return getView();
+    public ComposerAccess getComposerAccess() {
+        return getView().getComposer();
     }
 
     @Override

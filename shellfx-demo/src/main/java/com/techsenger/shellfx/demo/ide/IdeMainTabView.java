@@ -27,9 +27,9 @@ import com.techsenger.shellfx.core.tab.TabView;
  *
  * @author Pavel Castornii
  */
-public interface IdeMainTabView extends TabView, PopupContainerView, IdeMainTabPort.ViewAccess {
+public interface IdeMainTabView extends TabView, PopupContainerView {
 
-    interface Composer extends TabView.Composer, PopupContainerView.Composer, IdeMainTabPort.Composer {
+    interface Composer extends TabView.Composer, PopupContainerView.Composer, IdeMainTabPort.ComposerAccess {
 
         DialogPort openDemoDialog(boolean resizable, DialogParams params);
 

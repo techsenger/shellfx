@@ -32,17 +32,12 @@ import com.techsenger.shellfx.material.icon.Icon;
  */
 public interface TabPort extends ChildPort, CloseAwarePort, Closable, Waitable, Iconed, Titled, Tooltiped {
 
-    interface Composer {
+    interface ComposerAccess {
 
         ShellPort getShellPort();
     }
 
-    interface ViewAccess {
-
-        Composer getComposer();
-    }
-
-    ViewAccess getViewAccess();
+    ComposerAccess getComposerAccess();
 
     /**
      * Returns whether the tab can be closed.

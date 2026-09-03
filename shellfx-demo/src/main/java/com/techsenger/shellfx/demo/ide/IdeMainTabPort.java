@@ -25,14 +25,10 @@ import com.techsenger.shellfx.core.tab.TabPort;
  */
 public interface IdeMainTabPort extends TabPort, PopupContainerPort {
 
-    interface Composer extends TabPort.Composer, PopupContainerPort.Composer {
+    interface ComposerAccess extends TabPort.ComposerAccess, PopupContainerPort.ComposerAccess {
 
     }
 
-    interface ViewAccess extends TabPort.ViewAccess, PopupContainerPort.ViewAccess {
-
-        Composer getComposer();
-    }
-
-    ViewAccess getViewAccess();
+    @Override
+    ComposerAccess getComposerAccess();
 }

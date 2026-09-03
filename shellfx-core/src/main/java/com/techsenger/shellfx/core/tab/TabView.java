@@ -25,9 +25,9 @@ import com.techsenger.shellfx.material.icon.Icon;
  *
  * @author Pavel Castornii
  */
-public interface TabView extends ChildView, TabPort.ViewAccess {
+public interface TabView extends ChildView {
 
-    interface Composer extends ChildView.Composer, TabPort.Composer {
+    interface Composer extends ChildView.Composer, TabPort.ComposerAccess {
 
         ShellPort getShellPort();
 

@@ -28,8 +28,8 @@ public abstract class AbstractHostTabPresenter<V extends HostTabView>
     }
 
     @Override
-    public HostTabPort.ViewAccess getViewAccess() {
-        return getView();
+    public HostTabPort.ComposerAccess getComposerAccess() {
+        return getView().getComposer();
     }
 
     @Override

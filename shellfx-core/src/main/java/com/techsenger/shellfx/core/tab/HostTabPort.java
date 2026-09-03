@@ -24,16 +24,10 @@ import com.techsenger.shellfx.core.window.WindowContainerPort;
  */
 public interface HostTabPort extends TabPort, WindowContainerPort {
 
-    interface Composer extends TabPort.Composer, WindowContainerPort.Composer {
+    interface ComposerAccess extends TabPort.ComposerAccess, WindowContainerPort.ComposerAccess {
 
-    }
-
-    interface ViewAccess extends TabPort.ViewAccess, WindowContainerPort.ViewAccess {
-
-        @Override
-        Composer getComposer();
     }
 
     @Override
-    ViewAccess getViewAccess();
+    ComposerAccess getComposerAccess();
 }

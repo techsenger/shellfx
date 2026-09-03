@@ -157,8 +157,8 @@ public abstract class AbstractTabPresenter<V extends TabView>
     }
 
     @Override
-    public TabPort.ViewAccess getViewAccess() {
-        return getView();
+    public TabPort.ComposerAccess getComposerAccess() {
+        return getView().getComposer();
     }
 
     @Override

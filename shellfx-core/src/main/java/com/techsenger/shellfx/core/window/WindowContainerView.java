@@ -22,9 +22,9 @@ import com.techsenger.shellfx.core.popup.PopupContainerView;
  *
  * @author Pavel Castornii
  */
-public interface WindowContainerView extends PopupContainerView, WindowContainerPort.ViewAccess {
+public interface WindowContainerView extends PopupContainerView {
 
-    interface Composer extends PopupContainerView.Composer, WindowContainerPort.Composer {
+    interface Composer extends PopupContainerView.Composer, WindowContainerPort.ComposerAccess {
 
     }
 

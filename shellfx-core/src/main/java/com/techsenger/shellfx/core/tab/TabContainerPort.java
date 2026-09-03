@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface TabContainerPort extends ParentPort {
 
-    interface Composer {
+    interface ComposerAccess {
 
         /**
          * Returns an unmodifiable list of tabs. A new list instance is created on each call.
@@ -41,12 +41,7 @@ public interface TabContainerPort extends ParentPort {
         TabPort getSelectedTabPort();
     }
 
-    interface  ViewAccess {
-
-        Composer getComposer();
-    }
-
-    ViewAccess getViewAccess();
+    ComposerAccess getComposerAccess();
 
     /**
      * Returns the index of the currently selected tab.

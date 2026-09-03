@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface PopupContainerPort extends ParentPort {
 
-    interface Composer {
+    interface ComposerAccess {
 
         /**
          * Returns an unmodifiable list of ports. A new list instance is created on each call.
@@ -36,10 +36,5 @@ public interface PopupContainerPort extends ParentPort {
         @Unmodifiable List<? extends PopupPort> getPopupPorts();
     }
 
-    interface ViewAccess {
-
-        Composer getComposer();
-    }
-
-    ViewAccess getViewAccess();
+    ComposerAccess getComposerAccess();
 }
