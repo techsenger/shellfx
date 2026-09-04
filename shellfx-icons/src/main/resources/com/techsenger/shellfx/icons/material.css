@@ -30,3 +30,10 @@
     -fx-icon-code: 983340; /* check */
 }
 
+.font-icon-view.chevron-up-icon {
+    -fx-icon-code: 983363; /* chevron-up */
+}
+
+.font-icon-view.chevron-down-icon {
+    -fx-icon-code: 983360; /* chevron-down */
+}

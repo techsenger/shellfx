@@ -27,4 +27,8 @@ public interface MaterialIcons {
     StyleFontIcon COPY = new StyleFontIcon("copy-icon");
 
     StyleFontIcon COPIED = new StyleFontIcon("copied-icon");
+
+    StyleFontIcon CHEVRON_UP = new StyleFontIcon("chevron-up-icon");
+
+    StyleFontIcon CHEVRON_DOWN = new StyleFontIcon("chevron-down-icon");
 }
