@@ -35,6 +35,17 @@ import java.util.List;
  * which allows storage-specific implementations to return richer subclasses of
  * {@link GenericFile} without requiring callers to cast.
  *
+ * <p><b>Naming.</b> "File" in most of this interface's own names ({@code FileStorage}, {@link #getFiles(URI)},
+ * {@link #getFile(URI)}, {@link GenericFile}) is used generically, for an entry of either structural kind - a
+ * directory is a "file" in that sense too. "Directory" always means specifically the
+ * {@link FileEntryType#DIRECTORY} kind, as opposed to {@link FileEntryType#FILE} (a regular, non-directory
+ * entry) - so the same word "file" is narrower at the {@link FileEntryType} level than it is at most of this
+ * interface's own methods. {@link #createFile}, like {@link #writeFile(URI, byte[])}/{@link #readFile(URI)},
+ * is one of the exceptions: it uses "file" in the narrower, {@link FileEntryType#FILE}-only sense. One
+ * consequence of the generic sense: {@link #getDirectories(URI)} exists as a narrower, explicitly-filtered
+ * alternative to {@link #getFiles(URI)} for callers (e.g. a directory tree) that only need subdirectories, so
+ * a storage need not fetch every regular file's metadata just to answer them.
+ *
  * <p>Every storage has a single root URI returned by {@link #getUri()}. All URIs passed to
  * or returned by this interface must be within that root.
  *
@@ -175,6 +186,25 @@ public interface FileStorage<T extends GenericFile> {
      */
     void createDirectory(URI uri) throws NoSuchFileException, FileAlreadyExistsException, AccessDeniedException,
             IOException;
+
+    /**
+     * Creates a new, empty regular file with real backing on this storage - the only way to do so, since
+     * {@link #writeFile(URI, byte[])}/{@link #writeFile(URI, String, Charset)} always require content. Like
+     * {@link #writeFile(URI, byte[])} and unlike {@link #createDirectory(URI)}/{@link #createVirtual}, this
+     * method only ever creates a {@link FileEntryType#FILE} entry - never a directory or a symbolic link, whose
+     * creation needs more than a name and a URI (a symbolic link needs a target, which this method has no
+     * parameter for).
+     *
+     * @param name the name of the file to create
+     * @param uri  the URI of the file to create
+     * @return the created file, never {@code null}
+     * @throws NoSuchFileException        if the parent directory does not exist
+     * @throws FileAlreadyExistsException if an entry already exists at {@code uri}
+     * @throws AccessDeniedException      if the caller lacks write permission for the parent
+     * @throws IOException                if an I/O error occurs
+     */
+    T createFile(String name, URI uri) throws NoSuchFileException, FileAlreadyExistsException,
+            AccessDeniedException, IOException;
 
     /**
      * Creates a virtual entry that has no real backing on this storage.

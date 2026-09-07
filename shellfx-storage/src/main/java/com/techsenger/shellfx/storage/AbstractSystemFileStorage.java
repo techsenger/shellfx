@@ -205,6 +205,15 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     }
 
     @Override
+    public T createFile(String name, URI uri) throws NoSuchFileException, FileAlreadyExistsException,
+            AccessDeniedException, IOException {
+        var path = toPath(uri);
+        checkIfExists(path.getParent());
+        Files.createFile(path);
+        return createFile(path, uri);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public T createVirtual(FileEntryType entryType, String name, @Nullable URI uri) {
         var file = fileFactory.create();
