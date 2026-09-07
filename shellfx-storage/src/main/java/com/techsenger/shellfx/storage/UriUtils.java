@@ -119,7 +119,7 @@ public final class UriUtils {
             // preserve the directory path semantics.
             return new URI(
                     fileStorageUri.getScheme(),
-                    fileStorageUri.getAuthority(),
+                    recoverAuthority(fileStorageUri),
                     parentPath,
                     fileStorageUri.getQuery(),
                     fileStorageUri.getFragment()
@@ -157,19 +157,10 @@ public final class UriUtils {
         if (isDirectory && !joinedPath.endsWith("/")) {
             joinedPath = joinedPath + "/";
         }
-        // URI#getAuthority() returns null both when the authority component is truly absent and when it is
-        // present but empty (e.g. "file:///path"). Passing that null straight to the URI constructor below
-        // would silently drop the "//" marker, turning "file:///path" into "file:/path" - a different URI
-        // string for the same file, which then fails equals() against URIs produced elsewhere (e.g. by
-        // listing the directory), even though both resolve to the same Path.
-        var authority = baseUri.getAuthority();
-        if (authority == null && baseUri.toString().startsWith(baseUri.getScheme() + "://")) {
-            authority = "";
-        }
         try {
             return new URI(
                 baseUri.getScheme(),
-                authority,
+                recoverAuthority(baseUri),
                 joinedPath, //path passed to constructor can't be encoded
                 baseUri.getQuery(),
                 baseUri.getFragment()
@@ -194,6 +185,22 @@ public final class UriUtils {
     public static String toHumanString(URI uri) {
         var result = URLDecoder.decode(uri.toString(), StandardCharsets.UTF_8);
         return result;
+    }
+
+    /**
+     * Returns {@code baseUri}'s authority, recovering it as an empty (not {@code null}) string when it is
+     * present but empty (e.g. {@code "file:///path"}) rather than truly absent (e.g. {@code "file:/path"}).
+     * {@link URI#getAuthority()} returns {@code null} for both cases, so passing it straight through to the
+     * {@code URI} constructor would silently turn {@code "file:///path"} into {@code "file:/path"} - a
+     * different URI string for the same file, which then fails {@code equals()} against a URI produced
+     * elsewhere for that same file (e.g. by listing its directory), even though both resolve to the same path.
+     */
+    private static @Nullable String recoverAuthority(URI baseUri) {
+        var authority = baseUri.getAuthority();
+        if (authority == null && baseUri.toString().startsWith(baseUri.getScheme() + "://")) {
+            return "";
+        }
+        return authority;
     }
 
     private static String joinPaths(String base, String relative) {
