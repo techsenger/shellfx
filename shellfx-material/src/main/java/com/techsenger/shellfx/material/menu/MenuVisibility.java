@@ -35,6 +35,9 @@ public final class MenuVisibility {
      * plugin registrations), so its visibility - and that of its own items' separators - is derived from
      * whether at least one item ends up visible, recursively.
      *
+     * <p>Assumes {@code menu} is genuinely about to be shown, and calls {@code onShowing()} on every handler
+     * along the way accordingly; use {@link #update(ManagedMenu)} instead when nothing is actually being shown.
+     *
      * @param menu the menu to resolve.
      * @return whether {@code menu} ended up visible.
      */
@@ -57,6 +60,9 @@ public final class MenuVisibility {
      * items and directly for a {@code ContextMenu}'s top-level items, which have no containing {@code Managed
      * Menu} of their own.
      *
+     * <p>Assumes {@code items} are genuinely about to be shown; use {@link #updateItems(Iterable)} instead when
+     * nothing is actually being shown.
+     *
      * @param items the items to resolve, in display order.
      * @return whether at least one item ended up visible.
      */
@@ -64,6 +70,43 @@ public final class MenuVisibility {
         var anyVisible = false;
         for (var item : items) {
             if (resolveItem(item)) {
+                anyVisible = true;
+            }
+        }
+        return anyVisible;
+    }
+
+    /**
+     * Like {@link #resolve(ManagedMenu)}, but never calls a handler's {@code onShowing()} - for refreshing a
+     * menu's visibility outside of it actually being shown (e.g. on a focus/selection change elsewhere in the
+     * shell), where firing a real showing transition on every handler underneath would be misleading.
+     *
+     * @param menu the menu to update.
+     * @return whether {@code menu} ended up visible.
+     */
+    public static boolean update(ManagedMenu menu) {
+        var handler = MenuHandler.getHandler(menu);
+        if (handler != null) {
+            handler.onUpdate();
+            return menu.isVisible();
+        }
+        var anyVisible = updateItems(menu.getItems());
+        collapseSeparators(menu.getItems());
+        menu.setVisible(anyVisible);
+        return anyVisible;
+    }
+
+    /**
+     * Like {@link #resolveItems(Iterable)}, but never calls a handler's {@code onShowing()} - see
+     * {@link #update(ManagedMenu)}.
+     *
+     * @param items the items to update, in display order.
+     * @return whether at least one item ended up visible.
+     */
+    public static boolean updateItems(Iterable<MenuItem> items) {
+        var anyVisible = false;
+        for (var item : items) {
+            if (updateItem(item)) {
                 anyVisible = true;
             }
         }
@@ -143,6 +186,24 @@ public final class MenuVisibility {
             var handler = MenuItemHandler.getHandler(managedItem);
             if (handler != null) {
                 handler.onShowing();
+                handler.onUpdate();
+            }
+            return item.isVisible();
+        }
+        return item.isVisible();
+    }
+
+    private static boolean updateItem(MenuItem item) {
+        if (item instanceof ManagedMenu managedMenu) {
+            return update(managedMenu);
+        }
+        if (item instanceof SeparatorMenuItem) {
+            return false;
+        }
+        if (item instanceof ManagedItem) {
+            var managedItem = (MenuItem & ManagedItem) item;
+            var handler = MenuItemHandler.getHandler(managedItem);
+            if (handler != null) {
                 handler.onUpdate();
             }
             return item.isVisible();

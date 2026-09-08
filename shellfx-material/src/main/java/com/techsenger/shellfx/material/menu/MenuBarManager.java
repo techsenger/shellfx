@@ -63,9 +63,20 @@ public class MenuBarManager {
             if (m instanceof ManagedMenu managedMenu) {
                 var handler = MenuHandler.getHandler(managedMenu);
                 if (handler != null) {
-                    handler.onHiding();
-                    handler.onShowing();
-                    handler.onUpdate();
+                    if (managedMenu.isShowing()) {
+                        managedMenu.hide();
+                    } else {
+                        handler.onUpdate();
+                    }
+                } else {
+                    // JavaFX checks each item's current isVisible() before opening a Menu's popup at all
+                    // (MenuBarSkin#isMenuEmpty), and that check runs before onShowing fires. A menu without its
+                    // own MenuHandler otherwise only recomputes item visibility inside onShowing - so once every
+                    // item happens to be invisible, JavaFX stops calling show() on it, onShowing never fires
+                    // again, and the items can never be recomputed: the menu is stuck empty forever. Updating
+                    // here instead, on every focus/selection change, avoids that trap; MenuVisibility#update is
+                    // used rather than #resolve since nothing is actually being shown here.
+                    MenuVisibility.update(managedMenu);
                 }
             }
         }
