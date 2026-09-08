@@ -83,7 +83,8 @@ final class MenuLogger {
                     logGroup(group, depth + 1, builder, tab);
                 }
                 logMenu(namedMenu, depth + 2, builder);
-            } else if (m instanceof ManagedMenuItem item) {
+            } else if (m instanceof MenuItem && m instanceof ManagedItem) {
+                var item = (MenuItem & ManagedItem) m;
                 if (item.getGroup() != group) {
                     group = item.getGroup();
                     logGroup(group, depth + 1, builder, tab);
