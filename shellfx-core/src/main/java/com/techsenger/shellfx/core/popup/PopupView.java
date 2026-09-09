@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.core.popup;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaView;
 
 /**
@@ -25,11 +24,9 @@ import com.techsenger.shellfx.core.area.AreaView;
  */
 public interface PopupView extends AreaView {
 
-    interface Composer extends AreaView.Composer {
+    interface Composer extends AreaView.Composer, PopupPort.ComposerAccess {
 
         void close();
-
-        @Nullable PopupContainerPort getContainerPort();
     }
 
     @Override

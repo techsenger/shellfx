@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.tab;
 
 import com.techsenger.patternfx.core.ComponentState;
-import com.techsenger.patternfx.mvp.ParentPresenter;
+import com.techsenger.patternfx.mvp.ChildPresenter;
 import com.techsenger.shellfx.core.CloseRequestResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerPresenter<V extends TabContainerView> extends ParentPresenter<V>, TabContainerPort {
+public interface TabContainerPresenter<V extends TabContainerView> extends ChildPresenter<V>, TabContainerPort {
 
     void onSelectedTabChanged(int index);
 

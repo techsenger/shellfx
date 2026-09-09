@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.popup;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.CloseAwarePort;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.traits.Waitable;
@@ -25,6 +26,15 @@ import com.techsenger.shellfx.core.traits.Waitable;
  * @author Pavel Castornii
  */
 public interface PopupPort extends AreaPort, CloseAwarePort, Waitable {
+
+    interface ComposerAccess extends AreaPort.ComposerAccess {
+
+        @Override
+        @Nullable PopupContainerPort getParentPort();
+    }
+
+    @Override
+    ComposerAccess getComposerAccess();
 
     /**
      * Returns {@code true} if the popup blocks interaction with underlying content (modal) and {@code false} otherwise.

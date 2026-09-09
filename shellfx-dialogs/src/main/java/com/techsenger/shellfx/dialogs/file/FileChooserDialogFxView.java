@@ -112,7 +112,7 @@ public class FileChooserDialogFxView<P extends FileChooserDialogPresenter<?, T>,
             var dialog = createAlertDialog(params);
             dialog.getPresenter().setMessage(message);
             if (dialog.getPresenter().getWindowType() == WindowType.NESTED) {
-                getContainer().getComposer().addDialog(dialog);
+                getParent().getComposer().addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getScene().getWindow());
                 dialog.getStage().show();

@@ -17,16 +17,16 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ParentPort;
+import com.techsenger.patternfx.mvp.ChildPort;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerPort extends ParentPort {
+public interface PopupContainerPort extends ChildPort {
 
-    interface ComposerAccess {
+    interface ComposerAccess extends ChildPort.ComposerAccess {
 
         /**
          * Returns an unmodifiable list of ports. A new list instance is created on each call.
@@ -36,5 +36,6 @@ public interface PopupContainerPort extends ParentPort {
         @Unmodifiable List<? extends PopupPort> getPopupPorts();
     }
 
+    @Override
     ComposerAccess getComposerAccess();
 }

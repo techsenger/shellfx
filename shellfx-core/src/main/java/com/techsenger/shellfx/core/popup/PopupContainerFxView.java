@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvp.ChildFxView;
 import com.techsenger.shellfx.material.Anchors;
 import java.util.List;
 
@@ -25,10 +25,10 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerFxView<P extends PopupContainerPresenter<?>> extends ParentFxView<P>,
+public interface PopupContainerFxView<P extends PopupContainerPresenter<?>> extends ChildFxView<P>,
         PopupContainerView {
 
-    interface Composer extends ParentFxView.Composer, PopupContainerView.Composer {
+    interface Composer extends ChildFxView.Composer, PopupContainerView.Composer {
 
         /**
          * Adds the specified popup component to the component tree.

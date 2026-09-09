@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.core;
 
 import com.techsenger.shellfx.core.window.AbstractHostWindowPresenter;
-import com.techsenger.shellfx.core.window.WindowContainerPort;
 import java.util.function.Consumer;
 
 /**
@@ -42,11 +41,6 @@ public class DefaultShellPresenter<V extends ShellView> extends AbstractHostWind
     @Override
     public <T extends ShellContext> T getContext(Class<T> contextClass) {
         return (T) this.context;
-    }
-
-    @Override
-    public WindowContainerPort.ComposerAccess getComposerAccess() {
-        return getView().getComposer();
     }
 
     @Override

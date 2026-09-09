@@ -29,14 +29,12 @@ import javafx.scene.text.Font;
  */
 public interface WindowView extends ChildView {
 
-    interface Composer extends ChildView.Composer {
+    interface Composer extends ChildView.Composer, WindowPort.ComposerAccess {
 
         /**
          * Closes both {@link WindowType#TOP_LEVEL} and {@link WindowType#NESTED} windows.
          */
         void close();
-
-        @Nullable WindowContainerPort getContainerPort();
     }
 
     @Override

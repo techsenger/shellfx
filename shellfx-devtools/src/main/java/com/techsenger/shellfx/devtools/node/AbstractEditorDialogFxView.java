@@ -44,7 +44,7 @@ public abstract class AbstractEditorDialogFxView<P extends AbstractEditorDialogP
         public AlertDialogPort openAlertDialog(AlertDialogParams params) {
             var dialog = createAlertDialog(params);
             if (params.getWindowType() == WindowType.NESTED) {
-                getContainer().getComposer().addDialog(dialog);
+                getParent().getComposer().addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getStage());
                 dialog.getStage().show();

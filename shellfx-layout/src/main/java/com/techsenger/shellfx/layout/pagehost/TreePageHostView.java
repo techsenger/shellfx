@@ -27,7 +27,8 @@ import java.util.List;
  */
 public interface TreePageHostView extends PageHostViewBase, TreePageContainerView {
 
-    interface Composer extends PageHostViewBase.Composer, TreePageContainerView.Composer {
+    interface Composer extends PageHostViewBase.Composer, TreePageContainerView.Composer,
+            TreePageHostPort.ComposerAccess {
 
        PagePort providePagePort(TreePageItem item);
     }

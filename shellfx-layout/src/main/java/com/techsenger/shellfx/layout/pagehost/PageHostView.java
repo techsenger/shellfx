@@ -27,7 +27,7 @@ import java.util.List;
  */
 public interface PageHostView extends PageHostViewBase, PageContainerView {
 
-    interface Composer extends PageHostViewBase.Composer, PageContainerView.Composer {
+    interface Composer extends PageHostViewBase.Composer, PageContainerView.Composer, PageHostPort.ComposerAccess {
 
         PagePort providePagePort(int index);
     }

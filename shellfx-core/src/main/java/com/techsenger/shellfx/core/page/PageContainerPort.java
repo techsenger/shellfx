@@ -17,16 +17,16 @@
 package com.techsenger.shellfx.core.page;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ParentPort;
+import com.techsenger.patternfx.mvp.ChildPort;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerPort extends ParentPort {
+public interface PageContainerPort extends ChildPort {
 
-    interface ComposerAccess {
+    interface ComposerAccess extends ChildPort.ComposerAccess {
 
         /**
          * Returns a list of created and initialized pages.
@@ -38,6 +38,7 @@ public interface PageContainerPort extends ParentPort {
         PagePort getSelectedPagePort();
     }
 
+    @Override
     ComposerAccess getComposerAccess();
 
     void selectPage(PageItem item);

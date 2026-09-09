@@ -28,7 +28,7 @@ import javafx.geometry.Side;
  */
 public interface TabPopupPort extends AreaPort {
 
-    interface ComposerAccess {
+    interface ComposerAccess extends AreaPort.ComposerAccess {
 
         /**
          * Returns un unmodifiable list of tabs. A list instance is created on each method call.

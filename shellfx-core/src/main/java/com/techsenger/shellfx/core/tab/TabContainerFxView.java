@@ -18,7 +18,7 @@ package com.techsenger.shellfx.core.tab;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvp.ChildFxView;
 import java.util.List;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.scene.control.Tab;
@@ -27,9 +27,9 @@ import javafx.scene.control.Tab;
  *
  * @author Pavel Castornii
  */
-public interface TabContainerFxView<P extends TabContainerPresenter<?>> extends ParentFxView<P> {
+public interface TabContainerFxView<P extends TabContainerPresenter<?>> extends ChildFxView<P> {
 
-     interface Composer extends ParentFxView.Composer, TabContainerView.Composer {
+     interface Composer extends ChildFxView.Composer, TabContainerView.Composer {
 
         void addTab(TabFxView<?> tab);
 

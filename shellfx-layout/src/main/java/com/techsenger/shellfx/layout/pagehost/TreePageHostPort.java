@@ -28,6 +28,13 @@ import java.util.List;
  */
 public interface TreePageHostPort extends AreaPort, TreePageContainerPort {
 
+    interface ComposerAccess extends AreaPort.ComposerAccess, TreePageContainerPort.ComposerAccess {
+
+    }
+
+    @Override
+    ComposerAccess getComposerAccess();
+
     /**
      * Returns an unmodifiable list of breadcrumbs.
      *

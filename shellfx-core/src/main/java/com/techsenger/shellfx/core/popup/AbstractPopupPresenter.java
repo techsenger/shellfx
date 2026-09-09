@@ -43,6 +43,11 @@ public abstract class AbstractPopupPresenter<V extends PopupView> extends Abstra
     }
 
     @Override
+    public PopupPort.ComposerAccess getComposerAccess() {
+        return getView().getComposer();
+    }
+
+    @Override
     public boolean isModal() {
         return this.modal;
     }

@@ -16,12 +16,12 @@
 
 package com.techsenger.shellfx.core.popup;
 
-import com.techsenger.patternfx.mvp.ParentPresenter;
+import com.techsenger.patternfx.mvp.ChildPresenter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerPresenter<V extends PopupContainerView> extends ParentPresenter<V>, PopupContainerPort {
+public interface PopupContainerPresenter<V extends PopupContainerView> extends ChildPresenter<V>, PopupContainerPort {
 
 }

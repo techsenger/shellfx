@@ -32,7 +32,8 @@ public interface TabFxView<P extends TabPresenter<?>> extends ChildFxView<P>, Ta
 
         ShellFxView<?> getShell();
 
-        @Nullable TabContainerFxView<?> getContainer();
+        @Override
+        @Nullable TabContainerFxView<?> getParent();
     }
 
     @Override

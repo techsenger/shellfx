@@ -25,4 +25,10 @@ import com.techsenger.shellfx.core.page.PageContainerPort;
  */
 public interface PageHostPort extends AreaPort, PageContainerPort {
 
+    interface ComposerAccess extends AreaPort.ComposerAccess, PageContainerPort.ComposerAccess {
+
+    }
+
+    @Override
+    ComposerAccess getComposerAccess();
 }

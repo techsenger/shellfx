@@ -34,6 +34,15 @@ import javafx.scene.text.Font;
  */
 public interface WindowPort extends ChildPort, CloseAwarePort, Titled, Closable, Iconed, Blockable {
 
+    interface ComposerAccess extends ChildPort.ComposerAccess {
+
+        @Override
+        @Nullable WindowContainerPort getParentPort();
+    }
+
+    @Override
+    ComposerAccess getComposerAccess();
+
     /**
      * Returns the type of this window.
      *

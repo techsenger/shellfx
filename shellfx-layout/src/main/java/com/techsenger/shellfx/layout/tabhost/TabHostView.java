@@ -26,7 +26,7 @@ import javafx.scene.text.Font;
  */
 public interface TabHostView extends AreaView, TabContainerView {
 
-    interface Composer extends AreaView.Composer, TabContainerView.Composer {
+    interface Composer extends AreaView.Composer, TabContainerView.Composer, TabHostPort.ComposerAccess {
 
         /**
          * Checks if tabs are detached.

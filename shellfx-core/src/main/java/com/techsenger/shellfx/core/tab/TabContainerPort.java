@@ -17,16 +17,16 @@
 package com.techsenger.shellfx.core.tab;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ParentPort;
+import com.techsenger.patternfx.mvp.ChildPort;
 import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerPort extends ParentPort {
+public interface TabContainerPort extends ChildPort {
 
-    interface ComposerAccess {
+    interface ComposerAccess extends ChildPort.ComposerAccess {
 
         /**
          * Returns an unmodifiable list of tabs. A new list instance is created on each call.
@@ -41,6 +41,7 @@ public interface TabContainerPort extends ParentPort {
         TabPort getSelectedTabPort();
     }
 
+    @Override
     ComposerAccess getComposerAccess();
 
     /**

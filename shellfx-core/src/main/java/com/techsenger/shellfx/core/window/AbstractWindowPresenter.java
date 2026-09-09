@@ -112,6 +112,11 @@ public abstract class AbstractWindowPresenter<T extends WindowView> extends Abst
     }
 
     @Override
+    public WindowPort.ComposerAccess getComposerAccess() {
+        return getView().getComposer();
+    }
+
+    @Override
     public WindowType getWindowType() {
         return this.windowType;
     }

@@ -22,7 +22,7 @@ package com.techsenger.shellfx.core.window;
  */
 public interface HostWindowView extends WindowView, WindowContainerView {
 
-    interface Composer extends WindowView.Composer, WindowContainerView.Composer {
+    interface Composer extends WindowView.Composer, WindowContainerView.Composer, HostWindowPort.ComposerAccess {
 
     }
 

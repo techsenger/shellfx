@@ -142,15 +142,15 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
         }
 
         @Override
-        public @Nullable WindowContainerFxView<?> getContainer() {
+        public @Nullable WindowContainerFxView<?> getParent() {
             checkIfNested();
-            return getParent(WindowContainerFxView.class);
+            return (WindowContainerFxView<?>) super.getParent();
         }
 
         @Override
-        public @Nullable WindowContainerPort getContainerPort() {
+        public @Nullable WindowContainerPort getParentPort() {
             checkIfNested();
-            var container = getContainer();
+            var container = getParent();
             return container == null ? null : container.getPresenter();
         }
 
@@ -334,9 +334,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             this.stage.setMaximized(maximized);
         } else {
             if (maximized) {
-                getComposer().getContainer().getComposer().maximizeWindow(this);
+                getComposer().getParent().getComposer().maximizeWindow(this);
             } else {
-                getComposer().getContainer().getComposer().restoreWindow(this);
+                getComposer().getParent().getComposer().restoreWindow(this);
             }
         }
         this.maximized.set(maximized);
@@ -367,9 +367,9 @@ public abstract class AbstractWindowFxView<P extends AbstractWindowPresenter<?>>
             this.stage.setIconified(minimized);
         } else {
             if (minimized) {
-                getComposer().getContainer().getComposer().minimizeWindow(this);
+                getComposer().getParent().getComposer().minimizeWindow(this);
             } else {
-                getComposer().getContainer().getComposer().restoreWindow(this);
+                getComposer().getParent().getComposer().restoreWindow(this);
             }
         }
         this.minimized.set(minimized);

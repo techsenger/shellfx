@@ -25,5 +25,12 @@ import com.techsenger.shellfx.core.tab.TabContainerPort;
  */
 public interface TabHostPort extends AreaPort, TabContainerPort {
 
+    interface ComposerAccess extends AreaPort.ComposerAccess, TabContainerPort.ComposerAccess {
+
+    }
+
+    @Override
+    ComposerAccess getComposerAccess();
+
     boolean isTabHeaderVisible();
 }

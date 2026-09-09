@@ -63,13 +63,12 @@ public interface WindowFxView<P extends WindowPresenter<?>> extends ChildFxView<
         void close();
 
         /**
-         * Returns the container.
+         * {@inheritDoc}
          *
          * <p>This method is intended for {@link WindowType#NESTED} windows only.
-         *
-         * @return
          */
-        @Nullable WindowContainerFxView<?> getContainer();
+        @Override
+        @Nullable WindowContainerFxView<?> getParent();
     }
 
     @Override

@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface SideBarPort extends AreaPort {
 
-    interface ComposerAccess {
+    interface ComposerAccess extends AreaPort.ComposerAccess {
 
         /**
          * Returns an unmodifiable list of minimized tab docks.
@@ -36,5 +36,6 @@ public interface SideBarPort extends AreaPort {
         @Unmodifiable List<? extends TabDockPort> getTabDockPorts();
     }
 
+    @Override
     ComposerAccess getComposerAccess();
 }

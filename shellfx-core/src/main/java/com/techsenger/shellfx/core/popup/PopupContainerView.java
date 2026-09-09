@@ -16,15 +16,15 @@
 
 package com.techsenger.shellfx.core.popup;
 
-import com.techsenger.patternfx.mvp.ParentView;
+import com.techsenger.patternfx.mvp.ChildView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerView extends ParentView {
+public interface PopupContainerView extends ChildView {
 
-    interface Composer extends ParentView.Composer, PopupContainerPort.ComposerAccess {
+    interface Composer extends ChildView.Composer, PopupContainerPort.ComposerAccess {
 
     }
 

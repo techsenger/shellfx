@@ -28,7 +28,6 @@ import com.techsenger.shellfx.core.popup.PopupManager;
 import com.techsenger.shellfx.core.popup.PopupParams;
 import com.techsenger.shellfx.core.popup.PopupPort;
 import com.techsenger.shellfx.core.tab.AbstractTabFxView;
-import com.techsenger.shellfx.core.tab.TabContainerFxView;
 import com.techsenger.shellfx.demo.dialogs.DemoDialogFxView;
 import com.techsenger.shellfx.demo.dialogs.DemoDialogPresenter;
 import com.techsenger.shellfx.demo.main.TestInterface;
@@ -71,7 +70,7 @@ public class IdeMainTabFxView<P extends IdeMainTabPresenter<?>> extends Abstract
                 } else {
                     view.getNode().getContent().removeEventFilter(InputEvent.ANY, getEventBlocker());
                 }
-                getParent(TabContainerFxView.class).setTabHeaderBlocked(view.getNode(), blocked);
+                getParent().setTabHeaderBlocked(view.getNode(), blocked);
             }
         };
 

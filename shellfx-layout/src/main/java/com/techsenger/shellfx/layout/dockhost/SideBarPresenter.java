@@ -42,7 +42,7 @@ public class SideBarPresenter<V extends SideBarView> extends AbstractAreaPresent
     }
 
     @Override
-    public ComposerAccess getComposerAccess() {
+    public SideBarPort.ComposerAccess getComposerAccess() {
         return getView().getComposer();
     }
 }

@@ -58,18 +58,18 @@ public abstract class AbstractTabFxView<P extends AbstractTabPresenter<?>> exten
         public void close() {
             var parent = getParent();
             if (parent != null) {
-                ((TabContainerFxView.Composer) parent.getComposer()).closeTab(view);
+                parent.getComposer().closeTab(view);
             }
         }
 
         @Override
-        public @Nullable TabContainerFxView<?> getContainer() {
-            return getParent(TabContainerFxView.class);
+        public @Nullable TabContainerFxView<?> getParent() {
+            return (TabContainerFxView<?>) super.getParent();
         }
 
         @Override
-        public @Nullable TabContainerPort getContainerPort() {
-            var container = getContainer();
+        public @Nullable TabContainerPort getParentPort() {
+            var container = getParent();
             return container == null ? null : container.getPresenter();
         }
 

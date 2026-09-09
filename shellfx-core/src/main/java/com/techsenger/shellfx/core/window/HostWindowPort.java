@@ -22,4 +22,10 @@ package com.techsenger.shellfx.core.window;
  */
 public interface HostWindowPort extends WindowPort, WindowContainerPort {
 
+    interface ComposerAccess extends WindowPort.ComposerAccess, WindowContainerPort.ComposerAccess {
+
+    }
+
+    @Override
+    ComposerAccess getComposerAccess();
 }

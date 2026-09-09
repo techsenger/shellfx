@@ -40,18 +40,18 @@ public abstract class AbstractPopupFxView<P extends AbstractPopupPresenter<?>>
         public void close() {
             var parent = getParent();
             if (parent != null) {
-                ((PopupContainerFxView.Composer) parent.getComposer()).closePopup(view);
+                parent.getComposer().closePopup(view);
             }
         }
 
         @Override
-        public @Nullable PopupContainerFxView<?> getContainer() {
-            return getParent(PopupContainerFxView.class);
+        public @Nullable PopupContainerFxView<?> getParent() {
+            return (PopupContainerFxView<?>) super.getParent();
         }
 
         @Override
-        public @Nullable PopupContainerPort getContainerPort() {
-            var container = getContainer();
+        public @Nullable PopupContainerPort getParentPort() {
+            var container = getParent();
             return container == null ? null : container.getPresenter();
         }
     }

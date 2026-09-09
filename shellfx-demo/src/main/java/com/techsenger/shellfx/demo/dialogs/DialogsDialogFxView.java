@@ -94,7 +94,7 @@ public class DialogsDialogFxView extends AbstractDialogFxView<DialogsDialogPrese
 
         private void showDialog(DialogFxView<?> dialog) {
             if (dialog.getPresenter().getWindowType() == WindowType.NESTED) {
-                getContainer().getComposer().addDialog(dialog);
+                getParent().getComposer().addDialog(dialog);
             } else {
                 dialog.getStage().initOwner(getNode().getScene().getWindow());
                 dialog.getStage().show();

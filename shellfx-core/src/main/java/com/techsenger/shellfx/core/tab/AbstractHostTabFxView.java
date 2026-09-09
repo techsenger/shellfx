@@ -160,7 +160,7 @@ public abstract class AbstractHostTabFxView<P extends AbstractHostTabPresenter<?
                     } else {
                         view.getNode().getContent().removeEventFilter(InputEvent.ANY, getEventBlocker());
                     }
-                    view.getComposer().getParent(TabContainerFxView.class).setTabHeaderBlocked(view.getNode(), blocked);
+                    view.getComposer().getParent().setTabHeaderBlocked(view.getNode(), blocked);
                 }
             };
         }

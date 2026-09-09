@@ -49,7 +49,7 @@ public class PageHostPresenter<V extends PageHostView> extends AbstractPageHostP
     }
 
     @Override
-    public ComposerAccess getComposerAccess() {
+    public PageHostPort.ComposerAccess getComposerAccess() {
         return getView().getComposer();
     }
 

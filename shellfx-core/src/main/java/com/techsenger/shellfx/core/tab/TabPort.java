@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.tab;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ChildPort;
 import com.techsenger.shellfx.core.CloseAwarePort;
 import com.techsenger.shellfx.core.ShellPort;
@@ -24,7 +25,6 @@ import com.techsenger.shellfx.core.traits.Iconed;
 import com.techsenger.shellfx.core.traits.Titled;
 import com.techsenger.shellfx.core.traits.Tooltiped;
 import com.techsenger.shellfx.core.traits.Waitable;
-import com.techsenger.shellfx.material.icon.Icon;
 
 /**
  *
@@ -32,27 +32,16 @@ import com.techsenger.shellfx.material.icon.Icon;
  */
 public interface TabPort extends ChildPort, CloseAwarePort, Closable, Waitable, Iconed, Titled, Tooltiped {
 
-    interface ComposerAccess {
+    interface ComposerAccess extends ChildPort.ComposerAccess {
 
         ShellPort getShellPort();
+
+        @Override
+        @Nullable TabContainerPort getParentPort();
     }
 
+    @Override
     ComposerAccess getComposerAccess();
 
-    /**
-     * Returns whether the tab can be closed.
-     *
-     * @return true if the tab can be closed, false otherwise
-     */
-    boolean isClosable();
-
-    boolean isWaiting();
-
     boolean isSelected();
-
-    String getTitle();
-
-    Icon<?> getIcon();
-
-    String getTooltip();
 }

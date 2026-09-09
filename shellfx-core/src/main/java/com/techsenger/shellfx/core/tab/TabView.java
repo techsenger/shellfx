@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.core.tab;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvp.ChildView;
 import com.techsenger.shellfx.core.ShellPort;
 import com.techsenger.shellfx.material.icon.Icon;
@@ -30,8 +29,6 @@ public interface TabView extends ChildView {
     interface Composer extends ChildView.Composer, TabPort.ComposerAccess {
 
         ShellPort getShellPort();
-
-        @Nullable TabContainerPort getContainerPort();
 
         void close();
     }

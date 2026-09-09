@@ -28,6 +28,11 @@ public abstract class AbstractHostWindowPresenter<V extends HostWindowView> exte
     }
 
     @Override
+    public HostWindowPort.ComposerAccess getComposerAccess() {
+        return getView().getComposer();
+    }
+
+    @Override
     protected void postInitialize() {
         super.postInitialize();
         setMinimizable(true);

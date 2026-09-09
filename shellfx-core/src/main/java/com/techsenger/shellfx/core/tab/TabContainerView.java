@@ -16,15 +16,15 @@
 
 package com.techsenger.shellfx.core.tab;
 
-import com.techsenger.patternfx.mvp.ParentView;
+import com.techsenger.patternfx.mvp.ChildView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerView extends ParentView {
+public interface TabContainerView extends ChildView {
 
-    interface Composer extends ParentView.Composer, TabContainerPort.ComposerAccess {
+    interface Composer extends ChildView.Composer, TabContainerPort.ComposerAccess {
 
     }
 

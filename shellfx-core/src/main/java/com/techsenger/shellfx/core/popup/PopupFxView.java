@@ -30,7 +30,8 @@ public interface PopupFxView<P extends PopupPresenter<?>> extends AreaFxView<P>,
 
         void close();
 
-        @Nullable PopupContainerFxView<?> getContainer();
+        @Override
+        @Nullable PopupContainerFxView<?> getParent();
     }
 
     @Override
