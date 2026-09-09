@@ -168,6 +168,10 @@ class Parent {
     <<interface>>
 }
 
+class Child {
+    <<interface>>
+}
+
 class PageContainer {
     <<interface>>
 }
@@ -210,10 +214,12 @@ class DefaultShell
 class AbstractTab
 class AbstractHostTab
 
-Parent <|-- PageContainer
-Parent <|-- TreePageContainer
-Parent <|-- PopupContainer
-Parent <|-- TabContainer
+Parent <|-- Child
+
+Child <|-- PageContainer
+Child <|-- TreePageContainer
+Child <|-- PopupContainer
+Child <|-- TabContainer
 
 PopupContainer <|-- WindowContainer
 
