@@ -21,6 +21,7 @@ import com.techsenger.shellfx.core.popup.PopupContainerPort;
 import java.util.List;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */

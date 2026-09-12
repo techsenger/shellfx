@@ -16,14 +16,14 @@
 
 package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.patternfx.mvp.FxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
  *
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface ControlFactory<V extends FxView<?>, T> {
+public interface ControlFactory<V extends ParentView<?>, T> {
 
     T create(V view);
 }

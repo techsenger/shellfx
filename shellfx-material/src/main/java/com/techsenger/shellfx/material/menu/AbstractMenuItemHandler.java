@@ -16,14 +16,14 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractMenuItemHandler<T extends ParentFxView<?>, I extends MenuItem & ManagedItem>
+public abstract class AbstractMenuItemHandler<T extends ParentView<?>, I extends MenuItem & ManagedItem>
         extends AbstractHandler<T> implements MenuItemHandler<T> {
 
     private final I item;

@@ -16,13 +16,13 @@
 
 package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
  *
  * @author Pavel Castornii
  */
-abstract class AbstractMenuRegistration<T extends ParentFxView<?>, R> implements ControlRegistry.Registration {
+abstract class AbstractMenuRegistration<T extends ParentView<?>, R> implements ControlRegistry.Registration {
 
     private final MenuElementType type;
 

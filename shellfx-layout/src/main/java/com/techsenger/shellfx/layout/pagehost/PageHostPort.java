@@ -18,8 +18,10 @@ package com.techsenger.shellfx.layout.pagehost;
 
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.page.PageContainerPort;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -31,4 +33,8 @@ public interface PageHostPort extends AreaPort, PageContainerPort {
 
     @Override
     ComposerAccess getComposerAccess();
+
+    boolean isFindMode();
+
+    ReadOnlyBooleanProperty findModeProperty();
 }

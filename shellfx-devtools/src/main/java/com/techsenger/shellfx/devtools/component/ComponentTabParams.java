@@ -44,7 +44,7 @@ public class ComponentTabParams extends TabParams {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(service);
         Objects.requireNonNull(tabDock);

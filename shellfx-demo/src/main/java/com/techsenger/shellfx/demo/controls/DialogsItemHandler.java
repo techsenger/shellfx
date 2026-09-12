@@ -16,33 +16,33 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.demo.dialogs.DialogsDialogFxView;
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.demo.dialogs.DialogsDialogParams;
-import com.techsenger.shellfx.demo.dialogs.DialogsDialogPresenter;
+import com.techsenger.shellfx.demo.dialogs.DialogsDialogView;
+import com.techsenger.shellfx.demo.dialogs.DialogsDialogViewModel;
+import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DialogsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class DialogsItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
 
-    public DialogsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public DialogsItemHandler(ShellView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
     @Override
     public void onAction() {
-        var shellV = getComponent();
-        var shellP = shellV.getPresenter();
-        var dialogView = new DialogsDialogFxView();
+        var shell = getComponent();
+        var context = shell.getViewModel().getContext();
         var dialogParams = new DialogsDialogParams(
-                shellP.getContext().getSettings().getAppearance(),
-                shellP.getContext().getHistoryManager());
-        var dialogPresenter = new DialogsDialogPresenter(dialogView, dialogParams);
-        dialogPresenter.initialize();
-        shellV.getComposer().addDialog(dialogView);
+                context.getSettings().getAppearance(),
+                context.getHistoryManager());
+        var dialogViewModel = new DialogsDialogViewModel<>(dialogParams);
+        var dialogView = new DialogsDialogView<>(dialogViewModel);
+        dialogView.initialize();
+        shell.getComposer().addDialog(dialogView);
     }
 }

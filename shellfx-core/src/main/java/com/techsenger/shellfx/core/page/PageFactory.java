@@ -28,5 +28,5 @@ public interface PageFactory<T extends PageItem> {
      * @param item
      * @return
      */
-    PageFxView<?> createAndInitialize(T item);
+    PageView<?> create(T item);
 }

@@ -16,14 +16,14 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface MenuItemHandler<T extends ParentFxView<?>> extends Handler {
+public interface MenuItemHandler<T extends ParentView<?>> extends Handler {
 
     static <T extends MenuItem & ManagedItem> void setHandler(T item, MenuItemHandler<?> handler) {
         item.getProperties().put(key(), handler);

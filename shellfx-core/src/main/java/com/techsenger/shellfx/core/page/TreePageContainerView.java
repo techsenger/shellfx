@@ -16,16 +16,17 @@
 
 package com.techsenger.shellfx.core.page;
 
-import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.patternfx.mvvm.ChildView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TreePageContainerView extends ChildView {
+public interface TreePageContainerView<VM extends TreePageContainerViewModel<?>> extends ChildView<VM> {
 
-    interface Composer extends ChildView.Composer, TreePageContainerPort.ComposerAccess {
+    interface Composer extends ChildView.Composer, TreePageContainerComposer {
 
+        void setPages(TreePageDescriptor root, boolean showRoot);
     }
 
     @Override

@@ -18,22 +18,26 @@ package com.techsenger.shellfx.demo;
 
 import atlantafx.base.theme.Styles;
 import com.techsenger.shellfx.core.DefaultShellContext;
-import com.techsenger.shellfx.core.DefaultShellFxView;
 import com.techsenger.shellfx.core.DefaultShellParams;
-import com.techsenger.shellfx.core.DefaultShellPresenter;
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.area.AreaFxView;
+import com.techsenger.shellfx.core.DefaultShellView;
+import com.techsenger.shellfx.core.DefaultShellViewModel;
+import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.registry.ControlRegistry;
+import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
+import static com.techsenger.shellfx.demo.ApplicationType.IDE;
+import static com.techsenger.shellfx.demo.ApplicationType.MDI;
+import static com.techsenger.shellfx.demo.ApplicationType.STYLES_ONLY;
 import com.techsenger.shellfx.demo.controls.ModuleControlRegistrar;
 import com.techsenger.shellfx.demo.history.DemoHistoryManager;
 import com.techsenger.shellfx.demo.settings.DemoSettings;
-import com.techsenger.shellfx.demo.styles.StylesTabFxView;
-import com.techsenger.shellfx.demo.styles.StylesTabPresenter;
+import com.techsenger.shellfx.demo.styles.StylesTabView;
+import com.techsenger.shellfx.demo.styles.StylesTabViewModel;
 import com.techsenger.shellfx.icons.Fonts;
 import com.techsenger.shellfx.icons.IconStylesheetFactory;
 import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
 import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
-import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
+import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -100,14 +104,23 @@ public class Demo extends Application {
         primaryStage.show();
     }
 
-    private ShellFxView<?> createShell(ApplicationType appType) {
-        // use default icons
+    private ShellView<?> createShell(ApplicationType appType) {
+        // setting icons
         FontIconView.setDefaultIconFont(Fonts.MATERIAL_DESIGN_ICONS.getFamily());
         IconStylesheets.addAll(IconStylesheetFactory.forAll());
 
-        // creating component
+        // creating shell component
         var controlRegistry = new ControlRegistry();
-        var shellView = new DefaultShellFxView<>(this, null, ShellControls.MAIN_MENU_GROUP, controlRegistry) {
+        var context = new DefaultShellContext(DemoSettings.createSettings(),
+                new DemoHistoryManager(), getHostServices());
+        if (appType == ApplicationType.STYLES_ONLY) {
+            // Important: To support different density styles, the window density must not be specified.
+            context.getSettings().getAppearance().setDensity(null);
+        }
+        var shellParams = new DefaultShellParams(context);
+        var shellViewModel = new DefaultShellViewModel<>(shellParams);
+        var shellView = new DefaultShellView<>(shellViewModel, this, null, ShellControls.MAIN_MENU_GROUP,
+                controlRegistry) {
             @Override
             protected void build() {
                 super.build();
@@ -116,22 +129,30 @@ public class Demo extends Application {
                 }
             }
         };
-        var context = new DefaultShellContext(DemoSettings.createSettings(),
-                new DemoHistoryManager(), getHostServices());
-        if (appType == ApplicationType.STYLES_ONLY) {
-            // Important: To support different density styles, the window density must not be specified.
-            context.getSettings().getAppearance().setDensity(null);
-        }
-        var shellParams = new DefaultShellParams(context);
-        var shellPresenter = new DefaultShellPresenter<>(shellView, shellParams);
-        shellPresenter.initialize();
-        shellPresenter.setTitle("ShellFX Demo");
+        shellView.initialize();
+        shellViewModel.setTitle("ShellFX Demo");
 
         // creating workspace
-        AreaFxView<?> workspace;
+        var workspace = createWorkspace(appType, shellView);
+        if (workspace != null) {
+            shellView.getComposer().addWorkspace(workspace);
+        }
+
+        // adding menu; register() itself is a no-op for STYLES_ONLY, since no branch there matches it
+        var registrar = new ModuleControlRegistrar(appType, shellView);
+        registrar.register();
+
+        shellView.upgradeMenuBar();
+        shellView.getStage().show();
+        return shellView;
+    }
+
+    private AreaView<?> createWorkspace(ApplicationType appType, ShellView<?> shellView) {
+        AreaView<?> workspace;
+        var context = shellView.getViewModel().getContext();
         switch (appType) {
             case BROWSER -> {
-                workspace = HostFactory.createTabHost();
+                workspace = HostFactory.createProminentTabHost(context.getSettings().getAppearance());
             }
             case IDE -> {
                 var dockHost = HostFactory.createDockHost(shellView, () -> context.getHistoryManager()
@@ -150,29 +171,19 @@ public class Demo extends Application {
                 workspace = null;
             }
             case STYLES_ONLY -> {
-                workspace = HostFactory.createTabHost();
+                workspace = HostFactory.createProminentTabHost(context.getSettings().getAppearance());
             }
             default -> throw new AssertionError();
         }
-        if (workspace != null) {
-            shellView.getComposer().addWorkspace(workspace);
-        }
-
-        // adding menu; register() itself is a no-op for STYLES_ONLY, since no branch there matches it
-        var registrar = new ModuleControlRegistrar(appType, shellView);
-        registrar.register();
-
-        shellView.upgradeMenuBar();
-        shellView.getStage().show();
-        return shellView;
+        return workspace;
     }
 
-    private void openInitialTab(ShellFxView<?> shell, ApplicationType appType) {
+    private void openInitialTab(ShellView<?> shell, ApplicationType appType) {
         if (appType == ApplicationType.STYLES_ONLY) {
-            var tabView = new StylesTabFxView(shell);
-            var tabPresenter = new StylesTabPresenter(tabView);
-            tabPresenter.initialize();
-            TabHostFxView<?> workspace = (TabHostFxView<?>) shell.getComposer().getWorkspace();
+            var tabViewModel = new StylesTabViewModel<>();
+            var tabView = new StylesTabView<>(tabViewModel, shell);
+            tabView.initialize();
+            TabHostView<?> workspace = (TabHostView<?>) shell.getComposer().getWorkspace();
             workspace.getComposer().addTab(tabView);
             tabView.requestFocus();
         }

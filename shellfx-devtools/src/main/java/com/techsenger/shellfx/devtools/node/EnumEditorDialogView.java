@@ -16,15 +16,39 @@
 
 package com.techsenger.shellfx.devtools.node;
 
-import java.util.List;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface EnumEditorDialogView extends EditorDialogView {
+public class EnumEditorDialogView<VM extends EnumEditorDialogViewModel<?>> extends AbstractEditorDialogView<VM> {
 
-    void updateValues(List<String> values);
+    private final ComboBox<String> comboBox = new ComboBox<>();
 
-    void updateValue(String value);
+    public EnumEditorDialogView(VM viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        comboBox.setItems(getViewModel().getValues());
+        HBox.setHgrow(comboBox, Priority.ALWAYS);
+        comboBox.setMaxWidth(Double.MAX_VALUE);
+        getRowBox().getChildren().add(comboBox);
+    }
+
+    @Override
+    protected void bind() {
+        super.bind();
+        comboBox.valueProperty().bindBidirectional(getViewModel().valueProperty());
+    }
 }

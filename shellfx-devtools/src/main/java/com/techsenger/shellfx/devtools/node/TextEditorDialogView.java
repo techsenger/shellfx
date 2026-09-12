@@ -16,11 +16,37 @@
 
 package com.techsenger.shellfx.devtools.node;
 
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface TextEditorDialogView extends EditorDialogView {
+public class TextEditorDialogView<VM extends TextEditorDialogViewModel<?>> extends AbstractEditorDialogView<VM> {
 
-    void updateValue(String value);
+    private TextField textField = createTextField();
+
+    public TextEditorDialogView(VM viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+        this.textField.requestFocus();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        HBox.setHgrow(textField, Priority.ALWAYS);
+        getRowBox().getChildren().add(textField);
+    }
+
+    @Override
+    protected void bind() {
+        super.bind();
+        textField.textProperty().bindBidirectional(getViewModel().valueProperty());
+    }
 }

@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.window;
 
-import com.techsenger.patternfx.mvp.ComponentParams;
+import com.techsenger.patternfx.core.ComponentParams;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import java.util.Objects;
 
@@ -51,7 +51,7 @@ public class WindowParams extends ComponentParams {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         if (this.windowType == WindowType.TOP_LEVEL) {
             Objects.requireNonNull(settings);

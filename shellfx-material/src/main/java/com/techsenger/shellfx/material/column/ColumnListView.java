@@ -121,7 +121,7 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
          */
         @Override
         public void updateItem(Integer item, boolean empty) {
-            applyColumnWidth();
+            updateColumnWidth();
             if (item != null && item.equals(getItem()) && !empty && !dirty) {
                 return;
             }
@@ -167,7 +167,7 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
          * {@code super.updateItem(...)}, called after this, so it would still read the previous, stale value
          * while this column is being recycled for a different one).
          */
-        private void applyColumnWidth() {
+        private void updateColumnWidth() {
             var width = listView.resolveColumnWidth(getIndex());
             if (width < 0) {
                 return;
@@ -179,11 +179,11 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
             // 100000, pref = content size) - column width alone doesn't constrain a cell with long content,
             // it must be set on the cell itself too.
             for (var cell : cachedCells) {
-                applyCellWidth(cell, width);
+                updateCellWidth(cell, width);
             }
         }
 
-        private void applyCellWidth(ColumnListCell<T> cell, double width) {
+        private void updateCellWidth(ColumnListCell<T> cell, double width) {
             cell.setMinWidth(width);
             cell.setPrefWidth(width);
             cell.setMaxWidth(width);
@@ -244,7 +244,7 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
             cell.setListView((ColumnListView) this.listView);
             var width = listView.getColumnWidth();
             if (width >= 0) {
-                applyCellWidth(cell, width);
+                updateCellWidth(cell, width);
             }
             this.cachedCells.add(cell);
         }
@@ -1031,7 +1031,7 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
             if (column == null) {
                 iterator.remove();
             } else {
-                column.applyColumnWidth();
+                column.updateColumnWidth();
             }
         }
     }

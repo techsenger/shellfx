@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.dialog.DialogFxView;
+import com.techsenger.shellfx.core.dialog.DialogView;
 import com.techsenger.shellfx.core.popup.PopupManager;
 import javafx.collections.ObservableList;
 
@@ -33,21 +33,21 @@ public interface WindowManager extends PopupManager {
      *
      * @param windowView the window to add
      */
-    void addWindow(WindowFxView<?> windowView);
+    void addWindow(WindowView<?> windowView);
 
     /**
      * Removes a window from the manager.
      *
      * @param windowView the window to remove
      */
-    void removeWindow(WindowFxView<?> windowView);
+    void removeWindow(WindowView<?> windowView);
 
     /**
      * Returns an unmodifiable list of windows.
      *
      * @return the list of windows. If no windows are present, an empty list is returned.
      */
-    @Unmodifiable ObservableList<WindowFxView<?>> getWindows();
+    @Unmodifiable ObservableList<WindowView<?>> getWindows();
 
     /**
      * Aligns the given window within the {@code StackPane} according to the given {@link WindowPosition}, adjusted
@@ -63,7 +63,7 @@ public interface WindowManager extends PopupManager {
      * @param yOffset offset added to the computed y coordinate; positive values shift the window
      *                down, negative values shift it up
      */
-    void alignWindow(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset);
+    void alignWindow(WindowView<?> window, WindowPosition pos, double xOffset, double yOffset);
 
     /**
      * Aligns the given window within the {@code StackPane} according to the given {@link WindowPosition}, using the
@@ -84,7 +84,7 @@ public interface WindowManager extends PopupManager {
      * @param yOffset offset added to the computed y coordinate; positive values shift the window down,
      *                negative values shift it up
      */
-    void alignWindowToStage(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset);
+    void alignWindowToStage(WindowView<?> window, WindowPosition pos, double xOffset, double yOffset);
 
     /**
      * Convenience method that adds the given dialog to the component tree and aligns it slightly above the center
@@ -100,7 +100,7 @@ public interface WindowManager extends PopupManager {
      *
      * @param dialog the dialog to add and align
      */
-    void addDialog(DialogFxView<?> dialog);
+    void addDialog(DialogView<?> dialog);
 
     /**
      * Arranges all managed windows according to the specified arrangement strategy.
@@ -117,21 +117,21 @@ public interface WindowManager extends PopupManager {
      *
      * @param window the window component to maximize
      */
-    void maximizeWindow(WindowFxView<?> window);
+    void maximizeWindow(WindowView<?> window);
 
     /**
      * Minimizes the specified window.
      *
      * @param window the window component to maximize
      */
-    void minimizeWindow(WindowFxView<?> window);
+    void minimizeWindow(WindowView<?> window);
 
     /**
      * Restores the specified window to its previous size and position before it was maximized or minimized.
      *
      * @param window the window component to restore
      */
-    void restoreWindow(WindowFxView<?> window);
+    void restoreWindow(WindowView<?> window);
 
     /**
      * Updates the state of a window in the manager.
@@ -141,5 +141,5 @@ public interface WindowManager extends PopupManager {
      *
      * @param windowView the window to update
      */
-    void updateWindow(WindowFxView<?> windowView);
+    void updateWindow(WindowView<?> windowView);
 }

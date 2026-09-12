@@ -22,6 +22,12 @@ import com.techsenger.shellfx.core.area.AreaView;
  *
  * @author Pavel Castornii
  */
-public interface PageView extends AreaView {
+public interface PageView<VM extends PageViewModel<?>> extends AreaView<VM> {
 
+    interface Composer extends AreaView.Composer {
+
+    }
+
+    @Override
+    Composer getComposer();
 }

@@ -25,18 +25,18 @@ import java.util.Objects;
  */
 public class FindPanelParams extends AreaParams {
 
-    private final PageHostFindPort pageHost;
+    private final FindPageHostPort pageHost;
 
-    public FindPanelParams(PageHostFindPort pageHost) {
+    public FindPanelParams(FindPageHostPort pageHost) {
         this.pageHost = pageHost;
     }
 
-    public PageHostFindPort getPageHost() {
+    public FindPageHostPort getPageHost() {
         return pageHost;
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(pageHost);
     }

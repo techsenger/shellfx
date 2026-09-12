@@ -17,9 +17,9 @@
 package com.techsenger.shellfx.devtools.component;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.mvp.FxViewUtils;
-import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.core.ShellFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.patternfx.mvvm.ViewUtils;
+import com.techsenger.shellfx.core.ShellView;
 import javafx.stage.Window;
 
 /**
@@ -28,9 +28,9 @@ import javafx.stage.Window;
  */
 public class JfxComponentService implements ComponentService {
 
-    private final ShellFxView<?> shell;
+    private final ShellView<?> shell;
 
-    public JfxComponentService(ShellFxView<?> shell) {
+    public JfxComponentService(ShellView<?> shell) {
         this.shell = shell;
     }
 
@@ -43,11 +43,9 @@ public class JfxComponentService implements ComponentService {
     public @Nullable ComponentItem getComponent(int windowUid) {
         for (Window window : Window.getWindows()) {
             if (window.hashCode() == windowUid) {
-                return new JfxComponentItem((ParentFxView<?>) FxViewUtils.getView(window.getScene()));
+                return new JfxComponentItem((ParentView<?>) ViewUtils.getView(window.getScene()));
             }
         }
         return null;
     }
-
-
 }

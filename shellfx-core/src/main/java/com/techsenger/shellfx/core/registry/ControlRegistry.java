@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.menu.ManagedItem;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
 import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
@@ -75,7 +75,7 @@ public final class ControlRegistry implements ExtensionRegistry {
      * @param factory   the factory used to create the menu
      * @return a {@link Registration} that can be used to unregister this contribution
      */
-    public <V extends ParentFxView<?>> Registration registerMenu(MenuGroupName<V> groupName,
+    public <V extends ParentView<?>> Registration registerMenu(MenuGroupName<V> groupName,
             ControlFactory<V, ManagedMenu> factory) {
         Objects.requireNonNull(groupName, "Group can't be null");
         var reg = new MenuRegistration<>(groupName, factory);
@@ -92,7 +92,7 @@ public final class ControlRegistry implements ExtensionRegistry {
      * @param factory  the factory used to create the menu group
      * @return a {@link Registration} that can be used to unregister this contribution
      */
-    public <V extends ParentFxView<?>> Registration registerMenuGroup(MenuName<V> menuName,
+    public <V extends ParentView<?>> Registration registerMenuGroup(MenuName<V> menuName,
             ControlFactory<V, ManagedMenuGroup> factory) {
         var reg = new MenuGroupRegistration<>(menuName, factory);
         register(menuName.getComponentClass(), reg);
@@ -112,7 +112,7 @@ public final class ControlRegistry implements ExtensionRegistry {
      * @param <I>       the concrete managed item type produced by the factory
      * @return a {@link Registration} that can be used to unregister this contribution
      */
-    public <I extends MenuItem & ManagedItem, V extends ParentFxView<?>> Registration registerMenuItem(
+    public <I extends MenuItem & ManagedItem, V extends ParentView<?>> Registration registerMenuItem(
             MenuGroupName<V> groupName, ControlFactory<V, I> factory) {
         var reg = new MenuItemRegistration<>(groupName, factory);
         register(groupName.getComponentClass(), reg);

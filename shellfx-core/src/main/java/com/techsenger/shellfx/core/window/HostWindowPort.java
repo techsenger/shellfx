@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core.window;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */

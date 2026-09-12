@@ -16,13 +16,18 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.storage.GenericFile;
 import java.net.URI;
-import java.util.List;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.collections.ObservableList;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -38,37 +43,41 @@ public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort
 
     String getInitialFileName();
 
-    List<Location> getLocations();
+    String getLocationCaption();
+
+    ReadOnlyStringProperty locationCaptionProperty();
+
+    @Unmodifiable ObservableList<Location> getLocations();
 
     Location getLocation();
 
+    ReadOnlyObjectProperty<Location> locationProperty();
+
     Mode getMode();
 
-    List<T> getFiles();
+    ReadOnlyObjectProperty<Mode> modeProperty();
 
-    T getSelectedFile();
+    T getDirectory();
 
-    int getSelectedFileIndex();
+    ReadOnlyObjectProperty<T> directoryProperty();
+
+    @Unmodifiable ObservableList<T> getFiles();
+
+    T getFile();
+
+    ReadOnlyObjectProperty<T> fileProperty();
+
+    int getFileIndex();
+
+    ReadOnlyIntegerProperty fileIndexProperty();
+
+    @Unmodifiable ObservableList<ExtensionFilter> getExtensionFilters();
 
     ExtensionFilter getExtensionFilter();
 
+    ReadOnlyObjectProperty<ExtensionFilter> extensionFilterProperty();
+
     String getFileName();
 
-    List<ExtensionFilter> getExtensionFilters();
-
-    String getLocationCaption();
-
-    void setLocationCaption(String value);
-
-    void setLocations(List<Location> locations);
-
-    void setLocation(Location value);
-
-    void setMode(Mode mode);
-
-    void setFileName(String fileName);
-
-    void setExtensionFilters(List<ExtensionFilter> filters);
-
-    void setExtensionFilter(ExtensionFilter filter);
+    ReadOnlyStringProperty fileNameProperty();
 }

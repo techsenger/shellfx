@@ -17,10 +17,13 @@
 package com.techsenger.shellfx.core.tab;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ChildPort;
+import com.techsenger.patternfx.core.ChildPort;
 import java.util.List;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -39,70 +42,28 @@ public interface TabContainerPort extends ChildPort {
          * Returns selected tab port.
          */
         TabPort getSelectedTabPort();
+
+        ReadOnlyObjectProperty<? extends TabPort> selectedTabPortProperty();
+
+        /**
+         * Returns the index of the currently selected tab.
+         *
+         * @return zero-based index of the selected tab, or {@code -1} if no tab is selected
+         */
+        int getSelectedTabIndex();
+
+        ReadOnlyIntegerProperty selectedTabIndexProperty();
+
+        /**
+         * Returns the number of tabs currently contained in the tab container.
+         *
+         * @return number of tabs
+         */
+        int getTabCount();
+
+        ReadOnlyIntegerProperty tabCountProperty();
     }
 
     @Override
     ComposerAccess getComposerAccess();
-
-    /**
-     * Returns the index of the currently selected tab.
-     *
-     * @return zero-based index of the selected tab, or {@code -1} if no tab is selected
-     */
-    int getSelectedTabIndex();
-
-    /**
-     * Returns the number of tabs currently contained in the tab container.
-     *
-     * @return number of tabs
-     */
-    int getTabCount();
-
-    /**
-     * Selects the tab at the given index.
-     *
-     * @param tabIndex zero-based index of the tab to select
-     * @throws IndexOutOfBoundsException if the index is out of range
-     */
-    void selectTab(int tabIndex);
-
-    /**
-     * Closes all tabs except the specified one.
-     *
-     * @param tab the {@link TabPort} to keep open
-     */
-    void closeOtherTabs(TabPort tab);
-
-    /**
-     * Closes all tabs in the given list.
-     *
-     * @param tabs list of {@link TabPort} instances to close
-     */
-    void closeTabs(List<? extends TabPort> tabs);
-
-    /**
-     * Closes all tabs in this container.
-     */
-    void closeAllTabs();
-
-    /**
-     * Closes all tabs to the right of the specified tab.
-     *
-     * @param tab the {@link TabPort} used as a reference point
-     */
-    void closeRightTabs(TabPort tab);
-
-    /**
-     * Closes all tabs to the left of the specified tab.
-     *
-     * @param tab the {@link TabPort} used as a reference point
-     */
-    void closeLeftTabs(TabPort tab);
-
-    /**
-     * Closes the specified tab.
-     *
-     * @param tab the {@link TabPort} to close
-     */
-    void closeTab(TabPort tab);
 }

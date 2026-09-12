@@ -16,13 +16,13 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractMenuHandler<T extends ParentFxView<?>> extends AbstractHandler<T>
+public abstract class AbstractMenuHandler<T extends ParentView<?>> extends AbstractHandler<T>
         implements MenuHandler<T> {
 
     private final ManagedMenu menu;

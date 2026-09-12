@@ -16,18 +16,47 @@
 
 package com.techsenger.shellfx.core.popup;
 
-import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvvm.ChildView;
+import com.techsenger.shellfx.material.Anchors;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupContainerView extends ChildView {
+public interface PopupContainerView<VM extends PopupContainerViewModel<?>> extends ChildView<VM> {
 
-    interface Composer extends ChildView.Composer, PopupContainerPort.ComposerAccess {
+    interface Composer extends ChildView.Composer, PopupContainerComposer {
 
+        /**
+         * Adds the specified popup component to the component tree.
+         *
+         * @param popup the popup component to add
+         */
+        void addPopup(PopupView<?> popup, Anchors anchors);
+
+        /**
+         * Removes the specified popup component from the component tree.
+         *
+         * @param popup the popup component to remove
+         */
+        void removePopup(PopupView<?> popup);
+
+        /**
+         * Removes the specified popup component from the component tree and deinitializes it.
+         *
+         * @param popup the popup component to close
+         */
+        void closePopup(PopupView<?> popup);
+
+        /**
+         * Returns an an modifiable list of popups.
+         */
+        @Unmodifiable List<? extends PopupView<?>> getPopups();
     }
 
     @Override
     Composer getComposer();
+
 }

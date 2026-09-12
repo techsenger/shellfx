@@ -16,25 +16,27 @@
 
 package com.techsenger.shellfx.core.popup;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaView;
+import javafx.scene.layout.Pane;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PopupView extends AreaView {
+public interface PopupView<VM extends PopupViewModel<?>> extends AreaView<VM> {
 
     interface Composer extends AreaView.Composer, PopupPort.ComposerAccess {
 
         void close();
+
+        @Override
+        @Nullable PopupContainerView<?> getParent();
     }
 
     @Override
+    Pane getNode();
+
+    @Override
     Composer getComposer();
-
-    void updatePrefWidth(double value);
-
-    void updatePrefHeight(double value);
-
-    void updateWaiting(boolean waiting);
 }

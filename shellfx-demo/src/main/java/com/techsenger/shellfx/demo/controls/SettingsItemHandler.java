@@ -16,32 +16,32 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.demo.settings.SettingsDialogFxView;
+import com.techsenger.shellfx.demo.settings.SettingsDialogView;
 import com.techsenger.shellfx.demo.settings.SettingsDialogParams;
-import com.techsenger.shellfx.demo.settings.SettingsDialogPresenter;
+import com.techsenger.shellfx.demo.settings.SettingsDialogViewModel;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class SettingsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class SettingsItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
 
-    public SettingsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public SettingsItemHandler(ShellView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
     @Override
     public void onAction() {
         var shell = getComponent();
-        var appearance = shell.getPresenter().getContext().getSettings().getAppearance();
-        var view = new SettingsDialogFxView();
+        var appearance = shell.getViewModel().getContext().getSettings().getAppearance();
         var params = new SettingsDialogParams(WindowType.NESTED, appearance);
-        var presenter = new SettingsDialogPresenter(view, params);
-        presenter.initialize();
+        var viewModel = new SettingsDialogViewModel<>(params);
+        var view = new SettingsDialogView<>(viewModel);
+        view.initialize();
         shell.getComposer().addDialog(view);
     }
 }

@@ -16,19 +16,20 @@
 
 package com.techsenger.shellfx.core.page;
 
-import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.patternfx.mvvm.ChildView;
+import java.util.List;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageContainerView extends ChildView {
+public interface PageContainerView<VM extends PageContainerViewModel<?>> extends ChildView<VM> {
 
-    interface Composer extends ChildView.Composer, PageContainerPort.ComposerAccess {
+    interface Composer extends ChildView.Composer, PageContainerComposer {
 
+        void setPages(List<PageDescriptor> pages);
     }
 
     @Override
     Composer getComposer();
-
 }

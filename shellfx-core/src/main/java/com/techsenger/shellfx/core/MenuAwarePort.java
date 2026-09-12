@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.patternfx.mvp.ParentPort;
+import com.techsenger.patternfx.core.ParentPort;
 
 /**
  * Interface for the port the menu interacts with.

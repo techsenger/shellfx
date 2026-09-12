@@ -37,7 +37,7 @@ public class StylesheetTabParams extends TabParams {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(tabDock);
     }

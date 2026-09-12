@@ -17,14 +17,14 @@
 package com.techsenger.shellfx.demo.page;
 
 import com.techsenger.patternfx.core.DefaultComponentName;
-import com.techsenger.patternfx.mvp.ComponentDescriptor;
+import com.techsenger.patternfx.mvvm.Descriptor;
 import com.techsenger.shellfx.core.page.DefaultPageDescriptor;
 import com.techsenger.shellfx.core.page.DefaultTreePageDescriptor;
 import com.techsenger.shellfx.core.page.PageDescriptor;
 import com.techsenger.shellfx.core.page.PageFactory;
-import com.techsenger.shellfx.core.page.PageFxView;
 import com.techsenger.shellfx.core.page.PageItem;
 import com.techsenger.shellfx.core.page.PageParams;
+import com.techsenger.shellfx.core.page.PageView;
 import com.techsenger.shellfx.core.page.TreePageDescriptor;
 import com.techsenger.shellfx.material.style.Spacing;
 import java.util.List;
@@ -49,27 +49,27 @@ final class MenuFactory {
         }
 
         @Override
-        public PageFxView<?> createAndInitialize(PageItem item) {
+        public PageView<?> create(PageItem item) {
             Insets padding;
             if (pageHostParent == PageHostParent.DIALOG) {
                 padding = new Insets(0, Spacing.getHorizontal(), 0, Spacing.getHorizontal());
             } else {
                 padding = new Insets(0, Spacing.getHorizontal(), Spacing.getVertical(), Spacing.getHorizontal());
             }
-            var view = new DemoPageFxView(padding);
             var params = new PageParams(item);
-            var presenter = new DemoPagePresenter(view, params) {
+            var viewModel = new DemoPageViewModel<>(params) {
                 @Override
-                protected ComponentDescriptor createDescriptor() {
-                    return new ComponentDescriptor(new DefaultComponentName(item.getText()));
+                protected Descriptor createDescriptor() {
+                    return new Descriptor(new DefaultComponentName(item.getText()));
                 }
             };
-            presenter.initialize();
+            var view = new DemoPageView<>(viewModel, padding);
+            view.initialize();
             return view;
         }
     }
 
-    static List<PageDescriptor> createMenu(PageHostParent parentType) {
+    static List<PageDescriptor> createFlatMenu(PageHostParent parentType) {
         return List.of(
                 new DefaultPageDescriptor("Page 0", new PageFactoryImpl(parentType)),
                 new DefaultPageDescriptor("Page 1", new PageFactoryImpl(parentType)),

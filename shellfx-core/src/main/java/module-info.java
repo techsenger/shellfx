@@ -26,7 +26,7 @@ module com.techsenger.shellfx.core {
     requires atlantafx.base;
     requires com.techsenger.tabpanepro.core;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvp;
+    requires com.techsenger.patternfx.mvvm;
     requires com.techsenger.shellfx.material;
 
     exports com.techsenger.shellfx.core;

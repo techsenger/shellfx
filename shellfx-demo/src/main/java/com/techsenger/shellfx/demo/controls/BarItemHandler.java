@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
@@ -25,9 +25,9 @@ import com.techsenger.shellfx.material.menu.ManagedMenuItem;
  *
  * @author Pavel Castornii
  */
-public class BarItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class BarItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
 
-    public BarItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public BarItemHandler(ShellView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
@@ -35,7 +35,7 @@ public class BarItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, Mana
     public void onUpdate() {
         super.onUpdate();
         var menuAware = getComponent().getComposer().getMenuAware();
-        if (menuAware.getPresenter() instanceof DemoMenuAwarePort port) {
+        if (menuAware.getViewModel() instanceof DemoMenuAwarePort port) {
             getItem().setVisible(port.isBarIncluded());
             getItem().setDisable(port.isBarDisabled());
         }

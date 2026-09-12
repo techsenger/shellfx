@@ -16,27 +16,132 @@
 
 package com.techsenger.shellfx.devtools.stylesheet;
 
-import com.techsenger.shellfx.core.tab.TabView;
-import com.techsenger.shellfx.devtools.ToolBarPort;
+import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.tab.AbstractTabView;
+import com.techsenger.shellfx.devtools.FindToolBarPort;
+import com.techsenger.shellfx.devtools.ToolBarParams;
+import com.techsenger.shellfx.devtools.ToolBarView;
+import com.techsenger.shellfx.devtools.ToolBarViewModel;
+import com.techsenger.shellfx.material.style.StyleClasses;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import javafx.collections.ListChangeListener;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface StylesheetTabView extends TabView {
+public class StylesheetTabView<VM extends StylesheetTabViewModel<?>> extends AbstractTabView<VM> {
 
-    interface Composer extends TabView.Composer {
+    public class Composer extends AbstractTabView<VM>.Composer implements StylesheetTabComposer {
 
-       ToolBarPort getToolBarPort();
+        private final StylesheetTabView<VM> view = StylesheetTabView.this;
+
+        private ToolBarView<?> toolBar;
+
+        @Override
+        public void compose() {
+            super.compose();
+
+            this.toolBar = createToolBar();
+            getModifiableChildren().add(this.toolBar);
+            view.getContentBox().getChildren().add(0, this.toolBar.getNode());
+        }
+
+        protected ToolBarView<?> createToolBar() {
+            var viewModel = new ToolBarViewModel<>(new ToolBarParams(getViewModel().new ToolBarAwarePortImpl()));
+            var toolBarView = new ToolBarView<>(viewModel, "NodeClass / StyleClass / ID", false);
+            toolBarView.initialize();
+            return toolBarView;
+        }
+
+        @Override
+        public FindToolBarPort getToolBarPort() {
+            return this.toolBar == null ? null : this.toolBar.getViewModel();
+        }
+    }
+
+    private static final class StylesheetTreeCell extends TreeCell<StylesheetItem> {
+
+        @Override
+        protected void updateItem(StylesheetItem item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+            } else {
+                setText(item.name());
+            }
+        }
+    }
+
+    private final TreeView<StylesheetItem> treeView = new TreeView<>();
+
+    public StylesheetTabView(VM viewModel, ShellView<?> shell) {
+        super(viewModel, shell);
     }
 
     @Override
-    Composer getComposer();
+    public void requestFocus() {
 
-    /**
-     * Flat list of items representing a tree structure. The hierarchy is encoded via
-     * {@link StylesheetItem#depth() } and the actual TreeItems are rebuilt in the View on each refresh.
-     */
-    void updateItems(List<StylesheetItem> items);
+    }
+
+    @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
+    }
+
+    @Override
+    protected Composer createComposer() {
+        return new StylesheetTabView.Composer();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        treeView.getStyleClass().add(StyleClasses.NO_BORDER);
+        treeView.setShowRoot(true);
+        treeView.setCellFactory(e -> new StylesheetTreeCell());
+
+        VBox.setVgrow(treeView, Priority.ALWAYS);
+        getContentBox().getChildren().add(treeView);
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        getViewModel().getItems().addListener(
+                (ListChangeListener<StylesheetItem>) c -> rebuildTree(getViewModel().getItems()));
+        treeView.getSelectionModel().selectedItemProperty().addListener((ov, oldV, newV) -> {
+            if (newV != null) {
+                getViewModel().onStylesheetSelected(newV.getValue());
+            }
+        });
+    }
+
+    protected TreeView<StylesheetItem> getTreeView() {
+        return treeView;
+    }
+
+    private void rebuildTree(List<StylesheetItem> items) {
+        List<TreeItem<StylesheetItem>> lastTreeItems = new ArrayList<>(Collections.nCopies(4, null));
+        for (var item : items) {
+            var treeItem = new TreeItem<StylesheetItem>(item);
+            lastTreeItems.set(item.type().getDepth(), treeItem);
+            treeItem.setExpanded(item.expanded());
+            if (item.type() != StylesheetItemType.APPLICATION) {
+                var parent = lastTreeItems.get(item.type().getDepth() - 1);
+                if (parent != null) {
+                    parent.getChildren().add(treeItem);
+                }
+            }
+        }
+        // do not use the same root multiple times, as it causes a bug with node expansion
+        treeView.setRoot(lastTreeItems.get(0));
+    }
 }

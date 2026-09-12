@@ -22,5 +22,5 @@ package com.techsenger.shellfx.demo.dialogs;
  */
 enum DialogType {
 
-    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, OPEN_FILE, SAVE_FILE, PAGE, TREE_PAGE
+    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, PROGRESS, OPEN_FILE, SAVE_FILE, PAGE, TREE_PAGE
 }

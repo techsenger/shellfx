@@ -19,6 +19,7 @@ package com.techsenger.shellfx.core.tab;
 import com.techsenger.shellfx.core.window.WindowContainerPort;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */

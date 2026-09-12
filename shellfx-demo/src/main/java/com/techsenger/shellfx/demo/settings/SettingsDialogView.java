@@ -16,17 +16,100 @@
 
 package com.techsenger.shellfx.demo.settings;
 
-import com.techsenger.shellfx.core.dialog.DialogView;
+import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Density;
+import com.techsenger.shellfx.material.style.Spacing;
+import com.techsenger.shellfx.material.theme.AtlantaFxTheme;
 import com.techsenger.shellfx.material.theme.Theme;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface SettingsDialogView extends DialogView {
+public class SettingsDialogView<VM extends SettingsDialogViewModel<?>> extends AbstractDialogView<VM> {
 
-    void updateSelectedTheme(Theme theme);
+    private final Label themeLabel = new Label("Theme");
 
-    void updateSelectedDensity(Density density);
+    private final ComboBox<Theme> themeComboBox =
+            new ComboBox<>(FXCollections.observableArrayList(AtlantaFxTheme.values()));
+
+    private final Label densityLabel = new Label("Density");
+
+    private final ComboBox<Density> densityComboBox = new ComboBox<>();
+
+    private final GridPane gridPane = new GridPane();
+
+    private final ResultButton cancelButton = new ResultButton(SettingsDialogButtons.CANCEL, "Cancel");
+
+    private final ResultButton okButton = new ResultButton(SettingsDialogButtons.OK, "OK");
+
+    public SettingsDialogView(VM viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+        themeComboBox.requestFocus();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        themeLabel.setMinWidth(Region.USE_PREF_SIZE);
+        themeComboBox.setMaxWidth(Double.MAX_VALUE);
+        themeComboBox.setConverter(new StringConverter<Theme>() {
+            @Override
+            public String toString(Theme t) {
+                return t.getName();
+            }
+
+            @Override
+            public Theme fromString(String string) {
+                return null;
+            }
+        });
+        GridPane.setHgrow(themeComboBox, Priority.ALWAYS);
+        gridPane.addRow(gridPane.getRowCount(), themeLabel, themeComboBox);
+
+        densityLabel.setMinWidth(Region.USE_PREF_SIZE);
+        densityComboBox.getItems().add(null);
+        densityComboBox.getItems().addAll(Density.values());
+        densityComboBox.setMaxWidth(Double.MAX_VALUE);
+        GridPane.setHgrow(densityComboBox, Priority.ALWAYS);
+        gridPane.addRow(gridPane.getRowCount(), densityLabel, densityComboBox);
+
+        gridPane.setVgap(Spacing.getVertical());
+        gridPane.setHgap(Spacing.getHorizontal());
+
+        okButton.setDefaultButton(true);
+        registerButtons(cancelButton, okButton);
+        getButtonWidthGroup().add(cancelButton, okButton);
+        VBox.setVgrow(gridPane, Priority.ALWAYS);
+        getContentBox().getChildren().add(gridPane);
+    }
+
+    @Override
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
+        viewModel.themeWrapper().bind(themeComboBox.valueProperty());
+        viewModel.densityWrapper().bind(densityComboBox.valueProperty());
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
+        viewModel.themeSource().addListener((theme) -> themeComboBox.setValue(theme));
+        viewModel.densitySource().addListener((density) -> densityComboBox.setValue(density));
+    }
 }

@@ -17,19 +17,20 @@
 package com.techsenger.shellfx.demo;
 
 import com.techsenger.patternfx.core.HistoryProvider;
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.area.AreaParams;
-import com.techsenger.shellfx.demo.shared.DockableTabFxView;
+import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.demo.shared.DockableTabParams;
-import com.techsenger.shellfx.demo.shared.DockableTabPresenter;
-import com.techsenger.shellfx.layout.dockhost.DockHostFxView;
+import com.techsenger.shellfx.demo.shared.DockableTabView;
+import com.techsenger.shellfx.demo.shared.DockableTabViewModel;
 import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
 import com.techsenger.shellfx.layout.dockhost.DockHostParams;
-import com.techsenger.shellfx.layout.dockhost.DockHostPresenter;
+import com.techsenger.shellfx.layout.dockhost.DockHostView;
+import com.techsenger.shellfx.layout.dockhost.DockHostViewModel;
 import com.techsenger.shellfx.layout.dockhost.SideBarPolicy;
-import com.techsenger.shellfx.layout.dockhost.TabDockFxView;
-import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
-import com.techsenger.shellfx.layout.tabhost.TabHostPresenter;
+import com.techsenger.shellfx.layout.dockhost.TabDockView;
+import com.techsenger.shellfx.layout.tabhost.ProminentTabHostParams;
+import com.techsenger.shellfx.layout.tabhost.ProminentTabHostView;
+import com.techsenger.shellfx.layout.tabhost.ProminentTabHostViewModel;
 
 /**
  *
@@ -37,62 +38,57 @@ import com.techsenger.shellfx.layout.tabhost.TabHostPresenter;
  */
 public final class HostFactory {
 
-    public static TabHostFxView<?> createTabHost() {
-        var view = new TabHostFxView<>(true);
-        var params = new AreaParams();
-        var presenter = new TabHostPresenter<>(view, params) {
-            @Override
-            protected void onTabCountChanged(int tabCount) {
-                super.onTabCountChanged(tabCount);
-                setTabHeaderVisible(tabCount > 0);
-            }
-        };
-        presenter.initialize();
-        presenter.setTabHeaderVisible(false);
+    public static ProminentTabHostView<?> createProminentTabHost(AppearanceSettings settings) {
+        var params = new ProminentTabHostParams(settings);
+        var viewModel = new ProminentTabHostViewModel<>(params);
+        var view = new ProminentTabHostView<>(viewModel);
+        viewModel.getComposer().tabCountProperty().addListener((ov, oldV, newV) ->
+                viewModel.setTabHeaderVisible(newV.intValue() > 0));
+        view.initialize();
+        viewModel.setTabHeaderVisible(false);
         return view;
     }
 
-    public static DockHostFxView<?> createDockHost(ShellFxView<?> shell,
-            HistoryProvider<DockHostHistory> historyProvider) {
-        var view = new DockHostFxView<>() {
-            public class Composer extends DockHostFxView<?>.Composer {
+    public static DockHostView<?> createDockHost(ShellView<?> shell, HistoryProvider<DockHostHistory> historyProvider) {
+        var params = new DockHostParams(historyProvider);
+        var viewModel = new DockHostViewModel<>(params);
+        var view = new DockHostView<>(viewModel) {
+            public class Composer extends DockHostView<?>.Composer {
 
                 @Override
-                public TabDockFxView<?> createTabDock() {
+                public TabDockView<?> createTabDock() {
                     var tabDock = super.createTabDock();
-                    tabDock.getPresenter().setMinimizable(true);
-                    tabDock.getPresenter().setDraggable(true);
+                    tabDock.getViewModel().setMinimizable(true);
+                    tabDock.getViewModel().setDraggable(true);
                     return tabDock;
                 }
             }
 
             @Override
-            protected DockHostFxView.Composer createComposer() {
+            protected DockHostView.Composer createComposer() {
                 return new Composer();
             }
         };
-        var params = new DockHostParams(historyProvider);
-        var presenter = new DockHostPresenter<>(view, params);
-        presenter.initialize();
+        view.initialize();
         view.getComposer().setBottomBarPolicy(SideBarPolicy.EXISTS_ALWAYS);
         return view;
     }
 
-    public static TabDockFxView<?> createLeftTabDock(ShellFxView<?> shell, DockHostFxView<?> dockHost) {
+    public static TabDockView<?> createLeftTabDock(ShellView<?> shell, DockHostView<?> dockHost) {
         var leftTabDock = dockHost.getComposer().createTabDock();
-        leftTabDock.getPresenter().setDraggable(true);
-        leftTabDock.getPresenter().setMinimizable(true);
+        leftTabDock.getViewModel().setDraggable(true);
+        leftTabDock.getViewModel().setMinimizable(true);
         fillTabs(shell, leftTabDock);
-        leftTabDock.selectTab(0);
+        leftTabDock.getViewModel().selectTab(0);
         return leftTabDock;
     }
 
-    private static void fillTabs(ShellFxView<?> shell, TabDockFxView<?> tabDock) {
+    private static void fillTabs(ShellView<?> shell, TabDockView<?> tabDock) {
         for (var i = 0; i < 10; i++) {
-            var tabView = new DockableTabFxView(shell);
             var tabParams = new DockableTabParams(i + 1);
-            var tabPresenter = new DockableTabPresenter(tabView, tabParams);
-            tabPresenter.initialize();
+            var tabViewModel = new DockableTabViewModel<>(tabParams);
+            var tabView = new DockableTabView(tabViewModel, shell);
+            tabView.initialize();
             tabDock.getComposer().addTab(tabView);
         }
     }

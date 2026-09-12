@@ -16,19 +16,93 @@
 
 package com.techsenger.shellfx.demo.page;
 
-import com.techsenger.shellfx.core.tab.TabView;
+import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.tab.AbstractTabView;
+import com.techsenger.shellfx.layout.pagehost.AbstractPageHostView;
+import com.techsenger.shellfx.layout.pagehost.PageHostParams;
+import com.techsenger.shellfx.layout.pagehost.PageHostView;
+import com.techsenger.shellfx.layout.pagehost.PageHostViewModel;
+import com.techsenger.shellfx.layout.pagehost.TreePageHostParams;
+import com.techsenger.shellfx.layout.pagehost.TreePageHostView;
+import com.techsenger.shellfx.layout.pagehost.TreePageHostViewModel;
+import com.techsenger.shellfx.material.style.StyleClasses;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface PageTabView extends TabView {
+public class PageTabView<VM extends PageTabViewModel<?>> extends AbstractTabView<VM> {
 
-    interface Composer extends TabView.Composer {
+    public class Composer extends AbstractTabView<VM>.Composer {
 
-        void setMenuType(PageMenuType menuType);
+        private AbstractPageHostView<?> pageHost;
+
+        @Override
+        public void compose() {
+            super.compose();
+            if (getViewModel().getMenuType() == PageMenuType.FLAT) {
+                var pages = MenuFactory.createFlatMenu(PageHostParent.TAB);
+                var params = new PageHostParams(() -> getViewModel().getHistory().getHostHistory());
+                var pageHostViewModel = new PageHostViewModel<>(params);
+                pageHostViewModel.setDividerPosition(0.275);
+                var pageHost = new PageHostView<>(pageHostViewModel);
+                pageHost.initialize();
+                pageHost.getComposer().setPages(pages);
+                getModifiableChildren().add(pageHost);
+                getContentBox().getChildren().add(pageHost.getNode());
+                VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
+                pageHostViewModel.selectPage(0);
+                this.pageHost = pageHost;
+            } else {
+                var rootItem = MenuFactory.createTreeMenu(PageHostParent.TAB);
+                var params = new TreePageHostParams(() -> getViewModel().getHistory().getHostHistory());
+                var treeHostViewModel = new TreePageHostViewModel<>(params);
+                treeHostViewModel.setDividerPosition(0.275);
+                var pageHost = new TreePageHostView<>(treeHostViewModel);
+                pageHost.initialize();
+                pageHost.getComposer().setPages(rootItem, false);
+                getModifiableChildren().add(pageHost);
+                getContentBox().getChildren().add(pageHost.getNode());
+                VBox.setVgrow(pageHost.getNode(), Priority.ALWAYS);
+                treeHostViewModel.selectPage(rootItem.getChildren().getFirst()); // the root is not shown
+                this.pageHost = pageHost;
+            }
+        }
+
+        private AbstractPageHostView<?> getPageHost() {
+            return pageHost;
+        }
+    }
+
+    public PageTabView(VM viewModel, ShellView<?> shell) {
+        super(viewModel, shell);
     }
 
     @Override
-    Composer getComposer();
+    public void requestFocus() {
+         getComposer().getPageHost().requestFocus();
+    }
+
+    @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
+    }
+
+    @Override
+    protected Composer createComposer() {
+        return new PageTabView.Composer();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        var button = new Button("Test");
+        var toolBar = new ToolBar(button);
+        toolBar.getStyleClass().add(StyleClasses.BLEND);
+        getContentBox().getChildren().add(toolBar);
+    }
 }

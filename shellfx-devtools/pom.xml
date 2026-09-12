@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>com.techsenger.patternfx</groupId>
-            <artifactId>patternfx-mvp</artifactId>
+            <artifactId>patternfx-mvvm</artifactId>
         </dependency>
         <dependency>
             <groupId>com.techsenger.toolkit</groupId>

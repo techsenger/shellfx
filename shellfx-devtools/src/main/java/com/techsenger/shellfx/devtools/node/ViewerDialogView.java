@@ -16,23 +16,111 @@
 
 package com.techsenger.shellfx.devtools.node;
 
-import com.techsenger.shellfx.core.dialog.DialogView;
+import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.devtools.style.DevToolsIcons;
+import com.techsenger.shellfx.material.button.ResultButton;
+import com.techsenger.shellfx.material.icon.FontIconView;
+import com.techsenger.shellfx.material.style.Spacing;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ViewerDialogView extends DialogView {
+public class ViewerDialogView<VM extends ViewerDialogViewModel<?>> extends AbstractDialogView<VM> {
 
-    void updateName(String name);
+    private final GridPane gridPane = new GridPane();
 
-    void addNameUrl(String url);
+    private final Label nameLabel = new Label();
 
-    void updateValue(String value);
+    private final HBox nameBox = new HBox(nameLabel);
 
-    void updateCss(String css);
+    private final TextArea valueTextArea = new TextArea();
 
-    void addCssUrl(String url);
+    private final Label cssLabel = new Label("Css Property");
 
-    void updateState(String state);
+    private final HBox cssBox = new HBox(cssLabel);
+
+    private final TextField cssTextField = new TextField();
+
+    private final Label stateLabel = new Label("State");
+
+    private final TextField stateTextField = new TextField();
+
+    private final ResultButton okButton = new ResultButton(ViewerDialogButtons.OK, "OK");
+
+    public ViewerDialogView(VM viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+        gridPane.requestFocus();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+
+        nameLabel.setText(getViewModel().getName());
+        nameLabel.setMinWidth(Label.USE_PREF_SIZE);
+        nameBox.setAlignment(Pos.TOP_LEFT);
+        var nameUrl = getViewModel().getNameUrl();
+        if (nameUrl != null) {
+            addLink(nameBox, nameUrl);
+        }
+        gridPane.add(nameBox, 0, 0);
+        GridPane.setValignment(nameBox, VPos.TOP);
+        valueTextArea.setText(getViewModel().getValue());
+        valueTextArea.setEditable(false);
+        valueTextArea.setWrapText(true);
+        gridPane.add(valueTextArea, 1, 0);
+        GridPane.setVgrow(valueTextArea, Priority.ALWAYS);
+        GridPane.setHgrow(valueTextArea, Priority.ALWAYS);
+
+        cssLabel.setMinWidth(Label.USE_PREF_SIZE);
+        cssBox.setAlignment(Pos.CENTER_LEFT);
+        var cssUrl = getViewModel().getCssUrl();
+        if (cssUrl != null) {
+            addLink(cssBox, cssUrl);
+        }
+        gridPane.add(cssBox, 0, 1);
+        cssTextField.setText(getViewModel().getCss());
+        cssTextField.setEditable(false);
+        GridPane.setHgrow(cssTextField, Priority.ALWAYS);
+        gridPane.add(cssTextField, 1, 1);
+
+        stateLabel.setMinWidth(Hyperlink.USE_PREF_SIZE);
+        gridPane.add(stateLabel, 0, 2);
+        stateTextField.setText(getViewModel().getState());
+        stateTextField.setEditable(false);
+        GridPane.setHgrow(stateTextField, Priority.ALWAYS);
+        gridPane.add(stateTextField, 1, 2);
+
+        gridPane.setVgap(Spacing.getVertical());
+        gridPane.setHgap(Spacing.getHorizontal());
+        VBox.setVgrow(gridPane, Priority.ALWAYS);
+        getContentBox().getChildren().addAll(gridPane);
+
+        registerButtons(okButton);
+        okButton.setDefaultButton(true);
+    }
+
+    private void addLink(HBox box, String url) {
+        var link = new Hyperlink(null, new FontIconView(DevToolsIcons.OPEN_IN_NEW));
+        link.setTooltip(new Tooltip(url));
+        box.getChildren().add(link);
+        box.setSpacing(Spacing.getHorizontalThird());
+        link.setOnAction(e -> getViewModel().onFollowLink(url));
+    }
 }

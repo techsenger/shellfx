@@ -20,9 +20,12 @@ import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.page.TreePageContainerPort;
 import com.techsenger.shellfx.core.page.TreePageItem;
-import java.util.List;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.collections.ObservableList;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -35,12 +38,16 @@ public interface TreePageHostPort extends AreaPort, TreePageContainerPort {
     @Override
     ComposerAccess getComposerAccess();
 
+    boolean isFindMode();
+
+    ReadOnlyBooleanProperty findModeProperty();
+
     /**
      * Returns an unmodifiable list of breadcrumbs.
      *
      * @return
      */
-    @Unmodifiable List<PageBreadcrumb> getBreadcrumbs();
+    @Unmodifiable ObservableList<PageBreadcrumb> getBreadcrumbs();
 
     /**
      * Returns the root item of the tree menu.
@@ -49,10 +56,14 @@ public interface TreePageHostPort extends AreaPort, TreePageContainerPort {
      */
     TreePageItem getRootItem();
 
+    ReadOnlyObjectProperty<TreePageItem> rootItemProperty();
+
     /**
      * Returns whether the root item is shown in the tree menu.
      *
      * @return {@code true} if the root item is shown, {@code false} otherwise
      */
     boolean isShowRoot();
+
+    ReadOnlyBooleanProperty showRootProperty();
 }

@@ -16,13 +16,13 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.demo.browser.BrowserMainTabFxView;
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.demo.browser.BrowserMainTabParams;
-import com.techsenger.shellfx.demo.browser.BrowserMainTabPresenter;
-import com.techsenger.shellfx.demo.ide.IdeMainTabFxView;
-import com.techsenger.shellfx.demo.ide.IdeMainTabPresenter;
-import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
+import com.techsenger.shellfx.demo.browser.BrowserMainTabView;
+import com.techsenger.shellfx.demo.browser.BrowserMainTabViewModel;
+import com.techsenger.shellfx.demo.ide.IdeMainTabView;
+import com.techsenger.shellfx.demo.ide.IdeMainTabViewModel;
+import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
@@ -31,25 +31,24 @@ import com.techsenger.shellfx.material.menu.ManagedMenuItem;
  */
 public class MainTabItemHandler extends AbstractContainerItemHandler {
 
-    public MainTabItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public MainTabItemHandler(ShellView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
     @Override
     public void onAction() {
         var shell = getComponent();
-        if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?>) {
-            var tabView = new BrowserMainTabFxView(shell);
-            var tabParams = new BrowserMainTabParams(shell.getPresenter().getContext().getHistoryManager());
-            var tabPresenter = new BrowserMainTabPresenter(tabView, tabParams);
-            tabPresenter.initialize();
+        if (shell.getComposer().getWorkspace() instanceof TabHostView<?>) {
+            var tabParams = new BrowserMainTabParams(shell.getViewModel().getContext().getHistoryManager());
+            var tabViewModel = new BrowserMainTabViewModel<>(tabParams);
+            var tabView = new BrowserMainTabView<>(tabViewModel, shell);
+            tabView.initialize();
             resolveMainTabContainer().getComposer().addTab(tabView);
         } else {
-            var tabView = new IdeMainTabFxView<>(shell);
-            var tabPresenter = new IdeMainTabPresenter<>((IdeMainTabFxView<?>) tabView);
-            tabPresenter.initialize();
+            var tabViewModel = new IdeMainTabViewModel<>();
+            var tabView = new IdeMainTabView<>(tabViewModel, shell);
+            tabView.initialize();
             resolveMainTabContainer().getComposer().addTab(tabView);
         }
     }
-
 }

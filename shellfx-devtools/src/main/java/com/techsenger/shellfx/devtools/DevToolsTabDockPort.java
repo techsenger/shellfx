@@ -19,8 +19,10 @@ package com.techsenger.shellfx.devtools;
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.layout.dockhost.TabDockPort;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -35,4 +37,6 @@ public interface DevToolsTabDockPort extends TabDockPort {
     DevToolsHostType getHostType();
 
     boolean isSelectionSelected();
+
+    ReadOnlyBooleanProperty selectionSelectedProperty();
 }

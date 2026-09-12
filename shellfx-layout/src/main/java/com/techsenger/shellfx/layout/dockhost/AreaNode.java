@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.shellfx.core.area.AreaFxView;
+import com.techsenger.shellfx.core.area.AreaView;
 
 /**
  * A leaf {@link ModelNode} holding a single area.
@@ -30,7 +30,7 @@ public interface AreaNode extends ModelNode {
      *
      * @return the area
      */
-    AreaFxView<?> getArea();
+    AreaView<?> getArea();
 
     /**
      * Returns whether this node's area is the docking layout's main area.

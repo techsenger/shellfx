@@ -1,0 +1,139 @@
+/*
+ * Copyright 2024-2026 Pavel Castornii.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.techsenger.shellfx.dialogs.alert;
+
+import com.techsenger.shellfx.core.CloseCheckResult;
+import com.techsenger.shellfx.core.ClosePreparationResult;
+import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
+import com.techsenger.shellfx.core.window.WindowComposer;
+import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.CONFIRMATION;
+import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.ERROR;
+import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.INFO;
+import static com.techsenger.shellfx.dialogs.alert.AlertDialogType.WARNING;
+import com.techsenger.shellfx.dialogs.style.DialogIcons;
+import com.techsenger.shellfx.material.icon.Icon;
+import java.util.function.Consumer;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+/**
+ *
+ * @author Pavel Castornii
+ */
+public class AlertDialogViewModel<C extends WindowComposer> extends AbstractDialogViewModel<C>
+        implements FullAlertDialogPort {
+
+    private final AlertDialogType dialogType;
+
+    private final StringProperty message = new SimpleStringProperty();
+
+    private final ObjectProperty<Icon<?>> messageIcon = new SimpleObjectProperty<>();
+
+    public AlertDialogViewModel(AlertDialogParams params) {
+        super(params);
+        this.dialogType = params.getDialogType();
+    }
+
+    @Override
+    public CloseCheckResult isReadyToClose() {
+        return CloseCheckResult.READY;
+    }
+
+    @Override
+    public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public AlertDialogType getDialogType() {
+        return dialogType;
+    }
+
+    @Override
+    public String getMessage() {
+        return message.get();
+    }
+
+    @Override
+    public void setMessage(String message) {
+        this.message.set(message);
+    }
+
+    @Override
+    public StringProperty messageProperty() {
+        return message;
+    }
+
+    @Override
+    public Icon<?> getMessageIcon() {
+        return messageIcon.get();
+    }
+
+    @Override
+    public void setMessageIcon(Icon<?> messageIcon) {
+        this.messageIcon.set(messageIcon);
+    }
+
+    @Override
+    public ObjectProperty<Icon<?>> messageIconProperty() {
+        return messageIcon;
+    }
+
+    @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        switch (dialogType) {
+            case INFO:
+                setTitle("Info");
+                setMessageIcon(DialogIcons.INFO);
+            break;
+            case ERROR:
+                setTitle("Error");
+                setMessageIcon(DialogIcons.ERROR);
+            break;
+            case WARNING:
+                setTitle("Warning");
+                setMessageIcon(DialogIcons.WARNING);
+            break;
+            case CONFIRMATION:
+                setTitle("Confirm");
+                setMessageIcon(DialogIcons.QUESTION);
+                break;
+            default:
+                throw new AssertionError("Unknown type - " + dialogType);
+        }
+        if (dialogType != AlertDialogType.CONFIRMATION) {
+            setRightButtons(AlertDialogButtons.OK);
+            setButtonDefault(AlertDialogButtons.OK, true);
+        } else {
+            setRightButtons(AlertDialogButtons.NO, AlertDialogButtons.YES);
+            setButtonDefault(AlertDialogButtons.YES, true);
+        }
+        setOnResult((result) -> closeSafely());
+        setMinWidth(400);
+        setMinHeight(140);
+        setResizable(false);
+    }
+
+    @Override
+    protected void applyPersistentState() {
+        super.applyPersistentState();
+        setWidth(600);
+    }
+}

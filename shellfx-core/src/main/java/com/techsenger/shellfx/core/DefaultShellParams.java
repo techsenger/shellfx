@@ -39,7 +39,7 @@ public class DefaultShellParams extends WindowParams {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(context);
     }

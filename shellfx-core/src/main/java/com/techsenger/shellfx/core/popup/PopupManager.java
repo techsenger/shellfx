@@ -26,16 +26,16 @@ import javafx.collections.ObservableList;
  */
 public interface PopupManager {
 
-    void addPopup(PopupFxView<?> view, Anchors anchors);
+    void addPopup(PopupView<?> view, Anchors anchors);
 
-    void removePopup(PopupFxView<?> view);
+    void removePopup(PopupView<?> view);
 
     /**
      * Returns an unmodifiable list of popups.
      *
      * @return the list of popups. If no popups are present, an empty list is returned.
      */
-    @Unmodifiable ObservableList<PopupFxView<?>> getPopups();
+    @Unmodifiable ObservableList<PopupView<?>> getPopups();
 
     /**
      * Returns whether the container that owns this manager is blocked because a modal component is shown.

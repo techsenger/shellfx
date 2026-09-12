@@ -17,8 +17,10 @@
 package com.techsenger.shellfx.core.page;
 
 import com.techsenger.shellfx.core.area.AreaPort;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -26,7 +28,7 @@ public interface PagePort extends AreaPort {
 
     boolean isSelected();
 
-    void setSelected(boolean selected);
+    ReadOnlyBooleanProperty selectedProperty();
 
     /**
      * Returns the item associated with this page. The returned value can be cast to {@link TreePageItem} if tree

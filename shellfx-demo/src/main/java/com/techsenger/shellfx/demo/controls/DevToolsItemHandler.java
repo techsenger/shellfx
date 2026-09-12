@@ -16,29 +16,30 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.core.window.WindowContainerFxView;
+import com.techsenger.connectorfx.LocalConnector;
+import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
-import com.techsenger.shellfx.devtools.DevToolsTabDockFxView;
+import com.techsenger.shellfx.devtools.DevToolsTabDockView;
 import com.techsenger.shellfx.devtools.DevToolsTabDockParams;
-import com.techsenger.shellfx.devtools.DevToolsTabDockPresenter;
-import com.techsenger.shellfx.devtools.DevToolsWindowFxView;
+import com.techsenger.shellfx.devtools.DevToolsTabDockViewModel;
+import com.techsenger.shellfx.devtools.DevToolsWindowView;
 import com.techsenger.shellfx.devtools.DevToolsWindowParams;
-import com.techsenger.shellfx.devtools.DevToolsWindowPresenter;
-import com.techsenger.shellfx.layout.dockhost.DockHostFxView;
-import com.techsenger.shellfx.layout.dockhost.UtilityDockContainerFxView;
-import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
+import com.techsenger.shellfx.devtools.DevToolsWindowViewModel;
+import com.techsenger.shellfx.layout.dockhost.DockHostView;
+import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import javafx.geometry.Side;
+import com.techsenger.shellfx.layout.dockhost.UtilityDockContainerView;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
 
-    public DevToolsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public DevToolsItemHandler(ShellView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
@@ -46,28 +47,28 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>,
     public void onAction() {
         var shell = getComponent();
         if (shell.getComposer().getWorkspace() != null) {
-            if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
+            if (shell.getComposer().getWorkspace() instanceof TabHostView<?> tabHost) {
                 var tab = tabHost.getComposer().getSelectedTab();
-                if (tab != null && tab instanceof UtilityDockContainerFxView<?> c) {
+                if (tab != null && tab instanceof UtilityDockContainerView<?> c) {
                     var iterator = tab.getComposer().depthFirstIterator();
                     boolean devToolsPresent = false;
                     while (iterator.hasNext()) {
-                        if (iterator.next() instanceof DevToolsTabDockFxView<?>) {
+                        if (iterator.next() instanceof DevToolsTabDockView<?>) {
                             devToolsPresent = true;
                             break;
                         }
                     }
                     if (!devToolsPresent) {
                         var devTools = createDevToolsDock();
-                        devTools.getPresenter().setDraggable(true);
+                        devTools.getViewModel().setDraggable(true);
                         c.getComposer().addUtilityDock(devTools);
                     }
                 } else {
                     openInWindow();
                 }
-            } else if (shell.getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
+            } else if (shell.getComposer().getWorkspace() instanceof DockHostView<?> dockHost) {
                 var devTools = createDevToolsDock();
-                devTools.getPresenter().setDraggable(true);
+                devTools.getViewModel().setDraggable(true);
                 dockHost.getComposer().addTabDock(devTools, Side.BOTTOM, 250);
             }
         } else {
@@ -81,31 +82,32 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>,
         devTools.getStage().show();
     }
 
-    protected DevToolsTabDockFxView<?> createDevToolsDock() {
+    protected DevToolsTabDockView<?> createDevToolsDock() {
         var shell = getComponent();
-        var view = new DevToolsTabDockFxView<>(shell, resolveDialogContainer());
-        var context = shell.getPresenter().getContext();
+        var context = shell.getViewModel().getContext();
+        var connector = new LocalConnector(shell.getStage(), null);
         var params = new DevToolsTabDockParams(DevToolsHostType.SPLIT_SPACE,
-                context.getSettings(), context.getHistoryManager());
-        var presenter = new DevToolsTabDockPresenter<>(view, params);
-        presenter.initialize();
+                context.getSettings(), context.getHistoryManager(), connector, shell.getStage().hashCode());
+        var viewModel = new DevToolsTabDockViewModel<>(params);
+        var view = new DevToolsTabDockView<>(viewModel, shell, resolveDialogContainer());
+        view.initialize();
         return view;
     }
 
-    protected DevToolsWindowFxView<?> createDevToolsWindow() {
-        var view = new DevToolsWindowFxView<>(getComponent());
-        var context = getComponent().getPresenter().getContext();
+    protected DevToolsWindowView<?> createDevToolsWindow() {
+        var context = getComponent().getViewModel().getContext();
         var params = new DevToolsWindowParams(context.getSettings().getAppearance(), context.getHistoryManager());
-        var presenter = new DevToolsWindowPresenter<>(view, params);
-        presenter.initialize();
+        var viewModel = new DevToolsWindowViewModel<>(params);
+        var view = new DevToolsWindowView<>(viewModel, getComponent());
+        view.initialize();
         return view;
     }
 
-    private WindowContainerFxView<?> resolveDialogContainer() {
+    private WindowContainerView<?> resolveDialogContainer() {
         var shell = getComponent();
-        if (shell.getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
+        if (shell.getComposer().getWorkspace() instanceof TabHostView<?> tabHost) {
             var tab = tabHost.getComposer().getSelectedTab();
-            return (WindowContainerFxView<?>) tab;
+            return (WindowContainerView<?>) tab;
         } else {
             return shell;
         }

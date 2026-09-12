@@ -19,7 +19,7 @@ module com.techsenger.shellfx.dialogs {
     requires com.techsenger.toolkit.core;
     requires com.techsenger.annotations;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvp;
+    requires com.techsenger.patternfx.mvvm;
     requires com.techsenger.shellfx.core;
     requires com.techsenger.shellfx.material;
     requires com.techsenger.shellfx.shared;
@@ -30,7 +30,6 @@ module com.techsenger.shellfx.dialogs {
     requires com.techsenger.toolkit.fx;
     requires atlantafx.base;
 
-    exports com.techsenger.shellfx.dialogs;
     exports com.techsenger.shellfx.dialogs.alert;
     exports com.techsenger.shellfx.dialogs.file;
     exports com.techsenger.shellfx.dialogs.namevalue;

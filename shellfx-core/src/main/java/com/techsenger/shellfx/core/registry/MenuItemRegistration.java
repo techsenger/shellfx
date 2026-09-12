@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.menu.ManagedItem;
 import com.techsenger.shellfx.material.menu.MenuGroupName;
 import javafx.scene.control.MenuItem;
@@ -25,7 +25,7 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-class MenuItemRegistration<T extends ParentFxView<?>, I extends MenuItem & ManagedItem>
+class MenuItemRegistration<T extends ParentView<?>, I extends MenuItem & ManagedItem>
         extends AbstractMenuRegistration<T, I> {
 
     private final MenuGroupName<?> groupKey;

@@ -17,8 +17,8 @@
 package com.techsenger.shellfx.layout.dockhost;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.core.area.AbstractAreaFxView;
-import com.techsenger.shellfx.core.area.AreaFxView;
+import com.techsenger.shellfx.core.area.AbstractAreaView;
+import com.techsenger.shellfx.core.area.AreaView;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -61,19 +61,19 @@ public final class ModelNodeBuilder {
      */
     private static final class AreaNodeImpl implements AreaNode {
 
-        private final AreaFxView<?> area;
+        private final AreaView<?> area;
         private final boolean main;
         private final double proportion;
         private @Nullable GroupNode parent;
 
-        AreaNodeImpl(AreaFxView<?> area, boolean main, double proportion) {
+        AreaNodeImpl(AreaView<?> area, boolean main, double proportion) {
             this.area = area;
             this.main = main;
             this.proportion = proportion;
         }
 
         @Override
-        public AreaFxView<?> getArea() {
+        public AreaView<?> getArea() {
             return area;
         }
 
@@ -181,12 +181,12 @@ public final class ModelNodeBuilder {
 
     private final @Nullable Orientation orientation;
     private final List<ModelNodeBuilder> children = new ArrayList<>();
-    private final @Nullable AbstractAreaFxView<?> area;
+    private final @Nullable AbstractAreaView<?> area;
     private final boolean main;
     private final double proportion;
     private final MainTracker mainTracker;
 
-    private ModelNodeBuilder(@Nullable Orientation orientation, @Nullable AbstractAreaFxView<?> area, boolean main,
+    private ModelNodeBuilder(@Nullable Orientation orientation, @Nullable AbstractAreaView<?> area, boolean main,
             double proportion, MainTracker mainTracker) {
         this.orientation = orientation;
         this.area = area;
@@ -204,7 +204,7 @@ public final class ModelNodeBuilder {
      * @param area the leaf's area
      * @return this builder
      */
-    public ModelNodeBuilder area(AbstractAreaFxView<?> area) {
+    public ModelNodeBuilder area(AbstractAreaView<?> area) {
         return area(area, UNSET_PROPORTION);
     }
 
@@ -216,7 +216,7 @@ public final class ModelNodeBuilder {
      *         {@link #UNSET_PROPORTION}
      * @return this builder
      */
-    public ModelNodeBuilder area(AbstractAreaFxView<?> area, double proportion) {
+    public ModelNodeBuilder area(AbstractAreaView<?> area, double proportion) {
         children.add(new ModelNodeBuilder(null, area, false, proportion, mainTracker));
         return this;
     }
@@ -229,7 +229,7 @@ public final class ModelNodeBuilder {
      * @return this builder
      * @throws IllegalStateException if a main area was already added elsewhere in the tree
      */
-    public ModelNodeBuilder mainArea(AbstractAreaFxView<?> area) {
+    public ModelNodeBuilder mainArea(AbstractAreaView<?> area) {
         return mainArea(area, UNSET_PROPORTION);
     }
 
@@ -242,7 +242,7 @@ public final class ModelNodeBuilder {
      * @return this builder
      * @throws IllegalStateException if a main area was already added elsewhere in the tree
      */
-    public ModelNodeBuilder mainArea(AbstractAreaFxView<?> area, double proportion) {
+    public ModelNodeBuilder mainArea(AbstractAreaView<?> area, double proportion) {
         children.add(new ModelNodeBuilder(null, area, true, proportion, mainTracker));
         return this;
     }

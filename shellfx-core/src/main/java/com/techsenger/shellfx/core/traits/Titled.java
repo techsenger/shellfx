@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.core.traits;
 
+import javafx.beans.property.StringProperty;
+
 /**
  *
  * @author Pavel Castornii
@@ -35,4 +37,6 @@ public interface Titled {
      * @param title
      */
     void setTitle(String title);
+
+    StringProperty titleProperty();
 }

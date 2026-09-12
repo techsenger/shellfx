@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.tab;
 
-import com.techsenger.patternfx.mvp.ComponentParams;
+import com.techsenger.patternfx.core.ComponentParams;
 
 /**
  *

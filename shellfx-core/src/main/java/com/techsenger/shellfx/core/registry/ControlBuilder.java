@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.menu.ContextMenuHandler;
 import com.techsenger.shellfx.material.menu.ManagedContextMenu;
 import com.techsenger.shellfx.material.menu.ManagedItem;
@@ -93,7 +93,7 @@ public class ControlBuilder {
      *     determines which registrations apply, see {@link ControlRegistry#getRegistrationsFor(Object)}
      * @return a sorted list of the built {@link Menu} instances
      */
-    public List<Menu> buildMenus(MenuGroupName<?> topLevelGroup, ParentFxView<?> view) {
+    public List<Menu> buildMenus(MenuGroupName<?> topLevelGroup, ParentView<?> view) {
         var registrations = registry.getRegistrationsFor(view);
         var ctx = new BuildContext();
         buildElements(view, new ArrayList<>(registrations), ctx);
@@ -129,7 +129,7 @@ public class ControlBuilder {
      * @return the assembled {@link Menu}, or {@code null} if no registration exists for the given component and
      *         menu name
      */
-    public @Nullable Menu buildMenu(MenuName<?> menuName, ParentFxView<?> view) {
+    public @Nullable Menu buildMenu(MenuName<?> menuName, ParentView<?> view) {
         var registrations = registry.getRegistrationsFor(view);
         var ctx = new BuildContext();
         buildElements(view, new ArrayList<>(registrations), ctx);
@@ -167,7 +167,7 @@ public class ControlBuilder {
      * @param view     the component view passed to each control factory
      * @return the assembled menu, or {@code null} if no registration exists or it ended up empty
      */
-    public @Nullable ManagedContextMenu buildContextMenu(MenuName<?> menuName, ParentFxView<?> view) {
+    public @Nullable ManagedContextMenu buildContextMenu(MenuName<?> menuName, ParentView<?> view) {
         var menu = buildMenu(menuName, view);
         if (menu == null) {
             return null;
@@ -184,21 +184,21 @@ public class ControlBuilder {
      * @param regs the list of registrations to process
      * @param ctx  the context that accumulates menus, groups, and items
      */
-    private void buildElements(ParentFxView<?> view, List<AbstractMenuRegistration<?, ?>> regs, BuildContext ctx) {
+    private void buildElements(ParentView<?> view, List<AbstractMenuRegistration<?, ?>> regs, BuildContext ctx) {
         for (var r : regs) {
             switch (r.getType()) {
                 case MENU:
-                    var mr = (MenuRegistration<ParentFxView<?>>) r;
+                    var mr = (MenuRegistration<ParentView<?>>) r;
                     var menu = mr.getFactory().create(view);
                     ctx.menusByName.put(menu.getName(), new MenuDescriptor(mr.getGroupName(), menu));
                     break;
                 case GROUP:
-                    var gr = (MenuGroupRegistration<ParentFxView<?>>) r;
+                    var gr = (MenuGroupRegistration<ParentView<?>>) r;
                     var group = gr.getFactory().create(view);
                     ctx.groupsByName.put(group.getName(), new GroupDescriptor(gr.getMenuName(), group));
                     break;
                 case ITEM:
-                    var ir = (MenuItemRegistration<ParentFxView<?>, ?>) r;
+                    var ir = (MenuItemRegistration<ParentView<?>, ?>) r;
                     var item = ir.getFactory().create(view);
                     ctx.itemsByGroup.computeIfAbsent(ir.getGroupKey(), k -> new HashSet<>()).add(item);
                     break;

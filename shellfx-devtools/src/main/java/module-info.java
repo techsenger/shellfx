@@ -18,7 +18,7 @@ module com.techsenger.shellfx.devtools {
     requires org.slf4j;
     requires com.techsenger.connectorfx;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvp;
+    requires com.techsenger.patternfx.mvvm;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.annotations;

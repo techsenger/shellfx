@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.core.traits;
 
+import javafx.beans.property.BooleanProperty;
+
 /**
  * Defines a component that can be blocked from receiving user input. When blocked, the component remains visually
  * unchanged but does not respond to mouse or keyboard events.
@@ -37,4 +39,6 @@ public interface Blockable {
      * @return {@code true} if this component is blocked, {@code false} otherwise
      */
     boolean isBlocked();
+
+    BooleanProperty blockedProperty();
 }

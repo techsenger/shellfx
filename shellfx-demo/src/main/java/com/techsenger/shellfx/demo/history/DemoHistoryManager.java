@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.demo.history;
 
-import com.techsenger.patternfx.mvp.ComponentHistory;
+import com.techsenger.patternfx.mvvm.ComponentHistory;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.toolkit.core.function.Factory;
 import java.util.HashMap;

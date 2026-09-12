@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.core.traits;
 
+import javafx.beans.property.StringProperty;
+
 /**
  *
  * @author Pavel Castornii
@@ -25,4 +27,6 @@ public interface Tooltiped {
     String getTooltip();
 
     void setTooltip(String tooltip);
+
+    StringProperty tooltipProperty();
 }

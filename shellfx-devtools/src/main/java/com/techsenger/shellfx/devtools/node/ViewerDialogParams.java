@@ -64,7 +64,7 @@ public class ViewerDialogParams extends DialogParams {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(node);
         Objects.requireNonNull(item);

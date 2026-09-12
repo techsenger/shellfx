@@ -16,21 +16,111 @@
 
 package com.techsenger.shellfx.dialogs.progress;
 
-import com.techsenger.shellfx.core.dialog.DialogView;
+import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.material.button.ResultButton;
+import com.techsenger.shellfx.material.style.Spacing;
+import com.techsenger.toolkit.fx.Spacer;
+import com.techsenger.toolkit.fx.value.ValueUtils;
+import javafx.geometry.Orientation;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ProgressDialogView extends DialogView {
+public class ProgressDialogView<VM extends ProgressDialogViewModel<?>> extends AbstractDialogView<VM> {
 
-    void updateMessage(String text);
+    private final Label messageLabel = new Label();
 
-    void updateStepsVisible(boolean value);
+    private final Label currentStepLabel = new Label();
 
-    void updateCurrentStep(int currentStep);
+    private final Label stepCountLabel = new Label();
 
-    void updateStepCount(int stepCount);
+    private final HBox stepBox = new HBox(new Label("["), currentStepLabel, new Label(" / "), stepCountLabel,
+            new Label("]"));
 
-    void updateProgress(double value);
+    private final HBox textBox = new HBox(messageLabel, new Spacer(Orientation.HORIZONTAL));
+
+    private final ProgressBar progressBar = new ProgressBar();
+
+    private final VBox mainBox = new VBox(Spacing.getVertical() * 3, textBox, progressBar);
+
+    private final ResultButton cancelButton = new ResultButton(ProgressDialogButtons.CANCEL, "Cancel");
+
+    public ProgressDialogView(VM viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        progressBar.setMaxWidth(Double.MAX_VALUE);
+        getContentBox().getChildren().add(mainBox);
+        registerButtons(cancelButton);
+    }
+
+    @Override
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
+        messageLabel.textProperty().bind(viewModel.messageProperty());
+        currentStepLabel.textProperty().bind(viewModel.currentStepProperty().asString());
+        stepCountLabel.textProperty().bind(viewModel.stepCountProperty().asString());
+        progressBar.progressProperty().bind(viewModel.progressProperty());
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
+        ValueUtils.callAndAddListener(viewModel.stepsVisibleProperty(), (ov, oldV, newV) -> updateStepsVisible(newV));
+    }
+
+    protected Label getMessageLabel() {
+        return messageLabel;
+    }
+
+    protected Label getCurrentStepLabel() {
+        return currentStepLabel;
+    }
+
+    protected Label getStepCountLabel() {
+        return stepCountLabel;
+    }
+
+    protected HBox getStepBox() {
+        return stepBox;
+    }
+
+    protected HBox getTextBox() {
+        return textBox;
+    }
+
+    protected ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    protected VBox getMainBox() {
+        return mainBox;
+    }
+
+    protected ResultButton getCancelButton() {
+        return cancelButton;
+    }
+
+    private void updateStepsVisible(boolean value) {
+        if (value && stepBox.getParent() == null) {
+            textBox.getChildren().add(stepBox);
+        } else if (!value && stepBox.getParent() != null) {
+            textBox.getChildren().remove(stepBox);
+        }
+    }
 }

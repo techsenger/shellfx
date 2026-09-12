@@ -20,7 +20,7 @@ module com.techsenger.shellfx.layout {
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvp;
+    requires com.techsenger.patternfx.mvvm;
     requires com.techsenger.shellfx.material;
     requires com.techsenger.shellfx.core;
     requires com.techsenger.shellfx.shared;
@@ -30,7 +30,6 @@ module com.techsenger.shellfx.layout {
     requires javafx.controls;
     requires atlantafx.base;
 
-    exports com.techsenger.shellfx.layout;
     exports com.techsenger.shellfx.layout.dockhost;
     exports com.techsenger.shellfx.layout.pagehost;
     exports com.techsenger.shellfx.layout.style;

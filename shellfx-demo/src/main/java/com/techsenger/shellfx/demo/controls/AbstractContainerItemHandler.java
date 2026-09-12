@@ -16,28 +16,28 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.core.tab.TabContainerFxView;
-import com.techsenger.shellfx.layout.dockhost.DockHostFxView;
-import com.techsenger.shellfx.layout.tabhost.TabHostFxView;
+import com.techsenger.shellfx.core.tab.TabContainerView;
+import com.techsenger.shellfx.layout.dockhost.DockHostView;
+import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractContainerItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public abstract class AbstractContainerItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
 
-    public AbstractContainerItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public AbstractContainerItemHandler(ShellView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
-    protected TabContainerFxView<?> resolveMainTabContainer() {
-        if (getComponent().getComposer().getWorkspace() instanceof TabHostFxView<?> tabHost) {
+    protected TabContainerView<?> resolveMainTabContainer() {
+        if (getComponent().getComposer().getWorkspace() instanceof TabHostView<?> tabHost) {
             return tabHost;
-        } else if (getComponent().getComposer().getWorkspace() instanceof DockHostFxView<?> dockHost) {
-            return (TabContainerFxView<?>) dockHost.getComposer().getMain();
+        } else if (getComponent().getComposer().getWorkspace() instanceof DockHostView<?> dockHost) {
+            return (TabContainerView<?>) dockHost.getComposer().getMain();
         }
         return null;
     }

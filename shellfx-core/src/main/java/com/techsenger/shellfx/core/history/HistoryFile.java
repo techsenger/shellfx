@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.history;
 
-import com.techsenger.patternfx.mvp.ComponentHistory;
+import com.techsenger.patternfx.mvvm.ComponentHistory;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

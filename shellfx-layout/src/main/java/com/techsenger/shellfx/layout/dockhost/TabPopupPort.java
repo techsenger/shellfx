@@ -23,6 +23,7 @@ import java.util.List;
 import javafx.geometry.Side;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -41,8 +42,4 @@ public interface TabPopupPort extends AreaPort {
     ComposerAccess getComposerAccess();
 
     Side getSide();
-
-    void onCenterWidthChanged(double width);
-
-    void onCenterHeightChanged(double height);
 }

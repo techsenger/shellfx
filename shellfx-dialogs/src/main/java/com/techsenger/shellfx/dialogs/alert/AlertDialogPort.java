@@ -18,8 +18,11 @@ package com.techsenger.shellfx.dialogs.alert;
 
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.material.icon.Icon;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -29,9 +32,9 @@ public interface AlertDialogPort extends DialogPort {
 
     String getMessage();
 
-    void setMessage(String message);
+    ReadOnlyStringProperty messageProperty();
 
     Icon<?> getMessageIcon();
 
-    void setMessageIcon(Icon<?> messageIcon);
+    ReadOnlyObjectProperty<Icon<?>> messageIconProperty();
 }

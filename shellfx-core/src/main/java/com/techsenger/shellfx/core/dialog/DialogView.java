@@ -17,19 +17,14 @@
 package com.techsenger.shellfx.core.dialog;
 
 import com.techsenger.shellfx.core.window.WindowView;
-import com.techsenger.shellfx.material.button.ResultButtonName;
+import javafx.scene.layout.Region;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DialogView extends WindowView {
+public interface DialogView<VM extends DialogViewModel<?>> extends WindowView<VM> {
 
-    void updateLeftButtons(ResultButtonName... names);
-
-    void updateRightButtons(ResultButtonName... names);
-
-    void updateButtonDisabled(ResultButtonName name, boolean value);
-
-    void updateButtonDefault(ResultButtonName name, boolean value);
+    @Override
+    Region getNode();
 }

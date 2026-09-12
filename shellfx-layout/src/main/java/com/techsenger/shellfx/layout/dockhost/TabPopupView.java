@@ -16,31 +16,299 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
+import atlantafx.base.theme.Styles;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.area.AreaView;
+import com.techsenger.shellfx.core.area.AbstractAreaView;
 import com.techsenger.shellfx.core.tab.TabPort;
+import com.techsenger.shellfx.core.tab.TabView;
+import com.techsenger.shellfx.material.style.Spacing;
+import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.tabpanepro.core.TabPanePro;
+import com.techsenger.tabpanepro.core.skin.TabPaneProSkin;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import static javafx.geometry.Side.BOTTOM;
+import static javafx.geometry.Side.LEFT;
+import static javafx.geometry.Side.RIGHT;
+import javafx.scene.Cursor;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 /**
+ * A TabPopup can display either one or two tabs. Two tabs are shown when the first tab is pinned and the mouse
+ * is hovered over the second tab.
  *
  * @author Pavel Castornii
  */
-public interface TabPopupView extends AreaView {
+public class TabPopupView<VM extends TabPopupViewModel<?>> extends AbstractAreaView<VM> {
 
-    interface Composer extends AreaView.Composer, TabPopupPort.ComposerAccess {
+    private static final double RESIZE_MARGIN = 2.0;
 
-        /**
-         * Returns un unmodifiable list of tabs. A list instance is created on each method call.
-         *
-         * @return
-         */
-        @Unmodifiable List<? extends TabPort> getTabPorts();
+    public class Composer extends AbstractAreaView<VM>.Composer implements TabPopupComposer {
+
+        private final TabPopupView<VM> view = TabPopupView.this;
+
+        private final ObservableList<TabView<?>> modifiableTabs = FXCollections.observableArrayList();
+
+        private final @Unmodifiable ObservableList<TabView<?>> tabs =
+                FXCollections.unmodifiableObservableList(modifiableTabs);
+
+        private SideBarView<?> sideBar;
+
+        @Override
+        public @Unmodifiable List<? extends TabPort> getTabPorts() {
+            return tabs.stream().map(v -> v.getViewModel()).toList();
+        }
+
+        public void addTab(TabView<?> tab) {
+            modifiableTabs.add(tab);
+            // there can be other children, so index is not used
+            view.tabPane.getTabs().add(tab.getNode());
+            getModifiableChildren().add(tab);
+        }
+
+        public void removeTab(TabView<?> tab) {
+            modifiableTabs.remove(tab);
+            // there can be other children, so index is not used
+            view.tabPane.getTabs().remove(tab.getNode());
+            getModifiableChildren().remove(tab);
+        }
+
+        @Unmodifiable ObservableList<TabView<?>> getTabs() {
+            return tabs;
+        }
+    }
+
+    private final TabPanePro tabPane = new TabPanePro();
+
+    private final VBox node = new VBox(tabPane);
+
+    private final Button closeButton = new Button();
+
+    private double onResizeX;
+
+    private double onResizeY;
+
+    private double onResizeWidth;
+
+    private double onResizeHeight;
+
+    private boolean isResizing = false;
+
+    public TabPopupView(VM viewModel, SideBarView<?> sideBar) {
+        super(viewModel);
+        getComposer().sideBar = sideBar;
     }
 
     @Override
-    Composer getComposer();
+    public void requestFocus() {
 
-    void updateHeight(double height);
+    }
 
-    void updateWidth(double width);
+    @Override
+    public Region getNode() {
+        return this.node;
+    }
+
+    @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
+    }
+
+    @Override
+    protected Composer createComposer() {
+        return new Composer();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        this.node.getStyleClass().addAll("tab-popup", getViewModel().getSide().name().toLowerCase());
+        VBox.setVgrow(tabPane, Priority.ALWAYS);
+        tabPane.getStyleClass().add(Styles.DENSE);
+
+        TabPaneProSkin tabPaneSkin = (TabPaneProSkin) tabPane.getSkin();
+        var lastArea = tabPaneSkin.getTabHeaderArea().getLastArea();
+        closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS, StyleClasses.SQUARE);
+        var hBox = new HBox(closeButton);
+        hBox.setPadding(new Insets(0, Spacing.getHorizontalHalf(), 0, 0));
+        hBox.setMaxHeight(HBox.USE_PREF_SIZE);
+        lastArea.getChildren().add(hBox);
+
+        switch (getViewModel().getSide()) {
+            case RIGHT:
+                StackPane.setAlignment(node, Pos.TOP_RIGHT);
+                break;
+            case BOTTOM:
+                StackPane.setAlignment(node, Pos.BOTTOM_LEFT);
+                break;
+            case LEFT:
+                StackPane.setAlignment(node, Pos.TOP_LEFT);
+                break;
+            default:
+                throw new AssertionError();
+        }
+        var css = TabPopupView.class.getResource("tab-popup.css").toExternalForm();
+        this.getNode().getStylesheets().add(css);
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        var viewModel = getViewModel();
+        viewModel.widthSource().addListener((width) -> updateWidth(width));
+        viewModel.heightSource().addListener((height) -> updateHeight(height));
+    }
+
+    @Override
+    protected void addHandlers() {
+        super.addHandlers();
+        var viewModel = getViewModel();
+        var composer = getComposer();
+        node.addEventFilter(MouseEvent.MOUSE_EXITED, (e) -> {
+            if (!hasMouseMovedToSideBar(e) && !isResizing && !composer.sideBar.containsSelectedTab()
+                    && !viewModel.isClosing()) {
+                viewModel.setClosing(true);
+                composer.sideBar.closeLastTabInPopup();
+                composer.sideBar.getComposer().removePopupFromLayout();
+            }
+        });
+        // resizing
+        node.addEventFilter(MouseEvent.MOUSE_MOVED, (e) -> {
+            if (!isResizing) {
+                if (isOnEdge(e.getX(), e.getY())) {
+                    setResizeCursor();
+                } else {
+                    restoreCursor();
+                }
+            }
+        });
+        node.addEventFilter(MouseEvent.MOUSE_PRESSED, (e) -> {
+            if (isOnEdge(e.getX(), e.getY())) {
+                isResizing = true;
+                onResizeX = e.getSceneX();
+                onResizeY = e.getSceneY();
+                onResizeWidth = this.node.getWidth();
+                onResizeHeight = this.node.getHeight();
+                e.consume();
+            }
+        });
+        node.addEventFilter(MouseEvent.MOUSE_DRAGGED, (e) -> {
+            if (isResizing) {
+                double deltaX = e.getSceneX() - onResizeX;
+                double deltaY = e.getSceneY() - onResizeY;
+                onResize(deltaX, deltaY);
+                e.consume();
+            }
+        });
+        node.addEventFilter(MouseEvent.MOUSE_RELEASED, (e) -> {
+            if (isResizing) {
+                isResizing = false;
+                restoreCursor();
+                e.consume();
+            }
+        });
+        closeButton.setOnAction(e -> {
+            if (!viewModel.isClosing()) {
+                viewModel.setClosing(true);
+                composer.sideBar.closeLastTabInPopup();
+                composer.sideBar.getComposer().removePopupFromLayout();
+            }
+        });
+    }
+
+    protected TabPanePro getTabPane() {
+        return tabPane;
+    }
+
+    private void updateWidth(double width) {
+        node.setPrefWidth(width);
+        node.setMinWidth(width);
+        node.setMaxWidth(width);
+    }
+
+    private void updateHeight(double height) {
+        node.setPrefHeight(height);
+        node.setMinHeight(height);
+        node.setMaxHeight(height);
+    }
+
+    private void setResizeCursor() {
+        switch (getViewModel().getSide()) {
+            case RIGHT:
+                this.node.setCursor(Cursor.W_RESIZE);
+                break;
+            case BOTTOM:
+                this.node.setCursor(Cursor.N_RESIZE);
+                break;
+            case LEFT:
+                this.node.setCursor(Cursor.E_RESIZE);
+                break;
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private void restoreCursor() {
+        this.node.setCursor(Cursor.DEFAULT);
+    }
+
+    private boolean hasMouseMovedToSideBar(MouseEvent e) {
+        switch (getViewModel().getSide()) {
+            case RIGHT:
+                return (e.getX() >= this.node.getWidth() && e.getY() <= this.node.getHeight() && e.getY() >= 0);
+            case BOTTOM:
+                return (e.getY() >= this.node.getHeight() && e.getX() <= this.node.getWidth() && e.getX() >= 0);
+            case LEFT:
+                return (e.getX() <= 0 && e.getY() <= this.node.getHeight() && e.getY() >= 0);
+            default:
+                throw new AssertionError();
+        }
+    }
+
+   private boolean isOnEdge(double x, double y) {
+        switch (getViewModel().getSide()) {
+            case RIGHT:
+                return x <= RESIZE_MARGIN;
+            case BOTTOM:
+                return y <= RESIZE_MARGIN;
+            case LEFT:
+                return x >= node.getWidth() - RESIZE_MARGIN;
+            default:
+                throw new AssertionError();
+        }
+    }
+
+    private void onResize(double deltaX, double deltaY) {
+        double newHeight;
+        double newWidth;
+        switch (getViewModel().getSide()) {
+            case BOTTOM:
+                newHeight = onResizeHeight - deltaY;
+                this.node.setPrefHeight(newHeight);
+                this.node.setMinHeight(newHeight);
+                this.node.setMaxHeight(newHeight);
+                break;
+            case LEFT:
+                newWidth = onResizeWidth + deltaX;
+                this.node.setPrefWidth(newWidth);
+                this.node.setMinWidth(newWidth);
+                this.node.setMaxWidth(newWidth);
+                break;
+            case RIGHT:
+                newWidth = onResizeWidth - deltaX;
+                this.node.setPrefWidth(newWidth);
+                this.node.setMinWidth(newWidth);
+                this.node.setMaxWidth(newWidth);
+                break;
+        }
+    }
 }

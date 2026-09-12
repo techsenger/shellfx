@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core.traits;
 
 import com.techsenger.shellfx.material.icon.Icon;
+import javafx.beans.property.ObjectProperty;
 
 /**
  *
@@ -36,4 +37,6 @@ public interface Iconed {
      * @param icon
      */
     void setIcon(Icon<?> icon);
+
+    ObjectProperty<Icon<?>> iconProperty();
 }

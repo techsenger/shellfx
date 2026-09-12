@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.devtools.component;
 
 import com.techsenger.patternfx.core.ComponentName;
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,15 +27,15 @@ import java.util.UUID;
  */
 public class JfxComponentItem implements ComponentItem {
 
-    private final ParentFxView<?> view;
+    private final ParentView<?> view;
 
-    public JfxComponentItem(ParentFxView<?> view) {
+    public JfxComponentItem(ParentView<?> view) {
         this.view = view;
     }
 
     @Override
     public ComponentName getName() {
-        return view.getDescriptor().getName();
+        return view.getViewModel().getDescriptor().getName();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class JfxComponentItem implements ComponentItem {
 
     @Override
     public UUID getUuid() {
-        return view.getDescriptor().getUuid();
+        return view.getViewModel().getDescriptor().getUuid();
     }
 
     @Override
@@ -56,12 +56,12 @@ public class JfxComponentItem implements ComponentItem {
                 .map(t -> (ComponentItem) t).toList();
     }
 
-    public ParentFxView<?> getView() {
+    public ParentView<?> getView() {
         return view;
     }
 
     @Override
     public String getShortUuid() {
-        return view.getDescriptor().getShortUuid();
+        return view.getViewModel().getDescriptor().getShortUuid();
     }
 }

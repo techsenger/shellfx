@@ -20,9 +20,9 @@ package com.techsenger.shellfx.core.window;
  *
  * @author Pavel Castornii
  */
-public interface HostWindowView extends WindowView, WindowContainerView {
+public interface HostWindowView<VM extends HostWindowViewModel<?>> extends WindowView<VM>, WindowContainerView<VM> {
 
-    interface Composer extends WindowView.Composer, WindowContainerView.Composer, HostWindowPort.ComposerAccess {
+    interface Composer extends WindowView.Composer, WindowContainerView.Composer, HostWindowComposer {
 
     }
 

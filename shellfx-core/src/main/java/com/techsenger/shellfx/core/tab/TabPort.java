@@ -17,20 +17,19 @@
 package com.techsenger.shellfx.core.tab;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.mvp.ChildPort;
-import com.techsenger.shellfx.core.CloseAwarePort;
+import com.techsenger.patternfx.core.ChildPort;
 import com.techsenger.shellfx.core.ShellPort;
-import com.techsenger.shellfx.core.traits.Closable;
-import com.techsenger.shellfx.core.traits.Iconed;
-import com.techsenger.shellfx.core.traits.Titled;
-import com.techsenger.shellfx.core.traits.Tooltiped;
-import com.techsenger.shellfx.core.traits.Waitable;
+import com.techsenger.shellfx.material.icon.Icon;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
-public interface TabPort extends ChildPort, CloseAwarePort, Closable, Waitable, Iconed, Titled, Tooltiped {
+public interface TabPort extends ChildPort {
 
     interface ComposerAccess extends ChildPort.ComposerAccess {
 
@@ -44,4 +43,26 @@ public interface TabPort extends ChildPort, CloseAwarePort, Closable, Waitable, 
     ComposerAccess getComposerAccess();
 
     boolean isSelected();
+
+    ReadOnlyBooleanProperty selectedProperty();
+
+    boolean isClosable();
+
+    ReadOnlyBooleanProperty closableProperty();
+
+    boolean isWaiting();
+
+    ReadOnlyBooleanProperty waitingProperty();
+
+    Icon<?> getIcon();
+
+    ReadOnlyObjectProperty<Icon<?>> iconProperty();
+
+    String getTitle();
+
+    ReadOnlyStringProperty titleProperty();
+
+    String getTooltip();
+
+    ReadOnlyStringProperty tooltipProperty();
 }

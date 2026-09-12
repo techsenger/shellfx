@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.patternfx.core.Name;
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
  * Although Menu extends MenuItem in JavaFX MenuName doesn't extend MenuItemName because name type must be unique.
@@ -28,7 +28,7 @@ import com.techsenger.patternfx.mvp.ParentFxView;
  * @param <V> the view type of the component this menu belongs to
  * @author Pavel Castornii
  */
-public interface MenuName<V extends ParentFxView<?>> extends Name {
+public interface MenuName<V extends ParentView<?>> extends Name {
 
     /**
      * Returns the view class registrations targeting this menu are filed under, and that a component's own class

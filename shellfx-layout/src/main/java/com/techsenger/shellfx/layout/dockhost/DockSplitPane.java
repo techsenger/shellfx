@@ -160,7 +160,7 @@ class DockSplitPane extends SplitPane {
                 double share = toDistribute * (oldSizes[i] / totalRemainingSize);
                 double taken = share;
                 if (isDonation) {
-                    double available = Math.max(oldSizes[i] - TabDockFxView.MIN_SIZE, 0) - contribution.get(i);
+                    double available = Math.max(oldSizes[i] - TabDockView.MIN_SIZE, 0) - contribution.get(i);
                     taken = Math.max(Math.min(share, available), 0);
                     if (taken < share) {
                         floored.add(i);

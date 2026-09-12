@@ -16,17 +16,50 @@
 
 package com.techsenger.shellfx.devtools.node;
 
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+
 /**
  *
  * @author Pavel Castornii
  */
-public interface InsetEditorDialogView extends EditorDialogView {
+public class InsetEditorDialogView<VM extends InsetEditorDialogViewModel<?>> extends AbstractEditorDialogView<VM> {
 
-    void updateTop(String value);
+    private final TextField topTextField = new TextField();
 
-    void updateRight(String value);
+    private final TextField rightTextField = new TextField();
 
-    void updateBottom(String value);
+    private final TextField bottomTextField = new TextField();
 
-    void updateLeft(String value);
+    private final TextField leftTextField = new TextField();
+
+    public InsetEditorDialogView(VM viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        HBox.setHgrow(topTextField, Priority.ALWAYS);
+        HBox.setHgrow(rightTextField, Priority.ALWAYS);
+        HBox.setHgrow(bottomTextField, Priority.ALWAYS);
+        HBox.setHgrow(leftTextField, Priority.ALWAYS);
+
+        getRowBox().getChildren().addAll(topTextField, rightTextField, bottomTextField, leftTextField);
+    }
+
+    @Override
+    protected void bind() {
+        super.bind();
+        topTextField.textProperty().bindBidirectional(getViewModel().topProperty());
+        rightTextField.textProperty().bindBidirectional(getViewModel().rightProperty());
+        bottomTextField.textProperty().bindBidirectional(getViewModel().bottomProperty());
+        leftTextField.textProperty().bindBidirectional(getViewModel().leftProperty());
+    }
 }

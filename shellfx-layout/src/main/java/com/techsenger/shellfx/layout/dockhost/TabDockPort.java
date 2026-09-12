@@ -17,8 +17,11 @@
 package com.techsenger.shellfx.layout.dockhost;
 
 import com.techsenger.shellfx.layout.tabhost.TabHostPort;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -34,7 +37,11 @@ public interface TabDockPort extends TabHostPort {
      */
     MinimizedPosition getMinimizedPosition();
 
+    ReadOnlyObjectProperty<MinimizedPosition> minimizedPositionProperty();
+
     TabDockState getState();
+
+    ReadOnlyObjectProperty<TabDockState> stateProperty();
 
     /**
      * Returns whether this TabDock can be dragged and repositioned within the docking layout.
@@ -47,15 +54,7 @@ public interface TabDockPort extends TabHostPort {
      */
     boolean isDraggable();
 
-    /**
-     * Returns whether this TabDock can be closed by the user.
-     * <p>
-     * When {@code true}, a close button is shown in the TabDock's header, allowing the user to remove it from the
-     * layout entirely. When {@code false}, no close button is displayed.
-     *
-     * @return {@code true} if this TabDock can be closed, {@code false} otherwise
-     */
-    boolean isClosable();
+    ReadOnlyBooleanProperty draggableProperty();
 
     /**
      * Returns whether this TabDock can be minimized into the sidebar.
@@ -67,34 +66,17 @@ public interface TabDockPort extends TabHostPort {
      */
     boolean isMinimizable();
 
-    /**
-     * Sets whether this TabDock can be dragged and repositioned within the docking layout.
-     * <p>
-     * When set to {@code true}, a drag handle is added to the TabDock's header, allowing the user to grab and move
-     * it to a different position in the layout. When set to {@code false}, the drag handle is removed and the
-     * TabDock remains fixed in place.
-     *
-     * @param value {@code true} to enable dragging and show the drag handle, {@code false} to disable it
-     */
-    void setDraggable(boolean value);
+    ReadOnlyBooleanProperty minimizableProperty();
 
     /**
-     * Sets whether this TabDock can be minimized into the sidebar.
+     * Returns whether this TabDock can be closed by the user.
      * <p>
-     * When set to {@code true}, a minimize button is added to the TabDock's header, allowing the user to collapse
-     * it into the sidebar while keeping it accessible. When set to {@code false}, the minimize button is removed.
+     * When {@code true}, a close button is shown in the TabDock's header, allowing the user to remove it from the
+     * layout entirely. When {@code false}, no close button is displayed.
      *
-     * @param minimizable {@code true} to enable minimizing and show the minimize button, {@code false} to disable it
+     * @return {@code true} if this TabDock can be closed, {@code false} otherwise
      */
-    void setMinimizable(boolean minimizable);
+    boolean isClosable();
 
-    /**
-     * Sets whether this TabDock can be closed by the user.
-     * <p>
-     * When set to {@code true}, a close button is added to the TabDock's header, allowing the user to remove it
-     * from the layout entirely. When set to {@code false}, the close button is removed.
-     *
-     * @param closable {@code true} to enable closing and show the close button, {@code false} to disable it
-     */
-    void setClosable(boolean closable);
+    ReadOnlyBooleanProperty closableProperty();
 }

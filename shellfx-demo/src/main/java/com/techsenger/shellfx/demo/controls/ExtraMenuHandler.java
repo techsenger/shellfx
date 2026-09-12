@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.material.menu.AbstractMenuHandler;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
@@ -25,9 +25,9 @@ import com.techsenger.shellfx.material.menu.ManagedMenu;
  *
  * @author Pavel Castornii
  */
-public class ExtraMenuHandler extends AbstractMenuHandler<ShellFxView<?>> {
+public class ExtraMenuHandler extends AbstractMenuHandler<ShellView<?>> {
 
-    public ExtraMenuHandler(ManagedMenu menu, ShellFxView<?> component) {
+    public ExtraMenuHandler(ManagedMenu menu, ShellView<?> component) {
         super(menu, component);
     }
 
@@ -35,6 +35,6 @@ public class ExtraMenuHandler extends AbstractMenuHandler<ShellFxView<?>> {
     public void onUpdate() {
         super.onUpdate();
         var menuAware = getComponent().getComposer().getMenuAware();
-        getMenu().setVisible(menuAware.getPresenter() instanceof DemoMenuAwarePort);
+        getMenu().setVisible(menuAware.getViewModel() instanceof DemoMenuAwarePort);
     }
 }

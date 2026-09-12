@@ -16,13 +16,22 @@
 
 package com.techsenger.shellfx.core;
 
+import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.window.HostWindowPort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ShellPort extends MenuAwarePort, HostWindowPort {
+public interface ShellPort extends HostWindowPort, MenuAwarePort {
+
+    interface ComposerAccess extends HostWindowPort.ComposerAccess {
+
+        AreaPort getWorkspacePort();
+    }
+
+    @Override
+    ComposerAccess getComposerAccess();
 
     /**
      * Returns the context of the shell.

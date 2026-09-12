@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.devtools;
 
+import com.techsenger.connectorfx.Connector;
 import com.techsenger.shellfx.core.area.AreaParams;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.ShellSettings;
@@ -33,10 +34,17 @@ public class DevToolsTabDockParams extends AreaParams {
 
     private final HistoryManager historyManager;
 
-    public DevToolsTabDockParams(DevToolsHostType hostType, ShellSettings settings, HistoryManager historyManager) {
+    private final Connector connector;
+
+    private final int shellWindowUid;
+
+    public DevToolsTabDockParams(DevToolsHostType hostType, ShellSettings settings, HistoryManager historyManager,
+            Connector connector, int shellWindowUid) {
         this.hostType = hostType;
         this.settings = settings;
         this.historyManager = historyManager;
+        this.connector = connector;
+        this.shellWindowUid = shellWindowUid;
         this.setHistoryProvider(() -> historyManager
                 .getOrCreateHistory(DevToolsTabDockHistory.class, DevToolsTabDockHistory::new));
     }
@@ -53,11 +61,20 @@ public class DevToolsTabDockParams extends AreaParams {
         return historyManager;
     }
 
+    public Connector getConnector() {
+        return connector;
+    }
+
+    public int getShellWindowUid() {
+        return shellWindowUid;
+    }
+
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(hostType);
         Objects.requireNonNull(settings);
         Objects.requireNonNull(historyManager);
+        Objects.requireNonNull(connector);
     }
 }

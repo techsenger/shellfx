@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
  * Behavior attached to a whole {@link ManagedContextMenu}, deciding whether the popup should be shown at all -
@@ -28,7 +28,7 @@ import com.techsenger.patternfx.mvp.ParentFxView;
  *
  * @author Pavel Castornii
  */
-public interface ContextMenuHandler<T extends ParentFxView<?>> extends Handler {
+public interface ContextMenuHandler<T extends ParentView<?>> extends Handler {
 
     static void setHandler(ManagedContextMenu menu, ContextMenuHandler<?> handler) {
         menu.setHandler(handler);

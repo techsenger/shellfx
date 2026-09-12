@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.patternfx.core.Name;
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
  * {@code V} is the view type a {@link com.techsenger.shellfx.core.registry.ControlFactory} registering a menu or
@@ -26,7 +26,7 @@ import com.techsenger.patternfx.mvp.ParentFxView;
  * @param <V> the view type of the component this group belongs to
  * @author Pavel Castornii
  */
-public interface MenuGroupName<V extends ParentFxView<?>> extends Name {
+public interface MenuGroupName<V extends ParentView<?>> extends Name {
 
     /**
      * Returns the view class registrations targeting this group are filed under, and that a component's own class

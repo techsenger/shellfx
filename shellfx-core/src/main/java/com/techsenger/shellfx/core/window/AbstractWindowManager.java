@@ -18,12 +18,12 @@ package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ChildFxView;
-import com.techsenger.patternfx.mvp.FxViewUtils;
-import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.core.dialog.DialogFxView;
+import com.techsenger.patternfx.mvvm.ChildView;
+import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.patternfx.mvvm.ViewUtils;
+import com.techsenger.shellfx.core.dialog.DialogView;
 import com.techsenger.shellfx.core.popup.AbstractPopupManager;
-import com.techsenger.shellfx.core.popup.PopupFxView;
+import com.techsenger.shellfx.core.popup.PopupView;
 import static com.techsenger.shellfx.core.window.WindowArrangement.CASCADE;
 import static com.techsenger.shellfx.core.window.WindowArrangement.TILE_HORIZONTAL;
 import static com.techsenger.shellfx.core.window.WindowArrangement.TILE_VERTICAL;
@@ -76,8 +76,70 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
 
     private static final class WindowPane extends AnchorPane {
 
+        private static double clamp(double value, double min, double max) {
+            return Math.max(min, Math.min(value, max));
+        }
+
+        private static boolean isAnchored(Node child) {
+            return AnchorPane.getTopAnchor(child) != null || AnchorPane.getBottomAnchor(child) != null
+                    || AnchorPane.getLeftAnchor(child) != null || AnchorPane.getRightAnchor(child) != null;
+        }
+
         private WindowPane(Node... nodes) {
             super(nodes);
+        }
+
+        /**
+         * Ignores this pane's window and reports only its own insets, so the window's current width — which for
+         * an unanchored child is otherwise mirrored straight into {@code AnchorPane}'s computed minimum — can never
+         * inflate the minimum size this pane reports to its own container.
+         *
+         * @param height ignored; the result does not depend on it
+         */
+        @Override
+        protected double computeMinWidth(double height) {
+            return snappedLeftInset() + snappedRightInset();
+        }
+
+        /**
+         * Ignores this pane's window and reports only its own insets, for the same reason as
+         * {@link #computeMinWidth(double)}, applied to height instead of width.
+         *
+         * @param width ignored; the result does not depend on it
+         */
+        @Override
+        protected double computeMinHeight(double width) {
+            return snappedTopInset() + snappedBottomInset();
+        }
+
+        /**
+         * Keeps a non-maximized window fully within this pane's current area, repositioning it first and, only if
+         * that is not enough, shrinking it — nothing else re-fits a window once this pane shrinks (e.g. the host
+         * window restored from maximized, or a Tile/Cascade arrangement computed against a larger, previous size).
+         * A maximized window (identified by having anchor constraints) is left to {@code AnchorPane}'s own
+         * anchor-based sizing.
+         */
+        @Override
+        protected void layoutChildren() {
+            super.layoutChildren();
+            if (getChildren().isEmpty()) {
+                return;
+            }
+            var child = getChildren().get(0);
+            if (isAnchored(child)) {
+                return;
+            }
+            var availableWidth = getWidth() - snappedLeftInset() - snappedRightInset();
+            var availableHeight = getHeight() - snappedTopInset() - snappedBottomInset();
+            var bounds = child.getLayoutBounds();
+            var width = Math.min(bounds.getWidth(), availableWidth);
+            var height = Math.min(bounds.getHeight(), availableHeight);
+            var x = clamp(child.getLayoutX(), 0, availableWidth - width);
+            var y = clamp(child.getLayoutY(), 0, availableHeight - height);
+            if (x != child.getLayoutX() || y != child.getLayoutY()
+                    || width != bounds.getWidth() || height != bounds.getHeight()) {
+                child.resizeRelocate(x, y, width, height);
+            }
         }
     }
 
@@ -100,7 +162,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
 
     private static final double DIALOG_Y_OFFSET = -50.0;
 
-    private static @Nullable WindowPane getWindowPane(WindowFxView<?> window) {
+    private static @Nullable WindowPane getWindowPane(WindowView<?> window) {
         if (window.getNode() != null) {
             return (WindowPane) window.getNode().getParent();
         } else {
@@ -261,15 +323,19 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         return result;
     }
 
-    private static Optional<WindowFxView<?>> findComponentWindow(ParentFxView<?> component, StackPane windowPane) {
+    private static Optional<WindowView<?>> findComponentWindow(ParentView<?> component, StackPane windowPane) {
         while (component != null) {
-            if (component instanceof WindowFxView<?> window) {
+            if (component instanceof WindowView<?> window) {
                 var bgPane = getWindowPane(window);
                 if (bgPane != null && bgPane.getParent() == windowPane) {
                     return Optional.of(window);
                 }
+                if (window.getViewModel().getWindowType() == WindowType.TOP_LEVEL) {
+                    // a TOP_LEVEL window has no parent window container to climb into
+                    return Optional.empty();
+                }
             }
-            component = component instanceof ChildFxView<?> child ? child.getComposer().getParent() : null;
+            component = component instanceof ChildView<?> child ? child.getComposer().getParent() : null;
         }
         return Optional.empty();
     }
@@ -423,17 +489,17 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
 
-    private final ObservableList<WindowFxView<?>> modifiableWindows = FXCollections.observableArrayList();
+    private final ObservableList<WindowView<?>> modifiableWindows = FXCollections.observableArrayList();
 
-    private final @Unmodifiable ObservableList<WindowFxView<?>> windows =
+    private final @Unmodifiable ObservableList<WindowView<?>> windows =
             FXCollections.unmodifiableObservableList(modifiableWindows);
 
     // The last window in z-order.
-    private WindowFxView<?> lastWindow;
+    private WindowView<?> lastWindow;
 
-    private final Map<WindowFxView<?>, RestoreInfo> restoreInfosByWindow = new HashMap<>();
+    private final Map<WindowView<?>, RestoreInfo> restoreInfosByWindow = new HashMap<>();
 
-    private final Supplier<ReadOnlyObjectProperty<@Nullable ParentFxView<?>>> focused;
+    private final Supplier<ReadOnlyObjectProperty<@Nullable ParentView<?>>> focused;
 
     private boolean animationEnabled = true;
 
@@ -444,7 +510,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     private final ChangeListener<? super Boolean> focusedListener;
 
     public AbstractWindowManager(Supplier<StackPane> stackPane,
-            Supplier<ReadOnlyObjectProperty<@Nullable ParentFxView<?>>> focused) {
+            Supplier<ReadOnlyObjectProperty<@Nullable ParentView<?>>> focused) {
         super(stackPane);
         this.focused = focused;
         this.focusedListener = (ov, oldV, newV) ->  {
@@ -457,12 +523,12 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     @Override
-    public void addWindow(WindowFxView<?> windowView) {
-        if (windowView instanceof AbstractWindowFxView<?> fxView) {
+    public void addWindow(WindowView<?> windowView) {
+        if (windowView instanceof AbstractWindowView<?> fxView) {
             fxView.setWindowManager(this);
         }
         modifiableWindows.add(windowView);
-        doAdd(windowView, windowView.getPresenter().isModal(), null);
+        doAdd(windowView, windowView.getViewModel().isModal(), null);
         reorderAll();
         focusLast();
         if (this.windows.size() == 1) {
@@ -471,11 +537,11 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     @Override
-    public void removeWindow(WindowFxView<?> windowView) {
+    public void removeWindow(WindowView<?> windowView) {
         if (modifiableWindows.remove(windowView)) {
             this.restoreInfosByWindow.remove(windowView);
-            doRemove(windowView, windowView.getPresenter().isModal());
-            if (windowView instanceof AbstractWindowFxView<?> fxView) {
+            doRemove(windowView, windowView.getViewModel().isModal());
+            if (windowView instanceof AbstractWindowView<?> fxView) {
                 fxView.setWindowManager(null);
             }
             reorderAll();
@@ -487,7 +553,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     @Override
-    public @Unmodifiable ObservableList<WindowFxView<?>> getWindows() {
+    public @Unmodifiable ObservableList<WindowView<?>> getWindows() {
         return windows;
     }
 
@@ -497,7 +563,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             return;
         }
 
-        List<WindowFxView<?>> windowsByZOder = getWindowsByZOrder();
+        List<WindowView<?>> windowsByZOder = getWindowsByZOrder();
 
         var stackPane = getStackPane().get();
         List<WindowBounds> bounds = switch (arrangement) {
@@ -512,22 +578,22 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         for (var i = 0; i < bounds.size(); i++) {
             var bound = bounds.get(i);
             var window = windowsByZOder.get(i);
-            if (window.getPresenter().isMaximized()) {
-                window.getPresenter().setMaximized(false);
+            if (window.getViewModel().isMaximized()) {
+                window.getViewModel().setMaximized(false);
             }
-            if (window.getPresenter().isMinimized()) {
-                window.getPresenter().setMinimized(false);
+            if (window.getViewModel().isMinimized()) {
+                window.getViewModel().setMinimized(false);
             }
             window.getNode().setLayoutX(bound.x);
             window.getNode().setLayoutY(bound.y);
-            window.getPresenter().setWidth(bound.width);
-            window.getPresenter().setHeight(bound.height);
+            window.getViewModel().setWidth(bound.width);
+            window.getViewModel().setHeight(bound.height);
         }
         this.animationEnabled = true;
     }
 
     @Override
-    public void alignWindow(WindowFxView<?> window, WindowPosition pos, double xOffset, double yOffset) {
+    public void alignWindow(WindowView<?> window, WindowPosition pos, double xOffset, double yOffset) {
         var sp = getStackPane().get();
         sp.applyCss();
         sp.layout();
@@ -535,14 +601,14 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                 sp.getWidth() - sp.getPadding().getLeft() - sp.getPadding().getRight(),
                 sp.getHeight() - sp.getPadding().getTop() - sp.getPadding().getBottom(),
                 window.getNode().getWidth(), window.getNode().getHeight());
-        window.getPresenter().setX(Math.round(coordinates.getX() + xOffset));
-        window.getPresenter().setY(Math.round(coordinates.getY() + yOffset));
+        window.getViewModel().setX(Math.round(coordinates.getX() + xOffset));
+        window.getViewModel().setY(Math.round(coordinates.getY() + yOffset));
     }
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractWindowManager.class);
 
     @Override
-    public void alignWindowToStage(WindowFxView<?> window, WindowPosition pos,
+    public void alignWindowToStage(WindowView<?> window, WindowPosition pos,
             double xOffset, double yOffset) {
         var sp = getStackPane().get();
         var scene = sp.getScene();
@@ -579,23 +645,23 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
                 window.getNode().getWidth(), window.getNode().getHeight(),
                 scene.getWidth(), scene.getHeight());
 
-        window.getPresenter().setX(Math.round(x));
-        window.getPresenter().setY(Math.round(y));
+        window.getViewModel().setX(Math.round(x));
+        window.getViewModel().setY(Math.round(y));
     }
 
     @Override
-    public void addDialog(DialogFxView<?> dialog) {
+    public void addDialog(DialogView<?> dialog) {
         addWindow(dialog);
         alignWindowToStage(dialog, WindowPosition.CENTER, 0, DIALOG_Y_OFFSET);
     }
 
     @Override
-    public void updateWindow(WindowFxView<?> windowView) {
+    public void updateWindow(WindowView<?> windowView) {
         reorderAll();
     }
 
     @Override
-    public void maximizeWindow(WindowFxView<?> window) {
+    public void maximizeWindow(WindowView<?> window) {
         var restoreInfo = restoreInfosByWindow.get(window);
         if (restoreInfo != null) { // from minimized
             restoreInfo.state = SpecialState.MAXIMIZED;
@@ -628,7 +694,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     @Override
-    public void minimizeWindow(WindowFxView<?> window) {
+    public void minimizeWindow(WindowView<?> window) {
         var restoreInfo = restoreInfosByWindow.get(window);
         if (restoreInfo != null) { // from maximized
             AnchorPane.clearConstraints(window.getNode());
@@ -638,7 +704,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             createAndSaveRestoreInfo(SpecialState.MINIMIZED, window);
         }
         var allMinimizedWindowBounds = this.windows.stream()
-                .filter(w -> w.getPresenter().isMinimized() && w != window)
+                .filter(w -> w.getViewModel().isMinimized() && w != window)
                 .map(w -> {
                     var n = w.getNode();
                     return new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
@@ -662,7 +728,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     @Override
-    public void restoreWindow(WindowFxView<?> window) {
+    public void restoreWindow(WindowView<?> window) {
         var info = this.restoreInfosByWindow.remove(window);
         if (info != null) {
             if (info.state == SpecialState.MAXIMIZED) {
@@ -680,8 +746,8 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
             } else {
                 window.getNode().setLayoutX(restoredBounds.x);
                 window.getNode().setLayoutY(restoredBounds.y);
-                window.getPresenter().setWidth(restoredBounds.width);
-                window.getPresenter().setHeight(restoredBounds.height);
+                window.getViewModel().setWidth(restoredBounds.width);
+                window.getViewModel().setHeight(restoredBounds.height);
             }
             if (info.state == SpecialState.MAXIMIZED) {
                 setMaximized(window, false);
@@ -691,41 +757,37 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
     }
 
-    protected void deactivateAllWindows(@Nullable WindowFxView<?> exclude) {
+    protected void deactivateAllWindows(@Nullable WindowView<?> exclude) {
         for (var window : windows) {
-            if (window.getPresenter().isActive() && window != exclude) {
-                if (window instanceof AbstractWindowFxView<?> windowView) {
-                    windowView.setActive(false);
-                }
+            if (window.getViewModel().isActive() && window != exclude) {
+                window.getViewModel().setActive(false);
                 break;
             }
         }
     }
 
-    protected void activateWindow(WindowFxView<?> window) {
-        if (!window.getPresenter().isActive() && window instanceof AbstractWindowFxView<?> windowView) {
-            if (!window.getPresenter().isActive()) {
-                windowView.setActive(true);
-            }
+    protected void activateWindow(WindowView<?> window) {
+        if (!window.getViewModel().isActive()) {
+            window.getViewModel().setActive(true);
         }
     }
 
-    protected double getTitleBarHeight(WindowFxView<?> window) {
-        if (window instanceof AbstractWindowFxView<?> windowView) {
+    protected double getTitleBarHeight(WindowView<?> window) {
+        if (window instanceof AbstractWindowView<?> windowView) {
             return windowView.getTitleBar().getHeight() + windowView.getWindowBox().getPadding().getBottom()
                     + windowView.getWindowBox().getPadding().getTop();
         }
         return -1;
     }
 
-    protected void setMaximized(WindowFxView<?> window, boolean maximized) {
-        if (window instanceof AbstractWindowFxView<?> windowView) {
+    protected void setMaximized(WindowView<?> window, boolean maximized) {
+        if (window instanceof AbstractWindowView<?> windowView) {
             windowView.onMaximized(maximized);
         }
     }
 
-    protected void setMinimized(WindowFxView<?> window, boolean minimized) {
-        if (window instanceof AbstractWindowFxView<?> windowView) {
+    protected void setMinimized(WindowView<?> window, boolean minimized) {
+        if (window instanceof AbstractWindowView<?> windowView) {
             windowView.onMinimized(minimized);
         }
     }
@@ -744,20 +806,20 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     }
 
     @Override
-    protected ChildFxView<?> getLastModal() {
+    protected ChildView<?> getLastModal() {
         var popup = super.getLastModal();
         if (popup != null) {
             return popup;
         }
-        if (this.lastWindow != null && this.lastWindow.getPresenter().isModal()) {
+        if (this.lastWindow != null && this.lastWindow.getViewModel().isModal()) {
             return this.lastWindow;
         }
         return null;
     }
 
     @Override
-    protected void doAdd(ChildFxView<?> view, boolean modal, Anchors anchors) {
-        if (view instanceof PopupFxView<?> popup) {
+    protected void doAdd(ChildView<?> view, boolean modal, Anchors anchors) {
+        if (view instanceof PopupView<?> popup) {
             super.doAdd(popup, modal, anchors);
             return;
         }
@@ -782,9 +844,9 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         deactivateAllWindows(null);
     }
 
-    void onFocusedComponentChanged(ParentFxView<?> component) {
+    void onFocusedComponentChanged(ParentView<?> component) {
         findComponentWindow(component, getStackPane().get()).ifPresent(w -> {
-            if (!w.getPresenter().isActive()) {
+            if (!w.getViewModel().isActive()) {
                 deactivateAllWindows(null);
                 activateWindow(w);
                 w.getNode().getParent().toFront();
@@ -793,7 +855,7 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         });
     }
 
-    private void createAndSaveRestoreInfo(SpecialState state, WindowFxView<?> window) {
+    private void createAndSaveRestoreInfo(SpecialState state, WindowView<?> window) {
         var n = window.getNode();
         var bounds = new WindowBounds(n.getLayoutX(), n.getLayoutY(), n.getWidth(), n.getHeight());
         var info = new RestoreInfo(state, bounds);
@@ -814,16 +876,16 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
     private void reorderWindows() {
         this.lastWindow = null;
         var windows = getWindowsByZOrder();
-        List<WindowFxView<?>> modalWindows = new ArrayList<>();
+        List<WindowView<?>> modalWindows = new ArrayList<>();
         for (var w : windows) {
             this.lastWindow = w;
             var bgPane = getWindowPane(w);
-            if (w.getPresenter().isAlwaysOnTop()) {
+            if (w.getViewModel().isAlwaysOnTop()) {
                 if (bgPane != null) {
                     bgPane.toFront();
                 }
             }
-            if (w.getPresenter().isModal() && bgPane != null) {
+            if (w.getViewModel().isModal() && bgPane != null) {
                 modalWindows.add(w);
             }
         }
@@ -839,11 +901,11 @@ public abstract class AbstractWindowManager extends AbstractPopupManager impleme
         }
     }
 
-    private List<WindowFxView<?>> getWindowsByZOrder() {
+    private List<WindowView<?>> getWindowsByZOrder() {
         return getStackPane().get().getChildren().stream()
                 .filter(n -> n.getClass() == WindowPane.class)
                 .map(WindowPane.class::cast)
-                .<WindowFxView<?>>map(n -> (WindowFxView<?>) FxViewUtils.getView(n.getChildren().get(0)))
+                .<WindowView<?>>map(n -> (WindowView<?>) ViewUtils.getView(n.getChildren().get(0)))
                 .toList();
     }
 

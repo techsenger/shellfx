@@ -47,7 +47,7 @@ public class DialogsDialogParams extends DialogParams {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(settings);
         Objects.requireNonNull(manager);

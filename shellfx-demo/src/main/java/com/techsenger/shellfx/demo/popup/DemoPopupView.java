@@ -16,12 +16,41 @@
 
 package com.techsenger.shellfx.demo.popup;
 
-import com.techsenger.shellfx.core.popup.PopupView;
+import com.techsenger.shellfx.core.popup.AbstractPopupView;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DemoPopupView extends PopupView {
+public class DemoPopupView<VM extends DemoPopupViewModel<?>> extends AbstractPopupView<VM> {
 
+    private final Label label = new Label("Popup!");
+
+    private final Button closeButton = new Button("Close");
+
+    public DemoPopupView(VM viewModel) {
+        super(viewModel);
+    }
+
+    @Override
+    public void requestFocus() {
+
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        getContentBox().getChildren().addAll(label, closeButton);
+        getContentBox().setSpacing(20);
+        getContentBox().setStyle("-fx-border-width: 2px; -fx-border-color: -color-accent-7; "
+                + "-fx-padding: 20; -fx-background-color: -color-bg-default");
+    }
+
+    @Override
+    protected void addHandlers() {
+        super.addHandlers();
+        closeButton.setOnAction(e -> getViewModel().closeSafely());
+    }
 }

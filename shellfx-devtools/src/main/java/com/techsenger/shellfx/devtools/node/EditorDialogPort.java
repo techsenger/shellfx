@@ -16,15 +16,19 @@
 
 package com.techsenger.shellfx.devtools.node;
 
-import com.techsenger.shellfx.core.dialog.DialogPort;
+import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
-public interface EditorDialogPort extends DialogPort {
+public interface EditorDialogPort extends ClosableDialogPort {
 
     boolean isPropertyUpdated();
 
     String getPropertyName();
+
+    ReadOnlyStringProperty propertyNameProperty();
 }

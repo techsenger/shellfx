@@ -18,7 +18,7 @@ package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ChildFxView;
+import com.techsenger.patternfx.mvvm.ChildView;
 import com.techsenger.shellfx.material.Anchors;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public abstract class AbstractPopupManager implements PopupManager {
         }
     }
 
-    private static @Nullable PopupPane getPopupPane(PopupFxView<?> popup) {
+    private static @Nullable PopupPane getPopupPane(PopupView<?> popup) {
         if (popup.getNode() != null) {
             return (PopupPane) popup.getNode().getParent();
         } else {
@@ -53,9 +53,9 @@ public abstract class AbstractPopupManager implements PopupManager {
         }
     }
 
-    private final ObservableList<PopupFxView<?>> modifiablePopups = FXCollections.observableArrayList();
+    private final ObservableList<PopupView<?>> modifiablePopups = FXCollections.observableArrayList();
 
-    private final @Unmodifiable ObservableList<PopupFxView<?>> popups =
+    private final @Unmodifiable ObservableList<PopupView<?>> popups =
             FXCollections.unmodifiableObservableList(modifiablePopups);
 
     private final Supplier<StackPane> stackPane;
@@ -65,7 +65,7 @@ public abstract class AbstractPopupManager implements PopupManager {
     private boolean containerBlocked;
 
     // The last popup in z-order.
-    private PopupFxView<?> lastPopup;
+    private PopupView<?> lastPopup;
 
     private final EventHandler<Event> eventBlocker = event -> {
         if (!isEventTargetInsideModal(event)) {
@@ -83,24 +83,24 @@ public abstract class AbstractPopupManager implements PopupManager {
     }
 
     @Override
-    public void addPopup(PopupFxView<?> view, Anchors anchors) {
+    public void addPopup(PopupView<?> view, Anchors anchors) {
         modifiablePopups.add(view);
-        doAdd(view, view.getPresenter().isModal(), anchors);
+        doAdd(view, view.getViewModel().isModal(), anchors);
         reorderPopups();
         focusLast();
     }
 
     @Override
-    public void removePopup(PopupFxView<?> view) {
+    public void removePopup(PopupView<?> view) {
         if (modifiablePopups.remove(view)) {
-            doRemove(view, view.getPresenter().isModal());
+            doRemove(view, view.getViewModel().isModal());
             reorderPopups();
             focusLast();
         }
     }
 
     @Override
-    public @Unmodifiable ObservableList<PopupFxView<?>> getPopups() {
+    public @Unmodifiable ObservableList<PopupView<?>> getPopups() {
         return this.popups;
     }
 
@@ -110,7 +110,7 @@ public abstract class AbstractPopupManager implements PopupManager {
         }
     }
 
-    protected PopupFxView<?> getLastPopup() {
+    protected PopupView<?> getLastPopup() {
         return lastPopup;
     }
 
@@ -118,7 +118,7 @@ public abstract class AbstractPopupManager implements PopupManager {
         return stackPane;
     }
 
-    protected ObservableList<PopupFxView<?>> getModifiablePopups() {
+    protected ObservableList<PopupView<?>> getModifiablePopups() {
         return modifiablePopups;
     }
 
@@ -144,7 +144,7 @@ public abstract class AbstractPopupManager implements PopupManager {
         }
     }
 
-    protected void doAdd(ChildFxView<?> view, boolean modal, Anchors anchors) {
+    protected void doAdd(ChildView<?> view, boolean modal, Anchors anchors) {
         Pane node = (Pane) view.getNode();
         var bgPane = new PopupPane(node);
         AnchorPane.setTopAnchor(node, anchors.getTop());
@@ -162,7 +162,7 @@ public abstract class AbstractPopupManager implements PopupManager {
         this.stackPane.get().getChildren().add(bgPane);
     }
 
-    protected void doRemove(ChildFxView<?> view, boolean modal) {
+    protected void doRemove(ChildView<?> view, boolean modal) {
         Pane node = (Pane) view.getNode();
         this.stackPane.get().getChildren().remove(node.getParent());
         if (modal) {
@@ -172,13 +172,13 @@ public abstract class AbstractPopupManager implements PopupManager {
 
     protected void reorderPopups() {
         this.lastPopup = null;
-        List<PopupFxView<?>> modalPopups = new ArrayList<>();
+        List<PopupView<?>> modalPopups = new ArrayList<>();
         for (var popup : popups) {
             this.lastPopup = popup;
             var pane = getPopupPane(popup);
             if (pane != null) {
                 pane.toFront();
-                if (popup.getPresenter().isModal()) {
+                if (popup.getViewModel().isModal()) {
                     modalPopups.add(popup);
                 }
             }
@@ -195,8 +195,8 @@ public abstract class AbstractPopupManager implements PopupManager {
         }
     }
 
-    protected @Nullable ChildFxView<?> getLastModal() {
-        if (this.lastPopup != null && this.lastPopup.getPresenter().isModal()) {
+    protected @Nullable ChildView<?> getLastModal() {
+        if (this.lastPopup != null && this.lastPopup.getViewModel().isModal()) {
             return this.lastPopup;
         } else {
             return null;
@@ -204,7 +204,7 @@ public abstract class AbstractPopupManager implements PopupManager {
     }
 
     private boolean isEventTargetInsideModal(Event event) {
-        ChildFxView<?> modalComponent = getLastModal();
+        ChildView<?> modalComponent = getLastModal();
         if (modalComponent == null) {
             return false;
         }

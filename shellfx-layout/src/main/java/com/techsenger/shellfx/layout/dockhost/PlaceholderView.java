@@ -17,9 +17,16 @@
 package com.techsenger.shellfx.layout.dockhost;
 
 /**
+ * Placeholder is a temporary component inserted into the layout at the calculated drop position while the dock is
+ * still attached to its original parent. It preserves the structure of the layout tree so that the dock can be safely
+ * removed from its old position and then inserted into the reserved place without losing the insertion context.
  *
  * @author Pavel Castornii
  */
-interface PlaceholderView extends TabDockView {
+class PlaceholderView extends TabDockView<PlaceholderViewModel<?>> {
+
+    PlaceholderView(PlaceholderViewModel<?> viewModel) {
+        super(viewModel);
+    }
 
 }

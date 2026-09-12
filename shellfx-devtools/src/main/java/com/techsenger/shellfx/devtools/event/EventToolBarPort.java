@@ -17,20 +17,29 @@
 package com.techsenger.shellfx.devtools.event;
 
 import com.techsenger.connectorfx.event.ConnectorEvent;
-import com.techsenger.shellfx.devtools.ToolBarPort;
+import com.techsenger.shellfx.shared.find.FindBasePort;
 import java.util.Set;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
-public interface EventToolBarPort extends ToolBarPort {
+public interface EventToolBarPort extends FindBasePort {
 
     Set<Class<? extends ConnectorEvent>> getSelectedEventTypes();
 
     boolean isFilterSelected();
 
+    ReadOnlyBooleanProperty filterSelectedProperty();
+
     boolean isSelectedNodeOnly();
 
-    void setStatistics(String text);
+    ReadOnlyBooleanProperty selectedNodeOnlyProperty();
+
+    ReadOnlyBooleanProperty recordSelectedProperty();
+
+    ReadOnlyStringProperty statisticsProperty();
 }

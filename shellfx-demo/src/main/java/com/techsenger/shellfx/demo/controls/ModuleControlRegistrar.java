@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.registry.AbstractControlRegistrar;
 import com.techsenger.shellfx.core.registry.ControlFactory;
 import com.techsenger.shellfx.core.window.WindowArrangement;
@@ -42,9 +42,9 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
 
     private final ApplicationType appType;
 
-    private final ShellFxView<?> shell;
+    private final ShellView<?> shell;
 
-    public ModuleControlRegistrar(ApplicationType appType, ShellFxView<?> shell) {
+    public ModuleControlRegistrar(ApplicationType appType, ShellView<?> shell) {
         super(shell.getControlRegistry());
 
         this.appType = appType;
@@ -85,7 +85,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerFileMenu() {
-        ControlFactory<ShellFxView<?>, ManagedMenu> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenu> f = (v) -> {
             var menu = new ManagedMenu(ShellControls.FileMenu.NAME, "_File", 0);
             return menu;
         };
@@ -93,7 +93,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerFileGroups() {
-        ControlFactory<ShellFxView<?>, ManagedMenuGroup> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuGroup> f = (v) -> {
             return new ManagedMenuGroup(ShellControls.FileMenu.DEMO_GROUP, 0);
         };
         addRegistration(getRegistry().registerMenuGroup(ShellControls.FileMenu.NAME, f));
@@ -104,7 +104,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerMainTabItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Main Tab", 100);
             MenuItemHandler.setHandler(item, new MainTabItemHandler(shell, item));
             return item;
@@ -113,7 +113,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerPageTabItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Page Tab", 200);
             MenuItemHandler.setHandler(item, new PageItemHandler(shell, item, PageMenuType.FLAT));
             return item;
@@ -122,7 +122,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerTreePageTabItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Tree Page Tab", 250);
             MenuItemHandler.setHandler(item, new PageItemHandler(shell, item, PageMenuType.TREE));
             return item;
@@ -131,7 +131,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerDialogsItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Dialogs", 300);
             MenuItemHandler.setHandler(item, new DialogsItemHandler(shell, item));
             return item;
@@ -140,7 +140,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerDevToolsItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("DevTools", 400);
             MenuItemHandler.setHandler(item, new DevToolsItemHandler(shell, item));
             return item;
@@ -149,7 +149,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerSettingsItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("_Settings", 100);
             MenuItemHandler.setHandler(item, new SettingsItemHandler(shell, item));
             return item;
@@ -158,7 +158,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerExitItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("E_xit", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new ExitItemHandler(shell, item));
@@ -169,7 +169,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerExtraMenu() {
-        ControlFactory<ShellFxView<?>, ManagedMenu> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenu> f = (v) -> {
             var menu = new ManagedMenu(ShellControls.ExtraMenu.NAME, "_Extra", 200);
             MenuHandler.setHandler(menu, new ExtraMenuHandler(menu, v));
             return menu;
@@ -178,14 +178,14 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerFooGroup() {
-        ControlFactory<ShellFxView<?>, ManagedMenuGroup> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuGroup> f = (v) -> {
             return new ManagedMenuGroup(ShellControls.ExtraMenu.FOO_GROUP, 0);
         };
         addRegistration(getRegistry().registerMenuGroup(ShellControls.ExtraMenu.NAME, f));
     }
 
     protected void registerBarGroup() {
-        ControlFactory<ShellFxView<?>, ManagedMenuGroup> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuGroup> f = (v) -> {
             return new ManagedMenuGroup(ShellControls.ExtraMenu.BAR_GROUP, 100);
         };
         addRegistration(getRegistry().registerMenuGroup(ShellControls.ExtraMenu.NAME, f));
@@ -195,7 +195,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
      * Foo item will be in the foo group.
      */
     protected void registerFooItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("_Foo", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new FooItemHandler(v, item));
@@ -209,7 +209,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
      * Bar item will be in the bar group.
      */
     protected void registerBarItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("_Bar", 100);
             item.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new BarItemHandler(v, item));
@@ -219,7 +219,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerWindowMenu() {
-        ControlFactory<ShellFxView<?>, ManagedMenu> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenu> f = (v) -> {
             var menu = new ManagedMenu(ShellControls.WindowMenu.NAME, "_Window", 100);
             return menu;
         };
@@ -227,7 +227,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerWindowGroups() {
-        ControlFactory<ShellFxView<?>, ManagedMenuGroup> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuGroup> f = (v) -> {
             return new ManagedMenuGroup(ShellControls.WindowMenu.DEFAULT_GROUP, 0);
         };
         addRegistration(getRegistry().registerMenuGroup(ShellControls.WindowMenu.NAME, f));
@@ -236,7 +236,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerWindowsItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Create Windows", 0);
             MenuItemHandler.setHandler(item, new WindowsItemHandler(shell, item));
             return item;
@@ -245,9 +245,9 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerCascadeItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Cascade", 0);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem>(shell, item) {
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.CASCADE);
@@ -259,9 +259,9 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerTileVerticalItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Tile Vertically", 100);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem>(shell, item) {
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_VERTICAL);
@@ -273,9 +273,9 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerTileHorizontalItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Tile Horizontally", 200);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem>(shell, item) {
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_HORIZONTAL);
@@ -287,9 +287,9 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerTileGridItem() {
-        ControlFactory<ShellFxView<?>, ManagedMenuItem> f = (v) -> {
+        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
             var item = new ManagedMenuItem("Tile Grid", 300);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem>(shell, item) {
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_GRID);

@@ -16,20 +16,80 @@
 
 package com.techsenger.shellfx.devtools;
 
-import com.techsenger.shellfx.core.history.HistoryManager;
-import com.techsenger.shellfx.core.window.WindowView;
+import com.techsenger.connectorfx.LocalConnector;
+import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.window.AbstractWindowView;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DevToolsWindowView extends WindowView {
+public class DevToolsWindowView<VM extends DevToolsWindowViewModel<?>> extends AbstractWindowView<VM> {
 
-    interface Composer extends WindowView.Composer {
+    public class Composer extends AbstractWindowView<VM>.Composer {
 
-        void setHistoryManager(HistoryManager historyManager);
+        private final DevToolsWindowView<VM> view = DevToolsWindowView.this;
+
+        private DevToolsTabDockView<?> tabDock;
+
+        public void addTabDock() {
+            var tabDock = createTabDock();
+            doAddTabDock(tabDock);
+        }
+
+        public void addTabDock(DevToolsTabDockView<?> tabDock) {
+            doAddTabDock(tabDock);
+            tabDock.getViewModel().setHostType(DevToolsHostType.WINDOW);
+        }
+
+        protected DevToolsTabDockView<?> createTabDock() {
+            var shell = this.view.shell;
+            var context = shell.getViewModel().getContext();
+            var connector = new LocalConnector(shell.getStage(), null);
+            var params = new DevToolsTabDockParams(DevToolsHostType.WINDOW, context.getSettings(),
+                    getViewModel().getHistoryManager(), connector, shell.getStage().hashCode());
+            var tabDockViewModel = new DevToolsTabDockViewModel<>(params);
+            var tabDockView = new DevToolsTabDockView<>(tabDockViewModel, shell, null);
+            tabDockView.initialize();
+            return tabDockView;
+        }
+
+        private void doAddTabDock(DevToolsTabDockView<?> tabDock) {
+            this.tabDock = tabDock;
+            getModifiableChildren().add(tabDock);
+            VBox.setVgrow(tabDock.getNode(), Priority.ALWAYS);
+            getContentBox().getChildren().add(tabDock.getNode());
+        }
+    }
+
+    private final ShellView<?> shell;
+
+    public DevToolsWindowView(VM viewModel, ShellView<?> shell) {
+        super(viewModel, new Stage(), null);
+        this.shell = shell;
     }
 
     @Override
-    Composer getComposer();
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
+    }
+
+    @Override
+    public void requestFocus() {
+
+    }
+
+    @Override
+    protected Composer createComposer() {
+        return new Composer();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        getStage().setAlwaysOnTop(true);
+    }
 }

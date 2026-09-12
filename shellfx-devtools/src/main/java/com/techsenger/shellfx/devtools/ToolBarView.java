@@ -16,12 +16,66 @@
 
 package com.techsenger.shellfx.devtools;
 
-import com.techsenger.shellfx.shared.find.FindBaseView;
+import atlantafx.base.theme.Styles;
+import com.techsenger.shellfx.devtools.style.DevToolsIcons;
+import com.techsenger.shellfx.material.icon.FontIconView;
+import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.shellfx.shared.find.AbstractFindBaseView;
+import com.techsenger.shellfx.shared.find.FindTrigger;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToolBar;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface ToolBarView extends FindBaseView {
+public class ToolBarView<VM extends ToolBarViewModel<?>> extends AbstractFindBaseView<VM> {
+
+    private final Button refreshButton = new Button(null, new FontIconView(DevToolsIcons.REFRESH));
+
+    private final ToolBar toolBar = new ToolBar();
+
+    private final boolean findNavigation;
+
+    public ToolBarView(VM viewModel, String prompt, boolean findNavigation) {
+        super(viewModel, FindTrigger.ON_TYPE);
+        getFindComboBox().setPromptText(prompt);
+        this.findNavigation = findNavigation;
+    }
+
+    @Override
+    public ToolBar getNode() {
+        return this.toolBar;
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        HBox.setHgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
+        getFindComboBoxWrapper().setPadding(Insets.EMPTY);
+        getFindComboBox().setMaxWidth(Double.MAX_VALUE);
+        getFindComboBox().getStyleClass().add(StyleClasses.SIZE_M);
+        getFindRightBox().getStyleClass().add(StyleClasses.SIZE_M);
+
+        this.refreshButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.refreshButton.setTooltip(new Tooltip("Refresh"));
+
+        this.toolBar.getItems().addAll(getFindComboBoxWrapper());
+        if (this.findNavigation) {
+            this.toolBar.getItems().addAll(getFindPreviousButton(), getFindNextButton());
+        }
+        this.toolBar.getItems().addAll(getMatchCaseButton(), refreshButton);
+    }
+
+    @Override
+    protected void addHandlers() {
+        super.addHandlers();
+        this.refreshButton.setOnAction((e) -> getViewModel().onRefresh());
+    }
+
 
 }

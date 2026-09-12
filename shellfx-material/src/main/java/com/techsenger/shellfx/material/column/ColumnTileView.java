@@ -107,8 +107,8 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
          */
         @Override
         public void updateItem(Integer item, boolean empty) {
-            applyRowHeight();
-            applyCellWidths();
+            updateRowHeight();
+            updateCellWidths();
             if (item != null && item.equals(getItem()) && !empty && !dirty) {
                 return;
             }
@@ -148,7 +148,7 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         /**
          * Applies {@link ColumnTileView#rowHeight} to this row's node, if resolved yet.
          */
-        private void applyRowHeight() {
+        private void updateRowHeight() {
             var height = tileView.rowHeight;
             if (height > 0) {
                 node.setMinHeight(height);
@@ -161,17 +161,17 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
          * Applies the current per-cell width (see {@link ColumnTileView#computeCellWidth()}) to every cached
          * cell in this row, if resolved yet.
          */
-        private void applyCellWidths() {
+        private void updateCellWidths() {
             var width = tileView.computeCellWidth();
             if (width < 0) {
                 return;
             }
             for (var cell : cachedCells) {
-                applyCellWidth(cell, width);
+                updateCellWidth(cell, width);
             }
         }
 
-        private void applyCellWidth(TileCell<T> cell, double width) {
+        private void updateCellWidth(TileCell<T> cell, double width) {
             cell.setMinWidth(width);
             cell.setPrefWidth(width);
             cell.setMaxWidth(width);
@@ -253,7 +253,7 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
             cell.setTileView((ColumnTileView) this.tileView);
             var width = tileView.computeCellWidth();
             if (width >= 0) {
-                applyCellWidth(cell, width);
+                updateCellWidth(cell, width);
             }
             this.cachedCells.add(cell);
         }
@@ -932,7 +932,7 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
             if (row == null) {
                 iterator.remove();
             } else {
-                row.applyCellWidths();
+                row.updateCellWidths();
             }
         }
     }

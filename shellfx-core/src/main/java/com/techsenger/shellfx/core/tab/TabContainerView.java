@@ -16,32 +16,53 @@
 
 package com.techsenger.shellfx.core.tab;
 
-import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.annotations.Nullable;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvvm.ChildView;
+import java.util.List;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.scene.control.Tab;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabContainerView extends ChildView {
+public interface TabContainerView<VM extends TabContainerViewModel<?>> extends ChildView<VM> {
 
-    interface Composer extends ChildView.Composer, TabContainerPort.ComposerAccess {
+    interface Composer extends ChildView.Composer, TabContainerComposer {
 
+        void addTab(TabView<?> tab);
+
+        void removeTab(TabView<?> tab);
+
+        void closeTab(TabView<?> tab);
+
+        /**
+         * Returns an unmodifiable list of tabs.
+         *
+         * @return
+         */
+        @Unmodifiable List<? extends TabView<?>> getTabs();
+
+        ReadOnlyObjectProperty<@Nullable TabView<?>> selectedTabProperty();
+
+        @Nullable TabView<?> getSelectedTab();
+
+        /**
+         * Returns the index of the selected tab.
+         *
+         * @return
+         */
+        int getSelectedTabIndex();
     }
 
     @Override
     Composer getComposer();
 
     /**
-     * Makes tab with specified index selected.
+     * Prevents interaction with the tab header while it is blocked (e.g. during modal operation).
      *
-     * @param tabIndex
-     */
-    void selectTab(int tabIndex);
-
-    /**
-     * Returns the index of the selected tab.
-     *
-     * @return
-     */
-    int getSelectedTabIndex();
+     * @param tab the tab to block
+    */
+    void setTabHeaderBlocked(Tab tab, boolean blocked);
 }

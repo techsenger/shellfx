@@ -16,19 +16,108 @@
 
 package com.techsenger.shellfx.dialogs.namevalue;
 
-import com.techsenger.shellfx.core.dialog.DialogView;
+import com.techsenger.shellfx.core.dialog.AbstractDialogView;
+import com.techsenger.shellfx.material.button.ResultButton;
+import com.techsenger.shellfx.material.style.Spacing;
+import javafx.geometry.VPos;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface NameValueDialogView extends DialogView {
+public class NameValueDialogView<VM extends NameValueDialogViewModel<?>> extends AbstractDialogView<VM> {
 
-    void updateName(String name);
+    private final Label nameLabel = new Label("Name");
 
-    void updateNameEditable(boolean value);
+    private final TextField nameTextField = new TextField();
 
-    void updateValue(String value);
+    private final Label valueLabel = new Label("Value");
 
-    void updateValueEditable(boolean value);
+    private final TextArea valueTextArea = new TextArea();
+
+    private final GridPane gridPane = new GridPane();
+
+    private final ResultButton cancelButton = new ResultButton(NameValueButtons.CANCEL, "Cancel");
+
+    private final ResultButton okButton = new ResultButton(NameValueButtons.OK, "OK");
+
+    public NameValueDialogView(VM viewModel) {
+        super(viewModel);
+    }
+
+    public NameValueDialogView(VM viewModel, String nameLabelText, String valueLabelText) {
+        super(viewModel);
+        nameLabel.setText(nameLabelText);
+        valueLabel.setText(valueLabelText);
+    }
+
+    @Override
+    public void requestFocus() {
+        nameTextField.requestFocus();
+        nameTextField.deselect();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        nameLabel.setMinWidth(Label.USE_PREF_SIZE);
+        gridPane.add(nameLabel, 0, 0);
+        gridPane.add(nameTextField, 1, 0);
+        nameTextField.setEditable(false);
+        GridPane.setHgrow(nameTextField, Priority.ALWAYS);
+
+        gridPane.add(valueLabel, 0, 1);
+        valueLabel.setMinWidth(Label.USE_PREF_SIZE);
+        GridPane.setValignment(valueLabel, VPos.TOP);
+        gridPane.add(valueTextArea, 1, 1);
+        valueTextArea.setEditable(false);
+        valueTextArea.setWrapText(true);
+        GridPane.setHgrow(valueTextArea, Priority.ALWAYS);
+        GridPane.setVgrow(valueTextArea, Priority.ALWAYS);
+
+        gridPane.setVgap(Spacing.getVertical());
+        gridPane.setHgap(Spacing.getHorizontal());
+        VBox.setVgrow(gridPane, Priority.ALWAYS);
+        getContentBox().getChildren().add(gridPane);
+
+        okButton.setDefaultButton(true);
+        registerButtons(cancelButton, okButton);
+        getButtonWidthGroup().add(cancelButton, okButton);
+    }
+
+    @Override
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
+        nameTextField.textProperty().bindBidirectional(viewModel.nameProperty());
+        nameTextField.editableProperty().bind(viewModel.nameEditableProperty());
+        valueTextArea.textProperty().bindBidirectional(viewModel.valueProperty());
+        valueTextArea.editableProperty().bind(viewModel.valueEditableProperty());
+    }
+
+    protected Label getNameLabel() {
+        return nameLabel;
+    }
+
+    protected TextField getNameTextField() {
+        return nameTextField;
+    }
+
+    protected Label getValueLabel() {
+        return valueLabel;
+    }
+
+    protected TextArea getValueTextArea() {
+        return valueTextArea;
+    }
+
+    protected GridPane getGridPane() {
+        return gridPane;
+    }
 }

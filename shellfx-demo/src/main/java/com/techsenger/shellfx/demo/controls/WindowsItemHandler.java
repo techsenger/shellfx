@@ -16,36 +16,39 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
+import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.window.WindowArrangement;
 import com.techsenger.shellfx.core.window.WindowParams;
-import com.techsenger.shellfx.core.window.WindowPosition;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.demo.window.DemoWindowFxView;
-import com.techsenger.shellfx.demo.window.DemoWindowPresenter;
+import com.techsenger.shellfx.demo.mdi.DemoWindowView;
+import com.techsenger.shellfx.demo.mdi.DemoWindowViewModel;
+import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import com.techsenger.toolkit.fx.utils.NodeUtils;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WindowsItemHandler extends AbstractMenuItemHandler<ShellFxView<?>, ManagedMenuItem> {
+public class WindowsItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
 
-    public WindowsItemHandler(ShellFxView<?> component, ManagedMenuItem item) {
+    public WindowsItemHandler(ShellView<?> component, ManagedMenuItem item) {
         super(component, item);
     }
 
     @Override
     public void onAction() {
+        DemoWindowView view = null;
         for (var i = 0; i < 6; i++) {
-            var view = new DemoWindowFxView(i);
-            var settings = getComponent().getPresenter().getContext().getSettings().getAppearance();
+            var settings = getComponent().getViewModel().getContext().getSettings().getAppearance();
             var params = new WindowParams(WindowType.NESTED, false, settings);
-            var presenter = new DemoWindowPresenter(view, params);
-            presenter.initialize();
-            presenter.setTitle("Window " + i);
+            var viewModel = new DemoWindowViewModel<>(params, i);
+            view = new DemoWindowView<>(viewModel);
+            view.initialize();
+            viewModel.setTitle("Window " + i);
             getComponent().getComposer().addWindow(view);
-            getComponent().getComposer().alignWindow(view, WindowPosition.CENTER);
         }
+        getComponent().getComposer().arrangeWindows(WindowArrangement.CASCADE);
+        NodeUtils.requestFocus(view.getNode());
     }
 }

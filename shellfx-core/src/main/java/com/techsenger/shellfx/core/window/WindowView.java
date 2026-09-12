@@ -17,88 +17,93 @@
 package com.techsenger.shellfx.core.window;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.patternfx.mvp.ChildView;
-import com.techsenger.shellfx.material.icon.Icon;
-import com.techsenger.shellfx.material.style.Density;
-import com.techsenger.shellfx.material.theme.Theme;
-import javafx.scene.text.Font;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.patternfx.mvvm.ChildView;
+import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.style.Stylesheet;
+import java.util.List;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.scene.layout.Region;
+import javafx.stage.Stage;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface WindowView extends ChildView {
+public interface WindowView<VM extends WindowViewModel<?>> extends ChildView<VM> {
 
-    interface Composer extends ChildView.Composer, WindowPort.ComposerAccess {
+    interface Composer extends ChildView.Composer, WindowComposer {
 
         /**
-         * Closes both {@link WindowType#TOP_LEVEL} and {@link WindowType#NESTED} windows.
+         * Defines the component that currently has the focus.
+         *
+         * <p>When the window loses focus and then regains it, the focused component does not change,
+         * because JavaFX preserves and restores the focus automatically.
+         * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
          */
+        ReadOnlyObjectProperty<@Nullable ParentView<?>> focusedProperty();
+
+        /**
+         * Returns the value of {@link #focusedProperty()}.
+         *
+         * <p>When the window loses focus and then regains it, the focused component does not change,
+         * because JavaFX preserves and restores the focus automatically.
+         * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
+         *
+         * @return
+         */
+        @Nullable ParentView<?> getFocused();
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p>This method is intended for {@link WindowType#NESTED} windows only.
+         */
+        @Override
         void close();
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p>This method is intended for {@link WindowType#NESTED} windows only.
+         */
+        @Override
+        @Nullable WindowContainerView<?> getParent();
     }
 
     @Override
     Composer getComposer();
 
     /**
-     * Makes this window modal.
+     * Adds stylesheets to this window.
      *
-     * <p>This is a one-time initialization command, not a live state update: modality can only be applied before
-     * the window is shown and cannot be changed or unset afterwards. Call this only once, when
-     * {@link WindowPort#isModal()} is {@code true}.
+     * @param sheets the stylesheets to add
      */
-    void updateModal();
-
-    void updateAlwaysOnTop(boolean alwaysOnTop);
-
-    void updateTitle(String title);
-
-    void updateIcon(Icon<?> icon);
-
-    void updateWidth(double value);
-
-    void updateHeight(double value);
-
-    void updateMinWidth(double value);
-
-    void updateMinHeight(double value);
-
-    void updateMaxWidth(double value);
-
-    void updateMaxHeight(double value);
-
-    void updateMaximized(boolean value);
-
-    void updateMaximizable(boolean maximizable);
-
-    void updateMinimized(boolean minimized);
-
-    void updateMinimizable(boolean minimizable);
-
-    void updateClosable(boolean closable);
-
-    void updateBlocked(boolean blocked);
-
-    void updateOutOfBoundsAllowed(boolean outOfBoundsAllowed);
-
-    void updateResizable(boolean value);
-
-    void updateX(double x);
-
-    void updateY(double y);
-
-    void updateDensity(@Nullable Density density);
-
-    void updateTheme(Theme theme);
-
-    void updateRegularFont(Font font);
-
-    void updateMonospaceFont(Font font);
+    void addStylesheets(List<Stylesheet> sheets);
 
     /**
-     * Closes the top level window.
+     * Removes stylesheets from this window.
+     *
+     * @param sheets the stylesheets to remove
+     */
+    void removeStylesheets(List<Stylesheet> sheets);
+
+    /**
+     * Returns an unmodifiable list of stylesheets applied to this window.
+     *
+     * @return an unmodifiable list of stylesheets
+     */
+    @Unmodifiable List<Stylesheet> getStylesheets();
+
+    /**
+     * Returns the {@link Stage} that backs this window.
      *
      * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only.
+     *
+     * @return the {@link Stage} of this window
      */
-    void closeWindow();
+    Stage getStage();
+
+    @Override
+    Region getNode();
 }

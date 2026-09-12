@@ -17,10 +17,11 @@
 package com.techsenger.shellfx.core.page;
 
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.patternfx.mvp.ChildPort;
+import com.techsenger.patternfx.core.ChildPort;
 import java.util.List;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -40,6 +41,4 @@ public interface TreePageContainerPort extends ChildPort {
 
     @Override
     ComposerAccess getComposerAccess();
-
-    void selectPage(TreePageItem item);
 }

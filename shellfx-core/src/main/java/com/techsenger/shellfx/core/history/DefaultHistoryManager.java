@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.history;
 
-import com.techsenger.patternfx.mvp.ComponentHistory;
+import com.techsenger.patternfx.mvvm.ComponentHistory;
 import com.techsenger.toolkit.core.function.Factory;
 import java.util.UUID;
 

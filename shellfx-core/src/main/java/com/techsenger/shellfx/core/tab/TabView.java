@@ -16,33 +16,28 @@
 
 package com.techsenger.shellfx.core.tab;
 
-import com.techsenger.patternfx.mvp.ChildView;
-import com.techsenger.shellfx.core.ShellPort;
-import com.techsenger.shellfx.material.icon.Icon;
+import com.techsenger.annotations.Nullable;
+import com.techsenger.patternfx.mvvm.ChildView;
+import com.techsenger.shellfx.core.ShellView;
+import javafx.scene.control.Tab;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface TabView extends ChildView {
+public interface TabView<VM extends TabViewModel<?>> extends ChildView<VM> {
 
-    interface Composer extends ChildView.Composer, TabPort.ComposerAccess {
+    interface Composer extends ChildView.Composer, TabComposer {
 
-        ShellPort getShellPort();
+        @Override
+        @Nullable TabContainerView<?> getParent();
 
-        void close();
+        ShellView<?> getShell();
     }
 
     @Override
+    Tab getNode();
+
+    @Override
     Composer getComposer();
-
-    void updateClosable(boolean closable);
-
-    void updateWaiting(boolean waiting);
-
-    void updateIcon(Icon<?> icon);
-
-    void updateTitle(String title);
-
-    void updateTooltip(String tooltip);
 }

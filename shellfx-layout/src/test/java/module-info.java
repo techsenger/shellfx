@@ -20,7 +20,7 @@ open module com.techsenger.shellfx.layout {
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
     requires com.techsenger.patternfx.core;
-    requires com.techsenger.patternfx.mvp;
+    requires com.techsenger.patternfx.mvvm;
     requires com.techsenger.shellfx.material;
     requires com.techsenger.shellfx.core;
     requires com.techsenger.shellfx.shared;

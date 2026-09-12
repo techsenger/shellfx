@@ -22,9 +22,9 @@ import com.techsenger.shellfx.core.window.WindowContainerView;
  *
  * @author Pavel Castornii
  */
-public interface HostTabView extends TabView, WindowContainerView {
+public interface HostTabView<VM extends HostTabViewModel<?>> extends TabView<VM>, WindowContainerView<VM> {
 
-    interface Composer extends TabView.Composer, WindowContainerView.Composer, HostTabPort.ComposerAccess {
+    interface Composer extends TabView.Composer, WindowContainerView.Composer, HostTabComposer {
 
     }
 

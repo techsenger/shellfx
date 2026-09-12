@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.core.traits;
 
+import javafx.beans.property.BooleanProperty;
+
 /**
  *
  * @author Pavel Castornii
@@ -25,4 +27,6 @@ public interface Waitable {
     void setWaiting(boolean waiting);
 
     boolean isWaiting();
+
+    BooleanProperty waitingProperty();
 }

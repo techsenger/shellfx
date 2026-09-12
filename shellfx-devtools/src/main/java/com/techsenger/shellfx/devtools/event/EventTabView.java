@@ -16,23 +16,82 @@
 
 package com.techsenger.shellfx.devtools.event;
 
-import com.techsenger.shellfx.core.tab.TabView;
+import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.tab.AbstractTabView;
+import com.techsenger.shellfx.material.style.StyleClasses;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import jfx.incubator.scene.control.richtext.RichTextArea;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface EventTabView extends TabView {
+public class EventTabView<VM extends EventTabViewModel<?>> extends AbstractTabView<VM> {
 
-    interface Composer extends TabView.Composer {
+    public class Composer extends AbstractTabView<VM>.Composer implements EventTabComposer {
 
-        EventToolBarPort getToolBarPort();
+        private EventToolBarView<?> toolBar;
+
+        @Override
+        public void compose() {
+            super.compose();
+            toolBar = createToolBar();
+            getModifiableChildren().add(toolBar);
+            getContentBox().getChildren().add(0, toolBar.getNode());
+        }
+
+        @Override
+        public FullEventToolBarPort getToolBarPort() {
+            return toolBar == null ? null : toolBar.getViewModel();
+        }
+
+        protected EventToolBarView<?> createToolBar() {
+            var params = new EventToolBarParams(getViewModel().new ToolBarAwarePortImpl());
+            var viewModel = new EventToolBarViewModel<>(params);
+            var toolBarView = new EventToolBarView<>(viewModel);
+            toolBarView.initialize();
+            return toolBarView;
+        }
+    }
+
+    /**
+     * JFX RichTextArea and JFX ListView generates too many events (NodeAdd, NodeRemove), so we use RTFX text area.
+     */
+    private final RichTextArea textArea = new RichTextArea();
+
+    public EventTabView(VM viewModel, ShellView<?> shell) {
+        super(viewModel, shell);
     }
 
     @Override
-    Composer getComposer();
+    public void requestFocus() {
 
-    void appendText(String text);
+    }
 
-    void clearText();
+    @Override
+    public Composer getComposer() {
+        return (Composer) super.getComposer();
+    }
+
+    @Override
+    protected Composer createComposer() {
+        return new EventTabView.Composer();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        textArea.setEditable(false);
+        textArea.getStyleClass().add(StyleClasses.MONOSPACE);
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+        getContentBox().getChildren().add(textArea);
+    }
+
+    @Override
+    protected void addListeners() {
+        super.addListeners();
+        getViewModel().getAppendTextSource().addListener(textArea::appendText);
+        getViewModel().getClearTextSource().addListener((v) -> textArea.clear());
+    }
 }

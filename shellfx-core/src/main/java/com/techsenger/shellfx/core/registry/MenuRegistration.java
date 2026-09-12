@@ -16,15 +16,15 @@
 
 package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.patternfx.mvp.ParentFxView;
-import com.techsenger.shellfx.material.menu.MenuGroupName;
+import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.menu.ManagedMenu;
+import com.techsenger.shellfx.material.menu.MenuGroupName;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuRegistration<T extends ParentFxView<?>> extends AbstractMenuRegistration<T, ManagedMenu> {
+class MenuRegistration<T extends ParentView<?>> extends AbstractMenuRegistration<T, ManagedMenu> {
 
     private final MenuGroupName<?> groupName;
 

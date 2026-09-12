@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.demo.main;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
+
 /**
  *
  * @author Pavel Castornii
@@ -24,7 +26,13 @@ public interface DemoMenuAwarePort {
 
     boolean isFooDisabled();
 
+    ReadOnlyBooleanProperty fooDisabledProperty();
+
     boolean isBarIncluded();
 
+    ReadOnlyBooleanProperty barIncludedProperty();
+
     boolean isBarDisabled();
+
+    ReadOnlyBooleanProperty barDisabledProperty();
 }

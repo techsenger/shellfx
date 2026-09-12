@@ -16,13 +16,50 @@
 
 package com.techsenger.shellfx.demo.page;
 
-import com.techsenger.shellfx.core.page.PageView;
+import com.techsenger.shellfx.core.page.AbstractPageView;
+import com.techsenger.shellfx.material.style.Spacing;
+import com.techsenger.toolkit.fx.utils.NodeUtils;
+import javafx.geometry.Insets;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface DemoPageView extends PageView {
+public class DemoPageView<VM extends DemoPageViewModel<?>> extends AbstractPageView<VM> {
 
-    void updateText(String text);
+    private final TextArea textArea = new TextArea();
+
+    private final VBox box = new VBox(textArea);
+
+    public DemoPageView(VM viewModel, Insets padding) {
+        super(viewModel);
+        this.box.setPadding(padding);
+    }
+
+    @Override
+    public void requestFocus() {
+        NodeUtils.requestFocus(this.textArea);
+    }
+
+    @Override
+    public VBox getNode() {
+        return box;
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+        textArea.setWrapText(true);
+        VBox.setVgrow(textArea, Priority.ALWAYS);
+        box.setSpacing(Spacing.getVertical());
+    }
+
+    @Override
+    protected void bind() {
+        super.bind();
+        textArea.textProperty().bind(getViewModel().textProperty());
+    }
 }

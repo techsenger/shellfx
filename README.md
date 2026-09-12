@@ -1,21 +1,21 @@
 # Techsenger ShellFX
 
 Techsenger ShellFX is a platform for building JavaFX applications, where an application is structured
-as a tree of MVP components, each of which has its own lifecycle, history, etc. The platform provides abstract
+as a tree of MVVM components, each of which has its own lifecycle, history, etc. The platform provides abstract
 classes for creating the main types of components: window, tab, area, page, dialog, and popup.
 
 It also includes ready-to-use implementations of containers (including a docking layout) and dialogs (including a
-universal file chooser). In addition, the platform provides powerful devtools that allow you to inspect both the MVP
+universal file chooser). In addition, the platform provides powerful devtools that allow you to inspect both the MVVM
 component tree and the underlying JavaFX scene graph. These tools make it easy to understand how the platform works
 and are invaluable during development.
 
 ShellFX is built around two core subsystems: the dynamic main menu and the workspace. The main menu is assembled
-at runtime and automatically adapts to the currently focused component. The workspace provides the structural
-foundation of the application and defines how components are arranged and interact visually. The platform supports
-different types of workspace models.
+at runtime and automatically adapts to the currently focused component. The workspace is everything below the main
+menu in the `Shell` — it provides the structural foundation of the application and defines how components are
+arranged and interact visually. The platform supports different types of workspace models.
 
 `ShellFX` is built according to the KISS principle. We aimed to keep it as simple as possible — with no magic and
-no overly complex solutions. For example, the platform is based on a slightly extended classic MVP pattern and provides
+no overly complex solutions. For example, the platform is based on a slightly extended classic MVVM pattern and provides
 components for the core parts of an application, such as windows, tabs, dialogs, and others. The main idea was to
 allow developers to start working with the platform within a single day, and we believe this goal has been achieved.
 
@@ -41,6 +41,7 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [Area](#core-area)
 * [Layout Components](#layout)
     * [TabHost](#layout-tab-host)
+    * [ProminentTabHost](#layout-prominent-tab-host)
     * [DockHost](#layout-dock-host)
     * [PageHost](#layout-page-host)
     * [TreePageHost](#layout-tree-page-host)
@@ -51,6 +52,7 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [AlertDialog](#dialog-alert)
     * [FileChooserDialog](#dialog-file-chooser)
     * [NameValueDialog](#dialog-name-value)
+    * [ProgressDialog](#dialog-progress)
 * [DevTools Components](#devtools)
     * [DevToolsTabDock](#devtools-tab-dock)
     * [ComponentTab](#devtools-component-tab)
@@ -118,7 +120,7 @@ flexible workspace management.
 
 It is particularly effective for projects that:
 
-- Rely on a component-based MVP architecture.
+- Rely on a component-based MVVM architecture.
 - Contain multiple tabs or require complex workspace layouts (including docking-based layouts).
 - Need dynamic menus, theming support, and centralized shell-level infrastructure.
 - Benefit from built-in DevTools for inspecting both the component tree and the JavaFX scene graph.
@@ -273,7 +275,7 @@ For this reason, all ShellFX core components inherit from the `Parent` and `Chil
 Each component is defined by an interface accompanied by a base implementation. This approach ensures loose coupling
 while still providing default implementations out of the box. It also allows developers to replace or extend the default
 behavior with custom implementations when required. For instance, the platform consistently references `Shell`
-through the `ShellFxView` interface rather than a concrete class.
+through the `ShellView` interface rather than a concrete class.
 
 When working with components, there are several important points to keep in mind:
 
@@ -323,14 +325,14 @@ of menu elements and responding to their actions. It interacts with a component 
 
 The algorithm works as follows. First, the component that has focus is determined. The `Shell` tracks changes to
 the focused node using `Scene#focusOwnerProperty()`. When this property changes, the component that owns the node is
-identified, and the result is stored in `ShellFxView#focusedProperty()`. Note that if a component should become focused
+identified, and the result is stored in `ShellView#focusedProperty()`. Note that if a component should become focused
 when the user clicks on an empty area of that component (for example, a `Pane`), you must explicitly call
 `pane.requestFocus()`.
 
 At the same time, the focused component may not participate in menu formation (for example, it could be just a toolbar).
 Therefore, after the focused component changes, `Shell` searches from the focused component up to the root of the
 tree — the Shell — for the first component whose port implements `MenuAwarePort`. Note that `Shell` can also form
-the main menu, but this is usually done only when the workspace is empty. See also `ShellFxView#menuAwareProperty()`.
+the main menu, but this is usually done only when the workspace is empty. See also `ShellView#menuAwareProperty()`.
 
 It is also important to remember that the `MenuBarManager` also interacts with `MenuAwarePort` when the user uses
 accelerators.
@@ -341,8 +343,8 @@ To gain a complete understanding of working with the menu, it is recommended to 
 The second key part of ShellFX is the workspace, which represents one of the available layouts. ShellFX supports
 different types of workspace:
 
-1. Browser-like. This workspace is created using the `TabHost` component with a flag indicating that it is a workspace.
-Additionally, the tabs added to this `TabHost` contain a docking layout created with the `DockHost` component.
+1. Browser-like. This workspace is created using the `ProminentTabHost` component. Additionally, the tabs added to
+this `ProminentTabHost` can contain a docking layout created with the `DockHost` component.
 2. IDE-like. This workspace is a straightforward docking layout created with the `DockHost` component.
 
 ### Window <a name="core-window"></a>
@@ -420,7 +422,7 @@ components that implement this interface: `Tab` and `Window`.
 
 ### Area <a name="core-area"></a>
 
-`Area` is an abstract base component that represents a rectangular region. Naturally, `AreaFxView#getNode()` returns a
+`Area` is an abstract base component that represents a rectangular region. Naturally, `AreaView#getNode()` returns a
 `Region`.
 
 ## Layout Components <a name="layout"></a>
@@ -432,6 +434,13 @@ Layout components are responsible for arranging `Tab`, `Page`, and, in some case
 `TabHost` is the primary component that can contain `Tab` components; therefore, it implements the `TabContainer` interface.
 This component provides all the necessary APIs for working with tabs — adding, selecting, removing, transferring
 tab ports, and more.
+
+### ProminentTabHost <a name="layout-prominent-tab-host"></a>
+
+`ProminentTabHost` extends `TabHost` and is the primary `TabHost` used for building browser-like applications,
+where the application shell consists of a main menu and this single component as its workspace. It is named after
+the `prominent` style class (see `StyleClasses#PROMINENT`) and visually stands out from a regular `TabHost` through
+larger tabs and a more prominent, saturated tab header.
 
 ### DockHost <a name="layout-dock-host"></a>
 
@@ -474,7 +483,7 @@ The second is the partial-tree API, which is intended for incremental runtime mo
 the entire layout, it performs targeted operations relative to an existing anchor component. This API is used for
 operations such as adding a new area next to an existing area, replacing a component, removing a component, or
 performing docking operations initiated by the user. Anchors are addressed the same way as in the whole-tree API —
-via `ModelNode` — but obtained live from the current layout using `Composer#getModelNode(AreaFxView)` rather than
+via `ModelNode` — but obtained live from the current layout using `Composer#getModelNode(AreaView)` rather than
 built by hand. A node obtained this way is not a snapshot: navigating it via `ModelNode#getParent()` or
 `GroupNode#getChildren()` always reflects the layout's actual current state, which lets an anchor be resolved to any
 ancestor group regardless of nesting depth.
@@ -527,6 +536,11 @@ implementation is supplied.
 
 `NameValueDialog` is a simple dialog for displaying name–value pairs. The parameter name is shown in a `TextField`,
 while the value is displayed in a `TextArea`.
+
+### ProgressDialog <a name="dialog-progress"></a>
+
+`ProgressDialog` is a dialog for reporting the progress of a long-running operation, with an optional message and
+an optional step counter (e.g. `3 / 10`) shown alongside the progress bar.
 
 ## DevTools Components <a name="devtools"></a>
 
@@ -594,7 +608,7 @@ eagerly; it only runs once its contribution actually needs to be materialized.
 
 Resolving the controls that apply to an actual component instance walks that instance's own class, its superclasses,
 and its interfaces, matching each against registered component classes — so a slot filed under a base view type
-(e.g. `TabHostFxView`) is automatically picked up by every subtype (`TabDockFxView`, and so on), without either side
+(e.g. `TabHostView`) is automatically picked up by every subtype (`TabDockView`, and so on), without either side
 needing to know about the other in advance. The resolved set is cached, keyed by `Class#getName()` rather than by
 the `Class` object itself — holding the `Class` would also hold a strong reference to its defining `ClassLoader`
 and, transitively, everything else a plugin module loaded through it, leaking the whole module after it is meant to
@@ -603,7 +617,7 @@ be unloaded. The cache is invalidated on every registration change, so it can ne
 `ControlRegistry` has no built-in notion of "the" main menu — `registerMenu`, `registerMenuGroup`, and
 `registerMenuItem` are the only entry points, and every registration is scoped by whichever `MenuGroupName`/
 `MenuName` it is registered under. Building Shell's own menu bar out of this is just one particular use: a caller
-like `DefaultShellFxView` picks a `MenuGroupName` to treat as its bar's root, registers/receives menus under that
+like `DefaultShellView` picks a `MenuGroupName` to treat as its bar's root, registers/receives menus under that
 group like any other, and passes the same group to `ControlBuilder#buildMenus` when assembling. Since nothing here
 is main-menu-specific, one registry can just as well back several independent menu bars, each keyed by its own
 group.
@@ -663,9 +677,9 @@ interfaces for components follows a consistent scheme:
 
 1. A unique name (may be omitted for brevity) — `Alert`, `File`, `Info`, etc.
 2. The component role — `Tab`, `Window`, `Popup`, `Area`, `Panel`, `ToolBar`, etc.
-3. The component element — `View`, `Presenter`, `FxView`, `Params`, `Port`, `History` etc.
+3. The component element — `View`, `ViewModel`, `Params`, `Port`, `History` etc.
 
-Examples: `AlertDialogFxView`, `EditorTabPresenter`, `InfoPopupParams`, `ToolBarPort`
+Examples: `AlertDialogView`, `EditorTabViewModel`, `InfoPopupParams`, `ToolBarPort`
 
 This approach is justified by the following reasons. When a complex component is split into multiple components
 (due to complexity, reuse of components, or use of a docking layout), there may be several components with the same
@@ -694,18 +708,12 @@ Examples of `Composer` methods using `open*` and `close*`:
 
 `View` methods also follow a naming convention that distinguishes two kinds of methods:
 
-1. State methods — methods that mirror state owned by the `Presenter`. The `Presenter` has the corresponding state and
-a `getX`/`isX` and/or `setX` accessor for it. The corresponding `View` method always starts with `update`, e.g.
-`updateTitle`, `updateModal`, `updateDensity`.
-2. Command methods — all other methods that perform an action rather than mirror `Presenter` state. They use an
-appropriate action verb, such as `showX`, `hideX`, `scrollToFile`, `selectFile`, `clearX`, or `refreshMenu`.
-
 ## Quick Start <a name="quick-start"></a>
 
 To get started with ShellFX, it is recommended to follow these steps:
 
 1. Familiarize yourself with the [PatternFX](https://github.com/techsenger/patternfx) framework,
-the [MVP](https://github.com/techsenger/patternfx#templates-mvp) template, and its demo.
+the [MVVM](https://github.com/techsenger/patternfx#templates-mvvm) template, and its demo.
 2. Explore and run the demo. See [Running Demo](#running-demo) for details.
 
 ## Requirements <a name="requirements"></a>

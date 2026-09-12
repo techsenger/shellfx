@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.core.traits;
 
+import javafx.beans.property.BooleanProperty;
+
 /**
  *
  * @author Pavel Castornii
@@ -35,4 +37,6 @@ public interface Closable {
      * @param closable true to allow closing the tab, false to prevent it
      */
     void setClosable(boolean closable);
+
+    BooleanProperty closableProperty();
 }

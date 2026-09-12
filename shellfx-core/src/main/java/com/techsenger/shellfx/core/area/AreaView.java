@@ -16,17 +16,21 @@
 
 package com.techsenger.shellfx.core.area;
 
-import com.techsenger.patternfx.mvp.ChildView;
+import com.techsenger.patternfx.mvvm.ChildView;
+import javafx.scene.layout.Region;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface AreaView extends ChildView {
+public interface AreaView<VM extends AreaViewModel<?>> extends ChildView<VM> {
 
     interface Composer extends ChildView.Composer {
 
     }
+
+    @Override
+    Region getNode();
 
     @Override
     Composer getComposer();

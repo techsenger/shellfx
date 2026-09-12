@@ -19,8 +19,10 @@ package com.techsenger.shellfx.layout.dockhost;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.area.AreaPort;
 import java.util.List;
+import javafx.geometry.Side;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -38,4 +40,6 @@ public interface SideBarPort extends AreaPort {
 
     @Override
     ComposerAccess getComposerAccess();
+
+    Side getSide();
 }

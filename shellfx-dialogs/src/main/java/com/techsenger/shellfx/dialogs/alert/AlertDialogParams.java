@@ -39,7 +39,7 @@ public class AlertDialogParams extends DialogParams {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(dialogType);
     }

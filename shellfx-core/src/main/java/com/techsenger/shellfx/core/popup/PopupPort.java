@@ -17,15 +17,15 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.core.CloseAwarePort;
 import com.techsenger.shellfx.core.area.AreaPort;
-import com.techsenger.shellfx.core.traits.Waitable;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
-public interface PopupPort extends AreaPort, CloseAwarePort, Waitable {
+public interface PopupPort extends AreaPort {
 
     interface ComposerAccess extends AreaPort.ComposerAccess {
 
@@ -43,11 +43,7 @@ public interface PopupPort extends AreaPort, CloseAwarePort, Waitable {
      */
     boolean isModal();
 
-    double getPrefWidth();
+    boolean isWaiting();
 
-    double getPrefHeight();
-
-    void setPrefWidth(double value);
-
-    void setPrefHeight(double value);
+    ReadOnlyBooleanProperty waitingProperty();
 }

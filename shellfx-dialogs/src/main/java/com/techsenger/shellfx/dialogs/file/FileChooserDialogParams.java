@@ -81,7 +81,7 @@ public class FileChooserDialogParams<T extends GenericFile> extends DialogParams
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(chooserType);
         Objects.requireNonNull(storages);

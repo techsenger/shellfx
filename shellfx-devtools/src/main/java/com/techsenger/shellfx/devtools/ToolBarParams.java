@@ -36,7 +36,7 @@ public class ToolBarParams extends AreaParams {
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(toolBarAware);
     }

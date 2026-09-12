@@ -16,12 +16,12 @@
 
 package com.techsenger.shellfx.demo.controls;
 
-import com.techsenger.shellfx.core.ShellFxView;
+import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.demo.page.PageMenuType;
-import com.techsenger.shellfx.demo.page.PageTabFxView;
 import com.techsenger.shellfx.demo.page.PageTabHistory;
 import com.techsenger.shellfx.demo.page.PageTabParams;
-import com.techsenger.shellfx.demo.page.PageTabPresenter;
+import com.techsenger.shellfx.demo.page.PageTabView;
+import com.techsenger.shellfx.demo.page.PageTabViewModel;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
 /**
@@ -32,21 +32,20 @@ public class PageItemHandler extends AbstractContainerItemHandler {
 
     private final PageMenuType menuType;
 
-    public PageItemHandler(ShellFxView<?> component, ManagedMenuItem item, PageMenuType menuType) {
+    public PageItemHandler(ShellView<?> component, ManagedMenuItem item, PageMenuType menuType) {
         super(component, item);
         this.menuType = menuType;
     }
 
     @Override
     public void onAction() {
-        var tabView = new PageTabFxView(getComponent());
-        var historyManager = getComponent().getPresenter().getContext().getHistoryManager();
+        var historyManager = getComponent().getViewModel().getContext().getHistoryManager();
         var params = new PageTabParams(() -> historyManager
                 .getOrCreateHistory(PageTabHistory.class, PageTabHistory::new), menuType);
-        var tabPresenter = new PageTabPresenter(tabView, params);
-        tabPresenter.initialize();
+        var tabViewModel = new PageTabViewModel<>(params);
+        var tabView = new PageTabView<>(tabViewModel, getComponent());
+        tabView.initialize();
         resolveMainTabContainer().getComposer().addTab(tabView);
         tabView.requestFocus();
     }
-
 }

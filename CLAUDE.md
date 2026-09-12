@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Techsenger ShellFX is a Java/JavaFX platform for building applications structured as a tree of MVP
-(Model-View-Presenter) components (window, tab, area, page, dialog, popup), each with its own lifecycle and
-history. It is built on top of [PatternFX](https://github.com/techsenger/patternfx) (`patternfx-mvp`,
-`patternfx-core`), which provides the underlying MVP component/tree machinery. ShellFX deliberately stays on
-MVP — do not propose MVVM, StateFX, or property-binding patterns for presenters.
+Techsenger ShellFX is a Java/JavaFX platform for building applications structured as a tree of MVVM
+(Model-View-ViewModel) components (window, tab, area, page, dialog, popup), each with its own lifecycle and
+history. It is built on top of [PatternFX](https://github.com/techsenger/patternfx) (`patternfx-mvvm`,
+`patternfx-core`), which provides the underlying MVVM component/tree machinery. Don't propose bringing in an
+outside state-management framework (StateFX or otherwise) beyond what `patternfx-mvvm` and plain JavaFX
+properties already provide.
 
 Requires Java 25 and JavaFX 26. Multi-module Maven build, parent POM inherits from `com.techsenger.maven.root`.
 
@@ -69,8 +70,50 @@ remember to add both the `exports` (and `opens` for CSS/FXML-loaded packages) in
 - **Lifecycle is explicit and developer-controlled.** Component init/deinit happens in `Composer` methods, not
   automatically — see Naming Convention below.
 - **Core interfaces vs. base implementations.** Each component is an interface + a default `Abstract*`
-  implementation (e.g. `ShellFxView` interface backing `Shell`). Code should reference the interface, not the
-  concrete class, matching the platform's own convention (`ShellFxView`, not `DefaultShellFxView`).
+  implementation (e.g. `ShellView` interface backing `Shell`). Code should reference the interface, not the
+  concrete class, matching the platform's own convention (`ShellView`, not `DefaultShellView`).
+- **ViewModel is a Port.** Every `*ViewModel<C>` interface extends both a `patternfx-mvvm` interface
+  (`ChildViewModel`/`ParentViewModel`/etc.) and the component's own `*Port` interface (e.g. `WindowViewModel<C>
+  extends ChildViewModel<C>, WindowPort`) — anything declared on the Port is automatically part of the
+  ViewModel's contract too. When deciding whether to promote a member from a concrete `Abstract*ViewModel` onto
+  its Port: only promote what is already `public` on the ViewModel, mirror its exact shape (readonly vs.
+  writable, single value vs. `ObservableList`) as-is, then add `@Override` on the implementation — don't invent
+  new visibility or reshape it while promoting.
+- **`wrapper`/`source`: the naming pattern for state a View or the platform owns, not the ViewModel.** Some
+  ViewModel state isn't decided by the ViewModel itself — it's decided by the real widget or the OS (a window's
+  width/height/x/y, maximized/minimized, a `TableView`'s selection) — and the *requested* value and the
+  *actual* value can legitimately diverge (the platform clamps, ignores, or rejects the request). This is why
+  real JavaFX's own `Window#widthProperty()` is `ReadOnlyDoubleProperty` with a separate best-effort
+  `setWidth(double)`, not a plain `DoubleProperty`. For this kind of state:
+  - Expose it as a `ReadOnly*Property` on the Port/ViewModel — never a plain writable `Property`. A writable
+    property lets a caller write an optimistic value straight in; if the platform then silently rejects the
+    request (no compensating change event fires, because nothing about the real state actually changed), that
+    optimistic value sits there being wrong forever — a "lying property," which is worse than the
+    two-way-binding reentrancy problem it might look like it's avoiding.
+  - Back it with a `ReadOnly*Wrapper` field, and add a package-private `xWrapper()` accessor — documented as a
+    framework contract ("written directly by the View... direct invocation by user code results in undefined
+    behavior") — that the paired View `.bind()`s straight to the real widget/`Stage` property. When there is no
+    independent widget truth to bind to at all (e.g. a `NESTED` window's `minimized`, confirmed only by
+    `WindowManager` after it finishes the operation), the View instead writes the wrapper directly, once, at
+    the point the real outcome is known.
+  - Give the public setter (`setWidth`, `setSelectedItem`, ...) a matching package-private `xSource()`
+    accessor returning an `ObservableSource<T>`. The setter only calls `xSource.next(value)` — it never touches
+    the wrapper itself. The View subscribes to `xSource()` and performs the real widget/platform call; the
+    outcome flows back solely through the wrapper. This keeps exactly one writer per property in each
+    direction, so there's no reentrancy/cycle to guard against and no way to bypass whatever side effect the
+    request needs to trigger. The backing field itself is also named `xSource` (e.g. `selectFileSource`,
+    `scrollToFileSource`), matching the accessor exactly — not `requestX`/`onX` or any other verb-first name —
+    so the field and its accessor read as the same concept at both the declaration and call site.
+  - Don't reach for `wrapper`/`source` for state the ViewModel fully owns itself, even if its setter carries a
+    side effect or validation (a derived flag to update, a check that throws) — as long as the setter is the
+    *only* way in, a plain `Property` is correct and a `ReadOnly` wrapper only makes the API harder to use for
+    no safety benefit. Reserve `wrapper`/`source` for state a second, independent party (the View, the
+    platform) can also change out from under the ViewModel.
+  - An `ObservableList`/`ObservableSet`/`ObservableMap` the ViewModel owns follows the same
+    read-only-from-outside idea without needing a wrapper at all: keep a private modifiable collection and
+    expose an unmodifiable view over it (`FXCollections.unmodifiableObservableList(...)`, see
+    `FileChooserDialogViewModel`'s `files`/`extensionFilters`) — callers observe structural changes directly,
+    and mutation only ever happens through the ViewModel's own methods.
 - **Menu system.** `ControlRegistry` (`shellfx-core`) stores menu/group/item contributions as `ControlFactory`
   registrations, supporting plugin-style dynamic (un)registration in any order; it never assembles a control
   itself. `ControlBuilder` reads a registry's contributions and assembles the final menu tree from them.
@@ -86,7 +129,7 @@ remember to add both the `exports` (and `opens` for CSS/FXML-loaded packages) in
   built on `Window` work unmodified in either mode.
 - **DockHost** (in `shellfx-layout`) has a whole-tree API (`ModelNode`/`GroupNode`/`AreaNode` built via
   `ModelNodeBuilder`, applied/captured via `Composer#applyModel`/`captureModel`) for full layout
-  construction/restoration, and a partial-tree API (anchors resolved live via `Composer#getModelNode(AreaFxView)`)
+  construction/restoration, and a partial-tree API (anchors resolved live via `Composer#getModelNode(AreaView)`)
   for incremental runtime changes (add-next-to, replace, remove, user-driven docking).
 
 ## Language
@@ -117,11 +160,50 @@ So the full sequence in one class is: static nested types (public→private) →
 (public→private) → static methods (public→private) → nested instance types (public→private) → instance
 fields (public→private) → constructors (public→private) → instance methods (public→private).
 
+**Field grouping, within one role+visibility bucket.** The three criteria above leave ties: in a `Port` or
+`ViewModel` interface/class, `getX()`/`isX()`, `setX()`, and `xProperty()` for the same field are normally all
+`public` instance methods, so nothing above orders them relative to each other or to the next field's trio.
+**When they share the same access modifier, group them by field** instead of batching all getters, then all
+setters, then all property accessors as three separate blocks — `getX()` → `setX()` (if present) →
+`xProperty()` (if present), then move on to the next field's trio:
+
+```java
+double getWidth();
+
+ReadOnlyDoubleProperty widthProperty();
+
+double getHeight();
+
+ReadOnlyDoubleProperty heightProperty();
+```
+
+not
+
+```java
+double getWidth();
+
+double getHeight();
+
+ReadOnlyDoubleProperty widthProperty();
+
+ReadOnlyDoubleProperty heightProperty();
+```
+
+Field order otherwise follows whichever order is already established (typically the backing fields'
+declaration order in the `Abstract*ViewModel`).
+
+If the field's methods don't share one access modifier — e.g. a `wrapper()`/`source()` pair is
+package-private while `getX()`/`xProperty()` are public (see the `wrapper`/`source` pattern above), or a
+setter is `protected` while its getter is `public` — visibility still wins: keep each method in its own
+visibility block, don't pull a lower-visibility method up next to a public one just to keep the trio
+together. The package-private `xWrapper()`/`xSource()` pair still groups with each other, just in the
+package-private block further down the class, not next to the public `getX()`/`xProperty()`.
+
 ## Naming convention
 
-Component classes follow: `[UniqueName][Role][Element]`, e.g. `AlertDialogFxView`, `EditorTabPresenter`,
+Component classes follow: `[UniqueName][Role][Element]`, e.g. `AlertDialogView`, `EditorTabViewModel`,
 `InfoPopupParams`, `ToolBarPort`. Role examples: `Tab`, `Window`, `Popup`, `Area`, `Panel`, `ToolBar`. Element
-examples: `View`, `Presenter`, `FxView`, `Params`, `Port`, `History`.
+examples: `View`, `ViewModel`, `Params`, `Port`, `History`.
 
 `Composer` methods split into two categories — keep this distinction when adding new component types:
 - Lifecycle-managing: `open*`/`close*` (create+add / remove+destroy) and `show*`/`hide*`.
@@ -144,12 +226,18 @@ selectionsByType`, `getSelectionsByType()`/`setSelectionsByType(...)`), not `<ke
 `typeSelections`). The `by`-form reads directly as "which value, keyed by which type of key" at the
 declaration site, without having to look at the generic type arguments to tell which side is the key.
 
-`View` methods follow a naming convention that distinguishes two kinds of methods:
+State mirroring from ViewModel to View goes through the View binding to the ViewModel's properties directly,
+in `bind()` (a plain `.bind()`) or `addListeners()` (`ValueUtils.callAndAddListener`/manual listeners, and any
+`wrapper`/`source` property — see Architecture above). The private method that actually pushes a value onto
+the real widget/platform uses the `update<X>` verb, e.g. `updateWidth`, `updateMaximized`, `updateTheme` — it
+is private and triggered by the View's own listener/binding, never called publicly from outside the View:
 
-1. State methods — methods that mirror state owned by the `Presenter`. The `Presenter` has the corresponding
-state and a `getX`/`isX` and/or `setX` accessor for it. The corresponding `View` method always starts with
-`update`, e.g. `updateTitle`, `updateModal`, `updateDensity`.
-2. Command methods — all other methods that perform an action rather than mirror `Presenter` state. They use an
+- Plain property: `ValueUtils.callAndAddListener(viewModel.xProperty(), (ov, oldV, newV) -> updateX(newV));`
+- `wrapper`/`source` property: `updateX(viewModel.getX()); viewModel.xSource().addListener((value) ->
+  updateX(value));` — the explicit initial `updateX(...)` call is required because an `ObservableSource` has no
+  "current value" to replay to a new subscriber the way a `Property` does.
+
+Command methods — View methods that perform an action rather than mirror ViewModel state — still use an
 appropriate action verb, such as `showX`, `hideX`, `scrollToFile`, `selectFile`, `clearX`, or `refreshMenu`.
 
 ## Javadoc

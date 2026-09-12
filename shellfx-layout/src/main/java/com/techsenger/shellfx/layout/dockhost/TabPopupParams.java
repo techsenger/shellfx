@@ -29,15 +29,12 @@ public class TabPopupParams extends AreaParams {
 
     private final Side side;
 
-    private final double centerWidth;
+    private final DockHostPort dockHost;
 
-    private final double centerHeight;
-
-    public TabPopupParams(Side side, double centerWidth, double centerHeight,
+    public TabPopupParams(Side side, DockHostPort dockHost,
             HistoryProvider<? extends TabPopupHistory> historyProvider) {
         this.side = side;
-        this.centerWidth = centerWidth;
-        this.centerHeight = centerHeight;
+        this.dockHost = dockHost;
         setHistoryProvider(historyProvider);
     }
 
@@ -45,17 +42,14 @@ public class TabPopupParams extends AreaParams {
         return side;
     }
 
-    public double getCenterWidth() {
-        return centerWidth;
-    }
-
-    public double getCenterHeight() {
-        return centerHeight;
+    public DockHostPort getDockHost() {
+        return dockHost;
     }
 
     @Override
-    protected void validate() {
+    public void validate() {
         super.validate();
         Objects.requireNonNull(side);
+        Objects.requireNonNull(dockHost);
     }
 }

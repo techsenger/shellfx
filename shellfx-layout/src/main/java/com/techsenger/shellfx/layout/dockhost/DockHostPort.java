@@ -16,12 +16,55 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaPort;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.geometry.Side;
 
 /**
+ * Provides minimal, read-only access to the component's client API.
  *
  * @author Pavel Castornii
  */
 public interface DockHostPort extends AreaPort {
 
+    interface ComposerAccess extends AreaPort.ComposerAccess {
+
+        @Nullable AreaPort getMainPort();
+
+        @Nullable SideBarPort getRightBarPort();
+
+        @Nullable SideBarPort getBottomBarPort();
+
+        @Nullable SideBarPort getLeftBarPort();
+
+        @Nullable SideBarPort getBarPort(Side side);
+
+        SideBarPolicy getRightBarPolicy();
+
+        SideBarPolicy getBottomBarPolicy();
+
+        SideBarPolicy getLeftBarPolicy();
+
+        SideBarPolicy getBarPolicy(Side side);
+
+        @Nullable TabPopupPort getRightPopupPort();
+
+        @Nullable TabPopupPort getBottomPopupPort();
+
+        @Nullable TabPopupPort getLeftPopupPort();
+
+        @Nullable TabPopupPort getPopupPort(Side side);
+    }
+
+    @Override
+    ComposerAccess getComposerAccess();
+
+    double getCenterWidth();
+
+    ReadOnlyDoubleProperty centerWidthProperty();
+
+    double getCenterHeight();
+
+    ReadOnlyDoubleProperty centerHeightProperty();
 }

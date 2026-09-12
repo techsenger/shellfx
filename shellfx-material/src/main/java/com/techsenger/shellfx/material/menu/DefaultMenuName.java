@@ -17,14 +17,14 @@
 package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.patternfx.core.AbstractIdentityName;
-import com.techsenger.patternfx.mvp.ParentFxView;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
  *
  * @param <V> the view type of the component this menu belongs to
  * @author Pavel Castornii
  */
-public class DefaultMenuName<V extends ParentFxView<?>> extends AbstractIdentityName implements MenuName<V> {
+public class DefaultMenuName<V extends ParentView<?>> extends AbstractIdentityName implements MenuName<V> {
 
     private final Class<?> componentClass;
 
