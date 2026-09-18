@@ -24,6 +24,7 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
 ## Table of Contents
 * [Demo](#demo)
     * [Workspaces](#demo-workspaces)
+    * [Windows](#demo-windows)
     * [Pages](#demo-pages)
     * [Dialogs](#demo-dialogs)
     * [DevTools](#demo-devtools)
@@ -79,6 +80,10 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
 ### Workspaces <a name="demo-workspaces"></a>
 <p><img width="1200" height="785" alt="ShellFX Browser Workspace" src="https://github.com/user-attachments/assets/01cb16d6-dd51-4139-9a93-acb46b167ff9" /></p>
 <p><img width="1200" height="785" alt="ShellFX IDE Workspace" src="https://github.com/user-attachments/assets/436ada94-c33d-46c2-89bb-0ff539a88c02" /></p>
+
+### Windows <a name="demo-windows"></a>
+<p><img width="1200" height="800" alt="ShellFX Windows" src="https://github.com/user-attachments/assets/f14da3cf-895f-4c58-a7dd-cab87371b893" /></p>
+<p><img width="1200" height="800" alt="ShellFX Windows Tile Grid" src="https://github.com/user-attachments/assets/d85615cb-66ec-4027-ab71-9717584982ed" /></p>
 
 ### Pages <a name="demo-pages"></a>
 
