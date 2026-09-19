@@ -31,7 +31,9 @@ import com.techsenger.shellfx.material.column.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnManager;
+import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.FileColumnBuilder;
 import com.techsenger.shellfx.storage.FileColumns;
@@ -42,6 +44,7 @@ import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.Comparator;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -248,7 +251,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
     protected void build() {
         super.build();
         var viewModel = getViewModel();
-        this.fileTableView.setItems(viewModel.getFiles());
+        this.fileTableView.setItems(viewModel.getModifiableFiles());
         this.fileTableView.setEditable(true);
         this.fileTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         this.fileTableView.setPlaceholder(new Label(""));
@@ -289,8 +292,6 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
             column.setEditable(false);
             return column;
         });
-        this.fileColumnManager.addColumns(viewModel.getColumns());
-
         this.fileListView = new FileListView<>(viewModel.getFiles(), new ContextMenu(createRefreshMenuItem()));
         locationLabel.setMinWidth(Region.USE_PREF_SIZE);
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
@@ -406,8 +407,18 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
                 viewModel.selectedFileIndexWrapper().set(newV.intValue());
             }
         });
-        ValueUtils.callAndAddListener(this.fileTableView.comparatorProperty(), (ov, oldV, newV) ->
-                viewModel.fileComparatorProperty().set(newV));
+        ValueUtils.callAndAddListener(this.fileTableView.comparatorProperty(), (ov, oldV, newV) -> {
+            viewModel.fileComparatorProperty().set(newV);
+        });
+        // columns is populated only once applyPersistentState()/restorePersistentState() run, which happens
+        // after build()/addListeners() in the component lifecycle - so columns must be built reactively, one
+        // at a time as each entry is put(), rather than eagerly in build(), where the map would still be empty
+        viewModel.getColumns().addListener((MapChangeListener<TableColumnName, TableColumnInfo>) change -> {
+            if (change.wasAdded()) {
+                var info = change.getValueAdded();
+                this.fileColumnManager.addColumn(info);
+            }
+        });
         this.fileColumnManager.setWidthListener(viewModel::setColumnWidth);
         this.fileColumnManager.setSortTypeListener(viewModel::setColumnSortType);
         this.fileColumnManager.setIndexListener(viewModel::setColumnIndex);

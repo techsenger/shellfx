@@ -45,12 +45,9 @@ import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -62,6 +59,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +110,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private final StringProperty locationCaption = new SimpleStringProperty();
 
-    private final Map<TableColumnName, TableColumnInfo> columns = new HashMap<>();
+    private final ObservableMap<TableColumnName, TableColumnInfo> columns = FXCollections.observableHashMap();
 
     private final ReadOnlyObjectWrapper<T> file = new ReadOnlyObjectWrapper<>();
 
@@ -367,9 +365,13 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         super.restorePersistentState();
         var history = getHistory();
         setMode(history.getMode());
-        for (var c : history.getTable().getColumns()) {
-            this.columns.put(c.getName(), c);
-        }
+        // put() in index order: the view builds/appends the real column on each map change, so this order
+        // also decides the columns' left-to-right order in the table
+        history.getTable().getColumns().stream()
+                .sorted(Comparator.comparingInt(TableColumnInfo::getIndex))
+                .forEach((c) -> {
+                    columns.put(c.getName(), c);
+                });
     }
 
     @Override
@@ -403,6 +405,10 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     protected FileStorage getStorage() {
         return currentStorage();
+    }
+
+    protected ObservableList<T> getModifiableFiles() {
+        return modifiableFiles;
     }
 
     protected void onLocationRequested(Location location) {
@@ -532,8 +538,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         return sortComparator;
     }
 
-    Collection<TableColumnInfo> getColumns() {
-        return columns.values();
+    ObservableMap<TableColumnName, TableColumnInfo> getColumns() {
+        return columns;
     }
 
     ObjectProperty<Comparator<T>> fileComparatorProperty() {
@@ -784,6 +790,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     private void createInitialColumns() {
+        // put() one at a time, in index order: the view builds/appends the real column on each map change,
+        // so this order also decides the columns' left-to-right order in the table
         var nameColumn = new TableColumnInfo(FileColumns.NAME);
         nameColumn.setIndex(0);
         nameColumn.setSortIndex(0);
@@ -793,6 +801,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         var sizeColumn = new TableColumnInfo(FileColumns.SIZE);
         sizeColumn.setIndex(1);
         columns.put(sizeColumn.getName(), sizeColumn);
+
         var modifiedColumn = new TableColumnInfo(FileColumns.LAST_MODIFIED);
         modifiedColumn.setIndex(2);
         columns.put(modifiedColumn.getName(), modifiedColumn);
