@@ -337,10 +337,10 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
             while (iterator.hasNext()) {
                 var c = iterator.next();
                 if (iterator.getDepth() > 0) {
-                    ((ViewModel) c).requestDeinitialize();
+                    ((ViewModel) c).deinitialize();
                 }
             }
-            requestDeinitialize();
+            deinitialize();
             closeWindowSource.next(null);
         }
         if (this.onClosed != null) {

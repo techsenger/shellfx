@@ -26,7 +26,7 @@ import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.INSETS;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
-import com.techsenger.patternfx.mvvm.Descriptor;
+import com.techsenger.patternfx.mvvm.ComponentDescriptor;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
 import com.techsenger.shellfx.core.tab.AbstractTabView;
@@ -308,7 +308,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
     }
 
     private static @Nullable EditPropertyTask<?> createEditTask(Element element, Attribute<?> attr,
-            Descriptor descriptor) {
+            ComponentDescriptor descriptor) {
         LocalElement local = (LocalElement) element;
         var node = local.unwrap();
         if (node != null) {
@@ -348,7 +348,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
 
     @SuppressWarnings("unchecked")
     private static EditPropertyTask<?> createEditTask(Attribute<?> attr, ReadOnlyProperty<?> property,
-            Descriptor descriptor) {
+            ComponentDescriptor descriptor) {
         if (property instanceof BooleanProperty bp) {
             return new EditPropertyTask<>(
                 attr,
@@ -420,7 +420,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
     }
 
     private static <T> EditPropertyTask<T> createObjectPropertyTask(Attribute<?> attr, Property<T> property,
-            Class<T> clazz, Descriptor descriptor) {
+            Class<T> clazz, ComponentDescriptor descriptor) {
         if (clazz.isEnum()) {
             return new EditPropertyTask<>(
                 attr,

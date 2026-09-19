@@ -61,7 +61,7 @@ public abstract class AbstractHostWindowView<VM extends AbstractHostWindowViewMo
         @Override
         public void closeWindow(WindowView<?> window) {
             removeWindow(window);
-            window.getViewModel().requestDeinitializeTree();
+            window.deinitializeTree();
         }
 
         @Override
@@ -120,7 +120,7 @@ public abstract class AbstractHostWindowView<VM extends AbstractHostWindowViewMo
         @Override
         public void closePopup(PopupView<?> popup) {
             removePopup(popup);
-            popup.getViewModel().requestDeinitializeTree();
+            popup.deinitializeTree();
         }
 
         @Override

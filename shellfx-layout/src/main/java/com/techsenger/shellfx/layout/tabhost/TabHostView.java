@@ -216,7 +216,7 @@ public class TabHostView<VM extends TabHostViewModel<?>> extends AbstractAreaVie
         @Override
         public void closeTab(TabView<?> tab) {
             removeTab(tab);
-            tab.getViewModel().requestDeinitializeTree();
+            tab.deinitializeTree();
         }
 
         protected @Unmodifiable List<? extends TabView<?>> getDetachedTabs() {

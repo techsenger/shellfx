@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core;
 
 import com.techsenger.patternfx.mvvm.Composer;
-import com.techsenger.patternfx.mvvm.Descriptor;
+import com.techsenger.patternfx.mvvm.ComponentDescriptor;
 import com.techsenger.patternfx.mvvm.ParentViewModel;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public interface CloseAwareViewModel<C extends Composer> extends ParentViewModel<C>, CloseAwarePort {
 
-    Descriptor getDescriptor();
+    ComponentDescriptor getDescriptor();
 
     @Override
     default void closeSafely(int maxAttempts, Consumer<CloseRequestResult> resultConsumer) {

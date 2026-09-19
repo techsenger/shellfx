@@ -2034,7 +2034,7 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             }
             parentContainer.removePermanently(tabDockContainer);
             if (operation == TabDockOperation.REMOVE) {
-                componentToRemove.getViewModel().requestDeinitializeTree();
+                componentToRemove.deinitializeTree();
                 composer.getModifiableChildren().remove(componentToRemove);
             }
             refresh();
@@ -2703,7 +2703,7 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
                 default -> throw new AssertionError();
             }
             getModifiableChildren().remove(sideBar);
-            sideBar.getViewModel().requestDeinitializeTree();
+            sideBar.deinitializeTree();
         }
 
         @Override
@@ -2904,7 +2904,7 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             if (popup != null) {
                 view.centerStackPane.getChildren().remove(popup.getNode());
                 getModifiableChildren().remove(popup);
-                popup.getViewModel().requestDeinitializeTree();
+                popup.deinitializeTree();
                 wrapper.set(null);
             }
         }

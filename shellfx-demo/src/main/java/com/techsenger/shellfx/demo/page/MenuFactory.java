@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.page;
 
 import com.techsenger.patternfx.core.DefaultComponentName;
-import com.techsenger.patternfx.mvvm.Descriptor;
+import com.techsenger.patternfx.mvvm.ComponentDescriptor;
 import com.techsenger.shellfx.core.page.DefaultPageDescriptor;
 import com.techsenger.shellfx.core.page.DefaultTreePageDescriptor;
 import com.techsenger.shellfx.core.page.PageDescriptor;
@@ -59,8 +59,8 @@ final class MenuFactory {
             var params = new PageParams(item);
             var viewModel = new DemoPageViewModel<>(params) {
                 @Override
-                protected Descriptor createDescriptor() {
-                    return new Descriptor(new DefaultComponentName(item.getText()));
+                protected ComponentDescriptor createDescriptor() {
+                    return new ComponentDescriptor(new DefaultComponentName(item.getText()));
                 }
             };
             var view = new DemoPageView<>(viewModel, padding);
