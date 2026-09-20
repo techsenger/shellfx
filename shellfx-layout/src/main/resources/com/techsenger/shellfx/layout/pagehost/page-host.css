@@ -40,6 +40,12 @@
   -fx-background-color: -color-cell-border, -color-cell-bg-selected;
 }
 
+/* To remove horizontal scrolling and truncate labels with an ellipsis   */
+.left-box > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell,
+.left-box > .tree-view > .virtual-flow > .clipped-container > .sheet > .tree-cell {
+    -fx-pref-width: 1px;
+}
+
 .left-box > .list-view:focused > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected,
 .left-box > .tree-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-cell:filled:selected  {
   -fx-background-color: -color-cell-border, -color-cell-bg-selected-focused;
