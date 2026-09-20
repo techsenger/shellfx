@@ -27,6 +27,7 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
 import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
 import static com.techsenger.shellfx.dialogs.file.FileChooserType.SAVE_AS;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
+import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.material.button.ResultButtonName;
 import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
@@ -208,6 +209,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     @Override
+    @RequestSetter
     public void setLocation(Location location) {
         locationSource.next(location);
     }
@@ -271,6 +273,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     @Override
+    @RequestSetter
     public void setExtensionFilter(ExtensionFilter extensionFilter) {
         extensionFilterSource.next(extensionFilter);
     }

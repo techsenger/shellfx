@@ -20,6 +20,7 @@ import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.core.area.AreaParams;
 import com.techsenger.shellfx.core.page.PageItem;
+import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
@@ -71,6 +72,7 @@ public abstract class AbstractPageHostViewModel<C extends BasePageHostComposer> 
      *
      * @param pos the requested divider position, between {@code 0} and {@code 1}
      */
+    @RequestSetter
     public void setDividerPosition(double pos) {
         dividerPositionSource.next(pos);
     }

@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.shellfx.core.dialog.FullDialogPort;
+import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.storage.GenericFile;
 import java.util.List;
 import javafx.beans.property.StringProperty;
@@ -35,12 +36,26 @@ public interface FullFileChooserDialogPort<T extends GenericFile> extends FileCh
 
     void setLocations(List<Location> locations);
 
+    /**
+     * Sets the current location. This is a request, not a guarantee — the underlying selection control may
+     * adjust or ignore it; observe {@link #locationProperty()} for the value actually applied.
+     *
+     * @param value the requested location
+     */
+    @RequestSetter
     void setLocation(Location value);
 
     void setMode(Mode mode);
 
     void setExtensionFilters(List<ExtensionFilter> filters);
 
+    /**
+     * Sets the current extension filter. This is a request, not a guarantee — the underlying selection control
+     * may adjust or ignore it; observe {@link #extensionFilterProperty()} for the value actually applied.
+     *
+     * @param filter the requested extension filter
+     */
+    @RequestSetter
     void setExtensionFilter(ExtensionFilter filter);
 
     void setFileName(String fileName);

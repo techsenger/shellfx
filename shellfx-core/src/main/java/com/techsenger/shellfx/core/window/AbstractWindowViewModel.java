@@ -21,6 +21,7 @@ import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
 import com.techsenger.patternfx.mvvm.ViewModel;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.settings.SettingsSubscription;
+import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.material.icon.Icon;
 import com.techsenger.shellfx.material.style.Density;
 import com.techsenger.shellfx.material.theme.Theme;
@@ -189,6 +190,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
+    @RequestSetter
     public void setWidth(double width) {
         widthSource.next(width);
     }
@@ -204,6 +206,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
+    @RequestSetter
     public void setHeight(double height) {
         heightSource.next(height);
     }
@@ -249,6 +252,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
+    @RequestSetter
     public void setMaximized(boolean maximized) {
         maximizedSource.next(maximized);
     }
@@ -279,6 +283,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
+    @RequestSetter
     public void setMinimized(boolean minimized) {
         minimizedSource.next(minimized);
     }
@@ -471,6 +476,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
+    @RequestSetter
     public void setX(double x) {
         xSource.next(x);
     }
@@ -486,6 +492,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
+    @RequestSetter
     public void setY(double y) {
         ySource.next(y);
     }

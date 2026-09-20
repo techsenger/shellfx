@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.shellfx.core.traits.Waitable;
+import com.techsenger.shellfx.material.RequestSetter;
 
 /**
  * Provides full access to the component's client API.
@@ -34,6 +35,7 @@ public interface FullPopupPort extends ClosablePopupPort, Waitable {
      *
      * @param value the width in pixels
      */
+    @RequestSetter
     void setWidth(double value);
 
     /**
@@ -45,5 +47,6 @@ public interface FullPopupPort extends ClosablePopupPort, Waitable {
      *
      * @param value the width in pixels
      */
+    @RequestSetter
     void setHeight(double value);
 }

@@ -20,6 +20,7 @@ import com.techsenger.shellfx.core.traits.Blockable;
 import com.techsenger.shellfx.core.traits.Closable;
 import com.techsenger.shellfx.core.traits.Iconed;
 import com.techsenger.shellfx.core.traits.Titled;
+import com.techsenger.shellfx.material.RequestSetter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 
@@ -52,6 +53,7 @@ public interface FullWindowPort extends ClosableWindowPort, Titled, Closable, Ic
      *
      * @param value {@code true} to maximize the window, {@code false} to restore it
      */
+    @RequestSetter
     void setMaximized(boolean value);
 
     /**
@@ -76,6 +78,7 @@ public interface FullWindowPort extends ClosableWindowPort, Titled, Closable, Ic
      *
      * @param minimized {@code true} to minimize the window, {@code false} to restore it
      */
+    @RequestSetter
     void setMinimized(boolean minimized);
 
     /**
@@ -99,6 +102,7 @@ public interface FullWindowPort extends ClosableWindowPort, Titled, Closable, Ic
      *
      * @param value the width in pixels
      */
+    @RequestSetter
     void setWidth(double value);
 
     /**
@@ -112,6 +116,7 @@ public interface FullWindowPort extends ClosableWindowPort, Titled, Closable, Ic
      *
      * @param value the height in pixels
      */
+    @RequestSetter
     void setHeight(double value);
 
     /**
@@ -186,6 +191,7 @@ public interface FullWindowPort extends ClosableWindowPort, Titled, Closable, Ic
      *
      * @param x the x-coordinate of the window
      */
+    @RequestSetter
     void setX(double x);
 
     /**
@@ -194,5 +200,6 @@ public interface FullWindowPort extends ClosableWindowPort, Titled, Closable, Ic
      *
      * @param y the y-coordinate of the window
      */
+    @RequestSetter
     void setY(double y);
 }

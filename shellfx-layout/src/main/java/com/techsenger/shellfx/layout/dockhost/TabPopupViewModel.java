@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.layout.dockhost;
 
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
+import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import javafx.beans.value.ChangeListener;
@@ -110,10 +111,12 @@ public class TabPopupViewModel<C extends TabPopupComposer> extends AbstractAreaV
         dockHost.centerHeightProperty().removeListener(centerHeightListener);
     }
 
+    @RequestSetter
     protected void setWidth(double width) {
         widthSource.next(width);
     }
 
+    @RequestSetter
     protected void setHeight(double height) {
         heightSource.next(height);
     }

@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
+import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import javafx.beans.property.BooleanProperty;
@@ -65,11 +66,13 @@ public abstract class AbstractPopupViewModel<C extends PopupComposer> extends Ab
     }
 
     @Override
+    @RequestSetter
     public void setWidth(double width) {
         this.widthSource.next(width);
     }
 
     @Override
+    @RequestSetter
     public void setHeight(double height) {
         this.heightSource.next(height);
     }
