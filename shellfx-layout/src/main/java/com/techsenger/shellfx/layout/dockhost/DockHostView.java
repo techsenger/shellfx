@@ -708,9 +708,9 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
         }
     }
 
-    private static final class MainAreaContainer extends AbstractAreaContainer<AreaView<?>> {
+    private static final class PlainAreaContainer extends AbstractAreaContainer<AreaView<?>> {
 
-        MainAreaContainer(DockHostView<?> dockHost, AreaView<?> area) {
+        PlainAreaContainer(DockHostView<?> dockHost, AreaView<?> area) {
             super(dockHost, area);
         }
 
@@ -773,7 +773,7 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
                 container = new TabDockContainer(dockHost, tabDock);
                 SplitPane.setResizableWithParent(container, false);
             } else {
-                container = new MainAreaContainer(dockHost, child);
+                container = new PlainAreaContainer(dockHost, child);
                 SplitPane.setResizableWithParent(container, true);
             }
             return container;
@@ -2355,7 +2355,7 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
 
         @Override
         public boolean isMain() {
-            return container instanceof MainAreaContainer;
+            return container.getArea() == container.getDockHost().getComposer().getMain();
         }
 
         @Override
@@ -2928,13 +2928,12 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
 
         private AbstractContainer build(ModelNode node) {
             if (node instanceof AreaNode areaNode) {
-                getModifiableChildren().add(areaNode.getArea());
+                var area = areaNode.getArea();
+                getModifiableChildren().add(area);
                 if (areaNode.isMain()) {
-                    setMain(areaNode.getArea());
-                    return new MainAreaContainer(view, areaNode.getArea());
-                } else {
-                    return new TabDockContainer(view, (TabDockView<?>) areaNode.getArea());
+                    setMain(area);
                 }
+                return ContainerUtils.createContainer(view, area);
             } else if (node instanceof GroupNode groupNode) {
                 var splitPane = new DockSplitPane(getDescriptor().getLogPrefix());
                 var splitPaneContainer = new SplitPaneContainer(view, splitPane);
