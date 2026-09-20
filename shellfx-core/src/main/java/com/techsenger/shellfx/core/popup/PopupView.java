@@ -26,12 +26,12 @@ import javafx.scene.layout.Pane;
  */
 public interface PopupView<VM extends PopupViewModel<?>> extends AreaView<VM> {
 
-    interface Composer extends AreaView.Composer, PopupPort.ComposerAccess {
-
-        void close();
+    interface Composer extends AreaView.Composer, PopupComposer {
 
         @Override
         @Nullable PopupContainerView<?> getParent();
+
+        void close();
     }
 
     @Override
