@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.demo.popup;
 
-import com.techsenger.shellfx.core.CloseCheckResult;
-import com.techsenger.shellfx.core.ClosePreparationResult;
+import com.techsenger.shellfx.core.close.CloseCheckResult;
+import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.popup.AbstractPopupViewModel;
 import com.techsenger.shellfx.core.popup.PopupComposer;
 import com.techsenger.shellfx.core.popup.PopupParams;

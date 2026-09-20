@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.core.close;
 
 /**
- * Represents the result of a component readiness check when it is queried whether it can be closed.
  *
  * @author Pavel Castornii
  */
-public enum CloseCheckResult {
+public enum ClosePreparationResult {
 
     /**
-     * The component is ready to be closed immediately without any preparation.
+     * Preparation completed successfully.
      */
-    READY,
+    SUCCESS,
 
     /**
-     * The component is not immediately ready to close and requires some preparation steps, such as saving data,
-     * stopping background tasks, or cleaning up temporary resources. Once the preparation is complete, the component
-     * can be safely closed.
+     * Preparation was cancelled by user or system.
      */
-    PREPARATION_REQUIRED,
-
-    /**
-     * Component is not ready to be closed. Closing is disallowed.
-     */
-    NOT_READY
+    CANCELLED,
 }

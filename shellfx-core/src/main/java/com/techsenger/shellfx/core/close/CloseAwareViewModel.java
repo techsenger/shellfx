@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.core.close;
 
 import com.techsenger.patternfx.mvvm.Composer;
 import com.techsenger.patternfx.mvvm.ComponentDescriptor;

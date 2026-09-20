@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.core.close;
 
 /**
- * Defines the scope of a close operation. Indicates whether the close event originated from a single tab
- * or the entire shell (main application window).
+ * Represents the result of a component readiness check when it is queried whether it can be closed.
  *
  * @author Pavel Castornii
  */
-public enum CloseScope {
+public enum CloseCheckResult {
 
     /**
-     * The close request was triggered for a specific tab
-     * (e.g., user clicked the tab's close button).
+     * The component is ready to be closed immediately without any preparation.
      */
-    TAB,
+    READY,
 
     /**
-     * The close request was triggered at the shell level
-     * (e.g., main window closure, application exit).
+     * The component is not immediately ready to close and requires some preparation steps, such as saving data,
+     * stopping background tasks, or cleaning up temporary resources. Once the preparation is complete, the component
+     * can be safely closed.
      */
-    SHELL
+    PREPARATION_REQUIRED,
+
+    /**
+     * Component is not ready to be closed. Closing is disallowed.
+     */
+    NOT_READY
 }

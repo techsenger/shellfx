@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.demo.browser;
 
-import com.techsenger.shellfx.core.CloseCheckResult;
-import com.techsenger.shellfx.core.ClosePreparationResult;
+import com.techsenger.shellfx.core.close.CloseCheckResult;
+import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.tab.AbstractHostTabViewModel;
 import com.techsenger.shellfx.core.tab.HostTabComposer;
 import com.techsenger.shellfx.demo.styles.DemoIcons;

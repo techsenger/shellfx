@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.core;
 
+import com.techsenger.shellfx.core.close.CloseCheckResult;
+import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.window.AbstractHostWindowViewModel;
 import java.util.function.Consumer;
 

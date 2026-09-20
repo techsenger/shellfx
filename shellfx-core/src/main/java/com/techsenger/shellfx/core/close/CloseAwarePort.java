@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.core.close;
 
 /**
  * Lifecycle contract for components that support both a {@link ForceClosePort#close() force close} and a

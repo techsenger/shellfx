@@ -31,6 +31,7 @@ module com.techsenger.shellfx.core {
 
     exports com.techsenger.shellfx.core;
     exports com.techsenger.shellfx.core.area;
+    exports com.techsenger.shellfx.core.close;
     exports com.techsenger.shellfx.core.dialog;
     exports com.techsenger.shellfx.core.history;
     exports com.techsenger.shellfx.core.page;

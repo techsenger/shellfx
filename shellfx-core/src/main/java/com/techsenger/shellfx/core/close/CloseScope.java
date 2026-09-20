@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.core.close;
 
 /**
- * Contract for components that can be closed immediately, without any readiness checks or preparation steps.
+ * Defines the scope of a close operation. Indicates whether the close event originated from a single tab
+ * or the entire shell (main application window).
  *
  * @author Pavel Castornii
  */
-public interface ForceClosePort extends CloseCallbackPort {
+public enum CloseScope {
 
     /**
-     * Closes this component immediately using a force close strategy.
-     *
-     * <p>This method immediately deinitializes the component and all its descendants and removes this component
-     * from the component tree, without performing any readiness checks or preparation steps. This method should
-     * only be used in exceptional situations where a forced shutdown is required.
+     * The close request was triggered for a specific tab
+     * (e.g., user clicked the tab's close button).
      */
-    void close();
+    TAB,
+
+    /**
+     * The close request was triggered at the shell level
+     * (e.g., main window closure, application exit).
+     */
+    SHELL
 }

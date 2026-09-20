@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.core.close;
 
 /**
+ * Contract for components that can be closed immediately, without any readiness checks or preparation steps.
  *
  * @author Pavel Castornii
  */
-public enum ClosePreparationResult {
+public interface ForceClosePort extends CloseCallbackPort {
 
     /**
-     * Preparation completed successfully.
+     * Closes this component immediately using a force close strategy.
+     *
+     * <p>This method immediately deinitializes the component and all its descendants and removes this component
+     * from the component tree, without performing any readiness checks or preparation steps. This method should
+     * only be used in exceptional situations where a forced shutdown is required.
      */
-    SUCCESS,
-
-    /**
-     * Preparation was cancelled by user or system.
-     */
-    CANCELLED,
+    void close();
 }

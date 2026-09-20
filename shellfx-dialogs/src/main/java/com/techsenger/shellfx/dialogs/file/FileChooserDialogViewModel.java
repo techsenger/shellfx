@@ -18,8 +18,8 @@ package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.CloseCheckResult;
-import com.techsenger.shellfx.core.ClosePreparationResult;
+import com.techsenger.shellfx.core.close.CloseCheckResult;
+import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;

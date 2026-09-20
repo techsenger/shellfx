@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.devtools;
 
-import com.techsenger.shellfx.core.CloseCheckResult;
-import com.techsenger.shellfx.core.ClosePreparationResult;
+import com.techsenger.shellfx.core.close.CloseCheckResult;
+import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowComposer;

@@ -17,14 +17,14 @@
 package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.connectorfx.scenegraph.Element;
-import com.techsenger.shellfx.core.CloseCheckResult;
-import com.techsenger.shellfx.core.ClosePreparationResult;
+import com.techsenger.shellfx.core.close.CloseCheckResult;
+import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
+import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
 import com.techsenger.shellfx.core.window.WindowComposer;
 import com.techsenger.shellfx.devtools.UrlUtils;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import java.util.function.Consumer;
-import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
 
 /**
  *

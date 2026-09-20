@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.core.popup;
 
-import com.techsenger.shellfx.core.CloseAwareViewModel;
 import com.techsenger.shellfx.core.area.AreaViewModel;
+import com.techsenger.shellfx.core.close.CloseAwareViewModel;
 
 /**
  *

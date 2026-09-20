@@ -19,7 +19,7 @@ package com.techsenger.shellfx.core.tab;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.patternfx.core.ComponentState;
 import com.techsenger.patternfx.mvvm.ChildComposer;
-import com.techsenger.shellfx.core.CloseRequestResult;
+import com.techsenger.shellfx.core.close.CloseRequestResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

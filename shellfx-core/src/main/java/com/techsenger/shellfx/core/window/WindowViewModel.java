@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.window;
 
 import com.techsenger.patternfx.mvvm.ChildViewModel;
-import com.techsenger.shellfx.core.CloseAwareViewModel;
+import com.techsenger.shellfx.core.close.CloseAwareViewModel;
 
 /**
  *

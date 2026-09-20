@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.devtools.node;
 
-import com.techsenger.shellfx.core.CloseCheckResult;
-import com.techsenger.shellfx.core.ClosePreparationResult;
+import com.techsenger.shellfx.core.close.CloseCheckResult;
+import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;

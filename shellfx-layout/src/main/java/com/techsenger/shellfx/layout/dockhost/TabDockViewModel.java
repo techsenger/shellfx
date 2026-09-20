@@ -16,10 +16,10 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.shellfx.core.CloseAwareViewModel;
-import com.techsenger.shellfx.core.CloseCheckResult;
-import com.techsenger.shellfx.core.ClosePreparationResult;
 import com.techsenger.shellfx.core.area.AreaParams;
+import com.techsenger.shellfx.core.close.CloseAwareViewModel;
+import com.techsenger.shellfx.core.close.CloseCheckResult;
+import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.layout.tabhost.TabHostViewModel;
 import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;

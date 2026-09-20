@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core.tab;
 
-import com.techsenger.shellfx.core.CloseAwarePort;
+import com.techsenger.shellfx.core.close.CloseAwarePort;
 
 /**
  * Provides minimal, read-only access to the component's client API, plus the ability to close it.
