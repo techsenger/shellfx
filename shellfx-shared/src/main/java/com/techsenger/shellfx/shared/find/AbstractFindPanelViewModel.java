@@ -18,21 +18,39 @@ package com.techsenger.shellfx.shared.find;
 
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.area.AreaParams;
+import com.techsenger.shellfx.core.close.ForceClosePort;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPanelViewModel<C extends ChildComposer> extends AbstractFindBaseViewModel<C> {
+public abstract class AbstractFindPanelViewModel<C extends ChildComposer> extends AbstractFindBaseViewModel<C>
+        implements ForceClosePort {
+
+    private Runnable onCloseRequest = () -> close();
 
     public AbstractFindPanelViewModel(AreaParams params) {
         super(params);
     }
 
-    protected abstract void onClose();
+    @Override
+    public Runnable getOnCloseRequest() {
+        return this.onCloseRequest;
+    }
+
+    @Override
+    public void setOnCloseRequest(Runnable runnable) {
+        this.onCloseRequest = runnable;
+    }
 
     @Override
     protected FindPanelHistory getHistory() {
         return (FindPanelHistory) super.getHistory();
+    }
+
+    protected void onCloseRequest() {
+        if (this.onCloseRequest != null) {
+            this.onCloseRequest.run();
+        }
     }
 }

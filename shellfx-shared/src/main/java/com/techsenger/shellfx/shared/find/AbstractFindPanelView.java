@@ -92,7 +92,6 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
         GridPane.setVgrow(this.findLabelWrapper, Priority.ALWAYS);
         GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
 
-        this.closeButton.setOnAction(e -> getViewModel().onClose());
         this.closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS,
                 StyleClasses.SQUARE);
         this.closeButton.setFocusTraversable(false);
@@ -113,7 +112,7 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
     @Override
     protected void addHandlers() {
         super.addHandlers();
-        closeButton.setOnAction(e -> getViewModel().onClose());
+        closeButton.setOnAction(e -> getViewModel().onCloseRequest());
     }
 
     protected GridPane getGridPane() {
