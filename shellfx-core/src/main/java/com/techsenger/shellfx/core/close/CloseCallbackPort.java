@@ -17,29 +17,12 @@
 package com.techsenger.shellfx.core.close;
 
 /**
- * Contract for components that expose lifecycle callbacks around a close action, independent of whether the
- * component actually closes via a {@link ForceClosePort} or a {@link SafeClosePort} strategy.
+ * Contract for components that, in addition to a {@link CloseRequestPort#getOnCloseRequest() close request}
+ * handler, also expose a callback for when the component has actually finished closing.
  *
  * @author Pavel Castornii
  */
-public interface CloseCallbackPort {
-
-    /**
-     * Returns the handler invoked when the component decides that a close action should be performed.
-     *
-     * @return the handler, or {@code null} if none is set
-     */
-    Runnable getOnCloseRequest();
-
-    /**
-     * Sets the handler invoked when the component decides that a close action should be performed.
-     *
-     * <p>The handler is responsible for deciding whether and how to close the component, for example by calling
-     * {@link ForceClosePort#close()} or {@link SafeClosePort#closeSafely()}, or doing nothing to cancel the close.
-     *
-     * @param runnable the handler to invoke, or {@code null} to clear it
-     */
-    void setOnCloseRequest(Runnable runnable);
+public interface CloseCallbackPort extends CloseRequestPort {
 
     /**
      * Returns the callback invoked after this component has been fully closed and deinitialized.

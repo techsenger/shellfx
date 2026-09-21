@@ -18,16 +18,16 @@ package com.techsenger.shellfx.shared.find;
 
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.area.AreaParams;
-import com.techsenger.shellfx.core.close.ForceClosePort;
+import com.techsenger.shellfx.core.close.CloseRequestPort;
 
 /**
  *
  * @author Pavel Castornii
  */
 public abstract class AbstractFindPanelViewModel<C extends ChildComposer> extends AbstractFindBaseViewModel<C>
-        implements ForceClosePort {
+        implements CloseRequestPort {
 
-    private Runnable onCloseRequest = () -> close();
+    private Runnable onCloseRequest;
 
     public AbstractFindPanelViewModel(AreaParams params) {
         super(params);
