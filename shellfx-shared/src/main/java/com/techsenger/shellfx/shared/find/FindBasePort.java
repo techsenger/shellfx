@@ -66,28 +66,4 @@ public interface FindBasePort extends AreaPort {
     boolean isFindPreviousDisabled();
 
     ReadOnlyBooleanProperty findPreviousDisabledProperty();
-
-    boolean isWholeWordSelected();
-
-    ReadOnlyBooleanProperty wholeWordSelectedProperty();
-
-    boolean isWholeWordDisabled();
-
-    ReadOnlyBooleanProperty wholeWordDisabledProperty();
-
-    boolean isRegExpSelected();
-
-    ReadOnlyBooleanProperty regExpSelectedProperty();
-
-    boolean isRegExpDisabled();
-
-    ReadOnlyBooleanProperty regExpDisabledProperty();
-
-    boolean isHighlightSelected();
-
-    ReadOnlyBooleanProperty highlightSelectedProperty();
-
-    boolean isHighlightDisabled();
-
-    ReadOnlyBooleanProperty highlightDisabledProperty();
 }

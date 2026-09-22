@@ -70,34 +70,4 @@ public interface FullFindBasePort extends FindBasePort, TextFindPort, ResultFind
 
     @Override
     BooleanProperty findPreviousDisabledProperty();
-
-    void setWholeWordSelected(boolean wholeWordSelected);
-
-    @Override
-    BooleanProperty wholeWordSelectedProperty();
-
-    void setWholeWordDisabled(boolean wholeWordDisabled);
-
-    @Override
-    BooleanProperty wholeWordDisabledProperty();
-
-    void setRegExpSelected(boolean regExpSelected);
-
-    @Override
-    BooleanProperty regExpSelectedProperty();
-
-    void setRegExpDisabled(boolean regExpDisabled);
-
-    @Override
-    BooleanProperty regExpDisabledProperty();
-
-    void setHighlightSelected(boolean highlightSelected);
-
-    @Override
-    BooleanProperty highlightSelectedProperty();
-
-    void setHighlightDisabled(boolean highlightDisabled);
-
-    @Override
-    BooleanProperty highlightDisabledProperty();
 }

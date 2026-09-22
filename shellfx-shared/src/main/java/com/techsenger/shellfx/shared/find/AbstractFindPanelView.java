@@ -16,8 +16,11 @@
 
 package com.techsenger.shellfx.shared.find;
 
+import atlantafx.base.theme.Styles;
+import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import com.techsenger.shellfx.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.FocusTrap;
 import com.techsenger.toolkit.fx.Spacer;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
@@ -25,6 +28,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -45,6 +50,12 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
     private final Label findLabel = new Label("Find");
 
     private final HBox findLabelWrapper = new HBox(findLabel);
+
+    private final ToggleButton wholeWordButton = new ToggleButton(null, new FontIconView(SharedIcons.WHOLE_WORD));
+
+    private final ToggleButton regExpButton = new ToggleButton(null, new FontIconView(SharedIcons.REG_EXP));
+
+    private final ToggleButton highlightButton = new ToggleButton(null, new FontIconView(SharedIcons.HIGHLIGHT));
 
     private final Button closeButton = new Button();
 
@@ -92,12 +103,24 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
         GridPane.setVgrow(this.findLabelWrapper, Priority.ALWAYS);
         GridPane.setVgrow(getFindComboBoxWrapper(), Priority.ALWAYS);
 
+        this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
+        this.wholeWordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.wholeWordButton.setFocusTraversable(false);
+
+        this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
+        this.regExpButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.regExpButton.setFocusTraversable(false);
+
+        this.highlightButton.setTooltip(new Tooltip("Highlight All"));
+        this.highlightButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
+        this.highlightButton.setFocusTraversable(false);
+
         this.closeButton.getStyleClass().addAll(StyleClasses.CROSS_BUTTON, StyleClasses.SIZE_XXS,
                 StyleClasses.SQUARE);
         this.closeButton.setFocusTraversable(false);
 
         this.toolBox.getChildren().addAll(getFindPreviousButton(), getFindNextButton(), getMatchCaseButton(),
-                getWholeWordButton(), getRegExpButton(), getHighlightButton(),
+                this.wholeWordButton, this.regExpButton, this.highlightButton,
                 new Spacer(Spacing.getHorizontal() - Spacing.getHorizontalThird() * 2), this.closeButton);
         this.toolBox.setSpacing(Spacing.getHorizontalThird());
         this.toolBox.setAlignment(Pos.CENTER_LEFT);
@@ -110,13 +133,41 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
     }
 
     @Override
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
+        wholeWordButton.selectedProperty().bindBidirectional(viewModel.wholeWordSelectedProperty());
+        wholeWordButton.disableProperty().bind(viewModel.wholeWordDisabledProperty());
+        regExpButton.selectedProperty().bindBidirectional(viewModel.regExpSelectedProperty());
+        regExpButton.disableProperty().bind(viewModel.regExpDisabledProperty());
+        highlightButton.selectedProperty().bindBidirectional(viewModel.highlightSelectedProperty());
+        highlightButton.disableProperty().bind(viewModel.highlightDisabledProperty());
+    }
+
+    @Override
     protected void addHandlers() {
         super.addHandlers();
-        closeButton.setOnAction(e -> getViewModel().onCloseRequest());
+        var viewModel = getViewModel();
+        closeButton.setOnAction(e -> viewModel.onCloseRequest());
+        wholeWordButton.setOnAction(e -> viewModel.onWholeWord());
+        regExpButton.setOnAction(e -> viewModel.onRegExp());
+        highlightButton.setOnAction(e -> viewModel.onHighlight());
     }
 
     protected GridPane getGridPane() {
         return gridPane;
+    }
+
+    protected ToggleButton getWholeWordButton() {
+        return wholeWordButton;
+    }
+
+    protected ToggleButton getRegExpButton() {
+        return regExpButton;
+    }
+
+    protected ToggleButton getHighlightButton() {
+        return highlightButton;
     }
 
     protected FocusTrap getFocusTrap() {

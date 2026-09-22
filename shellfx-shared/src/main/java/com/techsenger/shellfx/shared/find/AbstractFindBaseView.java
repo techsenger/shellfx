@@ -64,12 +64,6 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
 
     private final Button findNextButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_DOWN));
 
-    private final ToggleButton wholeWordButton = new ToggleButton(null, new FontIconView(SharedIcons.WHOLE_WORD));
-
-    private final ToggleButton regExpButton = new ToggleButton(null, new FontIconView(SharedIcons.REG_EXP));
-
-    private final ToggleButton highlightButton = new ToggleButton(null, new FontIconView(SharedIcons.HIGHLIGHT));
-
     private final BooleanProperty notFound = new SimpleBooleanProperty();
 
     /*
@@ -135,18 +129,6 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
         this.findPreviousButton.setTooltip(new Tooltip("Previous"));
         this.findPreviousButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         this.findPreviousButton.setFocusTraversable(false);
-
-        this.wholeWordButton.setTooltip(new Tooltip("Whole Word"));
-        this.wholeWordButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
-        this.wholeWordButton.setFocusTraversable(false);
-
-        this.highlightButton.setTooltip(new Tooltip("Highlight All"));
-        this.highlightButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
-        this.highlightButton.setFocusTraversable(false);
-
-        this.regExpButton.setTooltip(new Tooltip("Regular Expression"));
-        this.regExpButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
-        this.regExpButton.setFocusTraversable(false);
     }
 
     @Override
@@ -157,12 +139,6 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
         matchesLabel.textProperty().bind(viewModel.matchesTextProperty());
         matchCaseButton.selectedProperty().bindBidirectional(viewModel.matchCaseSelectedProperty());
         matchCaseButton.disableProperty().bind(viewModel.matchCaseDisabledProperty());
-        wholeWordButton.selectedProperty().bindBidirectional(viewModel.wholeWordSelectedProperty());
-        wholeWordButton.disableProperty().bind(viewModel.wholeWordDisabledProperty());
-        regExpButton.selectedProperty().bindBidirectional(viewModel.regExpSelectedProperty());
-        regExpButton.disableProperty().bind(viewModel.regExpDisabledProperty());
-        highlightButton.selectedProperty().bindBidirectional(viewModel.highlightSelectedProperty());
-        highlightButton.disableProperty().bind(viewModel.highlightDisabledProperty());
         findNextButton.disableProperty().bind(viewModel.findNextDisabledProperty());
         findPreviousButton.disableProperty().bind(viewModel.findPreviousDisabledProperty());
         findComboBox.getEditor().textProperty().bindBidirectional(viewModel.findTextProperty());
@@ -226,6 +202,7 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
         clearButton.setOnAction(e -> viewModel.onClearFindText());
         findPreviousButton.setOnAction(e -> viewModel.onFindPrevious());
         findNextButton.setOnAction(e -> viewModel.onFindNext());
+        matchCaseButton.setOnAction(e -> viewModel.onMatchCase());
     }
 
     /**
@@ -303,18 +280,6 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
 
     protected Button getFindNextButton() {
         return findNextButton;
-    }
-
-    protected ToggleButton getHighlightButton() {
-        return highlightButton;
-    }
-
-    protected ToggleButton getWholeWordButton() {
-        return wholeWordButton;
-    }
-
-    protected ToggleButton getRegExpButton() {
-        return regExpButton;
     }
 
     private void updateMatchesVisible(boolean visible) {

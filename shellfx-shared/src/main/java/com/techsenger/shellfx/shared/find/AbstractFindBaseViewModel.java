@@ -59,18 +59,6 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
 
     private final BooleanProperty findPreviousDisabled = new SimpleBooleanProperty();
 
-    private final BooleanProperty wholeWordSelected = new SimpleBooleanProperty();
-
-    private final BooleanProperty wholeWordDisabled = new SimpleBooleanProperty();
-
-    private final BooleanProperty regExpSelected = new SimpleBooleanProperty();
-
-    private final BooleanProperty regExpDisabled = new SimpleBooleanProperty();
-
-    private final BooleanProperty highlightSelected = new SimpleBooleanProperty();
-
-    private final BooleanProperty highlightDisabled = new SimpleBooleanProperty();
-
     public AbstractFindBaseViewModel(AreaParams params) {
         super(params);
         findText.addListener((obs, oldV, newV) -> onFindTextChanged(newV));
@@ -216,96 +204,6 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
         return findPreviousDisabled;
     }
 
-    @Override
-    public boolean isWholeWordSelected() {
-        return wholeWordSelected.get();
-    }
-
-    @Override
-    public void setWholeWordSelected(boolean wholeWordSelected) {
-        this.wholeWordSelected.set(wholeWordSelected);
-    }
-
-    @Override
-    public BooleanProperty wholeWordSelectedProperty() {
-        return wholeWordSelected;
-    }
-
-    @Override
-    public boolean isWholeWordDisabled() {
-        return wholeWordDisabled.get();
-    }
-
-    @Override
-    public void setWholeWordDisabled(boolean wholeWordDisabled) {
-        this.wholeWordDisabled.set(wholeWordDisabled);
-    }
-
-    @Override
-    public BooleanProperty wholeWordDisabledProperty() {
-        return wholeWordDisabled;
-    }
-
-    @Override
-    public boolean isRegExpSelected() {
-        return regExpSelected.get();
-    }
-
-    @Override
-    public void setRegExpSelected(boolean regExpSelected) {
-        this.regExpSelected.set(regExpSelected);
-    }
-
-    @Override
-    public BooleanProperty regExpSelectedProperty() {
-        return regExpSelected;
-    }
-
-    @Override
-    public boolean isRegExpDisabled() {
-        return regExpDisabled.get();
-    }
-
-    @Override
-    public void setRegExpDisabled(boolean regExpDisabled) {
-        this.regExpDisabled.set(regExpDisabled);
-    }
-
-    @Override
-    public BooleanProperty regExpDisabledProperty() {
-        return regExpDisabled;
-    }
-
-    @Override
-    public boolean isHighlightSelected() {
-        return highlightSelected.get();
-    }
-
-    @Override
-    public void setHighlightSelected(boolean highlightSelected) {
-        this.highlightSelected.set(highlightSelected);
-    }
-
-    @Override
-    public BooleanProperty highlightSelectedProperty() {
-        return highlightSelected;
-    }
-
-    @Override
-    public boolean isHighlightDisabled() {
-        return highlightDisabled.get();
-    }
-
-    @Override
-    public void setHighlightDisabled(boolean highlightDisabled) {
-        this.highlightDisabled.set(highlightDisabled);
-    }
-
-    @Override
-    public BooleanProperty highlightDisabledProperty() {
-        return highlightDisabled;
-    }
-
     /**
      * Shows search result information in the Find component using total match count only.
      *
@@ -381,6 +279,10 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
 
     }
 
+    protected void onMatchCase() {
+
+    }
+
     protected abstract void onFind();
 
     protected abstract void onFindCleared();
@@ -390,9 +292,6 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
         super.restorePersistentState();
         var h = getHistory();
         setMatchCaseSelected(h.isMatchCaseSelected());
-        setWholeWordSelected(h.isWholeWordSelected());
-        setRegExpSelected(h.isRegExpSelected());
-        setHighlightSelected(h.isHighlightSelected());
         modifiableFindTexts.setAll(h.getFindTexts());
     }
 
@@ -401,9 +300,6 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
         super.savePersistentState();
         var h = getHistory();
         h.setMatchCaseSelected(isMatchCaseSelected());
-        h.setWholeWordSelected(isWholeWordSelected());
-        h.setRegExpSelected(isRegExpSelected());
-        h.setHighlightSelected(isHighlightSelected());
         h.setFindTexts(new ArrayList<>(getFindTexts()));
     }
 

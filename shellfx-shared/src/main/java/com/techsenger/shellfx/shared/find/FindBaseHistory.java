@@ -30,12 +30,6 @@ public class FindBaseHistory extends AreaHistory {
 
     private boolean matchCaseSelected;
 
-    private boolean wholeWordSelected;
-
-    private boolean regExpSelected;
-
-    private boolean highlightSelected;
-
     public List<String> getFindTexts() {
         return findTexts;
     }
@@ -56,29 +50,5 @@ public class FindBaseHistory extends AreaHistory {
 
     public void setMatchCaseSelected(boolean matchCaseSelected) {
         this.matchCaseSelected = matchCaseSelected;
-    }
-
-    public boolean isWholeWordSelected() {
-        return wholeWordSelected;
-    }
-
-    public void setWholeWordSelected(boolean wholeWordSelected) {
-        this.wholeWordSelected = wholeWordSelected;
-    }
-
-    public boolean isRegExpSelected() {
-        return regExpSelected;
-    }
-
-    public void setRegExpSelected(boolean regExpSelected) {
-        this.regExpSelected = regExpSelected;
-    }
-
-    public boolean isHighlightSelected() {
-        return highlightSelected;
-    }
-
-    public void setHighlightSelected(boolean highlightSelected) {
-        this.highlightSelected = highlightSelected;
     }
 }

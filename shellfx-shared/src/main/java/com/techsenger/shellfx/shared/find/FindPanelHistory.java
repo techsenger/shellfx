@@ -22,4 +22,33 @@ package com.techsenger.shellfx.shared.find;
  */
 public class FindPanelHistory extends FindBaseHistory {
 
+    private boolean wholeWordSelected;
+
+    private boolean regExpSelected;
+
+    private boolean highlightSelected;
+
+    public boolean isWholeWordSelected() {
+        return wholeWordSelected;
+    }
+
+    public void setWholeWordSelected(boolean wholeWordSelected) {
+        this.wholeWordSelected = wholeWordSelected;
+    }
+
+    public boolean isRegExpSelected() {
+        return regExpSelected;
+    }
+
+    public void setRegExpSelected(boolean regExpSelected) {
+        this.regExpSelected = regExpSelected;
+    }
+
+    public boolean isHighlightSelected() {
+        return highlightSelected;
+    }
+
+    public void setHighlightSelected(boolean highlightSelected) {
+        this.highlightSelected = highlightSelected;
+    }
 }
