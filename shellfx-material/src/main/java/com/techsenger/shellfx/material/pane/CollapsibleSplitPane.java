@@ -117,16 +117,16 @@ public class CollapsibleSplitPane<T> extends StackPane {
             var box = new VBox(header, content);
             box.minHeightProperty().bind(header.heightProperty());
             splitPane.getItems().add(box);
-            item.collapsedProperty().addListener((ov, oldValue, newValue) -> onCollapsedChanged());
+            item.collapsedProperty().addListener((ov, oldValue, newValue) -> applyCollapsedChange());
         }
-        onCollapsedChanged();
+        applyCollapsedChange();
     }
 
     /**
      * Recomputes divider positions and every item's button icon/tooltip after any item's collapsed state
      * changes.
      */
-    private void onCollapsedChanged() {
+    private void applyCollapsedChange() {
         updateDividers();
         for (var item : items) {
             item.updateButton(isSoleExpanded(item));

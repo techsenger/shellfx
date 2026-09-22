@@ -67,12 +67,6 @@ public class ToolBarViewModel<C extends ChildComposer> extends AbstractFindBaseV
     }
 
     @Override
-    protected void onFindTextChanged(String text) {
-        super.onFindTextChanged(text);
-        setNotFound(false);
-    }
-
-    @Override
     protected void onFind() {
         this.toolBarAware.onFind();
     }

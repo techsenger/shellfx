@@ -61,7 +61,7 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
 
     public AbstractFindBaseViewModel(AreaParams params) {
         super(params);
-        findText.addListener((obs, oldV, newV) -> onFindTextChanged(newV));
+        findText.addListener((obs, oldV, newV) -> applyFindTextChange(newV));
     }
 
     @Override
@@ -254,23 +254,6 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
         setNotFound(false);
     }
 
-    /**
-     * Reacts to {@link #findTextProperty()} changing, regardless of whether the change came from the View
-     * (user typing) or programmatically. The default implementation shows/hides the clear button and clears
-     * any stale result info once the text becomes empty; subclasses may override to layer on extra behavior,
-     * calling {@code super.onFindTextChanged(text)} to keep the default reaction.
-     *
-     * @param text the current find text
-     */
-    protected void onFindTextChanged(String text) {
-        if (text == null || text.isEmpty()) {
-            setClearVisible(false);
-            hideFindResultInfo();
-        } else {
-            setClearVisible(true);
-        }
-    }
-
     protected void onFindNext() {
 
     }
@@ -318,5 +301,14 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
 
     protected void onClearFindText() {
         setFindText(null);
+    }
+
+    private void applyFindTextChange(String text) {
+        if (text == null || text.isEmpty()) {
+            setClearVisible(false);
+            hideFindResultInfo();
+        } else {
+            setClearVisible(true);
+        }
     }
 }
