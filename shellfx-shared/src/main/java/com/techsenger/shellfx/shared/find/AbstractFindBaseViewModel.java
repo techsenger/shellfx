@@ -287,7 +287,9 @@ public abstract class AbstractFindBaseViewModel<C extends ChildComposer> extends
     }
 
     protected void saveFindTextToHistory() {
-        HistoryUtils.addFirst(modifiableFindTexts, getFindText());
+        var updatedFindTexts = new ArrayList<>(modifiableFindTexts);
+        HistoryUtils.addFirst(updatedFindTexts, getFindText());
+        modifiableFindTexts.setAll(updatedFindTexts);
     }
 
     @Override
