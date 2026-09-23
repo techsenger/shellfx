@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.devtools.environment;
+package com.techsenger.shellfx.devtools.shared;
 
-import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.tab.TabComposer;
-import com.techsenger.shellfx.devtools.shared.ToolBarPort;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import com.techsenger.shellfx.shared.find.FindResult;
+import com.techsenger.shellfx.shared.find.ResultFindPort;
+import java.util.regex.Matcher;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 /**
+ * Provides minimal, read-only access to a non-navigable find toolbar's client API.
  *
  * @author Pavel Castornii
  */
-public interface EnvironmentTabComposer extends TabComposer {
+public interface ToolBarPort extends ResultFindPort<FindResult> {
 
-    ToolBarPort getToolBarPort();
+    String getFindPrompt();
 
-    FullNameValueDialogPort openNameValueDialog(DialogParams params);
+    ReadOnlyStringProperty findPromptProperty();
+
+    Matcher createFindMatcher();
 }

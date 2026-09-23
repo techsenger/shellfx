@@ -18,7 +18,8 @@ package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
 import com.techsenger.shellfx.core.tab.TabComposer;
-import com.techsenger.shellfx.devtools.FindToolBarPort;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarPort;
+import com.techsenger.shellfx.devtools.shared.ToolBarPort;
 
 /**
  *
@@ -26,9 +27,9 @@ import com.techsenger.shellfx.devtools.FindToolBarPort;
  */
 public interface NodeTabComposer extends TabComposer {
 
-    FindToolBarPort getNodeToolBarPort();
+    NavigableToolBarPort getNodeToolBarPort();
 
-    FindToolBarPort getPropertyToolBarPort();
+    ToolBarPort getPropertyToolBarPort();
 
     ClosableDialogPort openViewerDialog(ViewerDialogParams params);
 

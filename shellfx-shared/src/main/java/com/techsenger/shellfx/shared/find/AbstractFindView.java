@@ -24,7 +24,6 @@ import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.shared.style.SharedIcons;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
-import javafx.animation.PauseTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
@@ -35,18 +34,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<?>>
-        extends AbstractAreaView<VM> {
-
-    private final FindTrigger findTrigger;
+public abstract class AbstractFindView<VM extends AbstractFindViewModel<?, ?>> extends AbstractAreaView<VM> {
 
     private final ComboBox<String> findComboBox = new ComboBox<>();
 
@@ -60,41 +56,17 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
 
     private final ToggleButton matchCaseButton = new ToggleButton(null, new FontIconView(SharedIcons.MATCH_CASE));
 
-    private final Button findPreviousButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_UP));
-
-    private final Button findNextButton = new Button(null, new FontIconView(SharedIcons.CHEVRON_DOWN));
-
     private final BooleanProperty notFound = new SimpleBooleanProperty();
 
-    /*
-     * Debounce duration in milliseconds.
-     */
-    private int debounceMillis = 300;
-
-    /**
-     * Minimum characters to trigger incremental search (default 3).
-     */
-    private int minSearchLength = 3;
-
-    /**
-     * PauseTransition used to implement debounce on the JavaFX thread.
-     */
-    private PauseTransition debouncePause;
-
-    public AbstractFindBaseView(VM viewModel, FindTrigger findTrigger) {
+    public AbstractFindView(VM viewModel) {
         super(viewModel);
-        this.findTrigger = findTrigger;
     }
 
     @Override
     public void requestFocus() {
         NodeUtils.requestFocus(this.findComboBox.getEditor(), () -> {
-            onFindComboBoxFocused();
+            applyFindComboBoxFocused();
         });
-    }
-
-    public FindTrigger getFindTrigger() {
-        return findTrigger;
     }
 
     /**
@@ -103,7 +75,7 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
     @Override
     protected void build() {
         super.build();
-        getNode().getStylesheets().add(AbstractFindBaseView.class.getResource("find-base.css").toExternalForm());
+        getNode().getStylesheets().add(AbstractFindView.class.getResource("find-base.css").toExternalForm());
         this.findComboBox.setItems(getViewModel().getFindTexts());
         this.findComboBox.setEditable(true);
         this.findComboBox.getStyleClass().addAll(StyleClasses.NO_SELECTED);
@@ -121,14 +93,6 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
         this.matchCaseButton.setTooltip(new Tooltip("Match Case"));
         this.matchCaseButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         this.matchCaseButton.setFocusTraversable(false);
-
-        this.findNextButton.setTooltip(new Tooltip("Next"));
-        this.findNextButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
-        this.findNextButton.setFocusTraversable(false);
-
-        this.findPreviousButton.setTooltip(new Tooltip("Previous"));
-        this.findPreviousButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
-        this.findPreviousButton.setFocusTraversable(false);
     }
 
     @Override
@@ -139,9 +103,8 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
         matchesLabel.textProperty().bind(viewModel.matchesTextProperty());
         matchCaseButton.selectedProperty().bindBidirectional(viewModel.matchCaseSelectedProperty());
         matchCaseButton.disableProperty().bind(viewModel.matchCaseDisabledProperty());
-        findNextButton.disableProperty().bind(viewModel.findNextDisabledProperty());
-        findPreviousButton.disableProperty().bind(viewModel.findPreviousDisabledProperty());
-        findComboBox.getEditor().textProperty().bindBidirectional(viewModel.findTextProperty());
+        findComboBox.getEditor().textProperty().bindBidirectional(viewModel.editedFindTextProperty());
+        viewModel.findTextWrapper().bind(findComboBox.getSelectionModel().selectedItemProperty());
     }
 
     @Override
@@ -161,93 +124,36 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
         ValueUtils.callAndAddListener(viewModel.matchesVisibleProperty(),
                 (ov, oldV, newV) -> updateMatchesVisible(newV));
         ValueUtils.callAndAddListener(viewModel.clearVisibleProperty(), (ov, oldV, newV) -> updateClearVisible(newV));
-
-        findComboBox.getEditor().textProperty().addListener((ov, oldV, newV) -> {
-            if (this.findTrigger == FindTrigger.ON_TYPE) {
-                debouncePause.stop();
-                if (newV != null && newV.length() >= minSearchLength) {
-                    // restart debounce timer
-                    debouncePause.playFromStart();
-                }
-            }
-            if (newV == null || newV.isEmpty()) {
-                viewModel.onFindCleared();
-            }
-        });
-        // Combobox value change: keep existing behavior (invokes handler on selection)
-        findComboBox.valueProperty().addListener((ov, oldV, newV) -> {
-            invokeFindHandler();
-        });
+        viewModel.findTextSource().addListener((value) -> updateFindText(value));
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
         var viewModel = getViewModel();
-        if (findTrigger == FindTrigger.ON_TYPE) {
-            debouncePause = new PauseTransition(Duration.millis(debounceMillis));
-            debouncePause.setOnFinished(e -> {
-                invokeFindHandler();
-            });
-        }
+        // Blocks the ComboBox's own default behavior of committing the editor's raw typed text into
+        // value/selectedItem on Enter (ComboBoxPopupControl#handleKeyEvent, triggered on KEY_RELEASED, not
+        // KEY_PRESSED). That default commit would fire for arbitrary typed text too, not just real history
+        // entries, but findText is bound to selectedItem and expected to change only on a genuine pick from the
+        // list (see bind()). Must be added here, before the ComboBox is shown and its skin installs its own
+        // internal filter on the same node, so this filter runs first and can consume the event before the
+        // control's own commit logic sees it.
+        findComboBox.addEventFilter(KeyEvent.KEY_RELEASED, (e) -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                e.consume();
+            }
+        });
 
         // Enter key: immediate invocation (useful for manual search and also useful to allow
         // immediate search in incremental mode)
         findComboBox.getEditor().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                invokeFindHandler();
+                viewModel.onFindSubmitted();
             }
         });
 
         clearButton.setOnAction(e -> viewModel.onClearFindText());
-        findPreviousButton.setOnAction(e -> viewModel.onFindPrevious());
-        findNextButton.setOnAction(e -> viewModel.onFindNext());
         matchCaseButton.setOnAction(e -> viewModel.onMatchCase());
-    }
-
-    /**
-     * Returns debounce time in milliseconds.
-     */
-    protected int getDebounceMillis() {
-        return debounceMillis;
-    }
-
-    /**
-     * Sets debounce time in milliseconds. Updates the internal debounce timer immediately.
-     */
-    protected void setDebounceMillis(int debounceMillis) {
-        if (debounceMillis < 0) {
-            throw new IllegalArgumentException("debounceMillis must be >= 0");
-        }
-        this.debounceMillis = debounceMillis;
-        if (debouncePause != null) {
-            debouncePause.setDuration(Duration.millis(debounceMillis));
-        }
-    }
-
-    /**
-     * Returns minimum number of characters required for {@link SearchTrigger#ON_TYPE} trigger.
-     */
-    protected int getMinSearchLength() {
-        return minSearchLength;
-    }
-
-    /**
-     * Sets minimum number of characters required for {@link SearchTrigger#ON_TYPE} trigger.
-     */
-    protected void setMinSearchLength(int minSearchLength) {
-        if (minSearchLength < 1) {
-            throw new IllegalArgumentException("minSearchLength must be >= 1");
-        }
-        this.minSearchLength = minSearchLength;
-    }
-
-    protected void onFindComboBoxFocused() {
-        var text = this.findComboBox.getEditor().getText();
-        if (text != null && !text.isEmpty()) {
-            var pos = (int) text.codePointCount(0, text.length());
-            this.findComboBox.getEditor().positionCaret(pos);
-        }
     }
 
     protected ComboBox<String> getFindComboBox() {
@@ -274,12 +180,21 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
         return matchCaseButton;
     }
 
-    protected Button getFindPreviousButton() {
-        return findPreviousButton;
+    void applyFindComboBoxFocused() {
+        var text = this.findComboBox.getEditor().getText();
+        if (text != null && !text.isEmpty()) {
+            var pos = (int) text.codePointCount(0, text.length());
+            this.findComboBox.getEditor().positionCaret(pos);
+        }
     }
 
-    protected Button getFindNextButton() {
-        return findNextButton;
+    private void updateFindText(String value) {
+        if (value == null) {
+            // SingleSelectionModel#select(T) is a no-op for null, it does not clear the current selection
+            findComboBox.getSelectionModel().clearSelection();
+        } else {
+            findComboBox.getSelectionModel().select(value);
+        }
     }
 
     private void updateMatchesVisible(boolean visible) {
@@ -299,16 +214,6 @@ public abstract class AbstractFindBaseView<VM extends AbstractFindBaseViewModel<
         }
         if (!visible && visibleNow)  {
             this.findRightBox.getChildren().remove(this.clearButton);
-        }
-    }
-
-    private void invokeFindHandler() {
-        var text = this.findComboBox.getEditor().getText();
-        if (text != null && !text.isEmpty()) {
-            if (this.findTrigger == FindTrigger.ON_TYPE && text.length() < minSearchLength) {
-                return;
-            }
-            getViewModel().onFind();
         }
     }
 }

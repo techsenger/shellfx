@@ -24,6 +24,7 @@ import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
 import com.techsenger.shellfx.devtools.Selector;
+import com.techsenger.shellfx.shared.find.FindResult;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.time.Instant;
@@ -31,6 +32,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -40,7 +42,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class EventTabViewModel<C extends EventTabComposer> extends AbstractTabViewModel<C> {
+public class EventTabViewModel<C extends EventTabComposer> extends AbstractTabViewModel<C>
+        implements EventToolBarAwarePort {
 
     private static final long ZONE_OFFSET_MILLIS = ZoneId.systemDefault().getRules().getOffset(Instant.now())
             .getTotalSeconds() * 1000L;
@@ -71,58 +74,6 @@ public class EventTabViewModel<C extends EventTabComposer> extends AbstractTabVi
         timeArray[11] = (char) ('0' + ms % 10);
 
         return new String(timeArray);
-    }
-
-    protected class ToolBarAwarePortImpl implements EventToolBarAwarePort {
-
-        @Override
-        public void onRecord(boolean selected) {
-            if (selected) {
-                subscribe();
-            } else {
-                unsubscribe();
-            }
-        }
-
-        @Override
-        public void onClear() {
-            UiExecutor.execute(() -> clear());
-        }
-
-        @Override
-        public void onFilterSelected(boolean selected) {
-            filter.setSelected(selected);
-        }
-
-        @Override
-        public void onSelectedNodeOnly(boolean selected) {
-            filter.setSelectedNodeOnly(selected);
-        }
-
-        @Override
-        public void onEventTypesChanged() {
-            filter.setSelectedEventTypes(getComposer().getToolBarPort().getSelectedEventTypes());
-        }
-
-        @Override
-        public void onMatchCase(boolean selected) {
-            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
-        }
-
-        @Override
-        public void onRefresh() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void onFind() {
-            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
-        }
-
-        @Override
-        public void onFindCleared() {
-            filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
-        }
     }
 
     private final ObservableSource<String> appendTextSource = new SimpleObservableSource<>();
@@ -165,6 +116,56 @@ public class EventTabViewModel<C extends EventTabComposer> extends AbstractTabVi
     @Override
     public void prepareToClose(Consumer<ClosePreparationResult> resultCallback) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void onRecord(boolean selected) {
+        if (selected) {
+            subscribe();
+        } else {
+            unsubscribe();
+        }
+    }
+
+    @Override
+    public void onClear() {
+        UiExecutor.execute(() -> clear());
+    }
+
+    @Override
+    public void onFilterSelected(boolean selected) {
+        filter.setSelected(selected);
+    }
+
+    @Override
+    public void onSelectedNodeOnly(boolean selected) {
+        filter.setSelectedNodeOnly(selected);
+    }
+
+    @Override
+    public void onEventTypesChanged() {
+        filter.setSelectedEventTypes(getComposer().getToolBarPort().getSelectedEventTypes());
+    }
+
+    @Override
+    public void onMatchCase(boolean selected) {
+        filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
+    }
+
+    @Override
+    public void onRefresh() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public CompletableFuture<FindResult> onFind() {
+        filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public void onFindCleared() {
+        filter.setMatcher(getComposer().getToolBarPort().createFindMatcher());
     }
 
     @Override

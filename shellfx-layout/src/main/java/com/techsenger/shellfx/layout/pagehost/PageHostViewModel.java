@@ -19,12 +19,13 @@ package com.techsenger.shellfx.layout.pagehost;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.page.PageContainerViewModel;
 import com.techsenger.shellfx.core.page.PageItem;
+import com.techsenger.shellfx.shared.find.TextMatcherFactory;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,13 +37,10 @@ import javafx.collections.ObservableList;
 public class PageHostViewModel<C extends PageHostComposer> extends AbstractPageHostViewModel<C>
         implements PageContainerViewModel<C>, FullPageHostPort {
 
-    static List<PageItem> match(List<PageItem> items, Matcher matcher, FindStatistics statistics) {
-        List<PageItem> matchedItems = items.stream()
+    static List<PageItem> match(List<PageItem> items, Matcher matcher) {
+        return items.stream()
                 .filter(i -> matcher.reset(i.getText()).find())
                 .collect(Collectors.toList());
-        statistics.setMatches(matchedItems.size());
-        statistics.setTotal(items.size());
-        return matchedItems;
     }
 
     private final ObservableList<PageItem> modifiableMenu = FXCollections.observableArrayList();
@@ -90,26 +88,22 @@ public class PageHostViewModel<C extends PageHostComposer> extends AbstractPageH
     }
 
     @Override
-    public void onFind(String text) {
+    public CompletableFuture<PageFindResult> onFind(String text) {
         setFindMode(true);
         updateHistoryNavigation();
-        var matcher = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher("");
-        var statistics = new FindStatistics();
-        this.matchedItems = match(items, matcher, statistics);
-        var findPanel = getComposer().getFindPanelPort();
-        findPanel.showFindResultInfo(statistics.getMatches());
+        var matcher = TextMatcherFactory.create(text, false);
+        this.matchedItems = match(items, matcher);
         modifiableMenu.setAll(matchedItems);
         if (!matchedItems.isEmpty()) {
             if (!isCurrentPage(matchedItems.get(0))) {
                 doSelectPage(0);
             }
         }
+        return CompletableFuture.completedFuture(new PageFindResult(items.size(), matchedItems.size()));
     }
 
     @Override
     public void onFindCleared() {
-        var findPanel = getComposer().getFindPanelPort();
-        findPanel.hideFindResultInfo();
         setFindMode(false);
         var item = getComposer().getSelectedPagePort().getItem();
         addPageHistory(item);

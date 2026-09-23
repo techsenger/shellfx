@@ -16,8 +16,10 @@
 
 package com.techsenger.shellfx.devtools.event;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.connectorfx.event.ConnectorEvent;
-import com.techsenger.shellfx.shared.find.FindBasePort;
+import com.techsenger.shellfx.shared.find.FindPort;
+import com.techsenger.shellfx.shared.find.FindResult;
 import java.util.Set;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -27,9 +29,9 @@ import javafx.beans.property.ReadOnlyStringProperty;
  *
  * @author Pavel Castornii
  */
-public interface EventToolBarPort extends FindBasePort {
+public interface EventToolBarPort extends FindPort<FindResult> {
 
-    Set<Class<? extends ConnectorEvent>> getSelectedEventTypes();
+    @Unmodifiable Set<Class<? extends ConnectorEvent>> getSelectedEventTypes();
 
     boolean isFilterSelected();
 
@@ -39,7 +41,11 @@ public interface EventToolBarPort extends FindBasePort {
 
     ReadOnlyBooleanProperty selectedNodeOnlyProperty();
 
+    boolean isRecordSelected();
+
     ReadOnlyBooleanProperty recordSelectedProperty();
+
+    String getStatistics();
 
     ReadOnlyStringProperty statisticsProperty();
 }

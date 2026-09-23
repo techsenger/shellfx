@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.devtools.environment;
+package com.techsenger.shellfx.devtools.shared;
 
-import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.tab.TabComposer;
-import com.techsenger.shellfx.devtools.shared.ToolBarPort;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import javafx.beans.property.StringProperty;
 
 /**
+ * Provides full access to a navigable find toolbar's client API.
  *
  * @author Pavel Castornii
  */
-public interface EnvironmentTabComposer extends TabComposer {
+public interface FullNavigableToolBarPort extends NavigableToolBarPort {
 
-    ToolBarPort getToolBarPort();
+    void setFindPrompt(String prompt);
 
-    FullNameValueDialogPort openNameValueDialog(DialogParams params);
+    @Override
+    StringProperty findPromptProperty();
 }

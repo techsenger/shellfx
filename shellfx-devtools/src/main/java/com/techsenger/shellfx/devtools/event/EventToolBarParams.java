@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.devtools.event;
 
-import com.techsenger.shellfx.devtools.ToolBarParams;
+import com.techsenger.shellfx.devtools.shared.ToolBarParams;
 
 /**
  *
@@ -24,8 +24,8 @@ import com.techsenger.shellfx.devtools.ToolBarParams;
  */
 public class EventToolBarParams extends ToolBarParams {
 
-    public EventToolBarParams(EventToolBarAwarePort toolBarAware) {
-        super(toolBarAware);
+    public EventToolBarParams(EventToolBarAwarePort toolBarAware, String findPrompt) {
+        super(toolBarAware, findPrompt);
     }
 
     @Override

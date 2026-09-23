@@ -16,22 +16,16 @@
 
 package com.techsenger.shellfx.shared.find;
 
-import com.techsenger.annotations.Nullable;
-import javafx.beans.property.ReadOnlyObjectProperty;
-
 /**
- * Provides just enough read-only access for a component that delegates the actual search to something external to
- * observe the outcome reported back, without the rest of the find UI's client API.
+ * How {@link AbstractNavigableFindViewModel} formats {@code matchesText} from
+ * {@code totalMatches}/{@code currentMatch}: the total alone, or the currently selected match together with the
+ * total.
  *
- * @param <R> the kind of {@link FindResult} this component reports
  * @author Pavel Castornii
  */
-public interface ResultFindPort<R extends FindResult> {
+public enum MatchesFormat {
 
-    /**
-     * Returns the outcome of the most recently completed search, or {@code null} if none has completed yet.
-     */
-    @Nullable R getFindResult();
+    TOTAL_ONLY,
 
-    ReadOnlyObjectProperty<@Nullable R> findResultProperty();
+    CURRENT_AND_TOTAL
 }

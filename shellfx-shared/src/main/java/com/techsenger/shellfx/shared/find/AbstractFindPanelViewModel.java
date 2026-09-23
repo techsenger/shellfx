@@ -25,8 +25,8 @@ import javafx.beans.property.SimpleBooleanProperty;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPanelViewModel<C extends ChildComposer> extends AbstractFindBaseViewModel<C>
-        implements FullFindPanelPort {
+public abstract class AbstractFindPanelViewModel<C extends ChildComposer, R extends NavigableFindResult>
+        extends AbstractNavigableFindViewModel<C, R> implements FullFindPanelPort<R> {
 
     private final BooleanProperty wholeWordSelected = new SimpleBooleanProperty();
 
@@ -42,8 +42,8 @@ public abstract class AbstractFindPanelViewModel<C extends ChildComposer> extend
 
     private Runnable onCloseRequest;
 
-    public AbstractFindPanelViewModel(AreaParams params) {
-        super(params);
+    public AbstractFindPanelViewModel(AreaParams params, FindTrigger findTrigger) {
+        super(params, findTrigger);
     }
 
     @Override

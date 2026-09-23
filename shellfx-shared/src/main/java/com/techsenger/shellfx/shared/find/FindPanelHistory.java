@@ -20,7 +20,7 @@ package com.techsenger.shellfx.shared.find;
  *
  * @author Pavel Castornii
  */
-public class FindPanelHistory extends FindBaseHistory {
+public class FindPanelHistory extends FindHistory {
 
     private boolean wholeWordSelected;
 

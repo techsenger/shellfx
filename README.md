@@ -47,7 +47,8 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [PageHost](#layout-page-host)
     * [TreePageHost](#layout-tree-page-host)
 * [Shared Components](#shared)
-    * [FindBase](#shared-find-base)
+    * [Find](#shared-find)
+    * [NavigableFind](#shared-navigable-find)
     * [FindPanel](#shared-find-panel)
 * [Dialog Components](#dialog)
     * [AlertDialog](#dialog-alert)
@@ -507,16 +508,29 @@ It can be used to display navigable pages with a flat menu-like structure in dif
 
 Shared components are auxiliary components built on top of Core components and used by components from other modules.
 
-### FindBase <a name="shared-find-base"></a>
-`FindBase` is an abstract base search component that contains the entire search view implementation, including both
+### Find <a name="shared-find"></a>
+`Find` is an abstract base search component that contains the entire search view implementation, including both
 submit search and instant search functionality. Since child components may be of different types (toolbar, panel, etc.),
-this component includes only minimal CSS styling. It is important to note that this component does not contain any
-logic for executing the search itself. At the same time, the base `*FindPort` interfaces are provided without
-implementations.
+this component includes only minimal CSS styling. It owns the full logic of a generic search UI — which trigger
+mode is in effect (submit vs. instant), debounce timing for both search and history-save, committing the edited
+text into the confirmed search text, and match-count display formatting (including an optional, domain-agnostic
+`FindResult` contract a component can implement over its own result type to get that formatting for free). The
+only thing it does not know is what a match actually is or how to find one; that stays entirely up to the concrete
+component: `onFind()` returns a `CompletableFuture` with the outcome, so a component can either run its own search
+synchronously or delegate to something external and report back asynchronously — either way, `Find` clears the
+displayed result before a new search starts and discards a stale outcome on its own if a newer search has since
+superseded it, so no implementation has to worry about that itself.
+
+### NavigableFind <a name="shared-navigable-find"></a>
+`NavigableFind` extends `Find` with the ability to move between individual matches one at a time. It adds
+previous/next buttons, disabling them when there is nothing to navigate to, and can display the current match
+position alongside the total count (e.g. `1 / 10`) instead of a total-only count. It works with
+`NavigableFindResult`, a `FindResult` that also knows how to move to its next/previous match.
 
 ### FindPanel <a name="shared-find-panel"></a>
-`FindPanel` is an abstract class for find panels that are placed at the bottom of other components. It is important
-to note that this component does not contain any logic for executing the search itself.
+`FindPanel` is an abstract class for find panels that are placed at the bottom of other components, built on top
+of `NavigableFind`. Besides the generic search orchestration described above, it also adds whole word, regular
+expression, and highlight-all toggles, plus a close button — none of which `Find`/`NavigableFind` know about.
 
 ## Dialog Components <a name="dialog"></a>
 

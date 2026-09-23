@@ -14,39 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.layout.pagehost;
+package com.techsenger.shellfx.shared.find;
+
+import javafx.beans.property.ObjectProperty;
 
 /**
+ * Provides full access to the client API of a find component that can move between individual matches.
  *
+ * @param <R> the kind of {@link NavigableFindResult} this component reports
  * @author Pavel Castornii
  */
-public class FindStatistics {
+public interface FullNavigableFindPort<R extends NavigableFindResult> extends NavigableFindPort<R>, FullFindPort<R> {
 
-    private int total;
+    void setMatchesFormat(MatchesFormat matchesFormat);
 
-    private int matches;
-
-    public int getTotal() {
-        return total;
-    }
-
-    public void setTotal(int total) {
-        this.total = total;
-    }
-
-    public int getMatches() {
-        return matches;
-    }
-
-    public void setMatches(int matches) {
-        this.matches = matches;
-    }
-
-    public void incrementTotal() {
-        total++;
-    }
-
-    public void incrementMatches() {
-        matches++;
-    }
+    @Override
+    ObjectProperty<MatchesFormat> matchesFormatProperty();
 }

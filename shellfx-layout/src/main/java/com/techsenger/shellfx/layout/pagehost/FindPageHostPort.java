@@ -16,13 +16,15 @@
 
 package com.techsenger.shellfx.layout.pagehost;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  *
  * @author Pavel Castornii
  */
 public interface FindPageHostPort {
 
-    void onFind(String text);
+    CompletableFuture<PageFindResult> onFind(String text);
 
     void onFindCleared();
 }

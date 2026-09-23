@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
+@NullMarked
 package com.techsenger.shellfx.shared.find;
 
-/**
- *
- * @author Pavel Castornii
- */
-public interface FindNavigationAwarePort {
-
-    void onFindNext();
-
-    void onFindPrevious();
-}
+import com.techsenger.annotations.NullMarked;

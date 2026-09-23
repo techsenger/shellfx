@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.shared.find;
+package com.techsenger.shellfx.devtools.shared;
+
+import com.techsenger.shellfx.shared.find.FindAwarePort;
+import com.techsenger.shellfx.shared.find.FindResult;
 
 /**
- *
  * @author Pavel Castornii
  */
-public interface TextFindPort {
+public interface ToolBarAwarePort extends FindAwarePort<FindResult> {
 
-    String getFindText();
+    void onMatchCase(boolean selected);
+
+    void onRefresh();
 }

@@ -19,14 +19,15 @@ package com.techsenger.shellfx.layout.pagehost;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.page.TreePageContainerViewModel;
 import com.techsenger.shellfx.core.page.TreePageItem;
+import com.techsenger.shellfx.shared.find.TextMatcherFactory;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -42,14 +43,14 @@ import javafx.collections.ObservableList;
 public class TreePageHostViewModel<C extends TreePageHostComposer> extends AbstractPageHostViewModel<C>
         implements TreePageContainerViewModel<C>, FullTreePageHostPort {
 
-    static FilteredTreePageItem match(TreePageItem node, Matcher matcher, FindStatistics statistics) {
+    static FilteredTreePageItem match(TreePageItem node, Matcher matcher, MatchCounts counts) {
         List<FilteredTreePageItem> matchingChildren = node.getChildren().stream()
-                .map(child -> match(child, matcher, statistics))
+                .map(child -> match(child, matcher, counts))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         FilteredTreePageItem filtered = null;
-        statistics.incrementTotal();
+        counts.incrementTotalItems();
         if (node.getText() == null) {
             if (!matchingChildren.isEmpty()) {
                 filtered = new FilteredTreePageItem(node, false);
@@ -58,7 +59,7 @@ public class TreePageHostViewModel<C extends TreePageHostComposer> extends Abstr
         } else {
             boolean matches = matcher.reset(node.getText()).find();
             if (matches) {
-                statistics.incrementMatches();
+                counts.incrementTotalMatches();
             }
             if (matches || !matchingChildren.isEmpty()) {
                 filtered = new FilteredTreePageItem(node, matches);
@@ -168,14 +169,12 @@ public class TreePageHostViewModel<C extends TreePageHostComposer> extends Abstr
     }
 
     @Override
-    public void onFind(String text) {
+    public CompletableFuture<PageFindResult> onFind(String text) {
         setFindMode(true);
         updateHistoryNavigation();
-        var matcher = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher("");
-        var statistics = new FindStatistics();
-        var matchedItem = match(rootItem.get(), matcher, statistics);
-        var findPanel = getComposer().getFindPanelPort();
-        findPanel.showFindResultInfo(statistics.getMatches());
+        var matcher = TextMatcherFactory.create(text, false);
+        var counts = new MatchCounts();
+        var matchedItem = match(rootItem.get(), matcher, counts);
         refreshMenuSource.next(matchedItem);
         if (matchedItem != null) {
             var item = findFirstMatched(matchedItem).getOriginal();
@@ -184,12 +183,11 @@ public class TreePageHostViewModel<C extends TreePageHostComposer> extends Abstr
                 selectPage(item, breadcrumbs);
             }
         }
+        return CompletableFuture.completedFuture(new PageFindResult(counts.getTotalItems(), counts.getTotalMatches()));
     }
 
     @Override
     public void onFindCleared() {
-        var findPanel = getComposer().getFindPanelPort();
-        findPanel.hideFindResultInfo();
         setFindMode(false);
         var pageItem = (TreePageItem) getComposer().getSelectedPagePort().getItem();
         addPageHistory(pageItem);

@@ -27,8 +27,12 @@ import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
-import com.techsenger.shellfx.devtools.ToolBarAwarePort;
-import com.techsenger.shellfx.shared.find.FindNavigationAwarePort;
+import com.techsenger.shellfx.devtools.shared.IndexedFindResult;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.ToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.TotalFindResult;
+import com.techsenger.shellfx.shared.find.FindResult;
+import com.techsenger.shellfx.shared.find.NavigableFindResult;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
@@ -39,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import javafx.beans.property.ObjectProperty;
@@ -60,11 +65,11 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
 
     record AddPropertiesCommand(AttributeCategory category, boolean expanded, List<PropertyItem> items) { }
 
-    protected class NodeToolBarAwarePort implements ToolBarAwarePort, FindNavigationAwarePort {
+    protected class NodeToolBarAwarePort implements NavigableToolBarAwarePort {
 
         @Override
         public void onMatchCase(boolean selected) {
-            findNode();
+            // find result is refreshed by the runFind() triggered right after this returns
         }
 
         @Override
@@ -73,23 +78,13 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
         }
 
         @Override
-        public void onFind() {
-            findNode();
+        public CompletableFuture<NavigableFindResult> onFind() {
+            return CompletableFuture.completedFuture(findNode());
         }
 
         @Override
         public void onFindCleared() {
             clearFindNodeResult();
-        }
-
-        @Override
-        public void onFindNext() {
-            findNextNode();
-        }
-
-        @Override
-        public void onFindPrevious() {
-            findPreviousNode();
         }
     }
 
@@ -100,7 +95,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
 
         @Override
         public void onMatchCase(boolean selected) {
-            updateProperies();
+            // find result is refreshed by the runFind() triggered right after this returns
         }
 
         @Override
@@ -109,8 +104,8 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
         }
 
         @Override
-        public void onFind() {
-            updateProperies();
+        public CompletableFuture<FindResult> onFind() {
+            return CompletableFuture.completedFuture(updateProperies());
         }
 
         @Override
@@ -442,7 +437,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
         clearPropertiesSource.next(null);
     }
 
-    private void findNode() {
+    private NavigableFindResult findNode() {
         createNodeIndex();
         clearFindNodeResult();
         var matcher = getComposer().getNodeToolBarPort().createFindMatcher();
@@ -451,8 +446,8 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
             if (!foundNodes.isEmpty()) {
                 selectNodeSource.next(new SelectNodeCommand(foundNodes.get(foundNodeIndex), false));
             }
-            updateFoundNodeInfo();
         }
+        return buildFoundNodeInfo();
     }
 
     private void findNode(Element node, Matcher matcher) {
@@ -480,7 +475,6 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
             this.foundNodeIndex = 0;
         }
         selectNodeSource.next(new SelectNodeCommand(foundNodes.get(foundNodeIndex), false));
-        updateFoundNodeInfo();
     }
 
     private void findPreviousNode() {
@@ -492,13 +486,11 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
             this.foundNodeIndex = this.foundNodes.size() - 1;
         }
         selectNodeSource.next(new SelectNodeCommand(foundNodes.get(foundNodeIndex), false));
-        updateFoundNodeInfo();
     }
 
     private void clearFindNodeResult() {
         this.foundNodes.clear();
         this.foundNodeIndex = 0;
-        getComposer().getNodeToolBarPort().hideFindResultInfo();
     }
 
     private void createNodeIndex() {
@@ -509,12 +501,9 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
         this.nodeIndexCreated = true;
     }
 
-    private void updateFoundNodeInfo() {
-        var current = this.foundNodeIndex;
-        if (!this.foundNodes.isEmpty()) {
-            current = this.foundNodeIndex + 1;
-        }
-        getComposer().getNodeToolBarPort().showFindResultInfo(current, this.foundNodes.size());
+    private NavigableFindResult buildFoundNodeInfo() {
+        return new IndexedFindResult(() -> this.foundNodes.size(),
+                () -> this.foundNodes.isEmpty() ? -1 : this.foundNodeIndex, this::findNextNode, this::findPreviousNode);
     }
 
     private void processPropertyEvent(AttributeListEvent event) {
@@ -532,7 +521,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
         filterAndAddProperties(event.category(), properties);
     }
 
-    private void updateProperies() {
+    private FindResult updateProperies() {
         clearPropertiesSource.next(null);
         clearFindPropertyResult();
         this.propsMatcher = getComposer().getPropertyToolBarPort().createFindMatcher();
@@ -540,6 +529,7 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
         for (var entry : this.allPropsByCategory.entrySet()) {
             filterAndAddProperties(entry.getKey(), entry.getValue());
         }
+        return this.propsMatcher != null ? new TotalFindResult(foundPropertyCount) : null;
     }
 
     private void filterAndAddProperties(AttributeCategory cat, List<PropertyItem> props) {
@@ -554,7 +544,6 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
                 setShownProperties(cat, this.categoryExpansion.get(cat), filteredProps);
                 this.foundPropertyCount += filteredProps.size();
             }
-            getComposer().getPropertyToolBarPort().showFindResultInfo(foundPropertyCount);
         } else {
             setShownProperties(cat, this.categoryExpansion.get(cat), props);
         }
@@ -566,7 +555,6 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
     }
 
     private void clearFindPropertyResult() {
-        getComposer().getPropertyToolBarPort().hideFindResultInfo();
         this.foundPropertyCount = 0;
     }
 

@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.devtools.event;
 
+import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.connectorfx.event.AttributeListEvent;
 import com.techsenger.connectorfx.event.AttributeUpdatedEvent;
 import com.techsenger.connectorfx.event.ConnectorEvent;
@@ -31,7 +32,7 @@ import com.techsenger.connectorfx.event.RootChangedEvent;
 import com.techsenger.connectorfx.event.WindowClosedEvent;
 import com.techsenger.connectorfx.event.WindowPropertiesEvent;
 import com.techsenger.patternfx.mvvm.ChildComposer;
-import com.techsenger.shellfx.devtools.ToolBarViewModel;
+import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -79,7 +80,7 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
     }
 
     @Override
-    public Set<Class<? extends ConnectorEvent>> getSelectedEventTypes() {
+    public @Unmodifiable Set<Class<? extends ConnectorEvent>> getSelectedEventTypes() {
         return eventTypesByClass.entrySet().stream()
                 .filter(e -> e.getValue().get())
                 .map(Map.Entry::getKey)
@@ -107,6 +108,11 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
     }
 
     @Override
+    public boolean isRecordSelected() {
+        return recordSelected.get();
+    }
+
+    @Override
     public ReadOnlyBooleanProperty recordSelectedProperty() {
         return recordSelected.getReadOnlyProperty();
     }
@@ -119,6 +125,11 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
     @Override
     public StringProperty statisticsProperty() {
         return statistics;
+    }
+
+    @Override
+    public String getStatistics() {
+        return this.statistics.get();
     }
 
     @Override

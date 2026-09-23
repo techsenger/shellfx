@@ -22,9 +22,11 @@ import javafx.beans.property.BooleanProperty;
 /**
  * Provides full access to the component's client API.
  *
+ * @param <R> the kind of {@link NavigableFindResult} this component reports
  * @author Pavel Castornii
  */
-public interface FullFindPanelPort extends FindPanelPort, FullFindBasePort, CloseRequestPort {
+public interface FullFindPanelPort<R extends NavigableFindResult> extends FindPanelPort<R>, FullNavigableFindPort<R>,
+        CloseRequestPort {
 
     void setWholeWordSelected(boolean wholeWordSelected);
 

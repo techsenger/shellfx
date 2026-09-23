@@ -18,11 +18,11 @@ package com.techsenger.shellfx.layout.pagehost;
 
 import com.techsenger.shellfx.core.page.TreePageItem;
 import com.techsenger.shellfx.material.icon.Icon;
+import com.techsenger.shellfx.shared.find.TextMatcherFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
@@ -62,11 +62,11 @@ public class TreePageHostViewModelTest {
     }
 
     static Matcher matcher(String text) {
-        return Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher("");
+        return TextMatcherFactory.create(text, false);
     }
 
-    static FindStatistics newStats() {
-        return new FindStatistics();
+    static MatchCounts newMatchCounts() {
+        return new MatchCounts();
     }
 
     static FilteredTreePageItem childByText(FilteredTreePageItem parent, String text) {
@@ -113,78 +113,78 @@ public class TreePageHostViewModelTest {
     @Test
     void match_singleNodeMatches_returnsNode() {
         var node = new TestPageItem("Hello");
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(node, matcher("Hello"), stats);
+        var result = TreePageHostViewModel.match(node, matcher("Hello"), counts);
 
         assertThat(result).isNotNull();
         assertThat(result.getOriginal()).isSameAs(node);
         assertThat(result.getChildren()).isEmpty();
 
-        assertThat(stats.getTotal()).isEqualTo(1);
-        assertThat(stats.getMatches()).isEqualTo(1);
+        assertThat(counts.getTotalItems()).isEqualTo(1);
+        assertThat(counts.getTotalMatches()).isEqualTo(1);
     }
 
     @Test
     void match_singleNodeNoMatch_returnsNull() {
         var node = new TestPageItem("Hello");
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(node, matcher("xyz"), stats);
+        var result = TreePageHostViewModel.match(node, matcher("xyz"), counts);
 
         assertThat(result).isNull();
 
-        assertThat(stats.getTotal()).isEqualTo(1);
-        assertThat(stats.getMatches()).isEqualTo(0);
+        assertThat(counts.getTotalItems()).isEqualTo(1);
+        assertThat(counts.getTotalMatches()).isEqualTo(0);
     }
 
     @Test
     void match_caseInsensitive_returnsNode() {
         var node = new TestPageItem("Hello");
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(node, matcher("hello"), stats);
+        var result = TreePageHostViewModel.match(node, matcher("hello"), counts);
 
         assertThat(result).isNotNull();
         assertThat(result.getOriginal()).isSameAs(node);
 
-        assertThat(stats.getTotal()).isEqualTo(1);
-        assertThat(stats.getMatches()).isEqualTo(1);
+        assertThat(counts.getTotalItems()).isEqualTo(1);
+        assertThat(counts.getTotalMatches()).isEqualTo(1);
     }
 
     @Test
     void match_partialTextMatch_returnsNode() {
         var node = new TestPageItem("HelloWorld");
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(node, matcher("World"), stats);
+        var result = TreePageHostViewModel.match(node, matcher("World"), counts);
 
         assertThat(result).isNotNull();
         assertThat(result.getOriginal()).isSameAs(node);
 
-        assertThat(stats.getTotal()).isEqualTo(1);
-        assertThat(stats.getMatches()).isEqualTo(1);
+        assertThat(counts.getTotalItems()).isEqualTo(1);
+        assertThat(counts.getTotalMatches()).isEqualTo(1);
     }
 
     @Test
     void match_noMatch_returnsNull() {
         var root = buildTree();
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(root, matcher("xyz"), stats);
+        var result = TreePageHostViewModel.match(root, matcher("xyz"), counts);
 
         assertThat(result).isNull();
 
-        assertThat(stats.getTotal()).isEqualTo(10);
-        assertThat(stats.getMatches()).isEqualTo(0);
+        assertThat(counts.getTotalItems()).isEqualTo(10);
+        assertThat(counts.getTotalMatches()).isEqualTo(0);
     }
 
     @Test
     void match_leafMatches_wholeChainIncluded() {
         var root = buildTree();
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(root, matcher("profile"), stats);
+        var result = TreePageHostViewModel.match(root, matcher("profile"), counts);
 
         assertThat(result.getOriginal().getText()).isEqualTo("root");
 
@@ -200,16 +200,16 @@ public class TreePageHostViewModelTest {
 
         assertThat(settings.getChildren().get(0).getChildren()).isEmpty();
 
-        assertThat(stats.getTotal()).isEqualTo(10);
-        assertThat(stats.getMatches()).isEqualTo(1);
+        assertThat(counts.getTotalItems()).isEqualTo(10);
+        assertThat(counts.getTotalMatches()).isEqualTo(1);
     }
 
     @Test
     void match_leafMatches_siblingsExcluded() {
         var root = buildTree();
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(root, matcher("profile"), stats);
+        var result = TreePageHostViewModel.match(root, matcher("profile"), counts);
 
         var settings = childByText(result, "settings");
 
@@ -217,60 +217,60 @@ public class TreePageHostViewModelTest {
             .extracting(f -> f.getOriginal().getText())
             .containsExactly("profile");
 
-        assertThat(stats.getTotal()).isEqualTo(10);
-        assertThat(stats.getMatches()).isEqualTo(1);
+        assertThat(counts.getTotalItems()).isEqualTo(10);
+        assertThat(counts.getTotalMatches()).isEqualTo(1);
     }
 
     @Test
     void match_leafMatches_otherBranchesExcluded() {
         var root = buildTree();
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(root, matcher("profile"), stats);
+        var result = TreePageHostViewModel.match(root, matcher("profile"), counts);
 
         assertThat(result.getChildren())
             .extracting(f -> f.getOriginal().getText())
             .doesNotContain("dashboard", "users");
 
-        assertThat(stats.getTotal()).isEqualTo(10);
-        assertThat(stats.getMatches()).isEqualTo(1);
+        assertThat(counts.getTotalItems()).isEqualTo(10);
+        assertThat(counts.getTotalMatches()).isEqualTo(1);
     }
 
     @Test
     void match_intermediateNodeMatches_childrenExcluded() {
         var root = buildTree();
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(root, matcher("users"), stats);
+        var result = TreePageHostViewModel.match(root, matcher("users"), counts);
 
         var users = childByText(result, "users");
 
         assertThat(users.getChildren()).isEmpty();
 
-        assertThat(stats.getTotal()).isEqualTo(10);
-        assertThat(stats.getMatches()).isEqualTo(1);
+        assertThat(counts.getTotalItems()).isEqualTo(10);
+        assertThat(counts.getTotalMatches()).isEqualTo(1);
     }
 
     @Test
     void match_rootMatches_childrenExcluded() {
         var root = buildTree();
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(root, matcher("root"), stats);
+        var result = TreePageHostViewModel.match(root, matcher("root"), counts);
 
         assertThat(result.getOriginal().getText()).isEqualTo("root");
         assertThat(result.getChildren()).isEmpty();
 
-        assertThat(stats.getTotal()).isEqualTo(10);
-        assertThat(stats.getMatches()).isEqualTo(1);
+        assertThat(counts.getTotalItems()).isEqualTo(10);
+        assertThat(counts.getTotalMatches()).isEqualTo(1);
     }
 
     @Test
-    void match_manyMatches_statisticsCorrect() {
+    void match_manyMatches_findResultCorrect() {
         var root = buildTree();
-        var stats = newStats();
+        var counts = newMatchCounts();
 
-        var result = TreePageHostViewModel.match(root, matcher("s"), stats);
+        var result = TreePageHostViewModel.match(root, matcher("s"), counts);
 
         assertThat(result).isNotNull();
         assertThat(result.getOriginal().getText()).isEqualTo("root");
@@ -294,7 +294,7 @@ public class TreePageHostViewModelTest {
             .extracting(f -> f.getOriginal().getText())
             .containsExactlyInAnyOrder("admins", "guests");
 
-        assertThat(stats.getTotal()).isEqualTo(10);
-        assertThat(stats.getMatches()).isEqualTo(8);
+        assertThat(counts.getTotalItems()).isEqualTo(10);
+        assertThat(counts.getTotalMatches()).isEqualTo(8);
     }
 }

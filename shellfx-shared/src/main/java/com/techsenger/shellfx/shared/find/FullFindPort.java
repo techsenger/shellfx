@@ -16,25 +16,41 @@
 
 package com.techsenger.shellfx.shared.find;
 
+import com.techsenger.shellfx.material.RequestSetter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 
 /**
  * Provides full access to the component's client API.
  *
+ * @param <R> the kind of {@link FindResult} this component reports
  * @author Pavel Castornii
  */
-public interface FullFindBasePort extends FindBasePort, TextFindPort, ResultFindPort {
+public interface FullFindPort<R extends FindResult> extends FindPort<R> {
 
+    void setEditedFindText(String editedFindText);
+
+    @Override
+    StringProperty editedFindTextProperty();
+
+    /**
+     * Requests {@code findText} to change to the given value — the actual value is decided by the widget backing
+     * it, not written directly; observe {@link #findTextProperty()} for what was actually applied.
+     *
+     * @param findText the requested find text
+     */
+    @RequestSetter
     void setFindText(String findText);
 
-    @Override
-    StringProperty findTextProperty();
-
-    void setNotFound(boolean notFound);
+    void setShowClear(boolean showClear);
 
     @Override
-    BooleanProperty notFoundProperty();
+    BooleanProperty showClearProperty();
+
+    void setShowMatches(boolean showMatches);
+
+    @Override
+    BooleanProperty showMatchesProperty();
 
     void setMatchCaseSelected(boolean matchCaseSelected);
 
@@ -45,29 +61,4 @@ public interface FullFindBasePort extends FindBasePort, TextFindPort, ResultFind
 
     @Override
     BooleanProperty matchCaseDisabledProperty();
-
-    void setMatchesText(String matchesText);
-
-    @Override
-    StringProperty matchesTextProperty();
-
-    void setMatchesVisible(boolean matchesVisible);
-
-    @Override
-    BooleanProperty matchesVisibleProperty();
-
-    void setClearVisible(boolean clearVisible);
-
-    @Override
-    BooleanProperty clearVisibleProperty();
-
-    void setFindNextDisabled(boolean findNextDisabled);
-
-    @Override
-    BooleanProperty findNextDisabledProperty();
-
-    void setFindPreviousDisabled(boolean findPreviousDisabled);
-
-    @Override
-    BooleanProperty findPreviousDisabledProperty();
 }

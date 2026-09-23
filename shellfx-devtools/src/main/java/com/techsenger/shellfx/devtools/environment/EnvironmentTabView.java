@@ -16,15 +16,16 @@
 
 package com.techsenger.shellfx.devtools.environment;
 
+import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.AbstractTabView;
 import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.devtools.FindToolBarPort;
-import com.techsenger.shellfx.devtools.ToolBarParams;
-import com.techsenger.shellfx.devtools.ToolBarView;
-import com.techsenger.shellfx.devtools.ToolBarViewModel;
+import com.techsenger.shellfx.devtools.shared.ToolBarParams;
+import com.techsenger.shellfx.devtools.shared.ToolBarPort;
+import com.techsenger.shellfx.devtools.shared.ToolBarView;
+import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
 import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogView;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogViewModel;
@@ -62,7 +63,7 @@ public class EnvironmentTabView<VM extends EnvironmentTabViewModel<?>> extends A
         }
 
         @Override
-        public FindToolBarPort getToolBarPort() {
+        public ToolBarPort getToolBarPort() {
             return this.toolBar == null ? null : this.toolBar.getViewModel();
         }
 
@@ -79,8 +80,9 @@ public class EnvironmentTabView<VM extends EnvironmentTabViewModel<?>> extends A
         }
 
         protected ToolBarView<?> createToolBar() {
-            var viewModel = new ToolBarViewModel<>(new ToolBarParams(getViewModel().new ToolBarAwarePortImpl()));
-            var toolBarView = new ToolBarView<>(viewModel, "Property", false);
+            var viewModel = new ToolBarViewModel<ChildComposer>(
+                    new ToolBarParams(getViewModel(), "Property"));
+            var toolBarView = new ToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;
         }

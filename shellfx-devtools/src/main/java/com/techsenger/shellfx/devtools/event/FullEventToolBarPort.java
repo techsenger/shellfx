@@ -16,8 +16,9 @@
 
 package com.techsenger.shellfx.devtools.event;
 
-import com.techsenger.shellfx.devtools.FindToolBarPort;
-import com.techsenger.shellfx.shared.find.FullFindBasePort;
+import com.techsenger.shellfx.devtools.shared.FullToolBarPort;
+import com.techsenger.shellfx.shared.find.FindResult;
+import com.techsenger.shellfx.shared.find.FullFindPort;
 import javafx.beans.property.StringProperty;
 
 /**
@@ -25,7 +26,8 @@ import javafx.beans.property.StringProperty;
  *
  * @author Pavel Castornii
  */
-public interface FullEventToolBarPort extends EventToolBarPort, FullFindBasePort, FindToolBarPort {
+public interface FullEventToolBarPort extends EventToolBarPort, FullFindPort<FindResult>,
+        FullToolBarPort {
 
     void setStatistics(String text);
 

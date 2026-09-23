@@ -26,12 +26,15 @@ import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
-import com.techsenger.shellfx.devtools.ToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.ToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.TotalFindResult;
+import com.techsenger.shellfx.shared.find.FindResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -44,7 +47,8 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends AbstractTabViewModel<C> {
+public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends AbstractTabViewModel<C>
+        implements ToolBarAwarePort {
 
     protected static String getText(EnvironmentCategory cat) {
         return switch (cat) {
@@ -53,29 +57,6 @@ public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends A
             case SYSTEM_PROPERTY -> "System Properties";
             default -> throw new AssertionError();
         };
-    }
-
-    protected class ToolBarAwarePortImpl implements ToolBarAwarePort {
-
-        @Override
-        public void onMatchCase(boolean selected) {
-            refresh();
-        }
-
-        @Override
-        public void onRefresh() {
-            refresh();
-        }
-
-        @Override
-        public void onFind() {
-            refresh();
-        }
-
-        @Override
-        public void onFindCleared() {
-            refresh();
-        }
     }
 
     private final ObservableList<EnvironmentItem> modifiableItems = FXCollections.observableArrayList();
@@ -108,6 +89,26 @@ public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends A
     }
 
     @Override
+    public void onMatchCase(boolean selected) {
+        // find result is refreshed by the runFind() triggered right after this returns
+    }
+
+    @Override
+    public void onRefresh() {
+        refresh();
+    }
+
+    @Override
+    public CompletableFuture<FindResult> onFind() {
+        return CompletableFuture.completedFuture(refresh());
+    }
+
+    @Override
+    public void onFindCleared() {
+        refresh();
+    }
+
+    @Override
     protected void postInitialize() {
         super.postInitialize();
         setTitle("Environment");
@@ -115,23 +116,19 @@ public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends A
         UiExecutor.execute(() -> refresh());
     }
 
-    protected void refresh() {
+    protected FindResult refresh() {
         var composer = getComposer();
         var e = this.tabDock.getConnector().getEnv();
         var items = new ArrayList<EnvironmentItem>();
         items.add(new DefaultEnvironmentItem(EnvironmentItemType.ROOT, "", null, true));
         var matcher = composer.getToolBarPort().createFindMatcher();
-        var savedSize = items.size();
-        addItems(items, matcher, EnvironmentCategory.PLATFORM,
+        var matchCount = 0;
+        matchCount += addItems(items, matcher, EnvironmentCategory.PLATFORM,
                 e.getPlatformPreferences(), e.getOtherPlatformProperties(), e.getConditionalFeatures());
-        addItems(items, matcher, EnvironmentCategory.SYSTEM_PROPERTY, e.getSystemProperties());
-        addItems(items, matcher, EnvironmentCategory.ENVIRONMENT_VARIABLE, e.getEnvVariables());
-        if (matcher != null) {
-            composer.getToolBarPort().showFindResultInfo(items.size() - savedSize - 1); // -1 is the root
-        } else {
-            composer.getToolBarPort().hideFindResultInfo();
-        }
+        matchCount += addItems(items, matcher, EnvironmentCategory.SYSTEM_PROPERTY, e.getSystemProperties());
+        matchCount += addItems(items, matcher, EnvironmentCategory.ENVIRONMENT_VARIABLE, e.getEnvVariables());
         setItems(items);
+        return matcher != null ? new TotalFindResult(matchCount) : null;
     }
 
     protected void setItems(List<EnvironmentItem> items) {
@@ -153,7 +150,7 @@ public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends A
     }
 
     @SafeVarargs
-    private void addItems(List<EnvironmentItem> allItems, Matcher matcher, EnvironmentCategory cat,
+    private int addItems(List<EnvironmentItem> allItems, Matcher matcher, EnvironmentCategory cat,
             List<KeyValue>... lists) {
         var tempList = new ArrayList<EnvironmentItem>();
         for (var l : lists) {
@@ -177,5 +174,6 @@ public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends A
             });
             allItems.addAll(tempList);
         }
+        return tempList.size();
     }
 }

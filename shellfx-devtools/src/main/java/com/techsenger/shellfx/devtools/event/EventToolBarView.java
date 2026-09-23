@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.devtools.event;
 
 import atlantafx.base.theme.Styles;
-import com.techsenger.shellfx.devtools.ToolBarView;
+import com.techsenger.shellfx.devtools.shared.ToolBarView;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.StyleClasses;
@@ -59,7 +59,7 @@ public class EventToolBarView<VM extends EventToolBarViewModel<?>> extends ToolB
     private final Label statisticsDataLabel = new Label();
 
     public EventToolBarView(VM viewModel) {
-        super(viewModel, "Message", false);
+        super(viewModel);
     }
 
     @Override

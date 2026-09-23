@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.devtools.environment;
+package com.techsenger.shellfx.layout.pagehost;
 
-import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.tab.TabComposer;
-import com.techsenger.shellfx.devtools.shared.ToolBarPort;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import com.techsenger.shellfx.shared.find.FindResult;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface EnvironmentTabComposer extends TabComposer {
+public class PageFindResult implements FindResult {
 
-    ToolBarPort getToolBarPort();
+    private final int totalItems;
 
-    FullNameValueDialogPort openNameValueDialog(DialogParams params);
+    private final int totalMatches;
+
+    public PageFindResult(int totalItems, int totalMatches) {
+        this.totalItems = totalItems;
+        this.totalMatches = totalMatches;
+    }
+
+    public int getTotalItems() {
+        return totalItems;
+    }
+
+    @Override
+    public int getTotalMatches() {
+        return totalMatches;
+    }
 }

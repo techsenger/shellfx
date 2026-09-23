@@ -20,6 +20,7 @@ import atlantafx.base.theme.Tweaks;
 import com.techsenger.connectorfx.LocalElement;
 import com.techsenger.connectorfx.event.EventSource;
 import com.techsenger.connectorfx.scenegraph.Element;
+import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.patternfx.mvvm.ViewUtils;
 import com.techsenger.shellfx.core.ShellView;
@@ -30,10 +31,14 @@ import com.techsenger.shellfx.core.tab.TabView;
 import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.core.window.WindowView;
-import com.techsenger.shellfx.devtools.FindToolBarPort;
-import com.techsenger.shellfx.devtools.ToolBarParams;
-import com.techsenger.shellfx.devtools.ToolBarView;
-import com.techsenger.shellfx.devtools.ToolBarViewModel;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarParams;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarPort;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarView;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarViewModel;
+import com.techsenger.shellfx.devtools.shared.ToolBarParams;
+import com.techsenger.shellfx.devtools.shared.ToolBarPort;
+import com.techsenger.shellfx.devtools.shared.ToolBarView;
+import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
 import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogView;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogViewModel;
@@ -185,7 +190,7 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
 
         private final ComponentTabView<VM> view = ComponentTabView.this;
 
-        private ToolBarView<?> componentToolBar;
+        private NavigableToolBarView<?> componentToolBar;
 
         private ToolBarView<?> inspectorToolBar;
 
@@ -203,12 +208,12 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
         }
 
         @Override
-        public FindToolBarPort getComponentToolBarPort() {
+        public NavigableToolBarPort getComponentToolBarPort() {
             return this.componentToolBar == null ? null : this.componentToolBar.getViewModel();
         }
 
         @Override
-        public FindToolBarPort getInspectorToolBarPort() {
+        public ToolBarPort getInspectorToolBarPort() {
             return this.inspectorToolBar == null ? null : this.inspectorToolBar.getViewModel();
         }
 
@@ -225,7 +230,7 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
             return dialog.getViewModel();
         }
 
-        protected ToolBarView<?> getComponentToolBar() {
+        protected NavigableToolBarView<?> getComponentToolBar() {
             return componentToolBar;
         }
 
@@ -233,17 +238,20 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
             return inspectorToolBar;
         }
 
-        protected ToolBarView<?> createComponentToolBar() {
-            var viewModel = new ToolBarViewModel<>(new ToolBarParams(getViewModel().new ComponentToolBarAwarePort()));
-            var toolBarView = new ToolBarView<>(viewModel, "Name / UUID", true);
+        protected NavigableToolBarView<?> createComponentToolBar() {
+            var awarePort = getViewModel().new ComponentToolBarAwarePort();
+            var params =  new NavigableToolBarParams(awarePort, "Name / UUID");
+            var viewModel = new NavigableToolBarViewModel<ChildComposer>(params);
+            var toolBarView = new NavigableToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;
         }
 
         protected ToolBarView<?> createInspectorToolBar() {
-            var viewModel = new ToolBarViewModel<>(
-                    new ToolBarParams(getViewModel().new InspectorToolBarAwarePort()));
-            var toolBarView = new ToolBarView<>(viewModel, "Property / Class / Interface", false);
+            var awarePort = getViewModel().new InspectorToolBarAwarePort();
+            var params = new ToolBarParams(awarePort, "Property / Class / Interface");
+            var viewModel = new ToolBarViewModel<ChildComposer>(params);
+            var toolBarView = new ToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;
         }

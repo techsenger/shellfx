@@ -17,8 +17,7 @@
 package com.techsenger.shellfx.layout.pagehost;
 
 import com.techsenger.shellfx.material.style.Spacing;
-import com.techsenger.shellfx.shared.find.AbstractFindBaseView;
-import com.techsenger.shellfx.shared.find.FindTrigger;
+import com.techsenger.shellfx.shared.find.AbstractFindView;
 import javafx.geometry.Insets;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -27,12 +26,12 @@ import javafx.scene.layout.Priority;
  *
  * @author Pavel Castornii
  */
-public class FindPanelView<VM extends FindPanelViewModel<?>> extends AbstractFindBaseView<VM> {
+public class FindPanelView<VM extends FindPanelViewModel<?>> extends AbstractFindView<VM> {
 
     private final HBox box = new HBox(getFindComboBoxWrapper());
 
     public FindPanelView(VM viewModel) {
-        super(viewModel, FindTrigger.ON_TYPE);
+        super(viewModel);
     }
 
     @Override

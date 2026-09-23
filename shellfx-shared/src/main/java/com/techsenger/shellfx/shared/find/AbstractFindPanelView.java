@@ -40,8 +40,8 @@ import javafx.scene.layout.Priority;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewModel<?>>
-        extends AbstractFindBaseView<VM> {
+public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewModel<?, ?>>
+        extends AbstractNavigableFindView<VM> {
 
     protected static final String FOUND_STYLE_CLASS = "found";
 
@@ -63,14 +63,14 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
 
     private final FocusTrap focusTrap = new FocusTrap(gridPane);
 
-    public AbstractFindPanelView(VM viewModel, FindTrigger searchTrigger) {
-        super(viewModel, searchTrigger);
+    public AbstractFindPanelView(VM viewModel) {
+        super(viewModel);
     }
 
     @Override
     public void requestFocus() {
         NodeUtils.requestFocus(getFindComboBox().getEditor(), () -> {
-            onFindComboBoxFocused();
+            applyFindComboBoxFocused();
             if (!this.focusTrap.isActivated()) {
                 this.focusTrap.activate();
             }
@@ -154,10 +154,6 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
         highlightButton.setOnAction(e -> viewModel.onHighlight());
     }
 
-    protected GridPane getGridPane() {
-        return gridPane;
-    }
-
     protected ToggleButton getWholeWordButton() {
         return wholeWordButton;
     }
@@ -172,5 +168,21 @@ public abstract class AbstractFindPanelView<VM extends AbstractFindPanelViewMode
 
     protected FocusTrap getFocusTrap() {
         return focusTrap;
+    }
+
+    protected Label getFindLabel() {
+        return findLabel;
+    }
+
+    protected HBox getFindLabelWrapper() {
+        return findLabelWrapper;
+    }
+
+    protected Button getCloseButton() {
+        return closeButton;
+    }
+
+    protected HBox getToolBox() {
+        return toolBox;
     }
 }

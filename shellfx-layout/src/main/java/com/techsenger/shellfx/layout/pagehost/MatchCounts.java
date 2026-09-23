@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.devtools;
-
-import com.techsenger.shellfx.core.area.AreaParams;
-import java.util.Objects;
+package com.techsenger.shellfx.layout.pagehost;
 
 /**
+ * A mutable accumulator {@link TreePageHostViewModel#match(com.techsenger.shellfx.core.page.TreePageItem,
+ * java.util.regex.Matcher, MatchCounts)} increments while walking the tree; once the walk finishes, its totals are
+ * copied into a {@link PageFindResult}.
  *
  * @author Pavel Castornii
  */
-public class ToolBarParams extends AreaParams {
+final class MatchCounts {
 
-    private final ToolBarAwarePort toolBarAware;
+    private int totalItems;
 
-    public ToolBarParams(ToolBarAwarePort toolBarAware) {
-        this.toolBarAware = toolBarAware;
+    private int totalMatches;
+
+    int getTotalItems() {
+        return totalItems;
     }
 
-    public ToolBarAwarePort getToolBarAware() {
-        return toolBarAware;
+    int getTotalMatches() {
+        return totalMatches;
     }
 
-    @Override
-    public void validate() {
-        super.validate();
-        Objects.requireNonNull(toolBarAware);
+    void incrementTotalItems() {
+        totalItems++;
+    }
+
+    void incrementTotalMatches() {
+        totalMatches++;
     }
 }

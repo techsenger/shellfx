@@ -47,7 +47,7 @@ public class EventTabView<VM extends EventTabViewModel<?>> extends AbstractTabVi
         }
 
         protected EventToolBarView<?> createToolBar() {
-            var params = new EventToolBarParams(getViewModel().new ToolBarAwarePortImpl());
+            var params = new EventToolBarParams(getViewModel(), "Message");
             var viewModel = new EventToolBarViewModel<>(params);
             var toolBarView = new EventToolBarView<>(viewModel);
             toolBarView.initialize();

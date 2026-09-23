@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.devtools.stylesheet;
 
 import com.techsenger.shellfx.core.tab.TabComposer;
-import com.techsenger.shellfx.devtools.FindToolBarPort;
+import com.techsenger.shellfx.devtools.shared.ToolBarPort;
 
 /**
  *
@@ -25,5 +25,5 @@ import com.techsenger.shellfx.devtools.FindToolBarPort;
  */
 public interface StylesheetTabComposer extends TabComposer {
 
-    FindToolBarPort getToolBarPort();
+    ToolBarPort getToolBarPort();
 }

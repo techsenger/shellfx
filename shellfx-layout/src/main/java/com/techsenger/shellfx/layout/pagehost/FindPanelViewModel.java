@@ -17,24 +17,26 @@
 package com.techsenger.shellfx.layout.pagehost;
 
 import com.techsenger.patternfx.mvvm.ChildComposer;
-import com.techsenger.shellfx.shared.find.AbstractFindBaseViewModel;
+import com.techsenger.shellfx.shared.find.AbstractFindViewModel;
+import com.techsenger.shellfx.shared.find.FindTrigger;
+import java.util.concurrent.CompletableFuture;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class FindPanelViewModel<C extends ChildComposer> extends AbstractFindBaseViewModel<C> {
+public class FindPanelViewModel<C extends ChildComposer> extends AbstractFindViewModel<C, PageFindResult> {
 
     private final FindPageHostPort pageHost;
 
     public FindPanelViewModel(FindPanelParams params) {
-        super(params);
+        super(params, FindTrigger.ON_TYPE);
         this.pageHost = params.getPageHost();
     }
 
     @Override
-    protected void onFind() {
-        pageHost.onFind(getFindText());
+    protected CompletableFuture<PageFindResult> onFind() {
+        return pageHost.onFind(getFindText());
     }
 
     @Override

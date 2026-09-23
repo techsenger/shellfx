@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-public class FindBaseHistory extends AreaHistory {
+public class FindHistory extends AreaHistory {
 
     private List<String> findTexts;
 

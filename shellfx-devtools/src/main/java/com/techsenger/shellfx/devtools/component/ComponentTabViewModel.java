@@ -28,10 +28,14 @@ import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
-import com.techsenger.shellfx.devtools.ToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.IndexedFindResult;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.ToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.TotalFindResult;
 import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueButtons;
-import com.techsenger.shellfx.shared.find.FindNavigationAwarePort;
+import com.techsenger.shellfx.shared.find.FindResult;
+import com.techsenger.shellfx.shared.find.NavigableFindResult;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
@@ -44,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -205,12 +210,11 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
         }
     }
 
-    protected class ComponentToolBarAwarePort implements ToolBarAwarePort, FindNavigationAwarePort {
+    protected class ComponentToolBarAwarePort implements NavigableToolBarAwarePort {
 
         @Override
         public void onMatchCase(boolean selected) {
-            clearFoundComponents();
-            findComponents();
+            // find result is refreshed by the runFind() triggered right after this returns
         }
 
         @Override
@@ -219,25 +223,16 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
         }
 
         @Override
-        public void onFind() {
+        public CompletableFuture<NavigableFindResult> onFind() {
             // It is necessary to refresh the tree on every find because we work directly
             // with the live component tree, not with a snapshot/copy of it
             refreshComponents();
+            return CompletableFuture.completedFuture(buildFoundComponentInfo());
         }
 
         @Override
         public void onFindCleared() {
             clearFoundComponents();
-        }
-
-        @Override
-        public void onFindNext() {
-            findNextComponent();
-        }
-
-        @Override
-        public void onFindPrevious() {
-            findPreviousComponent();
         }
     }
 
@@ -245,7 +240,7 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
 
         @Override
         public void onMatchCase(boolean selected) {
-            refreshInspector();
+            // find result is refreshed by the runFind() triggered right after this returns
         }
 
         @Override
@@ -254,8 +249,8 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
         }
 
         @Override
-        public void onFind() {
-            refreshInspector();
+        public CompletableFuture<FindResult> onFind() {
+            return CompletableFuture.completedFuture(refreshInspector());
         }
 
         @Override
@@ -426,7 +421,6 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
                 this.currentMatchIndex = 0;
                 selectComponentByUuidSource.next(this.componentMatches.get(this.currentMatchIndex).item().getUuid());
             }
-            updateFoundComponentInfo();
         }
     }
 
@@ -436,7 +430,6 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
             if (this.currentMatchIndex >= this.componentMatches.size()) {
                 this.currentMatchIndex = 0;
             }
-            updateFoundComponentInfo();
             selectComponentByUuidSource.next(this.componentMatches.get(currentMatchIndex).item().getUuid());
         }
     }
@@ -447,7 +440,6 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
             if (this.currentMatchIndex < 0) {
                 this.currentMatchIndex = this.componentMatches.size() - 1;
             }
-            updateFoundComponentInfo();
             selectComponentByUuidSource.next(this.componentMatches.get(currentMatchIndex).item().getUuid());
         }
     }
@@ -455,15 +447,14 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
     private void clearFoundComponents() {
         this.componentMatches = Collections.emptyList();
         this.currentMatchIndex = -1;
-        getComposer().getComponentToolBarPort().hideFindResultInfo();
     }
 
-    private void updateFoundComponentInfo() {
-        getComposer().getComponentToolBarPort()
-                .showFindResultInfo(currentMatchIndex + 1, this.componentMatches.size());
+    private NavigableFindResult buildFoundComponentInfo() {
+        return new IndexedFindResult(() -> this.componentMatches.size(), () -> this.currentMatchIndex,
+                this::findNextComponent, this::findPreviousComponent);
     }
 
-    private void refreshInspector() {
+    private FindResult refreshInspector() {
         var composer = getComposer();
         if (this.componentFxViewClass != null) {
             var matcher = composer.getInspectorToolBarPort().createFindMatcher();
@@ -473,14 +464,10 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
                     this.componentViewModel,
                     matcher);
             refreshInspectorSource.next(new InspectorRefreshData(result.items, expandedByCategory));
-            if (matcher != null) {
-                composer.getInspectorToolBarPort().showFindResultInfo(result.totalMatches);
-            } else {
-                composer.getInspectorToolBarPort().hideFindResultInfo();
-            }
+            return matcher != null ? new TotalFindResult(result.totalMatches) : null;
         } else {
             refreshInspectorSource.next(new InspectorRefreshData(Collections.emptyList(), expandedByCategory));
-            composer.getInspectorToolBarPort().hideFindResultInfo();
+            return null;
         }
     }
 }

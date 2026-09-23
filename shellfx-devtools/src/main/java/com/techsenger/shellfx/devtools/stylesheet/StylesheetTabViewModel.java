@@ -29,9 +29,12 @@ import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
 import com.techsenger.shellfx.devtools.ElementUtils;
-import com.techsenger.shellfx.devtools.ToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.ToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.TotalFindResult;
+import com.techsenger.shellfx.shared.find.FindResult;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import javafx.collections.FXCollections;
@@ -41,7 +44,8 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public class StylesheetTabViewModel<C extends StylesheetTabComposer> extends AbstractTabViewModel<C> {
+public class StylesheetTabViewModel<C extends StylesheetTabComposer> extends AbstractTabViewModel<C>
+        implements ToolBarAwarePort {
 
     private static String formatWindowType(int uid, WindowProperties props) {
         String text;
@@ -67,29 +71,6 @@ public class StylesheetTabViewModel<C extends StylesheetTabComposer> extends Abs
             return type + " [" + propName + "=\"" + property + "\"" + "]";
         } else {
             return type + "@" + uid;
-        }
-    }
-
-    protected class ToolBarAwarePortImpl implements ToolBarAwarePort {
-
-        @Override
-        public void onMatchCase(boolean selected) {
-            refresh();
-        }
-
-        @Override
-        public void onRefresh() {
-            refresh();
-        }
-
-        @Override
-        public void onFind() {
-            rebuildTree();
-        }
-
-        @Override
-        public void onFindCleared() {
-            rebuildTree();
         }
     }
 
@@ -119,6 +100,26 @@ public class StylesheetTabViewModel<C extends StylesheetTabComposer> extends Abs
     }
 
     @Override
+    public void onMatchCase(boolean selected) {
+        // find result is refreshed by the runFind() triggered right after this returns
+    }
+
+    @Override
+    public void onRefresh() {
+        refresh();
+    }
+
+    @Override
+    public CompletableFuture<FindResult> onFind() {
+        return CompletableFuture.completedFuture(rebuildTree());
+    }
+
+    @Override
+    public void onFindCleared() {
+        rebuildTree();
+    }
+
+    @Override
     protected void postInitialize() {
         super.postInitialize();
         setTitle("Stylesheets");
@@ -141,7 +142,7 @@ public class StylesheetTabViewModel<C extends StylesheetTabComposer> extends Abs
         }
     }
 
-    protected void rebuildTree() {
+    protected FindResult rebuildTree() {
         var connector = this.tabDock.getConnector();
         var entry = connector.getStyledElements(tabDock.getSelector().getSelectedWindowUid());
         Matcher matcher = getComposer().getToolBarPort().createFindMatcher();
@@ -177,12 +178,8 @@ public class StylesheetTabViewModel<C extends StylesheetTabComposer> extends Abs
                 }
             }
         }
-        if (matcher != null) {
-            getComposer().getToolBarPort().showFindResultInfo(found);
-        } else {
-            getComposer().getToolBarPort().hideFindResultInfo();
-        }
         setItems(items);
+        return matcher != null ? new TotalFindResult(found) : null;
     }
 
     protected void setItems(List<StylesheetItem> items) {

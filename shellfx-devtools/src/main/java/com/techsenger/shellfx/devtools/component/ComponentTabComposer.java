@@ -18,7 +18,8 @@ package com.techsenger.shellfx.devtools.component;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.TabComposer;
-import com.techsenger.shellfx.devtools.FindToolBarPort;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarPort;
+import com.techsenger.shellfx.devtools.shared.ToolBarPort;
 import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
 
 /**
@@ -29,9 +30,9 @@ import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
  */
 public interface ComponentTabComposer extends TabComposer {
 
-    FindToolBarPort getComponentToolBarPort();
+    NavigableToolBarPort getComponentToolBarPort();
 
-    FindToolBarPort getInspectorToolBarPort();
+    ToolBarPort getInspectorToolBarPort();
 
     FullNameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption, DialogParams params);
 }

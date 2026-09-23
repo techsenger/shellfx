@@ -24,7 +24,6 @@ import com.techsenger.shellfx.layout.style.LayoutIcons;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
-import com.techsenger.shellfx.shared.find.ResultFindPort;
 import com.techsenger.toolkit.fx.Spacer;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -56,11 +55,6 @@ public abstract class AbstractPageHostView<VM extends AbstractPageHostViewModel<
             this.findPanel = createFindPanel();
             getModifiableChildren().add(this.findPanel);
             addFindPanel(this.findPanel.getNode());
-        }
-
-        @Override
-        public ResultFindPort getFindPanelPort() {
-            return this.findPanel.getViewModel();
         }
 
         @Override

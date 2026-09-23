@@ -17,36 +17,26 @@
 package com.techsenger.shellfx.shared.find;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides minimal, read-only access to the client API of a find component that can move between individual
+ * matches, on top of the plain {@link FindPort} contract.
  *
  * @param <R> the kind of {@link NavigableFindResult} this component reports
  * @author Pavel Castornii
  */
-public interface FindPanelPort<R extends NavigableFindResult> extends NavigableFindPort<R> {
+public interface NavigableFindPort<R extends NavigableFindResult> extends FindPort<R> {
 
-    boolean isWholeWordSelected();
+    MatchesFormat getMatchesFormat();
 
-    ReadOnlyBooleanProperty wholeWordSelectedProperty();
+    ReadOnlyObjectProperty<MatchesFormat> matchesFormatProperty();
 
-    boolean isWholeWordDisabled();
+    boolean isFindNextDisabled();
 
-    ReadOnlyBooleanProperty wholeWordDisabledProperty();
+    ReadOnlyBooleanProperty findNextDisabledProperty();
 
-    boolean isRegExpSelected();
+    boolean isFindPreviousDisabled();
 
-    ReadOnlyBooleanProperty regExpSelectedProperty();
-
-    boolean isRegExpDisabled();
-
-    ReadOnlyBooleanProperty regExpDisabledProperty();
-
-    boolean isHighlightSelected();
-
-    ReadOnlyBooleanProperty highlightSelectedProperty();
-
-    boolean isHighlightDisabled();
-
-    ReadOnlyBooleanProperty highlightDisabledProperty();
+    ReadOnlyBooleanProperty findPreviousDisabledProperty();
 }

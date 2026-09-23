@@ -16,12 +16,13 @@
 
 package com.techsenger.shellfx.devtools.stylesheet;
 
+import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.tab.AbstractTabView;
-import com.techsenger.shellfx.devtools.FindToolBarPort;
-import com.techsenger.shellfx.devtools.ToolBarParams;
-import com.techsenger.shellfx.devtools.ToolBarView;
-import com.techsenger.shellfx.devtools.ToolBarViewModel;
+import com.techsenger.shellfx.devtools.shared.ToolBarParams;
+import com.techsenger.shellfx.devtools.shared.ToolBarPort;
+import com.techsenger.shellfx.devtools.shared.ToolBarView;
+import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,14 +56,15 @@ public class StylesheetTabView<VM extends StylesheetTabViewModel<?>> extends Abs
         }
 
         protected ToolBarView<?> createToolBar() {
-            var viewModel = new ToolBarViewModel<>(new ToolBarParams(getViewModel().new ToolBarAwarePortImpl()));
-            var toolBarView = new ToolBarView<>(viewModel, "NodeClass / StyleClass / ID", false);
+            var params = new ToolBarParams(getViewModel(), "NodeClass / StyleClass / ID");
+            var viewModel = new ToolBarViewModel<ChildComposer>(params);
+            var toolBarView = new ToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;
         }
 
         @Override
-        public FindToolBarPort getToolBarPort() {
+        public ToolBarPort getToolBarPort() {
             return this.toolBar == null ? null : this.toolBar.getViewModel();
         }
     }

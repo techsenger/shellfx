@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.devtools;
+package com.techsenger.shellfx.devtools.shared;
 
-import com.techsenger.shellfx.shared.find.ResultFindPort;
-import java.util.regex.Matcher;
+import com.techsenger.shellfx.shared.find.FindResult;
 
 /**
+ * A {@link FindResult} for a search that only counts matches, used by the non-navigable find toolbars
+ * ({@link ToolBarViewModel}).
  *
  * @author Pavel Castornii
  */
-public interface FindToolBarPort extends ResultFindPort {
+public final class TotalFindResult implements FindResult {
 
-    Matcher createFindMatcher();
+    private final int totalMatches;
+
+    public TotalFindResult(int totalMatches) {
+        this.totalMatches = totalMatches;
+    }
+
+    @Override
+    public int getTotalMatches() {
+        return totalMatches;
+    }
 }

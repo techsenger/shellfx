@@ -26,6 +26,7 @@ import com.techsenger.connectorfx.scenegraph.attributes.Attribute;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.INSETS;
 import static com.techsenger.connectorfx.scenegraph.attributes.Attribute.DisplayHint.NUMERIC;
 import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
+import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.patternfx.mvvm.ComponentDescriptor;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
@@ -33,10 +34,14 @@ import com.techsenger.shellfx.core.tab.AbstractTabView;
 import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.devtools.ElementUtils;
-import com.techsenger.shellfx.devtools.FindToolBarPort;
-import com.techsenger.shellfx.devtools.ToolBarParams;
-import com.techsenger.shellfx.devtools.ToolBarView;
-import com.techsenger.shellfx.devtools.ToolBarViewModel;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarParams;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarPort;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarView;
+import com.techsenger.shellfx.devtools.shared.NavigableToolBarViewModel;
+import com.techsenger.shellfx.devtools.shared.ToolBarParams;
+import com.techsenger.shellfx.devtools.shared.ToolBarPort;
+import com.techsenger.shellfx.devtools.shared.ToolBarView;
+import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -479,7 +484,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
 
         private final NodeTabView<VM> view = NodeTabView.this;
 
-        private ToolBarView<?> nodeToolBar;
+        private NavigableToolBarView<?> nodeToolBar;
 
         private ToolBarView<?> propertyToolBar;
 
@@ -496,7 +501,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
             propertyBox.getChildren().add(0, propertyToolBar.getNode());
         }
 
-        public ToolBarView<?> getNodeToolBar() {
+        public NavigableToolBarView<?> getNodeToolBar() {
             return nodeToolBar;
         }
 
@@ -505,12 +510,12 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
         }
 
         @Override
-        public FindToolBarPort getNodeToolBarPort() {
+        public NavigableToolBarPort getNodeToolBarPort() {
             return nodeToolBar == null ? null : nodeToolBar.getViewModel();
         }
 
         @Override
-        public FindToolBarPort getPropertyToolBarPort() {
+        public ToolBarPort getPropertyToolBarPort() {
             return propertyToolBar == null ? null : propertyToolBar.getViewModel();
         }
 
@@ -545,16 +550,18 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
             return dialog.getViewModel();
         }
 
-        protected ToolBarView<?> createNodeToolBar() {
-            var viewModel = new ToolBarViewModel<>(new ToolBarParams(getViewModel().new NodeToolBarAwarePort()));
-            var toolBarView = new ToolBarView<>(viewModel, "NodeClass / StyleClass / ID", true);
+        protected NavigableToolBarView<?> createNodeToolBar() {
+            var viewModel = new NavigableToolBarViewModel<ChildComposer>(new NavigableToolBarParams(
+                    getViewModel().new NodeToolBarAwarePort(), "NodeClass / StyleClass / ID"));
+            var toolBarView = new NavigableToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;
         }
 
         protected ToolBarView<?> createPropertyToolBar() {
-            var viewModel = new ToolBarViewModel<>(new ToolBarParams(getViewModel().new PropertyToolBarAwarePort()));
-            var toolBarView = new ToolBarView<>(viewModel, "Property", false);
+            var viewModel = new ToolBarViewModel<ChildComposer>(
+                    new ToolBarParams(getViewModel().new PropertyToolBarAwarePort(), "Property"));
+            var toolBarView = new ToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;
         }

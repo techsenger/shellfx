@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.devtools.event;
 
-import com.techsenger.shellfx.devtools.ToolBarAwarePort;
+import com.techsenger.shellfx.devtools.shared.ToolBarAwarePort;
 
 /**
  *

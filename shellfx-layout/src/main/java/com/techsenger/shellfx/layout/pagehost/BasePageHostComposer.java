@@ -18,15 +18,12 @@ package com.techsenger.shellfx.layout.pagehost;
 
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.page.ContainerPagePort;
-import com.techsenger.shellfx.shared.find.ResultFindPort;
 
 /**
  *
  * @author Pavel Castornii
  */
 public interface BasePageHostComposer extends ChildComposer {
-
-    ResultFindPort getFindPanelPort();
 
     ContainerPagePort getSelectedPagePort();
 }

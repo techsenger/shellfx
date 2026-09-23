@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.devtools.environment;
+package com.techsenger.shellfx.devtools.shared;
 
-import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.tab.TabComposer;
-import com.techsenger.shellfx.devtools.shared.ToolBarPort;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import com.techsenger.shellfx.shared.find.FindAwarePort;
+import com.techsenger.shellfx.shared.find.NavigableFindResult;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface EnvironmentTabComposer extends TabComposer {
+public interface NavigableToolBarAwarePort extends FindAwarePort<NavigableFindResult> {
 
-    ToolBarPort getToolBarPort();
+    void onMatchCase(boolean selected);
 
-    FullNameValueDialogPort openNameValueDialog(DialogParams params);
+    void onRefresh();
 }

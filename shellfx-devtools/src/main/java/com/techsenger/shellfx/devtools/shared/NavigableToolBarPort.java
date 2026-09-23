@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.devtools;
+package com.techsenger.shellfx.devtools.shared;
 
-import com.techsenger.shellfx.shared.find.FindAwarePort;
+import com.techsenger.shellfx.shared.find.NavigableFindResult;
+import com.techsenger.shellfx.shared.find.ResultFindPort;
+import java.util.regex.Matcher;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 /**
+ * Provides minimal, read-only access to a navigable find toolbar's client API.
  *
  * @author Pavel Castornii
  */
-public interface ToolBarAwarePort extends FindAwarePort {
+public interface NavigableToolBarPort extends ResultFindPort<NavigableFindResult> {
 
-    void onMatchCase(boolean selected);
+    String getFindPrompt();
 
-    void onRefresh();
+    ReadOnlyStringProperty findPromptProperty();
+
+    Matcher createFindMatcher();
 }
-
