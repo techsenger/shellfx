@@ -144,9 +144,12 @@ public abstract class AbstractFindView<VM extends AbstractFindViewModel<?, ?>> e
             }
         });
 
-        // Enter key: immediate invocation (useful for manual search and also useful to allow
-        // immediate search in incremental mode)
-        findComboBox.getEditor().setOnKeyPressed(e -> {
+        // Enter key: immediate invocation (useful for manual search and also useful to allow immediate search in
+        // incremental mode). Registered as a filter directly on the ComboBox, not as a plain handler on the
+        // editor: ComboBoxPopupControl's own key handling is installed on the ComboBox itself and, for ENTER,
+        // consumes KEY_PRESSED before it would otherwise reach a handler on the (descendant) editor. Same
+        // node/mechanism as the KEY_RELEASED filter above, for the same reason.
+        findComboBox.addEventFilter(KeyEvent.KEY_PRESSED, (e) -> {
             if (e.getCode() == KeyCode.ENTER) {
                 viewModel.onFindSubmitted();
             }
