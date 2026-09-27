@@ -88,7 +88,7 @@ public abstract class AbstractTabView<VM extends AbstractTabViewModel<?>> extend
 
     private final IconViewBox iconViewBox = new IconViewBox();
 
-    private PulseListenerManager pulseListenerManager;
+    private final PulseListenerManager pulseListenerManager;
 
     public AbstractTabView(VM viewModel, ShellView<?> shell) {
         super(viewModel);

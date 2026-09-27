@@ -32,7 +32,7 @@ public abstract class AbstractAreaView<VM extends AbstractAreaViewModel<?>>
 
     }
 
-    private PulseListenerManager pulseListenerManager;
+    private final PulseListenerManager pulseListenerManager;
 
     public AbstractAreaView(VM viewModel) {
         super(viewModel);

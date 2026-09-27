@@ -38,6 +38,7 @@ import com.techsenger.shellfx.material.theme.JavaFxTheme;
 import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.toolkit.fx.RegionResizer;
 import com.techsenger.toolkit.fx.Spacer;
+import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -248,6 +249,8 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     private boolean resizingInProgress;
 
+    private PulseListenerManager pulseListenerManager;
+
     private final EventHandler<? super MouseEvent> maximizeHandler = (e) -> {
         if (e.getClickCount() == 2) {
             getViewModel().onMaximize();
@@ -256,6 +259,13 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     public AbstractWindowView(VM viewModel) {
         this(viewModel, null, null);
+        this.pulseListenerManager = new PulseListenerManager(getDescriptor().getFullName(), () -> {
+            if (viewModel.getWindowType() == WindowType.NESTED) {
+                return getNode().sceneProperty();
+            } else {
+                return getStage().sceneProperty();
+            }
+        });
     }
 
     /**
@@ -489,6 +499,10 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         }
         ValueUtils.callAndAddListener(viewModel.blockedProperty(), (ov, oldV, newV) -> updateBlocked(newV));
         ValueUtils.callAndAddListener(viewModel.activeProperty(), (ov, oldV, newV) -> updateActive(newV));
+    }
+
+    protected PulseListenerManager getPulseListenerManager() {
+        return pulseListenerManager;
     }
 
     private void updateAlwaysOnTop(boolean alwaysOnTop) {
