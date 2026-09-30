@@ -23,10 +23,12 @@ import com.techsenger.shellfx.core.Debouncer;
 import com.techsenger.shellfx.core.UiExecutor;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.core.area.AreaParams;
+import com.techsenger.shellfx.core.config.ConfigListener;
 import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javafx.beans.property.BooleanProperty;
@@ -53,6 +55,12 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractFindViewModel<C extends ChildComposer, R extends FindResult>
         extends AbstractAreaViewModel<C> implements FullFindPort<R> {
+
+    /**
+     * The hint of a config notification telling that the find texts were replaced. Finds sharing one config react
+     * only to it, so they show the same list of earlier find texts.
+     */
+    protected static final Object FIND_TEXTS_REPLACED_HINT = new Object();
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractFindViewModel.class);
 
@@ -89,7 +97,25 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
 
     private final ObservableSource<String> valueSource = new SimpleObservableSource<>();
 
-    private boolean updatingFindTexts;
+    private final ConfigListener configListener = this::onConfigChanged;
+
+    /**
+     * Whether the find texts are being replaced in the drop-down list. The ComboBox may change the edited text by
+     * itself meanwhile, which is not a user edit and must neither start a search nor clear the result.
+     */
+    private boolean replacingTexts;
+
+    /**
+     * Whether the find texts are being replaced with the ones from the config. A change of the list made meanwhile
+     * is not written back to the config, otherwise components sharing it would keep notifying each other.
+     */
+    private boolean applyingConfigTexts;
+
+    /**
+     * Whether this component is notifying the config listeners that the find texts were replaced. The notification
+     * is synchronous and reaches this component as well, which must ignore it.
+     */
+    private boolean notifyingConfigListeners;
 
     private @Nullable CompletableFuture<R> currentFind;
 
@@ -281,13 +307,17 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
     protected void postInitialize() {
         super.postInitialize();
         editedFindText.addListener((obs, oldV, newV) -> {
-            if (!updatingFindTexts) {
+            if (!replacingTexts) {
                 applyFindTextChange(newV);
             }
         });
         findResult.addListener((obs, oldV, newV) -> applyFindResult(newV));
         showClear.addListener((obs, oldV, newV) -> applyFindTextChange(getEditedFindText()));
         showMatches.addListener((obs, oldV, newV) -> applyShowMatches());
+        var config = getConfig();
+        if (config != null) {
+            config.addListener(configListener);
+        }
     }
 
     @Override
@@ -299,6 +329,10 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
         }
         if (findTextDebouncer != null) {
             findTextDebouncer.cancel();
+        }
+        var config = getConfig();
+        if (config != null) {
+            config.removeListener(configListener);
         }
     }
 
@@ -319,26 +353,19 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
             config.notifyListeners();
         });
         modifiableFindTexts.addListener((ListChangeListener<String>) change -> {
-            var texts = new ArrayList<>(modifiableFindTexts);
-            ConfigUtils.limit(texts);
-            config.setFindTexts(texts);
-            config.notifyListeners();
+            if (applyingConfigTexts) {
+                return;
+            }
+            config.setFindTexts(new ArrayList<>(modifiableFindTexts));
+            notifyTextsReplaced(config);
         });
     }
 
     protected void addFindText(String findText) {
         var updatedFindTexts = new ArrayList<>(modifiableFindTexts);
         ConfigUtils.addFirst(updatedFindTexts, findText);
-        // replacing the items makes the ComboBox move its selection to another item and change the edited text with
-        // it, so the value is set again and the temporary changes are not treated as user edits
-        var editedText = getEditedFindText();
-        updatingFindTexts = true;
-        try {
-            modifiableFindTexts.setAll(updatedFindTexts);
-            valueSource.next(editedText);
-        } finally {
-            updatingFindTexts = false;
-        }
+        ConfigUtils.limit(updatedFindTexts);
+        replaceFindTexts(updatedFindTexts);
     }
 
     @Override
@@ -499,6 +526,40 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
             }
         }
         reportResultInfo();
+    }
+
+    private void onConfigChanged(@Nullable Object hint) {
+        if (notifyingConfigListeners || !FIND_TEXTS_REPLACED_HINT.equals(hint)) {
+            return;
+        }
+        applyingConfigTexts = true;
+        try {
+            replaceFindTexts(new ArrayList<>(Objects.requireNonNull(getConfig()).getFindTexts()));
+        } finally {
+            applyingConfigTexts = false;
+        }
+    }
+
+    private void notifyTextsReplaced(FindConfig config) {
+        notifyingConfigListeners = true;
+        try {
+            config.notifyListeners(FIND_TEXTS_REPLACED_HINT);
+        } finally {
+            notifyingConfigListeners = false;
+        }
+    }
+
+    private void replaceFindTexts(List<String> texts) {
+        // replacing the items makes the ComboBox move its selection to another item and change the edited text with
+        // it, so the value is set again and the temporary changes are not treated as user edits
+        var editedText = getEditedFindText();
+        replacingTexts = true;
+        try {
+            modifiableFindTexts.setAll(texts);
+            valueSource.next(editedText);
+        } finally {
+            replacingTexts = false;
+        }
     }
 
     /**
