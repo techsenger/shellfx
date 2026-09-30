@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Techsenger ShellFX is a Java/JavaFX platform for building applications structured as a tree of MVVM
 (Model-View-ViewModel) components (window, tab, area, page, dialog, popup), each with its own lifecycle and
-history. It is built on top of [PatternFX](https://github.com/techsenger/patternfx) (`patternfx-mvvm`,
+config. It is built on top of [PatternFX](https://github.com/techsenger/patternfx) (`patternfx-mvvm`,
 `patternfx-core`), which provides the underlying MVVM component/tree machinery. Don't propose bringing in an
 outside state-management framework (StateFX or otherwise) beyond what `patternfx-mvvm` and plain JavaFX
 properties already provide.
@@ -233,6 +233,35 @@ expose an unmodifiable view over it to the View (`FXCollections.unmodifiableObse
 observe structural changes directly — and, if a subclass needs to mutate the collection itself, expose the
 modifiable collection to subclasses through a `protected` accessor rather than widening the public one.
 
+## Architecture: component config
+
+State that must survive between sessions (window size, find texts, column layout) lives in a config, not in
+PatternFX — PatternFX has no persistence. Configs replaced the former `*History` classes; don't reintroduce them.
+
+- **A config is a plain POJO.** It extends `AbstractConfig` (`shellfx-core`, package `config`), is `Serializable`
+  and contains no logic. Every class in a config tree declares its own
+  `@Serial private static final long serialVersionUID = 1L;` — it isn't inherited, and without it adding a field
+  makes existing files unreadable. Defaults go into the config's constructor: a constructor doesn't run when a
+  config is read from a file, and a field added after the file was written reads back as the Java zero value.
+  Name configs `[UniqueName][Role]Config` (`FileChooserDialogConfig`). A parent config creates its child configs
+  eagerly (`DockHostConfig` holds its `SideBarConfig`s, `DevToolsTabDockConfig` holds the tab configs).
+- **Storage.** `ConfigManager` keeps configs by class or by component UUID; the application decides when to save
+  (`FileConfigManager#save()`). `InMemoryConfigManager` is for tests and the demo.
+- **Params.** The config is always the first constructor argument and there is no setter. A required config is a
+  non-null parameter checked with `Objects.requireNonNull(getConfig())` in `validate()`; an optional one is
+  `@Nullable` and callers pass `null`. A `Params` subclass with its own config type overrides `getConfig()` with a
+  covariant return type (the cast in the override is accepted instead of generics), and so does its ViewModel.
+- **ViewModel.** `AbstractAreaViewModel`, `AbstractTabViewModel` and `AbstractWindowViewModel` hold the config and
+  expose it through a `protected` `getConfig()`. From `postInitialize()`, only when the config isn't `null`, they
+  call `loadConfigToState()` (copy config values into the ViewModel state) and then `observeStateForConfig()`
+  (listeners that write every change into the config and call `notifyListeners()` right away, not at
+  deinitialization). Subclasses override both hooks and call `super`. Listeners are added after loading, so
+  loading doesn't write back.
+- **Child components.** A parent passes the matching part of its config to the child's `Params`
+  (`getViewModel().getConfig().getDockHost()`), instead of looking it up in the `ConfigManager`.
+- **DevTools.** The component inspector shows a component's config class. It reads the protected `getConfig()`
+  reflectively, which is why `shellfx-core` opens `area`, `tab` and `window` to the devtools module only.
+
 ## Nullability
 
 Types use `com.techsenger.annotations.Nullable`/`@Unmodifiable`; NullAway is enforced at compile time
@@ -305,7 +334,7 @@ package-private block further down the class, not next to the public `getX()`/`x
 
 Component classes follow: `[UniqueName][Role][Element]`, e.g. `AlertDialogView`, `EditorTabViewModel`,
 `InfoPopupParams`, `ToolBarPort`. Role examples: `Tab`, `Window`, `Popup`, `Area`, `Panel`, `ToolBar`. Element
-examples: `View`, `ViewModel`, `Params`, `Port`, `History`.
+examples: `View`, `ViewModel`, `Params`, `Port`, `Config`.
 
 `Composer` methods split into two categories — keep this distinction when adding new component types:
 - Lifecycle-managing: `open*`/`close*` (create+add / remove+destroy) and `show*`/`hide*`.
