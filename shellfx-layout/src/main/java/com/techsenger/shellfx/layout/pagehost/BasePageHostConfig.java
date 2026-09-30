@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.layout.pagehost;
 
 import com.techsenger.shellfx.core.area.AreaConfig;
+import com.techsenger.shellfx.shared.find.FindPanelConfig;
 import java.io.Serial;
 
 /**
@@ -30,11 +31,21 @@ public class BasePageHostConfig extends AreaConfig {
 
     private double dividerPosition = 0.2;
 
+    private FindPanelConfig findPanel = new FindPanelConfig();
+
     public double getDividerPosition() {
         return dividerPosition;
     }
 
     public void setDividerPosition(double dividerPosition) {
         this.dividerPosition = dividerPosition;
+    }
+
+    public FindPanelConfig getFindPanel() {
+        return findPanel;
+    }
+
+    public void setFindPanel(FindPanelConfig findPanel) {
+        this.findPanel = findPanel;
     }
 }
