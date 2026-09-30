@@ -62,6 +62,9 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [EventTab](#devtools-event-tab)
     * [StylesheetTab](#devtools-stylesheet-tab)
     * [EnvironmentTab](#devtools-environment-tab)
+* [Component Config](#config)
+    * [Config Object](#config-object)
+    * [ConfigManager](#config-manager)
 * [Extension Registries](#registries)
     * [Control Registry](#registries-control)
 * [Managed Controls](#managed-controls)
@@ -608,6 +611,68 @@ This component allows inspecting which stylesheets are applied to nodes within t
 ### EnvironmentTab <a name="devtools-environment-tab"></a>
 
 This component provides access to platform settings, system properties, and environment variables.
+
+## Component Config <a name="config"></a>
+
+A component often has state that is worth keeping: the size of a dialog, the layout of the columns of a table,
+the recent queries of a search field. ShellFX keeps such state in a config. A config is stored outside the component,
+so it serves two purposes:
+
+* Saving between sessions. The config is written to a file when the application stops and read again at the next
+start, so the component comes back the way the user left it.
+* Synchronization between components. Components of the same kind may share one config, and a change made by one of
+them is seen by the others. For example, two search fields that share a config show the same list of recent
+queries: a query submitted in one field appears in the drop-down list of the other one immediately.
+
+A config is optional. A component that has nothing to keep, or whose state must not be shared, simply works without it.
+
+### Config Object <a name="config-object"></a>
+
+A config is a plain serializable object that extends `AbstractConfig` and contains no logic, only fields with
+getters and setters. Configs follow the same naming as the rest of the component (`FileChooserDialogConfig`,
+`DockHostConfig`). A config may contain other configs: for example, `DockHostConfig` holds the configs of its side
+bars, and the parent component passes the corresponding part to each child.
+
+The config is passed to the component as the first argument of its `Params`. It is either required (the `Params`
+checks it in `validate()`) or optional (the caller passes `null` and the component just does not keep its state).
+The default values are set in the constructor of the config, so a new config already describes a sensible
+component. Configs are read from a file with Java serialization, which does not call constructors, therefore keep
+in mind that a field added after a file was written has the Java zero value when that file is read, and that every
+class of a config must declare its own `serialVersionUID`.
+
+The base `ViewModel` classes of the three main components — `Window`, `Tab` and `Area` — hold the config and give
+a `ViewModel` two hooks that are called from `postInitialize()`, only if the config is set:
+
+* `loadConfigToState()` copies the values of the config into the state of the `ViewModel`.
+* `observeStateForConfig()` adds listeners to the state of the `ViewModel` that write every change into the config
+and call `notifyListeners()`.
+
+The second hook is what makes a config different from history. History is a snapshot: it is filled with the state of
+a component when the component is closed, and it belongs to that one component. A config is updated all the time while
+the component works, because it is changed together with the properties of the `ViewModel`. This is why a config can
+be shared: other components can listen to it with a `ConfigListener` and update themselves when it changes. A listener
+is told that the config has changed and may get a hint saying what exactly happened, so it can react only to the
+changes it is interested in. A component that registers a listener must remove it when it is deinitialized, because a
+config lives as long as the application.
+
+### ConfigManager <a name="config-manager"></a>
+
+`ConfigManager` owns the configs of the application. A config is stored either by its class, and then it is shared
+by all components of that kind, or by the UUID of a component instance, and then it belongs to that instance only.
+For each of the two ways the manager can get a config, create it with a factory if it does not exist yet, put a new
+one and remove it.
+
+The platform provides two implementations:
+
+* `FileConfigManager` keeps the configs in a file (see `ConfigFile`) and writes them back when `save()` is called.
+The application decides when to do it, usually when it stops. The file is replaced as a whole, so a failure never
+leaves a half-written one. The classes of the configs are loaded with the given class loader, which allows to read
+back the configs of plugins. Before saving the manager warns about every listener that is still registered on a
+config, because by that time the components are gone and such a listener is a leak.
+* `InMemoryConfigManager` keeps the configs only in memory. It is meant for tests and demos.
+
+The manager is available to components through `ShellContext`, and the code that creates a component takes the config
+from it and passes it to the `Params`.
 
 ## Extension Registries <a name="registries"></a>
 
