@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -57,6 +58,21 @@ public final class ConfigUtils {
     public static <T> void addFirst(List<T> list, T value) {
         list.remove(value);
         list.add(0, value);
+    }
+
+    /**
+     * Returns the classes of the listeners registered on the config, e.g. to report the ones that are still
+     * registered when the config is saved.
+     *
+     * @param config the config to inspect.
+     * @return the classes in the order the listeners were registered; one class per listener.
+     */
+    public static List<Class<?>> getListenerClasses(AbstractConfig config) {
+        var classes = new ArrayList<Class<?>>();
+        for (var listener : config.getListeners()) {
+            classes.add(listener.getClass());
+        }
+        return classes;
     }
 
     private ConfigUtils() {
