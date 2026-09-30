@@ -30,7 +30,8 @@ public class ComponentTabParams extends TabParams {
 
     private final DevToolsTabDockPort tabDock;
 
-    public ComponentTabParams(ComponentService service, DevToolsTabDockPort tabDock) {
+    public ComponentTabParams(ComponentTabConfig config, ComponentService service, DevToolsTabDockPort tabDock) {
+        super(config);
         this.service = service;
         this.tabDock = tabDock;
     }
@@ -44,8 +45,14 @@ public class ComponentTabParams extends TabParams {
     }
 
     @Override
+    public ComponentTabConfig getConfig() {
+        return (ComponentTabConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(service);
         Objects.requireNonNull(tabDock);
     }

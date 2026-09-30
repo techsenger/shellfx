@@ -76,34 +76,18 @@ public class EventToolBarView<VM extends EventToolBarViewModel<?>> extends ToolB
 
         eventTypesButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         List<MenuItem> items = new ArrayList<>();
-        getViewModel().getEventTypesByClass().entrySet().forEach(e -> {
+        getViewModel().getSelectionsByEventType().entrySet().forEach(e -> {
             var menuItem = new CheckMenuItem(e.getKey().getSimpleName());
-            menuItem.setSelected(e.getValue().get());
-            menuItem.selectedProperty()
-                    .addListener((ov, oldV, newV) -> getViewModel().setEventTypeSelected(e.getKey(), newV));
+            menuItem.selectedProperty().bindBidirectional(e.getValue());
             items.add(menuItem);
         });
         items.sort(Comparator.comparing(MenuItem::getText));
         this.eventTypesButton.getItems().addAll(items);
 
         var selectAllTypesItem = new MenuItem("Select All Types");
-        selectAllTypesItem.setOnAction(e -> {
-            for (var item : eventTypesButton.getItems()) {
-                if (item instanceof CheckMenuItem cmi) {
-                    cmi.setSelected(true);
-                }
-            }
-            getViewModel().selectAllEventTypes();
-        });
+        selectAllTypesItem.setOnAction(e -> getViewModel().selectAllEventTypes());
         var deselectAllTypesItem = new MenuItem("Deselect All Types");
-        deselectAllTypesItem.setOnAction(e -> {
-            for (var item : eventTypesButton.getItems()) {
-                if (item instanceof CheckMenuItem cmi) {
-                    cmi.setSelected(false);
-                }
-            }
-            getViewModel().deselectAllEventTypes();
-        });
+        deselectAllTypesItem.setOnAction(e -> getViewModel().deselectAllEventTypes());
         eventTypesButton.getItems().addAll(new SeparatorMenuItem(), selectAllTypesItem, deselectAllTypesItem);
 
         statisticsLabel.setMinWidth(Label.USE_PREF_SIZE);

@@ -28,7 +28,8 @@ public class EnvironmentTabParams extends TabParams {
 
     private final DevToolsTabDockPort tabDock;
 
-    public EnvironmentTabParams(DevToolsTabDockPort tabDock) {
+    public EnvironmentTabParams(EnvironmentTabConfig config, DevToolsTabDockPort tabDock) {
+        super(config);
         this.tabDock = tabDock;
     }
 
@@ -37,8 +38,14 @@ public class EnvironmentTabParams extends TabParams {
     }
 
     @Override
+    public EnvironmentTabConfig getConfig() {
+        return (EnvironmentTabConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(tabDock);
     }
 }

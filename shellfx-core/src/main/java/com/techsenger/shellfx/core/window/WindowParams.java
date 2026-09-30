@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.window;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.core.ComponentParams;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import java.util.Objects;
@@ -32,7 +33,10 @@ public class WindowParams extends ComponentParams {
 
     private final AppearanceSettings settings;
 
-    public WindowParams(WindowType type, boolean modal, AppearanceSettings settings) {
+    private final @Nullable WindowConfig config;
+
+    public WindowParams(@Nullable WindowConfig config, WindowType type, boolean modal, AppearanceSettings settings) {
+        this.config = config;
         this.windowType = type;
         this.modal = modal;
         this.settings = settings;
@@ -48,6 +52,10 @@ public class WindowParams extends ComponentParams {
 
     public AppearanceSettings getSettings() {
         return settings;
+    }
+
+    public @Nullable WindowConfig getConfig() {
+        return config;
     }
 
     @Override

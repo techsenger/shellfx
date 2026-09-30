@@ -61,7 +61,7 @@ public class PageDialogViewModel<C extends WindowComposer> extends AbstractDialo
     }
 
     @Override
-    protected PageDialogHistory getHistory() {
-        return (PageDialogHistory) super.getHistory();
+    protected PageDialogConfig getConfig() {
+        return (PageDialogConfig) super.getConfig();
     }
 }

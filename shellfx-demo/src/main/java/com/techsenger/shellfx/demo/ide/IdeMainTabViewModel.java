@@ -46,7 +46,7 @@ public class IdeMainTabViewModel<C extends IdeMainTabComposer> extends AbstractT
     private final BooleanProperty barDisabled = new SimpleBooleanProperty();
 
     public IdeMainTabViewModel() {
-        super(new TabParams());
+        super(new TabParams(null));
     }
 
     @Override
@@ -115,7 +115,7 @@ public class IdeMainTabViewModel<C extends IdeMainTabComposer> extends AbstractT
 
     protected void onDialogOpen() {
         var settings = getShellContext().getSettings().getAppearance();
-        var params = new DialogParams(WindowType.NESTED, settings);
+        var params = new DialogParams(null, WindowType.NESTED, settings);
         var dialog = getComposer().openDemoDialog(true, params);
         dialog.setOnResult((name) -> {
             if (name == DemoDailogResultButtons.OK) {

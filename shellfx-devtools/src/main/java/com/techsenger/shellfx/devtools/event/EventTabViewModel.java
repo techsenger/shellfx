@@ -169,6 +169,11 @@ public class EventTabViewModel<C extends EventTabComposer> extends AbstractTabVi
     }
 
     @Override
+    protected EventTabConfig getConfig() {
+        return (EventTabConfig) super.getConfig();
+    }
+
+    @Override
     protected void postInitialize() {
         super.postInitialize();
         setTitle("Events");

@@ -86,9 +86,8 @@ public class SettingsDialogViewModel<C extends WindowComposer> extends AbstractD
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setWidth(500);
+    protected SettingsDialogConfig getConfig() {
+        return (SettingsDialogConfig) super.getConfig();
     }
 
     @Override

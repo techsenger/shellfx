@@ -37,10 +37,10 @@ public class ViewerDialogParams extends DialogParams {
 
     private final Consumer<String> linkOpener;
 
-    public ViewerDialogParams(WindowType windowType, AppearanceSettings settings,
+    public ViewerDialogParams(ViewerDialogConfig config, WindowType windowType, AppearanceSettings settings,
             Element node, PropertyItem item, String declaringClassName,
             Consumer<String> linkOpener) {
-        super(windowType, settings);
+        super(config, windowType, settings);
         this.node = node;
         this.item = item;
         this.declaringClassName = declaringClassName;
@@ -64,8 +64,14 @@ public class ViewerDialogParams extends DialogParams {
     }
 
     @Override
+    public ViewerDialogConfig getConfig() {
+        return (ViewerDialogConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(node);
         Objects.requireNonNull(item);
     }

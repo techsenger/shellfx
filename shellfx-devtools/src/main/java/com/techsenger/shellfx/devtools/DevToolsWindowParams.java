@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.devtools;
 
-import com.techsenger.shellfx.core.history.HistoryManager;
+import com.techsenger.shellfx.core.config.ConfigManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
@@ -28,22 +28,27 @@ import java.util.Objects;
  */
 public class DevToolsWindowParams extends WindowParams {
 
-    private final HistoryManager historyManager;
+    private final ConfigManager configManager;
 
-    public DevToolsWindowParams(AppearanceSettings setting, HistoryManager historyManager) {
-        super(WindowType.TOP_LEVEL, false, setting);
-        this.historyManager = historyManager;
-        setHistoryProvider(() -> historyManager
-                .getOrCreateHistory(DevToolsWindowHistory.class, DevToolsWindowHistory::new));
+    public DevToolsWindowParams(DevToolsWindowConfig config, AppearanceSettings setting,
+            ConfigManager configManager) {
+        super(config, WindowType.TOP_LEVEL, false, setting);
+        this.configManager = configManager;
     }
 
-    public HistoryManager getHistoryManager() {
-        return historyManager;
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    @Override
+    public DevToolsWindowConfig getConfig() {
+        return (DevToolsWindowConfig) super.getConfig();
     }
 
     @Override
     public void validate() {
         super.validate();
-        Objects.requireNonNull(historyManager);
+        Objects.requireNonNull(getConfig());
+        Objects.requireNonNull(configManager);
     }
 }

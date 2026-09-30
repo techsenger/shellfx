@@ -67,7 +67,7 @@ public abstract class AbstractPageHostView<VM extends AbstractPageHostViewModel<
         }
 
         protected FindPanelView<?> createFindPanel() {
-            var viewModel = new FindPanelViewModel<>(new FindPanelParams(getViewModel()));
+            var viewModel = new FindPanelViewModel<>(new FindPanelParams(null, getViewModel()));
             var view = new FindPanelView<>(viewModel);
             view.initialize();
             return view;

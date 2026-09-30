@@ -38,6 +38,7 @@ import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogView;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogViewModel;
 import com.techsenger.shellfx.dialogs.progress.FullProgressDialogPort;
+import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogView;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogViewModel;
 import com.techsenger.shellfx.material.button.ResultButton;
@@ -77,7 +78,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         }
 
         @Override
-        public FullProgressDialogPort openProgressDialog(DialogParams params) {
+        public FullProgressDialogPort openProgressDialog(ProgressDialogParams params) {
             var viewModel = new ProgressDialogViewModel<>(params);
             var dialogView = new ProgressDialogView<>(viewModel);
             dialogView.initialize();

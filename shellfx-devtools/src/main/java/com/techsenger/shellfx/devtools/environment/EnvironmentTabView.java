@@ -80,8 +80,8 @@ public class EnvironmentTabView<VM extends EnvironmentTabViewModel<?>> extends A
         }
 
         protected ToolBarView<?> createToolBar() {
-            var viewModel = new ToolBarViewModel<ChildComposer>(
-                    new ToolBarParams(getViewModel(), "Property"));
+            var params = new ToolBarParams(getViewModel().getConfig().getToolBar(), getViewModel(), "Property");
+            var viewModel = new ToolBarViewModel<ChildComposer>(params);
             var toolBarView = new ToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;

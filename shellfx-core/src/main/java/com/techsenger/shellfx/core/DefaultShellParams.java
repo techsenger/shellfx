@@ -28,10 +28,9 @@ public class DefaultShellParams extends WindowParams {
 
     private final ShellContext context;
 
-    public DefaultShellParams(ShellContext context) {
-        super(WindowType.TOP_LEVEL, false, context.getSettings().getAppearance());
+    public DefaultShellParams(ShellConfig config, ShellContext context) {
+        super(config, WindowType.TOP_LEVEL, false, context.getSettings().getAppearance());
         this.context = context;
-        setHistoryProvider(() -> context.getHistoryManager().getOrCreateHistory(ShellHistory.class, ShellHistory::new));
     }
 
     public ShellContext getContext() {
@@ -39,8 +38,14 @@ public class DefaultShellParams extends WindowParams {
     }
 
     @Override
+    public ShellConfig getConfig() {
+        return (ShellConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(context);
     }
 }

@@ -51,9 +51,7 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
         @Override
         public void compose() {
             super.compose();
-            var historyManager = getShell().getViewModel().getContext().getHistoryManager();
-            var dockHost = HostFactory.createDockHost(getShell(),
-                    () -> historyManager.getHistory(BrowserMainTabHistory.class).getDockHost());
+            var dockHost = HostFactory.createDockHost(getViewModel().getConfig().getDockHost(), getShell());
             getModifiableChildren().add(dockHost);
             view.dockHost = dockHost;
             view.addLayout();
@@ -75,7 +73,7 @@ public class BrowserMainTabView<VM extends BrowserMainTabViewModel<?>> extends A
 
         protected MenuAwareAreaView<?> createTextViewer() {
             var appearance = getShell().getViewModel().getContext().getSettings().getAppearance();
-            var params = new MenuAwareAreaParams(appearance);
+            var params = new MenuAwareAreaParams(null, appearance);
             var viewModel = new MenuAwareAreaViewModel<>(params);
             var areaView = new MenuAwareAreaView<>(viewModel, view);
             areaView.initialize();

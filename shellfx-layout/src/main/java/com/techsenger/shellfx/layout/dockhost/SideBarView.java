@@ -206,8 +206,8 @@ public class SideBarView<VM extends SideBarViewModel<?>> extends AbstractAreaVie
         }
 
         void addPopupToLayout(Side side) {
-            var history = view.getViewModel().getHistory();
-            var params = new TabPopupParams(side, dockHost.getViewModel(), () -> history.getOrCreatePopup());
+            var config = view.getViewModel().getConfig();
+            var params = new TabPopupParams(config.getPopup(), side, dockHost.getViewModel());
             var popupViewModel = new TabPopupViewModel<>(params);
             var v = new TabPopupView<>(popupViewModel, view);
             v.initialize();

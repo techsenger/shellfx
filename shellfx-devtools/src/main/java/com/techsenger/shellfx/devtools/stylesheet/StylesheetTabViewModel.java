@@ -120,6 +120,11 @@ public class StylesheetTabViewModel<C extends StylesheetTabComposer> extends Abs
     }
 
     @Override
+    protected StylesheetTabConfig getConfig() {
+        return (StylesheetTabConfig) super.getConfig();
+    }
+
+    @Override
     protected void postInitialize() {
         super.postInitialize();
         setTitle("Stylesheets");

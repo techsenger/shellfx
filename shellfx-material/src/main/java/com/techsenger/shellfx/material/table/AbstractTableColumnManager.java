@@ -259,7 +259,7 @@ public abstract class AbstractTableColumnManager<N extends Name, C extends Table
      * the changes this method makes.
      *
      * <p>Columns are ordered by sorting the entries, not by indexing into an array/map with their {@code index}/
-     * {@code sortIndex} value, so gaps in those values (e.g. a persisted history that predates a since-removed
+     * {@code sortIndex} value, so gaps in those values (e.g. a persisted config that predates a since-removed
      * column) are harmless. Two entries sharing the same {@code index} or {@code sortIndex} are both kept (in
      * whatever order the sort happens to break the tie) and logged as a warning, rather than one silently
      * replacing the other.

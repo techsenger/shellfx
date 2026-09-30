@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.devtools;
 
 import com.techsenger.connectorfx.Connector;
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.layout.dockhost.TabDockPort;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 
@@ -31,8 +30,6 @@ public interface DevToolsTabDockPort extends TabDockPort {
     Selector getSelector();
 
     Connector getConnector();
-
-    HistoryManager getHistoryManager();
 
     DevToolsHostType getHostType();
 

@@ -410,7 +410,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         ValueUtils.callAndAddListener(this.fileTableView.comparatorProperty(), (ov, oldV, newV) -> {
             viewModel.fileComparatorProperty().set(newV);
         });
-        // columns is populated only once applyPersistentState()/restorePersistentState() run, which happens
+        // columns is populated only once loadConfigToState() runs, which happens
         // after build()/addListeners() in the component lifecycle - so columns must be built reactively, one
         // at a time as each entry is put(), rather than eagerly in build(), where the map would still be empty
         viewModel.getColumns().addListener((MapChangeListener<TableColumnName, TableColumnInfo>) change -> {

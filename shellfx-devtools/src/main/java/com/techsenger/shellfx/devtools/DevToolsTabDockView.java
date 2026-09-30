@@ -82,7 +82,8 @@ public class DevToolsTabDockView<VM extends DevToolsTabDockViewModel<?>> extends
         }
 
         protected ComponentTabView<?> createComponentTab() {
-            var params = new ComponentTabParams(new JfxComponentService(shell), getViewModel());
+            var params = new ComponentTabParams(getViewModel().getConfig().getComponentTab(),
+                    new JfxComponentService(shell), getViewModel());
             var viewModel = new ComponentTabViewModel<>(params);
             var tabView = new ComponentTabView<>(viewModel, shell, getWindowComposer());
             tabView.initialize();
@@ -90,7 +91,7 @@ public class DevToolsTabDockView<VM extends DevToolsTabDockViewModel<?>> extends
         }
 
         protected NodeTabView<?> createNodeTab() {
-            var params = new NodeTabParams(getViewModel());
+            var params = new NodeTabParams(getViewModel().getConfig().getNodeTab(), getViewModel());
             var viewModel = new NodeTabViewModel<>(params);
             var tabView = new NodeTabView<>(viewModel, shell, getWindowComposer());
             tabView.initialize();
@@ -98,7 +99,8 @@ public class DevToolsTabDockView<VM extends DevToolsTabDockViewModel<?>> extends
         }
 
         protected EventTabView<?> createEventTab() {
-            var params = new EventTabParams(connector, getViewModel().getSelector());
+            var params = new EventTabParams(getViewModel().getConfig().getEventTab(), connector,
+                    getViewModel().getSelector());
             var viewModel = new EventTabViewModel<>(params);
             var tabView = new EventTabView<>(viewModel, shell);
             tabView.initialize();
@@ -106,7 +108,8 @@ public class DevToolsTabDockView<VM extends DevToolsTabDockViewModel<?>> extends
         }
 
         protected StylesheetTabView<?> createStylesheetTab() {
-            var params = new StylesheetTabParams(getViewModel());
+            var params = new StylesheetTabParams(getViewModel().getConfig().getStylesheetTab(),
+                    getViewModel());
             var viewModel = new StylesheetTabViewModel<>(params);
             var tabView = new StylesheetTabView<>(viewModel, shell);
             tabView.initialize();
@@ -114,7 +117,8 @@ public class DevToolsTabDockView<VM extends DevToolsTabDockViewModel<?>> extends
         }
 
         protected EnvironmentTabView<?> createEnvironmentTab() {
-            var params = new EnvironmentTabParams(getViewModel());
+            var params = new EnvironmentTabParams(getViewModel().getConfig().getEnvironmentTab(),
+                    getViewModel());
             var viewModel = new EnvironmentTabViewModel<>(params);
             var tabView = new EnvironmentTabView<>(viewModel, shell, getWindowComposer());
             tabView.initialize();

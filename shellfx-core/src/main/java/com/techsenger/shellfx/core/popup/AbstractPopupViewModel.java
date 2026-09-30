@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.popup;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -113,8 +114,8 @@ public abstract class AbstractPopupViewModel<C extends PopupComposer> extends Ab
     }
 
     @Override
-    protected PopupHistory getHistory() {
-        return (PopupHistory) super.getHistory();
+    protected @Nullable PopupConfig getConfig() {
+        return (PopupConfig) super.getConfig();
     }
 
     protected void onCloseRequest() {

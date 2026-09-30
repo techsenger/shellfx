@@ -22,6 +22,7 @@ import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
 import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
@@ -32,9 +33,8 @@ import com.techsenger.shellfx.material.button.ResultButtonName;
 import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
-import com.techsenger.shellfx.material.table.TableHistory;
+import com.techsenger.shellfx.material.table.TableConfig;
 import com.techsenger.shellfx.storage.Comparators;
-import com.techsenger.shellfx.storage.FileColumns;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
@@ -330,8 +330,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     @Override
-    protected FileChooserDialogHistory getHistory() {
-        return (FileChooserDialogHistory) super.getHistory();
+    protected @Nullable FileChooserDialogConfig getConfig() {
+        return (FileChooserDialogConfig) super.getConfig();
     }
 
     @Override
@@ -346,35 +346,28 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setWidth(800);
-        setHeight(500);
-        createInitialColumns();
-        setMode(Mode.LIST);
-    }
-
-    @Override
-    protected void savePersistentState() {
-        super.savePersistentState();
-        var history = getHistory();
-        history.setMode(mode.get());
-        var tableHistory = new TableHistory(this.columns.values().stream().toList());
-        history.setTable(tableHistory);
-    }
-
-    @Override
-    protected void restorePersistentState() {
-        super.restorePersistentState();
-        var history = getHistory();
-        setMode(history.getMode());
-        // put() in index order: the view builds/appends the real column on each map change, so this order
-        // also decides the columns' left-to-right order in the table
-        history.getTable().getColumns().stream()
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        var config = getConfig();
+        setMode(config.getMode());
+        // put() one at a time, in index order: the view builds/appends the real column on each map change, so
+        // this order also decides the columns' left-to-right order in the table
+        config.getTable().getColumns().stream()
+                .map(TableColumnInfo::new)
                 .sorted(Comparator.comparingInt(TableColumnInfo::getIndex))
                 .forEach((c) -> {
                     columns.put(c.getName(), c);
                 });
+    }
+
+    @Override
+    protected void observeStateForConfig() {
+        super.observeStateForConfig();
+        var config = getConfig();
+        mode.addListener((ov, oldV, newV) -> {
+            config.setMode(newV);
+            config.notifyListeners();
+        });
     }
 
     @Override
@@ -520,21 +513,25 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     protected void setColumnWidth(TableColumnName name, double width) {
         var info = this.columns.get(name);
         info.setWidth(width);
+        updateConfigColumns();
     }
 
     protected void setColumnSortType(TableColumnName name, TableColumn.SortType sortType) {
         var info = this.columns.get(name);
         info.setSortType(sortType);
+        updateConfigColumns();
     }
 
     protected void setColumnIndex(TableColumnName name, int index) {
         var info = this.columns.get(name);
         info.setIndex(index);
+        updateConfigColumns();
     }
 
     protected void setColumnSortIndex(TableColumnName name, Integer index) {
         var info = this.columns.get(name);
         info.setSortIndex(index);
+        updateConfigColumns();
     }
 
     protected Comparator<T> getFileComparator() {
@@ -715,7 +712,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     private void showWarning(String text) {
-        var params = new AlertDialogParams(getWindowType(), getAppearanceSettings(), AlertDialogType.WARNING);
+        var params = new AlertDialogParams(new AlertDialogConfig(), getWindowType(), getAppearanceSettings(),
+                AlertDialogType.WARNING);
         getComposer().addAlertDialog(params, text);
     }
 
@@ -792,22 +790,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         return location;
     }
 
-    private void createInitialColumns() {
-        // put() one at a time, in index order: the view builds/appends the real column on each map change,
-        // so this order also decides the columns' left-to-right order in the table
-        var nameColumn = new TableColumnInfo(FileColumns.NAME);
-        nameColumn.setIndex(0);
-        nameColumn.setSortIndex(0);
-        nameColumn.setSortType(TableColumn.SortType.ASCENDING);
-        columns.put(nameColumn.getName(), nameColumn);
-
-        var sizeColumn = new TableColumnInfo(FileColumns.SIZE);
-        sizeColumn.setIndex(1);
-        columns.put(sizeColumn.getName(), sizeColumn);
-
-        var modifiedColumn = new TableColumnInfo(FileColumns.LAST_MODIFIED);
-        modifiedColumn.setIndex(2);
-        columns.put(modifiedColumn.getName(), modifiedColumn);
+    private void updateConfigColumns() {
+        var config = getConfig();
+        if (config != null) {
+            config.setTable(new TableConfig(columns.values().stream().map(TableColumnInfo::new).toList()));
+            config.notifyListeners();
+        }
     }
 
     private @Nullable T getResultFile() {

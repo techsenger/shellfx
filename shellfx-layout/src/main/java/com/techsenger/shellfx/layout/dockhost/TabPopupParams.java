@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.area.AreaParams;
 import java.util.Objects;
 import javafx.geometry.Side;
@@ -31,11 +30,10 @@ public class TabPopupParams extends AreaParams {
 
     private final DockHostPort dockHost;
 
-    public TabPopupParams(Side side, DockHostPort dockHost,
-            HistoryProvider<? extends TabPopupHistory> historyProvider) {
+    public TabPopupParams(TabPopupConfig config, Side side, DockHostPort dockHost) {
+        super(config);
         this.side = side;
         this.dockHost = dockHost;
-        setHistoryProvider(historyProvider);
     }
 
     public Side getSide() {
@@ -47,8 +45,14 @@ public class TabPopupParams extends AreaParams {
     }
 
     @Override
+    public TabPopupConfig getConfig() {
+        return (TabPopupConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(side);
         Objects.requireNonNull(dockHost);
     }

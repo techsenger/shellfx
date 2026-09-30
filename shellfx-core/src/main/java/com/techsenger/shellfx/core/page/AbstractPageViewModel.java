@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.page;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -58,7 +59,7 @@ public abstract class AbstractPageViewModel<C extends ChildComposer> extends Abs
     }
 
     @Override
-    protected PageHistory getHistory() {
-        return (PageHistory) super.getHistory();
+    protected @Nullable PageConfig getConfig() {
+        return (PageConfig) super.getConfig();
     }
 }

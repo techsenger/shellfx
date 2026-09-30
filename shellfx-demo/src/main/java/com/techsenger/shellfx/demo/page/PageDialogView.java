@@ -45,9 +45,8 @@ public class PageDialogView<VM extends PageDialogViewModel<?>> extends AbstractD
             super.compose();
             if (getViewModel().getMenuType() == PageMenuType.FLAT) {
                 var pages = MenuFactory.createFlatMenu(PageHostParent.TAB);
-                var params = new PageHostParams(() -> getViewModel().getHistory().getHostHistory());
+                var params = new PageHostParams(getViewModel().getConfig().getHostConfig());
                 var pageHostViewModel = new PageHostViewModel<>(params);
-                pageHostViewModel.setDividerPosition(0.275);
                 var pageHost = new PageHostView<>(pageHostViewModel);
                 pageHost.initialize();
                 pageHost.getComposer().setPages(pages);
@@ -58,9 +57,8 @@ public class PageDialogView<VM extends PageDialogViewModel<?>> extends AbstractD
                 this.pageHost = pageHost;
             } else {
                 var rootItem = MenuFactory.createTreeMenu(PageHostParent.TAB);
-                var params = new TreePageHostParams(() -> getViewModel().getHistory().getHostHistory());
+                var params = new TreePageHostParams(getViewModel().getConfig().getHostConfig());
                 var treeHostViewModel = new TreePageHostViewModel<>(params);
-                treeHostViewModel.setDividerPosition(0.275);
                 var pageHost = new TreePageHostView<>(treeHostViewModel);
                 pageHost.initialize();
                 pageHost.getComposer().setPages(rootItem, false);

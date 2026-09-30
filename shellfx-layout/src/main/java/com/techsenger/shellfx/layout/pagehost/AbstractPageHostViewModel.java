@@ -145,28 +145,24 @@ public abstract class AbstractPageHostViewModel<C extends BasePageHostComposer> 
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setDividerPosition(0.2);
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        setDividerPosition(getConfig().getDividerPosition());
     }
 
     @Override
-    protected void savePersistentState() {
-        super.savePersistentState();
-        var history = getHistory();
-        history.setDividerPosition(getDividerPosition());
+    protected void observeStateForConfig() {
+        super.observeStateForConfig();
+        var config = getConfig();
+        dividerPosition.addListener((ov, oldV, newV) -> {
+            config.setDividerPosition(newV.doubleValue());
+            config.notifyListeners();
+        });
     }
 
     @Override
-    protected void restorePersistentState() {
-        super.restorePersistentState();
-        var history = getHistory();
-        setDividerPosition(history.getDividerPosition());
-    }
-
-    @Override
-    protected PageHostHistoryBase getHistory() {
-        return (PageHostHistoryBase) super.getHistory();
+    protected BasePageHostConfig getConfig() {
+        return (BasePageHostConfig) super.getConfig();
     }
 
     @Override

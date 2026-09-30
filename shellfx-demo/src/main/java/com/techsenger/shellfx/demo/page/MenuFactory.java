@@ -56,7 +56,7 @@ final class MenuFactory {
             } else {
                 padding = new Insets(0, Spacing.getHorizontal(), Spacing.getVertical(), Spacing.getHorizontal());
             }
-            var params = new PageParams(item);
+            var params = new PageParams(null, item);
             var viewModel = new DemoPageViewModel<>(params) {
                 @Override
                 protected ComponentDescriptor createDescriptor() {

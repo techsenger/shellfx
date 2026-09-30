@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.dialogs.alert;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
@@ -132,8 +133,7 @@ public class AlertDialogViewModel<C extends WindowComposer> extends AbstractDial
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setWidth(600);
+    protected @Nullable AlertDialogConfig getConfig() {
+        return (AlertDialogConfig) super.getConfig();
     }
 }

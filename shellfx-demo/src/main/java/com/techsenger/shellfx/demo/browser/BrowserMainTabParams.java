@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo.browser;
 
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.tab.HostTabParams;
 import java.util.Objects;
 
@@ -26,21 +25,18 @@ import java.util.Objects;
  */
 public class BrowserMainTabParams extends HostTabParams {
 
-    private final HistoryManager historyManager;
-
-    public BrowserMainTabParams(HistoryManager historyManager) {
-        this.historyManager = historyManager;
-        setHistoryProvider(() -> historyManager
-                .getOrCreateHistory(BrowserMainTabHistory.class, BrowserMainTabHistory::new));
+    public BrowserMainTabParams(BrowserMainTabConfig config) {
+        super(config);
     }
 
-    public HistoryManager getHistoryManager() {
-        return historyManager;
+    @Override
+    public BrowserMainTabConfig getConfig() {
+        return (BrowserMainTabConfig) super.getConfig();
     }
 
     @Override
     public void validate() {
         super.validate();
-        Objects.requireNonNull(historyManager);
+        Objects.requireNonNull(getConfig());
     }
 }

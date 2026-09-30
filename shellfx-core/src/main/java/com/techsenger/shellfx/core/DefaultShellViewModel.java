@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.window.AbstractHostWindowViewModel;
@@ -61,14 +62,7 @@ public class DefaultShellViewModel<C extends ShellComposer> extends AbstractHost
     }
 
     @Override
-    protected ShellHistory getHistory() {
-        return (ShellHistory) super.getHistory();
-    }
-
-    @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setWidth(1200);
-        setHeight(800);
+    protected @Nullable ShellConfig getConfig() {
+        return (ShellConfig) super.getConfig();
     }
 }

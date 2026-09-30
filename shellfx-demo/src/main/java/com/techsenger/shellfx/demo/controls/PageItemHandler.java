@@ -18,7 +18,7 @@ package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.demo.page.PageMenuType;
-import com.techsenger.shellfx.demo.page.PageTabHistory;
+import com.techsenger.shellfx.demo.page.PageTabConfig;
 import com.techsenger.shellfx.demo.page.PageTabParams;
 import com.techsenger.shellfx.demo.page.PageTabView;
 import com.techsenger.shellfx.demo.page.PageTabViewModel;
@@ -39,9 +39,9 @@ public class PageItemHandler extends AbstractContainerItemHandler {
 
     @Override
     public void onAction() {
-        var historyManager = getComponent().getViewModel().getContext().getHistoryManager();
-        var params = new PageTabParams(() -> historyManager
-                .getOrCreateHistory(PageTabHistory.class, PageTabHistory::new), menuType);
+        var configManager = getComponent().getViewModel().getContext().getConfigManager();
+        var config = configManager.getOrCreateConfig(PageTabConfig.class, PageTabConfig::new);
+        var params = new PageTabParams(config, menuType);
         var tabViewModel = new PageTabViewModel<>(params);
         var tabView = new PageTabView<>(tabViewModel, getComponent());
         tabView.initialize();

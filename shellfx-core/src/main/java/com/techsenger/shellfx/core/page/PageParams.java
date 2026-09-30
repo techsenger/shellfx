@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.page;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaParams;
 import java.util.Objects;
 
@@ -27,12 +28,18 @@ public class PageParams extends AreaParams {
 
     private final PageItem item;
 
-    public PageParams(PageItem item) {
+    public PageParams(@Nullable PageConfig config, PageItem item) {
+        super(config);
         this.item = item;
     }
 
     public PageItem getItem() {
         return item;
+    }
+
+    @Override
+    public @Nullable PageConfig getConfig() {
+        return (PageConfig) super.getConfig();
     }
 
     @Override

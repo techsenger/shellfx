@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.demo.browser.BrowserMainTabConfig;
 import com.techsenger.shellfx.demo.browser.BrowserMainTabParams;
 import com.techsenger.shellfx.demo.browser.BrowserMainTabView;
 import com.techsenger.shellfx.demo.browser.BrowserMainTabViewModel;
@@ -39,7 +40,9 @@ public class MainTabItemHandler extends AbstractContainerItemHandler {
     public void onAction() {
         var shell = getComponent();
         if (shell.getComposer().getWorkspace() instanceof TabHostView<?>) {
-            var tabParams = new BrowserMainTabParams(shell.getViewModel().getContext().getHistoryManager());
+            var configManager = shell.getViewModel().getContext().getConfigManager();
+            var config = configManager.getOrCreateConfig(BrowserMainTabConfig.class, BrowserMainTabConfig::new);
+            var tabParams = new BrowserMainTabParams(config);
             var tabViewModel = new BrowserMainTabViewModel<>(tabParams);
             var tabView = new BrowserMainTabView<>(tabViewModel, shell);
             tabView.initialize();

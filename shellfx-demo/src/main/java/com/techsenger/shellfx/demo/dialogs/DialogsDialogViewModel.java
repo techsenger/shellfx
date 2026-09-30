@@ -18,19 +18,24 @@ package com.techsenger.shellfx.demo.dialogs;
 
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
+import com.techsenger.shellfx.core.config.ConfigManager;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
+import com.techsenger.shellfx.demo.page.PageDialogConfig;
 import com.techsenger.shellfx.demo.page.PageDialogParams;
 import com.techsenger.shellfx.demo.page.PageMenuType;
+import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogButtons;
+import com.techsenger.shellfx.dialogs.file.FileChooserDialogConfig;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
 import com.techsenger.shellfx.dialogs.file.FileChooserType;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueButtons;
+import com.techsenger.shellfx.dialogs.progress.ProgressDialogConfig;
+import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
 import com.techsenger.shellfx.storage.DefaultGenericFile;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.GenericFile;
@@ -53,37 +58,37 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
 
     private final AppearanceSettings settings;
 
-    private final HistoryManager historyManager;
+    private final ConfigManager configManager;
 
     private final List<? extends FileStorage<GenericFile>> storages;
 
     private final Map<DialogType, Runnable> dialogActionsByType = Map.ofEntries(
             Map.entry(DialogType.INFO, () -> {
-                var params = new AlertDialogParams(selectedWindowType.get(), getAppearanceSettings(),
-                        AlertDialogType.INFO);
+                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                        getAppearanceSettings(), AlertDialogType.INFO);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("All done! Time for coffee.");
             }),
             Map.entry(DialogType.WARNING, () -> {
-                var params = new AlertDialogParams(selectedWindowType.get(), getAppearanceSettings(),
-                        AlertDialogType.WARNING);
+                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                        getAppearanceSettings(), AlertDialogType.WARNING);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Attention! You shouldn't do it!");
             }),
             Map.entry(DialogType.ERROR, () -> {
-                var params = new AlertDialogParams(selectedWindowType.get(), getAppearanceSettings(),
-                        AlertDialogType.ERROR);
+                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                        getAppearanceSettings(), AlertDialogType.ERROR);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Oops! That didn’t work.\nTwice!");
             }),
             Map.entry(DialogType.YES_NO, () -> {
-                var params = new AlertDialogParams(selectedWindowType.get(), getAppearanceSettings(),
-                        AlertDialogType.CONFIRMATION);
+                var params = new AlertDialogParams(new AlertDialogConfig(), selectedWindowType.get(),
+                        getAppearanceSettings(), AlertDialogType.CONFIRMATION);
                 var dialog = getComposer().openAlertDialog(params);
                 dialog.setMessage("Are you really sure?");
             }),
             Map.entry(DialogType.NAME_VALUE, () -> {
-                var params = new DialogParams(selectedWindowType.get(), getSettings());
+                var params = new DialogParams(null, selectedWindowType.get(), getSettings());
                 var dialog = getComposer().openNameValueDialog(params);
                 dialog.setTitle("Name & Value");
                 dialog.setName("Some Name");
@@ -91,7 +96,8 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 dialog.setRightButtons(NameValueButtons.OK);
             }),
             Map.entry(DialogType.PROGRESS, () -> {
-                var params = new DialogParams(selectedWindowType.get(), getSettings());
+                var params = new ProgressDialogParams(new ProgressDialogConfig(), selectedWindowType.get(),
+                        getSettings());
                 var dialog = getComposer().openProgressDialog(params);
                 dialog.setMessage("I am working...");
                 dialog.setStepsVisible(true);
@@ -108,7 +114,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
     public DialogsDialogViewModel(DialogsDialogParams params) {
         super(params);
         this.settings = params.getSettings();
-        this.historyManager = params.getManager();
+        this.configManager = params.getManager();
         if (OsUtils.isWindows()) {
             this.storages = WindowsFileStorage.createSystemStorages(DefaultGenericFile::new);
         } else {
@@ -148,8 +154,9 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
     }
 
     private void showFileChooserDialog(FileChooserType type) {
-        var params = new FileChooserDialogParams<GenericFile>(selectedWindowType.get(), settings,
-                type, this.storages, historyManager);
+        var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
+        var params = new FileChooserDialogParams<GenericFile>(config, selectedWindowType.get(), settings,
+                type, this.storages);
         var dialog = getComposer().openFileChooserDialog(params);
         dialog.setOnResult((buttonName) -> {
             if (buttonName == FileChooserDialogButtons.OK) {
@@ -163,7 +170,8 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
     }
 
     private void showPagedDialog(PageMenuType menuType) {
-        var params = new PageDialogParams(selectedWindowType.get(), settings, menuType, historyManager);
+        var config = configManager.getOrCreateConfig(PageDialogConfig.class, PageDialogConfig::new);
+        var params = new PageDialogParams(config, selectedWindowType.get(), settings, menuType);
         getComposer().openPagedDialog(params);
     }
 }

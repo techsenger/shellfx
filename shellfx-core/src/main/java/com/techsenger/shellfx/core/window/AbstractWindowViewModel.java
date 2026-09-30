@@ -104,6 +104,8 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
 
     private final AppearanceSettings appearanceSettings;
 
+    private final @Nullable WindowConfig config;
+
     private SettingsSubscription densitySubscription;
 
     private SettingsSubscription themeSubscription;
@@ -137,6 +139,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
         this.windowType = params.getWindowType();
         this.modal = params.isModal();
         this.appearanceSettings = params.getSettings();
+        this.config = params.getConfig();
     }
 
     @Override
@@ -575,6 +578,15 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     }
 
     @Override
+    protected void postInitialize() {
+        super.postInitialize();
+        if (config != null) {
+            loadConfigToState();
+            observeStateForConfig();
+        }
+    }
+
+    @Override
     protected void postDeinitialize() {
         super.postDeinitialize();
         if (this.windowType == WindowType.TOP_LEVEL) {
@@ -585,31 +597,41 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
         this.themeSubscription.unsubscribe();
     }
 
-    @Override
-    protected WindowHistory getHistory() {
-        return (WindowHistory) super.getHistory();
-    }
-
-    @Override
-    protected void restorePersistentState() {
-        super.restorePersistentState();
-        var h = getHistory();
-        setMaximized(h.isMaximized());
-        if (h.getHeight() >= 0) {
-            setHeight(h.getHeight());
+    /**
+     * Applies the values stored in the config to the state of this component. Called once from
+     * {@code postInitialize()} before {@link #observeStateForConfig()}; overriding methods must call {@code super}.
+     */
+    protected void loadConfigToState() {
+        setMaximized(config.isMaximized());
+        if (config.getHeight() >= 0) {
+            setHeight(config.getHeight());
         }
-        if (h.getWidth() >= 0) {
-            setWidth(h.getWidth());
+        if (config.getWidth() >= 0) {
+            setWidth(config.getWidth());
         }
     }
 
-    @Override
-    protected void savePersistentState() {
-        super.savePersistentState();
-        var h = getHistory();
-        h.setWidth(getWidth());
-        h.setHeight(getHeight());
-        h.setMaximized(isMaximized());
+    /**
+     * Registers listeners that write changes of the state of this component into the config and notify the config
+     * listeners. Called once after {@link #loadConfigToState()}; overriding methods must call {@code super}.
+     */
+    protected void observeStateForConfig() {
+        this.width.addListener((ov, oldV, newV) -> {
+            config.setWidth(newV.doubleValue());
+            config.notifyListeners();
+        });
+        this.height.addListener((ov, oldV, newV) -> {
+            config.setHeight(newV.doubleValue());
+            config.notifyListeners();
+        });
+        this.maximized.addListener((ov, oldV, newV) -> {
+            config.setMaximized(newV);
+            config.notifyListeners();
+        });
+    }
+
+    protected @Nullable WindowConfig getConfig() {
+        return config;
     }
 
     protected AppearanceSettings getAppearanceSettings() {

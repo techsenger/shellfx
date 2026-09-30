@@ -16,15 +16,18 @@
 
 package com.techsenger.shellfx.devtools.component;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.patternfx.mvvm.View;
 import com.techsenger.patternfx.mvvm.ViewModel;
 import com.techsenger.shellfx.core.UiExecutor;
+import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
+import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
@@ -39,7 +42,6 @@ import com.techsenger.shellfx.shared.find.NavigableFindResult;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -54,6 +56,8 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -62,6 +66,11 @@ import javafx.beans.property.SimpleObjectProperty;
 public class ComponentTabViewModel<C extends ComponentTabComposer> extends AbstractTabViewModel<C> {
 
     private record FindMatch(ComponentItem item) { }
+
+    private static final Logger logger = LoggerFactory.getLogger(ComponentTabViewModel.class);
+
+    private static final List<Class<?>> CONFIG_OWNER_CLASSES = List.of(AbstractAreaViewModel.class,
+            AbstractTabViewModel.class, AbstractWindowViewModel.class);
 
     /**
      * Traverses the tree and finds all items whose text matches the given matcher.
@@ -127,7 +136,36 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
             categoryItem = new InspectorItem(InspectorCategory.COMPOSER, "Composer", null, List.of("Interfaces"), null);
             totalMatches += matchInspectorItems(fxComposerClass, categoryItem, items, matcher);
         }
+
+        var configClass = findConfigClass(viewModel);
+        if (configClass != null) {
+            categoryItem = new InspectorItem(InspectorCategory.CONFIG, "Config", null, List.of("Interfaces"), null);
+            totalMatches += matchInspectorItems(configClass, categoryItem, items, matcher);
+        }
         return new InspectorMatchResult(items, totalMatches);
+    }
+
+    /**
+     * Returns the class of the config of the given view model, or {@code null} if it has none or it cannot be read.
+     * The config accessor is protected, so it is called reflectively on the base view model class, whose package
+     * core opens to this module.
+     */
+    private static @Nullable Class<?> findConfigClass(ViewModel viewModel) {
+        for (var ownerClass : CONFIG_OWNER_CLASSES) {
+            if (!ownerClass.isInstance(viewModel)) {
+                continue;
+            }
+            try {
+                var method = ownerClass.getDeclaredMethod("getConfig");
+                method.setAccessible(true);
+                var config = method.invoke(viewModel);
+                return config == null ? null : config.getClass();
+            } catch (ReflectiveOperationException | RuntimeException ex) {
+                logger.debug("Couldn't read config of {}", viewModel.getClass().getName(), ex);
+                return null;
+            }
+        }
+        return null;
     }
 
     private static int matchInspectorItems(Class<?> clazz, InspectorItem cat, List<InspectorItem> items,
@@ -319,6 +357,17 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
     }
 
     @Override
+    protected ComponentTabConfig getConfig() {
+        return (ComponentTabConfig) super.getConfig();
+    }
+
+    @Override
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        expandedByCategory.putAll(getConfig().getInspectorExpansion());
+    }
+
+    @Override
     protected void postInitialize() {
         super.postInitialize();
         setTitle("Components");
@@ -339,7 +388,6 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
         });
         UiExecutor.execute(() -> {
             refreshComponents();
-            Arrays.stream(InspectorCategory.values()).forEach((v) -> expandedByCategory.put(v, Boolean.FALSE));
         });
     }
 
@@ -365,7 +413,7 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
         if (tabDock.getHostType() == DevToolsHostType.WINDOW) {
             type = WindowType.TOP_LEVEL;
         }
-        var params = new DialogParams(type, getShellContext().getSettings().getAppearance());
+        var params = new DialogParams(null, type, getShellContext().getSettings().getAppearance());
         FullNameValueDialogPort dialog;
         if (parent.category() == InspectorCategory.PROPERTY) {
             dialog = getComposer().addNameValueDialog("Property", "Value", params);
@@ -384,6 +432,9 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
 
     protected void onCategoryExpanded(InspectorCategory category, boolean expanded) {
         expandedByCategory.put(category, expanded);
+        var config = getConfig();
+        config.setInspectorExpansion(new HashMap<>(expandedByCategory));
+        config.notifyListeners();
     }
 
     protected void refreshComponents() {

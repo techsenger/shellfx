@@ -36,7 +36,6 @@ import com.techsenger.shellfx.shared.find.NavigableFindResult;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -294,15 +293,21 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        var catExpansion = new HashMap<AttributeCategory, Boolean>();
-        Arrays.stream(AttributeCategory.values()).forEach(c -> catExpansion.put(c, Boolean.FALSE));
-        setCategoryExpansion(catExpansion);
+    protected NodeTabConfig getConfig() {
+        return (NodeTabConfig) super.getConfig();
+    }
+
+    @Override
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        setCategoryExpansion(new HashMap<>(getConfig().getCategoryExpansion()));
     }
 
     protected void onCategoryExpanded(AttributeCategory category, boolean expanded) {
         this.categoryExpansion.put(category, expanded);
+        var config = getConfig();
+        config.setCategoryExpansion(new HashMap<>(categoryExpansion));
+        config.notifyListeners();
     }
 
     protected void onPropertyRequested(PropertyItem item) {
@@ -319,8 +324,8 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
         if (tabDock.getHostType() == DevToolsHostType.WINDOW) {
             windowType = WindowType.TOP_LEVEL;
         }
-        var params = new ViewerDialogParams(windowType, getShellContext().getSettings().getAppearance(),
-                node, item, declaringClassName, linkOpener);
+        var params = new ViewerDialogParams(new ViewerDialogConfig(), windowType,
+                getShellContext().getSettings().getAppearance(), node, item, declaringClassName, linkOpener);
         var dialog = getComposer().openViewerDialog(params);
         dialog.setOnClosed(() -> focusPropertiesSource.next(null));
     }
@@ -330,8 +335,8 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
         if (this.tabDock.getHostType() == DevToolsHostType.WINDOW) {
             windowType = WindowType.TOP_LEVEL;
         }
-        var params = new EditorDialogParams(windowType, getShellContext().getSettings().getAppearance(),
-                task, this.tabDock.getHistoryManager());
+        var params = new EditorDialogParams(getConfig().getEditorDialog(), windowType,
+                getShellContext().getSettings().getAppearance(), task);
         var dialog = getComposer().openEditorDialog(params);
         dialog.setOnClosed(() -> {
             if (dialog.isPropertyUpdated()) {

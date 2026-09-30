@@ -33,8 +33,6 @@ import static javafx.geometry.Side.RIGHT;
 public class TabPopupViewModel<C extends TabPopupComposer> extends AbstractAreaViewModel<C>
         implements FullTabPopupPort {
 
-    private static final double DEFAULT_SIZE = 250.0;
-
     private final ObservableSource<Double> widthSource = new SimpleObservableSource<>();
 
     private final ObservableSource<Double> heightSource = new SimpleObservableSource<>();
@@ -68,33 +66,16 @@ public class TabPopupViewModel<C extends TabPopupComposer> extends AbstractAreaV
     }
 
     @Override
-    protected TabPopupHistory getHistory() {
-        return (TabPopupHistory) super.getHistory();
+    protected TabPopupConfig getConfig() {
+        return (TabPopupConfig) super.getConfig();
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setWidth(validateWidth(DEFAULT_SIZE));
-        setHeight(validateHeight(DEFAULT_SIZE));
-    }
-
-    @Override
-    protected void restorePersistentState() {
-        super.restorePersistentState();
-        var h = getHistory();
-        setWidth(validateWidth(h.getWidth()));
-        setHeight(validateHeight(h.getHeight()));
-    }
-
-    @Override
-    protected void savePersistentState() {
-        super.savePersistentState();
-        // If the user moves the mouse quickly, components may be created
-        // and removed even before they have been rendered
-        var h = getHistory();
-        h.setWidth(validateWidth(getWidth() > 0.1 ? getWidth() : DEFAULT_SIZE));
-        h.setHeight(validateHeight(getHeight() > 0.1 ? getHeight() : DEFAULT_SIZE));
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        var config = getConfig();
+        setWidth(validateWidth(config.getWidth()));
+        setHeight(validateHeight(config.getHeight()));
     }
 
     @Override

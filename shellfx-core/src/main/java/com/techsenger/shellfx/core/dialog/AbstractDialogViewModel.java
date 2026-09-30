@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.dialog;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowComposer;
@@ -130,8 +131,8 @@ public abstract class AbstractDialogViewModel<C extends WindowComposer> extends 
     }
 
     @Override
-    protected DialogHistory getHistory() {
-        return (DialogHistory) super.getHistory();
+    protected @Nullable DialogConfig getConfig() {
+        return (DialogConfig) super.getConfig();
     }
 
     protected void onResult(ResultButtonName name) {

@@ -23,8 +23,7 @@ import javafx.geometry.Side;
  *
  * @author Pavel Castornii
  */
-public class SideBarViewModel<C extends SideBarComposer> extends AbstractAreaViewModel<C>
-        implements FullSideBarPort {
+public class SideBarViewModel<C extends SideBarComposer> extends AbstractAreaViewModel<C> implements FullSideBarPort {
 
     private final Side side;
 
@@ -44,7 +43,7 @@ public class SideBarViewModel<C extends SideBarComposer> extends AbstractAreaVie
     }
 
     @Override
-    protected SideBarHistory getHistory() {
-        return (SideBarHistory) super.getHistory();
+    protected SideBarConfig getConfig() {
+        return (SideBarConfig) super.getConfig();
     }
 }

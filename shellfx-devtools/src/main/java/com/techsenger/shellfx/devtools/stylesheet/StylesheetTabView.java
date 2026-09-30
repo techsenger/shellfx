@@ -56,7 +56,8 @@ public class StylesheetTabView<VM extends StylesheetTabViewModel<?>> extends Abs
         }
 
         protected ToolBarView<?> createToolBar() {
-            var params = new ToolBarParams(getViewModel(), "NodeClass / StyleClass / ID");
+            var params = new ToolBarParams(getViewModel().getConfig().getToolBar(), getViewModel(),
+                    "NodeClass / StyleClass / ID");
             var viewModel = new ToolBarViewModel<ChildComposer>(params);
             var toolBarView = new ToolBarView<>(viewModel);
             toolBarView.initialize();

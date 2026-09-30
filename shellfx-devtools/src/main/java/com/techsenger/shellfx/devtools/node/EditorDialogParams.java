@@ -17,9 +17,9 @@
 package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
+import java.util.Objects;
 
 /**
  *
@@ -29,15 +29,25 @@ public class EditorDialogParams extends DialogParams {
 
     private EditPropertyTask<?> task;
 
-    public EditorDialogParams(WindowType windowType, AppearanceSettings settings, EditPropertyTask<?> task,
-            HistoryManager historyManager) {
-        super(windowType, settings);
+    public EditorDialogParams(EditorDialogConfig config, WindowType windowType, AppearanceSettings settings,
+            EditPropertyTask<?> task) {
+        super(config, windowType, settings);
         this.task = task;
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(EditorDialogHistory.class,
-                EditorDialogHistory::new));
     }
 
     public EditPropertyTask<?> getTask() {
         return task;
+    }
+
+    @Override
+    public EditorDialogConfig getConfig() {
+        return (EditorDialogConfig) super.getConfig();
+    }
+
+    @Override
+    public void validate() {
+        super.validate();
+        Objects.requireNonNull(getConfig());
+        Objects.requireNonNull(task);
     }
 }

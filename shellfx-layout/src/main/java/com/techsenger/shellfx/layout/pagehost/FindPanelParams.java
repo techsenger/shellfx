@@ -16,7 +16,9 @@
 
 package com.techsenger.shellfx.layout.pagehost;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaParams;
+import com.techsenger.shellfx.shared.find.FindPanelConfig;
 import java.util.Objects;
 
 /**
@@ -27,12 +29,18 @@ public class FindPanelParams extends AreaParams {
 
     private final FindPageHostPort pageHost;
 
-    public FindPanelParams(FindPageHostPort pageHost) {
+    public FindPanelParams(@Nullable FindPanelConfig config, FindPageHostPort pageHost) {
+        super(config);
         this.pageHost = pageHost;
     }
 
     public FindPageHostPort getPageHost() {
         return pageHost;
+    }
+
+    @Override
+    public @Nullable FindPanelConfig getConfig() {
+        return (FindPanelConfig) super.getConfig();
     }
 
     @Override

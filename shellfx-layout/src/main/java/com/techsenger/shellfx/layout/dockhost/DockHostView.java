@@ -2579,7 +2579,7 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
         }
 
         public TabDockView<?> createTabDock() {
-            var viewModel = new TabDockViewModel<>(new AreaParams());
+            var viewModel = new TabDockViewModel<>(new AreaParams(null));
             var v = new TabDockView<>(viewModel);
             v.getComposer().setDockHost(view);
             v.initialize();
@@ -2662,21 +2662,21 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
         }
 
         public void showBar(Side side) {
-            var layoutHistory = view.getViewModel().getHistory();
-            SideBarHistory barHistory = null;
+            var layoutConfig = view.getViewModel().getConfig();
+            SideBarConfig barConfig = null;
             switch (side) {
                 case RIGHT -> {
-                    barHistory = layoutHistory.getOrCreateRightSideBar();
-                    showBar(side, barHistory, rightBar, v -> view.getNode().setRight(v.getNode()));
+                    barConfig = layoutConfig.getRightSideBar();
+                    showBar(side, barConfig, rightBar, v -> view.getNode().setRight(v.getNode()));
                 }
                 case LEFT -> {
-                    barHistory = layoutHistory.getOrCreateLeftSideBar();
-                    showBar(side, barHistory, leftBar, v -> view.getNode().setLeft(v.getNode()));
+                    barConfig = layoutConfig.getLeftSideBar();
+                    showBar(side, barConfig, leftBar, v -> view.getNode().setLeft(v.getNode()));
                 }
                 case TOP, BOTTOM -> {
                     side = Side.BOTTOM;
-                    barHistory = layoutHistory.getOrCreateBottomSideBar();
-                    showBar(side, barHistory, bottomBar, v -> view.getNode().setBottom(v.getNode()));
+                    barConfig = layoutConfig.getBottomSideBar();
+                    showBar(side, barConfig, bottomBar, v -> view.getNode().setBottom(v.getNode()));
                 }
                 default -> throw new AssertionError();
             }
@@ -2870,15 +2870,15 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             return popup == null ? null : popup.getViewModel();
         }
 
-        protected SideBarView<?> createBar(Side side, SideBarHistory history) {
-            var viewModel = new SideBarViewModel<>(new SideBarParams(side, () -> history));
+        protected SideBarView<?> createBar(Side side, SideBarConfig config) {
+            var viewModel = new SideBarViewModel<>(new SideBarParams(config, side));
             var v = new SideBarView<>(viewModel, view);
             v.initialize();
             return v;
         }
 
         protected PlaceholderView createPlaceholder() {
-            var viewModel = new PlaceholderViewModel<>(new AreaParams());
+            var viewModel = new PlaceholderViewModel<>(new AreaParams(null));
             var v = new PlaceholderView(viewModel);
             v.getComposer().setDockHost(view);
             v.initialize();
@@ -2973,12 +2973,12 @@ public class DockHostView<VM extends DockHostViewModel<?>> extends AbstractAreaV
             splitPane.setDividerPositions(positions);
         }
 
-        private SideBarView<?> showBar(Side side, SideBarHistory sideBarHistory,
+        private SideBarView<?> showBar(Side side, SideBarConfig sideBarConfig,
             ReadOnlyObjectWrapper<SideBarView<?>> wrapper, Consumer<SideBarView<?>> viewAdder) {
             if (wrapper.get() != null) {
                 return wrapper.get();
             }
-            var sideBar = createBar(side, sideBarHistory);
+            var sideBar = createBar(side, sideBarConfig);
             getModifiableChildren().add(sideBar);
             wrapper.set(sideBar);
             viewAdder.accept(sideBar);

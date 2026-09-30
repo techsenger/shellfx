@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.tab;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
 import com.techsenger.shellfx.core.ShellContext;
 import com.techsenger.shellfx.material.icon.Icon;
@@ -51,8 +52,11 @@ public abstract class AbstractTabViewModel<C extends TabComposer> extends Abstra
 
     private final ReadOnlyBooleanWrapper selected = new ReadOnlyBooleanWrapper();
 
+    private final @Nullable TabConfig config;
+
     public AbstractTabViewModel(TabParams params) {
         super(params);
+        this.config = params.getConfig();
     }
 
     @Override
@@ -179,8 +183,28 @@ public abstract class AbstractTabViewModel<C extends TabComposer> extends Abstra
     }
 
     @Override
-    protected TabHistory getHistory() {
-        return (TabHistory) super.getHistory();
+    protected void postInitialize() {
+        super.postInitialize();
+        if (config != null) {
+            loadConfigToState();
+            observeStateForConfig();
+        }
+    }
+
+    /**
+     * Applies the values stored in the config to the state of this component. Called once from
+     * {@code postInitialize()} before {@link #observeStateForConfig()}; overriding methods must call {@code super}.
+     */
+    protected void loadConfigToState() { }
+
+    /**
+     * Registers listeners that write changes of the state of this component into the config and notify the config
+     * listeners. Called once after {@link #loadConfigToState()}; overriding methods must call {@code super}.
+     */
+    protected void observeStateForConfig() { }
+
+    protected @Nullable TabConfig getConfig() {
+        return config;
     }
 
     protected void onCloseRequest() {

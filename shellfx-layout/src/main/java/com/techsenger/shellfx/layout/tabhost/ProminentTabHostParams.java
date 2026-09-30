@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.layout.tabhost;
 
+import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.core.area.AreaConfig;
 import com.techsenger.shellfx.core.area.AreaParams;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 
@@ -27,7 +29,8 @@ public class ProminentTabHostParams extends AreaParams {
 
     private final AppearanceSettings settings;
 
-    public ProminentTabHostParams(AppearanceSettings settings) {
+    public ProminentTabHostParams(@Nullable AreaConfig config, AppearanceSettings settings) {
+        super(config);
         this.settings = settings;
     }
 

@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.devtools.shared;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaParams;
 import java.util.Objects;
 
@@ -28,7 +29,8 @@ public class ToolBarParams extends AreaParams {
 
     private final String findPrompt;
 
-    public ToolBarParams(ToolBarAwarePort toolBarAware, String findPrompt) {
+    public ToolBarParams(@Nullable ToolBarConfig config, ToolBarAwarePort toolBarAware, String findPrompt) {
+        super(config);
         this.toolBarAware = toolBarAware;
         this.findPrompt = findPrompt;
     }
@@ -39,6 +41,11 @@ public class ToolBarParams extends AreaParams {
 
     public String getFindPrompt() {
         return findPrompt;
+    }
+
+    @Override
+    public @Nullable ToolBarConfig getConfig() {
+        return (ToolBarConfig) super.getConfig();
     }
 
     @Override

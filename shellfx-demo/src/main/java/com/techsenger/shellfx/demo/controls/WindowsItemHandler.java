@@ -41,7 +41,7 @@ public class WindowsItemHandler extends AbstractMenuItemHandler<ShellView<?>, Ma
         DemoWindowView view = null;
         for (var i = 0; i < 6; i++) {
             var settings = getComponent().getViewModel().getContext().getSettings().getAppearance();
-            var params = new WindowParams(WindowType.NESTED, false, settings);
+            var params = new WindowParams(null, WindowType.NESTED, false, settings);
             var viewModel = new DemoWindowViewModel<>(params, i);
             view = new DemoWindowView<>(viewModel);
             view.initialize();

@@ -26,6 +26,7 @@ import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
 import com.techsenger.shellfx.dialogs.file.FullFileChooserDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
 import com.techsenger.shellfx.dialogs.progress.FullProgressDialogPort;
+import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
 import com.techsenger.shellfx.storage.GenericFile;
 
 /**
@@ -38,7 +39,7 @@ public interface DialogsDialogComposer extends WindowComposer {
 
     FullNameValueDialogPort openNameValueDialog(DialogParams params);
 
-    FullProgressDialogPort openProgressDialog(DialogParams params);
+    FullProgressDialogPort openProgressDialog(ProgressDialogParams params);
 
     FullFileChooserDialogPort<GenericFile> openFileChooserDialog(FileChooserDialogParams<GenericFile> params);
 

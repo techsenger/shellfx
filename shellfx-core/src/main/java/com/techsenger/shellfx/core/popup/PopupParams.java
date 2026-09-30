@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.popup;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaParams;
 
 /**
@@ -26,11 +27,17 @@ public class PopupParams extends AreaParams {
 
     private final boolean modal;
 
-    public PopupParams(boolean modal) {
+    public PopupParams(@Nullable PopupConfig config, boolean modal) {
+        super(config);
         this.modal = modal;
     }
 
     public boolean isModal() {
         return modal;
+    }
+
+    @Override
+    public @Nullable PopupConfig getConfig() {
+        return (PopupConfig) super.getConfig();
     }
 }

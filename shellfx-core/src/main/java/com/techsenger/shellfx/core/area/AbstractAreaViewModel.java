@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.area;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -32,8 +33,11 @@ public abstract class AbstractAreaViewModel<C extends ChildComposer> extends Abs
 
     private final ReadOnlyDoubleWrapper height = new ReadOnlyDoubleWrapper();
 
+    private final @Nullable AreaConfig config;
+
     public AbstractAreaViewModel(AreaParams params) {
         super(params);
+        this.config = params.getConfig();
     }
 
     @Override
@@ -57,8 +61,37 @@ public abstract class AbstractAreaViewModel<C extends ChildComposer> extends Abs
     }
 
     @Override
-    protected AreaHistory getHistory() {
-        return (AreaHistory) super.getHistory();
+    protected void postInitialize() {
+        super.postInitialize();
+        if (config != null) {
+            loadConfigToState();
+            observeStateForConfig();
+        }
+    }
+
+    /**
+     * Applies the values stored in the config to the state of this component. Called once from
+     * {@code postInitialize()} before {@link #observeStateForConfig()}; overriding methods must call {@code super}.
+     */
+    protected void loadConfigToState() { }
+
+    /**
+     * Registers listeners that write changes of the state of this component into the config and notify the config
+     * listeners. Called once after {@link #loadConfigToState()}; overriding methods must call {@code super}.
+     */
+    protected void observeStateForConfig() {
+        this.width.addListener((ov, oldV, newV) -> {
+            config.setWidth(newV.doubleValue());
+            config.notifyListeners();
+        });
+        this.height.addListener((ov, oldV, newV) -> {
+            config.setHeight(newV.doubleValue());
+            config.notifyListeners();
+        });
+    }
+
+    protected @Nullable AreaConfig getConfig() {
+        return config;
     }
 
     /**

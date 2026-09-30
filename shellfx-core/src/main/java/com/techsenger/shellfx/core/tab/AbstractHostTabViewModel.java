@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.core.tab;
 
+import com.techsenger.annotations.Nullable;
+
 /**
  *
  * @author Pavel Castornii
@@ -33,7 +35,7 @@ public abstract class AbstractHostTabViewModel<C extends HostTabComposer> extend
     }
 
     @Override
-    protected HostTabHistory getHistory() {
-        return (HostTabHistory) super.getHistory();
+    protected @Nullable HostTabConfig getConfig() {
+        return (HostTabConfig) super.getConfig();
     }
 }

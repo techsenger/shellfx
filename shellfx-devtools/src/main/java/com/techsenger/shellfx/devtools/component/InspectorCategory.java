@@ -22,5 +22,5 @@ package com.techsenger.shellfx.devtools.component;
  */
 public enum InspectorCategory {
 
-    PROPERTY, VIEW, VIEW_MODEL, COMPOSER, HISTORY
+    PROPERTY, VIEW, VIEW_MODEL, COMPOSER, CONFIG
 }

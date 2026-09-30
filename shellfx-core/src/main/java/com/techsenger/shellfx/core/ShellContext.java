@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.shellfx.core.history.HistoryManager;
+import com.techsenger.shellfx.core.config.ConfigManager;
 import javafx.application.HostServices;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 
@@ -34,11 +34,11 @@ public interface ShellContext {
     ShellSettings getSettings();
 
     /**
-     * Returns the history manager.
+     * Returns the config manager.
      *
      * @return
      */
-    HistoryManager getHistoryManager();
+    ConfigManager getConfigManager();
 
     /**
      * Returns application host services.

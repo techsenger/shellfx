@@ -23,11 +23,11 @@ import com.techsenger.shellfx.core.Debouncer;
 import com.techsenger.shellfx.core.UiExecutor;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.core.area.AreaParams;
-import com.techsenger.shellfx.core.history.HistoryUtils;
-import com.techsenger.shellfx.material.RequestSetter;
+import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -40,6 +40,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +57,6 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
     private static final Logger logger = LoggerFactory.getLogger(AbstractFindViewModel.class);
 
     private final StringProperty editedFindText = new SimpleStringProperty();
-
-    private final ReadOnlyStringWrapper findText = new ReadOnlyStringWrapper();
-
-    private final ObservableSource<String> findTextSource = new SimpleObservableSource<>();
 
     private final ObservableList<String> modifiableFindTexts = FXCollections.observableArrayList();
 
@@ -88,11 +85,11 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
 
     private final @Nullable Debouncer debouncer;
 
-    private final @Nullable Debouncer historyDebouncer;
+    private final @Nullable Debouncer findTextDebouncer;
 
-    private boolean applyingFindText;
+    private final ObservableSource<String> valueSource = new SimpleObservableSource<>();
 
-    private boolean historySaveRequested;
+    private boolean updatingFindTexts;
 
     private @Nullable CompletableFuture<R> currentFind;
 
@@ -100,8 +97,8 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
         super(params);
         this.findTrigger = findTrigger;
         this.debouncer = findTrigger == FindTrigger.ON_TYPE ? new Debouncer(getDebounceMillis()) : null;
-        this.historyDebouncer = findTrigger == FindTrigger.ON_TYPE
-                ? new Debouncer(getHistoryDebounceMillis()) : null;
+        this.findTextDebouncer = findTrigger == FindTrigger.ON_TYPE
+                ? new Debouncer(getFindTextDebounceMillis()) : null;
     }
 
     @Override
@@ -117,27 +114,6 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
     @Override
     public StringProperty editedFindTextProperty() {
         return editedFindText;
-    }
-
-    @Override
-    public String getFindText() {
-        return findText.get();
-    }
-
-    @Override
-    @RequestSetter
-    public void setFindText(String findText) {
-        applyingFindText = true;
-        try {
-            findTextSource.next(findText);
-        } finally {
-            applyingFindText = false;
-        }
-    }
-
-    @Override
-    public ReadOnlyStringProperty findTextProperty() {
-        return findText.getReadOnlyProperty();
     }
 
     public FindTrigger getFindTrigger() {
@@ -272,13 +248,11 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
     }
 
     /**
-     * Requests {@code editedFindText} as the new {@code findText}, cancels any pending incremental search, and
-     * runs a find. Called by the View when the user submits the find field, e.g. by pressing Enter. Always
-     * searches immediately, regardless of the trigger mode or {@code minSearchLength}: an explicit submit is a
-     * deliberate request, not an incidental keystroke, so those gates — which exist only to avoid firing
-     * {@code ON_TYPE} incremental search too eagerly — do not apply here. Also marks the resulting
-     * {@code findResult} update to save {@code findText} to history immediately rather than through the debounced
-     * save used for incidental {@code ON_TYPE} results.
+     * Adds {@code editedFindText} to {@code findTexts}, cancels any pending incremental search, and runs a find.
+     * Called by the View when the user submits the find field, e.g. by pressing Enter. Always searches
+     * immediately, regardless of the trigger mode or {@code minSearchLength}: an explicit submit is a deliberate
+     * request, not an incidental keystroke, so those gates — which exist only to avoid firing {@code ON_TYPE}
+     * incremental search too eagerly — do not apply here.
      */
     protected void onFindSubmitted() {
         var text = getEditedFindText();
@@ -288,13 +262,12 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
         if (debouncer != null) {
             debouncer.cancel();
         }
-        setFindText(text);
-        historySaveRequested = true;
+        addFindText(text);
         runFind();
     }
 
     /**
-     * Runs a find using the current {@code findText} and returns its eventual outcome, synchronously or from a
+     * Runs a find using the current {@code editedFindText} and returns its eventual outcome, synchronously or from a
      * background thread. Called by {@link #runFind()}, which discards the outcome if a newer find has started by
      * the time it completes, so an implementation never has to cancel or otherwise account for its own staleness.
      * Never call this from the View: this class alone owns the trigger mode, debounce timing, and minimum-length
@@ -307,12 +280,9 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
     @Override
     protected void postInitialize() {
         super.postInitialize();
-        editedFindText.addListener((obs, oldV, newV) -> applyFindTextChange(newV));
-        findText.addListener((obs, oldV, newV) -> {
-            this.currentFind = null;
-            if (!applyingFindText) {
-                historySaveRequested = true;
-                runFind();
+        editedFindText.addListener((obs, oldV, newV) -> {
+            if (!updatingFindTexts) {
+                applyFindTextChange(newV);
             }
         });
         findResult.addListener((obs, oldV, newV) -> applyFindResult(newV));
@@ -327,36 +297,53 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
         if (debouncer != null) {
             debouncer.cancel();
         }
-        if (historyDebouncer != null) {
-            historyDebouncer.cancel();
+        if (findTextDebouncer != null) {
+            findTextDebouncer.cancel();
         }
     }
 
     @Override
-    protected void restorePersistentState() {
-        super.restorePersistentState();
-        var h = getHistory();
-        setMatchCaseSelected(h.isMatchCaseSelected());
-        modifiableFindTexts.setAll(h.getFindTexts());
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        var config = Objects.requireNonNull(getConfig());
+        setMatchCaseSelected(config.isMatchCaseSelected());
+        modifiableFindTexts.setAll(config.getFindTexts());
     }
 
     @Override
-    protected void savePersistentState() {
-        super.savePersistentState();
-        var h = getHistory();
-        h.setMatchCaseSelected(isMatchCaseSelected());
-        h.setFindTexts(new ArrayList<>(getFindTexts()));
+    protected void observeStateForConfig() {
+        super.observeStateForConfig();
+        var config = Objects.requireNonNull(getConfig());
+        matchCaseSelected.addListener((obs, oldV, newV) -> {
+            config.setMatchCaseSelected(newV);
+            config.notifyListeners();
+        });
+        modifiableFindTexts.addListener((ListChangeListener<String>) change -> {
+            var texts = new ArrayList<>(modifiableFindTexts);
+            ConfigUtils.limit(texts);
+            config.setFindTexts(texts);
+            config.notifyListeners();
+        });
     }
 
-    protected void saveFindTextToHistory() {
+    protected void addFindText(String findText) {
         var updatedFindTexts = new ArrayList<>(modifiableFindTexts);
-        HistoryUtils.addFirst(updatedFindTexts, getFindText());
-        modifiableFindTexts.setAll(updatedFindTexts);
+        ConfigUtils.addFirst(updatedFindTexts, findText);
+        // replacing the items makes the ComboBox move its selection to another item and change the edited text with
+        // it, so the value is set again and the temporary changes are not treated as user edits
+        var editedText = getEditedFindText();
+        updatingFindTexts = true;
+        try {
+            modifiableFindTexts.setAll(updatedFindTexts);
+            valueSource.next(editedText);
+        } finally {
+            updatingFindTexts = false;
+        }
     }
 
     @Override
-    protected FindHistory getHistory() {
-        return (FindHistory) super.getHistory();
+    protected @Nullable FindConfig getConfig() {
+        return (FindConfig) super.getConfig();
     }
 
     protected ObservableList<String> getModifiableFindTexts() {
@@ -387,11 +374,11 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
 
     /**
      * Returns the delay, in milliseconds, {@code applyFindResult} waits after the last incidental {@code ON_TYPE}
-     * result before saving {@code findText} to history. Not used for {@code ON_SUBMIT}. Called from the
+     * result before adding the find text to {@code findTexts}. Not used for {@code ON_SUBMIT}. Called from the
      * constructor to build the underlying {@link Debouncer} — an override must return a constant, since
      * subclass instance state is not yet initialized at that point.
      */
-    protected int getHistoryDebounceMillis() {
+    protected int getFindTextDebounceMillis() {
         return 3000;
     }
 
@@ -424,15 +411,15 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
     }
 
     /**
-     * Runs {@link #onFind()} against the current {@code findText}, clearing {@code findResult} first so no previous
-     * outcome is shown while the new find is in flight, and applies whatever it eventually completes with — unless
-     * a further find has since started, in which case the now-stale outcome is silently discarded instead. Does
-     * nothing if {@code findText} is empty. Besides the triggers this class handles itself, a subclass may call
-     * this directly for a condition it alone knows about — e.g. reapplying the find after a refresh, or after
-     * toggling {@code matchCaseSelected} — instead of reporting a result on its own.
+     * Runs {@link #onFind()} against the current {@code editedFindText}, clearing {@code findResult} first so no
+     * previous outcome is shown while the new find is in flight, and applies whatever it eventually completes with
+     * — unless a further find has since started, in which case the now-stale outcome is silently discarded
+     * instead. Does nothing if {@code editedFindText} is empty. Besides the triggers this class handles itself, a
+     * subclass may call this directly for a condition it alone knows about — e.g. reapplying the find after a
+     * refresh, or after toggling {@code matchCaseSelected} — instead of reporting a result on its own.
      */
     protected void runFind() {
-        var text = getFindText();
+        var text = getEditedFindText();
         if (text == null || text.isEmpty()) {
             return;
         }
@@ -485,42 +472,31 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
         }
     }
 
-    ReadOnlyStringWrapper findTextWrapper() {
-        return findText;
-    }
-
-    ObservableSource<String> findTextSource() {
-        return findTextSource;
+    ObservableSource<String> valueSource() {
+        return valueSource;
     }
 
     /**
      * Reacts to {@code findResult} changing by reporting the new outcome through {@link #reportResultInfo()}, or
-     * hiding the result info if the new value is {@code null}. Also saves {@code findText} to history when at
-     * least one match was found: immediately, if this change follows a deliberate submit or history pick, or
-     * after {@code historyDebounceMillis} with no further change, if it comes from incidental {@code ON_TYPE}
-     * incremental search — so live typing does not flood the history with every intermediate result.
+     * hiding the result info if the new value is {@code null}. For {@code ON_TYPE} also adds
+     * {@code editedFindText} to {@code findTexts} once at least one match was found and it has stayed unchanged for
+     * {@code findTextDebounceMillis} — so live typing does not flood {@code findTexts} with intermediate texts.
      */
     private void applyFindResult(@Nullable R result) {
-        var save = historySaveRequested;
-        historySaveRequested = false;
         if (result == null) {
-            if (historyDebouncer != null) {
-                historyDebouncer.cancel();
+            if (findTextDebouncer != null) {
+                findTextDebouncer.cancel();
             }
             hideFindResultInfo();
             return;
         }
-        if (result.getTotalMatches() > 0) {
-            if (save) {
-                if (historyDebouncer != null) {
-                    historyDebouncer.cancel();
-                }
-                saveFindTextToHistory();
-            } else if (historyDebouncer != null) {
-                historyDebouncer.schedule(this::saveFindTextToHistory);
+        if (findTextDebouncer != null) {
+            if (result.getTotalMatches() > 0) {
+                var text = getEditedFindText();
+                findTextDebouncer.schedule(() -> addFindText(text));
+            } else {
+                findTextDebouncer.cancel();
             }
-        } else if (historyDebouncer != null) {
-            historyDebouncer.cancel();
         }
         reportResultInfo();
     }
@@ -544,23 +520,19 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
             if (debouncer != null) {
                 debouncer.cancel();
             }
-            if (historyDebouncer != null) {
-                historyDebouncer.cancel();
+            if (findTextDebouncer != null) {
+                findTextDebouncer.cancel();
             }
             setClearVisible(false);
             setFindResult(null);
             hideFindResultInfo();
-            setFindText(null); // covers both the Clear button and typing/deleting down to empty text
             onFindCleared();
             return;
         }
         setClearVisible(isShowClear());
         if (findTrigger == FindTrigger.ON_TYPE) {
             if (text.length() >= getMinSearchLength()) {
-                debouncer.schedule(() -> {
-                    setFindText(text);
-                    runFind();
-                });
+                debouncer.schedule(this::runFind);
             } else {
                 debouncer.cancel();
             }

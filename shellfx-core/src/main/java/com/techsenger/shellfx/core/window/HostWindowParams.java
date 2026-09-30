@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.window;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 
 /**
@@ -24,8 +25,12 @@ import com.techsenger.shellfx.core.settings.AppearanceSettings;
  */
 public class HostWindowParams extends WindowParams {
 
-    public HostWindowParams(boolean modal, AppearanceSettings setting) {
-        super(WindowType.TOP_LEVEL, modal, setting);
+    public HostWindowParams(@Nullable HostWindowConfig config, boolean modal, AppearanceSettings setting) {
+        super(config, WindowType.TOP_LEVEL, modal, setting);
     }
 
+    @Override
+    public @Nullable HostWindowConfig getConfig() {
+        return (HostWindowConfig) super.getConfig();
+    }
 }

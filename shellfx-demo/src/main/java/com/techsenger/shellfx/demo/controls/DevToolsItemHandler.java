@@ -20,9 +20,11 @@ import com.techsenger.connectorfx.LocalConnector;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
+import com.techsenger.shellfx.devtools.DevToolsTabDockConfig;
 import com.techsenger.shellfx.devtools.DevToolsTabDockView;
 import com.techsenger.shellfx.devtools.DevToolsTabDockParams;
 import com.techsenger.shellfx.devtools.DevToolsTabDockViewModel;
+import com.techsenger.shellfx.devtools.DevToolsWindowConfig;
 import com.techsenger.shellfx.devtools.DevToolsWindowView;
 import com.techsenger.shellfx.devtools.DevToolsWindowParams;
 import com.techsenger.shellfx.devtools.DevToolsWindowViewModel;
@@ -86,8 +88,10 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellView<?>, M
         var shell = getComponent();
         var context = shell.getViewModel().getContext();
         var connector = new LocalConnector(shell.getStage(), null);
-        var params = new DevToolsTabDockParams(DevToolsHostType.SPLIT_SPACE,
-                context.getSettings(), context.getHistoryManager(), connector, shell.getStage().hashCode());
+        var config = context.getConfigManager().getOrCreateConfig(DevToolsTabDockConfig.class,
+                DevToolsTabDockConfig::new);
+        var params = new DevToolsTabDockParams(config, DevToolsHostType.SPLIT_SPACE,
+                context.getSettings(), connector, shell.getStage().hashCode());
         var viewModel = new DevToolsTabDockViewModel<>(params);
         var view = new DevToolsTabDockView<>(viewModel, shell, resolveDialogContainer());
         view.initialize();
@@ -96,7 +100,10 @@ public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellView<?>, M
 
     protected DevToolsWindowView<?> createDevToolsWindow() {
         var context = getComponent().getViewModel().getContext();
-        var params = new DevToolsWindowParams(context.getSettings().getAppearance(), context.getHistoryManager());
+        var config = context.getConfigManager().getOrCreateConfig(DevToolsWindowConfig.class,
+                DevToolsWindowConfig::new);
+        var params = new DevToolsWindowParams(config, context.getSettings().getAppearance(),
+                context.getConfigManager());
         var viewModel = new DevToolsWindowViewModel<>(params);
         var view = new DevToolsWindowView<>(viewModel, getComponent());
         view.initialize();

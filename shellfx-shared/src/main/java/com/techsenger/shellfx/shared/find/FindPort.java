@@ -31,17 +31,11 @@ import javafx.collections.ObservableList;
 public interface FindPort<R extends FindResult> extends AreaPort, ResultFindPort<R> {
 
     /**
-     * Returns the text currently displayed in the find field, including whatever the user is still typing and has
-     * not committed to a search yet. It changes on every keystroke, unlike {@code findText}, which only changes
-     * once a search is actually committed, by submitting it or by picking a history entry.
+     * Returns the text currently displayed in the find field, including whatever the user is still typing.
      */
     String getEditedFindText();
 
     ReadOnlyStringProperty editedFindTextProperty();
-
-    String getFindText();
-
-    ReadOnlyStringProperty findTextProperty();
 
     @Unmodifiable ObservableList<String> getFindTexts();
 

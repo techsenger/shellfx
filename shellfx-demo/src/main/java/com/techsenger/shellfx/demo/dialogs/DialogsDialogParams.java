@@ -16,8 +16,10 @@
 
 package com.techsenger.shellfx.demo.dialogs;
 
+import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.core.config.ConfigManager;
+import com.techsenger.shellfx.core.dialog.DialogConfig;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
@@ -30,10 +32,10 @@ public class DialogsDialogParams extends DialogParams {
 
     private final AppearanceSettings settings;
 
-    private final HistoryManager manager;
+    private final ConfigManager manager;
 
-    public DialogsDialogParams(AppearanceSettings settings, HistoryManager manager) {
-        super(WindowType.NESTED, settings);
+    public DialogsDialogParams(@Nullable DialogConfig config, AppearanceSettings settings, ConfigManager manager) {
+        super(config, WindowType.NESTED, settings);
         this.settings = settings;
         this.manager = manager;
     }
@@ -42,7 +44,7 @@ public class DialogsDialogParams extends DialogParams {
         return settings;
     }
 
-    public HistoryManager getManager() {
+    public ConfigManager getManager() {
         return manager;
     }
 

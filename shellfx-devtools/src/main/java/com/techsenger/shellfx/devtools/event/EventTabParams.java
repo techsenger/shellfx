@@ -31,7 +31,8 @@ public class EventTabParams extends TabParams {
 
     private final Selector selector;
 
-    public EventTabParams(Connector connector, Selector selector) {
+    public EventTabParams(EventTabConfig config, Connector connector, Selector selector) {
+        super(config);
         this.connector = connector;
         this.selector = selector;
     }
@@ -45,8 +46,14 @@ public class EventTabParams extends TabParams {
     }
 
     @Override
+    public EventTabConfig getConfig() {
+        return (EventTabConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(connector);
         Objects.requireNonNull(selector);
     }

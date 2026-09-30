@@ -21,21 +21,22 @@ import com.techsenger.shellfx.core.DefaultShellContext;
 import com.techsenger.shellfx.core.DefaultShellParams;
 import com.techsenger.shellfx.core.DefaultShellView;
 import com.techsenger.shellfx.core.DefaultShellViewModel;
+import com.techsenger.shellfx.core.ShellConfig;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.area.AreaView;
+import com.techsenger.shellfx.core.config.InMemoryConfigManager;
 import com.techsenger.shellfx.core.registry.ControlRegistry;
 import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
 import static com.techsenger.shellfx.demo.ApplicationType.IDE;
 import static com.techsenger.shellfx.demo.ApplicationType.MDI;
 import static com.techsenger.shellfx.demo.ApplicationType.STYLES_ONLY;
 import com.techsenger.shellfx.demo.controls.ModuleControlRegistrar;
-import com.techsenger.shellfx.demo.history.DemoHistoryManager;
 import com.techsenger.shellfx.demo.settings.DemoSettings;
 import com.techsenger.shellfx.demo.styles.StylesTabView;
 import com.techsenger.shellfx.demo.styles.StylesTabViewModel;
 import com.techsenger.shellfx.icons.Fonts;
 import com.techsenger.shellfx.icons.IconStylesheetFactory;
-import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
+import com.techsenger.shellfx.layout.dockhost.DockHostConfig;
 import com.techsenger.shellfx.layout.dockhost.ModelNodeBuilder;
 import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.icon.FontIconView;
@@ -112,12 +113,13 @@ public class Demo extends Application {
         // creating shell component
         var controlRegistry = new ControlRegistry();
         var context = new DefaultShellContext(DemoSettings.createSettings(),
-                new DemoHistoryManager(), getHostServices());
+                new InMemoryConfigManager(), getHostServices());
         if (appType == ApplicationType.STYLES_ONLY) {
             // Important: To support different density styles, the window density must not be specified.
             context.getSettings().getAppearance().setDensity(null);
         }
-        var shellParams = new DefaultShellParams(context);
+        var shellConfig = context.getConfigManager().getOrCreateConfig(ShellConfig.class, ShellConfig::new);
+        var shellParams = new DefaultShellParams(shellConfig, context);
         var shellViewModel = new DefaultShellViewModel<>(shellParams);
         var shellView = new DefaultShellView<>(shellViewModel, this, null, ShellControls.MAIN_MENU_GROUP,
                 controlRegistry) {
@@ -155,8 +157,9 @@ public class Demo extends Application {
                 workspace = HostFactory.createProminentTabHost(context.getSettings().getAppearance());
             }
             case IDE -> {
-                var dockHost = HostFactory.createDockHost(shellView, () -> context.getHistoryManager()
-                        .getOrCreateHistory(DockHostHistory.class, DockHostHistory::new));
+                var dockHostConfig = context.getConfigManager()
+                        .getOrCreateConfig(DockHostConfig.class, DockHostConfig::new);
+                var dockHost = HostFactory.createDockHost(dockHostConfig, shellView);
                 workspace = dockHost;
                 var leftTabDock = HostFactory.createLeftTabDock(shellView, dockHost);
                 var rightTabDock = dockHost.getComposer().createTabDock();

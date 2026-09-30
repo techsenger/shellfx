@@ -86,7 +86,7 @@ public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractT
 
         @Override
         public PopupPort openDemoPopup(OverlayScope scope) {
-            var params = new PopupParams(false);
+            var params = new PopupParams(null, false);
             var viewModel = new DemoPopupViewModel<>(params);
             var popupView = new DemoPopupView<>(viewModel);
             popupView.initialize();

@@ -36,7 +36,7 @@ public class FindPanelViewModel<C extends ChildComposer> extends AbstractFindVie
 
     @Override
     protected CompletableFuture<PageFindResult> onFind() {
-        return pageHost.onFind(getFindText());
+        return pageHost.onFind(getEditedFindText());
     }
 
     @Override

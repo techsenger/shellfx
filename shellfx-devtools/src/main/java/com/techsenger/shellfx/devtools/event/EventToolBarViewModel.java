@@ -35,10 +35,11 @@ import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -49,20 +50,20 @@ import javafx.beans.property.StringProperty;
 public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewModel<C>
         implements FullEventToolBarPort {
 
-    private final Map<Class<? extends ConnectorEvent>, AtomicBoolean> eventTypesByClass = Map.ofEntries(
-            Map.entry(AttributeListEvent.class, new AtomicBoolean(true)),
-            Map.entry(AttributeUpdatedEvent.class, new AtomicBoolean(true)),
-            Map.entry(ExceptionEvent.class, new AtomicBoolean(false)),
-            Map.entry(JavaFXEvent.class, new AtomicBoolean(false)),
-            Map.entry(MousePosEvent.class, new AtomicBoolean(false)),
-            Map.entry(NodeAddedEvent.class, new AtomicBoolean(true)),
-            Map.entry(NodeRemovedEvent.class, new AtomicBoolean(true)),
-            Map.entry(NodeSelectedEvent.class, new AtomicBoolean(true)),
-            Map.entry(NodeStyleClassEvent.class, new AtomicBoolean(true)),
-            Map.entry(NodeVisibilityEvent.class, new AtomicBoolean(true)),
-            Map.entry(RootChangedEvent.class, new AtomicBoolean(true)),
-            Map.entry(WindowClosedEvent.class, new AtomicBoolean(true)),
-            Map.entry(WindowPropertiesEvent.class, new AtomicBoolean(true)));
+    private final Map<Class<? extends ConnectorEvent>, BooleanProperty> selectionsByEventType = Map.ofEntries(
+            Map.entry(AttributeListEvent.class, new SimpleBooleanProperty()),
+            Map.entry(AttributeUpdatedEvent.class, new SimpleBooleanProperty()),
+            Map.entry(ExceptionEvent.class, new SimpleBooleanProperty()),
+            Map.entry(JavaFXEvent.class, new SimpleBooleanProperty()),
+            Map.entry(MousePosEvent.class, new SimpleBooleanProperty()),
+            Map.entry(NodeAddedEvent.class, new SimpleBooleanProperty()),
+            Map.entry(NodeRemovedEvent.class, new SimpleBooleanProperty()),
+            Map.entry(NodeSelectedEvent.class, new SimpleBooleanProperty()),
+            Map.entry(NodeStyleClassEvent.class, new SimpleBooleanProperty()),
+            Map.entry(NodeVisibilityEvent.class, new SimpleBooleanProperty()),
+            Map.entry(RootChangedEvent.class, new SimpleBooleanProperty()),
+            Map.entry(WindowClosedEvent.class, new SimpleBooleanProperty()),
+            Map.entry(WindowPropertiesEvent.class, new SimpleBooleanProperty()));
 
     private final ReadOnlyBooleanWrapper filterSelected = new ReadOnlyBooleanWrapper();
 
@@ -71,6 +72,8 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
     private final ReadOnlyBooleanWrapper recordSelected = new ReadOnlyBooleanWrapper();
 
     private final StringProperty statistics = new SimpleStringProperty();
+
+    private boolean updatingEventTypes;
 
     public EventToolBarViewModel(EventToolBarParams params) {
         super(params);
@@ -81,7 +84,7 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
 
     @Override
     public @Unmodifiable Set<Class<? extends ConnectorEvent>> getSelectedEventTypes() {
-        return eventTypesByClass.entrySet().stream()
+        return selectionsByEventType.entrySet().stream()
                 .filter(e -> e.getValue().get())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
@@ -133,6 +136,41 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
     }
 
     @Override
+    protected EventToolBarConfig getConfig() {
+        return (EventToolBarConfig) super.getConfig();
+    }
+
+    @Override
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        var config = getConfig();
+        filterSelected.set(config.isFilterSelected());
+        selectedNodeOnly.set(config.isSelectedNodeOnly());
+        selectionsByEventType.forEach((type, selected) -> {
+            selected.set(config.getSelectedEventTypes().contains(type.getName()));
+        });
+    }
+
+    @Override
+    protected void observeStateForConfig() {
+        super.observeStateForConfig();
+        var config = getConfig();
+        filterSelected.addListener((ov, oldV, newV) -> {
+            config.setFilterSelected(newV);
+            config.notifyListeners();
+        });
+        selectedNodeOnly.addListener((ov, oldV, newV) -> {
+            config.setSelectedNodeOnly(newV);
+            config.notifyListeners();
+        });
+        selectionsByEventType.values().forEach(selected -> selected.addListener((ov, oldV, newV) -> {
+            if (!updatingEventTypes) {
+                applyEventTypesChange();
+            }
+        }));
+    }
+
+    @Override
     protected EventToolBarAwarePort getToolBarAware() {
         return (EventToolBarAwarePort) super.getToolBarAware();
     }
@@ -142,22 +180,15 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
     }
 
     protected void selectAllEventTypes() {
-        this.eventTypesByClass.values().forEach(e -> e.set(true));
-        getToolBarAware().onEventTypesChanged();
+        setAllEventTypesSelected(true);
     }
 
     protected void deselectAllEventTypes() {
-        this.eventTypesByClass.values().forEach(e -> e.set(false));
-        getToolBarAware().onEventTypesChanged();
+        setAllEventTypesSelected(false);
     }
 
-    protected void setEventTypeSelected(Class<? extends ConnectorEvent> clazz, boolean selected) {
-        this.eventTypesByClass.get(clazz).set(selected);
-        getToolBarAware().onEventTypesChanged();
-    }
-
-    Map<Class<? extends ConnectorEvent>, AtomicBoolean> getEventTypesByClass() {
-        return eventTypesByClass;
+    Map<Class<? extends ConnectorEvent>, BooleanProperty> getSelectionsByEventType() {
+        return selectionsByEventType;
     }
 
     ReadOnlyBooleanWrapper recordSelectedWrapper() {
@@ -170,5 +201,23 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
 
     ReadOnlyBooleanWrapper selectedNodeOnlyWrapper() {
         return selectedNodeOnly;
+    }
+
+    private void setAllEventTypesSelected(boolean selected) {
+        updatingEventTypes = true;
+        try {
+            selectionsByEventType.values().forEach(p -> p.set(selected));
+        } finally {
+            updatingEventTypes = false;
+        }
+        applyEventTypesChange();
+    }
+
+    private void applyEventTypesChange() {
+        var config = getConfig();
+        config.setSelectedEventTypes(getSelectedEventTypes().stream().map(Class::getName)
+                .collect(Collectors.toSet()));
+        config.notifyListeners();
+        getToolBarAware().onEventTypesChanged();
     }
 }

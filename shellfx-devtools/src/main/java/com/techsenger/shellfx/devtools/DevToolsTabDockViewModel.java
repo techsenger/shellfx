@@ -18,7 +18,6 @@ package com.techsenger.shellfx.devtools;
 
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.SettingsSubscription;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.layout.dockhost.TabDockComposer;
@@ -40,8 +39,6 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
 
     private final ShellSettings settings;
 
-    private final HistoryManager historyManager;
-
     private final Connector connector;
 
     private final int shellWindowUid;
@@ -56,7 +53,6 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
         super(params);
         this.hostType = params.getHostType();
         this.settings = params.getSettings();
-        this.historyManager = params.getHistoryManager();
         this.connector = params.getConnector();
         this.shellWindowUid = params.getShellWindowUid();
         this.selector = new Selector(this.connector, getDescriptor().getLogPrefix());
@@ -85,11 +81,6 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
     @Override
     public Selector getSelector() {
         return this.selector;
-    }
-
-    @Override
-    public HistoryManager getHistoryManager() {
-        return this.historyManager;
     }
 
     @Override
@@ -173,22 +164,24 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
     }
 
     @Override
-    protected DevToolsTabDockHistory getHistory() {
-        return (DevToolsTabDockHistory) super.getHistory();
+    protected DevToolsTabDockConfig getConfig() {
+        return (DevToolsTabDockConfig) super.getConfig();
     }
 
     @Override
-    protected void savePersistentState() {
-        super.savePersistentState();
-        var h = getHistory();
-        h.setSelectionSelected(isSelectionSelected());
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        setSelectionSelected(getConfig().isSelectionSelected());
     }
 
     @Override
-    protected void restorePersistentState() {
-        super.restorePersistentState();
-        var h = getHistory();
-        setSelectionSelected(h.isSelectionSelected());
+    protected void observeStateForConfig() {
+        super.observeStateForConfig();
+        var config = getConfig();
+        selectionSelected.addListener((ov, oldV, newV) -> {
+            config.setSelectionSelected(newV);
+            config.notifyListeners();
+        });
     }
 
     private void updateHighlight(Theme theme) {

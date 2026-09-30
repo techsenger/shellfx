@@ -61,8 +61,8 @@ public class DockHostViewModel<C extends DockHostComposer> extends AbstractAreaV
     }
 
     @Override
-    protected DockHostHistory getHistory() {
-        return (DockHostHistory) super.getHistory();
+    protected DockHostConfig getConfig() {
+        return (DockHostConfig) super.getConfig();
     }
 
     /**

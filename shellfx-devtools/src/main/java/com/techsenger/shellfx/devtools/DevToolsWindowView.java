@@ -49,8 +49,10 @@ public class DevToolsWindowView<VM extends DevToolsWindowViewModel<?>> extends A
             var shell = this.view.shell;
             var context = shell.getViewModel().getContext();
             var connector = new LocalConnector(shell.getStage(), null);
-            var params = new DevToolsTabDockParams(DevToolsHostType.WINDOW, context.getSettings(),
-                    getViewModel().getHistoryManager(), connector, shell.getStage().hashCode());
+            var configManager = getViewModel().getConfigManager();
+            var config = configManager.getOrCreateConfig(DevToolsTabDockConfig.class, DevToolsTabDockConfig::new);
+            var params = new DevToolsTabDockParams(config, DevToolsHostType.WINDOW, context.getSettings(),
+                    connector, shell.getStage().hashCode());
             var tabDockViewModel = new DevToolsTabDockViewModel<>(params);
             var tabDockView = new DevToolsTabDockView<>(tabDockViewModel, shell, null);
             tabDockView.initialize();

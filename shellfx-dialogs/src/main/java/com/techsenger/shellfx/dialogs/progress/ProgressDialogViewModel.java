@@ -16,10 +16,10 @@
 
 package com.techsenger.shellfx.dialogs.progress;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
-import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.window.WindowComposer;
 import java.util.function.Consumer;
 import javafx.beans.property.BooleanProperty;
@@ -48,7 +48,7 @@ public class ProgressDialogViewModel<C extends WindowComposer> extends AbstractD
 
     private final DoubleProperty progress = new SimpleDoubleProperty();
 
-    public ProgressDialogViewModel(DialogParams params) {
+    public ProgressDialogViewModel(ProgressDialogParams params) {
         super(params);
     }
 
@@ -138,9 +138,8 @@ public class ProgressDialogViewModel<C extends WindowComposer> extends AbstractD
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setWidth(450);
+    protected @Nullable ProgressDialogConfig getConfig() {
+        return (ProgressDialogConfig) super.getConfig();
     }
 
     @Override

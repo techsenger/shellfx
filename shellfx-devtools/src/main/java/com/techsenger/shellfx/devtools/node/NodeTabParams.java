@@ -28,7 +28,8 @@ public class NodeTabParams extends TabParams {
 
     private final DevToolsTabDockPort tabDock;
 
-    public NodeTabParams(DevToolsTabDockPort tabDock) {
+    public NodeTabParams(NodeTabConfig config, DevToolsTabDockPort tabDock) {
+        super(config);
         this.tabDock = tabDock;
     }
 
@@ -37,8 +38,14 @@ public class NodeTabParams extends TabParams {
     }
 
     @Override
+    public NodeTabConfig getConfig() {
+        return (NodeTabConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(tabDock);
     }
 }

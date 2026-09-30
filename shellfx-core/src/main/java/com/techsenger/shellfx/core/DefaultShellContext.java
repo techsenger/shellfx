@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.shellfx.core.history.HistoryManager;
+import com.techsenger.shellfx.core.config.ConfigManager;
 import javafx.application.HostServices;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 
@@ -28,13 +28,13 @@ public class DefaultShellContext implements ShellContext {
 
     private final ShellSettings settings;
 
-    private final HistoryManager historyManager;
+    private final ConfigManager configManager;
 
     private final HostServices hostServices;
 
-    public DefaultShellContext(ShellSettings settings, HistoryManager historyManager, HostServices hostServices) {
+    public DefaultShellContext(ShellSettings settings, ConfigManager configManager, HostServices hostServices) {
         this.settings = settings;
-        this.historyManager = historyManager;
+        this.configManager = configManager;
         this.hostServices = hostServices;
     }
 
@@ -44,8 +44,8 @@ public class DefaultShellContext implements ShellContext {
     }
 
     @Override
-    public HistoryManager getHistoryManager() {
-        return historyManager;
+    public ConfigManager getConfigManager() {
+        return configManager;
     }
 
     @Override

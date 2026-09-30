@@ -90,7 +90,7 @@ public class MenuAwareAreaViewModel<C extends MenuAwareAreaComposer> extends Abs
     }
 
     protected void onDialogOpen(OverlayScope scope) {
-        var params = new DialogParams(WindowType.NESTED, settings);
+        var params = new DialogParams(null, WindowType.NESTED, settings);
         var dialog = getComposer().openDemoDialog(scope, true, params);
         dialog.setOnResult((name) -> {
             if (name == DemoDailogResultButtons.OK) {

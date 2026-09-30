@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.devtools.event;
 
 import com.techsenger.shellfx.devtools.shared.ToolBarParams;
+import java.util.Objects;
 
 /**
  *
@@ -24,12 +25,23 @@ import com.techsenger.shellfx.devtools.shared.ToolBarParams;
  */
 public class EventToolBarParams extends ToolBarParams {
 
-    public EventToolBarParams(EventToolBarAwarePort toolBarAware, String findPrompt) {
-        super(toolBarAware, findPrompt);
+    public EventToolBarParams(EventToolBarConfig config, EventToolBarAwarePort toolBarAware, String findPrompt) {
+        super(config, toolBarAware, findPrompt);
     }
 
     @Override
     public EventToolBarAwarePort getToolBarAware() {
         return (EventToolBarAwarePort) super.getToolBarAware();
+    }
+
+    @Override
+    public EventToolBarConfig getConfig() {
+        return (EventToolBarConfig) super.getConfig();
+    }
+
+    @Override
+    public void validate() {
+        super.validate();
+        Objects.requireNonNull(getConfig());
     }
 }

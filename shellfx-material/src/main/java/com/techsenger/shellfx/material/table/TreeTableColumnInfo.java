@@ -22,7 +22,7 @@ import javafx.scene.control.TreeTableColumn;
  * The persisted position/width/sort state of one {@code TreeTableView} column, identified by a
  * {@link TreeTableColumnName}. Built and consumed by
  * {@link TreeTableColumnManager}/{@link AbstractTableColumnManager}, and persisted across sessions via
- * {@link TableHistory}.
+ * {@link TableConfig}.
  *
  * @author Pavel Castornii
  */

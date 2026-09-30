@@ -16,10 +16,20 @@
 
 package com.techsenger.shellfx.core.tab;
 
+import com.techsenger.annotations.Nullable;
+
 /**
  *
  * @author Pavel Castornii
  */
 public class HostTabParams extends TabParams {
 
+    public HostTabParams(@Nullable HostTabConfig config) {
+        super(config);
+    }
+
+    @Override
+    public @Nullable HostTabConfig getConfig() {
+        return (HostTabConfig) super.getConfig();
+    }
 }

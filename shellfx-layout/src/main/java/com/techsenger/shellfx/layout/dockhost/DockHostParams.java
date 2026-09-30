@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.area.AreaParams;
+import java.util.Objects;
 
 /**
  *
@@ -25,7 +25,18 @@ import com.techsenger.shellfx.core.area.AreaParams;
  */
 public class DockHostParams extends AreaParams {
 
-    public DockHostParams(HistoryProvider<? extends DockHostHistory> history) {
-        setHistoryProvider(history);
+    public DockHostParams(DockHostConfig config) {
+        super(config);
+    }
+
+    @Override
+    public DockHostConfig getConfig() {
+        return (DockHostConfig) super.getConfig();
+    }
+
+    @Override
+    public void validate() {
+        super.validate();
+        Objects.requireNonNull(getConfig());
     }
 }

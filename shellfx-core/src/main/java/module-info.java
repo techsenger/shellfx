@@ -32,8 +32,8 @@ module com.techsenger.shellfx.core {
     exports com.techsenger.shellfx.core;
     exports com.techsenger.shellfx.core.area;
     exports com.techsenger.shellfx.core.close;
+    exports com.techsenger.shellfx.core.config;
     exports com.techsenger.shellfx.core.dialog;
-    exports com.techsenger.shellfx.core.history;
     exports com.techsenger.shellfx.core.page;
     exports com.techsenger.shellfx.core.popup;
     exports com.techsenger.shellfx.core.registry;
@@ -43,4 +43,8 @@ module com.techsenger.shellfx.core {
     exports com.techsenger.shellfx.core.window;
 
     opens com.techsenger.shellfx.core.style;
+    // to get access to component config in component inspector
+    opens com.techsenger.shellfx.core.area to com.techsenger.shellfx.devtools;
+    opens com.techsenger.shellfx.core.tab to com.techsenger.shellfx.devtools;
+    opens com.techsenger.shellfx.core.window to com.techsenger.shellfx.devtools;
 }

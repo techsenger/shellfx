@@ -18,7 +18,7 @@ package com.techsenger.shellfx.devtools;
 
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
-import com.techsenger.shellfx.core.history.HistoryManager;
+import com.techsenger.shellfx.core.config.ConfigManager;
 import com.techsenger.shellfx.core.window.AbstractWindowViewModel;
 import com.techsenger.shellfx.core.window.WindowComposer;
 import com.techsenger.shellfx.devtools.style.DevToolsIcons;
@@ -30,11 +30,11 @@ import java.util.function.Consumer;
  */
 public class DevToolsWindowViewModel<C extends WindowComposer> extends AbstractWindowViewModel<C> {
 
-    private final HistoryManager historyManager;
+    private final ConfigManager configManager;
 
     public DevToolsWindowViewModel(DevToolsWindowParams params) {
         super(params);
-        this.historyManager = params.getHistoryManager();
+        this.configManager = params.getConfigManager();
     }
 
     @Override
@@ -47,8 +47,8 @@ public class DevToolsWindowViewModel<C extends WindowComposer> extends AbstractW
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public HistoryManager getHistoryManager() {
-        return historyManager;
+    public ConfigManager getConfigManager() {
+        return configManager;
     }
 
     @Override
@@ -61,9 +61,7 @@ public class DevToolsWindowViewModel<C extends WindowComposer> extends AbstractW
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setWidth(1000);
-        setHeight(400);
+    protected DevToolsWindowConfig getConfig() {
+        return (DevToolsWindowConfig) super.getConfig();
     }
 }

@@ -44,8 +44,8 @@ public class BrowserMainTabViewModel<C extends HostTabComposer> extends Abstract
     }
 
     @Override
-    protected BrowserMainTabHistory getHistory() {
-        return (BrowserMainTabHistory) super.getHistory();
+    protected BrowserMainTabConfig getConfig() {
+        return (BrowserMainTabConfig) super.getConfig();
     }
 
     @Override

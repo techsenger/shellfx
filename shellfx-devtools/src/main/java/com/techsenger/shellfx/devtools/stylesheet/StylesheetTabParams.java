@@ -28,7 +28,8 @@ public class StylesheetTabParams extends TabParams {
 
     private final DevToolsTabDockPort tabDock;
 
-    public StylesheetTabParams(DevToolsTabDockPort tabDock) {
+    public StylesheetTabParams(StylesheetTabConfig config, DevToolsTabDockPort tabDock) {
+        super(config);
         this.tabDock = tabDock;
     }
 
@@ -37,8 +38,14 @@ public class StylesheetTabParams extends TabParams {
     }
 
     @Override
+    public StylesheetTabConfig getConfig() {
+        return (StylesheetTabConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(tabDock);
     }
 }

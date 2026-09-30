@@ -16,13 +16,12 @@
 
 package com.techsenger.shellfx.demo;
 
-import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.demo.shared.DockableTabParams;
 import com.techsenger.shellfx.demo.shared.DockableTabView;
 import com.techsenger.shellfx.demo.shared.DockableTabViewModel;
-import com.techsenger.shellfx.layout.dockhost.DockHostHistory;
+import com.techsenger.shellfx.layout.dockhost.DockHostConfig;
 import com.techsenger.shellfx.layout.dockhost.DockHostParams;
 import com.techsenger.shellfx.layout.dockhost.DockHostView;
 import com.techsenger.shellfx.layout.dockhost.DockHostViewModel;
@@ -39,7 +38,7 @@ import com.techsenger.shellfx.layout.tabhost.ProminentTabHostViewModel;
 public final class HostFactory {
 
     public static ProminentTabHostView<?> createProminentTabHost(AppearanceSettings settings) {
-        var params = new ProminentTabHostParams(settings);
+        var params = new ProminentTabHostParams(null, settings);
         var viewModel = new ProminentTabHostViewModel<>(params);
         var view = new ProminentTabHostView<>(viewModel);
         viewModel.getComposer().tabCountProperty().addListener((ov, oldV, newV) ->
@@ -49,8 +48,8 @@ public final class HostFactory {
         return view;
     }
 
-    public static DockHostView<?> createDockHost(ShellView<?> shell, HistoryProvider<DockHostHistory> historyProvider) {
-        var params = new DockHostParams(historyProvider);
+    public static DockHostView<?> createDockHost(DockHostConfig config, ShellView<?> shell) {
+        var params = new DockHostParams(config);
         var viewModel = new DockHostViewModel<>(params);
         var view = new DockHostView<>(viewModel) {
             public class Composer extends DockHostView<?>.Composer {
@@ -85,7 +84,7 @@ public final class HostFactory {
 
     private static void fillTabs(ShellView<?> shell, TabDockView<?> tabDock) {
         for (var i = 0; i < 10; i++) {
-            var tabParams = new DockableTabParams(i + 1);
+            var tabParams = new DockableTabParams(null, i + 1);
             var tabViewModel = new DockableTabViewModel<>(tabParams);
             var tabView = new DockableTabView(tabViewModel, shell);
             tabView.initialize();

@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.demo.shared;
 
+import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.core.tab.TabConfig;
 import com.techsenger.shellfx.core.tab.TabParams;
 
 /**
@@ -26,7 +28,8 @@ public class DockableTabParams extends TabParams {
 
     private final int index;
 
-    public DockableTabParams(int index) {
+    public DockableTabParams(@Nullable TabConfig config, int index) {
+        super(config);
         this.index = index;
     }
 

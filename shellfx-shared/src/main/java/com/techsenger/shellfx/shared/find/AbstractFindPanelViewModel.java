@@ -16,8 +16,10 @@
 
 package com.techsenger.shellfx.shared.find;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.area.AreaParams;
+import java.util.Objects;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
@@ -159,26 +161,35 @@ public abstract class AbstractFindPanelViewModel<C extends ChildComposer, R exte
     }
 
     @Override
-    protected void restorePersistentState() {
-        super.restorePersistentState();
-        var h = getHistory();
-        setWholeWordSelected(h.isWholeWordSelected());
-        setRegExpSelected(h.isRegExpSelected());
-        setHighlightSelected(h.isHighlightSelected());
+    protected void loadConfigToState() {
+        super.loadConfigToState();
+        var config = Objects.requireNonNull(getConfig());
+        setWholeWordSelected(config.isWholeWordSelected());
+        setRegExpSelected(config.isRegExpSelected());
+        setHighlightSelected(config.isHighlightSelected());
     }
 
     @Override
-    protected void savePersistentState() {
-        super.savePersistentState();
-        var h = getHistory();
-        h.setWholeWordSelected(isWholeWordSelected());
-        h.setRegExpSelected(isRegExpSelected());
-        h.setHighlightSelected(isHighlightSelected());
+    protected void observeStateForConfig() {
+        super.observeStateForConfig();
+        var config = Objects.requireNonNull(getConfig());
+        wholeWordSelected.addListener((obs, oldV, newV) -> {
+            config.setWholeWordSelected(newV);
+            config.notifyListeners();
+        });
+        regExpSelected.addListener((obs, oldV, newV) -> {
+            config.setRegExpSelected(newV);
+            config.notifyListeners();
+        });
+        highlightSelected.addListener((obs, oldV, newV) -> {
+            config.setHighlightSelected(newV);
+            config.notifyListeners();
+        });
     }
 
     @Override
-    protected FindPanelHistory getHistory() {
-        return (FindPanelHistory) super.getHistory();
+    protected @Nullable FindPanelConfig getConfig() {
+        return (FindPanelConfig) super.getConfig();
     }
 
     protected void onCloseRequest() {

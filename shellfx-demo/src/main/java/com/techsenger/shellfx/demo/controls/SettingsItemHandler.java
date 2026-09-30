@@ -19,8 +19,9 @@ package com.techsenger.shellfx.demo.controls;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.demo.settings.SettingsDialogView;
+import com.techsenger.shellfx.demo.settings.SettingsDialogConfig;
 import com.techsenger.shellfx.demo.settings.SettingsDialogParams;
+import com.techsenger.shellfx.demo.settings.SettingsDialogView;
 import com.techsenger.shellfx.demo.settings.SettingsDialogViewModel;
 import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 
@@ -38,7 +39,7 @@ public class SettingsItemHandler extends AbstractMenuItemHandler<ShellView<?>, M
     public void onAction() {
         var shell = getComponent();
         var appearance = shell.getViewModel().getContext().getSettings().getAppearance();
-        var params = new SettingsDialogParams(WindowType.NESTED, appearance);
+        var params = new SettingsDialogParams(new SettingsDialogConfig(), WindowType.NESTED, appearance);
         var viewModel = new SettingsDialogViewModel<>(params);
         var view = new SettingsDialogView<>(viewModel);
         view.initialize();

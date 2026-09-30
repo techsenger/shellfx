@@ -102,10 +102,8 @@ public class ViewerDialogViewModel<C extends WindowComposer> extends AbstractDia
     }
 
     @Override
-    protected void applyPersistentState() {
-        super.applyPersistentState();
-        setWidth(600);
-        setHeight(350);
+    protected ViewerDialogConfig getConfig() {
+        return (ViewerDialogConfig) super.getConfig();
     }
 
     protected void onFollowLink(String url) {

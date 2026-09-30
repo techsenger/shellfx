@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 public class StylesTabViewModel<C extends TabComposer> extends AbstractTabViewModel<C> {
 
     public StylesTabViewModel() {
-        super(new TabParams());
+        super(new TabParams(null));
     }
 
     @Override

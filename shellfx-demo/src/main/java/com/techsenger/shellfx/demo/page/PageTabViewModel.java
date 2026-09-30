@@ -50,8 +50,8 @@ public class PageTabViewModel<C extends TabComposer> extends AbstractTabViewMode
     }
 
     @Override
-    protected PageTabHistory getHistory() {
-        return (PageTabHistory) super.getHistory();
+    protected PageTabConfig getConfig() {
+        return (PageTabConfig) super.getConfig();
     }
 
     @Override

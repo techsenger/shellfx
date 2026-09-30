@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.tab;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.core.ComponentParams;
 
 /**
@@ -24,4 +25,13 @@ import com.techsenger.patternfx.core.ComponentParams;
  */
 public class TabParams extends ComponentParams {
 
+    private final @Nullable TabConfig config;
+
+    public TabParams(@Nullable TabConfig config) {
+        this.config = config;
+    }
+
+    public @Nullable TabConfig getConfig() {
+        return config;
+    }
 }

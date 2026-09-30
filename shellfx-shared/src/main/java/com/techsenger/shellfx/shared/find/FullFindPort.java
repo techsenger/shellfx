@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.shared.find;
 
-import com.techsenger.shellfx.material.RequestSetter;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 
@@ -32,15 +31,6 @@ public interface FullFindPort<R extends FindResult> extends FindPort<R> {
 
     @Override
     StringProperty editedFindTextProperty();
-
-    /**
-     * Requests {@code findText} to change to the given value — the actual value is decided by the widget backing
-     * it, not written directly; observe {@link #findTextProperty()} for what was actually applied.
-     *
-     * @param findText the requested find text
-     */
-    @RequestSetter
-    void setFindText(String findText);
 
     void setShowClear(boolean showClear);
 

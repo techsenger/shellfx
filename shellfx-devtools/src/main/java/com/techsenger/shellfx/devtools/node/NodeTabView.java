@@ -551,16 +551,18 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
         }
 
         protected NavigableToolBarView<?> createNodeToolBar() {
-            var viewModel = new NavigableToolBarViewModel<ChildComposer>(new NavigableToolBarParams(
-                    getViewModel().new NodeToolBarAwarePort(), "NodeClass / StyleClass / ID"));
+            var params = new NavigableToolBarParams(getViewModel().getConfig().getNodeToolBar(),
+                    getViewModel().new NodeToolBarAwarePort(), "NodeClass / StyleClass / ID");
+            var viewModel = new NavigableToolBarViewModel<ChildComposer>(params);
             var toolBarView = new NavigableToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;
         }
 
         protected ToolBarView<?> createPropertyToolBar() {
-            var viewModel = new ToolBarViewModel<ChildComposer>(
-                    new ToolBarParams(getViewModel().new PropertyToolBarAwarePort(), "Property"));
+            var params = new ToolBarParams(getViewModel().getConfig().getPropertyToolBar(),
+                    getViewModel().new PropertyToolBarAwarePort(), "Property");
+            var viewModel = new ToolBarViewModel<ChildComposer>(params);
             var toolBarView = new ToolBarView<>(viewModel);
             toolBarView.initialize();
             return toolBarView;

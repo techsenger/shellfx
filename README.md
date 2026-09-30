@@ -1,7 +1,7 @@
 # Techsenger ShellFX
 
 Techsenger ShellFX is a platform for building JavaFX applications, where an application is structured
-as a tree of MVVM components, each of which has its own lifecycle, history, etc. The platform provides abstract
+as a tree of MVVM components, each of which has its own lifecycle, config, etc. The platform provides abstract
 classes for creating the main types of components: window, tab, area, page, dialog, and popup.
 
 It also includes ready-to-use implementations of containers (including a docking layout) and dialogs (including a
@@ -112,7 +112,7 @@ Key features of ShellFX include:
 * A set of ready-made components that can be used out of the box.
 * Support for different layouts, including a docking layout.
 * Set of devtools for inspecting the application at both the component layer and the JavaFX scene graph layer.
-* Ability to preserve component history.
+* Ability to preserve component config.
 * Support for inline popups and dialogs with two scopes — window and tab.
 * Window styling that matches the theme.
 * Support for 7 themes (4 dark and 3 light).
@@ -512,8 +512,8 @@ Shared components are auxiliary components built on top of Core components and u
 `Find` is an abstract base search component that contains the entire search view implementation, including both
 submit search and instant search functionality. Since child components may be of different types (toolbar, panel, etc.),
 this component includes only minimal CSS styling. It owns the full logic of a generic search UI — which trigger
-mode is in effect (submit vs. instant), debounce timing for both search and history-save, committing the edited
-text into the confirmed search text, and match-count display formatting (including an optional, domain-agnostic
+mode is in effect (submit vs. instant), debounce timing for both search and adding the find text to the earlier
+find texts, and match-count display formatting (including an optional, domain-agnostic
 `FindResult` contract a component can implement over its own result type to get that formatting for free). The
 only thing it does not know is what a match actually is or how to find one; that stays entirely up to the concrete
 component: `onFind()` returns a `CompletableFuture` with the outcome, so a component can either run its own search
@@ -696,7 +696,7 @@ interfaces for components follows a consistent scheme:
 
 1. A unique name (may be omitted for brevity) — `Alert`, `File`, `Info`, etc.
 2. The component role — `Tab`, `Window`, `Popup`, `Area`, `Panel`, `ToolBar`, etc.
-3. The component element — `View`, `ViewModel`, `Params`, `Port`, `History` etc.
+3. The component element — `View`, `ViewModel`, `Params`, `Port`, `Config` etc.
 
 Examples: `AlertDialogView`, `EditorTabViewModel`, `InfoPopupParams`, `ToolBarPort`
 

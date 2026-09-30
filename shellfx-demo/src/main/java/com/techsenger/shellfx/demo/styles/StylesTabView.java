@@ -25,6 +25,7 @@ import com.techsenger.shellfx.core.page.PageItem;
 import com.techsenger.shellfx.core.page.PageParams;
 import com.techsenger.shellfx.core.page.PageView;
 import com.techsenger.shellfx.core.tab.AbstractTabView;
+import com.techsenger.shellfx.layout.pagehost.BasePageHostConfig;
 import com.techsenger.shellfx.layout.pagehost.PageHostParams;
 import com.techsenger.shellfx.layout.pagehost.PageHostView;
 import com.techsenger.shellfx.layout.pagehost.PageHostViewModel;
@@ -45,7 +46,7 @@ public class StylesTabView<VM extends StylesTabViewModel<?>> extends AbstractTab
 
             @Override
             public PageView<?> create(PageItem t) {
-                var viewModel = new VariantPageViewModel<>(new PageParams(t));
+                var viewModel = new VariantPageViewModel<>(new PageParams(null, t));
                 var view = new VariantPageView<>(viewModel);
                 view.initialize();
                 return view;
@@ -62,7 +63,7 @@ public class StylesTabView<VM extends StylesTabViewModel<?>> extends AbstractTab
 
             @Override
             public PageView<?> create(PageItem t) {
-                var viewModel = new SetPageViewModel<>(new PageParams(t));
+                var viewModel = new SetPageViewModel<>(new PageParams(null, t));
                 var view = new SetPageView<>(viewModel, styleName);
                 view.initialize();
                 return view;
@@ -80,7 +81,7 @@ public class StylesTabView<VM extends StylesTabViewModel<?>> extends AbstractTab
         public void compose() {
             super.compose();
 
-            var params = new PageHostParams(null);
+            var params = new PageHostParams(new BasePageHostConfig());
             var pageHostViewModel = new PageHostViewModel<>(params);
             var pageHost = new PageHostView<>(pageHostViewModel) {
                 {

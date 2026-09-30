@@ -21,7 +21,7 @@ import javafx.scene.control.TableColumn;
 /**
  * The persisted position/width/sort state of one {@code TableView} column, identified by a {@link TableColumnName}.
  * Built and consumed by {@link TableColumnManager}/{@link AbstractTableColumnManager}, and persisted across
- * sessions via {@link TableHistory}.
+ * sessions via {@link TableConfig}.
  *
  * @author Pavel Castornii
  */

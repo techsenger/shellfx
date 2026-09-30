@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.core.area;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.core.ComponentParams;
 
 /**
@@ -24,4 +25,13 @@ import com.techsenger.patternfx.core.ComponentParams;
  */
 public class AreaParams extends ComponentParams {
 
+    private final @Nullable AreaConfig config;
+
+    public AreaParams(@Nullable AreaConfig config) {
+        this.config = config;
+    }
+
+    public @Nullable AreaConfig getConfig() {
+        return config;
+    }
 }

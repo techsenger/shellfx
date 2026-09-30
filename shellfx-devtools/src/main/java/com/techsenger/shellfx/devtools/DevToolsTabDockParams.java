@@ -18,7 +18,6 @@ package com.techsenger.shellfx.devtools;
 
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.shellfx.core.area.AreaParams;
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import java.util.Objects;
 
@@ -32,21 +31,17 @@ public class DevToolsTabDockParams extends AreaParams {
 
     private final ShellSettings settings;
 
-    private final HistoryManager historyManager;
-
     private final Connector connector;
 
     private final int shellWindowUid;
 
-    public DevToolsTabDockParams(DevToolsHostType hostType, ShellSettings settings, HistoryManager historyManager,
+    public DevToolsTabDockParams(DevToolsTabDockConfig config, DevToolsHostType hostType, ShellSettings settings,
             Connector connector, int shellWindowUid) {
+        super(config);
         this.hostType = hostType;
         this.settings = settings;
-        this.historyManager = historyManager;
         this.connector = connector;
         this.shellWindowUid = shellWindowUid;
-        this.setHistoryProvider(() -> historyManager
-                .getOrCreateHistory(DevToolsTabDockHistory.class, DevToolsTabDockHistory::new));
     }
 
     public DevToolsHostType getHostType() {
@@ -55,10 +50,6 @@ public class DevToolsTabDockParams extends AreaParams {
 
     public ShellSettings getSettings() {
         return settings;
-    }
-
-    public HistoryManager getHistoryManager() {
-        return historyManager;
     }
 
     public Connector getConnector() {
@@ -70,11 +61,16 @@ public class DevToolsTabDockParams extends AreaParams {
     }
 
     @Override
+    public DevToolsTabDockConfig getConfig() {
+        return (DevToolsTabDockConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
         Objects.requireNonNull(hostType);
         Objects.requireNonNull(settings);
-        Objects.requireNonNull(historyManager);
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(connector);
     }
 }

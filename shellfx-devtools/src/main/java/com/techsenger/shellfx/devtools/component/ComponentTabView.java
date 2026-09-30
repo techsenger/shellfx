@@ -240,7 +240,8 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
 
         protected NavigableToolBarView<?> createComponentToolBar() {
             var awarePort = getViewModel().new ComponentToolBarAwarePort();
-            var params =  new NavigableToolBarParams(awarePort, "Name / UUID");
+            var params =  new NavigableToolBarParams(getViewModel().getConfig().getComponentToolBar(), awarePort,
+                    "Name / UUID");
             var viewModel = new NavigableToolBarViewModel<ChildComposer>(params);
             var toolBarView = new NavigableToolBarView<>(viewModel);
             toolBarView.initialize();
@@ -249,7 +250,8 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
 
         protected ToolBarView<?> createInspectorToolBar() {
             var awarePort = getViewModel().new InspectorToolBarAwarePort();
-            var params = new ToolBarParams(awarePort, "Property / Class / Interface");
+            var params = new ToolBarParams(getViewModel().getConfig().getInspectorToolBar(), awarePort,
+                    "Property / Class / Interface");
             var viewModel = new ToolBarViewModel<ChildComposer>(params);
             var toolBarView = new ToolBarView<>(viewModel);
             toolBarView.initialize();

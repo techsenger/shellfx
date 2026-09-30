@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.storage.FileStorage;
@@ -36,20 +35,15 @@ public class FileChooserDialogParams<T extends GenericFile> extends DialogParams
 
     private final List<? extends FileStorage<T>> storages;
 
-    private final HistoryManager historyManager;
-
     private URI initialDirectory;
 
     private String initialFileName;
 
-    public FileChooserDialogParams(WindowType windowType, AppearanceSettings settings,
-            FileChooserType chooserType, List<? extends FileStorage<T>> storages, HistoryManager historyManager) {
-        super(windowType, settings);
+    public FileChooserDialogParams(FileChooserDialogConfig config, WindowType windowType, AppearanceSettings settings,
+            FileChooserType chooserType, List<? extends FileStorage<T>> storages) {
+        super(config, windowType, settings);
         this.chooserType = chooserType;
         this.storages = storages;
-        this.historyManager = historyManager;
-        setHistoryProvider(() -> historyManager.getOrCreateHistory(FileChooserDialogHistory.class,
-                FileChooserDialogHistory::new));
     }
 
     public FileChooserType getChooserType() {
@@ -58,10 +52,6 @@ public class FileChooserDialogParams<T extends GenericFile> extends DialogParams
 
     public List<? extends FileStorage<T>> getStorages() {
         return storages;
-    }
-
-    public HistoryManager getHistoryManager() {
-        return historyManager;
     }
 
     public URI getInitialDirectory() {
@@ -81,10 +71,15 @@ public class FileChooserDialogParams<T extends GenericFile> extends DialogParams
     }
 
     @Override
+    public FileChooserDialogConfig getConfig() {
+        return (FileChooserDialogConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(chooserType);
         Objects.requireNonNull(storages);
-        Objects.requireNonNull(historyManager);
     }
 }

@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
-import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.area.AreaParams;
 import java.util.Objects;
 import javafx.geometry.Side;
@@ -29,9 +28,9 @@ public class SideBarParams extends AreaParams {
 
     private final Side side;
 
-    public SideBarParams(Side side, HistoryProvider<SideBarHistory> historyProvider) {
+    public SideBarParams(SideBarConfig config, Side side) {
+        super(config);
         this.side = side;
-        setHistoryProvider(historyProvider);
     }
 
     public Side getSide() {
@@ -39,9 +38,14 @@ public class SideBarParams extends AreaParams {
     }
 
     @Override
+    public SideBarConfig getConfig() {
+        return (SideBarConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(side);
-        Objects.requireNonNull(getHistoryProvider());
     }
 }

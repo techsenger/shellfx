@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.layout.pagehost;
 
-import com.techsenger.patternfx.core.HistoryProvider;
 import com.techsenger.shellfx.core.area.AreaParams;
+import java.util.Objects;
 
 /**
  *
@@ -25,7 +25,18 @@ import com.techsenger.shellfx.core.area.AreaParams;
  */
 public class TreePageHostParams extends AreaParams {
 
-    public TreePageHostParams(HistoryProvider<PageHostHistoryBase> historyProvider) {
-        setHistoryProvider(historyProvider);
+    public TreePageHostParams(BasePageHostConfig config) {
+        super(config);
+    }
+
+    @Override
+    public BasePageHostConfig getConfig() {
+        return (BasePageHostConfig) super.getConfig();
+    }
+
+    @Override
+    public void validate() {
+        super.validate();
+        Objects.requireNonNull(getConfig());
     }
 }

@@ -38,8 +38,9 @@ public class DialogsItemHandler extends AbstractMenuItemHandler<ShellView<?>, Ma
         var shell = getComponent();
         var context = shell.getViewModel().getContext();
         var dialogParams = new DialogsDialogParams(
+                null,
                 context.getSettings().getAppearance(),
-                context.getHistoryManager());
+                context.getConfigManager());
         var dialogViewModel = new DialogsDialogViewModel<>(dialogParams);
         var dialogView = new DialogsDialogView<>(dialogViewModel);
         dialogView.initialize();

@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.demo.page;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.history.HistoryManager;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import java.util.Objects;
@@ -30,10 +29,10 @@ public class PageDialogParams extends DialogParams {
 
     private final PageMenuType menuType;
 
-    public PageDialogParams(WindowType type, AppearanceSettings setting, PageMenuType menuType, HistoryManager hm) {
-        super(type, setting);
+    public PageDialogParams(PageDialogConfig config, WindowType type, AppearanceSettings setting,
+            PageMenuType menuType) {
+        super(config, type, setting);
         this.menuType = menuType;
-        setHistoryProvider(() -> hm.getOrCreateHistory(PageDialogHistory.class, PageDialogHistory::new));
     }
 
     public PageMenuType getMenuType() {
@@ -41,8 +40,14 @@ public class PageDialogParams extends DialogParams {
     }
 
     @Override
+    public PageDialogConfig getConfig() {
+        return (PageDialogConfig) super.getConfig();
+    }
+
+    @Override
     public void validate() {
         super.validate();
+        Objects.requireNonNull(getConfig());
         Objects.requireNonNull(menuType);
     }
 }

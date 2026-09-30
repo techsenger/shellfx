@@ -109,6 +109,11 @@ public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends A
     }
 
     @Override
+    protected EnvironmentTabConfig getConfig() {
+        return (EnvironmentTabConfig) super.getConfig();
+    }
+
+    @Override
     protected void postInitialize() {
         super.postInitialize();
         setTitle("Environment");
@@ -141,7 +146,7 @@ public class EnvironmentTabViewModel<C extends EnvironmentTabComposer> extends A
             if (tabDock.getHostType() == DevToolsHostType.WINDOW) {
                 windowType = WindowType.TOP_LEVEL;
             }
-            var params = new DialogParams(windowType, getShellContext().getSettings().getAppearance());
+            var params = new DialogParams(null, windowType, getShellContext().getSettings().getAppearance());
             var dialog = getComposer().openNameValueDialog(params);
             dialog.setTitle("Property Dialog");
             dialog.setName(i.getName());

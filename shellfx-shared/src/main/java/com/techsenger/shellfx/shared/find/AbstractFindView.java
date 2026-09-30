@@ -30,6 +30,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
@@ -104,7 +105,6 @@ public abstract class AbstractFindView<VM extends AbstractFindViewModel<?, ?>> e
         matchCaseButton.selectedProperty().bindBidirectional(viewModel.matchCaseSelectedProperty());
         matchCaseButton.disableProperty().bind(viewModel.matchCaseDisabledProperty());
         findComboBox.getEditor().textProperty().bindBidirectional(viewModel.editedFindTextProperty());
-        viewModel.findTextWrapper().bind(findComboBox.getSelectionModel().selectedItemProperty());
     }
 
     @Override
@@ -124,36 +124,29 @@ public abstract class AbstractFindView<VM extends AbstractFindViewModel<?, ?>> e
         ValueUtils.callAndAddListener(viewModel.matchesVisibleProperty(),
                 (ov, oldV, newV) -> updateMatchesVisible(newV));
         ValueUtils.callAndAddListener(viewModel.clearVisibleProperty(), (ov, oldV, newV) -> updateClearVisible(newV));
-        viewModel.findTextSource().addListener((value) -> updateFindText(value));
+        viewModel.valueSource().addListener((value) -> findComboBox.setValue(value));
     }
 
     @Override
     protected void addHandlers() {
         super.addHandlers();
         var viewModel = getViewModel();
-        // Blocks the ComboBox's own default behavior of committing the editor's raw typed text into
-        // value/selectedItem on Enter (ComboBoxPopupControl#handleKeyEvent, triggered on KEY_RELEASED, not
-        // KEY_PRESSED). That default commit would fire for arbitrary typed text too, not just real history
-        // entries, but findText is bound to selectedItem and expected to change only on a genuine pick from the
-        // list (see bind()). Must be added here, before the ComboBox is shown and its skin installs its own
-        // internal filter on the same node, so this filter runs first and can consume the event before the
-        // control's own commit logic sees it.
-        findComboBox.addEventFilter(KeyEvent.KEY_RELEASED, (e) -> {
-            if (e.getCode() == KeyCode.ENTER) {
-                e.consume();
-            }
-        });
-
         // Enter key: immediate invocation (useful for manual search and also useful to allow immediate search in
         // incremental mode). Registered as a filter directly on the ComboBox, not as a plain handler on the
         // editor: ComboBoxPopupControl's own key handling is installed on the ComboBox itself and, for ENTER,
-        // consumes KEY_PRESSED before it would otherwise reach a handler on the (descendant) editor. Same
-        // node/mechanism as the KEY_RELEASED filter above, for the same reason.
+        // consumes KEY_PRESSED before it would otherwise reach a handler on the (descendant) editor.
         findComboBox.addEventFilter(KeyEvent.KEY_PRESSED, (e) -> {
             if (e.getCode() == KeyCode.ENTER) {
                 viewModel.onFindSubmitted();
             }
         });
+
+        // The ComboBox updates its editor only when its value changes, and the value stays what it was after an
+        // earlier pick or Enter while the text is edited or cleared. The value is aligned with the editor when the
+        // list opens (not on every keystroke), so picking an item that equals the stale value works and the item
+        // matching the text is highlighted.
+        findComboBox.addEventHandler(ComboBoxBase.ON_SHOWING,
+                e -> findComboBox.setValue(findComboBox.getEditor().getText()));
 
         clearButton.setOnAction(e -> viewModel.onClearFindText());
         matchCaseButton.setOnAction(e -> viewModel.onMatchCase());
@@ -188,15 +181,6 @@ public abstract class AbstractFindView<VM extends AbstractFindViewModel<?, ?>> e
         if (text != null && !text.isEmpty()) {
             var pos = (int) text.codePointCount(0, text.length());
             this.findComboBox.getEditor().positionCaret(pos);
-        }
-    }
-
-    private void updateFindText(String value) {
-        if (value == null) {
-            // SingleSelectionModel#select(T) is a no-op for null, it does not clear the current selection
-            findComboBox.getSelectionModel().clearSelection();
-        } else {
-            findComboBox.getSelectionModel().select(value);
         }
     }
 
