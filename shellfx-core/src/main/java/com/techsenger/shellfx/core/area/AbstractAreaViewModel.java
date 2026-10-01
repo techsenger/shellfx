@@ -19,6 +19,7 @@ package com.techsenger.shellfx.core.area;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
 import com.techsenger.patternfx.mvvm.ChildComposer;
+import com.techsenger.shellfx.core.config.ConfigUtils;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 
@@ -80,14 +81,8 @@ public abstract class AbstractAreaViewModel<C extends ChildComposer> extends Abs
      * listeners. Called once after {@link #loadConfigToState()}; overriding methods must call {@code super}.
      */
     protected void observeStateForConfig() {
-        this.width.addListener((ov, oldV, newV) -> {
-            config.setWidth(newV.doubleValue());
-            config.notifyListeners();
-        });
-        this.height.addListener((ov, oldV, newV) -> {
-            config.setHeight(newV.doubleValue());
-            config.notifyListeners();
-        });
+        ConfigUtils.observe(this.width, config, AreaConfig::setWidth);
+        ConfigUtils.observe(this.height, config, AreaConfig::setHeight);
     }
 
     protected @Nullable AreaConfig getConfig() {

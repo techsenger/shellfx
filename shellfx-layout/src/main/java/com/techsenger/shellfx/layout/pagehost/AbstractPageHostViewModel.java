@@ -19,6 +19,7 @@ package com.techsenger.shellfx.layout.pagehost;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.area.AbstractAreaViewModel;
 import com.techsenger.shellfx.core.area.AreaParams;
+import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.core.page.PageItem;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -154,10 +155,7 @@ public abstract class AbstractPageHostViewModel<C extends BasePageHostComposer> 
     protected void observeStateForConfig() {
         super.observeStateForConfig();
         var config = getConfig();
-        dividerPosition.addListener((ov, oldV, newV) -> {
-            config.setDividerPosition(newV.doubleValue());
-            config.notifyListeners();
-        });
+        ConfigUtils.observe(dividerPosition, config, BasePageHostConfig::setDividerPosition);
     }
 
     @Override

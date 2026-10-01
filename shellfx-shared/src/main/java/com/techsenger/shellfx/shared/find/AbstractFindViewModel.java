@@ -348,10 +348,7 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
     protected void observeStateForConfig() {
         super.observeStateForConfig();
         var config = Objects.requireNonNull(getConfig());
-        matchCaseSelected.addListener((obs, oldV, newV) -> {
-            config.setMatchCaseSelected(newV);
-            config.notifyListeners();
-        });
+        ConfigUtils.observe(matchCaseSelected, config, FindConfig::setMatchCaseSelected);
         modifiableFindTexts.addListener((ListChangeListener<String>) change -> {
             if (applyingConfigTexts) {
                 return;

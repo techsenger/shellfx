@@ -20,6 +20,7 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
+import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
@@ -364,10 +365,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     protected void observeStateForConfig() {
         super.observeStateForConfig();
         var config = getConfig();
-        mode.addListener((ov, oldV, newV) -> {
-            config.setMode(newV);
-            config.notifyListeners();
-        });
+        ConfigUtils.observe(mode, config, FileChooserDialogConfig::setMode);
     }
 
     @Override

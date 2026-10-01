@@ -19,6 +19,7 @@ package com.techsenger.shellfx.shared.find;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.area.AreaParams;
+import com.techsenger.shellfx.core.config.ConfigUtils;
 import java.util.Objects;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -173,18 +174,9 @@ public abstract class AbstractFindPanelViewModel<C extends ChildComposer, R exte
     protected void observeStateForConfig() {
         super.observeStateForConfig();
         var config = Objects.requireNonNull(getConfig());
-        wholeWordSelected.addListener((obs, oldV, newV) -> {
-            config.setWholeWordSelected(newV);
-            config.notifyListeners();
-        });
-        regExpSelected.addListener((obs, oldV, newV) -> {
-            config.setRegExpSelected(newV);
-            config.notifyListeners();
-        });
-        highlightSelected.addListener((obs, oldV, newV) -> {
-            config.setHighlightSelected(newV);
-            config.notifyListeners();
-        });
+        ConfigUtils.observe(wholeWordSelected, config, FindPanelConfig::setWholeWordSelected);
+        ConfigUtils.observe(regExpSelected, config, FindPanelConfig::setRegExpSelected);
+        ConfigUtils.observe(highlightSelected, config, FindPanelConfig::setHighlightSelected);
     }
 
     @Override

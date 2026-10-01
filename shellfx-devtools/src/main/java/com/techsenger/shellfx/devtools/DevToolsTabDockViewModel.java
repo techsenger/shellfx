@@ -18,6 +18,7 @@ package com.techsenger.shellfx.devtools;
 
 import com.techsenger.connectorfx.Connector;
 import com.techsenger.connectorfx.Highlight;
+import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.core.settings.SettingsSubscription;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 import com.techsenger.shellfx.layout.dockhost.TabDockComposer;
@@ -178,10 +179,7 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
     protected void observeStateForConfig() {
         super.observeStateForConfig();
         var config = getConfig();
-        selectionSelected.addListener((ov, oldV, newV) -> {
-            config.setSelectionSelected(newV);
-            config.notifyListeners();
-        });
+        ConfigUtils.observe(selectionSelected, config, DevToolsTabDockConfig::setSelectionSelected);
     }
 
     private void updateHighlight(Theme theme) {

@@ -32,6 +32,7 @@ import com.techsenger.connectorfx.event.RootChangedEvent;
 import com.techsenger.connectorfx.event.WindowClosedEvent;
 import com.techsenger.connectorfx.event.WindowPropertiesEvent;
 import com.techsenger.patternfx.mvvm.ChildComposer;
+import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
 import java.util.Map;
 import java.util.Set;
@@ -155,14 +156,8 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
     protected void observeStateForConfig() {
         super.observeStateForConfig();
         var config = getConfig();
-        filterSelected.addListener((ov, oldV, newV) -> {
-            config.setFilterSelected(newV);
-            config.notifyListeners();
-        });
-        selectedNodeOnly.addListener((ov, oldV, newV) -> {
-            config.setSelectedNodeOnly(newV);
-            config.notifyListeners();
-        });
+        ConfigUtils.observe(filterSelected, config, EventToolBarConfig::setFilterSelected);
+        ConfigUtils.observe(selectedNodeOnly, config, EventToolBarConfig::setSelectedNodeOnly);
         selectionsByEventType.values().forEach(selected -> selected.addListener((ov, oldV, newV) -> {
             if (!updatingEventTypes) {
                 applyEventTypesChange();

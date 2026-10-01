@@ -19,6 +19,10 @@ package com.techsenger.shellfx.core.config;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.ObjDoubleConsumer;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableValue;
 
 /**
  *
@@ -58,6 +62,41 @@ public final class ConfigUtils {
     public static <T> void addFirst(List<T> list, T value) {
         list.remove(value);
         list.add(0, value);
+    }
+
+    /**
+     * Writes every subsequent change of the value into the config through the setter and then notifies the config
+     * listeners. The current value is not written; only changes are.
+     *
+     * @param <T> the type of the value.
+     * @param <C> the type of the config.
+     * @param value the observed value.
+     * @param config the config to write to and notify after each write.
+     * @param setter the config setter that receives the config and the new value.
+     */
+    public static <T, C extends AbstractConfig> void observe(ObservableValue<T> value, C config,
+            BiConsumer<C, ? super T> setter) {
+        value.addListener((ov, oldV, newV) -> {
+            setter.accept(config, newV);
+            config.notifyListeners();
+        });
+    }
+
+    /**
+     * Same as {@link #observe(ObservableValue, AbstractConfig, BiConsumer)} for a {@code double} value, so that a
+     * setter taking a primitive {@code double} can be passed as is.
+     *
+     * @param <C> the type of the config.
+     * @param value the observed value.
+     * @param config the config to write to and notify after each write.
+     * @param setter the config setter that receives the config and the new value.
+     */
+    public static <C extends AbstractConfig> void observe(ObservableDoubleValue value, C config,
+            ObjDoubleConsumer<C> setter) {
+        value.addListener((ov, oldV, newV) -> {
+            setter.accept(config, newV.doubleValue());
+            config.notifyListeners();
+        });
     }
 
     /**

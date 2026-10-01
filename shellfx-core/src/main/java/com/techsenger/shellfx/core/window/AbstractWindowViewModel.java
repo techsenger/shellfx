@@ -19,6 +19,7 @@ package com.techsenger.shellfx.core.window;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
 import com.techsenger.patternfx.mvvm.ViewModel;
+import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.settings.SettingsSubscription;
 import com.techsenger.shellfx.material.RequestSetter;
@@ -616,18 +617,9 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
      * listeners. Called once after {@link #loadConfigToState()}; overriding methods must call {@code super}.
      */
     protected void observeStateForConfig() {
-        this.width.addListener((ov, oldV, newV) -> {
-            config.setWidth(newV.doubleValue());
-            config.notifyListeners();
-        });
-        this.height.addListener((ov, oldV, newV) -> {
-            config.setHeight(newV.doubleValue());
-            config.notifyListeners();
-        });
-        this.maximized.addListener((ov, oldV, newV) -> {
-            config.setMaximized(newV);
-            config.notifyListeners();
-        });
+        ConfigUtils.observe(this.width, config, WindowConfig::setWidth);
+        ConfigUtils.observe(this.height, config, WindowConfig::setHeight);
+        ConfigUtils.observe(this.maximized, config, WindowConfig::setMaximized);
     }
 
     protected @Nullable WindowConfig getConfig() {
