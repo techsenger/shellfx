@@ -36,7 +36,7 @@ public enum FileEntryType {
     /**
      * A link to another entry: a symbolic link on any system, or a directory junction on Windows. The entry
      * describes the link itself (its own size, times and so on); what it points to is described by
-     * {@link GenericFile#getTargetUri()}.
+     * {@link GenericFile#getLinkTarget()}.
      *
      * <p>A link has this type of its own, rather than the type of its target, for two reasons: the attributes of a
      * link itself describe neither a file nor a directory, and a broken link has no target to take a type from. So

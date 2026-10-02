@@ -367,16 +367,12 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         file.setUri(uri);
         file.setModifiedTime(attrs.lastModifiedTime().toMillis());
         file.setCreatedTime(attrs.creationTime().toMillis());
-        if (isLink(attrs)) {
-            file.setEntryType(FileEntryType.LINK);
+        var entryType = resolveEntryType(attrs);
+        file.setEntryType(entryType);
+        if (entryType == FileEntryType.LINK) {
             file.setSize(attrs.size());
-            file.setTargetUri(readTargetUri(path));
-        } else if (attrs.isDirectory()) {
-            file.setEntryType(FileEntryType.DIRECTORY);
-        } else if (attrs.isOther()) {
-            file.setEntryType(FileEntryType.OTHER);
-        } else {
-            file.setEntryType(FileEntryType.FILE);
+            file.setLinkTarget(readLinkTarget(path));
+        } else if (entryType == FileEntryType.FILE) {
             file.setSize(attrs.size());
         }
         file.setVirtual(false);
@@ -386,20 +382,47 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     }
 
     /**
-     * Returns the URI the link at {@code link} points to, or {@code null} if it can't be determined. A symbolic link
-     * gives the path it states (a relative target is resolved against the link's directory); a Windows junction
-     * states none, so its resolved path is used instead.
+     * Describes what the link at {@code link} points to: the path it states (a relative target is resolved against
+     * the link's directory; a Windows junction states none, so its resolved path is used instead) and the type of
+     * the entry there, as it is - a link that points to another link has a target of type
+     * {@link FileEntryType#LINK}. If nothing can be read at the target the link is broken and the target has no
+     * type.
+     *
+     * @return the target, or {@code null} if the path can't be determined
      */
-    private @Nullable URI readTargetUri(Path link) {
+    private @Nullable LinkTarget readLinkTarget(Path link) {
+        Path targetPath;
         try {
             try {
-                return link.resolveSibling(Files.readSymbolicLink(link)).toUri();
+                targetPath = link.resolveSibling(Files.readSymbolicLink(link));
             } catch (NotLinkException | UnsupportedOperationException ex) {
-                return link.toRealPath().toUri();
+                targetPath = link.toRealPath();
             }
         } catch (IOException ex) {
             logger.warn("Couldn't determine the target of the link {}", link, ex);
             return null;
         }
+        var target = new DefaultLinkTarget();
+        target.setUri(targetPath.toUri());
+        try {
+            target.setEntryType(resolveEntryType(
+                    Files.readAttributes(targetPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS)));
+        } catch (IOException ex) {
+            // the link is broken: nothing exists at the target, or it is out of reach
+        }
+        return target;
+    }
+
+    /**
+     * Returns the type of the entry with these own attributes (read without following links).
+     */
+    private FileEntryType resolveEntryType(BasicFileAttributes attrs) {
+        if (isLink(attrs)) {
+            return FileEntryType.LINK;
+        }
+        if (attrs.isDirectory()) {
+            return FileEntryType.DIRECTORY;
+        }
+        return attrs.isOther() ? FileEntryType.OTHER : FileEntryType.FILE;
     }
 }

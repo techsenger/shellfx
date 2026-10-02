@@ -138,7 +138,7 @@ public interface GenericFile {
 
     /**
      * Returns {@code true} if this entry is a link: a symbolic link on any system, or a directory junction on
-     * Windows. It is the link itself that this entry describes; see {@link #getTargetUri()} for what it points to.
+     * Windows. It is the link itself that this entry describes; see {@link #getLinkTarget()} for what it points to.
      * Code that walks a directory tree must not descend into a link, see {@link FileEntryType#LINK}.
      *
      * @return {@code true} if {@link #getEntryType()} is {@link FileEntryType#LINK}
@@ -148,16 +148,13 @@ public interface GenericFile {
     }
 
     /**
-     * Returns the URI of what this link points to, or {@code null} if this entry is not a {@link #isLink() link} or
-     * the path the link points to couldn't be determined.
+     * Returns what this link points to, or {@code null} if this entry is not a {@link #isLink() link} or the path
+     * the link points to couldn't be determined. A broken link still has a target - its path is known, only
+     * {@link LinkTarget#getEntryType()} is {@code null}.
      *
-     * <p>Only the path is known: nothing says the target exists (the link may be broken), or what it is - a file, a
-     * directory or anything else. To find out, ask the storage for the entry at this URI; it fails with
-     * {@link java.nio.file.NoSuchFileException} if the link is broken. The URI may also belong to another storage.
-     *
-     * @return the URI the link points to, or {@code null}
+     * @return the target of the link, or {@code null}
      */
-    @Nullable URI getTargetUri();
+    @Nullable LinkTarget getLinkTarget();
 
     /**
      * Returns {@code true} if this entry represents the root directory of its {@link FileStorage}.

@@ -59,7 +59,7 @@ public class DefaultGenericFile implements GenericFile {
 
     private boolean virtual;
 
-    private @Nullable URI targetUri;
+    private @Nullable LinkTarget linkTarget;
 
     private FontIcon<?> icon;
 
@@ -115,8 +115,8 @@ public class DefaultGenericFile implements GenericFile {
     }
 
     @Override
-    public @Nullable URI getTargetUri() {
-        return targetUri;
+    public @Nullable LinkTarget getLinkTarget() {
+        return linkTarget;
     }
 
     @Override
@@ -291,13 +291,13 @@ public class DefaultGenericFile implements GenericFile {
     }
 
     /**
-     * Sets the URI this entry points to.
+     * Sets what this entry points to.
      *
-     * @param targetUri the URI a link entry points to, or {@code null} if this is not a link or the path it
-     *     points to is unknown
+     * @param linkTarget the target of a link entry, or {@code null} if this is not a link or the path it points
+     *     to is unknown
      */
-    protected void setTargetUri(@Nullable URI targetUri) {
-        this.targetUri = targetUri;
+    protected void setLinkTarget(@Nullable LinkTarget linkTarget) {
+        this.linkTarget = linkTarget;
     }
 
     /**
