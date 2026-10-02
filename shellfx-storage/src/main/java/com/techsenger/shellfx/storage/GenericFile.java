@@ -44,7 +44,7 @@ public interface GenericFile {
     FileStorage<?> getStorage();
 
     /**
-     * Returns the structural type of this file system entry (regular file, directory, symbolic link, etc.).
+     * Returns the structural type of this file system entry (regular file, directory, link, etc.).
      *
      * @return the entry type, never {@code null}
      */
@@ -137,13 +137,27 @@ public interface GenericFile {
     }
 
     /**
-     * Returns {@code true} if this entry is a symbolic link.
+     * Returns {@code true} if this entry is a link: a symbolic link on any system, or a directory junction on
+     * Windows. It is the link itself that this entry describes; see {@link #getTargetUri()} for what it points to.
+     * Code that walks a directory tree must not descend into a link, see {@link FileEntryType#LINK}.
      *
-     * @return {@code true} if {@link #getEntryType()} is {@link FileEntryType#SYMBOLIC_LINK}
+     * @return {@code true} if {@link #getEntryType()} is {@link FileEntryType#LINK}
      */
-    default boolean isSymbolicLink() {
-        return getEntryType() == FileEntryType.SYMBOLIC_LINK;
+    default boolean isLink() {
+        return getEntryType() == FileEntryType.LINK;
     }
+
+    /**
+     * Returns the URI of what this link points to, or {@code null} if this entry is not a {@link #isLink() link} or
+     * the path the link points to couldn't be determined.
+     *
+     * <p>Only the path is known: nothing says the target exists (the link may be broken), or what it is - a file, a
+     * directory or anything else. To find out, ask the storage for the entry at this URI; it fails with
+     * {@link java.nio.file.NoSuchFileException} if the link is broken. The URI may also belong to another storage.
+     *
+     * @return the URI the link points to, or {@code null}
+     */
+    @Nullable URI getTargetUri();
 
     /**
      * Returns {@code true} if this entry represents the root directory of its {@link FileStorage}.

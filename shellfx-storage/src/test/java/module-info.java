@@ -24,7 +24,9 @@ open module com.techsenger.shellfx.storage {
     requires com.sun.jna;
     requires com.sun.jna.platform;
 
+    requires com.google.common.jimfs;
     requires org.junit.jupiter.api;
+    requires org.junit.jupiter.params;
     requires org.assertj.core;
     requires org.mockito;
 }

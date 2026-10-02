@@ -21,6 +21,9 @@ import com.techsenger.toolkit.core.function.Factory;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.DosFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.filechooser.FileSystemView;
@@ -80,5 +83,18 @@ public class WindowsFileStorage<T extends GenericFile> extends AbstractSystemFil
         String givenRoot = uri.getPath().substring(0, Math.min(uri.getPath().length(), 3));
         String storageRoot = getUri().getPath().substring(0, 3);
         return givenRoot.equalsIgnoreCase(storageRoot);
+    }
+
+    @Override
+    boolean isLink(BasicFileAttributes ownAttributes) {
+        // A directory junction isn't a symbolic link for Java, but it is a reparse point, which Windows reports as
+        // isOther() - for a directory, that can only be a junction or another reparse point (e.g. a cloud
+        // placeholder), and descending into any of those is as unsafe as into a link.
+        return super.isLink(ownAttributes) || (ownAttributes.isDirectory() && ownAttributes.isOther());
+    }
+
+    @Override
+    boolean isHidden(Path path, BasicFileAttributes attrs) {
+        return attrs instanceof DosFileAttributes dosAttributes && dosAttributes.isHidden();
     }
 }

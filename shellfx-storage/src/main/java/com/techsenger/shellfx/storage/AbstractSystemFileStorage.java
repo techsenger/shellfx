@@ -32,7 +32,9 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.NotLinkException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
@@ -78,8 +80,9 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
             for (Path childPath : stream) {
                 try {
-                    var attrs = Files.readAttributes(childPath, BasicFileAttributes.class);
-                    if (attrs.isDirectory()) {
+                    var attrs = Files.readAttributes(childPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+                    // a link is not a directory, even if it points to one
+                    if (attrs.isDirectory() && !isLink(attrs)) {
                         result.add(createFile(childPath, attrs, childPath.toUri()));
                     }
                 } catch (InvalidFileException ex) {
@@ -130,7 +133,8 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
                         return FileVisitResult.CONTINUE;
                     }
                     result.add(createFile(dir, attrs, dir.toUri()));
-                    return FileVisitResult.CONTINUE;
+                    // a directory that is a link (e.g. a Windows junction) must not be entered
+                    return isLink(attrs) ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
                 }
 
                 @Override
@@ -316,10 +320,36 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         }
     }
 
+    /**
+     * Tells whether an entry with these attributes is itself a link. Recognizes symbolic links; a system with other
+     * kinds of links (e.g. Windows junctions) overrides this to recognize them too.
+     *
+     * @param ownAttributes the entry's own attributes, read without following links
+     * @return {@code true} if the entry is a link
+     */
+    boolean isLink(BasicFileAttributes ownAttributes) {
+        return ownAttributes.isSymbolicLink();
+    }
+
+    /**
+     * Tells whether the entry is hidden, without any further access to the file system. By convention of Unix-like
+     * systems it is hidden if its name starts with a dot; a system with another notion (e.g. the hidden attribute
+     * on Windows) overrides this.
+     *
+     * @param path the entry's path
+     * @param attrs the entry's own attributes, read without following links
+     * @return {@code true} if the entry is hidden
+     */
+    boolean isHidden(Path path, BasicFileAttributes attrs) {
+        var name = path.getFileName();
+        return name != null && name.toString().startsWith(".");
+    }
+
     @SuppressWarnings("unchecked")
     private T createFile(Path path, URI uri) throws InvalidFileException {
         try {
-            var attrs = Files.readAttributes(path, BasicFileAttributes.class);
+            // the entry's own attributes, so a link is seen as a link and not as what it points to
+            var attrs = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
             return createFile(path, attrs, uri);
         } catch (InvalidFileException ex) {
             throw ex;
@@ -333,20 +363,20 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         var file = fileFactory.create();
         file.setStorage(this);
         file.setName(path.getFileName().toString());
-        file.setHidden(isHidden(path));
+        file.setHidden(isHidden(path, attrs));
         file.setUri(uri);
         file.setModifiedTime(attrs.lastModifiedTime().toMillis());
         file.setCreatedTime(attrs.creationTime().toMillis());
-        if (attrs.isDirectory()) {
+        if (isLink(attrs)) {
+            file.setEntryType(FileEntryType.LINK);
+            file.setSize(attrs.size());
+            file.setTargetUri(readTargetUri(path));
+        } else if (attrs.isDirectory()) {
             file.setEntryType(FileEntryType.DIRECTORY);
         } else if (attrs.isOther()) {
             file.setEntryType(FileEntryType.OTHER);
         } else {
-            var entryType = FileEntryType.FILE;
-            if (attrs.isSymbolicLink()) {
-                entryType = FileEntryType.SYMBOLIC_LINK;
-            }
-            file.setEntryType(entryType);
+            file.setEntryType(FileEntryType.FILE);
             file.setSize(attrs.size());
         }
         file.setVirtual(false);
@@ -355,11 +385,21 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         return result;
     }
 
-    private boolean isHidden(Path path) {
+    /**
+     * Returns the URI the link at {@code link} points to, or {@code null} if it can't be determined. A symbolic link
+     * gives the path it states (a relative target is resolved against the link's directory); a Windows junction
+     * states none, so its resolved path is used instead.
+     */
+    private @Nullable URI readTargetUri(Path link) {
         try {
-            return Files.isHidden(path);
+            try {
+                return link.resolveSibling(Files.readSymbolicLink(link)).toUri();
+            } catch (NotLinkException | UnsupportedOperationException ex) {
+                return link.toRealPath().toUri();
+            }
         } catch (IOException ex) {
-            return false;
+            logger.warn("Couldn't determine the target of the link {}", link, ex);
+            return null;
         }
     }
 }

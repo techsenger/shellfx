@@ -59,6 +59,8 @@ public class DefaultGenericFile implements GenericFile {
 
     private boolean virtual;
 
+    private @Nullable URI targetUri;
+
     private FontIcon<?> icon;
 
     /**
@@ -110,6 +112,11 @@ public class DefaultGenericFile implements GenericFile {
     @Override
     public boolean isVirtual() {
         return virtual;
+    }
+
+    @Override
+    public @Nullable URI getTargetUri() {
+        return targetUri;
     }
 
     @Override
@@ -281,6 +288,16 @@ public class DefaultGenericFile implements GenericFile {
      */
     protected void setVirtual(boolean virtual) {
         this.virtual = virtual;
+    }
+
+    /**
+     * Sets the URI this entry points to.
+     *
+     * @param targetUri the URI a link entry points to, or {@code null} if this is not a link or the path it
+     *     points to is unknown
+     */
+    protected void setTargetUri(@Nullable URI targetUri) {
+        this.targetUri = targetUri;
     }
 
     /**

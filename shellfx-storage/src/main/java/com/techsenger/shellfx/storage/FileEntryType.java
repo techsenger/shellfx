@@ -34,9 +34,19 @@ public enum FileEntryType {
     FILE,
 
     /**
-     * A symbolic link.
+     * A link to another entry: a symbolic link on any system, or a directory junction on Windows. The entry
+     * describes the link itself (its own size, times and so on); what it points to is described by
+     * {@link GenericFile#getTargetUri()}.
+     *
+     * <p>A link has this type of its own, rather than the type of its target, for two reasons: the attributes of a
+     * link itself describe neither a file nor a directory, and a broken link has no target to take a type from. So
+     * a link is always recognizable as one, whether or not its target can be determined.
+     *
+     * <p>A link is neither a file nor a directory, whatever it points to. Code that walks a directory tree must not
+     * descend into one: doing so reaches entries that don't belong to the tree - deleting or copying through it
+     * would act on data outside the selected directory. Treat a link as a single entry instead.
      */
-    SYMBOLIC_LINK,
+    LINK,
 
     /**
      * An entry that is none of the above — a Unix domain socket, named pipe (FIFO), device file, or similar
