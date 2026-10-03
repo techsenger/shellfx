@@ -383,7 +383,8 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
 
     /**
      * Describes what the link at {@code link} points to: the path it states (a relative target is resolved against
-     * the link's directory; a Windows junction states none, so its resolved path is used instead) and the type of
+     * the link's directory and normalized, so a stated {@code ./tmp} or {@code ../x} comes out as a clean path; a
+     * Windows junction states none, so its resolved path is used instead) and the type of
      * the entry there, as it is - a link that points to another link has a target of type
      * {@link FileEntryType#LINK}. If nothing can be read at the target the link is broken and the target has no
      * type.
@@ -394,7 +395,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         Path targetPath;
         try {
             try {
-                targetPath = link.resolveSibling(Files.readSymbolicLink(link));
+                targetPath = link.resolveSibling(Files.readSymbolicLink(link)).normalize();
             } catch (NotLinkException | UnsupportedOperationException ex) {
                 targetPath = link.toRealPath();
             }

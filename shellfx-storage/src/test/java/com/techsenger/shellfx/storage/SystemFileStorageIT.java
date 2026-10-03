@@ -184,8 +184,23 @@ public class SystemFileStorageIT {
 
         var link = find(files, "link");
         assertThat(link.isLink()).isTrue();
-        assertThat(Paths.get(link.getLinkTarget().getUri()).normalize()).isEqualTo(real);
+        assertThat(Paths.get(link.getLinkTarget().getUri())).isEqualTo(real);
         assertThat(link.getLinkTarget().getEntryType()).isEqualTo(FileEntryType.FILE);
+    }
+
+    @ParameterizedTest
+    @MethodSource("flavors")
+    public void getFiles_linkStatingDotSlashPath_targetPathIsNormalized(
+            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+        var storage = storageFactory.get();
+        var root = Paths.get(storage.getUri());
+        var folder = Files.createDirectory(root.resolve("tmp"));
+        Files.createSymbolicLink(root.resolve("link"), root.getFileSystem().getPath(".", "tmp"));
+
+        var files = storage.getFiles(root.toUri());
+
+        assertTargets(files, new ExpectedTarget("link", folder, FileEntryType.DIRECTORY));
+        assertThat(find(files, "link").getLinkTarget().getUri().toString()).doesNotContain("/./");
     }
 
     @ParameterizedTest
