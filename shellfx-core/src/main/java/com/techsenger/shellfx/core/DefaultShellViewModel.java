@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public class DefaultShellViewModel<C extends ShellComposer> extends AbstractHostWindowViewModel<C>
         implements ShellViewModel<C> {
 
-    private final ShellContext context;
+    private final ShellViewModelContext context;
 
     public DefaultShellViewModel(DefaultShellParams params) {
         super(params);
@@ -42,12 +42,12 @@ public class DefaultShellViewModel<C extends ShellComposer> extends AbstractHost
     }
 
     @Override
-    public ShellContext getContext() {
+    public ShellViewModelContext getContext() {
         return this.context;
     }
 
     @Override
-    public <T extends ShellContext> T getContext(Class<T> contextClass) {
+    public <T extends ShellViewModelContext> T getContext(Class<T> contextClass) {
         return (T) this.context;
     }
 

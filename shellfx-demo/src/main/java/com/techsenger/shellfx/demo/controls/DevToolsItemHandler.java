@@ -21,27 +21,27 @@ import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockConfig;
-import com.techsenger.shellfx.devtools.DevToolsTabDockView;
 import com.techsenger.shellfx.devtools.DevToolsTabDockParams;
+import com.techsenger.shellfx.devtools.DevToolsTabDockView;
 import com.techsenger.shellfx.devtools.DevToolsTabDockViewModel;
 import com.techsenger.shellfx.devtools.DevToolsWindowConfig;
-import com.techsenger.shellfx.devtools.DevToolsWindowView;
 import com.techsenger.shellfx.devtools.DevToolsWindowParams;
+import com.techsenger.shellfx.devtools.DevToolsWindowView;
 import com.techsenger.shellfx.devtools.DevToolsWindowViewModel;
 import com.techsenger.shellfx.layout.dockhost.DockHostView;
+import com.techsenger.shellfx.layout.dockhost.UtilityDockContainerView;
 import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import javafx.geometry.Side;
-import com.techsenger.shellfx.layout.dockhost.UtilityDockContainerView;
+import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
+public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public DevToolsItemHandler(ShellView<?> component, ManagedMenuItem item) {
+    public DevToolsItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 

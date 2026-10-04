@@ -16,17 +16,18 @@
 
 package com.techsenger.shellfx.material.menu;
 
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
 /**
  * Visibility bookkeeping shared by {@link MenuBarManager} (the persistent menu bar) and {@link ContextMenuManager}
- * (one-off popups): resolving whether a registry-composed {@code ManagedMenu} should show at all, and
+ * (one-off popups): resolving whether a registry-composed {@code Menu} should show at all, and
  * collapsing separators around sections that ended up empty.
  *
  * @author Pavel Castornii
  */
-public final class MenuVisibility {
+final class MenuVisibility {
 
     /**
      * Resolves whether {@code menu} should be visible. If it has its own {@link MenuHandler}, that handler's
@@ -36,12 +37,12 @@ public final class MenuVisibility {
      * whether at least one item ends up visible, recursively.
      *
      * <p>Assumes {@code menu} is genuinely about to be shown, and calls {@code onShowing()} on every handler
-     * along the way accordingly; use {@link #update(ManagedMenu)} instead when nothing is actually being shown.
+     * along the way accordingly; use {@link #update(Menu)} instead when nothing is actually being shown.
      *
      * @param menu the menu to resolve.
      * @return whether {@code menu} ended up visible.
      */
-    public static boolean resolve(ManagedMenu menu) {
+    static boolean resolve(Menu menu) {
         var handler = MenuHandler.getHandler(menu);
         if (handler != null) {
             handler.onShowing();
@@ -55,10 +56,10 @@ public final class MenuVisibility {
     }
 
     /**
-     * Resolves every item in {@code items} (see {@link #resolve(ManagedMenu)} for nested menus), without
-     * deciding anything about a containing menu - used both by {@link #resolve(ManagedMenu)} for a menu's own
-     * items and directly for a {@code ContextMenu}'s top-level items, which have no containing {@code Managed
-     * Menu} of their own.
+     * Resolves every item in {@code items} (see {@link #resolve(Menu)} for nested menus), without
+     * deciding anything about a containing menu - used both by {@link #resolve(Menu)} for a menu's own
+     * items and directly for a {@code ContextMenu}'s top-level items, which have no containing
+     * {@code Menu} of their own.
      *
      * <p>Assumes {@code items} are genuinely about to be shown; use {@link #updateItems(Iterable)} instead when
      * nothing is actually being shown.
@@ -66,7 +67,7 @@ public final class MenuVisibility {
      * @param items the items to resolve, in display order.
      * @return whether at least one item ended up visible.
      */
-    public static boolean resolveItems(Iterable<MenuItem> items) {
+    static boolean resolveItems(Iterable<MenuItem> items) {
         var anyVisible = false;
         for (var item : items) {
             if (resolveItem(item)) {
@@ -77,14 +78,14 @@ public final class MenuVisibility {
     }
 
     /**
-     * Like {@link #resolve(ManagedMenu)}, but never calls a handler's {@code onShowing()} - for refreshing a
+     * Like {@link #resolve(Menu)}, but never calls a handler's {@code onShowing()} - for refreshing a
      * menu's visibility outside of it actually being shown (e.g. on a focus/selection change elsewhere in the
      * shell), where firing a real showing transition on every handler underneath would be misleading.
      *
      * @param menu the menu to update.
      * @return whether {@code menu} ended up visible.
      */
-    public static boolean update(ManagedMenu menu) {
+    static boolean update(Menu menu) {
         var handler = MenuHandler.getHandler(menu);
         if (handler != null) {
             handler.onUpdate();
@@ -98,12 +99,12 @@ public final class MenuVisibility {
 
     /**
      * Like {@link #resolveItems(Iterable)}, but never calls a handler's {@code onShowing()} - see
-     * {@link #update(ManagedMenu)}.
+     * {@link #update(Menu)}.
      *
      * @param items the items to update, in display order.
      * @return whether at least one item ended up visible.
      */
-    public static boolean updateItems(Iterable<MenuItem> items) {
+    static boolean updateItems(Iterable<MenuItem> items) {
         var anyVisible = false;
         for (var item : items) {
             if (updateItem(item)) {
@@ -119,7 +120,7 @@ public final class MenuVisibility {
      *
      * @param items the items to inspect, in display order.
      */
-    public static void collapseSeparators(Iterable<MenuItem> items) {
+    static void collapseSeparators(Iterable<MenuItem> items) {
         SeparatorMenuItem previousVisibleSeparator = null;
         var visibleItemsPresent = false;
         for (var item : items) {
@@ -155,18 +156,17 @@ public final class MenuVisibility {
      *
      * @param items the items to notify, in any order.
      */
-    public static void fireHiding(Iterable<MenuItem> items) {
+    static void fireHiding(Iterable<MenuItem> items) {
         for (var item : items) {
-            if (item instanceof ManagedMenu managedMenu) {
+            if (item instanceof Menu managedMenu) {
                 var handler = MenuHandler.getHandler(managedMenu);
                 if (handler != null) {
                     handler.onHiding();
                 } else {
                     fireHiding(managedMenu.getItems());
                 }
-            } else if (item instanceof ManagedItem) {
-                var managedItem = (MenuItem & ManagedItem) item;
-                var handler = MenuItemHandler.getHandler(managedItem);
+            } else {
+                var handler = MenuItemHandler.getHandler(item);
                 if (handler != null) {
                     handler.onHiding();
                 }
@@ -175,38 +175,30 @@ public final class MenuVisibility {
     }
 
     private static boolean resolveItem(MenuItem item) {
-        if (item instanceof ManagedMenu managedMenu) {
+        if (item instanceof Menu managedMenu) {
             return resolve(managedMenu);
         }
         if (item instanceof SeparatorMenuItem) {
             return false;
         }
-        if (item instanceof ManagedItem) {
-            var managedItem = (MenuItem & ManagedItem) item;
-            var handler = MenuItemHandler.getHandler(managedItem);
-            if (handler != null) {
-                handler.onShowing();
-                handler.onUpdate();
-            }
-            return item.isVisible();
+        var handler = MenuItemHandler.getHandler(item);
+        if (handler != null) {
+            handler.onShowing();
+            handler.onUpdate();
         }
         return item.isVisible();
     }
 
     private static boolean updateItem(MenuItem item) {
-        if (item instanceof ManagedMenu managedMenu) {
+        if (item instanceof Menu managedMenu) {
             return update(managedMenu);
         }
         if (item instanceof SeparatorMenuItem) {
             return false;
         }
-        if (item instanceof ManagedItem) {
-            var managedItem = (MenuItem & ManagedItem) item;
-            var handler = MenuItemHandler.getHandler(managedItem);
-            if (handler != null) {
-                handler.onUpdate();
-            }
-            return item.isVisible();
+        var handler = MenuItemHandler.getHandler(item);
+        if (handler != null) {
+            handler.onUpdate();
         }
         return item.isVisible();
     }

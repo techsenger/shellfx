@@ -17,9 +17,9 @@
 package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.material.menu.AbstractMenuHandler;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
-import com.techsenger.shellfx.material.menu.ManagedMenu;
+import com.techsenger.shellfx.material.menu.AbstractMenuHandler;
+import javafx.scene.control.Menu;
 
 /**
  *
@@ -27,7 +27,7 @@ import com.techsenger.shellfx.material.menu.ManagedMenu;
  */
 public class ExtraMenuHandler extends AbstractMenuHandler<ShellView<?>> {
 
-    public ExtraMenuHandler(ManagedMenu menu, ShellView<?> component) {
+    public ExtraMenuHandler(Menu menu, ShellView<?> component) {
         super(menu, component);
     }
 

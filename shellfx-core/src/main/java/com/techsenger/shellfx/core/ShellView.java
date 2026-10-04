@@ -18,7 +18,6 @@ package com.techsenger.shellfx.core;
 
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.core.area.AreaView;
-import com.techsenger.shellfx.core.registry.ControlRegistry;
 import com.techsenger.shellfx.core.window.HostWindowView;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
@@ -53,11 +52,11 @@ public interface ShellView<VM extends ShellViewModel<?>> extends HostWindowView<
     Composer getComposer();
 
     /**
-     * Returns the control registry. There can be only one registry in the application.
+     * Returns the part of the shell context that is available to views.
      *
      * @return
      */
-    ControlRegistry getControlRegistry();
+    ShellViewContext getContext();
 
     /**
      * Clears all existing elements in menu bar and adds new elements build using registry.

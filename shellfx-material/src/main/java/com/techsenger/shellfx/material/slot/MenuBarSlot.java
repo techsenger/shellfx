@@ -14,36 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.material.slot;
 
-import com.techsenger.shellfx.core.config.ConfigManager;
-import javafx.application.HostServices;
-import com.techsenger.shellfx.core.settings.ShellSettings;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
+ * The slot of a menu bar; menus are put into it. The menu bar itself is created by the component.
  *
+ * @param <V> the view type of the component this slot belongs to
  * @author Pavel Castornii
  */
-public interface ShellContext {
+public final class MenuBarSlot<V extends ParentView<?>> extends AbstractSlot<V> {
 
-    /**
-     * Returns the settings of the shell.
-     *
-     * @return
-     */
-    ShellSettings getSettings();
-
-    /**
-     * Returns the config manager.
-     *
-     * @return
-     */
-    ConfigManager getConfigManager();
-
-    /**
-     * Returns application host services.
-     *
-     * @return
-     */
-    HostServices getHostServices();
+    public MenuBarSlot(Class<? super V> componentClass, String text) {
+        super(componentClass, text);
+    }
 }

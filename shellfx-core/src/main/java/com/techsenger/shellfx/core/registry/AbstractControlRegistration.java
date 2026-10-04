@@ -17,38 +17,34 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.slot.Slot;
 
 /**
+ * Binds the factory of a control to a slot.
  *
  * @author Pavel Castornii
  */
-abstract class AbstractMenuRegistration<T extends ParentView<?>, R> implements ControlRegistry.Registration {
+abstract class AbstractControlRegistration extends AbstractRegistration {
 
-    private final MenuElementType type;
+    private final Slot<?> slot;
 
-    private final ControlFactory<T, R> factory;
+    private final ControlFactory<? extends ParentView<?>, ?> factory;
 
-    private Runnable unregister;
-
-    AbstractMenuRegistration(MenuElementType type, ControlFactory<T, R> factory) {
-        this.type = type;
+    AbstractControlRegistration(Slot<?> slot, ControlFactory<? extends ParentView<?>, ?> factory) {
+        this.slot = slot;
         this.factory = factory;
     }
 
-    @Override
-    public void unregister() {
-        unregister.run();
+    Slot<?> getSlot() {
+        return slot;
     }
 
-    public MenuElementType getType() {
-        return type;
-    }
-
-    public ControlFactory<T, R> getFactory() {
-        return factory;
-    }
-
-    public void setUnregister(Runnable unregister) {
-        this.unregister = unregister;
+    /**
+     * Creates the control for {@code view}; the registry guarantees at registration time that the view's type
+     * matches the one the factory was registered with.
+     */
+    @SuppressWarnings("unchecked")
+    Object create(ParentView<?> view) {
+        return ((ControlFactory<ParentView<?>, ?>) factory).create(view);
     }
 }

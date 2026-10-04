@@ -16,34 +16,28 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.shellfx.core.area.AreaPort;
-import com.techsenger.shellfx.core.window.HostWindowPort;
+import com.techsenger.shellfx.core.registry.ControlRegistry;
+import com.techsenger.shellfx.core.registry.SlotRegistry;
 
 /**
+ * The part of the shell context that is available to views: the shell uses its registries on the view side only.
+ * The view model part is {@link ShellViewModelContext}.
  *
  * @author Pavel Castornii
  */
-public interface ShellPort extends HostWindowPort, MenuAwarePort {
-
-    interface ComposerAccess extends HostWindowPort.ComposerAccess {
-
-        AreaPort getWorkspacePort();
-    }
-
-    @Override
-    ComposerAccess getComposerAccess();
+public interface ShellViewContext {
 
     /**
-     * Returns the part of the shell context that is available to view models.
+     * Returns the registry of the slot tree. There can be only one registry in the application.
      *
      * @return
      */
-    ShellViewModelContext getContext();
+    SlotRegistry getSlotRegistry();
 
     /**
-     * Returns the context of the shell as an instance of the specified class using type casting.
+     * Returns the control registry. There can be only one registry in the application.
      *
      * @return
      */
-    <T extends ShellViewModelContext> T getContext(Class<T> contextClass);
+    ControlRegistry getControlRegistry();
 }

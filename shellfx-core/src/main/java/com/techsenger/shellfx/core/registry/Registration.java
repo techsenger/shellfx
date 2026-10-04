@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.menu;
-
-import com.techsenger.patternfx.core.AbstractIdentityName;
-import com.techsenger.patternfx.mvvm.ParentView;
+package com.techsenger.shellfx.core.registry;
 
 /**
+ * Represents a handle for a registered contribution. The holder of this handle is the only one who can undo the
+ * registration.
  *
- * @param <V> the view type of the component this group belongs to
  * @author Pavel Castornii
  */
-public class DefaultMenuGroupName<V extends ParentView<?>> extends AbstractIdentityName implements MenuGroupName<V> {
+public interface Registration {
 
-    private final Class<?> componentClass;
-
-    public DefaultMenuGroupName(Class<?> componentClass, String text) {
-        super(text);
-        this.componentClass = componentClass;
-    }
-
-    @Override
-    public Class<?> getComponentClass() {
-        return componentClass;
-    }
+    /**
+     * Removes this registration from its registry.
+     */
+    void unregister();
 }

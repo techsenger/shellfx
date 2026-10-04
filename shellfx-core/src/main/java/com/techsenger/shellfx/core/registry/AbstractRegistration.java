@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.menu;
-
-import javafx.beans.property.ObjectProperty;
+package com.techsenger.shellfx.core.registry;
 
 /**
  *
  * @author Pavel Castornii
  */
-public interface Groupable {
+abstract class AbstractRegistration implements Registration {
 
-    ObjectProperty<ManagedMenuGroup> groupProperty();
+    private Runnable unregister;
 
-    default ManagedMenuGroup getGroup() {
-        return groupProperty().get();
+    @Override
+    public void unregister() {
+        unregister.run();
     }
 
-    default void setGroup(ManagedMenuGroup group) {
-        groupProperty().set(group);
+    void setUnregister(Runnable unregister) {
+        this.unregister = unregister;
     }
 }

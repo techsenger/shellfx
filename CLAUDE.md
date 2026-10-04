@@ -87,16 +87,28 @@ lookups silently fall back to defaults and mask regressions.
   its Port: only promote what is already `public` on the ViewModel, mirror its exact shape (readonly vs.
   writable, single value vs. `ObservableList`) as-is, then add `@Override` on the implementation — don't invent
   new visibility or reshape it while promoting.
-- **Menu system.** `ControlRegistry` (`shellfx-core`) stores menu/group/item contributions as `ControlFactory`
-  registrations, supporting plugin-style dynamic (un)registration in any order; it never assembles a control
-  itself. `ControlBuilder` reads a registry's contributions and assembles the final menu tree from them.
-  The managed controls that tree is built from (`ManagedMenu`, `ManagedMenuItem`, `ManagedMenuGroup`,
-  `ManagedContextMenu`), their `Handler` family, and the `MenuBarManager`/`ContextMenuManager` classes that
-  wire runtime behavior onto them, all live in `shellfx-material.menu` — independent of `ControlRegistry`, so
-  they can be used standalone too. `MenuBarManager` tracks the focused component via
-  `Scene#focusOwnerProperty()`, walks up the component tree to find the nearest ancestor implementing
-  `MenuAwarePort`, and dispatches state/actions to it. A component that should focus on click of an empty area
-  must call `requestFocus()` explicitly.
+- **Menu system.** UI is composed from a tree of slots (`shellfx-material.slot`): `Slot<V>` is the interface,
+  `AbstractSlot` the base class, and the kind of a slot is its class (`MenuBarSlot`, `MenuSlot`, `ContextMenuSlot`,
+  `ToolBarSlot`, `GroupSlot<V, L>`). Slots are immutable identities with no children, declared once as constants;
+  the tree is built in `SlotRegistry` (`register(parent, position, child)`, overloaded by the slot classes so that
+  only a menu bar → menus, a menu / context menu → groups of menu items, a tool bar → groups of controls and a
+  group → nested menus compile), and `ControlRegistry` binds controls to the slots: `register(menuSlot, factory)`
+  for a menu bar, a menu or a context menu and `register(group, position, factory)` for a leaf (a menu item) in a group. A
+  group has no control of its own. Both registries support plugin-style dynamic (un)registration in any order, and
+  neither assembles a control. `AbstractSlotRegistrar` and `AbstractControlRegistrar` (over `AbstractRegistrar<R>`)
+  wrap them for plugins. `ControlBuilder` returns the ordered controls of the groups of a tool bar slot, and
+  `ManagedControlBuilder` assembles the final menu tree from both registries.
+  The menu controls are plain JavaFX (`Menu`, `MenuItem`...) with a `Handler` in their properties
+  (`ContextMenu` too, including its `visible` flag); the `Handler` family, and the `MenuBarManager`/`ContextMenuManager`
+  classes that wire runtime behavior onto them, all live in `shellfx-material.menu` — independent of
+  `ControlRegistry` and the builders, so they can be used standalone too; they never change the menu structure,
+  only visibility. The builders log what they built, with registered positions, at debug level. A menu item
+  action is dispatched by `MenuItemDispatcher`: a mouse click runs it as is, an accelerator (a `KeyEvent` returned
+  by `WindowView#getInputEvent()` of the window, which the managers get as a `Supplier`) first calls `onUpdate()`
+  and is dropped if the item turned disabled or invisible.
+  `MenuBarManager` tracks the focused component via `Scene#focusOwnerProperty()`, walks up the component tree to
+  find the nearest ancestor implementing `MenuAwarePort`, and dispatches state/actions to it. A component that
+  should focus on click of an empty area must call `requestFocus()` explicitly.
 - **Windows.** `Window` comes in `NESTED` (managed by `WindowManager`, hosted inside a `HostWindow` or
   `HostTab`) and `TOP_LEVEL` (own OS `Stage`) variants, both accessed through the same API — dialogs/wizards
   built on `Window` work unmodified in either mode.

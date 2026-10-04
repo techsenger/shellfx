@@ -16,15 +16,18 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import javafx.collections.ListChangeListener;
+import com.techsenger.annotations.Nullable;
+import java.util.function.Supplier;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.InputEvent;
 
 /**
- * Wires runtime behavior onto a {@link ManagedContextMenu} built via {@code MenuBuilder#buildContextMenu} -
- * action dispatch for its items (including nested menus, and items added/removed after {@link #manage()}
- * runs - the same registry-driven activation/deactivation that can change an already-built {@link ManagedMenu}
- * tree can just as well change one already handed to a {@code ContextMenuManager}), and, on showing, the same
- * visibility resolution {@link MenuBarManager} uses for the persistent menu bar.
+ * Wires runtime behavior onto a {@link ContextMenu} built via {@code ManagedControlBuilder#buildContextMenu} -
+ * action dispatch for its items (including nested menus) and, on showing, the same visibility resolution
+ * {@link MenuBarManager} uses for the persistent menu bar. The menu structure is never changed after it is
+ * built.
  *
  * <p>Unlike {@link MenuBarManager}, which manages one {@code MenuBar} kept alive for the shell's lifetime and
  * must disambiguate a mouse click from a keyboard accelerator, a {@code ContextMenuManager} has no competing
@@ -34,24 +37,25 @@ import javafx.scene.control.MenuItem;
  */
 public class ContextMenuManager {
 
-    private final ManagedContextMenu contextMenu;
+    private final Supplier<@Nullable InputEvent> inputEvent;
 
-    private final ListChangeListener<MenuItem> menuItemsListener =
-            (ListChangeListener.Change<? extends MenuItem> c) -> processMenuListChange(c);
-
-    public ContextMenuManager(ManagedContextMenu contextMenu) {
-        this.contextMenu = contextMenu;
-    }
-
-    public void manage() {
-        contextMenu.getItems().addListener(menuItemsListener);
+    /**
+     * Creates a manager of {@code contextMenu} and wires its behavior right away. The context menu must be fully
+     * built; the manager is discarded together with it.
+     *
+     * @param contextMenu the context menu to manage.
+     * @param inputEvent supplies the input event the window of the menu is dispatching right now, which tells an
+     *     accelerator from a mouse click.
+     */
+    public ContextMenuManager(ContextMenu contextMenu, Supplier<@Nullable InputEvent> inputEvent) {
+        this.inputEvent = inputEvent;
         initializeItems(contextMenu.getItems());
         contextMenu.setOnShowing(e -> {
             var handler = ContextMenuHandler.getHandler(contextMenu);
             if (handler != null) {
                 handler.onShowing();
                 handler.onUpdate();
-                if (!contextMenu.isVisible()) {
+                if (!ContextMenuHandler.isVisible(contextMenu)) {
                     e.consume();
                     return;
                 }
@@ -71,16 +75,6 @@ public class ContextMenuManager {
         });
     }
 
-    private <T extends MenuItem> void processMenuListChange(ListChangeListener.Change<T> c) {
-        while (c.next()) {
-            if (c.wasAdded()) {
-                initializeItems(c.getAddedSubList());
-            } else if (c.wasRemoved()) {
-                deinitializeItems(c.getRemoved());
-            }
-        }
-    }
-
     /**
      * Recursively wires action dispatch for {@code items}, including nested menus.
      *
@@ -88,42 +82,14 @@ public class ContextMenuManager {
      */
     private void initializeItems(Iterable<? extends MenuItem> items) {
         for (var item : items) {
-            if (item instanceof ManagedMenu managedMenu) {
-                initializeMenu(managedMenu);
-            } else if (item instanceof ManagedItem) {
-                var managedItem = (MenuItem & ManagedItem) item;
-                var handler = MenuItemHandler.getHandler(managedItem);
+            if (item instanceof Menu menu) {
+                initializeItems(menu.getItems());
+            } else {
+                var handler = MenuItemHandler.getHandler(item);
                 if (handler != null) {
-                    item.setOnAction(e -> handler.onAction());
+                    item.setOnAction(e -> MenuItemDispatcher.dispatch(item, handler, inputEvent));
                 }
             }
         }
-    }
-
-    private void initializeMenu(ManagedMenu managedMenu) {
-        managedMenu.getItems().addListener(menuItemsListener);
-        initializeItems(managedMenu.getItems());
-    }
-
-    /**
-     * Recursively unwires action dispatch for {@code items}, including nested menus - called for items removed
-     * from an already-{@link #manage()}d menu, so a stale handler never keeps firing after removal.
-     *
-     * @param items the items to unwire, in any order.
-     */
-    private void deinitializeItems(Iterable<? extends MenuItem> items) {
-        for (var item : items) {
-            if (item instanceof ManagedMenu managedMenu) {
-                deinitializeMenu(managedMenu);
-            } else if (item instanceof MenuItem mi) {
-                mi.setOnAction(null);
-            }
-        }
-    }
-
-    private void deinitializeMenu(ManagedMenu managedMenu) {
-        managedMenu.getItems().removeListener(menuItemsListener);
-        managedMenu.setOnAction(null);
-        deinitializeItems(managedMenu.getItems());
     }
 }

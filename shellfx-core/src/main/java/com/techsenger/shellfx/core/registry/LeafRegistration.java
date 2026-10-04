@@ -17,23 +17,23 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.shellfx.material.menu.ManagedMenu;
-import com.techsenger.shellfx.material.menu.MenuGroupName;
+import com.techsenger.shellfx.material.slot.Slot;
 
 /**
+ * Puts the control a factory creates (a menu item, a button) into a group slot at a position among its siblings.
  *
  * @author Pavel Castornii
  */
-class MenuRegistration<T extends ParentView<?>> extends AbstractMenuRegistration<T, ManagedMenu> {
+final class LeafRegistration extends AbstractControlRegistration {
 
-    private final MenuGroupName<?> groupName;
+    private final int position;
 
-    MenuRegistration(MenuGroupName<?> groupKey, ControlFactory<T, ManagedMenu> factory) {
-        super(MenuElementType.MENU, factory);
-        this.groupName = groupKey;
+    LeafRegistration(Slot<?> group, int position, ControlFactory<? extends ParentView<?>, ?> factory) {
+        super(group, factory);
+        this.position = position;
     }
 
-    public MenuGroupName<?> getGroupName() {
-        return groupName;
+    int getPosition() {
+        return position;
     }
 }

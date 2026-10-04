@@ -18,23 +18,24 @@ package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.registry.AbstractControlRegistrar;
-import com.techsenger.shellfx.core.registry.ControlFactory;
 import com.techsenger.shellfx.core.window.WindowArrangement;
 import com.techsenger.shellfx.demo.ApplicationType;
-import com.techsenger.shellfx.demo.ShellControls;
+import com.techsenger.shellfx.demo.SlotRegistrar;
+import com.techsenger.shellfx.demo.Slots;
 import com.techsenger.shellfx.demo.page.PageMenuType;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.material.menu.ManagedMenu;
-import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import com.techsenger.shellfx.material.menu.MenuHandler;
 import com.techsenger.shellfx.material.menu.MenuItemHandler;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
 /**
- * Registers every menu, group, and item the demo application contributes, gated by {@link ApplicationType}.
+ * Registers the control of every menu and item the demo application contributes, gated by
+ * {@link ApplicationType}; where the menus and groups sit is set by {@link SlotRegistrar}.
  *
  * @author Pavel Castornii
  */
@@ -45,7 +46,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     private final ShellView<?> shell;
 
     public ModuleControlRegistrar(ApplicationType appType, ShellView<?> shell) {
-        super(shell.getControlRegistry());
+        super(shell.getContext().getControlRegistry());
 
         this.appType = appType;
         this.shell = shell;
@@ -53,9 +54,9 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
 
     @Override
     public void register() {
+        registerMainMenu();
         if (appType != ApplicationType.STYLES_ONLY) {
             registerFileMenu();
-            registerFileGroups();
             if (appType != ApplicationType.MDI) {
                 registerMainTabItem();
                 registerPageTabItem();
@@ -68,14 +69,11 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
         }
         if (appType == ApplicationType.BROWSER || appType == ApplicationType.IDE) {
             registerExtraMenu();
-            registerFooGroup();
-            registerBarGroup();
             registerFooItem();
             registerBarItem();
         }
         if (appType == ApplicationType.MDI) {
             registerWindowMenu();
-            registerWindowGroups();
             registerWindowsItem();
             registerCascadeItem();
             registerTileVerticalItem();
@@ -85,218 +83,163 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerFileMenu() {
-        ControlFactory<ShellView<?>, ManagedMenu> f = (v) -> {
-            var menu = new ManagedMenu(ShellControls.FileMenu.NAME, "_File", 0);
-            return menu;
-        };
-        addRegistration(getRegistry().registerMenu(ShellControls.MAIN_MENU_GROUP, f));
-    }
-
-    protected void registerFileGroups() {
-        ControlFactory<ShellView<?>, ManagedMenuGroup> f = (v) -> {
-            return new ManagedMenuGroup(ShellControls.FileMenu.DEMO_GROUP, 0);
-        };
-        addRegistration(getRegistry().registerMenuGroup(ShellControls.FileMenu.NAME, f));
-        f = (v) -> new ManagedMenuGroup(ShellControls.FileMenu.APPEARANCE_GROUP, 100);
-        addRegistration(getRegistry().registerMenuGroup(ShellControls.FileMenu.NAME, f));
-        f = (v) -> new ManagedMenuGroup(ShellControls.FileMenu.LAST_GROUP, 200);
-        addRegistration(getRegistry().registerMenuGroup(ShellControls.FileMenu.NAME, f));
+        register(Slots.FileMenu.MENU, v -> new Menu("_File"));
     }
 
     protected void registerMainTabItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Main Tab", 100);
+        register(Slots.FileMenu.DEMO_GROUP, 100, v -> {
+            var item = new MenuItem("Main Tab");
             MenuItemHandler.setHandler(item, new MainTabItemHandler(shell, item));
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.FileMenu.DEMO_GROUP, f));
+        });
     }
 
     protected void registerPageTabItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Page Tab", 200);
+        register(Slots.FileMenu.DEMO_GROUP, 200, v -> {
+            var item = new MenuItem("Page Tab");
             MenuItemHandler.setHandler(item, new PageItemHandler(shell, item, PageMenuType.FLAT));
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.FileMenu.DEMO_GROUP, f));
+        });
     }
 
     protected void registerTreePageTabItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Tree Page Tab", 250);
+        register(Slots.FileMenu.DEMO_GROUP, 250, v -> {
+            var item = new MenuItem("Tree Page Tab");
             MenuItemHandler.setHandler(item, new PageItemHandler(shell, item, PageMenuType.TREE));
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.FileMenu.DEMO_GROUP, f));
+        });
     }
 
     protected void registerDialogsItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Dialogs", 300);
+        register(Slots.FileMenu.DEMO_GROUP, 300, v -> {
+            var item = new MenuItem("Dialogs");
             MenuItemHandler.setHandler(item, new DialogsItemHandler(shell, item));
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.FileMenu.DEMO_GROUP, f));
+        });
     }
 
     protected void registerDevToolsItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("DevTools", 400);
+        register(Slots.FileMenu.DEMO_GROUP, 400, v -> {
+            var item = new MenuItem("DevTools");
             MenuItemHandler.setHandler(item, new DevToolsItemHandler(shell, item));
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.FileMenu.DEMO_GROUP, f));
+        });
+    }
+
+    protected void registerMainMenu() {
+        register(Slots.MAIN_MENU, v -> new MenuBar());
     }
 
     protected void registerSettingsItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("_Settings", 100);
+        register(Slots.FileMenu.APPEARANCE_GROUP, 100, v -> {
+            var item = new MenuItem("_Settings");
             MenuItemHandler.setHandler(item, new SettingsItemHandler(shell, item));
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.FileMenu.APPEARANCE_GROUP, f));
+        });
     }
 
     protected void registerExitItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("E_xit", 100);
+        register(Slots.FileMenu.LAST_GROUP, 100, v -> {
+            var item = new MenuItem("E_xit");
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new ExitItemHandler(shell, item));
             return item;
-
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.FileMenu.LAST_GROUP, f));
+        });
     }
 
     protected void registerExtraMenu() {
-        ControlFactory<ShellView<?>, ManagedMenu> f = (v) -> {
-            var menu = new ManagedMenu(ShellControls.ExtraMenu.NAME, "_Extra", 200);
+        register(Slots.ExtraMenu.MENU, v -> {
+            var menu = new Menu("_Extra");
             MenuHandler.setHandler(menu, new ExtraMenuHandler(menu, v));
             return menu;
-        };
-        addRegistration(getRegistry().registerMenu(ShellControls.MAIN_MENU_GROUP, f));
-    }
-
-    protected void registerFooGroup() {
-        ControlFactory<ShellView<?>, ManagedMenuGroup> f = (v) -> {
-            return new ManagedMenuGroup(ShellControls.ExtraMenu.FOO_GROUP, 0);
-        };
-        addRegistration(getRegistry().registerMenuGroup(ShellControls.ExtraMenu.NAME, f));
-    }
-
-    protected void registerBarGroup() {
-        ControlFactory<ShellView<?>, ManagedMenuGroup> f = (v) -> {
-            return new ManagedMenuGroup(ShellControls.ExtraMenu.BAR_GROUP, 100);
-        };
-        addRegistration(getRegistry().registerMenuGroup(ShellControls.ExtraMenu.NAME, f));
+        });
     }
 
     /**
      * Foo item will be in the foo group.
      */
     protected void registerFooItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("_Foo", 100);
+        register(Slots.ExtraMenu.FOO_GROUP, 100, v -> {
+            var item = new MenuItem("_Foo");
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new FooItemHandler(v, item));
             return item;
-
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.ExtraMenu.FOO_GROUP, f));
+        });
     }
 
     /**
      * Bar item will be in the bar group.
      */
     protected void registerBarItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("_Bar", 100);
+        register(Slots.ExtraMenu.BAR_GROUP, 100, v -> {
+            var item = new MenuItem("_Bar");
             item.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new BarItemHandler(v, item));
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.ExtraMenu.BAR_GROUP, f));
+        });
     }
 
     protected void registerWindowMenu() {
-        ControlFactory<ShellView<?>, ManagedMenu> f = (v) -> {
-            var menu = new ManagedMenu(ShellControls.WindowMenu.NAME, "_Window", 100);
-            return menu;
-        };
-        addRegistration(getRegistry().registerMenu(ShellControls.MAIN_MENU_GROUP, f));
-    }
-
-    protected void registerWindowGroups() {
-        ControlFactory<ShellView<?>, ManagedMenuGroup> f = (v) -> {
-            return new ManagedMenuGroup(ShellControls.WindowMenu.DEFAULT_GROUP, 0);
-        };
-        addRegistration(getRegistry().registerMenuGroup(ShellControls.WindowMenu.NAME, f));
-        f = (v) -> new ManagedMenuGroup(ShellControls.WindowMenu.ARRANGEMENT_GROUP, 100);
-        addRegistration(getRegistry().registerMenuGroup(ShellControls.WindowMenu.NAME, f));
+        register(Slots.WindowMenu.MENU, v -> new Menu("_Window"));
     }
 
     protected void registerWindowsItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Create Windows", 0);
+        register(Slots.WindowMenu.DEFAULT_GROUP, 0, v -> {
+            var item = new MenuItem("Create Windows");
             MenuItemHandler.setHandler(item, new WindowsItemHandler(shell, item));
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.WindowMenu.DEFAULT_GROUP, f));
+        });
     }
 
     protected void registerCascadeItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Cascade", 0);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem>(shell, item) {
+        register(Slots.WindowMenu.ARRANGEMENT_GROUP, 0, v -> {
+            var item = new MenuItem("Cascade");
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, MenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.CASCADE);
                 }
             });
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.WindowMenu.ARRANGEMENT_GROUP, f));
+        });
     }
 
     protected void registerTileVerticalItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Tile Vertically", 100);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem>(shell, item) {
+        register(Slots.WindowMenu.ARRANGEMENT_GROUP, 100, v -> {
+            var item = new MenuItem("Tile Vertically");
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, MenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_VERTICAL);
                 }
             });
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.WindowMenu.ARRANGEMENT_GROUP, f));
+        });
     }
 
     protected void registerTileHorizontalItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Tile Horizontally", 200);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem>(shell, item) {
+        register(Slots.WindowMenu.ARRANGEMENT_GROUP, 200, v -> {
+            var item = new MenuItem("Tile Horizontally");
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, MenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_HORIZONTAL);
                 }
             });
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.WindowMenu.ARRANGEMENT_GROUP, f));
+        });
     }
 
     protected void registerTileGridItem() {
-        ControlFactory<ShellView<?>, ManagedMenuItem> f = (v) -> {
-            var item = new ManagedMenuItem("Tile Grid", 300);
-            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem>(shell, item) {
+        register(Slots.WindowMenu.ARRANGEMENT_GROUP, 300, v -> {
+            var item = new MenuItem("Tile Grid");
+            MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, MenuItem>(shell, item) {
                 @Override
                 public void onAction() {
                     shell.getComposer().arrangeWindows(WindowArrangement.TILE_GRID);
                 }
             });
             return item;
-        };
-        addRegistration(getRegistry().registerMenuItem(ShellControls.WindowMenu.ARRANGEMENT_GROUP, f));
+        });
     }
 }

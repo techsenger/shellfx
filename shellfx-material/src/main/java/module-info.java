@@ -35,6 +35,7 @@ module com.techsenger.shellfx.material {
     exports com.techsenger.shellfx.material.layout;
     exports com.techsenger.shellfx.material.menu;
     exports com.techsenger.shellfx.material.pane;
+    exports com.techsenger.shellfx.material.slot;
     exports com.techsenger.shellfx.material.style;
     exports com.techsenger.shellfx.material.table;
     exports com.techsenger.shellfx.material.textarea;

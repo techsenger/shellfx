@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.menu;
+package com.techsenger.shellfx.material.slot;
 
-import com.techsenger.shellfx.material.Positioned;
+import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
- * Marker interface for any menu element managed by ShellFX — combines the two capabilities
- * required for participation in dynamic menu assembly: position within a group, and group
- * membership itself.
+ * The slot of a tool bar; groups of controls are put into it. The tool bar itself is created by the component.
  *
+ * @param <V> the view type of the component this slot belongs to
  * @author Pavel Castornii
  */
-public interface ManagedItem extends Positioned, Groupable {
+public final class ToolBarSlot<V extends ParentView<?>> extends AbstractSlot<V> {
 
+    public ToolBarSlot(Class<? super V> componentClass, String text) {
+        super(componentClass, text);
+    }
 }

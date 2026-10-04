@@ -17,15 +17,14 @@
 package com.techsenger.shellfx.material.menu;
 
 /**
- * Represents behavior attached to a managed menu or menu item, kept as a plain object rather than being expressed
+ * Represents behavior attached to a menu or menu item, kept as a plain object rather than being expressed
  * as methods on the control itself. This separation exists for two reasons.
  *
  * <p>First, it decouples behavior from the JavaFX control hierarchy. {@code Menu}, {@code MenuItem},
- * {@code CheckMenuItem} and {@code RadioMenuItem} form a fixed single-inheritance hierarchy that managed types
- * ({@code ManagedMenu}, {@code ManagedMenuItem}, {@code ManagedCheckMenuItem}, etc.) must extend directly, leaving
- * no room to also extend a common behavioral base class. Because a {@code Handler} is a separate object, its own
+ * {@code CheckMenuItem} and {@code RadioMenuItem} form a fixed single-inheritance hierarchy that leaves no room
+ * to also extend a common behavioral base class. Because a {@code Handler} is a separate object, its own
  * class hierarchy is free of that constraint, so shared behavior (e.g. confirming before an action runs) can be
- * reused across otherwise unrelated managed item types.
+ * reused across otherwise unrelated menu item types.
  *
  * <p>Second, it avoids colliding with JavaFX's own {@code onShowing}/{@code onHiding}/{@code onAction} properties
  * on {@code Menu} and {@code MenuItem}. Those properties are already used internally by {@code MenuManager} to

@@ -16,10 +16,17 @@
 
 package com.techsenger.shellfx.core.registry;
 
+import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.slot.Slot;
+
 /**
+ * Binds the factory of the control a slot stands for (a menu, a context menu) to that slot.
  *
  * @author Pavel Castornii
  */
-enum MenuElementType {
-    GROUP, MENU, ITEM
+final class NodeRegistration extends AbstractControlRegistration {
+
+    NodeRegistration(Slot<?> slot, ControlFactory<? extends ParentView<?>, ?> factory) {
+        super(slot, factory);
+    }
 }

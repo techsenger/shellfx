@@ -16,24 +16,20 @@
 
 package com.techsenger.shellfx.core;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ChildView;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.area.AreaView;
-import com.techsenger.shellfx.core.registry.ControlBuilder;
-import com.techsenger.shellfx.core.registry.ControlRegistry;
+import com.techsenger.shellfx.core.registry.ManagedControlBuilder;
 import com.techsenger.shellfx.core.window.AbstractHostWindowView;
 import com.techsenger.shellfx.material.menu.MenuBarManager;
-import com.techsenger.shellfx.material.menu.MenuGroupName;
+import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import java.util.List;
-import java.util.Objects;
-import javafx.application.Application;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.MenuBar;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HeaderBar;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -151,29 +147,24 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
         }
     }
 
-    private final Application application;
+    private @Nullable MenuBar menuBar;
 
-    private final MenuBar menuBar = new MenuBar();
+    private @Nullable MenuBarManager menuBarManager;
 
-    private final MenuBarManager menuBarManager;
+    private final MenuBarSlot<?> menuBarSlot;
 
-    private final MenuGroupName<?> menuBarGroup;
+    private final ShellViewContext context;
 
-    private final ControlRegistry controlRegistry;
-
-    public DefaultShellView(VM viewModel, Application application, List<Stylesheet> stylesheets,
-            MenuGroupName<?> menuBarGroup, ControlRegistry controlRegistry) {
-        this(viewModel, application, new Stage(), stylesheets, menuBarGroup, controlRegistry);
+    public DefaultShellView(VM viewModel, List<Stylesheet> stylesheets, MenuBarSlot<?> menuBarSlot,
+            ShellViewContext context) {
+        this(viewModel, new Stage(), stylesheets, menuBarSlot, context);
     }
 
-    public DefaultShellView(VM viewModel, Application application, Stage stage, List<Stylesheet> stylesheets,
-            MenuGroupName<?> menuBarGroup, ControlRegistry controlRegistry) {
+    public DefaultShellView(VM viewModel, Stage stage, List<Stylesheet> stylesheets, MenuBarSlot<?> menuBarSlot,
+            ShellViewContext context) {
         super(viewModel, stage, stylesheets);
-        Objects.requireNonNull(application, "Application can't be null");
-        this.application = application;
-        this.menuBarManager = new MenuBarManager(this.menuBar);
-        this.menuBarGroup = menuBarGroup;
-        this.controlRegistry = controlRegistry;
+        this.menuBarSlot = menuBarSlot;
+        this.context = context;
         getComposer().setMenuAware(this);
     }
 
@@ -186,22 +177,38 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
     }
 
     @Override
-    public ControlRegistry getControlRegistry() {
-        return controlRegistry;
+    public ShellViewContext getContext() {
+        return context;
     }
 
     @Override
     public void upgradeMenuBar() {
-        this.menuBar.getMenus().clear();
-        var builder = new ControlBuilder(controlRegistry);
-        var menus = builder.buildMenus(menuBarGroup, this);
-        this.menuBar.getMenus().addAll(menus);
+        var children = getLeftBox().getChildren();
+        var index = children.size();
+        if (this.menuBar != null) {
+            for (var menu : this.menuBar.getMenus()) {
+                menu.hide();
+            }
+            index = children.indexOf(this.menuBar);
+            children.remove(this.menuBar);
+        }
+        var builder = new ManagedControlBuilder(context.getSlotRegistry(), context.getControlRegistry());
+        this.menuBar = builder.buildMenuBar(menuBarSlot, this);
+        if (this.menuBar == null) {
+            this.menuBarManager = null;
+        } else {
+            this.menuBarManager = new MenuBarManager(this.menuBar, this::getInputEvent);
+            children.add(index, this.menuBar);
+        }
         logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());
         updateMenuBar();
     }
 
     @Override
     public void updateMenuBar() {
+        if (this.menuBarManager == null) {
+            return;
+        }
         this.menuBarManager.updateMenuBar();
         logger.debug("{} Menu bar updated", getDescriptor().getLogPrefix());
     }
@@ -220,24 +227,10 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
     protected void build() {
         super.build();
         getLeftBox().getChildren().remove(getTitleLabel());
-        getLeftBox().getChildren().add(menuBar);
-    }
-
-    @Override
-    protected void addHandlers() {
-        super.addHandlers();
-        getStage().getScene().addEventFilter(MouseEvent.MOUSE_CLICKED,
-                e -> menuBarManager.setLastMouseClickTime(System.nanoTime()));
     }
 
     @Override
     protected HeaderBar getTitleBar() {
         return (HeaderBar) super.getTitleBar();
-    }
-
-    @Override
-    protected void fixAcceleratorKeyPressed(KeyEvent e) {
-        menuBarManager.setLastKeyPressedTime(System.nanoTime());
-        super.fixAcceleratorKeyPressed(e);
     }
 }

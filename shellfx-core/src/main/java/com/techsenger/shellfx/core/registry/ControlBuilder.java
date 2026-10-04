@@ -16,268 +16,86 @@
 
 package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.shellfx.material.menu.ContextMenuHandler;
-import com.techsenger.shellfx.material.menu.ManagedContextMenu;
-import com.techsenger.shellfx.material.menu.ManagedItem;
-import com.techsenger.shellfx.material.menu.ManagedMenu;
-import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
-import com.techsenger.shellfx.material.menu.MenuGroupName;
-import com.techsenger.shellfx.material.menu.MenuName;
-import com.techsenger.toolkit.core.Pair;
+import com.techsenger.shellfx.material.slot.GroupSlot;
+import com.techsenger.shellfx.material.slot.ToolBarSlot;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Control;
+import javafx.scene.control.Labeled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * Assembles the controls of the groups put into a tool bar slot without knowing anything about them beyond
+ * their type: groups and controls come back in the order of their positions, so the caller only decides how to lay them
+ * out (for example, with a separator between groups). For menus see {@link ManagedControlBuilder}. What was built,
+ * with the registered positions, is logged at debug level.
  *
  * @author Pavel Castornii
  */
 public class ControlBuilder {
 
-    private static class MenuDescriptor {
+    private static final Logger logger = LoggerFactory.getLogger(ControlBuilder.class);
 
-        private final MenuGroupName<?> groupName;
+    private final SlotRegistry slotRegistry;
 
-        private final ManagedMenu menu;
+    private final ControlRegistry controlRegistry;
 
-        MenuDescriptor(MenuGroupName<?> groupName, ManagedMenu menu) {
-            this.groupName = groupName;
-            this.menu = menu;
-        }
-    }
-
-    private static class GroupDescriptor {
-
-        private final MenuName<?> menuName;
-
-        private final ManagedMenuGroup group;
-
-        GroupDescriptor(MenuName<?> menuName, ManagedMenuGroup group) {
-            this.menuName = menuName;
-            this.group = group;
-        }
-    }
-
-    private static final class BuildContext {
-
-        private final Map<MenuName<?>, MenuDescriptor> menusByName = new HashMap<>();
-
-        private final Map<MenuGroupName<?>, GroupDescriptor> groupsByName = new HashMap<>();
-
-        private final Map<MenuGroupName<?>, Set<MenuItem>> itemsByGroup = new HashMap<>();
-    }
-
-    private final ControlRegistry registry;
-
-    public ControlBuilder(ControlRegistry registry) {
-        this.registry = registry;
+    public ControlBuilder(SlotRegistry slotRegistry, ControlRegistry controlRegistry) {
+        this.slotRegistry = slotRegistry;
+        this.controlRegistry = controlRegistry;
     }
 
     /**
-     * Builds every menu registered directly under {@code topLevelGroup} — typically the root group of one
-     * {@code MenuBar}, though nothing here depends on that; a program with several menu bars calls this once per
-     * bar, with each bar's own group. Empty menus are removed from the result.
+     * Builds the controls of every group put directly into {@code toolBar}. Empty groups are left out.
      *
-     * @param topLevelGroup the group whose menus are built
-     * @param view          the component view passed to each control factory; its class (and ancestors/interfaces)
-     *     determines which registrations apply, see {@link ControlRegistry#getRegistrationsFor(Object)}
-     * @return a sorted list of the built {@link Menu} instances
+     * @param toolBar     the slot of the tool bar whose groups are built
+     * @param controlType the type of controls the caller expects
+     * @param view        the component view passed to each control factory; its class (and ancestors/interfaces)
+     *     determines which registrations apply
+     * @param <C>         the type of controls the caller expects
+     * @return the non-empty groups sorted by position, each with its controls sorted by position
      */
-    public List<Menu> buildMenus(MenuGroupName<?> topLevelGroup, ParentView<?> view) {
-        var registrations = registry.getRegistrationsFor(view);
-        var ctx = new BuildContext();
-        buildElements(view, new ArrayList<>(registrations), ctx);
-        List<ManagedMenu> topMenus = new ArrayList<>();
-        Map<MenuName<?>, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
-        // Distribute menus — top-level ones go to the result list, nested ones are added to their parent group
-        for (var entry : ctx.menusByName.entrySet()) {
-            var descriptor = entry.getValue();
-            if (descriptor.groupName == topLevelGroup) {
-                topMenus.add(descriptor.menu);
-            } else {
-                var groupDescriptor = ctx.groupsByName.get(descriptor.groupName);
-                if (groupDescriptor != null) {
-                    groupDescriptor.group.getItems().add(descriptor.menu);
-                    descriptor.menu.setGroup(groupDescriptor.group);
-                }
+    public <C> List<List<C>> build(ToolBarSlot<?> toolBar, Class<C> controlType, ParentView<?> view) {
+        var tree = new SlotTree(slotRegistry, controlRegistry, view);
+        var result = new ArrayList<List<C>>();
+        var description = new StringBuilder();
+        for (var link : tree.getChildren(toolBar)) {
+            var group = link.getChild();
+            if (!(group instanceof GroupSlot<?, ?>) || tree.getLeaves(group).isEmpty()) {
+                continue;
             }
-            menusAndGroups.put(entry.getKey(), new Pair<>(descriptor.menu, new ArrayList<>()));
+            description.append(System.lineSeparator()).append("    Group: ").append(group.getText());
+            description.append(", position: ").append(link.getPosition());
+            var controls = new ArrayList<C>();
+            for (var leaf : tree.getLeaves(group)) {
+                var control = controlType.cast(leaf.create(view));
+                controls.add(control);
+                description.append(System.lineSeparator()).append("        Control: ").append(describe(control));
+                description.append(", position: ").append(leaf.getPosition());
+            }
+            result.add(controls);
         }
-        assembleMenus(ctx, menusAndGroups);
-        Collections.sort(topMenus, (p1, p2) -> Integer.compare(p1.getPosition(), p2.getPosition()));
-        removeEmptyMenus(topMenus);
-        return (List) topMenus;
+        if (logger.isDebugEnabled()) {
+            logger.debug("Controls built for {}:{}Tool bar: {}{}", tree.getViewName(), System.lineSeparator(),
+                    toolBar.getText(), description);
+        }
+        return result;
     }
 
     /**
-     * Builds a single {@link Menu} for the given component and menu name. All groups and items applicable to
-     * {@code view}'s class (see {@link ControlRegistry#getRegistrationsFor(Object)}) are assembled into the menu.
-     * Empty menus are removed from the result.
-     *
-     * @param menuName the name of the menu to build
-     * @param view     the component view passed to each control factory
-     * @return the assembled {@link Menu}, or {@code null} if no registration exists for the given component and
-     *         menu name
+     * Names a control by its type and the most telling text it has: its own text, or else its tooltip.
      */
-    public @Nullable Menu buildMenu(MenuName<?> menuName, ParentView<?> view) {
-        var registrations = registry.getRegistrationsFor(view);
-        var ctx = new BuildContext();
-        buildElements(view, new ArrayList<>(registrations), ctx);
-        var menuDescriptor = ctx.menusByName.get(menuName);
-        if (menuDescriptor == null) {
-            return null;
+    private String describe(Object control) {
+        String text = null;
+        if (control instanceof Labeled labeled) {
+            text = labeled.getText();
         }
-        Map<MenuName<?>, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups = new HashMap<>();
-        for (var entry : ctx.menusByName.entrySet()) {
-            var descriptor = entry.getValue();
-            if (descriptor.groupName != null) {
-                var groupDescriptor = ctx.groupsByName.get(descriptor.groupName);
-                if (groupDescriptor != null) {
-                    groupDescriptor.group.getItems().add(descriptor.menu);
-                    descriptor.menu.setGroup(groupDescriptor.group);
-                }
-            }
-            menusAndGroups.put(entry.getKey(), new Pair<>(descriptor.menu, new ArrayList<>()));
+        if ((text == null || text.isEmpty()) && control instanceof Control c && c.getTooltip() != null) {
+            text = c.getTooltip().getText();
         }
-        assembleMenus(ctx, menusAndGroups);
-        if (removeEmptyMenus(menuDescriptor.menu)) {
-            return null;
-        }
-        return menuDescriptor.menu;
-    }
-
-    /**
-     * Builds a {@link ManagedContextMenu} for the given component and menu name. {@code ContextMenu} does not
-     * extend {@link Menu}, so it cannot be produced directly by {@link #buildMenu} - this materializes a fresh
-     * {@code ManagedContextMenu} from the same assembled root and copies its items over. Attach a
-     * {@link ContextMenuHandler} to the returned menu (before showing it) if whether to show the popup at all
-     * depends on something other than which items it ended up with.
-     *
-     * @param menuName the name of the menu to build
-     * @param view     the component view passed to each control factory
-     * @return the assembled menu, or {@code null} if no registration exists or it ended up empty
-     */
-    public @Nullable ManagedContextMenu buildContextMenu(MenuName<?> menuName, ParentView<?> view) {
-        var menu = buildMenu(menuName, view);
-        if (menu == null) {
-            return null;
-        }
-        var contextMenu = new ManagedContextMenu();
-        contextMenu.getItems().setAll(menu.getItems());
-        return contextMenu;
-    }
-
-    /**
-     * Instantiates all menu elements from the given registrations and populates the build context.
-     *
-     * @param view the component view passed to each control factory
-     * @param regs the list of registrations to process
-     * @param ctx  the context that accumulates menus, groups, and items
-     */
-    private void buildElements(ParentView<?> view, List<AbstractMenuRegistration<?, ?>> regs, BuildContext ctx) {
-        for (var r : regs) {
-            switch (r.getType()) {
-                case MENU:
-                    var mr = (MenuRegistration<ParentView<?>>) r;
-                    var menu = mr.getFactory().create(view);
-                    ctx.menusByName.put(menu.getName(), new MenuDescriptor(mr.getGroupName(), menu));
-                    break;
-                case GROUP:
-                    var gr = (MenuGroupRegistration<ParentView<?>>) r;
-                    var group = gr.getFactory().create(view);
-                    ctx.groupsByName.put(group.getName(), new GroupDescriptor(gr.getMenuName(), group));
-                    break;
-                case ITEM:
-                    var ir = (MenuItemRegistration<ParentView<?>, ?>) r;
-                    var item = ir.getFactory().create(view);
-                    ctx.itemsByGroup.computeIfAbsent(ir.getGroupKey(), k -> new HashSet<>()).add(item);
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-        }
-    }
-
-    /**
-     * Assembles groups and items into their parent menus. Groups are sorted by position and separated by
-     * {@link SeparatorMenuItem}s. Empty groups are skipped. Any item or nested menu that implements
-     * {@link ManagedItem} has its group back-reference set; items of other kinds are still added to the menu but
-     * are not tracked as belonging to a group.
-     *
-     * @param ctx            the build context containing all instantiated elements
-     * @param menusAndGroups a map from menu name to its menu instance and the list of groups that belong to it
-     */
-    private void assembleMenus(BuildContext ctx,
-            Map<MenuName<?>, Pair<ManagedMenu, List<GroupDescriptor>>> menusAndGroups) {
-        // Assign items to their groups
-        for (var entry : ctx.itemsByGroup.entrySet()) {
-            var groupDescriptor = ctx.groupsByName.get(entry.getKey());
-            if (groupDescriptor != null) {
-                for (var item : entry.getValue()) {
-                    groupDescriptor.group.getItems().add(item);
-                    if (item instanceof ManagedItem managedItem) {
-                        managedItem.setGroup(groupDescriptor.group);
-                    }
-                }
-            }
-        }
-        // Assign groups to their parent menus
-        for (var entry : ctx.groupsByName.entrySet()) {
-            var groupDescriptor = entry.getValue();
-            var menusAndGroup = menusAndGroups.get(groupDescriptor.menuName);
-            if (menusAndGroup != null) {
-                menusAndGroup.getSecond().add(groupDescriptor);
-            }
-        }
-        // Build each menu from its sorted groups
-        for (var entry : menusAndGroups.entrySet()) {
-            var menu = entry.getValue().getFirst();
-            var groups = entry.getValue().getSecond();
-            List<MenuItem> menuElements = new ArrayList<>();
-            groups.sort((o1, o2) -> Integer.compare(o1.group.getPosition(), o2.group.getPosition()));
-            for (var i = 0; i < groups.size(); i++) {
-                var group = groups.get(i).group;
-                if (group.getItems().isEmpty()) {
-                    continue;
-                }
-                if (i != 0) {
-                    menuElements.add(new SeparatorMenuItem());
-                }
-                group.sort();
-                menuElements.addAll(group.getItems());
-            }
-            menu.getItems().addAll(menuElements);
-        }
-    }
-
-    private void removeEmptyMenus(List<ManagedMenu> menus) {
-        for (Iterator<ManagedMenu> iterator = menus.iterator(); iterator.hasNext();) {
-            Menu menu = iterator.next();
-            if (removeEmptyMenus(menu)) {
-                iterator.remove();
-            }
-        }
-    }
-
-    private boolean removeEmptyMenus(Menu menu) {
-        for (Iterator<MenuItem> iterator = menu.getItems().iterator(); iterator.hasNext();) {
-            MenuItem item = iterator.next();
-            if (item instanceof Menu) {
-                if (removeEmptyMenus((Menu) item)) {
-                    iterator.remove();
-                }
-            }
-        }
-        return menu.getItems().isEmpty();
+        var type = control.getClass().getSimpleName();
+        return text == null || text.isEmpty() ? type : type + " '" + text + "'";
     }
 }

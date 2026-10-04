@@ -17,10 +17,11 @@
 package com.techsenger.shellfx.core.registry;
 
 /**
+ * Registers a set of contributions with a registry, and withdraws all of them on demand.
  *
  * @author Pavel Castornii
  */
-public interface ControlRegistrar {
+public interface Registrar {
 
     void register();
 

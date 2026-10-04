@@ -23,6 +23,7 @@ import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import java.util.List;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.scene.input.InputEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
@@ -103,6 +104,17 @@ public interface WindowView<VM extends WindowViewModel<?>> extends ChildView<VM>
      * @return the {@link Stage} of this window
      */
     Stage getStage();
+
+    /**
+     * Returns the input event (key, mouse, etc.) this window is dispatching right now, so code that only sees a
+     * derived event, such as a menu item action, can tell whether it was caused by an accelerator or a click.
+     *
+     * <p>This method is intended for {@link WindowType#TOP_LEVEL} windows only. Clicks inside popups (menus) are
+     * dispatched by the popup's own window, so for them the result is {@code null}.
+     *
+     * @return the event being dispatched, or {@code null} if there is none.
+     */
+    @Nullable InputEvent getInputEvent();
 
     @Override
     Region getNode();

@@ -18,7 +18,7 @@ package com.techsenger.shellfx.core.tab;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.AbstractChildViewModel;
-import com.techsenger.shellfx.core.ShellContext;
+import com.techsenger.shellfx.core.ShellViewModelContext;
 import com.techsenger.shellfx.material.icon.Icon;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -216,9 +216,9 @@ public abstract class AbstractTabViewModel<C extends TabComposer> extends Abstra
     /**
      * Convenience method that returns the current shell context.
      *
-     * @return the current {@link ShellContext}
+     * @return the current {@link ShellViewModelContext}
      */
-    protected ShellContext getShellContext() {
+    protected ShellViewModelContext getShellContext() {
         return getComposer().getShellPort().getContext();
     }
 
@@ -229,7 +229,7 @@ public abstract class AbstractTabViewModel<C extends TabComposer> extends Abstra
      * @param <T> the context type
      * @return the current shell context as the specified type
      */
-    protected <T extends ShellContext> T getShellContext(Class<T> clazz) {
+    protected <T extends ShellViewModelContext> T getShellContext(Class<T> clazz) {
         return getComposer().getShellPort().getContext(clazz);
     }
 }

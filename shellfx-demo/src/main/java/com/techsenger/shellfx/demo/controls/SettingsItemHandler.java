@@ -17,21 +17,21 @@
 package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.settings.SettingsDialogConfig;
 import com.techsenger.shellfx.demo.settings.SettingsDialogParams;
 import com.techsenger.shellfx.demo.settings.SettingsDialogView;
 import com.techsenger.shellfx.demo.settings.SettingsDialogViewModel;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
+import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class SettingsItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
+public class SettingsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public SettingsItemHandler(ShellView<?> component, ManagedMenuItem item) {
+    public SettingsItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 

@@ -17,148 +17,115 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.shellfx.material.menu.ManagedItem;
-import com.techsenger.shellfx.material.menu.ManagedMenu;
-import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
-import com.techsenger.shellfx.material.menu.MenuGroupName;
-import com.techsenger.shellfx.material.menu.MenuName;
-import java.util.HashSet;
-import java.util.Map;
+import com.techsenger.shellfx.material.slot.ContextMenuSlot;
+import com.techsenger.shellfx.material.slot.GroupSlot;
+import com.techsenger.shellfx.material.slot.MenuBarSlot;
+import com.techsenger.shellfx.material.slot.MenuSlot;
+import com.techsenger.shellfx.material.slot.Slot;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 
 /**
- * Registry for UI controls such as menus, toolbars, context menus, etc. Allows components to contribute UI
- * elements to other components' slots. Each registration returns a {@link Registration} that can be used to undo
- * the extension.
+ * Registry of the controls that fill the slots: the control a slot stands for (a menu bar, a menu, a context menu),
+ * and the controls (menu items, buttons) that are put into the groups. It never creates or inspects a control; that is
+ * the job of a builder such as {@link ControlBuilder} or {@link ManagedControlBuilder}. Where the slots are nested into
+ * each other is kept in the {@link SlotRegistry}.
  *
- * <p>Contributions are filed under the target slot's own {@link MenuName#getComponentClass()}/
- * {@link MenuGroupName#getComponentClass()} (e.g. {@code ShellFxView.class}). Resolving controls for an actual
- * component instance ({@link #getRegistrationsFor(Object)}) walks that instance's own class, its superclasses, and
- * its interfaces, so a slot filed under a base view type is automatically picked up by every subtype, without
- * either side having to know about the other in advance.
- *
- * <p>The resolved-controls cache is keyed by {@link Class#getName()} rather than by the {@link Class} object itself:
- * a plugin module is typically loaded through its own {@code ClassLoader}/JPMS layer, and a {@code Class} holds a
- * strong reference to its defining loader (and, transitively, to everything else that loader defined) — so keeping
- * {@code Class} objects themselves in a cache that outlives the plugin would leak the whole layer. A name string
- * carries none of that.
+ * <p>Contributions are filed under the slot's own {@link Slot#getComponentClass()}. Registrations can be added or
+ * removed at any time and in any order, which is what makes the registry safe to use with dynamically loaded
+ * plugins. The kind of a slot is its class, which is what tells the overloads apart.
  *
  * @author Pavel Castornii
  */
 public final class ControlRegistry implements ExtensionRegistry {
 
-    /**
-     * Represents a handle for a registered contribution. The holder of this handle is the only one who can undo
-     * the registration.
-     */
-    public interface Registration {
-
-        /**
-         * Removes this registration from the registry.
-         */
-        void unregister();
-    }
-
-    private final Map<Class<?>, Set<AbstractMenuRegistration<?, ?>>> registrationsByClass = new ConcurrentHashMap<>();
-
-    private final Map<String, Set<AbstractMenuRegistration<?, ?>>> resolvedByClassName = new ConcurrentHashMap<>();
+    private final RegistrationIndex<AbstractControlRegistration> index = new RegistrationIndex<>();
 
     /**
-     * Registers a menu in the specified group. The group's own view type pins the view type {@code factory} must
-     * accept, so a factory built for a different component is rejected at compile time; the group's
-     * {@link MenuGroupName#getComponentClass()} determines which component(s) the registration applies to.
+     * Registers the factory of the menu bar a slot stands for. The factory is not invoked here, only when a
+     * builder materializes the control.
      *
-     * @param groupName the name of the group this menu will belong to, never {@code null}.
-     * @param factory   the factory used to create the menu
-     * @return a {@link Registration} that can be used to unregister this contribution
+     * @param slot    the slot of the menu bar, never {@code null}
+     * @param factory the factory used to create the menu bar
+     * @param <V>     the view type of the component the slot belongs to
+     * @return a {@link Registration} that can be used to undo this contribution
+     * @throws IllegalStateException if the slot already has a control
      */
-    public <V extends ParentView<?>> Registration registerMenu(MenuGroupName<V> groupName,
-            ControlFactory<V, ManagedMenu> factory) {
-        Objects.requireNonNull(groupName, "Group can't be null");
-        var reg = new MenuRegistration<>(groupName, factory);
-        register(groupName.getComponentClass(), reg);
-        return reg;
+    public <V extends ParentView<?>> Registration register(MenuBarSlot<V> slot,
+            ControlFactory<V, ? extends MenuBar> factory) {
+        return addNode(slot, factory);
     }
 
     /**
-     * Registers a menu group in the specified menu. The menu's own view type pins the view type {@code factory}
-     * must accept, so a factory built for a different component is rejected at compile time; the menu's
-     * {@link MenuName#getComponentClass()} determines which component(s) the registration applies to.
+     * Registers the factory of the menu a slot stands for. Its position among the siblings comes from where the
+     * slot is put in the {@link SlotRegistry}. The factory is not invoked here, only when a builder materializes
+     * the control.
      *
-     * @param menuName the name of the menu this group will belong to
-     * @param factory  the factory used to create the menu group
-     * @return a {@link Registration} that can be used to unregister this contribution
+     * @param slot    the slot of the menu, never {@code null}
+     * @param factory the factory used to create the menu
+     * @param <V>     the view type of the component the slot belongs to
+     * @return a {@link Registration} that can be used to undo this contribution
+     * @throws IllegalStateException if the slot already has a control
      */
-    public <V extends ParentView<?>> Registration registerMenuGroup(MenuName<V> menuName,
-            ControlFactory<V, ManagedMenuGroup> factory) {
-        var reg = new MenuGroupRegistration<>(menuName, factory);
-        register(menuName.getComponentClass(), reg);
-        return reg;
+    public <V extends ParentView<?>> Registration register(MenuSlot<V> slot,
+            ControlFactory<V, ? extends Menu> factory) {
+        return addNode(slot, factory);
     }
 
     /**
-     * Registers a menu item in the specified group. Accepts a factory for any managed item type —
-     * {@code ManagedMenuItem}, {@code ManagedCheckMenuItem}, {@code ManagedRadioMenuItem}, or any future
-     * {@link ManagedItem} implementation — the concrete type is inferred from the factory. The group's own view
-     * type pins the view type {@code factory} must accept, so a factory built for a different component is
-     * rejected at compile time; the group's {@link MenuGroupName#getComponentClass()} determines which
-     * component(s) the registration applies to.
+     * Registers the factory of the context menu a slot stands for. The factory is not invoked here, only when a
+     * builder materializes the control.
      *
-     * @param groupName the name of the group this item will belong to
-     * @param factory   the factory used to create the menu item
-     * @param <I>       the concrete managed item type produced by the factory
-     * @return a {@link Registration} that can be used to unregister this contribution
+     * @param slot    the slot of the context menu, never {@code null}
+     * @param factory the factory used to create the context menu
+     * @param <V>     the view type of the component the slot belongs to
+     * @return a {@link Registration} that can be used to undo this contribution
+     * @throws IllegalStateException if the slot already has a control
      */
-    public <I extends MenuItem & ManagedItem, V extends ParentView<?>> Registration registerMenuItem(
-            MenuGroupName<V> groupName, ControlFactory<V, I> factory) {
-        var reg = new MenuItemRegistration<>(groupName, factory);
-        register(groupName.getComponentClass(), reg);
-        return reg;
+    public <V extends ParentView<?>> Registration register(ContextMenuSlot<V> slot,
+            ControlFactory<V, ? extends ContextMenu> factory) {
+        return addNode(slot, factory);
     }
 
     /**
-     * Returns every registration applicable to the given component instance: its own class, filed registrations
-     * for every ancestor class, and for every interface it (or an ancestor) implements. The result is cached by
-     * {@link Class#getName()} and recomputed lazily the first time a given class is seen after a registry change.
+     * Registers the factory of a control that is put into a group, for example a menu item. The type of the
+     * controls comes from the group, so a factory of a wrong kind of control is rejected at compile time. The
+     * factory is not invoked here, only when a builder materializes the control.
      *
-     * @param instance the component instance controls are being resolved for
-     * @return the merged, applicable registrations
+     * @param group    the slot of the group the control will belong to, never {@code null}
+     * @param position the position of the control among the other controls of the group
+     * @param factory  the factory used to create the control
+     * @param <V>      the view type of the component the group belongs to
+     * @param <L>      the type of the controls the group holds
+     * @return a {@link Registration} that can be used to undo this contribution
      */
-    Set<AbstractMenuRegistration<?, ?>> getRegistrationsFor(Object instance) {
-        var type = instance.getClass();
-        return resolvedByClassName.computeIfAbsent(type.getName(), n -> resolve(type));
+    public <V extends ParentView<?>, L> Registration register(GroupSlot<V, L> group, int position,
+            ControlFactory<V, ? extends L> factory) {
+        Objects.requireNonNull(group, "Group can't be null");
+        var registration = new LeafRegistration(group, position, factory);
+        index.add(group.getComponentClass(), registration);
+        return registration;
     }
 
-    private void register(Class<?> componentClass, AbstractMenuRegistration<?, ?> reg) {
-        var regs = registrationsByClass.computeIfAbsent(componentClass, k -> ConcurrentHashMap.newKeySet());
-        regs.add(reg);
-        resolvedByClassName.clear();
-        reg.setUnregister(() -> {
-            regs.remove(reg);
-            resolvedByClassName.clear();
-        });
+    /**
+     * Returns every registration applicable to the given component instance.
+     */
+    Set<AbstractControlRegistration> getRegistrationsFor(Object instance) {
+        return index.resolve(instance);
     }
 
-    private Set<AbstractMenuRegistration<?, ?>> resolve(Class<?> type) {
-        var result = new HashSet<AbstractMenuRegistration<?, ?>>();
-        collect(type, result, new HashSet<>());
-        return result;
-    }
-
-    private void collect(Class<?> type, Set<AbstractMenuRegistration<?, ?>> result, Set<Class<?>> visited) {
-        if (type == null || !visited.add(type)) {
-            return;
+    private <V extends ParentView<?>> Registration addNode(Slot<V> slot, ControlFactory<V, ?> factory) {
+        Objects.requireNonNull(slot, "Slot can't be null");
+        for (var registration : index.get(slot.getComponentClass())) {
+            if (registration instanceof NodeRegistration && registration.getSlot() == slot) {
+                throw new IllegalStateException("Slot '" + slot.getText() + "' already has a control");
+            }
         }
-        var regs = registrationsByClass.get(type);
-        if (regs != null) {
-            result.addAll(regs);
-        }
-        collect(type.getSuperclass(), result, visited);
-        for (var iface : type.getInterfaces()) {
-            collect(iface, result, visited);
-        }
+        var registration = new NodeRegistration(slot, factory);
+        index.add(slot.getComponentClass(), registration);
+        return registration;
     }
 }

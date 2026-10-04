@@ -21,15 +21,15 @@ import com.techsenger.shellfx.demo.dialogs.DialogsDialogParams;
 import com.techsenger.shellfx.demo.dialogs.DialogsDialogView;
 import com.techsenger.shellfx.demo.dialogs.DialogsDialogViewModel;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DialogsItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
+public class DialogsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public DialogsItemHandler(ShellView<?> component, ManagedMenuItem item) {
+    public DialogsItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 

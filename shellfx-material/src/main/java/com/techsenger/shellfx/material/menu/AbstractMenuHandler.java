@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.material.menu;
 
 import com.techsenger.patternfx.mvvm.ParentView;
+import javafx.scene.control.Menu;
 
 /**
  *
@@ -25,14 +26,14 @@ import com.techsenger.patternfx.mvvm.ParentView;
 public abstract class AbstractMenuHandler<T extends ParentView<?>> extends AbstractHandler<T>
         implements MenuHandler<T> {
 
-    private final ManagedMenu menu;
+    private final Menu menu;
 
-    public AbstractMenuHandler(ManagedMenu menu, T component) {
+    public AbstractMenuHandler(Menu menu, T component) {
         super(component);
         this.menu = menu;
     }
 
-    protected ManagedMenu getMenu() {
+    protected Menu getMenu() {
         return menu;
     }
 }

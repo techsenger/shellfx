@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.menu;
+package com.techsenger.shellfx.material.slot;
 
 import com.techsenger.patternfx.mvvm.ParentView;
-import javafx.scene.control.MenuItem;
 
 /**
+ * The slot of a context menu; groups of menu items are put into it. The context menu itself is a control
+ * registered for the slot.
  *
+ * @param <V> the view type of the component this slot belongs to
  * @author Pavel Castornii
  */
-public interface MenuItemHandler<T extends ParentView<?>> extends Handler {
+public final class ContextMenuSlot<V extends ParentView<?>> extends AbstractSlot<V> {
 
-    static void setHandler(MenuItem item, MenuItemHandler<?> handler) {
-        item.getProperties().put(key(), handler);
+    public ContextMenuSlot(Class<? super V> componentClass, String text) {
+        super(componentClass, text);
     }
-
-    static MenuItemHandler<?> getHandler(MenuItem item) {
-        return (MenuItemHandler<?>) item.getProperties().get(key());
-    }
-
-    private static Object key() {
-        class KeyHolder {
-            private static final Object KEY = new Object();
-        }
-        return KeyHolder.KEY;
-    }
-
-    void onAction();
 }

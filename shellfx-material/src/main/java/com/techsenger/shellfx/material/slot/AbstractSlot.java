@@ -14,27 +14,40 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.menu;
+package com.techsenger.shellfx.material.slot;
 
-import com.techsenger.patternfx.core.AbstractIdentityName;
 import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
+ * Base of the slots: keeps the component class and the text. A slot is equal only to itself, so it is meant to be
+ * declared once as a constant.
  *
- * @param <V> the view type of the component this menu belongs to
+ * @param <V> the view type of the component this slot belongs to
  * @author Pavel Castornii
  */
-public class DefaultMenuName<V extends ParentView<?>> extends AbstractIdentityName implements MenuName<V> {
+public abstract class AbstractSlot<V extends ParentView<?>> implements Slot<V> {
 
-    private final Class<?> componentClass;
+    private final Class<? super V> componentClass;
 
-    public DefaultMenuName(Class<?> componentClass) {
-        super(null);
+    private final String text;
+
+    protected AbstractSlot(Class<? super V> componentClass, String text) {
         this.componentClass = componentClass;
+        this.text = text;
     }
 
     @Override
-    public Class<?> getComponentClass() {
+    public Class<? super V> getComponentClass() {
         return componentClass;
+    }
+
+    @Override
+    public String getText() {
+        return text;
+    }
+
+    @Override
+    public String toString() {
+        return text;
     }
 }

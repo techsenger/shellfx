@@ -14,34 +14,38 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.menu;
+package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.shellfx.material.Positioned;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import com.techsenger.shellfx.material.slot.Slot;
 
 /**
+ * Puts a slot into another one at a position among its siblings.
  *
  * @author Pavel Castornii
  */
-final class ManagedItemSupport implements Positioned, Groupable {
+final class SlotRegistration extends AbstractRegistration {
+
+    private final Slot<?> parent;
 
     private final int position;
 
-    private final ObjectProperty<ManagedMenuGroup> group = new SimpleObjectProperty<>();
+    private final Slot<?> child;
 
-    ManagedItemSupport(int position) {
+    SlotRegistration(Slot<?> parent, int position, Slot<?> child) {
+        this.parent = parent;
         this.position = position;
+        this.child = child;
     }
 
-    @Override
-    public int getPosition() {
+    Slot<?> getParent() {
+        return parent;
+    }
+
+    int getPosition() {
         return position;
     }
 
-    @Override
-    public ObjectProperty<ManagedMenuGroup> groupProperty() {
-        return group;
+    Slot<?> getChild() {
+        return child;
     }
 }
-

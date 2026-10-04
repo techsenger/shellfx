@@ -17,17 +17,17 @@
 package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
+import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class BarItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
+public class BarItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public BarItemHandler(ShellView<?> component, ManagedMenuItem item) {
+    public BarItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 

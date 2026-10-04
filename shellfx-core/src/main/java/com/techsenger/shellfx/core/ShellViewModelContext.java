@@ -14,26 +14,36 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core;
 
-import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.shellfx.material.menu.ManagedMenuGroup;
-import com.techsenger.shellfx.material.menu.MenuName;
+import com.techsenger.shellfx.core.config.ConfigManager;
+import javafx.application.HostServices;
+import com.techsenger.shellfx.core.settings.ShellSettings;
 
 /**
  *
  * @author Pavel Castornii
  */
-class MenuGroupRegistration<T extends ParentView<?>> extends AbstractMenuRegistration<T, ManagedMenuGroup> {
+public interface ShellViewModelContext {
 
-    private final MenuName<?> menuName;
+    /**
+     * Returns the settings of the shell.
+     *
+     * @return
+     */
+    ShellSettings getSettings();
 
-    MenuGroupRegistration(MenuName<?> menuName, ControlFactory<T, ManagedMenuGroup> factory) {
-        super(MenuElementType.GROUP, factory);
-        this.menuName = menuName;
-    }
+    /**
+     * Returns the config manager.
+     *
+     * @return
+     */
+    ConfigManager getConfigManager();
 
-    public MenuName<?> getMenuName() {
-        return menuName;
-    }
+    /**
+     * Returns application host services.
+     *
+     * @return
+     */
+    HostServices getHostServices();
 }

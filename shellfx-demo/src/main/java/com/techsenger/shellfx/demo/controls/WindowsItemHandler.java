@@ -23,16 +23,16 @@ import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.mdi.DemoWindowView;
 import com.techsenger.shellfx.demo.mdi.DemoWindowViewModel;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
+import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WindowsItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
+public class WindowsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public WindowsItemHandler(ShellView<?> component, ManagedMenuItem item) {
+    public WindowsItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 

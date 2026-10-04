@@ -24,7 +24,7 @@ import com.techsenger.shellfx.demo.browser.BrowserMainTabViewModel;
 import com.techsenger.shellfx.demo.ide.IdeMainTabView;
 import com.techsenger.shellfx.demo.ide.IdeMainTabViewModel;
 import com.techsenger.shellfx.layout.tabhost.TabHostView;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import javafx.scene.control.MenuItem;
 
 /**
  *
@@ -32,7 +32,7 @@ import com.techsenger.shellfx.material.menu.ManagedMenuItem;
  */
 public class MainTabItemHandler extends AbstractContainerItemHandler {
 
-    public MainTabItemHandler(ShellView<?> component, ManagedMenuItem item) {
+    public MainTabItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 

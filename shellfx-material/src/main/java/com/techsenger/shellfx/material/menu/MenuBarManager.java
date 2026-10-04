@@ -16,10 +16,12 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import javafx.collections.ListChangeListener;
+import com.techsenger.annotations.Nullable;
+import java.util.function.Supplier;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.InputEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +33,12 @@ import org.slf4j.LoggerFactory;
  * are always visible their visibility is configured in two cases: when a focused component changed
  * (including no tab cases) and when updateMenuBar is invoked.
  *
- * <p>Only {@code initializeMenu(ManagedMenu) } and {@code deinitializeMenu(ManagedMenu)} methods are recursive.
+ * <p>The menus are wired once, when the manager is created; the manager never changes the menu structure and is
+ * discarded together with its menu bar.
  *
- * <p>Menu items are handled uniformly through {@link MenuItem} and {@link ManagedItem}. This class has no
- * knowledge of concrete managed item types ({@code ManagedMenuItem}, {@code ManagedCheckMenuItem},
- * {@code ManagedRadioMenuItem}, etc.) — any item that is both a {@link MenuItem} and a {@link ManagedItem} with a
- * registered {@link MenuItemHandler} is dispatched the same way.
+ * <p>Menu items are handled uniformly through {@link MenuItem}. This class has no knowledge of concrete item types
+ * ({@code MenuItem}, {@code CheckMenuItem}, {@code RadioMenuItem}, etc.) — any item with a registered
+ * {@link MenuItemHandler} is dispatched the same way.
  *
  * @author Pavel Castornii
  */
@@ -45,22 +47,33 @@ public class MenuBarManager {
     private static final Logger logger = LoggerFactory.getLogger(MenuBarManager.class);
 
     private final MenuBar menuBar;
-    private final ListChangeListener<MenuItem> menuItemsListener =
-            (ListChangeListener.Change<? extends MenuItem> c) -> processMenuListChange(c);
-    private long lastKeyPressedTime;
-    private long lastMouseClickTime;
 
-    public MenuBarManager(MenuBar menuBar) {
+    private final Supplier<@Nullable InputEvent> inputEvent;
+
+    /**
+     * Creates a manager of {@code menuBar} and wires action dispatch and visibility handling onto its menus right
+     * away. The menu bar must be fully built; the manager is discarded together with it.
+     *
+     * @param menuBar     the menu bar to manage.
+     * @param inputEvent supplies the input event the window of the menu bar is dispatching right now, which tells
+     *     an accelerator from a mouse click.
+     */
+    public MenuBarManager(MenuBar menuBar, Supplier<@Nullable InputEvent> inputEvent) {
         this.menuBar = menuBar;
-        //listener if menus are added/removed dinamically to/from menu bar(!)
-        this.menuBar.getMenus().addListener((ListChangeListener.Change<? extends Menu> c)  -> {
-            processMenuListChange(c);
-        });
+        this.inputEvent = inputEvent;
+        for (var menu : this.menuBar.getMenus()) {
+            this.initializeMenu(menu);
+        }
     }
 
+    /**
+     * Refreshes the visibility of the menu bar menus without showing them; call it when the focused component or
+     * its state changes. A menu with a handler is updated by it (an open one is hidden instead), the others derive
+     * visibility from their items.
+     */
     public void updateMenuBar() {
         for (var m : this.menuBar.getMenus()) {
-            if (m instanceof ManagedMenu managedMenu) {
+            if (m instanceof Menu managedMenu) {
                 var handler = MenuHandler.getHandler(managedMenu);
                 if (handler != null) {
                     if (managedMenu.isShowing()) {
@@ -82,70 +95,22 @@ public class MenuBarManager {
         }
     }
 
-    public void setLastKeyPressedTime(long lastKeyPressedTime) {
-        this.lastKeyPressedTime = lastKeyPressedTime;
-    }
-
-    public void setLastMouseClickTime(long lastMouseClickTime) {
-        this.lastMouseClickTime = lastMouseClickTime;
-    }
-
-    private <T extends MenuItem> void processMenuListChange(ListChangeListener.Change<T> c) {
-        while (c.next()) {
-            if (c.wasAdded()) {
-                for (var m : c.getAddedSubList()) {
-                    if (m instanceof ManagedMenu) {
-                        this.initializeMenu((ManagedMenu) m);
-                    }
-                }
-            } else if (c.wasRemoved()) {
-                for (var m : c.getRemoved()) {
-                    if (m instanceof ManagedMenu) {
-                        this.deinitializeMenu((ManagedMenu) m);
-                    }
-                }
-            }
-        }
-        //logging new version of menu
-        MenuLogger.logMenus(this.menuBar.getMenus(), true);
-    }
-
     /**
      * Recursively initializes all menus.
      *
      * @param managedMenu
      */
-    private void initializeMenu(ManagedMenu managedMenu) {
-        //listener if menu/items are added/removed dinamically to/from menu(!)
-        managedMenu.getItems().addListener(menuItemsListener);
+    private void initializeMenu(Menu managedMenu) {
         managedMenu.setOnShowing((e) -> this.onMenuShowing(managedMenu));
         managedMenu.setOnHiding((e) -> this.onMenuHiding(managedMenu));
         //managedMenu.setOnAction();
         for (var m : managedMenu.getItems()) {
-            if (m instanceof ManagedMenu menu) {
+            if (m instanceof Menu menu) {
                 this.initializeMenu(menu);
-            } else if (m instanceof MenuItem item && item instanceof ManagedItem) {
-                var managedItem = (MenuItem & ManagedItem) item;
-                var handler = MenuItemHandler.getHandler(managedItem);
+            } else {
+                var handler = MenuItemHandler.getHandler(m);
                 if (handler != null) {
-                    item.setOnAction(e -> {
-                        if (lastMouseClickTime > lastKeyPressedTime) {
-                            handler.onAction();
-                        } else {
-                            handler.onUpdate();
-                            if (!item.isDisable() && item.isVisible()) {
-                                handler.onAction();
-                                if (logger.isDebugEnabled()) {
-                                    logger.debug("Event for '{}' accelerator was dispatched", getMenuText(item));
-                                }
-                            } else {
-                                if (logger.isDebugEnabled()) {
-                                    logger.debug("Event for '{}' accelerator ignored; disabled: {}, visible: {}",
-                                        getMenuText(item), item.isDisable(), item.isVisible());
-                                }
-                            }
-                        }
-                    });
+                    m.setOnAction(e -> MenuItemDispatcher.dispatch(m, handler, inputEvent));
                 }
             }
         }
@@ -154,34 +119,12 @@ public class MenuBarManager {
         }
     }
 
-    /**
-     * Recursively deinitializes menu and all nested menus.
-     *
-     * @param managedMenu
-     */
-    private void deinitializeMenu(ManagedMenu managedMenu) {
-        managedMenu.getItems().removeListener(menuItemsListener);
-        managedMenu.setOnShowing(null);
-        managedMenu.setOnHiding(null);
-        managedMenu.setOnAction(null);
-        for (var m : managedMenu.getItems()) {
-            if (m instanceof ManagedMenu menu) {
-                this.deinitializeMenu(menu);
-            } else if (m instanceof MenuItem item) {
-                item.setOnAction(null);
-            }
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Menu {} deinitialized", getMenuText(managedMenu));
-        }
-    }
-
-    private void onMenuShowing(ManagedMenu menu) {
+    private void onMenuShowing(Menu menu) {
         MenuVisibility.resolveItems(menu.getItems());
         MenuVisibility.collapseSeparators(menu.getItems());
     }
 
-    private void onMenuHiding(ManagedMenu menu) {
+    private void onMenuHiding(Menu menu) {
         MenuVisibility.fireHiding(menu.getItems());
     }
 

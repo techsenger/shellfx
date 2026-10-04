@@ -26,10 +26,7 @@ import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.config.InMemoryConfigManager;
 import com.techsenger.shellfx.core.registry.ControlRegistry;
-import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
-import static com.techsenger.shellfx.demo.ApplicationType.IDE;
-import static com.techsenger.shellfx.demo.ApplicationType.MDI;
-import static com.techsenger.shellfx.demo.ApplicationType.STYLES_ONLY;
+import com.techsenger.shellfx.core.registry.SlotRegistry;
 import com.techsenger.shellfx.demo.controls.ModuleControlRegistrar;
 import com.techsenger.shellfx.demo.settings.DemoSettings;
 import com.techsenger.shellfx.demo.styles.StylesTabView;
@@ -56,6 +53,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
+import static com.techsenger.shellfx.demo.ApplicationType.IDE;
+import static com.techsenger.shellfx.demo.ApplicationType.MDI;
+import static com.techsenger.shellfx.demo.ApplicationType.STYLES_ONLY;
 
 /**
  *
@@ -111,9 +112,8 @@ public class Demo extends Application {
         IconStylesheets.addAll(IconStylesheetFactory.forAll());
 
         // creating shell component
-        var controlRegistry = new ControlRegistry();
         var context = new DefaultShellContext(DemoSettings.createSettings(),
-                new InMemoryConfigManager(), getHostServices());
+                new InMemoryConfigManager(), getHostServices(), new SlotRegistry(), new ControlRegistry());
         if (appType == ApplicationType.STYLES_ONLY) {
             // Important: To support different density styles, the window density must not be specified.
             context.getSettings().getAppearance().setDensity(null);
@@ -121,8 +121,7 @@ public class Demo extends Application {
         var shellConfig = context.getConfigManager().getOrCreateConfig(ShellConfig.class, ShellConfig::new);
         var shellParams = new DefaultShellParams(shellConfig, context);
         var shellViewModel = new DefaultShellViewModel<>(shellParams);
-        var shellView = new DefaultShellView<>(shellViewModel, this, null, ShellControls.MAIN_MENU_GROUP,
-                controlRegistry) {
+        var shellView = new DefaultShellView<>(shellViewModel, null, Slots.MAIN_MENU, context) {
             @Override
             protected void build() {
                 super.build();
@@ -141,8 +140,8 @@ public class Demo extends Application {
         }
 
         // adding menu; register() itself is a no-op for STYLES_ONLY, since no branch there matches it
-        var registrar = new ModuleControlRegistrar(appType, shellView);
-        registrar.register();
+        new SlotRegistrar(shellView).register();
+        new ModuleControlRegistrar(appType, shellView).register();
 
         shellView.upgradeMenuBar();
         shellView.getStage().show();

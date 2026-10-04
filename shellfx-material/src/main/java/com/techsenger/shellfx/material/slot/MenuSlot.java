@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.material.slot;
 
 import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.shellfx.material.menu.ManagedItem;
-import com.techsenger.shellfx.material.menu.MenuGroupName;
-import javafx.scene.control.MenuItem;
 
 /**
+ * The slot of a menu; groups of menu items are put into it. The menu itself is a control registered for the slot.
  *
+ * @param <V> the view type of the component this slot belongs to
  * @author Pavel Castornii
  */
-class MenuItemRegistration<T extends ParentView<?>, I extends MenuItem & ManagedItem>
-        extends AbstractMenuRegistration<T, I> {
+public final class MenuSlot<V extends ParentView<?>> extends AbstractSlot<V> {
 
-    private final MenuGroupName<?> groupKey;
-
-    MenuItemRegistration(MenuGroupName<?> groupKey, ControlFactory<T, I> factory) {
-        super(MenuElementType.ITEM, factory);
-        this.groupKey = groupKey;
-    }
-
-    public MenuGroupName<?> getGroupKey() {
-        return groupKey;
+    public MenuSlot(Class<? super V> componentClass, String text) {
+        super(componentClass, text);
     }
 }

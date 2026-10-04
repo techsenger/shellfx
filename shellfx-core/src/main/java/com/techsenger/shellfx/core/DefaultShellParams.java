@@ -26,14 +26,14 @@ import java.util.Objects;
  */
 public class DefaultShellParams extends WindowParams {
 
-    private final ShellContext context;
+    private final ShellViewModelContext context;
 
-    public DefaultShellParams(ShellConfig config, ShellContext context) {
+    public DefaultShellParams(ShellConfig config, ShellViewModelContext context) {
         super(config, WindowType.TOP_LEVEL, false, context.getSettings().getAppearance());
         this.context = context;
     }
 
-    public ShellContext getContext() {
+    public ShellViewModelContext getContext() {
         return context;
     }
 

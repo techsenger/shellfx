@@ -18,15 +18,15 @@ package com.techsenger.shellfx.demo.controls;
 
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import com.techsenger.shellfx.material.menu.ManagedMenuItem;
+import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ExitItemHandler extends AbstractMenuItemHandler<ShellView<?>, ManagedMenuItem> {
+public class ExitItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public ExitItemHandler(ShellView<?> component, ManagedMenuItem item) {
+    public ExitItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 

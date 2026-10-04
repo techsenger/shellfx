@@ -23,7 +23,7 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractMenuItemHandler<T extends ParentView<?>, I extends MenuItem & ManagedItem>
+public abstract class AbstractMenuItemHandler<T extends ParentView<?>, I extends MenuItem>
         extends AbstractHandler<T> implements MenuItemHandler<T> {
 
     private final I item;

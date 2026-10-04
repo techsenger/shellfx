@@ -65,6 +65,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -217,6 +218,8 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
 
     private @Nullable Stage stage;
 
+    private @Nullable InputEvent inputEvent;
+
     private @Nullable FontApplier fontApplier;
 
     private @Nullable Density density;
@@ -306,6 +309,12 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
     public Stage getStage() {
         checkIfTopLevel();
         return this.stage;
+    }
+
+    @Override
+    public @Nullable InputEvent getInputEvent() {
+        checkIfTopLevel();
+        return this.inputEvent;
     }
 
     @Override
@@ -648,6 +657,18 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
         this.maximizeButton.setOnAction(e -> viewModel.onMaximize());
         this.minimizeButton.setOnAction(e -> viewModel.onMinimize());
         if (viewModel.getWindowType() == WindowType.TOP_LEVEL) {
+            var originalDispatcher = this.stage.getEventDispatcher();
+            this.stage.setEventDispatcher((event, tail) -> {
+                if (!(event instanceof InputEvent e)) {
+                    return originalDispatcher.dispatchEvent(event, tail);
+                }
+                this.inputEvent = e;
+                try {
+                    return originalDispatcher.dispatchEvent(event, tail);
+                } finally {
+                    this.inputEvent = null;
+                }
+            });
             this.stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, this::fixAcceleratorKeyPressed);
             stage.setOnCloseRequest(event -> {
                 event.consume();
