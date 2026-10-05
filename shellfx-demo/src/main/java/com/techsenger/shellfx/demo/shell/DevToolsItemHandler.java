@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.controls;
+package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.connectorfx.LocalConnector;
 import com.techsenger.shellfx.core.ShellView;

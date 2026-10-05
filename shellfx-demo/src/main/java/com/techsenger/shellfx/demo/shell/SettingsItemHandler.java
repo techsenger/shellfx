@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.controls;
+package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.demo.dialogs.DialogsDialogParams;
-import com.techsenger.shellfx.demo.dialogs.DialogsDialogView;
-import com.techsenger.shellfx.demo.dialogs.DialogsDialogViewModel;
+import com.techsenger.shellfx.core.window.WindowType;
+import com.techsenger.shellfx.demo.settings.SettingsDialogConfig;
+import com.techsenger.shellfx.demo.settings.SettingsDialogParams;
+import com.techsenger.shellfx.demo.settings.SettingsDialogView;
+import com.techsenger.shellfx.demo.settings.SettingsDialogViewModel;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import javafx.scene.control.MenuItem;
 
@@ -27,23 +29,20 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public class DialogsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public class SettingsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public DialogsItemHandler(ShellView<?> component, MenuItem item) {
+    public SettingsItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 
     @Override
     public void onAction() {
         var shell = getComponent();
-        var context = shell.getViewModel().getContext();
-        var dialogParams = new DialogsDialogParams(
-                null,
-                context.getSettings().getAppearance(),
-                context.getConfigManager());
-        var dialogViewModel = new DialogsDialogViewModel<>(dialogParams);
-        var dialogView = new DialogsDialogView<>(dialogViewModel);
-        dialogView.initialize();
-        shell.getComposer().addDialog(dialogView);
+        var appearance = shell.getViewModel().getContext().getSettings().getAppearance();
+        var params = new SettingsDialogParams(new SettingsDialogConfig(), WindowType.NESTED, appearance);
+        var viewModel = new SettingsDialogViewModel<>(params);
+        var view = new SettingsDialogView<>(viewModel);
+        view.initialize();
+        shell.getComposer().addDialog(view);
     }
 }

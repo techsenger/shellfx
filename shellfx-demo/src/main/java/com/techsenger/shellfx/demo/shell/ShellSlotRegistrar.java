@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo;
+package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.registry.AbstractSlotRegistrar;
@@ -25,26 +25,26 @@ import com.techsenger.shellfx.core.registry.AbstractSlotRegistrar;
  *
  * @author Pavel Castornii
  */
-public class SlotRegistrar extends AbstractSlotRegistrar {
+public class ShellSlotRegistrar extends AbstractSlotRegistrar {
 
-    public SlotRegistrar(ShellView<?> shell) {
+    public ShellSlotRegistrar(ShellView<?> shell) {
         super(shell.getContext().getSlotRegistry());
     }
 
     @Override
     public void register() {
-        register(Slots.MAIN_MENU, 0, Slots.FileMenu.MENU);
-        register(Slots.MAIN_MENU, 100, Slots.WindowMenu.MENU);
-        register(Slots.MAIN_MENU, 200, Slots.ExtraMenu.MENU);
+        register(ShellSlots.MAIN_MENU, 0, ShellSlots.FileMenu.MENU);
+        register(ShellSlots.MAIN_MENU, 100, ShellSlots.WindowMenu.MENU);
+        register(ShellSlots.MAIN_MENU, 200, ShellSlots.ExtraMenu.MENU);
 
-        register(Slots.FileMenu.MENU, 0, Slots.FileMenu.DEMO_GROUP);
-        register(Slots.FileMenu.MENU, 100, Slots.FileMenu.APPEARANCE_GROUP);
-        register(Slots.FileMenu.MENU, 200, Slots.FileMenu.LAST_GROUP);
+        register(ShellSlots.FileMenu.MENU, 0, ShellSlots.FileMenu.DEMO_GROUP);
+        register(ShellSlots.FileMenu.MENU, 100, ShellSlots.FileMenu.APPEARANCE_GROUP);
+        register(ShellSlots.FileMenu.MENU, 200, ShellSlots.FileMenu.LAST_GROUP);
 
-        register(Slots.WindowMenu.MENU, 0, Slots.WindowMenu.DEFAULT_GROUP);
-        register(Slots.WindowMenu.MENU, 100, Slots.WindowMenu.ARRANGEMENT_GROUP);
+        register(ShellSlots.WindowMenu.MENU, 0, ShellSlots.WindowMenu.DEFAULT_GROUP);
+        register(ShellSlots.WindowMenu.MENU, 100, ShellSlots.WindowMenu.ARRANGEMENT_GROUP);
 
-        register(Slots.ExtraMenu.MENU, 0, Slots.ExtraMenu.FOO_GROUP);
-        register(Slots.ExtraMenu.MENU, 100, Slots.ExtraMenu.BAR_GROUP);
+        register(ShellSlots.ExtraMenu.MENU, 0, ShellSlots.ExtraMenu.FOO_GROUP);
+        register(ShellSlots.ExtraMenu.MENU, 100, ShellSlots.ExtraMenu.BAR_GROUP);
     }
 }

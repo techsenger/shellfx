@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.controls;
+package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.tab.TabContainerView;
-import com.techsenger.shellfx.layout.dockhost.DockHostView;
-import com.techsenger.shellfx.layout.tabhost.TabHostView;
+import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import javafx.scene.control.MenuItem;
 
@@ -27,18 +25,23 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractContainerItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public class FooItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public AbstractContainerItemHandler(ShellView<?> component, MenuItem item) {
+    public FooItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 
-    protected TabContainerView<?> resolveMainTabContainer() {
-        if (getComponent().getComposer().getWorkspace() instanceof TabHostView<?> tabHost) {
-            return tabHost;
-        } else if (getComponent().getComposer().getWorkspace() instanceof DockHostView<?> dockHost) {
-            return (TabContainerView<?>) dockHost.getComposer().getMain();
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+        var menuAware = getComponent().getComposer().getMenuAware();
+        if (menuAware.getViewModel() instanceof DemoMenuAwarePort port) {
+            getItem().setDisable(port.isFooDisabled());
         }
-        return null;
+    }
+
+    @Override
+    public void onAction() {
+        System.out.println("Foo Item");
     }
 }

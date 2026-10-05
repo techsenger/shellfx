@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.controls;
+package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.shellfx.core.ShellView;
+import com.techsenger.shellfx.core.tab.TabContainerView;
+import com.techsenger.shellfx.layout.dockhost.DockHostView;
+import com.techsenger.shellfx.layout.tabhost.TabHostView;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import javafx.scene.control.MenuItem;
 
@@ -24,14 +27,18 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public class ExitItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public abstract class AbstractContainerItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public ExitItemHandler(ShellView<?> component, MenuItem item) {
+    public AbstractContainerItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 
-    @Override
-    public void onAction() {
-        getComponent().getViewModel().closeSafely();
+    protected TabContainerView<?> resolveMainTabContainer() {
+        if (getComponent().getComposer().getWorkspace() instanceof TabHostView<?> tabHost) {
+            return tabHost;
+        } else if (getComponent().getComposer().getWorkspace() instanceof DockHostView<?> dockHost) {
+            return (TabContainerView<?>) dockHost.getComposer().getMain();
+        }
+        return null;
     }
 }

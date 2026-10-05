@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.controls;
+package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.registry.AbstractControlRegistrar;
 import com.techsenger.shellfx.core.window.WindowArrangement;
 import com.techsenger.shellfx.demo.ApplicationType;
-import com.techsenger.shellfx.demo.SlotRegistrar;
-import com.techsenger.shellfx.demo.Slots;
 import com.techsenger.shellfx.demo.page.PageMenuType;
 import com.techsenger.shellfx.material.ControlGroup;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
@@ -36,17 +34,17 @@ import javafx.scene.input.KeyCombination;
 
 /**
  * Registers the control of every menu and item the demo application contributes, gated by
- * {@link ApplicationType}; where the menus and groups sit is set by {@link SlotRegistrar}.
+ * {@link ApplicationType}; where the menus and groups sit is set by {@link ShellSlotRegistrar}.
  *
  * @author Pavel Castornii
  */
-public class ModuleControlRegistrar extends AbstractControlRegistrar {
+public class ShellControlRegistrar extends AbstractControlRegistrar {
 
     private final ApplicationType appType;
 
     private final ShellView<?> shell;
 
-    public ModuleControlRegistrar(ApplicationType appType, ShellView<?> shell) {
+    public ShellControlRegistrar(ApplicationType appType, ShellView<?> shell) {
         super(shell.getContext().getControlRegistry());
 
         this.appType = appType;
@@ -84,14 +82,14 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerFileMenu() {
-        register(Slots.FileMenu.MENU, v -> new Menu("_File"));
-        register(Slots.FileMenu.DEMO_GROUP, v -> new ControlGroup<>());
-        register(Slots.FileMenu.APPEARANCE_GROUP, v -> new ControlGroup<>());
-        register(Slots.FileMenu.LAST_GROUP, v -> new ControlGroup<>());
+        register(ShellSlots.FileMenu.MENU, v -> new Menu("_File"));
+        register(ShellSlots.FileMenu.DEMO_GROUP, v -> new ControlGroup<>());
+        register(ShellSlots.FileMenu.APPEARANCE_GROUP, v -> new ControlGroup<>());
+        register(ShellSlots.FileMenu.LAST_GROUP, v -> new ControlGroup<>());
     }
 
     protected void registerMainTabItem() {
-        register(Slots.FileMenu.DEMO_GROUP, 100, v -> {
+        register(ShellSlots.FileMenu.DEMO_GROUP, 100, v -> {
             var item = new MenuItem("Main Tab");
             MenuItemHandler.setHandler(item, new MainTabItemHandler(shell, item));
             return item;
@@ -99,7 +97,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerPageTabItem() {
-        register(Slots.FileMenu.DEMO_GROUP, 200, v -> {
+        register(ShellSlots.FileMenu.DEMO_GROUP, 200, v -> {
             var item = new MenuItem("Page Tab");
             MenuItemHandler.setHandler(item, new PageItemHandler(shell, item, PageMenuType.FLAT));
             return item;
@@ -107,7 +105,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerTreePageTabItem() {
-        register(Slots.FileMenu.DEMO_GROUP, 250, v -> {
+        register(ShellSlots.FileMenu.DEMO_GROUP, 250, v -> {
             var item = new MenuItem("Tree Page Tab");
             MenuItemHandler.setHandler(item, new PageItemHandler(shell, item, PageMenuType.TREE));
             return item;
@@ -115,7 +113,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerDialogsItem() {
-        register(Slots.FileMenu.DEMO_GROUP, 300, v -> {
+        register(ShellSlots.FileMenu.DEMO_GROUP, 300, v -> {
             var item = new MenuItem("Dialogs");
             MenuItemHandler.setHandler(item, new DialogsItemHandler(shell, item));
             return item;
@@ -123,7 +121,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerDevToolsItem() {
-        register(Slots.FileMenu.DEMO_GROUP, 400, v -> {
+        register(ShellSlots.FileMenu.DEMO_GROUP, 400, v -> {
             var item = new MenuItem("DevTools");
             MenuItemHandler.setHandler(item, new DevToolsItemHandler(shell, item));
             return item;
@@ -131,11 +129,11 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerMainMenu() {
-        register(Slots.MAIN_MENU, v -> new MenuBar());
+        register(ShellSlots.MAIN_MENU, v -> new MenuBar());
     }
 
     protected void registerSettingsItem() {
-        register(Slots.FileMenu.APPEARANCE_GROUP, 100, v -> {
+        register(ShellSlots.FileMenu.APPEARANCE_GROUP, 100, v -> {
             var item = new MenuItem("_Settings");
             MenuItemHandler.setHandler(item, new SettingsItemHandler(shell, item));
             return item;
@@ -143,7 +141,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerExitItem() {
-        register(Slots.FileMenu.LAST_GROUP, 100, v -> {
+        register(ShellSlots.FileMenu.LAST_GROUP, 100, v -> {
             var item = new MenuItem("E_xit");
             item.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new ExitItemHandler(shell, item));
@@ -152,20 +150,20 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerExtraMenu() {
-        register(Slots.ExtraMenu.MENU, v -> {
+        register(ShellSlots.ExtraMenu.MENU, v -> {
             var menu = new Menu("_Extra");
             MenuHandler.setHandler(menu, new ExtraMenuHandler(menu, v));
             return menu;
         });
-        register(Slots.ExtraMenu.FOO_GROUP, v -> new ControlGroup<>());
-        register(Slots.ExtraMenu.BAR_GROUP, v -> new ControlGroup<>());
+        register(ShellSlots.ExtraMenu.FOO_GROUP, v -> new ControlGroup<>());
+        register(ShellSlots.ExtraMenu.BAR_GROUP, v -> new ControlGroup<>());
     }
 
     /**
      * Foo item will be in the foo group.
      */
     protected void registerFooItem() {
-        register(Slots.ExtraMenu.FOO_GROUP, 100, v -> {
+        register(ShellSlots.ExtraMenu.FOO_GROUP, 100, v -> {
             var item = new MenuItem("_Foo");
             item.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new FooItemHandler(v, item));
@@ -177,7 +175,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
      * Bar item will be in the bar group.
      */
     protected void registerBarItem() {
-        register(Slots.ExtraMenu.BAR_GROUP, 100, v -> {
+        register(ShellSlots.ExtraMenu.BAR_GROUP, 100, v -> {
             var item = new MenuItem("_Bar");
             item.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
             MenuItemHandler.setHandler(item, new BarItemHandler(v, item));
@@ -186,13 +184,13 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerWindowMenu() {
-        register(Slots.WindowMenu.MENU, v -> new Menu("_Window"));
-        register(Slots.WindowMenu.DEFAULT_GROUP, v -> new ControlGroup<>());
-        register(Slots.WindowMenu.ARRANGEMENT_GROUP, v -> new ControlGroup<>());
+        register(ShellSlots.WindowMenu.MENU, v -> new Menu("_Window"));
+        register(ShellSlots.WindowMenu.DEFAULT_GROUP, v -> new ControlGroup<>());
+        register(ShellSlots.WindowMenu.ARRANGEMENT_GROUP, v -> new ControlGroup<>());
     }
 
     protected void registerWindowsItem() {
-        register(Slots.WindowMenu.DEFAULT_GROUP, 0, v -> {
+        register(ShellSlots.WindowMenu.DEFAULT_GROUP, 0, v -> {
             var item = new MenuItem("Create Windows");
             MenuItemHandler.setHandler(item, new WindowsItemHandler(shell, item));
             return item;
@@ -200,7 +198,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerCascadeItem() {
-        register(Slots.WindowMenu.ARRANGEMENT_GROUP, 0, v -> {
+        register(ShellSlots.WindowMenu.ARRANGEMENT_GROUP, 0, v -> {
             var item = new MenuItem("Cascade");
             MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, MenuItem>(shell, item) {
                 @Override
@@ -213,7 +211,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerTileVerticalItem() {
-        register(Slots.WindowMenu.ARRANGEMENT_GROUP, 100, v -> {
+        register(ShellSlots.WindowMenu.ARRANGEMENT_GROUP, 100, v -> {
             var item = new MenuItem("Tile Vertically");
             MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, MenuItem>(shell, item) {
                 @Override
@@ -226,7 +224,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerTileHorizontalItem() {
-        register(Slots.WindowMenu.ARRANGEMENT_GROUP, 200, v -> {
+        register(ShellSlots.WindowMenu.ARRANGEMENT_GROUP, 200, v -> {
             var item = new MenuItem("Tile Horizontally");
             MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, MenuItem>(shell, item) {
                 @Override
@@ -239,7 +237,7 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
     }
 
     protected void registerTileGridItem() {
-        register(Slots.WindowMenu.ARRANGEMENT_GROUP, 300, v -> {
+        register(ShellSlots.WindowMenu.ARRANGEMENT_GROUP, 300, v -> {
             var item = new MenuItem("Tile Grid");
             MenuItemHandler.setHandler(item, new AbstractMenuItemHandler<ShellView<?>, MenuItem>(shell, item) {
                 @Override

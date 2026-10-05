@@ -26,9 +26,12 @@ import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.area.AreaView;
 import com.techsenger.shellfx.core.config.InMemoryConfigManager;
 import com.techsenger.shellfx.core.registry.ControlRegistry;
+import com.techsenger.shellfx.core.registry.RegistrarManager;
 import com.techsenger.shellfx.core.registry.SlotRegistry;
-import com.techsenger.shellfx.demo.controls.ModuleControlRegistrar;
 import com.techsenger.shellfx.demo.settings.DemoSettings;
+import com.techsenger.shellfx.demo.shell.ShellControlRegistrar;
+import com.techsenger.shellfx.demo.shell.ShellSlotRegistrar;
+import com.techsenger.shellfx.demo.shell.ShellSlots;
 import com.techsenger.shellfx.demo.styles.StylesTabView;
 import com.techsenger.shellfx.demo.styles.StylesTabViewModel;
 import com.techsenger.shellfx.icons.Fonts;
@@ -40,6 +43,7 @@ import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.IconStylesheets;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
+import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -121,7 +125,7 @@ public class Demo extends Application {
         var shellConfig = context.getConfigManager().getOrCreateConfig(ShellConfig.class, ShellConfig::new);
         var shellParams = new DefaultShellParams(shellConfig, context);
         var shellViewModel = new DefaultShellViewModel<>(shellParams);
-        var shellView = new DefaultShellView<>(shellViewModel, null, Slots.MAIN_MENU, context) {
+        var shellView = new DefaultShellView<>(shellViewModel, null, ShellSlots.MAIN_MENU, context) {
             @Override
             protected void build() {
                 super.build();
@@ -140,8 +144,8 @@ public class Demo extends Application {
         }
 
         // adding menu; register() itself is a no-op for STYLES_ONLY, since no branch there matches it
-        new SlotRegistrar(shellView).register();
-        new ModuleControlRegistrar(appType, shellView).register();
+        new RegistrarManager(List.of(new ShellSlotRegistrar(shellView), new ShellControlRegistrar(appType, shellView)))
+                .registerAll();
 
         shellView.upgradeMenuBar();
         shellView.getStage().show();

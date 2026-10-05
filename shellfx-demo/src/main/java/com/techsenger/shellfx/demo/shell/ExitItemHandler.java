@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.controls;
+package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import javafx.scene.control.MenuItem;
 
@@ -25,25 +24,14 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public class BarItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public class ExitItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
 
-    public BarItemHandler(ShellView<?> component, MenuItem item) {
+    public ExitItemHandler(ShellView<?> component, MenuItem item) {
         super(component, item);
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
-        var menuAware = getComponent().getComposer().getMenuAware();
-        if (menuAware.getViewModel() instanceof DemoMenuAwarePort port) {
-            getItem().setVisible(port.isBarIncluded());
-            getItem().setDisable(port.isBarDisabled());
-        }
-    }
-
-    @Override
     public void onAction() {
-        System.out.println("Bar Item");
+        getComponent().getViewModel().closeSafely();
     }
-
 }
