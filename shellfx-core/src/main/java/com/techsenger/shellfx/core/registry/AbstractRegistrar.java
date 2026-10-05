@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Base of the registrars of a registry, be it the {@link ControlRegistry} or the {@link SlotRegistry}:
  * it remembers every registration made through {@link #addRegistration(Registration)} and undoes them all in
- * {@link #unregister()}.
+ * {@link #unregister()}, which also forgets them, so a repeated call does nothing.
  *
  * @param <R> the type of the registry this registrar contributes to
  * @author Pavel Castornii
@@ -40,6 +40,7 @@ public abstract class AbstractRegistrar<R extends ExtensionRegistry> implements 
     @Override
     public void unregister() {
         registrations.forEach(r -> r.unregister());
+        registrations.clear();
     }
 
     protected R getRegistry() {
