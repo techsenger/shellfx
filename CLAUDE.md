@@ -89,15 +89,17 @@ lookups silently fall back to defaults and mask regressions.
   new visibility or reshape it while promoting.
 - **Menu system.** UI is composed from a tree of slots (`shellfx-material.slot`): `Slot<V>` is the interface,
   `AbstractSlot` the base class, and the kind of a slot is its class (`MenuBarSlot`, `MenuSlot`, `ContextMenuSlot`,
-  `ToolBarSlot`, `GroupSlot<V, L>`). Slots are immutable identities with no children, declared once as constants;
+  `ToolBarSlot`, `GroupSlot<V, C>`). Slots are immutable identities with no children, declared once as constants;
   the tree is built in `SlotRegistry` (`register(parent, position, child)`, overloaded by the slot classes so that
   only a menu bar → menus, a menu / context menu → groups of menu items, a tool bar → groups of controls and a
-  group → nested menus compile), and `ControlRegistry` binds controls to the slots: `register(menuSlot, factory)`
-  for a menu bar, a menu or a context menu and `register(group, position, factory)` for a leaf (a menu item) in a group. A
-  group has no control of its own. Both registries support plugin-style dynamic (un)registration in any order, and
-  neither assembles a control. `AbstractSlotRegistrar` and `AbstractControlRegistrar` (over `AbstractRegistrar<R>`)
-  wrap them for plugins. `ControlBuilder` returns the ordered controls of the groups of a tool bar slot, and
-  `ManagedControlBuilder` assembles the final menu tree from both registries.
+  group → nested menus compile), and `ControlRegistry` binds controls to the slots: `register(slot, factory)` for a
+  menu bar, a menu, a context menu, a tool bar and a group (a `ControlGroup<C>` from `shellfx-material`, which a
+  builder fills with the controls of the group, replacing whatever the factory put there; a group without a factory is
+  left out) and `register(group, position, factory)` for a leaf (a menu item) in a group. Both registries support
+  plugin-style dynamic (un)registration in any order, and neither assembles a control. `AbstractSlotRegistrar` and
+  `AbstractControlRegistrar` (over `AbstractRegistrar<R>`) wrap them for plugins. `ControlBuilder` assembles a
+  `ToolBar` from its groups (or returns the `ControlGroup`s of a tool bar slot), and `ManagedControlBuilder`
+  assembles the final menu tree from both registries.
   The menu controls are plain JavaFX (`Menu`, `MenuItem`...) with a `Handler` in their properties
   (`ContextMenu` too, including its `visible` flag); the `Handler` family, and the `MenuBarManager`/`ContextMenuManager`
   classes that wire runtime behavior onto them, all live in `shellfx-material.menu` — independent of

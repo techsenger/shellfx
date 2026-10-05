@@ -20,17 +20,17 @@ import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
  * The slot of a group of controls that are laid out together and set apart from the other groups of the same
- * container (for example, menu items between two separators); the controls are put into it. A group has no control
- * of its own, the builder of a container decides how it is drawn.
+ * container (for example, menu items between two separators); the controls are put into it. The control of the
+ * group is a {@code ControlGroup}, created by the factory registered for the slot.
  *
- * <p>{@code L} is the type of the controls the group holds, so a factory registered for the group is checked
+ * <p>{@code C} is the type of the controls the group holds, so a factory registered for the group is checked
  * against it at compile time.
  *
  * @param <V> the view type of the component this slot belongs to
- * @param <L> the type of the controls the group holds
+ * @param <C> the type of the controls the group holds
  * @author Pavel Castornii
  */
-public final class GroupSlot<V extends ParentView<?>, L> extends AbstractSlot<V> {
+public final class GroupSlot<V extends ParentView<?>, C> extends AbstractSlot<V> {
 
     public GroupSlot(Class<? super V> componentClass, String text) {
         super(componentClass, text);

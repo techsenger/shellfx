@@ -17,13 +17,16 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.ControlGroup;
 import com.techsenger.shellfx.material.slot.ContextMenuSlot;
 import com.techsenger.shellfx.material.slot.GroupSlot;
 import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
+import com.techsenger.shellfx.material.slot.ToolBarSlot;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.ToolBar;
 
 /**
  * Base of the registrars that bind controls to slots. Its methods register a control factory and remember the
@@ -76,16 +79,43 @@ public abstract class AbstractControlRegistrar extends AbstractRegistrar<Control
     }
 
     /**
+     * Registers the factory of the tool bar a slot stands for.
+     *
+     * @param slot    the slot of the tool bar
+     * @param factory the factory used to create the tool bar
+     * @param <V>     the view type of the component the slot belongs to
+     * @throws IllegalStateException if the slot already has a control
+     */
+    protected <V extends ParentView<?>> void register(ToolBarSlot<V> slot,
+            ControlFactory<V, ? extends ToolBar> factory) {
+        addRegistration(getRegistry().register(slot, factory));
+    }
+
+    /**
+     * Registers the factory of the group a slot stands for.
+     *
+     * @param group   the slot of the group
+     * @param factory the factory used to create the group
+     * @param <V>     the view type of the component the group belongs to
+     * @param <C>     the type of the controls the group holds
+     * @throws IllegalStateException if the slot already has a control
+     */
+    protected <V extends ParentView<?>, C> void register(GroupSlot<V, C> group,
+            ControlFactory<V, ? extends ControlGroup<C>> factory) {
+        addRegistration(getRegistry().register(group, factory));
+    }
+
+    /**
      * Registers the factory of a control that is put into a group, for example a menu item.
      *
      * @param group    the slot of the group the control will belong to
      * @param position the position of the control among the other controls of the group
      * @param factory  the factory used to create the control
      * @param <V>      the view type of the component the group belongs to
-     * @param <L>      the type of the controls the group holds
+     * @param <C>      the type of the controls the group holds
      */
-    protected <V extends ParentView<?>, L> void register(GroupSlot<V, L> group, int position,
-            ControlFactory<V, ? extends L> factory) {
+    protected <V extends ParentView<?>, C> void register(GroupSlot<V, C> group, int position,
+            ControlFactory<V, ? extends C> factory) {
         addRegistration(getRegistry().register(group, position, factory));
     }
 }

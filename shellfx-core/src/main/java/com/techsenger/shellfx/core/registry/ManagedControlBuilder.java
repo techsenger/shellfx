@@ -18,6 +18,7 @@ package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.ControlGroup;
 import com.techsenger.shellfx.material.menu.ContextMenuHandler;
 import com.techsenger.shellfx.material.slot.ContextMenuSlot;
 import com.techsenger.shellfx.material.slot.GroupSlot;
@@ -217,12 +218,17 @@ public class ManagedControlBuilder {
     }
 
     /**
-     * Collects the controls put into {@code group} and the nested menus of the group, in the order of their
-     * positions.
+     * Fills the group {@code group} stands for with the controls put into it and the nested menus of the group, in
+     * the order of their positions.
      *
-     * @return the group's items with its description, or {@code null} if the group ended up empty.
+     * @return the group's items with its description, or {@code null} if no control is registered for the group
+     *     or it ended up empty.
      */
+    @SuppressWarnings("unchecked")
     private @Nullable Segment buildGroup(GroupSlot<?, ?> group, int position, int depth, SlotTree tree) {
+        if (!(tree.createNode(group) instanceof ControlGroup<?> controlGroup)) {
+            return null;
+        }
         var elements = new ArrayList<Element>();
         for (var leaf : tree.getLeaves(group)) {
             var item = (MenuItem) leaf.create(tree.getView());
@@ -250,6 +256,7 @@ public class ManagedControlBuilder {
             items.add(element.item);
             description.append(element.description);
         }
+        ((ControlGroup<MenuItem>) controlGroup).getItems().setAll(items);
         return new Segment(items, description.toString());
     }
 }

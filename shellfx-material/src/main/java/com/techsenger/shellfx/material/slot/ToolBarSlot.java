@@ -19,7 +19,8 @@ package com.techsenger.shellfx.material.slot;
 import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
- * The slot of a tool bar; groups of controls are put into it. The tool bar itself is created by the component.
+ * The slot of a tool bar; groups of controls are put into it. The control of the slot is the tool bar, created by the
+ * factory registered for it.
  *
  * @param <V> the view type of the component this slot belongs to
  * @author Pavel Castornii

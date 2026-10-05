@@ -16,20 +16,25 @@
 
 package com.techsenger.shellfx.core.registry;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.ControlGroup;
 import com.techsenger.shellfx.material.slot.GroupSlot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Labeled;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Assembles the controls of the groups put into a tool bar slot without knowing anything about them beyond
- * their type: groups and controls come back in the order of their positions, so the caller only decides how to lay them
- * out (for example, with a separator between groups). For menus see {@link ManagedControlBuilder}. What was built,
+ * Assembles a tool bar from the groups of controls put into its slot: the tool bar is the control registered for the
+ * slot, its groups and controls follow the order of their positions and the groups are set apart with separators.
+ * A group without a registered control is left out. For menus see {@link ManagedControlBuilder}. What was built,
  * with the registered positions, is logged at debug level.
  *
  * @author Pavel Castornii
@@ -48,6 +53,33 @@ public class ControlBuilder {
     }
 
     /**
+     * Builds the tool bar {@code toolBarSlot} stands for, with the controls of every group put into the slot. The
+     * control registered for the slot is the {@link ToolBar} to fill; empty groups are left out.
+     *
+     * @param toolBarSlot the slot of the tool bar to build
+     * @param view        the component view passed to each control factory; its class (and ancestors/interfaces)
+     *     determines which registrations apply
+     * @return the assembled tool bar, or {@code null} if no control is registered for the slot or it ended up empty
+     */
+    public @Nullable ToolBar buildToolBar(ToolBarSlot<?> toolBarSlot, ParentView<?> view) {
+        var tree = new SlotTree(slotRegistry, controlRegistry, view);
+        if (!(tree.createNode(toolBarSlot) instanceof ToolBar toolBar)) {
+            return null;
+        }
+        var groups = build(toolBarSlot, Node.class, tree);
+        if (groups.isEmpty()) {
+            return null;
+        }
+        for (var i = 0; i < groups.size(); i++) {
+            if (i != 0) {
+                toolBar.getItems().add(new Separator());
+            }
+            toolBar.getItems().addAll(groups.get(i).getItems());
+        }
+        return toolBar;
+    }
+
+    /**
      * Builds the controls of every group put directly into {@code toolBar}. Empty groups are left out.
      *
      * @param toolBar     the slot of the tool bar whose groups are built
@@ -57,13 +89,19 @@ public class ControlBuilder {
      * @param <C>         the type of controls the caller expects
      * @return the non-empty groups sorted by position, each with its controls sorted by position
      */
-    public <C> List<List<C>> build(ToolBarSlot<?> toolBar, Class<C> controlType, ParentView<?> view) {
-        var tree = new SlotTree(slotRegistry, controlRegistry, view);
-        var result = new ArrayList<List<C>>();
+    public <C> List<ControlGroup<C>> buildGroups(ToolBarSlot<?> toolBar, Class<C> controlType, ParentView<?> view) {
+        return build(toolBar, controlType, new SlotTree(slotRegistry, controlRegistry, view));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <C> List<ControlGroup<C>> build(ToolBarSlot<?> toolBar, Class<C> controlType, SlotTree tree) {
+        var view = tree.getView();
+        var result = new ArrayList<ControlGroup<C>>();
         var description = new StringBuilder();
         for (var link : tree.getChildren(toolBar)) {
             var group = link.getChild();
-            if (!(group instanceof GroupSlot<?, ?>) || tree.getLeaves(group).isEmpty()) {
+            if (!(group instanceof GroupSlot<?, ?>) || tree.getLeaves(group).isEmpty()
+                    || !(tree.createNode(group) instanceof ControlGroup<?> controlGroup)) {
                 continue;
             }
             description.append(System.lineSeparator()).append("    Group: ").append(group.getText());
@@ -75,7 +113,9 @@ public class ControlBuilder {
                 description.append(System.lineSeparator()).append("        Control: ").append(describe(control));
                 description.append(", position: ").append(leaf.getPosition());
             }
-            result.add(controls);
+            var typedGroup = (ControlGroup<C>) controlGroup;
+            typedGroup.getItems().setAll(controls);
+            result.add(typedGroup);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Controls built for {}:{}Tool bar: {}{}", tree.getViewName(), System.lineSeparator(),

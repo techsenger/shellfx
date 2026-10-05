@@ -17,16 +17,19 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.ControlGroup;
 import com.techsenger.shellfx.material.slot.ContextMenuSlot;
 import com.techsenger.shellfx.material.slot.GroupSlot;
 import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
 import com.techsenger.shellfx.material.slot.Slot;
+import com.techsenger.shellfx.material.slot.ToolBarSlot;
 import java.util.Objects;
 import java.util.Set;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.ToolBar;
 
 /**
  * Registry of the controls that fill the slots: the control a slot stands for (a menu bar, a menu, a context menu),
@@ -91,6 +94,37 @@ public final class ControlRegistry implements ExtensionRegistry {
     }
 
     /**
+     * Registers the factory of the tool bar a slot stands for. The factory is not invoked here, only when a
+     * builder materializes the control.
+     *
+     * @param slot    the slot of the tool bar, never {@code null}
+     * @param factory the factory used to create the tool bar
+     * @param <V>     the view type of the component the slot belongs to
+     * @return a {@link Registration} that can be used to undo this contribution
+     * @throws IllegalStateException if the slot already has a control
+     */
+    public <V extends ParentView<?>> Registration register(ToolBarSlot<V> slot,
+            ControlFactory<V, ? extends ToolBar> factory) {
+        return addNode(slot, factory);
+    }
+
+    /**
+     * Registers the factory of the group a slot stands for. A group without a factory is left out by the
+     * builders. The factory is not invoked here, only when a builder materializes the control.
+     *
+     * @param group   the slot of the group, never {@code null}
+     * @param factory the factory used to create the group
+     * @param <V>     the view type of the component the slot belongs to
+     * @param <C>     the type of the controls the group holds
+     * @return a {@link Registration} that can be used to undo this contribution
+     * @throws IllegalStateException if the slot already has a control
+     */
+    public <V extends ParentView<?>, C> Registration register(GroupSlot<V, C> group,
+            ControlFactory<V, ? extends ControlGroup<C>> factory) {
+        return addNode(group, factory);
+    }
+
+    /**
      * Registers the factory of a control that is put into a group, for example a menu item. The type of the
      * controls comes from the group, so a factory of a wrong kind of control is rejected at compile time. The
      * factory is not invoked here, only when a builder materializes the control.
@@ -99,11 +133,11 @@ public final class ControlRegistry implements ExtensionRegistry {
      * @param position the position of the control among the other controls of the group
      * @param factory  the factory used to create the control
      * @param <V>      the view type of the component the group belongs to
-     * @param <L>      the type of the controls the group holds
+     * @param <C>      the type of the controls the group holds
      * @return a {@link Registration} that can be used to undo this contribution
      */
-    public <V extends ParentView<?>, L> Registration register(GroupSlot<V, L> group, int position,
-            ControlFactory<V, ? extends L> factory) {
+    public <V extends ParentView<?>, C> Registration register(GroupSlot<V, C> group, int position,
+            ControlFactory<V, ? extends C> factory) {
         Objects.requireNonNull(group, "Group can't be null");
         var registration = new LeafRegistration(group, position, factory);
         index.add(group.getComponentClass(), registration);

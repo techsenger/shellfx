@@ -23,6 +23,7 @@ import com.techsenger.shellfx.demo.ApplicationType;
 import com.techsenger.shellfx.demo.SlotRegistrar;
 import com.techsenger.shellfx.demo.Slots;
 import com.techsenger.shellfx.demo.page.PageMenuType;
+import com.techsenger.shellfx.material.ControlGroup;
 import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.shellfx.material.menu.MenuHandler;
 import com.techsenger.shellfx.material.menu.MenuItemHandler;
@@ -84,6 +85,9 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
 
     protected void registerFileMenu() {
         register(Slots.FileMenu.MENU, v -> new Menu("_File"));
+        register(Slots.FileMenu.DEMO_GROUP, v -> new ControlGroup<>());
+        register(Slots.FileMenu.APPEARANCE_GROUP, v -> new ControlGroup<>());
+        register(Slots.FileMenu.LAST_GROUP, v -> new ControlGroup<>());
     }
 
     protected void registerMainTabItem() {
@@ -153,6 +157,8 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
             MenuHandler.setHandler(menu, new ExtraMenuHandler(menu, v));
             return menu;
         });
+        register(Slots.ExtraMenu.FOO_GROUP, v -> new ControlGroup<>());
+        register(Slots.ExtraMenu.BAR_GROUP, v -> new ControlGroup<>());
     }
 
     /**
@@ -181,6 +187,8 @@ public class ModuleControlRegistrar extends AbstractControlRegistrar {
 
     protected void registerWindowMenu() {
         register(Slots.WindowMenu.MENU, v -> new Menu("_Window"));
+        register(Slots.WindowMenu.DEFAULT_GROUP, v -> new ControlGroup<>());
+        register(Slots.WindowMenu.ARRANGEMENT_GROUP, v -> new ControlGroup<>());
     }
 
     protected void registerWindowsItem() {

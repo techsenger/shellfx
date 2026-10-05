@@ -328,8 +328,8 @@ to predict the final structure of the menu that the user will work with.
 The implementation is built on two extension registries (see [Extension Registries](#registries)). The
 `SlotRegistry` holds the structure of the menu: the menu bar, its menus and the groups of menu items are slots, put
 into each other at positions. The `ControlRegistry` holds the factories that create the controls: the menu bar, the
-menus and the menu items. Both registries can be changed and unregistered from at any time, so a plugin can add its
-own menu or put its items into an existing one. When the menu needs to be updated, `Shell` has `ManagedControlBuilder`
+menus, the groups and the menu items. Both registries can be changed and unregistered from at any time, so a plugin
+can add its own menu or put its items into an existing one. When the menu needs to be updated, `Shell` has `ManagedControlBuilder`
 read both registries and build a new menu bar from them. How the built controls behave at runtime is described in
 [Managed Controls](#managed-controls).
 
@@ -731,15 +731,17 @@ A group of menu items can also contain nested menus.
 
 `ControlRegistry` stores factories that create controls for registered slots.
 
-A factory can be registered in two ways:
+A factory can be registered in three ways:
 
-- **For a control slot.** A menu bar, menu, or context menu is itself a control and can have one factory.
-- **For a group.** A factory can be registered at a specific position within a `GroupSlot<V, C>`. It creates a control
-  belonging to that group, such as a menu item. The generic type of the group ensures that the factory creates a
-  compatible control.
+- **For a control slot.** A menu bar, menu, context menu, or tool bar is itself a control and can have one factory.
+- **For a group.** A group is a `ControlGroup<C>` and has one factory too, so a custom subclass can, for example, track
+  the number of its items. A group without a factory is left out by the builders.
+- **For a group item.** A factory can be registered at a specific position within a `GroupSlot<V, C>`. It creates a
+  control belonging to that group, such as a menu item. The generic type of the group ensures that the factory creates
+  a compatible control.
 
-A group is not a control, so it does not have a factory of its own. The builder decides how a group is represented and
-laid out.
+The builder fills the `ControlGroup` created by the group's factory with the controls of the group and decides how the
+group is laid out.
 
 Registering a factory does not invoke it. Factories are called only when a builder creates the corresponding
 controls.
@@ -750,8 +752,9 @@ Neither registry creates the final control hierarchy. Builders combine the two r
 factories for a component, walk the tree from a root slot, create the controls, and order them by their registered
 positions.
 
-`ControlBuilder` provides the basic form. It returns the controls contributed to each group of a root slot as ordered
-lists, leaving the actual layout to the caller, such as the placement of separators.
+`ControlBuilder` builds tool bars. A tool bar slot produces the `ToolBar` created by its factory, filled with the
+controls of its groups in the order of their positions; groups are separated by separators and empty groups are
+omitted. For custom layouts it can also return the groups of a tool bar slot as `ControlGroup`s.
 
 `ManagedControlBuilder` builds complete menus. A menu bar slot produces a `MenuBar` containing its menus; a menu
 produces its groups and nested menus; groups are separated by separators; and empty menus and groups are omitted.
