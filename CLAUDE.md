@@ -107,7 +107,10 @@ lookups silently fall back to defaults and mask regressions.
   (`ContextMenu` too, including its `visible` flag); the `Handler` family, and the `MenuBarManager`/`ContextMenuManager`
   classes that wire runtime behavior onto them, all live in `shellfx-material.menu` — independent of
   `ControlRegistry` and the builders, so they can be used standalone too; they never change the menu structure,
-  only visibility. The builders log what they built, with registered positions, at debug level. A menu item
+  only visibility. Each `build*` call logs the tree it built, with registered positions, at debug level, and - if
+  anything looks wrong (a group or a menu without a factory, controls of a group put nowhere, a menu item without
+  a handler, equal positions) - a second tree at warning level with only the places that lead to the problems; the
+  report is `SlotTreeLogger`, kept by the `SlotTree` of the build. A menu item
   action is dispatched by `MenuItemDispatcher`: a mouse click runs it as is, an accelerator (a `KeyEvent` returned
   by `WindowView#getInputEvent()` of the window, which the managers get as a `Supplier`) first calls `onUpdate()`
   and is dropped if the item turned disabled or invisible.

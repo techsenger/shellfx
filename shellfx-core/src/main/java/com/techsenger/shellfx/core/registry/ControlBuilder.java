@@ -34,8 +34,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Assembles a tool bar from the groups of controls put into its slot: the tool bar is the control registered for the
  * slot, its groups and controls follow the order of their positions and the groups are set apart with separators.
- * A group without a registered control is left out. For menus see {@link ManagedControlBuilder}. What was built,
- * with the registered positions, is logged at debug level.
+ * A group without a registered control is left out. For menus see {@link ManagedControlBuilder}. The tree that was
+ * built, with the registered positions, is logged at debug level; what looks wrong in it - a group without a
+ * factory, controls of a group that is put nowhere, equal positions - is logged at warning level as a second tree
+ * with only the places that lead to the problems.
  *
  * @author Pavel Castornii
  */
@@ -64,7 +66,7 @@ public class ControlBuilder {
      * @throws IllegalStateException if no tool bar control is registered for the slot
      */
     public ToolBar buildToolBar(ToolBarSlot<?> toolBarSlot, ParentView<?> view) {
-        var tree = new SlotTree(slotRegistry, controlRegistry, view);
+        var tree = createSlotTree(view);
         if (!(tree.createNode(toolBarSlot) instanceof ToolBar toolBar)) {
             throw new IllegalStateException("No tool bar control is registered for slot " + toolBarSlot.getText());
         }
@@ -80,34 +82,43 @@ public class ControlBuilder {
         return toolBar;
     }
 
+    /**
+     * Creates the tree of slots for a build; its report is on if the logger of the builder logs at warning level.
+     */
+    SlotTree createSlotTree(ParentView<?> view) {
+        var tree = new SlotTree(slotRegistry, controlRegistry, view);
+        tree.getLogger().setEnabled(logger.isWarnEnabled());
+        return tree;
+    }
+
     @SuppressWarnings("unchecked")
     private <C> List<ControlGroup<C>> build(ToolBarSlot<?> toolBar, Class<C> controlType, SlotTree tree) {
         var view = tree.getView();
         var result = new ArrayList<ControlGroup<C>>();
-        var description = new StringBuilder();
+        var loggerRoot = tree.getLogger().add("Tool bar: " + toolBar.getText());
         for (var link : tree.getChildren(toolBar)) {
             var group = link.getChild();
-            if (!(group instanceof GroupSlot<?, ?>) || tree.getLeaves(group).isEmpty()
-                    || !(tree.createNode(group) instanceof ControlGroup<?> controlGroup)) {
+            var leaves = tree.getLeaves(group);
+            if (!(group instanceof GroupSlot<?, ?>) || leaves.isEmpty()) {
                 continue;
             }
-            description.append(System.lineSeparator()).append("    Group: ").append(group.getText());
-            description.append(", position: ").append(link.getPosition());
+            var loggerGroup = loggerRoot.add("Group: " + group.getText(), link.getPosition());
+            if (!(tree.createNode(group) instanceof ControlGroup<?> controlGroup)) {
+                loggerGroup.skip("no ControlGroup factory registered, its " + leaves.size() + " controls are left out");
+                continue;
+            }
             var controls = new ArrayList<C>();
-            for (var leaf : tree.getLeaves(group)) {
+            for (var leaf : leaves) {
                 var control = controlType.cast(leaf.create(view));
                 controls.add(control);
-                description.append(System.lineSeparator()).append("        Control: ").append(describe(control));
-                description.append(", position: ").append(leaf.getPosition());
+                loggerGroup.add("Control: " + describe(control), leaf.getPosition());
             }
             var typedGroup = (ControlGroup<C>) controlGroup;
             typedGroup.getItems().setAll(controls);
             result.add(typedGroup);
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Controls built for {}:{}Tool bar: {}{}", tree.getViewName(), System.lineSeparator(),
-                    toolBar.getText(), description);
-        }
+        tree.logOrphanGroups(loggerRoot);
+        tree.getLogger().write(logger, "Controls");
         return result;
     }
 

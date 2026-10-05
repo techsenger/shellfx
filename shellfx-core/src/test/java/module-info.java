@@ -15,10 +15,21 @@
  */
 
 open module com.techsenger.shellfx.core {
+    requires com.techsenger.annotations;
+    requires com.techsenger.toolkit.core;
+    requires com.techsenger.toolkit.fx;
     requires org.slf4j;
+    requires javafx.base;
+    requires javafx.graphics;
+    requires javafx.controls;
+    requires javafx.swing;
+    requires atlantafx.base;
+    requires com.techsenger.tabpanepro.core;
+    requires com.techsenger.patternfx.core;
+    requires com.techsenger.patternfx.mvvm;
+    requires com.techsenger.shellfx.material;
 
     requires org.junit.jupiter.api;
     requires org.assertj.core;
+    requires org.mockito;
 }
-
-

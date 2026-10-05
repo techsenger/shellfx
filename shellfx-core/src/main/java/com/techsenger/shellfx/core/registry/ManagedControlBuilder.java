@@ -20,6 +20,8 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.ControlGroup;
 import com.techsenger.shellfx.material.menu.ContextMenuHandler;
+import com.techsenger.shellfx.material.menu.MenuHandler;
+import com.techsenger.shellfx.material.menu.MenuItemHandler;
 import com.techsenger.shellfx.material.slot.ContextMenuSlot;
 import com.techsenger.shellfx.material.slot.GroupSlot;
 import com.techsenger.shellfx.material.slot.MenuBarSlot;
@@ -40,43 +42,25 @@ import org.slf4j.LoggerFactory;
  * Assembles the menu tree from the slots of a menu bar, a menu or a context menu: the menus put into a
  * slot are {@link Menu}s, a context menu is a {@link ContextMenu}, the groups hold menu items and
  * nested menus, and the groups are set apart from each other with separators. A menu without a registered control
- * does not make it into the result, and neither does an empty menu or group. What was built, with the registered
- * positions, is logged at debug level.
+ * does not make it into the result, and neither does an empty menu or group. The tree that was built, with the
+ * registered positions, is logged at debug level; what looks wrong in it - a menu or a group without a factory, a
+ * menu item without a handler, controls of a group that is put nowhere, equal positions - is logged at warning
+ * level as a second tree with only the places that lead to the problems.
  *
  * @author Pavel Castornii
  */
 public class ManagedControlBuilder {
 
-    private static final class Element {
+    /**
+     * A control of a group or a nested menu of it, put at a position.
+     */
+    private record Entry(int position, @Nullable LeafRegistration leaf, @Nullable Slot<?> menuSlot) {
 
-        private final MenuItem item;
-
-        private final int position;
-
-        private final String description;
-
-        Element(MenuItem item, int position, String description) {
-            this.item = item;
-            this.position = position;
-            this.description = description;
-        }
-    }
-
-    private static final class Segment {
-
-        private final List<MenuItem> items;
-
-        private final String description;
-
-        Segment(List<MenuItem> items, String description) {
-            this.items = items;
-            this.description = description;
-        }
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ManagedControlBuilder.class);
 
-    private static final String TAB = "    ";
+    private static final String MISSING_MENU = "no Menu factory registered, it is left out";
 
     private final SlotRegistry slotRegistry;
 
@@ -98,24 +82,23 @@ public class ManagedControlBuilder {
      * @throws IllegalStateException if no menu bar control is registered for the slot
      */
     public MenuBar buildMenuBar(MenuBarSlot<?> menuBarSlot, ParentView<?> view) {
-        var tree = new SlotTree(slotRegistry, controlRegistry, view);
+        var tree = createSlotTree(view);
         if (!(tree.createNode(menuBarSlot) instanceof MenuBar menuBar)) {
             throw new IllegalStateException("No menu bar control is registered for slot " + menuBarSlot.getText());
         }
-        var description = new StringBuilder();
+        var loggerRoot = tree.getLogger().add("Menu bar: " + menuBarSlot.getText());
         for (var link : tree.getChildren(menuBarSlot)) {
-            if (tree.createNode(link.getChild()) instanceof Menu menu) {
-                var segment = buildMenu(link.getChild(), menu, link.getPosition(), 1, tree);
-                if (segment != null) {
+            var child = link.getChild();
+            if (tree.createNode(child) instanceof Menu menu) {
+                if (buildMenu(child, menu, link.getPosition(), loggerRoot, tree)) {
                     menuBar.getMenus().add(menu);
-                    description.append(segment.description);
                 }
+            } else {
+                loggerRoot.add("Menu: " + child.getText(), link.getPosition()).skip(MISSING_MENU);
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Menu bar built for {}:{}Menu bar: {}{}", tree.getViewName(), System.lineSeparator(),
-                    menuBarSlot.getText(), description);
-        }
+        tree.logOrphanGroups(loggerRoot);
+        tree.getLogger().write(logger, "Menu bar");
         return menuBar;
     }
 
@@ -128,14 +111,15 @@ public class ManagedControlBuilder {
      * @throws IllegalStateException if no menu control is registered for the slot
      */
     public Menu buildMenu(MenuSlot<?> menuSlot, ParentView<?> view) {
-        var tree = new SlotTree(slotRegistry, controlRegistry, view);
+        var tree = createSlotTree(view);
         if (!(tree.createNode(menuSlot) instanceof Menu menu)) {
             throw new IllegalStateException("No menu control is registered for slot " + menuSlot.getText());
         }
-        var segment = buildMenu(menuSlot, menu, 0, 0, tree);
-        if (segment != null && logger.isDebugEnabled()) {
-            logger.debug("Menu built for {}:{}", tree.getViewName(), segment.description);
-        }
+        var loggerRoot = tree.getLogger().add("Menu: " + describe(menu));
+        warnIfNoHandler(menu, loggerRoot);
+        assemble(menuSlot, menu.getItems(), loggerRoot, tree);
+        tree.logOrphanGroups(loggerRoot);
+        tree.getLogger().write(logger, "Menu");
         return menu;
     }
 
@@ -151,106 +135,126 @@ public class ManagedControlBuilder {
      */
     public ContextMenu buildContextMenu(ContextMenuSlot<?> contextMenuSlot,
             ParentView<?> view) {
-        var tree = new SlotTree(slotRegistry, controlRegistry, view);
+        var tree = createSlotTree(view);
         if (!(tree.createNode(contextMenuSlot) instanceof ContextMenu contextMenu)) {
             throw new IllegalStateException("No context menu control is registered for slot "
                     + contextMenuSlot.getText());
         }
-        var description = assemble(contextMenuSlot, contextMenu.getItems(), 1, tree);
-        if (description != null && logger.isDebugEnabled()) {
-            logger.debug("Context menu built for {}:{}Context menu: {}{}", tree.getViewName(),
-                    System.lineSeparator(), contextMenuSlot.getText(), description);
-        }
+        var loggerRoot = tree.getLogger().add("Context menu: " + contextMenuSlot.getText());
+        assemble(contextMenuSlot, contextMenu.getItems(), loggerRoot, tree);
+        tree.logOrphanGroups(loggerRoot);
+        tree.getLogger().write(logger, "Context menu");
         return contextMenu;
     }
 
     /**
-     * Fills {@code menu} with the groups put into {@code slot}, in the order of their positions.
-     *
-     * @return the menu with its description, or {@code null} if the menu ended up empty.
+     * Creates the tree of slots for a build; its report is on if the logger of the builder logs at warning level.
      */
-    private @Nullable Segment buildMenu(Slot<?> slot, Menu menu, int position, int depth,
-            SlotTree tree) {
-        var childrenDescription = assemble(slot, menu.getItems(), depth + 1, tree);
-        if (childrenDescription == null) {
-            return null;
-        }
-        var description = System.lineSeparator() + TAB.repeat(depth) + "Menu: "
-                + String.valueOf(menu.getText()).replace("_", "") + ", position: " + position + childrenDescription;
-        return new Segment(List.of(menu), description);
+    SlotTree createSlotTree(ParentView<?> view) {
+        var tree = new SlotTree(slotRegistry, controlRegistry, view);
+        tree.getLogger().setEnabled(logger.isWarnEnabled());
+        return tree;
+    }
+
+    /**
+     * Fills {@code menu} with the groups put into {@code slot} and describes it under {@code loggerParent}; a menu that
+     * has nothing to describe is not described at all.
+     *
+     * @return whether the menu got items.
+     */
+    private boolean buildMenu(Slot<?> slot, Menu menu, int position, SlotTreeLogger.Node loggerParent, SlotTree tree) {
+        var loggerNode = loggerParent.add("Menu: " + describe(menu), position);
+        warnIfNoHandler(menu, loggerNode);
+        assemble(slot, menu.getItems(), loggerNode, tree);
+        var built = !menu.getItems().isEmpty();
+        loggerParent.settle(loggerNode, built);
+        return built;
     }
 
     /**
      * Puts the groups of {@code container} into {@code target} in the order of their positions, with a separator
-     * between the groups; empty groups are left out.
-     *
-     * @return the description of the groups, or {@code null} if there was nothing to put into {@code target}.
+     * between the groups, and describes them under {@code loggerParent}; empty groups are left out.
      */
-    private @Nullable String assemble(Slot<?> container, List<MenuItem> target, int depth,
-            SlotTree tree) {
-        var segments = new ArrayList<Segment>();
-        var description = new StringBuilder();
+    private void assemble(Slot<?> container, List<MenuItem> target, SlotTreeLogger.Node loggerParent, SlotTree tree) {
+        var groups = new ArrayList<List<MenuItem>>();
         for (var link : tree.getChildren(container)) {
             if (link.getChild() instanceof GroupSlot<?, ?> group) {
-                var segment = buildGroup(group, link.getPosition(), depth, tree);
-                if (segment != null) {
-                    segments.add(segment);
-                    description.append(segment.description);
+                var items = buildGroup(group, link.getPosition(), loggerParent, tree);
+                if (!items.isEmpty()) {
+                    groups.add(items);
                 }
             }
         }
-        if (segments.isEmpty()) {
-            return null;
-        }
-        for (var i = 0; i < segments.size(); i++) {
+        for (var i = 0; i < groups.size(); i++) {
             if (i != 0) {
                 target.add(new SeparatorMenuItem());
             }
-            target.addAll(segments.get(i).items);
+            target.addAll(groups.get(i));
         }
-        return description.toString();
     }
 
     /**
      * Fills the group {@code group} stands for with the controls put into it and the nested menus of the group, in
-     * the order of their positions.
+     * the order of their positions, and describes it under {@code loggerParent}; a group that has nothing to
+     * describe is not described at all.
      *
-     * @return the group's items with its description, or {@code null} if no control is registered for the group
-     *     or it ended up empty.
+     * @return the items of the group, none if the group has no factory or ended up empty.
      */
     @SuppressWarnings("unchecked")
-    private @Nullable Segment buildGroup(GroupSlot<?, ?> group, int position, int depth, SlotTree tree) {
+    private List<MenuItem> buildGroup(GroupSlot<?, ?> group, int position, SlotTreeLogger.Node loggerParent,
+            SlotTree tree) {
+        var leaves = tree.getLeaves(group);
+        var nestedLinks = tree.getChildren(group).stream()
+                .filter(link -> !(link.getChild() instanceof GroupSlot<?, ?>)).toList();
+        if (leaves.isEmpty() && nestedLinks.isEmpty()) {
+            return List.of();
+        }
+        var loggerNode = loggerParent.add("Group: " + group.getText(), position);
         if (!(tree.createNode(group) instanceof ControlGroup<?> controlGroup)) {
-            return null;
+            loggerNode.skip("no ControlGroup factory registered, its content is left out");
+            return List.of();
         }
-        var elements = new ArrayList<Element>();
-        for (var leaf : tree.getLeaves(group)) {
-            var item = (MenuItem) leaf.create(tree.getView());
-            var description = System.lineSeparator() + TAB.repeat(depth + 1) + "MenuItem: "
-                    + String.valueOf(item.getText()).replace("_", "") + ", position: " + leaf.getPosition()
-                    + (item.getAccelerator() == null ? "" : ", hotkey: " + item.getAccelerator());
-            elements.add(new Element(item, leaf.getPosition(), description));
-        }
-        for (var link : tree.getChildren(group)) {
-            if (tree.createNode(link.getChild()) instanceof Menu nested) {
-                var segment = buildMenu(link.getChild(), nested, link.getPosition(), depth + 1, tree);
-                if (segment != null) {
-                    elements.add(new Element(nested, link.getPosition(), segment.description));
+        var entries = new ArrayList<Entry>();
+        leaves.forEach(leaf -> entries.add(new Entry(leaf.getPosition(), leaf, null)));
+        nestedLinks.forEach(link -> entries.add(new Entry(link.getPosition(), null, link.getChild())));
+        entries.sort(Comparator.comparingInt(e -> e.position));
+        var items = new ArrayList<MenuItem>();
+        for (var entry : entries) {
+            if (entry.leaf != null) {
+                var item = (MenuItem) entry.leaf.create(tree.getView());
+                var loggerItem = loggerNode.add("MenuItem: " + describe(item), entry.position,
+                        item.getAccelerator() == null ? null : "hotkey: " + item.getAccelerator());
+                if (!(item instanceof Menu) && !(item instanceof SeparatorMenuItem)
+                        && MenuItemHandler.getHandler(item) == null) {
+                    loggerItem.warn("no handler");
+                }
+                items.add(item);
+            } else if (entry.menuSlot != null) {
+                if (tree.createNode(entry.menuSlot) instanceof Menu nested) {
+                    if (buildMenu(entry.menuSlot, nested, entry.position, loggerNode, tree)) {
+                        items.add(nested);
+                    }
+                } else {
+                    loggerNode.add("Menu: " + entry.menuSlot.getText(), entry.position).skip(MISSING_MENU);
                 }
             }
         }
-        if (elements.isEmpty()) {
-            return null;
-        }
-        elements.sort(Comparator.comparingInt(e -> e.position));
-        var items = new ArrayList<MenuItem>();
-        var description = new StringBuilder(System.lineSeparator() + TAB.repeat(depth) + "Group: " + group.getText()
-                + ", position: " + position);
-        for (var element : elements) {
-            items.add(element.item);
-            description.append(element.description);
-        }
+        loggerParent.settle(loggerNode, !items.isEmpty());
         ((ControlGroup<MenuItem>) controlGroup).getItems().setAll(items);
-        return new Segment(items, description.toString());
+        return items;
+    }
+
+    /**
+     * Notes a menu without a handler: it has no logic of its own to show or hide it, so its visibility is
+     * determined by walking its items.
+     */
+    private void warnIfNoHandler(Menu menu, SlotTreeLogger.Node loggerNode) {
+        if (MenuHandler.getHandler(menu) == null) {
+            loggerNode.warn("no handler, its visibility is determined by walking its items");
+        }
+    }
+
+    private String describe(MenuItem item) {
+        return String.valueOf(item.getText()).replace("_", "");
     }
 }

@@ -24,10 +24,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The tree of slots as the registries describe it for one component instance: which slots sit in
- * which one, which control each slot stands for, and which controls fill each group. The builders walk it.
+ * which one, which control each slot stands for, and which controls fill each group. The builders walk it and
+ * report what they build and what looks wrong in it to its logger.
  *
  * @author Pavel Castornii
  */
@@ -41,8 +43,11 @@ final class SlotTree {
 
     private final Map<Slot<?>, List<LeafRegistration>> leavesByGroup = new HashMap<>();
 
+    private final SlotTreeLogger logger;
+
     SlotTree(SlotRegistry slotRegistry, ControlRegistry controlRegistry, ParentView<?> view) {
         this.view = view;
+        this.logger = new SlotTreeLogger(getViewName());
         for (var registration : slotRegistry.getRegistrationsFor(view)) {
             childrenByParent.computeIfAbsent(registration.getParent(), k -> new ArrayList<>()).add(registration);
         }
@@ -86,6 +91,27 @@ final class SlotTree {
      */
     List<LeafRegistration> getLeaves(Slot<?> group) {
         return leavesByGroup.getOrDefault(group, List.of());
+    }
+
+    /**
+     * Returns the logger that collects the report of the build of this tree.
+     */
+    SlotTreeLogger getLogger() {
+        return logger;
+    }
+
+    /**
+     * Adds to {@code parent} the groups that have controls registered but are not put into any slot, so their
+     * controls can never be shown.
+     */
+    void logOrphanGroups(SlotTreeLogger.Node parent) {
+        var placed = childrenByParent.values().stream().flatMap(List::stream).map(SlotRegistration::getChild)
+                .collect(Collectors.toSet());
+        leavesByGroup.entrySet().stream()
+                .filter(e -> !placed.contains(e.getKey()))
+                .sorted(Comparator.comparing(e -> e.getKey().getText()))
+                .forEach(e -> parent.add("Group: " + e.getKey().getText()).skip("not put into any menu or tool bar, "
+                        + "its " + e.getValue().size() + " controls are never shown"));
     }
 
     /**
