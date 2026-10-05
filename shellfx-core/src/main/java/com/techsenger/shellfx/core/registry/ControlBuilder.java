@@ -22,6 +22,7 @@ import com.techsenger.shellfx.material.slot.GroupSlot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Labeled;
@@ -68,9 +69,11 @@ public class ControlBuilder {
             throw new IllegalStateException("No tool bar control is registered for slot " + toolBarSlot.getText());
         }
         var groups = build(toolBarSlot, Node.class, tree);
+        var separatorOrientation = toolBar.getOrientation() == Orientation.HORIZONTAL
+                ? Orientation.VERTICAL : Orientation.HORIZONTAL;
         for (var i = 0; i < groups.size(); i++) {
             if (i != 0) {
-                toolBar.getItems().add(new Separator());
+                toolBar.getItems().add(new Separator(separatorOrientation));
             }
             toolBar.getItems().addAll(groups.get(i).getItems());
         }
