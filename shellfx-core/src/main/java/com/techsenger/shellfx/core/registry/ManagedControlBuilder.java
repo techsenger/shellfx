@@ -250,7 +250,7 @@ public class ManagedControlBuilder {
      */
     private void warnIfNoHandler(Menu menu, SlotTreeLogger.Node loggerNode) {
         if (MenuHandler.getHandler(menu) == null) {
-            loggerNode.warn("no handler, its visibility is determined by walking its items");
+            loggerNode.warn("no handler");
         }
     }
 

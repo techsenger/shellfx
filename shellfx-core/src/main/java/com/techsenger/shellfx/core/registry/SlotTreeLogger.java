@@ -245,7 +245,7 @@ final class SlotTreeLogger {
             logger.debug("{} built for {}:{}{}", what, viewName, System.lineSeparator(), this);
         }
         if (hasProblems()) {
-            logger.warn("{} built for {} with problems:{}{}", what, viewName, System.lineSeparator(),
+            logger.warn("{} built for {} with warnings:{}{}", what, viewName, System.lineSeparator(),
                     describeProblems());
         }
     }

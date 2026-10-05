@@ -238,8 +238,7 @@ public class ManagedControlBuilderIT {
         assertThat(report.toString()).contains("Menu: Edit, position: 100").doesNotContain("WARNING");
         assertThat(report.describeProblems()).isEqualTo(String.join(System.lineSeparator(),
                 "Menu bar: MainMenu",
-                "    Menu: Edit, position: 100, warning: no handler, its visibility is determined by walking its "
-                        + "items"));
+                "    Menu: Edit, position: 100, warning: no handler"));
     }
 
     @Test
