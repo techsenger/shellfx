@@ -194,12 +194,8 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
         }
         var builder = new ManagedControlBuilder(context.getSlotRegistry(), context.getControlRegistry());
         this.menuBar = builder.buildMenuBar(menuBarSlot, this);
-        if (this.menuBar == null) {
-            this.menuBarManager = null;
-        } else {
-            this.menuBarManager = new MenuBarManager(this.menuBar, this::getInputEvent);
-            children.add(index, this.menuBar);
-        }
+        this.menuBarManager = new MenuBarManager(this.menuBar, this::getInputEvent);
+        children.add(index, this.menuBar);
         logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());
         updateMenuBar();
     }

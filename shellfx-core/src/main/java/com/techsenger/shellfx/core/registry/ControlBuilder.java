@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.ControlGroup;
 import com.techsenger.shellfx.material.slot.GroupSlot;
@@ -54,22 +53,21 @@ public class ControlBuilder {
 
     /**
      * Builds the tool bar {@code toolBarSlot} stands for, with the controls of every group put into the slot. The
-     * control registered for the slot is the {@link ToolBar} to fill; empty groups are left out.
+     * control registered for the slot is the {@link ToolBar} to fill; empty groups are left out, so a tool bar
+     * without groups is returned empty.
      *
      * @param toolBarSlot the slot of the tool bar to build
      * @param view        the component view passed to each control factory; its class (and ancestors/interfaces)
      *     determines which registrations apply
-     * @return the assembled tool bar, or {@code null} if no control is registered for the slot or it ended up empty
+     * @return the assembled tool bar
+     * @throws IllegalStateException if no tool bar control is registered for the slot
      */
-    public @Nullable ToolBar buildToolBar(ToolBarSlot<?> toolBarSlot, ParentView<?> view) {
+    public ToolBar buildToolBar(ToolBarSlot<?> toolBarSlot, ParentView<?> view) {
         var tree = new SlotTree(slotRegistry, controlRegistry, view);
         if (!(tree.createNode(toolBarSlot) instanceof ToolBar toolBar)) {
-            return null;
+            throw new IllegalStateException("No tool bar control is registered for slot " + toolBarSlot.getText());
         }
         var groups = build(toolBarSlot, Node.class, tree);
-        if (groups.isEmpty()) {
-            return null;
-        }
         for (var i = 0; i < groups.size(); i++) {
             if (i != 0) {
                 toolBar.getItems().add(new Separator());
@@ -77,20 +75,6 @@ public class ControlBuilder {
             toolBar.getItems().addAll(groups.get(i).getItems());
         }
         return toolBar;
-    }
-
-    /**
-     * Builds the controls of every group put directly into {@code toolBar}. Empty groups are left out.
-     *
-     * @param toolBar     the slot of the tool bar whose groups are built
-     * @param controlType the type of controls the caller expects
-     * @param view        the component view passed to each control factory; its class (and ancestors/interfaces)
-     *     determines which registrations apply
-     * @param <C>         the type of controls the caller expects
-     * @return the non-empty groups sorted by position, each with its controls sorted by position
-     */
-    public <C> List<ControlGroup<C>> buildGroups(ToolBarSlot<?> toolBar, Class<C> controlType, ParentView<?> view) {
-        return build(toolBar, controlType, new SlotTree(slotRegistry, controlRegistry, view));
     }
 
     @SuppressWarnings("unchecked")

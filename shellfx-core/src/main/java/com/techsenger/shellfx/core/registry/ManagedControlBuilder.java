@@ -94,12 +94,13 @@ public class ManagedControlBuilder {
      * @param menuBarSlot the slot of the menu bar to build
      * @param view        the component view passed to each control factory; its class (and ancestors/interfaces)
      *     determines which registrations apply
-     * @return the assembled menu bar, or {@code null} if no control is registered for the slot or it ended up empty
+     * @return the assembled menu bar, empty if none of its menus has any items
+     * @throws IllegalStateException if no menu bar control is registered for the slot
      */
-    public @Nullable MenuBar buildMenuBar(MenuBarSlot<?> menuBarSlot, ParentView<?> view) {
+    public MenuBar buildMenuBar(MenuBarSlot<?> menuBarSlot, ParentView<?> view) {
         var tree = new SlotTree(slotRegistry, controlRegistry, view);
         if (!(tree.createNode(menuBarSlot) instanceof MenuBar menuBar)) {
-            return null;
+            throw new IllegalStateException("No menu bar control is registered for slot " + menuBarSlot.getText());
         }
         var description = new StringBuilder();
         for (var link : tree.getChildren(menuBarSlot)) {
@@ -110,9 +111,6 @@ public class ManagedControlBuilder {
                     description.append(segment.description);
                 }
             }
-        }
-        if (menuBar.getMenus().isEmpty()) {
-            return null;
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Menu bar built for {}:{}Menu bar: {}{}", tree.getViewName(), System.lineSeparator(),
@@ -126,19 +124,16 @@ public class ManagedControlBuilder {
      *
      * @param menuSlot the slot of the menu to build
      * @param view      the component view passed to each control factory
-     * @return the assembled {@link Menu}, or {@code null} if no control is registered for the slot or the menu
-     *     ended up empty
+     * @return the assembled {@link Menu}, without items if none of its groups has any
+     * @throws IllegalStateException if no menu control is registered for the slot
      */
-    public @Nullable Menu buildMenu(MenuSlot<?> menuSlot, ParentView<?> view) {
+    public Menu buildMenu(MenuSlot<?> menuSlot, ParentView<?> view) {
         var tree = new SlotTree(slotRegistry, controlRegistry, view);
         if (!(tree.createNode(menuSlot) instanceof Menu menu)) {
-            return null;
+            throw new IllegalStateException("No menu control is registered for slot " + menuSlot.getText());
         }
         var segment = buildMenu(menuSlot, menu, 0, 0, tree);
-        if (segment == null) {
-            return null;
-        }
-        if (logger.isDebugEnabled()) {
+        if (segment != null && logger.isDebugEnabled()) {
             logger.debug("Menu built for {}:{}", tree.getViewName(), segment.description);
         }
         return menu;
@@ -151,19 +146,18 @@ public class ManagedControlBuilder {
      *
      * @param contextMenuSlot the slot of the context menu to build
      * @param view             the component view passed to each control factory
-     * @return the assembled menu, or {@code null} if no control is registered for the slot or it ended up empty
+     * @return the assembled menu, without items if none of its groups has any
+     * @throws IllegalStateException if no context menu control is registered for the slot
      */
-    public @Nullable ContextMenu buildContextMenu(ContextMenuSlot<?> contextMenuSlot,
+    public ContextMenu buildContextMenu(ContextMenuSlot<?> contextMenuSlot,
             ParentView<?> view) {
         var tree = new SlotTree(slotRegistry, controlRegistry, view);
         if (!(tree.createNode(contextMenuSlot) instanceof ContextMenu contextMenu)) {
-            return null;
+            throw new IllegalStateException("No context menu control is registered for slot "
+                    + contextMenuSlot.getText());
         }
         var description = assemble(contextMenuSlot, contextMenu.getItems(), 1, tree);
-        if (description == null) {
-            return null;
-        }
-        if (logger.isDebugEnabled()) {
+        if (description != null && logger.isDebugEnabled()) {
             logger.debug("Context menu built for {}:{}Context menu: {}{}", tree.getViewName(),
                     System.lineSeparator(), contextMenuSlot.getText(), description);
         }
