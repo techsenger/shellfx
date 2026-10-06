@@ -69,10 +69,9 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
 * [Extension Registries](#registries)
     * [Slot Registry](#registries-slot)
     * [Control Registry](#registries-control)
-    * [Builders](#registries-builders)
-* [Managed Controls](#managed-controls)
-    * [Menu Handlers](#managed-controls-menu)
-    * [Visibility](#managed-controls-visibility)
+    * [Control Builder](#registries-control-builder)
+    * [Control State](#registries-control-state)
+    * [Menu Visibility](#registries-menu-visibility)
 * [Naming Convention](#naming-convention)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
@@ -319,7 +318,7 @@ The Shell core does not contain any business logic. It is only a shell for other
 Working with the main menu of the `Shell` is carried out in two directions:
 
 1. Configuring menu elements
-2. Managing the state of elements and responding to user actions
+2. Keeping the state of elements actual and responding to user actions, which the controls do themselves
 
 The configuration of menu elements is performed dynamically and in any order, with the final result being unknown in
 advance. This feature is crucial in cases where plugins/extensions are used, as they can be added/removed dynamically by
@@ -330,14 +329,14 @@ The implementation is built on two extension registries (see [Extension Registri
 `SlotRegistry` holds the structure of the menu: the menu bar, its menus and the groups of menu items are slots, put
 into each other at positions. The `ControlRegistry` holds the factories that create the controls: the menu bar, the
 menus, the groups and the menu items. Both registries can be changed and unregistered from at any time, so a plugin
-can add its own menu or put its items into an existing one. When the menu needs to be updated, `Shell` has `ManagedControlBuilder`
-read both registries and build a new menu bar from them. How the built controls behave at runtime is described in
-[Managed Controls](#managed-controls).
+can add its own menu or put its items into an existing one. When the menu needs to be updated, `Shell` has
+`ControlBuilder` read both registries and build a new menu bar from them. How the built controls behave at runtime is
+described in [Control State](#registries-control-state) and [Menu Visibility](#registries-menu-visibility).
 
 A menu consists of groups separated by separators. Items are added to groups, and empty groups are ignored. Each menu
-and group is identified by its slot. The `MenuBarManager` is responsible for managing the state
-of menu elements and responding to their actions. It interacts with a component that provides a port implementing the
-`MenuAwarePort` interface.
+and group is identified by its slot. The controls of the menu keep their own state and react to their own actions (see
+[Control State](#registries-control-state)); they take the state from the port of the component that implements the
+`MenuAwarePort` interface and is exposed by `ShellPort.ComposerAccess#menuAwarePortProperty()`.
 
 The algorithm works as follows. First, the component that has focus is determined. The `Shell` tracks changes to
 the focused node using `Scene#focusOwnerProperty()`. When this property changes, the component that owns the node is
@@ -348,10 +347,13 @@ when the user clicks on an empty area of that component (for example, a `Pane`),
 At the same time, the focused component may not participate in menu formation (for example, it could be just a toolbar).
 Therefore, after the focused component changes, `Shell` searches from the focused component up to the root of the
 tree — the Shell — for the first component whose port implements `MenuAwarePort`. Note that `Shell` can also form
-the main menu, but this is usually done only when the workspace is empty. See also `ShellView#menuAwareProperty()`.
+the main menu, but this is usually done only when the workspace is empty. See also
+`ShellView.Composer#menuAwareProperty()`.
 
-It is also important to remember that the `MenuBarManager` also interacts with `MenuAwarePort` when the user uses
-accelerators.
+The port of the menu aware component is available to menu controls as
+`ShellPort.ComposerAccess#menuAwarePortProperty()`, which is `null` when no component forms the menu. A control that
+depends on the state of that component observes it through this property, so its state stays actual whether the menu
+is open or an accelerator is pressed.
 
 To gain a complete understanding of working with the menu, it is recommended to familiarize yourself with the
 `MenuAwarePort` interface, experiment with the menu in the demo, and pay attention to log messages at the debug level.
@@ -743,9 +745,9 @@ and other controls are contributed through the [Control Registry](#registries-co
 
 - `V` is the view type of the component the slot belongs to, for example `ShellView<?>`. Two slots used in the same
   registration must have compatible `V` types. `V` also determines the type of component instance passed to a control
-  factory. When a control is created, the factory receives the component instance into which the control may be
+  provider. When a control is created, its provider receives the component instance into which the control may be
   placed.
-- `C` is the control type accepted by a `GroupSlot<V, C>`. A factory registered for the group in the
+- `C` is the control type accepted by a `GroupSlot<V, C>`. A provider registered for the group in the
   `ControlRegistry` must create a compatible control.
 
 Only compatible slots can be connected. A menu bar contains menus. A menu or context menu contains groups of menu
@@ -754,86 +756,245 @@ A group of menu items can also contain nested menus.
 
 ### Control Registry <a name="registries-control"></a>
 
-`ControlRegistry` stores factories that create controls for registered slots.
+`ControlRegistry` stores factories of `ControlProvider`s for registered slots. A provider creates and owns the
+control of one slot for one component view: the control is passed to the constructor or created in `initialize(view)`
+(`setControl`), `initialize` hooks it onto the view, `getControl()` returns it, `getSlot()` tells which slot it was
+registered for and `deinitialize(view)` unhooks it. Both can be called only once and throw an
+`IllegalStateException` otherwise, so an override calls `super` first (the check is not enforced: an override that
+forgets `super` is simply not checked). A provider keeps its control, so a new provider is created for every build,
+which is why a `ControlProviderFactory` is registered (`BackButtonProvider::new` or
+`() -> new SimpleControlProvider<>(control) {...}`) and not the provider itself. `ControlProvider` is an interface;
+`SimpleControlProvider` is its base class that keeps the control and the slot and guards `initialize` and
+`deinitialize`.
 
-A factory can be registered in three ways:
+A provider can be registered in three ways:
 
-- **For a control slot.** A menu bar, menu, context menu, or tool bar is itself a control and can have one factory.
-- **For a group.** A group is a `ControlGroup<C>` and has one factory too, so a custom subclass can, for example, track
-  the number of its items. A group without a factory is left out by the builders.
-- **For a group item.** A factory can be registered at a specific position within a `GroupSlot<V, C>`. It creates a
-  control belonging to that group, such as a menu item. The generic type of the group ensures that the factory creates
-  a compatible control.
+- **For a control slot.** A menu bar, menu, context menu, or tool bar is itself a control and can have one provider.
+  A control is passed to the constructor of the provider; one that needs nothing to be hooked onto the view needs no
+  more:
 
-The builder fills the `ControlGroup` created by the group's factory with the controls of the group and decides how the
-group is laid out.
+  ```java
+  register(ShellSlots.MAIN_MENU, () -> new SimpleControlProvider<>(new MenuBar()));
+  ```
+
+  Otherwise `initialize` hooks it onto the view with `getControl()`. A control whose creation depends on the view can
+  be created in `initialize` and given to `setControl` instead.
+
+- **For a group.** A group is a `ControlGroup<C>` and has one provider too (`SimpleGroupProvider` gives a plain
+  group), so a custom provider can, for example, create a group that tracks the number of its items. A group without
+  a provider is left out by the builder.
+
+  ```java
+  register(ShellSlots.FileMenu.DEMO_GROUP, SimpleGroupProvider::new);
+  ```
+
+- **For a group item.** A provider can be registered at a specific position within a `GroupSlot<V, C>`. It creates a
+  control belonging to that group, such as a menu item. The generic type of the group ensures that the provider
+  creates a compatible control.
+
+  ```java
+  register(ShellSlots.FileMenu.DEMO_GROUP, 100, () -> new SimpleControlProvider<>(new MenuItem("Main Tab")) {
+      @Override
+      public void initialize(ShellView<?> view) {
+          super.initialize(view);
+          getControl().setOnAction(new MainTabItemHandler(shell));
+      }
+  });
+  ```
+
+  A control that hooks itself onto long-living state unhooks in `deinitialize`, which the owner of the controls
+  calls when it is done with them:
+
+  ```java
+  register(ShellSlots.FileMenu.DEMO_GROUP, 200, () -> new SimpleControlProvider<>(new MenuItem()) {
+
+      @Override
+      public void initialize(ShellView<?> view) {
+          super.initialize(view);
+          getControl().textProperty().bind(view.getViewModel().titleProperty());
+          getControl().setOnAction(new TitleItemHandler(shell));
+      }
+
+      @Override
+      public void deinitialize(ShellView<?> view) {
+          super.deinitialize(view);
+          getControl().textProperty().unbind();
+      }
+  });
+  ```
+
+  The type of the control comes from the slot; to get a narrower one, for example a `Button`, name the type
+  arguments: `new SimpleControlProvider<ToolBarView, Button>() {...}`.
+
+The builder fills the `ControlGroup` created by the group's provider with the controls of the group and decides how
+the group is laid out.
 
 Registering a factory does not invoke it. Factories are called only when a builder creates the corresponding
 controls.
 
-### Builders <a name="registries-builders"></a>
+### Control Builder <a name="registries-control-builder"></a>
 
-Neither registry creates the final control hierarchy. Builders combine the two registries: they resolve the slots and
-factories for a component, walk the tree from a root slot, create the controls, and order them by their registered
-positions.
+Neither registry creates the final control hierarchy. `ControlBuilder` combines the two registries: it resolves the
+slots and providers for a component, walks the tree from a root slot, creates and initializes the providers, takes
+their controls, and orders them by their registered positions.
 
-`ControlBuilder` builds tool bars. A tool bar slot produces the `ToolBar` created by its factory, filled with the
-controls of its groups in the order of their positions; groups are separated by separators and empty groups are
-omitted. For custom layouts it can also return the groups of a tool bar slot as `ControlGroup`s.
+A build has two passes. The first plans what is going to be built, so a menu or a group that would be left out is
+never created; the second creates the providers in the order of the tree, initializes them and takes their controls.
+Every provider in the result therefore has its control in the built controls. The builder takes the view first and the
+slot second, and returns `Controls<V, R>`: the root control and the providers of all the controls created for it,
+from the root down, already initialized like any other created component. The owner of the root calls
+`Controls#deinitializeAll(view)` when it no longer needs the controls (for example, before it builds the menu bar
+again); the providers are deinitialized from the last to the first. A provider is a one-shot object: it is
+initialized once by the builder and deinitialized once by the owner of the controls, and neither can be repeated
+(the second call of `deinitialize` of a provider throws an `IllegalStateException`). A provider and its control are
+never reused; a new provider is created for every build.
 
-`ManagedControlBuilder` builds complete menus. A menu bar slot produces a `MenuBar` containing its menus; a menu
+Each build reports itself in two trees. The built tree is logged at debug level. The defects of the registrations - a
+group or a menu without a provider, controls of a group put nowhere, controls at the same position - are logged at
+warning level, with only the places that lead to them, followed by the paths to the warnings of the built tree.
+
+`ControlBuilder` builds both menus and tool bars. A menu bar slot produces a `MenuBar` containing its menus; a menu
 produces its groups and nested menus; groups are separated by separators; and empty menus and groups are omitted.
-See [Managed Controls](#managed-controls).
+See [Menu Visibility](#registries-menu-visibility). A tool bar slot produces the `ToolBar` created by its provider,
+filled with the controls of its groups in the order of their positions; groups are separated by separators and
+empty groups are omitted.
 
-## Managed Controls <a name="managed-controls"></a>
+### Control State <a name="registries-control-state"></a>
 
-Managed controls are regular JavaFX controls such as `Menu`, `MenuItem`, `CheckMenuItem`, and `RadioMenuItem`.
-Their platform-specific behavior is kept in a `Handler` stored in the control's properties rather than in the control
-itself.
+The controls are regular JavaFX controls such as `Menu`, `MenuItem`, `CheckMenuItem`, and `RadioMenuItem`. A control
+is created and owned by its provider, so it can keep its state actual itself instead of being updated from the
+outside. A control observes whatever it depends on - the view model of the shell, the port of the menu aware
+component - and keeps its `visible` and `disable` properties actual at all times. For this a provider binds the
+properties in `initialize` and always unbinds them in `deinitialize`:
 
-There are two reasons for this design. First, JavaFX already defines a fixed inheritance hierarchy for menu controls,
-leaving no suitable common base class for adding platform behavior. Second, JavaFX exposes control behavior through
-properties such as `onShowing`, `onHiding`, and `onAction`. Using those properties directly for platform handlers
-would allow a call such as `setOnAction` to silently replace the platform behavior.
+```java
+register(ShellSlots.ExtraMenu.FOO_GROUP, 100, () -> new SimpleControlProvider<>(new MenuItem("_Foo")) {
 
-### Menu Handlers <a name="managed-controls-menu"></a>
+    @Override
+    public void initialize(ShellView<?> view) {
+        super.initialize(view);
+        getControl().disableProperty().bind(view.getComposer().menuAwarePortProperty()
+                .flatMap(port -> port instanceof FooPort fooPort ? fooPort.fooDisabledProperty() : null));
+        getControl().setOnAction(e -> System.out.println("Foo"));
+    }
 
-The menu classes are defined in the `material` module. They do not depend on `ControlRegistry` or the builders.
+    @Override
+    public void deinitialize(ShellView<?> view) {
+        super.deinitialize(view);
+        getControl().disableProperty().unbind();
+    }
+});
+```
 
-- **Menu.** All controls remain ordinary JavaFX classes. `ContextMenu` has no `visible` property, so
-  `ContextMenuHandler` stores this state in the menu's properties, allowing the handler to hide the entire popup.
-- **Handler.** `Handler` defines `onUpdate`, `onShowing`, and `onHiding`. `MenuItemHandler` additionally defines
-  `onAction`. `MenuHandler` and `ContextMenuHandler` are attached to `Menu` and `ContextMenu`, respectively, and
-  determine their visibility independently of their contents. This is necessary because a menu can be assembled from
-  contributions made by independent plugins and therefore cannot know which plugins contributed its items.
-  `AbstractHandler`, `AbstractMenuHandler`, `AbstractMenuItemHandler`, and `AbstractContextMenuHandler` provide empty
-  default implementations.
-- **Manager.** `MenuBarManager` is created for a built `MenuBar` and manages its runtime behavior. It invokes item
-  actions, resolves menu visibility when a menu is shown, and hides separators around empty sections. It also
-  distinguishes mouse clicks from keyboard accelerators, because the same key combination can invoke an item whether
-  or not its menu is currently open.
+Since the state is always actual, nothing has to be refreshed when a menu is shown or an accelerator is pressed: a
+disabled item reacts neither to a mouse click nor to its accelerator.
 
-  The manager does not modify the menu structure. The builder creates the structure once; the manager only controls
-  the state and behavior of the controls that already exist.
+#### Why flatMap
 
-  `ContextMenuManager` provides the same functionality for a `ContextMenu`, without accelerator handling, which is not
-  needed for a popup menu.
+The state of a control depends on the port of the menu aware component, and that port changes every time the user
+moves the focus to another component. The control needs a property of the *current* port, not of the one that was
+there when the control was created. `flatMap` does exactly that: it takes the observable value of the port and a
+function that returns a property of a given port, and gives back an observable value that always follows the
+property of the current port. When the port changes, it drops the property of the old port and picks up the property
+of the new one by itself; when there is no port, or the function returns `null`, the result is `null`, which a bound
+`BooleanProperty` treats as `false`. Without `flatMap` every control would have to listen to the port, rebind its
+property and remove the listener in `deinitialize`. A plain `map` is not enough here, because the function does not
+return a value but another observable.
 
-Managed controls are independent of registries and builders. A `Menu` tree can be constructed manually and passed to
-a `MenuBarManager`, and handlers will work in exactly the same way. Registries and builders solve a different problem:
-they assemble such a control tree from contributions made by independent plugins.
+#### Why the state is lazy
 
-### Visibility <a name="managed-controls-visibility"></a>
+A bound property and a binding in JavaFX are lazy. When their source changes they are only marked invalid and tell
+their observers that they have become invalid, without recalculating anything. The value is recalculated the next
+time somebody reads it (`isVisible()`, `isDisable()`), which also makes the property valid again. A property that
+is read again after being invalidated reports the next change as well; a property that nobody reads reports only
+the first one, which is enough, because it is already known to be stale.
 
-Menu visibility is resolved in one of two ways:
+`flatMap` is lazy in the same way: when the port changes, it only becomes invalid and unsubscribes from the property
+of the old port; it subscribes to the property of the new port when its value is next read. So when the user
+switches to another tab, nothing is asked from the new port until the state of an item is really needed: when a menu
+is shown, when an accelerator is pressed, or when the menu bar reads `visible` of a top-level menu. The state of an
+item in a menu that nobody opens is never calculated.
 
-1. **The menu has a handler.** The handler is called and its result determines the visibility. The menu items are not
-   traversed.
-2. **The menu has no handler.** The manager recursively checks the menu items and shows the menu if at least one item
-   is visible.
+This is why `DynamicMenu` listens to the `visible` properties of its items with an `InvalidationListener` and not
+with a `ChangeListener`. A `ChangeListener` has to pass the old and the new value, so the property must calculate the
+new value right away, whether or not the menu is ever shown. An `InvalidationListener` only marks the `visible`
+binding of the menu as stale, and the items are read when the visibility of the menu is read. For the same reason a
+provider should bind the state of its control and should not copy it with a change listener.
 
-A handler therefore provides an explicit visibility decision without traversing the menu tree. It is also the only way
-to show or hide a menu independently of its items. Once the menu is shown, its items are resolved in both cases.
+#### Why unbind in deinitialize
+
+A `flatMap` subscribes to its source (here, the port property of the shell, which lives as long as the shell) only
+while somebody observes the `flatMap` itself, and it stops observing the source as soon as the last observer is
+gone. The observer is the property of the control it is bound to, so `unbind()` is what lets go of the shell:
+without it the shell keeps the `flatMap` of a control that is no longer used. The property holds its binding weakly
+and the binding is cleaned up when it is invalidated after the control is collected, but a binding that is invalid
+and never read does not get that chance, so do not rely on it. The owner of the controls calls `deinitialize` of
+every provider (`Controls#deinitializeAll`) before it drops them, and a provider must unbind there every property it
+bound in `initialize`, including `map` and `flatMap` results, and remove from a dynamic menu every condition it
+added.
+
+### Menu Visibility <a name="registries-menu-visibility"></a>
+
+A menu decides its own visibility: that is the logic of whoever provides it, and the platform does not interfere.
+A menu assembled from contributions of independent plugins, however, cannot know whether any of its items will be
+visible, so the `material` module has ready-made classes for the common case:
+
+* `DynamicMenu` is visible only while at least one of its items is visible, and it hides the separators around the
+  groups that have nothing to show. Its `visible` property is bound and is kept actual all the time, not only when the
+  menu is shown, so a top-level menu appears in or disappears from the menu bar as soon as its items change. Because
+  the property is bound it cannot be set; use a plain `Menu` for a menu that decides its own visibility.
+* `DynamicContextMenu` is not shown when none of its items is visible, and it hides the separators around the groups
+  that have nothing to show. A context menu has no `visible` property and is not on screen until it is opened, so
+  this is checked when it is about to be shown.
+* When the visibility of a dynamic menu depends on something else as well, a condition is added with
+  `addVisibleCondition(ObservableValue<Boolean>)` and removed with `removeVisibleCondition(...)`; the menu is visible
+  while it has a visible item and all its conditions are true, and a `null` value of a condition counts as `false`.
+  A condition can be anything that observes a boolean: a property, a `Bindings` expression or the result of `map`,
+  `flatMap`, `orElse` and `when`. The provider of the menu creates the condition in `initialize` and removes it in
+  `deinitialize`, because the provider owns it; the menu listens to it weakly. Every call of `map` and `flatMap`
+  creates a new object, so the provider keeps the condition in a field to remove the very same one. The lazy values
+  created by `map` and `flatMap` stop observing their sources when the menu removes its listener; a binding created
+  by `Bindings` should be disposed after that:
+
+  ```java
+  register(ShellSlots.ExtraMenu.MENU, () -> new SimpleControlProvider<ShellView<?>, DynamicMenu>(
+          new DynamicMenu("_Extra")) {
+
+      private ObservableValue<Boolean> fooPort;
+
+      @Override
+      public void initialize(ShellView<?> view) {
+          super.initialize(view);
+          fooPort = view.getComposer().menuAwarePortProperty().map(port -> port instanceof FooPort);
+          getControl().addVisibleCondition(fooPort);
+      }
+
+      @Override
+      public void deinitialize(ShellView<?> view) {
+          super.deinitialize(view);
+          getControl().removeVisibleCondition(fooPort);
+      }
+  });
+  ```
+
+  The type arguments are named because `getControl()` must return a `DynamicMenu`: with `<>` the compiler takes the
+  control type from the slot, which is a plain `Menu`.
+
+  `DynamicContextMenu` has the same two methods: the menu is shown only while it has a visible item and all its
+  conditions are true.
+* A plain `Menu` is the choice when the menu has its own logic; the provider binds `visible` itself, as shown in
+  [Control State](#registries-control-state), and unbinds it in `deinitialize`:
+
+  ```java
+  menu.visibleProperty().bind(view.getComposer().menuAwarePortProperty()
+          .map(port -> port instanceof FooPort));
+  ```
+
+* `GroupCollapser` is installed by the dynamic menus themselves. Just before a menu is shown, it hides the separators
+  at the start and the end of the menu and next to another separator, because the section between them has no visible
+  items. It never changes the visibility of the menu or of its items and does not depend on `ControlRegistry` or
+  `ControlBuilder`. The builder puts a separator between the groups of any menu, so a plain `Menu` that has groups
+  with nothing to show should install it too: `GroupCollapser.install(menu)`.
 
 ## Naming Convention <a name="naming-convention"></a>
 

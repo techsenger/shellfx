@@ -17,21 +17,20 @@
 package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import javafx.scene.control.MenuItem;
+import javafx.event.ActionEvent;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class ExitItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public class ExitItemHandler extends AbstractItemHandler {
 
-    public ExitItemHandler(ShellView<?> component, MenuItem item) {
-        super(component, item);
+    public ExitItemHandler(ShellView<?> component) {
+        super(component);
     }
 
     @Override
-    public void onAction() {
+    public void handle(ActionEvent event) {
         getComponent().getViewModel().closeSafely();
     }
 }

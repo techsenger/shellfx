@@ -20,7 +20,7 @@ import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.slot.Slot;
 
 /**
- * Puts the control a factory creates (a menu item, a button) into a group slot at a position among its siblings.
+ * Puts the control a provider creates (a menu item, a button) into a group slot at a position among its siblings.
  *
  * @author Pavel Castornii
  */
@@ -28,7 +28,7 @@ final class LeafRegistration extends AbstractControlRegistration {
 
     private final int position;
 
-    LeafRegistration(Slot<?> group, int position, ControlFactory<? extends ParentView<?>, ?> factory) {
+    LeafRegistration(Slot<?> group, int position,  ControlProviderFactory<? extends ParentView<?>, ?> factory) {
         super(group, factory);
         this.position = position;
     }

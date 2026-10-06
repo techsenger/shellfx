@@ -16,8 +16,10 @@
 
 package com.techsenger.shellfx.core;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.window.HostWindowPort;
+import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
  *
@@ -28,6 +30,16 @@ public interface ShellPort extends HostWindowPort, MenuAwarePort {
     interface ComposerAccess extends HostWindowPort.ComposerAccess {
 
         AreaPort getWorkspacePort();
+
+        @Nullable MenuAwarePort getMenuAwarePort();
+
+        /**
+         * Defines the port of the component that currently forms the menu in the Shell; {@code null} when there is
+         * none.
+         *
+         * @return
+         */
+        ReadOnlyObjectProperty<MenuAwarePort> menuAwarePortProperty();
     }
 
     @Override

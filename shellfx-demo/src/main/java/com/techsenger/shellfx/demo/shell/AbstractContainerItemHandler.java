@@ -20,17 +20,15 @@ import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.tab.TabContainerView;
 import com.techsenger.shellfx.layout.dockhost.DockHostView;
 import com.techsenger.shellfx.layout.tabhost.TabHostView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractContainerItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public abstract class AbstractContainerItemHandler extends AbstractItemHandler {
 
-    public AbstractContainerItemHandler(ShellView<?> component, MenuItem item) {
-        super(component, item);
+    public AbstractContainerItemHandler(ShellView<?> component) {
+        super(component);
     }
 
     protected TabContainerView<?> resolveMainTabContainer() {

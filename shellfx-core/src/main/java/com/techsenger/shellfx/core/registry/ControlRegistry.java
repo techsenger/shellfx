@@ -32,10 +32,10 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.ToolBar;
 
 /**
- * Registry of the controls that fill the slots: the control a slot stands for (a menu bar, a menu, a context menu),
- * and the controls (menu items, buttons) that are put into the groups. It never creates or inspects a control; that is
- * the job of a builder such as {@link ControlBuilder} or {@link ManagedControlBuilder}. Where the slots are nested into
- * each other is kept in the {@link SlotRegistry}.
+ * Registry of the providers of the controls that fill the slots: the control a slot stands for (a menu bar, a menu, a
+ * context menu), and the controls (menu items, buttons) that are put into the groups. It never creates or inspects a
+ * provider; that is the job of a builder such as {@link ControlBuilder}. Where the
+ * slots are nested into each other is kept in the {@link SlotRegistry}.
  *
  * <p>Contributions are filed under the slot's own {@link Slot#getComponentClass()}. Registrations can be added or
  * removed at any time and in any order, which is what makes the registry safe to use with dynamically loaded
@@ -48,96 +48,96 @@ public final class ControlRegistry implements ExtensionRegistry {
     private final RegistrationIndex<AbstractControlRegistration> index = new RegistrationIndex<>();
 
     /**
-     * Registers the factory of the menu bar a slot stands for. The factory is not invoked here, only when a
+     * Registers the provider of the menu bar a slot stands for. The factory is not invoked here, only when a
      * builder materializes the control.
      *
      * @param slot    the slot of the menu bar, never {@code null}
-     * @param factory the factory used to create the menu bar
+     * @param factory the factory of the provider of the menu bar
      * @param <V>     the view type of the component the slot belongs to
      * @return a {@link Registration} that can be used to undo this contribution
      * @throws IllegalStateException if the slot already has a control
      */
     public <V extends ParentView<?>> Registration register(MenuBarSlot<V> slot,
-            ControlFactory<V, ? extends MenuBar> factory) {
+            ControlProviderFactory<V, ? extends MenuBar> factory) {
         return addNode(slot, factory);
     }
 
     /**
-     * Registers the factory of the menu a slot stands for. Its position among the siblings comes from where the
+     * Registers the provider of the menu a slot stands for. Its position among the siblings comes from where the
      * slot is put in the {@link SlotRegistry}. The factory is not invoked here, only when a builder materializes
      * the control.
      *
      * @param slot    the slot of the menu, never {@code null}
-     * @param factory the factory used to create the menu
+     * @param factory the factory of the provider of the menu
      * @param <V>     the view type of the component the slot belongs to
      * @return a {@link Registration} that can be used to undo this contribution
      * @throws IllegalStateException if the slot already has a control
      */
     public <V extends ParentView<?>> Registration register(MenuSlot<V> slot,
-            ControlFactory<V, ? extends Menu> factory) {
+            ControlProviderFactory<V, ? extends Menu> factory) {
         return addNode(slot, factory);
     }
 
     /**
-     * Registers the factory of the context menu a slot stands for. The factory is not invoked here, only when a
+     * Registers the provider of the context menu a slot stands for. The factory is not invoked here, only when a
      * builder materializes the control.
      *
      * @param slot    the slot of the context menu, never {@code null}
-     * @param factory the factory used to create the context menu
+     * @param factory the factory of the provider of the context menu
      * @param <V>     the view type of the component the slot belongs to
      * @return a {@link Registration} that can be used to undo this contribution
      * @throws IllegalStateException if the slot already has a control
      */
     public <V extends ParentView<?>> Registration register(ContextMenuSlot<V> slot,
-            ControlFactory<V, ? extends ContextMenu> factory) {
+            ControlProviderFactory<V, ? extends ContextMenu> factory) {
         return addNode(slot, factory);
     }
 
     /**
-     * Registers the factory of the tool bar a slot stands for. The factory is not invoked here, only when a
+     * Registers the provider of the tool bar a slot stands for. The factory is not invoked here, only when a
      * builder materializes the control.
      *
      * @param slot    the slot of the tool bar, never {@code null}
-     * @param factory the factory used to create the tool bar
+     * @param factory the factory of the provider of the tool bar
      * @param <V>     the view type of the component the slot belongs to
      * @return a {@link Registration} that can be used to undo this contribution
      * @throws IllegalStateException if the slot already has a control
      */
     public <V extends ParentView<?>> Registration register(ToolBarSlot<V> slot,
-            ControlFactory<V, ? extends ToolBar> factory) {
+            ControlProviderFactory<V, ? extends ToolBar> factory) {
         return addNode(slot, factory);
     }
 
     /**
-     * Registers the factory of the group a slot stands for. A group without a factory is left out by the
+     * Registers the provider of the group a slot stands for. A group without a provider is left out by the
      * builders. The factory is not invoked here, only when a builder materializes the control.
      *
-     * @param group   the slot of the group, never {@code null}
-     * @param factory the factory used to create the group
+     * @param group    the slot of the group, never {@code null}
+     * @param factory the factory of the provider of the group
      * @param <V>     the view type of the component the slot belongs to
      * @param <C>     the type of the controls the group holds
      * @return a {@link Registration} that can be used to undo this contribution
      * @throws IllegalStateException if the slot already has a control
      */
     public <V extends ParentView<?>, C> Registration register(GroupSlot<V, C> group,
-            ControlFactory<V, ? extends ControlGroup<C>> factory) {
+            ControlProviderFactory<V, ? extends ControlGroup<C>> factory) {
         return addNode(group, factory);
     }
 
     /**
-     * Registers the factory of a control that is put into a group, for example a menu item. The type of the
-     * controls comes from the group, so a factory of a wrong kind of control is rejected at compile time. The
+     * Registers the provider of a control that is put into a group, for example a menu item. The type of the
+     * controls comes from the group, so a provider of a wrong kind of control is rejected at compile time. The
      * factory is not invoked here, only when a builder materializes the control.
      *
      * @param group    the slot of the group the control will belong to, never {@code null}
      * @param position the position of the control among the other controls of the group
-     * @param factory  the factory used to create the control
+     * @param factory the factory of the provider of the control
      * @param <V>      the view type of the component the group belongs to
      * @param <C>      the type of the controls the group holds
      * @return a {@link Registration} that can be used to undo this contribution
      */
     public <V extends ParentView<?>, C> Registration register(GroupSlot<V, C> group, int position,
-            ControlFactory<V, ? extends C> factory) {
+            ControlProviderFactory<V, ? extends C> factory) {
         Objects.requireNonNull(group, "Group can't be null");
         var registration = new LeafRegistration(group, position, factory);
         index.add(group.getComponentClass(), registration);
@@ -151,7 +151,8 @@ public final class ControlRegistry implements ExtensionRegistry {
         return index.resolve(instance);
     }
 
-    private <V extends ParentView<?>> Registration addNode(Slot<V> slot, ControlFactory<V, ?> factory) {
+    private <V extends ParentView<?>> Registration addNode(Slot<V> slot,
+            ControlProviderFactory<V, ?> factory) {
         Objects.requireNonNull(slot, "Slot can't be null");
         for (var registration : index.get(slot.getComponentClass())) {
             if (registration instanceof NodeRegistration && registration.getSlot() == slot) {

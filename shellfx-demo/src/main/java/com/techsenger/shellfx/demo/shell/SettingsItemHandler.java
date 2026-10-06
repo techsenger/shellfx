@@ -22,21 +22,20 @@ import com.techsenger.shellfx.demo.settings.SettingsDialogConfig;
 import com.techsenger.shellfx.demo.settings.SettingsDialogParams;
 import com.techsenger.shellfx.demo.settings.SettingsDialogView;
 import com.techsenger.shellfx.demo.settings.SettingsDialogViewModel;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import javafx.scene.control.MenuItem;
+import javafx.event.ActionEvent;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class SettingsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public class SettingsItemHandler extends AbstractItemHandler {
 
-    public SettingsItemHandler(ShellView<?> component, MenuItem item) {
-        super(component, item);
+    public SettingsItemHandler(ShellView<?> component) {
+        super(component);
     }
 
     @Override
-    public void onAction() {
+    public void handle(ActionEvent event) {
         var shell = getComponent();
         var appearance = shell.getViewModel().getContext().getSettings().getAppearance();
         var params = new SettingsDialogParams(new SettingsDialogConfig(), WindowType.NESTED, appearance);

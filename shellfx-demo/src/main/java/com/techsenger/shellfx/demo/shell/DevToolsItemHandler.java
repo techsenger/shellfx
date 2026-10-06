@@ -31,22 +31,21 @@ import com.techsenger.shellfx.devtools.DevToolsWindowViewModel;
 import com.techsenger.shellfx.layout.dockhost.DockHostView;
 import com.techsenger.shellfx.layout.dockhost.UtilityDockContainerView;
 import com.techsenger.shellfx.layout.tabhost.TabHostView;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
+import javafx.event.ActionEvent;
 import javafx.geometry.Side;
-import javafx.scene.control.MenuItem;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DevToolsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public class DevToolsItemHandler extends AbstractItemHandler {
 
-    public DevToolsItemHandler(ShellView<?> component, MenuItem item) {
-        super(component, item);
+    public DevToolsItemHandler(ShellView<?> component) {
+        super(component);
     }
 
     @Override
-    public void onAction() {
+    public void handle(ActionEvent event) {
         var shell = getComponent();
         if (shell.getComposer().getWorkspace() != null) {
             if (shell.getComposer().getWorkspace() instanceof TabHostView<?> tabHost) {

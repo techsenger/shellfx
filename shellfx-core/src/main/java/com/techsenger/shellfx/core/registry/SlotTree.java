@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.slot.Slot;
 import java.util.ArrayList;
@@ -33,9 +32,9 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Castornii
  */
-final class SlotTree {
+final class SlotTree<V extends ParentView<?>> {
 
-    private final ParentView<?> view;
+    private final V view;
 
     private final Map<Slot<?>, List<SlotRegistration>> childrenByParent = new HashMap<>();
 
@@ -43,9 +42,11 @@ final class SlotTree {
 
     private final Map<Slot<?>, List<LeafRegistration>> leavesByGroup = new HashMap<>();
 
+    private final List<ControlProvider<? super V, ?>> providers = new ArrayList<>();
+
     private final SlotTreeLogger logger;
 
-    SlotTree(SlotRegistry slotRegistry, ControlRegistry controlRegistry, ParentView<?> view) {
+    SlotTree(SlotRegistry slotRegistry, ControlRegistry controlRegistry, V view) {
         this.view = view;
         this.logger = new SlotTreeLogger(getViewName());
         for (var registration : slotRegistry.getRegistrationsFor(view)) {
@@ -63,7 +64,7 @@ final class SlotTree {
         leavesByGroup.values().forEach(leaves -> leaves.sort(Comparator.comparingInt(LeafRegistration::getPosition)));
     }
 
-    ParentView<?> getView() {
+    V getView() {
         return view;
     }
 
@@ -94,6 +95,14 @@ final class SlotTree {
     }
 
     /**
+     * Returns the providers of all controls created so far, in the order of their creation: a control is created
+     * before the controls put into it.
+     */
+    List<ControlProvider<? super V, ?>> getProviders() {
+        return providers;
+    }
+
+    /**
      * Returns the logger that collects the report of the build of this tree.
      */
     SlotTreeLogger getLogger() {
@@ -110,17 +119,45 @@ final class SlotTree {
         leavesByGroup.entrySet().stream()
                 .filter(e -> !placed.contains(e.getKey()))
                 .sorted(Comparator.comparing(e -> e.getKey().getText()))
-                .forEach(e -> parent.add("Group: " + e.getKey().getText()).skip("not put into any menu or tool bar, "
+                .forEach(e -> parent.add("Group: " + e.getKey().getText()).warn("not put into any menu or tool bar, "
                         + "its " + e.getValue().size() + " controls are never shown"));
     }
 
     /**
-     * Creates the control {@code slot} stands for.
-     *
-     * @return the control, or {@code null} if no factory has been registered for the slot.
+     * Tells whether a provider is registered for the control {@code slot} stands for.
      */
-    @Nullable Object createNode(Slot<?> slot) {
+    boolean hasNode(Slot<?> slot) {
+        return nodesBySlot.containsKey(slot);
+    }
+
+    /**
+     * Creates and initializes the provider of the control {@code slot} stands for.
+     *
+     * @return the control.
+     * @throws IllegalStateException if no provider has been registered for the slot
+     */
+    Object createNode(Slot<?> slot) {
         var registration = nodesBySlot.get(slot);
-        return registration == null ? null : registration.create(view);
+        if (registration == null) {
+            throw new IllegalStateException("No provider is registered for slot " + slot.getText());
+        }
+        return create(registration);
+    }
+
+    /**
+     * Creates and initializes the provider of a control put into a group.
+     *
+     * @return the control of the provider.
+     */
+    Object createLeaf(LeafRegistration leaf) {
+        return create(leaf);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object create(AbstractControlRegistration registration) {
+        var provider = (ControlProvider<? super V, ?>) registration.createProvider();
+        provider.initialize(view);
+        providers.add(provider);
+        return provider.getControl();
     }
 }

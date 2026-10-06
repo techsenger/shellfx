@@ -22,7 +22,7 @@ import com.techsenger.shellfx.demo.page.PageTabConfig;
 import com.techsenger.shellfx.demo.page.PageTabParams;
 import com.techsenger.shellfx.demo.page.PageTabView;
 import com.techsenger.shellfx.demo.page.PageTabViewModel;
-import javafx.scene.control.MenuItem;
+import javafx.event.ActionEvent;
 
 /**
  *
@@ -32,13 +32,13 @@ public class PageItemHandler extends AbstractContainerItemHandler {
 
     private final PageMenuType menuType;
 
-    public PageItemHandler(ShellView<?> component, MenuItem item, PageMenuType menuType) {
-        super(component, item);
+    public PageItemHandler(ShellView<?> component, PageMenuType menuType) {
+        super(component);
         this.menuType = menuType;
     }
 
     @Override
-    public void onAction() {
+    public void handle(ActionEvent event) {
         var configManager = getComponent().getViewModel().getContext().getConfigManager();
         var config = configManager.getOrCreateConfig(PageTabConfig.class, PageTabConfig::new);
         var params = new PageTabParams(config, menuType);

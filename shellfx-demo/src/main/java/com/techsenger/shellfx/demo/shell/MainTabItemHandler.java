@@ -24,7 +24,7 @@ import com.techsenger.shellfx.demo.browser.BrowserMainTabViewModel;
 import com.techsenger.shellfx.demo.ide.IdeMainTabView;
 import com.techsenger.shellfx.demo.ide.IdeMainTabViewModel;
 import com.techsenger.shellfx.layout.tabhost.TabHostView;
-import javafx.scene.control.MenuItem;
+import javafx.event.ActionEvent;
 
 /**
  *
@@ -32,12 +32,12 @@ import javafx.scene.control.MenuItem;
  */
 public class MainTabItemHandler extends AbstractContainerItemHandler {
 
-    public MainTabItemHandler(ShellView<?> component, MenuItem item) {
-        super(component, item);
+    public MainTabItemHandler(ShellView<?> component) {
+        super(component);
     }
 
     @Override
-    public void onAction() {
+    public void handle(ActionEvent event) {
         var shell = getComponent();
         if (shell.getComposer().getWorkspace() instanceof TabHostView<?>) {
             var configManager = shell.getViewModel().getContext().getConfigManager();

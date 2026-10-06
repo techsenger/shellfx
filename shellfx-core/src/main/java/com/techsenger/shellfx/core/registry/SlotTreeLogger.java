@@ -22,25 +22,31 @@ import java.util.List;
 import org.slf4j.Logger;
 
 /**
- * The report of one build of a slot tree. {@link #toString()} returns the tree that was built, as it is in the
- * result; {@link #describeProblems()} returns a tree of everything that looks wrong - what was left out and what
- * was built with a flaw - with only the places that lead to the problems. {@link #write(Logger, String)} logs the
- * first at debug level and, if there are problems, the second at warning level. A disabled logger records nothing.
+ * The report of one build of a slot tree, made of two trees. The built tree is what was actually built, with the
+ * hints and warnings of the controls; it is written while the controls are created. The defects tree is what the
+ * registrations lack - a missing provider, a group put nowhere, controls at the same position - with only the places
+ * that lead to the defects; it is written while the build is planned. {@link #write(Logger, String)} logs the built
+ * tree at debug level and, if there are any, the defects and the warnings of the built tree at warning level. A
+ * disabled logger records nothing.
  *
  * @author Pavel Castornii
  */
 final class SlotTreeLogger {
 
     /**
-     * A line of the report on the control tree that was built, not on the slot tree it was built from: a menu or
-     * group appears only if it built something or lost something, and so does every control built into a group.
+     * A line of a report tree: a menu, a group or a control.
      */
     static final class Node {
 
         /**
-         * The text of the line without the problems.
+         * The text of the line without the hints and warnings.
          */
         private final String text;
+
+        /**
+         * Tells whether siblings added with a position are checked for sharing it.
+         */
+        private final boolean checkPositions;
 
         /**
          * The lines nested under this one, in the order they were added: the groups of a menu, the controls of a
@@ -49,22 +55,23 @@ final class SlotTreeLogger {
         private final List<Node> children = new ArrayList<>();
 
         /**
-         * What looks wrong in this node, written after its text in the report of the problems.
+         * What is worth knowing about this node, written after its text in the built tree.
          */
-        private final List<String> problems = new ArrayList<>();
+        private final List<String> hints = new ArrayList<>();
 
         /**
-         * Tells whether the node is in the built tree; a node that is not stays only in the report of the problems.
+         * What looks wrong in this node, written after its text.
          */
-        private boolean built = true;
+        private final List<String> warnings = new ArrayList<>();
 
         /**
          * The position of the last child added with a position, to find a sibling that shares it.
          */
         private @Nullable Integer lastChildPosition;
 
-        private Node(String text) {
+        private Node(String text, boolean checkPositions) {
             this.text = text;
+            this.checkPositions = checkPositions;
         }
 
         /**
@@ -75,9 +82,9 @@ final class SlotTreeLogger {
         }
 
         /**
-         * Adds a node at {@code position} inside this one; add siblings in the order of their positions, so a
-         * sibling at the same position as the previous one gets a problem, as the order of such nodes is not
-         * defined.
+         * Adds a node at {@code position} inside this one; in the defects tree add siblings in the order of their
+         * positions, so a sibling at the same position as the previous one gets a warning, as the order of such
+         * nodes is not defined.
          */
         Node add(String text, int position) {
             return add(text, position, null);
@@ -93,7 +100,7 @@ final class SlotTreeLogger {
                 return this;
             }
             var child = addChild(text + ", position: " + position + (details == null ? "" : ", " + details));
-            if (lastChildPosition != null && lastChildPosition == position) {
+            if (checkPositions && lastChildPosition != null && lastChildPosition == position) {
                 child.warn("shares the position " + position + " with the previous sibling");
             }
             lastChildPosition = position;
@@ -101,71 +108,55 @@ final class SlotTreeLogger {
         }
 
         /**
-         * Notes a flaw of this node, which is built nevertheless.
+         * Notes something worth knowing about this node that is not wrong.
          */
-        void warn(String problem) {
+        void hint(String hint) {
             if (this != STUB) {
-                problems.add(problem);
+                hints.add(hint);
             }
         }
 
         /**
-         * Notes that this node is not built, and why; it leaves the built tree.
+         * Notes a flaw of this node.
          */
-        void skip(String problem) {
+        void warn(String warning) {
             if (this != STUB) {
-                problems.add(problem);
-                built = false;
+                warnings.add(warning);
             }
         }
 
         /**
-         * Tells whether this node or anything inside of it has a problem.
+         * Tells whether this node or anything inside of it has a warning.
          */
-        boolean hasProblems() {
-            return !problems.isEmpty() || children.stream().anyMatch(Node::hasProblems);
-        }
-
-        /**
-         * Settles a child once it is done: a child that ended up not built leaves the built tree, and goes from the
-         * report altogether unless it has problems inside, which it stays as the way to.
-         */
-        void settle(Node child, boolean built) {
-            if (built) {
-                return;
-            }
-            if (child.hasProblems()) {
-                child.built = false;
-            } else {
-                children.remove(child);
-            }
+        boolean hasWarnings() {
+            return !warnings.isEmpty() || children.stream().anyMatch(Node::hasWarnings);
         }
 
         private Node addChild(String text) {
             if (this == STUB) {
                 return this;
             }
-            var child = new Node(text);
+            var child = new Node(text, checkPositions);
             children.add(child);
             return child;
         }
 
-        private void appendBuilt(StringBuilder result, int depth) {
-            if (!built) {
-                return;
-            }
-            append(result, depth, text);
-            children.forEach(c -> c.appendBuilt(result, depth + 1));
+        private void appendAll(StringBuilder result, int depth) {
+            var line = new StringBuilder(text);
+            hints.forEach(h -> line.append(", hint: ").append(h));
+            warnings.forEach(w -> line.append(", warning: ").append(w));
+            append(result, depth, line.toString());
+            children.forEach(c -> c.appendAll(result, depth + 1));
         }
 
-        private void appendProblems(StringBuilder result, int depth) {
-            if (!hasProblems()) {
+        private void appendWarned(StringBuilder result, int depth) {
+            if (!hasWarnings()) {
                 return;
             }
             var line = new StringBuilder(text);
-            problems.forEach(p -> line.append(", warning: ").append(p));
+            warnings.forEach(w -> line.append(", warning: ").append(w));
             append(result, depth, line.toString());
-            children.forEach(c -> c.appendProblems(result, depth + 1));
+            children.forEach(c -> c.appendWarned(result, depth + 1));
         }
 
         private void append(StringBuilder result, int depth, String line) {
@@ -179,13 +170,15 @@ final class SlotTreeLogger {
     /**
      * The stand-in for the nodes of a disabled report: it records nothing and every node added to it is itself.
      */
-    private static final Node STUB = new Node("");
+    private static final Node STUB = new Node("", false);
 
     private static final String INDENT = "    ";
 
     private final String viewName;
 
-    private final List<Node> roots = new ArrayList<>();
+    private @Nullable Node builtRoot;
+
+    private @Nullable Node defectsRoot;
 
     private boolean enabled;
 
@@ -201,38 +194,80 @@ final class SlotTreeLogger {
     }
 
     /**
-     * Adds a node without a position on the top level of the report.
+     * Starts the built tree with its root.
+     *
+     * @throws IllegalStateException if the built tree has been started already
      */
-    Node add(String text) {
+    Node addBuilt(String text) {
         if (!enabled) {
             return STUB;
         }
-        var node = new Node(text);
-        roots.add(node);
-        return node;
+        if (builtRoot != null) {
+            throw new IllegalStateException("The built tree has been started already");
+        }
+        builtRoot = new Node(text, false);
+        return builtRoot;
     }
 
     /**
-     * Tells whether anything in the report looks wrong.
-     */
-    boolean hasProblems() {
-        return roots.stream().anyMatch(Node::hasProblems);
-    }
-
-    /**
-     * Describes everything that looks wrong as a tree of only the places that lead to the problems.
+     * Starts the defects tree with its root.
      *
-     * @return the tree, or an empty text if there are no problems.
+     * @throws IllegalStateException if the defects tree has been started already
      */
-    String describeProblems() {
+    Node addDefects(String text) {
+        if (!enabled) {
+            return STUB;
+        }
+        if (defectsRoot != null) {
+            throw new IllegalStateException("The defects tree has been started already");
+        }
+        defectsRoot = new Node(text, true);
+        return defectsRoot;
+    }
+
+    /**
+     * Tells whether anything in the registrations looks wrong.
+     */
+    boolean hasDefects() {
+        return defectsRoot != null && defectsRoot.hasWarnings();
+    }
+
+    /**
+     * Tells whether anything in the built controls looks wrong.
+     */
+    boolean hasWarnings() {
+        return builtRoot != null && builtRoot.hasWarnings();
+    }
+
+    /**
+     * Describes the defects of the registrations as a tree of only the places that lead to them.
+     *
+     * @return the tree, or an empty text if there are no defects.
+     */
+    String describeDefects() {
         var result = new StringBuilder();
-        roots.forEach(n -> n.appendProblems(result, 0));
+        if (defectsRoot != null) {
+            defectsRoot.appendWarned(result, 0);
+        }
         return result.toString();
     }
 
     /**
-     * Logs the built tree at debug level and, if anything looks wrong, the problems at warning level, in a message
-     * of their own.
+     * Describes the warnings of the built controls as a tree of only the places that lead to them.
+     *
+     * @return the tree, or an empty text if there are no warnings.
+     */
+    String describeWarnings() {
+        var result = new StringBuilder();
+        if (builtRoot != null) {
+            builtRoot.appendWarned(result, 0);
+        }
+        return result.toString();
+    }
+
+    /**
+     * Logs the built tree at debug level and, if there are any, the defects and the warnings at warning level, each
+     * in a message of its own.
      *
      * @param logger the logger of the builder
      * @param what   what was built, for the first line of the messages
@@ -244,16 +279,22 @@ final class SlotTreeLogger {
         if (logger.isDebugEnabled()) {
             logger.debug("{} built for {}:{}{}", what, viewName, System.lineSeparator(), this);
         }
-        if (hasProblems()) {
+        if (hasDefects()) {
+            logger.warn("{} built for {} with defects:{}{}", what, viewName, System.lineSeparator(),
+                    describeDefects());
+        }
+        if (hasWarnings()) {
             logger.warn("{} built for {} with warnings:{}{}", what, viewName, System.lineSeparator(),
-                    describeProblems());
+                    describeWarnings());
         }
     }
 
     @Override
     public String toString() {
         var result = new StringBuilder();
-        roots.forEach(n -> n.appendBuilt(result, 0));
+        if (builtRoot != null) {
+            builtRoot.appendAll(result, 0);
+        }
         return result.toString();
     }
 }

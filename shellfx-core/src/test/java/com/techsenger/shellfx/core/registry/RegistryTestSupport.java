@@ -17,61 +17,19 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.shellfx.material.menu.MenuHandler;
-import com.techsenger.shellfx.material.menu.MenuItemHandler;
 import com.techsenger.toolkit.fx.FxPlatform;
+import java.util.function.Function;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import static org.mockito.Mockito.mock;
 
 /**
  * Shared fixture of the builder integration tests: starts the JavaFX toolkit, creates the view the builders are
- * given, and creates menu items the way the managed controls are made.
+ * given, and creates menu items and menus.
  *
  * @author Pavel Castornii
  */
 final class RegistryTestSupport {
-
-    private static final class NoOpMenuHandler implements MenuHandler<ParentView<?>> {
-
-        @Override
-        public void onUpdate() {
-            // empty
-        }
-
-        @Override
-        public void onShowing() {
-            // empty
-        }
-
-        @Override
-        public void onHiding() {
-            // empty
-        }
-    }
-
-    private static final class NoOpItemHandler implements MenuItemHandler<ParentView<?>> {
-
-        @Override
-        public void onAction() {
-            // empty
-        }
-
-        @Override
-        public void onUpdate() {
-            // empty
-        }
-
-        @Override
-        public void onShowing() {
-            // empty
-        }
-
-        @Override
-        public void onHiding() {
-            // empty
-        }
-    }
 
     private static boolean started;
 
@@ -96,21 +54,31 @@ final class RegistryTestSupport {
     }
 
     /**
-     * Creates a menu item with a handler, as the registered factories do.
+     * Wraps a plain function into the factory of a provider that sets the control it creates; a test that has
+     * nothing to unhook does not need a provider class of its own.
      */
-    static MenuItem createItem(String text) {
-        var item = new MenuItem(text);
-        MenuItemHandler.setHandler(item, new NoOpItemHandler());
-        return item;
+    static <C> ControlProviderFactory<ParentView<?>, C> provider(Function<ParentView<?>, C> factory) {
+        return () -> new SimpleControlProvider<>() {
+            @Override
+            public void initialize(ParentView<?> view) {
+                super.initialize(view);
+                setControl(factory.apply(view));
+            }
+        };
     }
 
     /**
-     * Creates a menu with a handler, as the registered factories do.
+     * Creates a menu item, as the registered factories do.
+     */
+    static MenuItem createItem(String text) {
+        return new MenuItem(text);
+    }
+
+    /**
+     * Creates a menu, as the registered factories do.
      */
     static Menu createMenu(String text) {
-        var menu = new Menu(text);
-        MenuHandler.setHandler(menu, new NoOpMenuHandler());
-        return menu;
+        return new Menu(text);
     }
 
     private RegistryTestSupport() {

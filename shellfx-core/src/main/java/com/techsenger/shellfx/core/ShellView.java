@@ -64,9 +64,4 @@ public interface ShellView<VM extends ShellViewModel<?>> extends HostWindowView<
      * @param registry
      */
     void upgradeMenuBar();
-
-    /**
-     * Forces shell to update the visibility of the elements in menu bar.
-     */
-    void updateMenuBar();
 }

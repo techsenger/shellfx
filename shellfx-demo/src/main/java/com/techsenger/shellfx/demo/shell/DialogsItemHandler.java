@@ -20,21 +20,20 @@ import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.demo.dialogs.DialogsDialogParams;
 import com.techsenger.shellfx.demo.dialogs.DialogsDialogView;
 import com.techsenger.shellfx.demo.dialogs.DialogsDialogViewModel;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
-import javafx.scene.control.MenuItem;
+import javafx.event.ActionEvent;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class DialogsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public class DialogsItemHandler extends AbstractItemHandler {
 
-    public DialogsItemHandler(ShellView<?> component, MenuItem item) {
-        super(component, item);
+    public DialogsItemHandler(ShellView<?> component) {
+        super(component);
     }
 
     @Override
-    public void onAction() {
+    public void handle(ActionEvent event) {
         var shell = getComponent();
         var context = shell.getViewModel().getContext();
         var dialogParams = new DialogsDialogParams(

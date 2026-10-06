@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.material.menu;
+package com.techsenger.shellfx.demo.shell;
 
-import com.techsenger.patternfx.mvvm.ParentView;
-import javafx.scene.control.MenuItem;
+import com.techsenger.shellfx.core.ShellView;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 /**
+ * Base class of the action of a menu item of the demo shell.
  *
  * @author Pavel Castornii
  */
-public interface MenuItemHandler<T extends ParentView<?>> extends Handler {
+public abstract class AbstractItemHandler implements EventHandler<ActionEvent> {
 
-    static void setHandler(MenuItem item, MenuItemHandler<?> handler) {
-        item.getProperties().put(key(), handler);
+    private final ShellView<?> component;
+
+    protected AbstractItemHandler(ShellView<?> component) {
+        this.component = component;
     }
 
-    static MenuItemHandler<?> getHandler(MenuItem item) {
-        return (MenuItemHandler<?>) item.getProperties().get(key());
+    protected ShellView<?> getComponent() {
+        return component;
     }
-
-    private static Object key() {
-        class KeyHolder {
-            private static final Object KEY = new Object();
-        }
-        return KeyHolder.KEY;
-    }
-
-    void onAction();
 }

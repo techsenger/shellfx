@@ -22,22 +22,21 @@ import com.techsenger.shellfx.core.window.WindowParams;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.demo.mdi.DemoWindowView;
 import com.techsenger.shellfx.demo.mdi.DemoWindowViewModel;
-import com.techsenger.shellfx.material.menu.AbstractMenuItemHandler;
 import com.techsenger.toolkit.fx.utils.NodeUtils;
-import javafx.scene.control.MenuItem;
+import javafx.event.ActionEvent;
 
 /**
  *
  * @author Pavel Castornii
  */
-public class WindowsItemHandler extends AbstractMenuItemHandler<ShellView<?>, MenuItem> {
+public class WindowsItemHandler extends AbstractItemHandler {
 
-    public WindowsItemHandler(ShellView<?> component, MenuItem item) {
-        super(component, item);
+    public WindowsItemHandler(ShellView<?> component) {
+        super(component);
     }
 
     @Override
-    public void onAction() {
+    public void handle(ActionEvent event) {
         DemoWindowView view = null;
         for (var i = 0; i < 6; i++) {
             var settings = getComponent().getViewModel().getContext().getSettings().getAppearance();

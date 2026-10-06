@@ -29,7 +29,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.ToolBar;
 
 /**
- * Base of the registrars that bind controls to slots. Its methods register a control factory and remember the
+ * Base of the registrars that bind controls to slots. Its methods register a control provider and remember the
  * registration, so {@link #unregister()} undoes it.
  *
  * @author Pavel Castornii
@@ -41,81 +41,82 @@ public abstract class AbstractControlRegistrar extends AbstractRegistrar<Control
     }
 
     /**
-     * Registers the factory of the menu bar a slot stands for.
+     * Registers the provider of the menu bar a slot stands for.
      *
      * @param slot    the slot of the menu bar
-     * @param factory the factory used to create the menu bar
+     * @param factory the factory of the provider of the menu bar
      * @param <V>     the view type of the component the slot belongs to
      * @throws IllegalStateException if the slot already has a control
      */
     protected <V extends ParentView<?>> void register(MenuBarSlot<V> slot,
-            ControlFactory<V, ? extends MenuBar> factory) {
+            ControlProviderFactory<V, ? extends MenuBar> factory) {
         addRegistration(getRegistry().register(slot, factory));
     }
 
     /**
-     * Registers the factory of the menu a slot stands for.
+     * Registers the provider of the menu a slot stands for.
      *
      * @param slot    the slot of the menu
-     * @param factory the factory used to create the menu
+     * @param factory the factory of the provider of the menu
      * @param <V>     the view type of the component the slot belongs to
      * @throws IllegalStateException if the slot already has a control
      */
-    protected <V extends ParentView<?>> void register(MenuSlot<V> slot, ControlFactory<V, ? extends Menu> factory) {
+    protected <V extends ParentView<?>> void register(MenuSlot<V> slot,
+            ControlProviderFactory<V, ? extends Menu> factory) {
         addRegistration(getRegistry().register(slot, factory));
     }
 
     /**
-     * Registers the factory of the context menu a slot stands for.
+     * Registers the provider of the context menu a slot stands for.
      *
      * @param slot    the slot of the context menu
-     * @param factory the factory used to create the context menu
+     * @param factory the factory of the provider of the context menu
      * @param <V>     the view type of the component the slot belongs to
      * @throws IllegalStateException if the slot already has a control
      */
     protected <V extends ParentView<?>> void register(ContextMenuSlot<V> slot,
-            ControlFactory<V, ? extends ContextMenu> factory) {
+            ControlProviderFactory<V, ? extends ContextMenu> factory) {
         addRegistration(getRegistry().register(slot, factory));
     }
 
     /**
-     * Registers the factory of the tool bar a slot stands for.
+     * Registers the provider of the tool bar a slot stands for.
      *
      * @param slot    the slot of the tool bar
-     * @param factory the factory used to create the tool bar
+     * @param factory the factory of the provider of the tool bar
      * @param <V>     the view type of the component the slot belongs to
      * @throws IllegalStateException if the slot already has a control
      */
     protected <V extends ParentView<?>> void register(ToolBarSlot<V> slot,
-            ControlFactory<V, ? extends ToolBar> factory) {
+            ControlProviderFactory<V, ? extends ToolBar> factory) {
         addRegistration(getRegistry().register(slot, factory));
     }
 
     /**
-     * Registers the factory of the group a slot stands for.
+     * Registers the provider of the group a slot stands for.
      *
-     * @param group   the slot of the group
-     * @param factory the factory used to create the group
+     * @param group    the slot of the group
+     * @param factory the factory of the provider of the group
      * @param <V>     the view type of the component the group belongs to
      * @param <C>     the type of the controls the group holds
      * @throws IllegalStateException if the slot already has a control
      */
     protected <V extends ParentView<?>, C> void register(GroupSlot<V, C> group,
-            ControlFactory<V, ? extends ControlGroup<C>> factory) {
+            ControlProviderFactory<V, ? extends ControlGroup<C>> factory) {
         addRegistration(getRegistry().register(group, factory));
     }
 
     /**
-     * Registers the factory of a control that is put into a group, for example a menu item.
+     * Registers the provider of a control that is put into a group, for example a menu item.
      *
      * @param group    the slot of the group the control will belong to
      * @param position the position of the control among the other controls of the group
-     * @param factory  the factory used to create the control
+     * @param factory the factory of the provider of the control
      * @param <V>      the view type of the component the group belongs to
      * @param <C>      the type of the controls the group holds
      */
     protected <V extends ParentView<?>, C> void register(GroupSlot<V, C> group, int position,
-            ControlFactory<V, ? extends C> factory) {
+            ControlProviderFactory<V, ? extends C> factory) {
         addRegistration(getRegistry().register(group, position, factory));
     }
 }

@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.shell;
+package com.techsenger.shellfx.core.registry;
 
-import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;
-import com.techsenger.shellfx.material.menu.AbstractMenuHandler;
-import javafx.scene.control.Menu;
+import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.ControlGroup;
 
 /**
+ * Provides a plain {@link ControlGroup}; extend it to provide a custom group, for example one that tracks its items.
  *
+ * @param <V> the view type of the component the group is built for
+ * @param <C> the type of the controls the group holds
  * @author Pavel Castornii
  */
-public class ExtraMenuHandler extends AbstractMenuHandler<ShellView<?>> {
+public class SimpleGroupProvider<V extends ParentView<?>, C> extends SimpleControlProvider<V, ControlGroup<C>> {
 
-    public ExtraMenuHandler(Menu menu, ShellView<?> component) {
-        super(menu, component);
-    }
-
-    @Override
-    public void onUpdate() {
-        super.onUpdate();
-        var menuAware = getComponent().getComposer().getMenuAware();
-        getMenu().setVisible(menuAware.getViewModel() instanceof DemoMenuAwarePort);
+    public SimpleGroupProvider() {
+        super(new ControlGroup<>());
     }
 }

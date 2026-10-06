@@ -19,11 +19,15 @@ package com.techsenger.shellfx.core.registry;
 import com.techsenger.patternfx.mvvm.ParentView;
 
 /**
+ * Creates a new {@link ControlProvider} for every build of the controls: a provider keeps its control, so one
+ * provider can serve only one component view.
  *
+ * @param <V> the view type of the component the controls are built for
+ * @param <C> the type of the control of the created provider; the provider may hold a control of a narrower type
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface ControlFactory<V extends ParentView<?>, T> {
+public interface ControlProviderFactory<V extends ParentView<?>, C> {
 
-    T create(V view);
+    ControlProvider<V, ? extends C> create();
 }

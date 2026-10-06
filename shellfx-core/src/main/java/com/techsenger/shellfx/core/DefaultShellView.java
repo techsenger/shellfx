@@ -21,9 +21,9 @@ import com.techsenger.patternfx.mvvm.ChildView;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.area.AreaView;
-import com.techsenger.shellfx.core.registry.ManagedControlBuilder;
+import com.techsenger.shellfx.core.registry.ControlBuilder;
+import com.techsenger.shellfx.core.registry.Controls;
 import com.techsenger.shellfx.core.window.AbstractHostWindowView;
-import com.techsenger.shellfx.material.menu.MenuBarManager;
 import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.style.Stylesheet;
 import java.util.List;
@@ -51,6 +51,8 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
 
         private final ReadOnlyObjectWrapper<ParentView<?>> menuAware = new ReadOnlyObjectWrapper<>();
 
+        private final ReadOnlyObjectWrapper<MenuAwarePort> menuAwarePort = new ReadOnlyObjectWrapper<>();
+
         private final DefaultShellView<VM> view = DefaultShellView.this;
 
         private AreaView<?> workspace;
@@ -59,7 +61,7 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
             this.menuAware.addListener((ov, oldV, newV) -> {
                 logger.debug("{} Menu aware component: {}", getDescriptor().getLogPrefix(),
                         (newV == null) ? null : newV.getViewModel().getDescriptor().getFullName());
-                updateMenuBar();
+                updateMenuAwarePort(newV);
             });
         }
 
@@ -101,6 +103,16 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
         }
 
         @Override
+        public @Nullable MenuAwarePort getMenuAwarePort() {
+            return this.menuAwarePort.get();
+        }
+
+        @Override
+        public ReadOnlyObjectProperty<MenuAwarePort> menuAwarePortProperty() {
+            return this.menuAwarePort.getReadOnlyProperty();
+        }
+
+        @Override
         protected void onFocusPauseFinished() {
             super.onFocusPauseFinished();
             var newNode = view.getStage().getScene().getFocusOwner();
@@ -113,6 +125,14 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
 
         private void setMenuAware(ParentView<?> menuAware) {
             this.menuAware.set(menuAware);
+        }
+
+        private void updateMenuAwarePort(@Nullable ParentView<?> menuAware) {
+            @Nullable MenuAwarePort port = null;
+            if (menuAware != null && menuAware.getViewModel() instanceof MenuAwarePort menuAwarePort) {
+                port = menuAwarePort;
+            }
+            this.menuAwarePort.set(port);
         }
 
         private void resolvedMenuAware() {
@@ -147,21 +167,19 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
         }
     }
 
-    private @Nullable MenuBar menuBar;
-
-    private @Nullable MenuBarManager menuBarManager;
-
-    private final MenuBarSlot<?> menuBarSlot;
+    private final MenuBarSlot<ShellView<?>> menuBarSlot;
 
     private final ShellViewContext context;
 
-    public DefaultShellView(VM viewModel, List<Stylesheet> stylesheets, MenuBarSlot<?> menuBarSlot,
-            ShellViewContext context) {
+    private @Nullable Controls<ShellView<?>, MenuBar> menuBarControls;
+
+    public DefaultShellView(VM viewModel, List<Stylesheet> stylesheets,
+            MenuBarSlot<ShellView<?>> menuBarSlot, ShellViewContext context) {
         this(viewModel, new Stage(), stylesheets, menuBarSlot, context);
     }
 
-    public DefaultShellView(VM viewModel, Stage stage, List<Stylesheet> stylesheets, MenuBarSlot<?> menuBarSlot,
-            ShellViewContext context) {
+    public DefaultShellView(VM viewModel, Stage stage, List<Stylesheet> stylesheets,
+            MenuBarSlot<ShellView<?>> menuBarSlot, ShellViewContext context) {
         super(viewModel, stage, stylesheets);
         this.menuBarSlot = menuBarSlot;
         this.context = context;
@@ -185,28 +203,19 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
     public void upgradeMenuBar() {
         var children = getLeftBox().getChildren();
         var index = children.size();
-        if (this.menuBar != null) {
-            for (var menu : this.menuBar.getMenus()) {
+        if (this.menuBarControls != null) {
+            var oldMenuBar = this.menuBarControls.root();
+            for (var menu : oldMenuBar.getMenus()) {
                 menu.hide();
             }
-            index = children.indexOf(this.menuBar);
-            children.remove(this.menuBar);
+            index = children.indexOf(oldMenuBar);
+            children.remove(oldMenuBar);
+            deinitializeMenuBar();
         }
-        var builder = new ManagedControlBuilder(context.getSlotRegistry(), context.getControlRegistry());
-        this.menuBar = builder.buildMenuBar(menuBarSlot, this);
-        this.menuBarManager = new MenuBarManager(this.menuBar, this::getInputEvent);
-        children.add(index, this.menuBar);
+        var builder = new ControlBuilder(context.getSlotRegistry(), context.getControlRegistry());
+        this.menuBarControls = builder.buildMenuBar(this, menuBarSlot);
+        children.add(index, this.menuBarControls.root());
         logger.debug("{} Menu bar upgraded", getDescriptor().getLogPrefix());
-        updateMenuBar();
-    }
-
-    @Override
-    public void updateMenuBar() {
-        if (this.menuBarManager == null) {
-            return;
-        }
-        this.menuBarManager.updateMenuBar();
-        logger.debug("{} Menu bar updated", getDescriptor().getLogPrefix());
     }
 
     @Override
@@ -226,7 +235,24 @@ public class DefaultShellView<VM extends DefaultShellViewModel<?>>
     }
 
     @Override
+    protected void unbuild() {
+        deinitializeMenuBar();
+        super.unbuild();
+    }
+
+    @Override
     protected HeaderBar getTitleBar() {
         return (HeaderBar) super.getTitleBar();
+    }
+
+    /**
+     * Deinitializes the providers of the menu bar controls, if there are any.
+     */
+    private void deinitializeMenuBar() {
+        if (this.menuBarControls == null) {
+            return;
+        }
+        this.menuBarControls.deinitializeAll(this);
+        this.menuBarControls = null;
     }
 }

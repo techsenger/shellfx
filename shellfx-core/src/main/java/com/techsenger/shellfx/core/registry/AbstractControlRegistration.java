@@ -20,7 +20,7 @@ import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.slot.Slot;
 
 /**
- * Binds the factory of a control to a slot.
+ * Binds the factory of the provider of a control to a slot.
  *
  * @author Pavel Castornii
  */
@@ -28,9 +28,9 @@ abstract class AbstractControlRegistration extends AbstractRegistration {
 
     private final Slot<?> slot;
 
-    private final ControlFactory<? extends ParentView<?>, ?> factory;
+    private final ControlProviderFactory<? extends ParentView<?>, ?> factory;
 
-    AbstractControlRegistration(Slot<?> slot, ControlFactory<? extends ParentView<?>, ?> factory) {
+    AbstractControlRegistration(Slot<?> slot, ControlProviderFactory<? extends ParentView<?>, ?> factory) {
         this.slot = slot;
         this.factory = factory;
     }
@@ -40,11 +40,13 @@ abstract class AbstractControlRegistration extends AbstractRegistration {
     }
 
     /**
-     * Creates the control for {@code view}; the registry guarantees at registration time that the view's type
-     * matches the one the factory was registered with.
+     * Creates a new provider put into the slot of this registration; the registry guarantees at registration time
+     * that the type of the view the provider will get matches the one the factory was registered with.
      */
     @SuppressWarnings("unchecked")
-    Object create(ParentView<?> view) {
-        return ((ControlFactory<ParentView<?>, ?>) factory).create(view);
+    ControlProvider<? extends ParentView<?>, ?> createProvider() {
+        var provider = (ControlProvider<ParentView<?>, ?>) factory.create();
+        provider.setSlot((Slot<ParentView<?>>) slot);
+        return provider;
     }
 }

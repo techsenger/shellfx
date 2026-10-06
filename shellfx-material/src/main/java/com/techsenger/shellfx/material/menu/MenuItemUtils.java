@@ -16,24 +16,32 @@
 
 package com.techsenger.shellfx.material.menu;
 
-import com.techsenger.patternfx.mvvm.ParentView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 
 /**
+ * Helpers shared by the menu classes of this package.
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractMenuItemHandler<T extends ParentView<?>, I extends MenuItem>
-        extends AbstractHandler<T> implements MenuItemHandler<T> {
+final class MenuItemUtils {
 
-    private final I item;
-
-    protected AbstractMenuItemHandler(T component, I item) {
-        super(component);
-        this.item = item;
+    /**
+     * Tells whether at least one of the items, other than separators, is visible.
+     *
+     * @param items the items to check.
+     * @return {@code true} if there is a visible item.
+     */
+    static boolean hasVisibleItem(Iterable<? extends MenuItem> items) {
+        for (var item : items) {
+            if (!(item instanceof SeparatorMenuItem) && item.isVisible()) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    protected I getItem() {
-        return item;
+    private MenuItemUtils() {
+        // empty
     }
 }
