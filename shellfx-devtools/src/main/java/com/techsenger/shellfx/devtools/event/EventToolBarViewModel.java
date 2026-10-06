@@ -142,8 +142,8 @@ public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewM
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         var config = getConfig();
         filterSelected.set(config.isFilterSelected());
         selectedNodeOnly.set(config.isSelectedNodeOnly());

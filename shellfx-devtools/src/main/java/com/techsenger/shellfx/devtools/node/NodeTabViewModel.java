@@ -298,8 +298,8 @@ public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabView
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         setCategoryExpansion(new HashMap<>(getConfig().getCategoryExpansion()));
     }
 

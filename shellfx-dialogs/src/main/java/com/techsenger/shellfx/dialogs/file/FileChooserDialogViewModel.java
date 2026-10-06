@@ -347,8 +347,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         var config = getConfig();
         setMode(config.getMode());
         // put() one at a time, in index order: the view builds/appends the real column on each map change, so

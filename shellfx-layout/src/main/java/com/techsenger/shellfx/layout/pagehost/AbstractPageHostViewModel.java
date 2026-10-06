@@ -146,8 +146,8 @@ public abstract class AbstractPageHostViewModel<C extends BasePageHostComposer> 
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         setDividerPosition(getConfig().getDividerPosition());
     }
 

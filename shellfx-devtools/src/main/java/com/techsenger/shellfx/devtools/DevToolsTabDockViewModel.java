@@ -170,8 +170,8 @@ public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDock
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         setSelectionSelected(getConfig().isSelectionSelected());
     }
 

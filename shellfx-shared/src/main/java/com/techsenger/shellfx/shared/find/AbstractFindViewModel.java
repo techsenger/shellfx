@@ -337,8 +337,8 @@ public abstract class AbstractFindViewModel<C extends ChildComposer, R extends F
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         var config = Objects.requireNonNull(getConfig());
         setMatchCaseSelected(config.isMatchCaseSelected());
         modifiableFindTexts.setAll(config.getFindTexts());

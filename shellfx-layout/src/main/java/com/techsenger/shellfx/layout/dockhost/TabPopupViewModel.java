@@ -71,8 +71,8 @@ public class TabPopupViewModel<C extends TabPopupComposer> extends AbstractAreaV
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         var config = getConfig();
         setWidth(validateWidth(config.getWidth()));
         setHeight(validateHeight(config.getHeight()));

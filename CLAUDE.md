@@ -273,7 +273,7 @@ PatternFX — PatternFX has no persistence. Configs replaced the former `*Histor
   covariant return type (the cast in the override is accepted instead of generics), and so does its ViewModel.
 - **ViewModel.** `AbstractAreaViewModel`, `AbstractTabViewModel` and `AbstractWindowViewModel` hold the config and
   expose it through a `protected` `getConfig()`. From `postInitialize()`, only when the config isn't `null`, they
-  call `loadConfigToState()` (copy config values into the ViewModel state) and then `observeStateForConfig()`
+  call `loadStateFromConfig()` (copy config values into the ViewModel state) and then `observeStateForConfig()`
   (listeners that write every change into the config and call `notifyListeners()` right away, not at
   deinitialization). Subclasses override both hooks and call `super`. Listeners are added after loading, so
   loading doesn't write back.

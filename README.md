@@ -650,7 +650,7 @@ class of a config must declare its own `serialVersionUID`.
 The base `ViewModel` classes of the three main components — `Window`, `Tab` and `Area` — hold the config and give
 a `ViewModel` two hooks that are called from `postInitialize()`, only if the config is set:
 
-* `loadConfigToState()` copies the values of the config into the state of the `ViewModel`.
+* `loadStateFromConfig()` copies the values of the config into the state of the `ViewModel`.
 * `observeStateForConfig()` adds listeners to the state of the `ViewModel` that write every change into the config
 and call `notifyListeners()`.
 

@@ -582,7 +582,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
     protected void postInitialize() {
         super.postInitialize();
         if (config != null) {
-            loadConfigToState();
+            loadStateFromConfig();
             observeStateForConfig();
         }
     }
@@ -602,7 +602,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
      * Applies the values stored in the config to the state of this component. Called once from
      * {@code postInitialize()} before {@link #observeStateForConfig()}; overriding methods must call {@code super}.
      */
-    protected void loadConfigToState() {
+    protected void loadStateFromConfig() {
         setMaximized(config.isMaximized());
         if (config.getHeight() >= 0) {
             setHeight(config.getHeight());
@@ -614,7 +614,7 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
 
     /**
      * Registers listeners that write changes of the state of this component into the config and notify the config
-     * listeners. Called once after {@link #loadConfigToState()}; overriding methods must call {@code super}.
+     * listeners. Called once after {@link #loadStateFromConfig()}; overriding methods must call {@code super}.
      */
     protected void observeStateForConfig() {
         ConfigUtils.observe(this.width, config, WindowConfig::setWidth);

@@ -186,7 +186,7 @@ public abstract class AbstractTabViewModel<C extends TabComposer> extends Abstra
     protected void postInitialize() {
         super.postInitialize();
         if (config != null) {
-            loadConfigToState();
+            loadStateFromConfig();
             observeStateForConfig();
         }
     }
@@ -195,11 +195,11 @@ public abstract class AbstractTabViewModel<C extends TabComposer> extends Abstra
      * Applies the values stored in the config to the state of this component. Called once from
      * {@code postInitialize()} before {@link #observeStateForConfig()}; overriding methods must call {@code super}.
      */
-    protected void loadConfigToState() { }
+    protected void loadStateFromConfig() { }
 
     /**
      * Registers listeners that write changes of the state of this component into the config and notify the config
-     * listeners. Called once after {@link #loadConfigToState()}; overriding methods must call {@code super}.
+     * listeners. Called once after {@link #loadStateFromConfig()}; overriding methods must call {@code super}.
      */
     protected void observeStateForConfig() { }
 

@@ -162,8 +162,8 @@ public abstract class AbstractFindPanelViewModel<C extends ChildComposer, R exte
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         var config = Objects.requireNonNull(getConfig());
         setWholeWordSelected(config.isWholeWordSelected());
         setRegExpSelected(config.isRegExpSelected());

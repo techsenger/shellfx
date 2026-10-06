@@ -362,8 +362,8 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
     }
 
     @Override
-    protected void loadConfigToState() {
-        super.loadConfigToState();
+    protected void loadStateFromConfig() {
+        super.loadStateFromConfig();
         expandedByCategory.putAll(getConfig().getInspectorExpansion());
     }
 
