@@ -21,6 +21,6 @@ package com.techsenger.shellfx.core.popup;
  *
  * @author Pavel Castornii
  */
-public interface ContainerPopupPort extends ClosablePopupPort {
+public interface ContainerPopupPort extends PopupPort {
 
 }

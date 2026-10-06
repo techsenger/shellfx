@@ -25,7 +25,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */

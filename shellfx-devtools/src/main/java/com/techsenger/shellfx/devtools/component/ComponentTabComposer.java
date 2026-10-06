@@ -20,7 +20,7 @@ import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.TabComposer;
 import com.techsenger.shellfx.devtools.shared.NavigableToolBarPort;
 import com.techsenger.shellfx.devtools.shared.ToolBarPort;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 
 /**
  * The Port-level facet of a ComponentTab's Composer &mdash; the type a {@link ComponentTabViewModel} is
@@ -34,5 +34,5 @@ public interface ComponentTabComposer extends TabComposer {
 
     ToolBarPort getInspectorToolBarPort();
 
-    FullNameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption, DialogParams params);
+    NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption, DialogParams params);
 }

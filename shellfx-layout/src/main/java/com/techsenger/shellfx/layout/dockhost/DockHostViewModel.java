@@ -25,7 +25,7 @@ import javafx.beans.property.ReadOnlyDoubleWrapper;
  * @author Pavel Castornii
  */
 public class DockHostViewModel<C extends DockHostComposer> extends AbstractAreaViewModel<C>
-        implements FullDockHostPort {
+        implements DockHostPort {
 
     private final ReadOnlyDoubleWrapper centerWidth = new ReadOnlyDoubleWrapper();
 
@@ -36,8 +36,8 @@ public class DockHostViewModel<C extends DockHostComposer> extends AbstractAreaV
     }
 
     @Override
-    public FullDockHostPort.ComposerAccess getComposerAccess() {
-        return (FullDockHostPort.ComposerAccess) super.getComposerAccess();
+    public DockHostPort.ComposerAccess getComposerAccess() {
+        return getComposer();
     }
 
     @Override

@@ -17,13 +17,13 @@
 package com.techsenger.shellfx.dialogs.progress;
 
 import com.techsenger.shellfx.core.dialog.DialogPort;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -31,21 +31,31 @@ public interface ProgressDialogPort extends DialogPort {
 
     String getMessage();
 
-    ReadOnlyStringProperty messageProperty();
+    void setMessage(String text);
+
+    StringProperty messageProperty();
 
     boolean isStepsVisible();
 
-    ReadOnlyBooleanProperty stepsVisibleProperty();
+    void setStepsVisible(boolean value);
+
+    BooleanProperty stepsVisibleProperty();
 
     int getStepCount();
 
-    ReadOnlyIntegerProperty stepCountProperty();
+    void setStepCount(int count);
+
+    IntegerProperty stepCountProperty();
 
     int getCurrentStep();
 
-    ReadOnlyIntegerProperty currentStepProperty();
+    void setCurrentStep(int step);
+
+    IntegerProperty currentStepProperty();
 
     double getProgress();
 
-    ReadOnlyDoubleProperty progressProperty();
+    void setProgress(double value);
+
+    DoubleProperty progressProperty();
 }

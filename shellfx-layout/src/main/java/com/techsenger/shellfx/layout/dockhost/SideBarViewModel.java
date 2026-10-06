@@ -23,7 +23,7 @@ import javafx.geometry.Side;
  *
  * @author Pavel Castornii
  */
-public class SideBarViewModel<C extends SideBarComposer> extends AbstractAreaViewModel<C> implements FullSideBarPort {
+public class SideBarViewModel<C extends SideBarComposer> extends AbstractAreaViewModel<C> implements SideBarPort {
 
     private final Side side;
 

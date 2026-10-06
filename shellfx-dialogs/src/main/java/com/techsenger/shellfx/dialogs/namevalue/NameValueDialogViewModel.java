@@ -32,7 +32,7 @@ import javafx.beans.property.StringProperty;
  * @author Pavel Castornii
  */
 public class NameValueDialogViewModel<C extends WindowComposer> extends AbstractDialogViewModel<C>
-        implements FullNameValueDialogPort {
+        implements NameValueDialogPort {
 
     private final StringProperty name = new SimpleStringProperty();
 

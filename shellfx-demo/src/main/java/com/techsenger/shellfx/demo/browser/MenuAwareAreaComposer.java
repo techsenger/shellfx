@@ -18,7 +18,7 @@ package com.techsenger.shellfx.demo.browser;
 
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.dialog.FullDialogPort;
+import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.popup.PopupPort;
 
@@ -28,7 +28,7 @@ import com.techsenger.shellfx.core.popup.PopupPort;
  */
 public interface MenuAwareAreaComposer extends ChildComposer {
 
-    FullDialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params);
+    DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params);
 
     PopupPort openDemoPopup(OverlayScope scope);
 }

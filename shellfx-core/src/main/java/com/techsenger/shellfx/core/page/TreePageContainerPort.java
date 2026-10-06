@@ -21,7 +21,7 @@ import com.techsenger.patternfx.core.ChildPort;
 import java.util.List;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -41,4 +41,12 @@ public interface TreePageContainerPort extends ChildPort {
 
     @Override
     ComposerAccess getComposerAccess();
+
+    /**
+     * Selects the given page, unless it is already the current page or isn't part of what is currently displayed
+     * (e.g. filtered out by an active find) — in which case this call has no effect.
+     *
+     * @param item the page to select
+     */
+    void selectPage(TreePageItem item);
 }

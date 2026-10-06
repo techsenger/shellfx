@@ -23,6 +23,6 @@ import com.techsenger.patternfx.mvvm.ChildViewModel;
  * @author Pavel Castornii
  */
 public interface TabContainerViewModel<C extends TabContainerComposer> extends ChildViewModel<C>,
-        FullTabContainerPort {
+        TabContainerPort {
 
 }

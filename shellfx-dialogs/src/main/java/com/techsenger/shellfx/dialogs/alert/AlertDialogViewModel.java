@@ -38,7 +38,7 @@ import javafx.beans.property.StringProperty;
  * @author Pavel Castornii
  */
 public class AlertDialogViewModel<C extends WindowComposer> extends AbstractDialogViewModel<C>
-        implements FullAlertDialogPort {
+        implements AlertDialogPort {
 
     private final AlertDialogType dialogType;
 

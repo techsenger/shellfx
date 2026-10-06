@@ -24,5 +24,5 @@ import com.techsenger.shellfx.core.tab.TabComposer;
  */
 public interface EventTabComposer extends TabComposer {
 
-    FullEventToolBarPort getToolBarPort();
+    EventToolBarPort getToolBarPort();
 }

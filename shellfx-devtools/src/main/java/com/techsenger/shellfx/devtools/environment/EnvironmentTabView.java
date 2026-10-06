@@ -26,7 +26,7 @@ import com.techsenger.shellfx.devtools.shared.ToolBarParams;
 import com.techsenger.shellfx.devtools.shared.ToolBarPort;
 import com.techsenger.shellfx.devtools.shared.ToolBarView;
 import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogView;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogViewModel;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class EnvironmentTabView<VM extends EnvironmentTabViewModel<?>> extends A
         }
 
         @Override
-        public FullNameValueDialogPort openNameValueDialog(DialogParams params) {
+        public NameValueDialogPort openNameValueDialog(DialogParams params) {
             var dialog = createNameValueDialog(params);
             if (params.getWindowType() == WindowType.NESTED) {
                 view.windowContainer.addDialog(dialog);

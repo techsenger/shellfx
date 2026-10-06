@@ -23,6 +23,6 @@ import com.techsenger.patternfx.mvvm.ChildViewModel;
  * @author Pavel Castornii
  */
 public interface PageContainerViewModel<C extends PageContainerComposer> extends ChildViewModel<C>,
-        FullPageContainerPort {
+        PageContainerPort {
 
 }

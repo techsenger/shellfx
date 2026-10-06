@@ -23,7 +23,7 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -66,4 +66,11 @@ public interface TabContainerPort extends ChildPort {
 
     @Override
     ComposerAccess getComposerAccess();
+
+    /**
+     * Selects the tab at the given index.
+     *
+     * @param tabIndex zero-based index of the tab to select; a no-op if out of range
+     */
+    void selectTab(int tabIndex);
 }

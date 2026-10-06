@@ -32,7 +32,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  * @author Pavel Castornii
  */
 public class TabDockViewModel<C extends TabDockComposer> extends TabHostViewModel<C>
-        implements FullTabDockPort, CloseAwareViewModel<C> {
+        implements TabDockPort, CloseAwareViewModel<C> {
 
     private final BooleanProperty draggable = new SimpleBooleanProperty();
 

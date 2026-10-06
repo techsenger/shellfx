@@ -19,7 +19,7 @@ package com.techsenger.shellfx.demo.ide;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.dialog.FullDialogPort;
+import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.popup.AbstractPopupManager;
 import com.techsenger.shellfx.core.popup.ContainerPopupPort;
 import com.techsenger.shellfx.core.popup.OverlayScope;
@@ -75,7 +75,7 @@ public class IdeMainTabView<VM extends IdeMainTabViewModel<?>> extends AbstractT
         };
 
         @Override
-        public FullDialogPort openDemoDialog(boolean resizable, DialogParams params) {
+        public DialogPort openDemoDialog(boolean resizable, DialogParams params) {
             var viewModel = new DemoDialogViewModel<>(params);
             var dialogView = new DemoDialogView<>(viewModel);
             dialogView.initialize();

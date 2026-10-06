@@ -23,6 +23,6 @@ import com.techsenger.patternfx.mvvm.ChildViewModel;
  *
  * @author Pavel Castornii
  */
-public interface AreaViewModel<C extends ChildComposer> extends ChildViewModel<C>, FullAreaPort {
+public interface AreaViewModel<C extends ChildComposer> extends ChildViewModel<C>, AreaPort {
 
 }

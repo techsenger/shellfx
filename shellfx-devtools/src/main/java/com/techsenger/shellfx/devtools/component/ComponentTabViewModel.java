@@ -35,8 +35,8 @@ import com.techsenger.shellfx.devtools.shared.IndexedFindResult;
 import com.techsenger.shellfx.devtools.shared.NavigableToolBarAwarePort;
 import com.techsenger.shellfx.devtools.shared.ToolBarAwarePort;
 import com.techsenger.shellfx.devtools.shared.TotalFindResult;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueButtons;
+import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.shellfx.shared.find.FindResult;
 import com.techsenger.shellfx.shared.find.NavigableFindResult;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -414,7 +414,7 @@ public class ComponentTabViewModel<C extends ComponentTabComposer> extends Abstr
             type = WindowType.TOP_LEVEL;
         }
         var params = new DialogParams(null, type, getShellContext().getSettings().getAppearance());
-        FullNameValueDialogPort dialog;
+        NameValueDialogPort dialog;
         if (parent.category() == InspectorCategory.PROPERTY) {
             dialog = getComposer().addNameValueDialog("Property", "Value", params);
         } else {

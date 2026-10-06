@@ -27,18 +27,18 @@ import com.techsenger.shellfx.demo.page.PageDialogParams;
 import com.techsenger.shellfx.demo.page.PageDialogView;
 import com.techsenger.shellfx.demo.page.PageDialogViewModel;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
+import com.techsenger.shellfx.dialogs.alert.AlertDialogPort;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogView;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogViewModel;
-import com.techsenger.shellfx.dialogs.alert.FullAlertDialogPort;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
+import com.techsenger.shellfx.dialogs.file.FileChooserDialogPort;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogView;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogViewModel;
-import com.techsenger.shellfx.dialogs.file.FullFileChooserDialogPort;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogView;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogViewModel;
-import com.techsenger.shellfx.dialogs.progress.FullProgressDialogPort;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
+import com.techsenger.shellfx.dialogs.progress.ProgressDialogPort;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogView;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogViewModel;
 import com.techsenger.shellfx.material.button.ResultButton;
@@ -60,7 +60,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
     public class Composer extends AbstractWindowView<VM>.Composer implements DialogsDialogComposer {
 
         @Override
-        public FullAlertDialogPort openAlertDialog(AlertDialogParams params) {
+        public AlertDialogPort openAlertDialog(AlertDialogParams params) {
             var viewModel = new AlertDialogViewModel<>(params);
             var dialogView = new AlertDialogView<>(viewModel);
             dialogView.initialize();
@@ -69,7 +69,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         }
 
         @Override
-        public FullNameValueDialogPort openNameValueDialog(DialogParams params) {
+        public NameValueDialogPort openNameValueDialog(DialogParams params) {
             var viewModel = new NameValueDialogViewModel<>(params);
             var dialogView = new NameValueDialogView<>(viewModel);
             dialogView.initialize();
@@ -78,7 +78,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         }
 
         @Override
-        public FullProgressDialogPort openProgressDialog(ProgressDialogParams params) {
+        public ProgressDialogPort openProgressDialog(ProgressDialogParams params) {
             var viewModel = new ProgressDialogViewModel<>(params);
             var dialogView = new ProgressDialogView<>(viewModel);
             dialogView.initialize();
@@ -87,7 +87,7 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         }
 
         @Override
-        public FullFileChooserDialogPort<GenericFile> openFileChooserDialog(
+        public FileChooserDialogPort<GenericFile> openFileChooserDialog(
                 FileChooserDialogParams<GenericFile> params) {
             var viewModel = new FileChooserDialogViewModel<>(params);
             var dialogView = new FileChooserDialogView<>(viewModel);

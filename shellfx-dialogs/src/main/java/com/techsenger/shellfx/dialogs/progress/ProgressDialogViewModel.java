@@ -36,7 +36,7 @@ import javafx.beans.property.StringProperty;
  * @author Pavel Castornii
  */
 public class ProgressDialogViewModel<C extends WindowComposer> extends AbstractDialogViewModel<C>
-        implements FullProgressDialogPort {
+        implements ProgressDialogPort {
 
     private final BooleanProperty stepsVisible = new SimpleBooleanProperty();
 

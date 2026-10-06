@@ -19,7 +19,7 @@ package com.techsenger.shellfx.devtools.environment;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.tab.TabComposer;
 import com.techsenger.shellfx.devtools.shared.ToolBarPort;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 
 /**
  *
@@ -29,5 +29,5 @@ public interface EnvironmentTabComposer extends TabComposer {
 
     ToolBarPort getToolBarPort();
 
-    FullNameValueDialogPort openNameValueDialog(DialogParams params);
+    NameValueDialogPort openNameValueDialog(DialogParams params);
 }

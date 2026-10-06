@@ -18,12 +18,14 @@ package com.techsenger.shellfx.shared.find;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.area.AreaPort;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @param <R> the kind of {@link FindResult} this component reports
  * @author Pavel Castornii
@@ -35,7 +37,9 @@ public interface FindPort<R extends FindResult> extends AreaPort, ResultFindPort
      */
     String getEditedFindText();
 
-    ReadOnlyStringProperty editedFindTextProperty();
+    void setEditedFindText(String editedFindText);
+
+    StringProperty editedFindTextProperty();
 
     @Unmodifiable ObservableList<String> getFindTexts();
 
@@ -45,7 +49,9 @@ public interface FindPort<R extends FindResult> extends AreaPort, ResultFindPort
      */
     boolean isShowClear();
 
-    ReadOnlyBooleanProperty showClearProperty();
+    void setShowClear(boolean showClear);
+
+    BooleanProperty showClearProperty();
 
     boolean isClearVisible();
 
@@ -57,7 +63,9 @@ public interface FindPort<R extends FindResult> extends AreaPort, ResultFindPort
      */
     boolean isShowMatches();
 
-    ReadOnlyBooleanProperty showMatchesProperty();
+    void setShowMatches(boolean showMatches);
+
+    BooleanProperty showMatchesProperty();
 
     String getMatchesText();
 
@@ -73,9 +81,13 @@ public interface FindPort<R extends FindResult> extends AreaPort, ResultFindPort
 
     boolean isMatchCaseSelected();
 
-    ReadOnlyBooleanProperty matchCaseSelectedProperty();
+    void setMatchCaseSelected(boolean matchCaseSelected);
+
+    BooleanProperty matchCaseSelectedProperty();
 
     boolean isMatchCaseDisabled();
 
-    ReadOnlyBooleanProperty matchCaseDisabledProperty();
+    void setMatchCaseDisabled(boolean matchCaseDisabled);
+
+    BooleanProperty matchCaseDisabledProperty();
 }

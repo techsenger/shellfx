@@ -65,6 +65,7 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
 * [Component Config](#config)
     * [Config Object](#config-object)
     * [ConfigManager](#config-manager)
+* [Component Port](#port)
 * [Extension Registries](#registries)
     * [Slot Registry](#registries-slot)
     * [Control Registry](#registries-control)
@@ -679,6 +680,30 @@ config, because by that time the components are gone and such a listener is a le
 
 The manager is available to components through `ShellViewModelContext`, and the code that creates a component takes
 the config from it and passes it to the `Params`.
+
+## Component Port <a name="port"></a>
+
+Every component has a port. A port is a safe interface for working with a component: other components and application
+code interact with the component only through it and never get its `ViewModel` directly (see
+[PatternFX](https://github.com/techsenger/patternfx#templates-component-port)).
+
+The default port of a component (`AlertDialogPort`, `TabPort`, `WindowPort`, etc.) gives full access to the
+component, both for reading and for writing. Properties that are decided by the `View` or by the platform, such as the
+size of a window or the selected state of a tab, are exposed as read-only properties with a request setter where
+changing them makes sense. A few operations that only a container should perform, such as selecting a tab within its
+container, are kept in a separate container-only port (`ContainerTabPort`) that is not part of the client API.
+
+If a user needs to restrict access, they can create their own port that exposes only what is needed and make the
+component implement it. This is intentional: it is impossible to foresee how restricted a port a user will need. One
+user needs only a title, another needs everything except closing.
+
+The platform does not provide a read-only port for each component, because:
+
+* Read-only ports provided by the platform for each component would not solve the problem anyway: they can only hide
+all setters at once, and it is impossible to hide a particular getter or read-only property from them.
+* The need for a port that gives full read-only access is very rare in practice.
+* Read-only ports double the number of types and bloat the code, since every property would have to be declared twice —
+as a read-only property in one port and as a writable one in another.
 
 ## Extension Registries <a name="registries"></a>
 

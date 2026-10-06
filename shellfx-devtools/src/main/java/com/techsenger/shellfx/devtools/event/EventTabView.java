@@ -42,7 +42,7 @@ public class EventTabView<VM extends EventTabViewModel<?>> extends AbstractTabVi
         }
 
         @Override
-        public FullEventToolBarPort getToolBarPort() {
+        public EventToolBarPort getToolBarPort() {
             return toolBar == null ? null : toolBar.getViewModel();
         }
 

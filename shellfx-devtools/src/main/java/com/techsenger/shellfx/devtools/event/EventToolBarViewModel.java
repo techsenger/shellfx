@@ -49,7 +49,7 @@ import javafx.beans.property.StringProperty;
  * @author Pavel Castornii
  */
 public class EventToolBarViewModel<C extends ChildComposer> extends ToolBarViewModel<C>
-        implements FullEventToolBarPort {
+        implements EventToolBarPort {
 
     private final Map<Class<? extends ConnectorEvent>, BooleanProperty> selectionsByEventType = Map.ofEntries(
             Map.entry(AttributeListEvent.class, new SimpleBooleanProperty()),

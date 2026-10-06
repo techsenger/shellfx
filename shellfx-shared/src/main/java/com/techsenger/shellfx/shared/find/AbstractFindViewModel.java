@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public abstract class AbstractFindViewModel<C extends ChildComposer, R extends FindResult>
-        extends AbstractAreaViewModel<C> implements FullFindPort<R> {
+        extends AbstractAreaViewModel<C> implements FindPort<R> {
 
     /**
      * The hint of a config notification telling that the find texts were replaced. Finds sharing one config react

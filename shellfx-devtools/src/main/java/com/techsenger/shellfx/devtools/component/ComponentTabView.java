@@ -39,7 +39,7 @@ import com.techsenger.shellfx.devtools.shared.ToolBarParams;
 import com.techsenger.shellfx.devtools.shared.ToolBarPort;
 import com.techsenger.shellfx.devtools.shared.ToolBarView;
 import com.techsenger.shellfx.devtools.shared.ToolBarViewModel;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
+import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogView;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogViewModel;
 import com.techsenger.shellfx.material.layout.LabelHContainer;
@@ -218,7 +218,7 @@ public class ComponentTabView<VM extends ComponentTabViewModel<?>> extends Abstr
         }
 
         @Override
-        public FullNameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption,
+        public NameValueDialogPort addNameValueDialog(String nameCaption, String valueCaption,
                 DialogParams params) {
             var dialog = createNameValueDialog(nameCaption, valueCaption, params);
             if (params.getWindowType() == WindowType.NESTED) {

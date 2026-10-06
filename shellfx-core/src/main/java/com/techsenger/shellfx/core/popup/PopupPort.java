@@ -18,14 +18,16 @@ package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AreaPort;
-import javafx.beans.property.ReadOnlyBooleanProperty;
+import com.techsenger.shellfx.core.close.CloseAwarePort;
+import com.techsenger.shellfx.core.traits.Waitable;
+import com.techsenger.shellfx.material.RequestSetter;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
-public interface PopupPort extends AreaPort {
+public interface PopupPort extends AreaPort, CloseAwarePort, Waitable {
 
     interface ComposerAccess extends AreaPort.ComposerAccess {
 
@@ -43,7 +45,27 @@ public interface PopupPort extends AreaPort {
      */
     boolean isModal();
 
-    boolean isWaiting();
+    /**
+     * Sets the width of the popup. Using this method is optional because, by default, the popup width is
+     * based on the preferred width of its content.
+     *
+     * <p>This is a request, not a guarantee — the platform may adjust or ignore it; observe
+     * {@link #widthProperty()} for the value actually applied.
+     *
+     * @param value the width in pixels
+     */
+    @RequestSetter
+    void setWidth(double value);
 
-    ReadOnlyBooleanProperty waitingProperty();
+    /**
+     * Sets the height of the popup. Using this method is optional because, by default, the popup height is
+     * based on the preferred height of its content.
+     *
+     * <p>This is a request, not a guarantee — the platform may adjust or ignore it; observe
+     * {@link #heightProperty()} for the value actually applied.
+     *
+     * @param value the height in pixels
+     */
+    @RequestSetter
+    void setHeight(double value);
 }

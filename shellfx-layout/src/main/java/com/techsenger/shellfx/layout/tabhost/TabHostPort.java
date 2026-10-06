@@ -18,10 +18,10 @@ package com.techsenger.shellfx.layout.tabhost;
 
 import com.techsenger.shellfx.core.area.AreaPort;
 import com.techsenger.shellfx.core.tab.TabContainerPort;
-import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.BooleanProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -36,5 +36,7 @@ public interface TabHostPort extends AreaPort, TabContainerPort {
 
     boolean isTabHeaderVisible();
 
-    ReadOnlyBooleanProperty tabHeaderVisibleProperty();
+    void setTabHeaderVisible(boolean tabHeaderVisible);
+
+    BooleanProperty tabHeaderVisibleProperty();
 }

@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabViewModel<C> implements FullNodeTabPort {
+public class NodeTabViewModel<C extends NodeTabComposer> extends AbstractTabViewModel<C> implements NodeTabPort {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeTabViewModel.class);
 

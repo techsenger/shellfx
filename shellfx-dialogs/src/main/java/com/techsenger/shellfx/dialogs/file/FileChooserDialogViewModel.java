@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author Pavel Castornii
  */
 public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T extends GenericFile>
-        extends AbstractDialogViewModel<C> implements FullFileChooserDialogPort<T> {
+        extends AbstractDialogViewModel<C> implements FileChooserDialogPort<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileChooserDialogViewModel.class);
 

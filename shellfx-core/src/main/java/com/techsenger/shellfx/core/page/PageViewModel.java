@@ -23,6 +23,6 @@ import com.techsenger.shellfx.core.area.AreaViewModel;
  *
  * @author Pavel Castornii
  */
-public interface PageViewModel<C extends ChildComposer> extends AreaViewModel<C>, ContainerPagePort, FullPagePort {
+public interface PageViewModel<C extends ChildComposer> extends AreaViewModel<C>, ContainerPagePort {
 
 }

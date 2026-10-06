@@ -18,14 +18,17 @@ package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.connectorfx.scenegraph.Element;
 import com.techsenger.shellfx.core.tab.TabPort;
+import java.util.function.Consumer;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
 public interface NodeTabPort extends TabPort {
 
     ReadOnlyObjectProperty<Element> rootNodeProperty();
+
+    void setLinkOpener(Consumer<String> opener);
 }

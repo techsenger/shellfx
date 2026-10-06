@@ -16,37 +16,50 @@
 
 package com.techsenger.shellfx.shared.find;
 
-import javafx.beans.property.ReadOnlyBooleanProperty;
+import com.techsenger.shellfx.core.close.CloseRequestPort;
+import javafx.beans.property.BooleanProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @param <R> the kind of {@link NavigableFindResult} this component reports
  * @author Pavel Castornii
  */
-public interface FindPanelPort<R extends NavigableFindResult> extends NavigableFindPort<R> {
+public interface FindPanelPort<R extends NavigableFindResult> extends NavigableFindPort<R>, CloseRequestPort {
 
     boolean isWholeWordSelected();
 
-    ReadOnlyBooleanProperty wholeWordSelectedProperty();
+    void setWholeWordSelected(boolean wholeWordSelected);
+
+    BooleanProperty wholeWordSelectedProperty();
 
     boolean isWholeWordDisabled();
 
-    ReadOnlyBooleanProperty wholeWordDisabledProperty();
+    void setWholeWordDisabled(boolean wholeWordDisabled);
+
+    BooleanProperty wholeWordDisabledProperty();
 
     boolean isRegExpSelected();
 
-    ReadOnlyBooleanProperty regExpSelectedProperty();
+    void setRegExpSelected(boolean regExpSelected);
+
+    BooleanProperty regExpSelectedProperty();
 
     boolean isRegExpDisabled();
 
-    ReadOnlyBooleanProperty regExpDisabledProperty();
+    void setRegExpDisabled(boolean regExpDisabled);
+
+    BooleanProperty regExpDisabledProperty();
 
     boolean isHighlightSelected();
 
-    ReadOnlyBooleanProperty highlightSelectedProperty();
+    void setHighlightSelected(boolean highlightSelected);
+
+    BooleanProperty highlightSelectedProperty();
 
     boolean isHighlightDisabled();
 
-    ReadOnlyBooleanProperty highlightDisabledProperty();
+    void setHighlightDisabled(boolean highlightDisabled);
+
+    BooleanProperty highlightDisabledProperty();
 }

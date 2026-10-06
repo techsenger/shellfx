@@ -23,6 +23,6 @@ import com.techsenger.patternfx.mvvm.ChildViewModel;
  * @author Pavel Castornii
  */
 public interface TreePageContainerViewModel<C extends TreePageContainerComposer> extends ChildViewModel<C>,
-        FullTreePageContainerPort {
+        TreePageContainerPort {
 
 }

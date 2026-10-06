@@ -23,6 +23,6 @@ import com.techsenger.shellfx.core.window.WindowViewModel;
  *
  * @author Pavel Castornii
  */
-public interface DialogViewModel<C extends WindowComposer> extends WindowViewModel<C>, FullDialogPort {
+public interface DialogViewModel<C extends WindowComposer> extends WindowViewModel<C>, DialogPort {
 
 }

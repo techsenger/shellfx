@@ -31,7 +31,7 @@ import static javafx.geometry.Side.RIGHT;
  * @author Pavel Castornii
  */
 public class TabPopupViewModel<C extends TabPopupComposer> extends AbstractAreaViewModel<C>
-        implements FullTabPopupPort {
+        implements TabPopupPort {
 
     private final ObservableSource<Double> widthSource = new SimpleObservableSource<>();
 

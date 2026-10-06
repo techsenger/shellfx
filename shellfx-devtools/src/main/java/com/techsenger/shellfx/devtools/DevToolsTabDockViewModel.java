@@ -34,7 +34,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  * @author Pavel Castornii
  */
 public class DevToolsTabDockViewModel<C extends TabDockComposer> extends TabDockViewModel<C>
-        implements FullDevToolsTabDockPort {
+        implements DevToolsTabDockPort {
 
     private final BooleanProperty selectionSelected = new SimpleBooleanProperty();
 

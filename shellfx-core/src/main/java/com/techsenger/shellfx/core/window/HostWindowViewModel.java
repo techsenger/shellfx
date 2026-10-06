@@ -21,6 +21,6 @@ package com.techsenger.shellfx.core.window;
  * @author Pavel Castornii
  */
 public interface HostWindowViewModel<C extends HostWindowComposer> extends WindowViewModel<C>,
-        WindowContainerViewModel<C>, FullHostWindowPort {
+        WindowContainerViewModel<C>, HostWindowPort {
 
 }

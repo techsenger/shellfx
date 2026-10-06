@@ -21,12 +21,12 @@ import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.window.WindowComposer;
 import com.techsenger.shellfx.demo.page.PageDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
-import com.techsenger.shellfx.dialogs.alert.FullAlertDialogPort;
+import com.techsenger.shellfx.dialogs.alert.AlertDialogPort;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
-import com.techsenger.shellfx.dialogs.file.FullFileChooserDialogPort;
-import com.techsenger.shellfx.dialogs.namevalue.FullNameValueDialogPort;
-import com.techsenger.shellfx.dialogs.progress.FullProgressDialogPort;
+import com.techsenger.shellfx.dialogs.file.FileChooserDialogPort;
+import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
+import com.techsenger.shellfx.dialogs.progress.ProgressDialogPort;
 import com.techsenger.shellfx.storage.GenericFile;
 
 /**
@@ -35,13 +35,13 @@ import com.techsenger.shellfx.storage.GenericFile;
  */
 public interface DialogsDialogComposer extends WindowComposer {
 
-    FullAlertDialogPort openAlertDialog(AlertDialogParams params);
+    AlertDialogPort openAlertDialog(AlertDialogParams params);
 
-    FullNameValueDialogPort openNameValueDialog(DialogParams params);
+    NameValueDialogPort openNameValueDialog(DialogParams params);
 
-    FullProgressDialogPort openProgressDialog(ProgressDialogParams params);
+    ProgressDialogPort openProgressDialog(ProgressDialogParams params);
 
-    FullFileChooserDialogPort<GenericFile> openFileChooserDialog(FileChooserDialogParams<GenericFile> params);
+    FileChooserDialogPort<GenericFile> openFileChooserDialog(FileChooserDialogParams<GenericFile> params);
 
     DialogPort openPagedDialog(PageDialogParams params);
 }

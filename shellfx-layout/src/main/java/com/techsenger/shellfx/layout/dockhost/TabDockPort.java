@@ -16,16 +16,17 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
+import com.techsenger.shellfx.core.close.CloseAwarePort;
 import com.techsenger.shellfx.layout.tabhost.TabHostPort;
-import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
-public interface TabDockPort extends TabHostPort {
+public interface TabDockPort extends TabHostPort, CloseAwarePort {
 
     /**
      * Returns the value that stores the original position of this component in the layout before it was minimized
@@ -54,7 +55,18 @@ public interface TabDockPort extends TabHostPort {
      */
     boolean isDraggable();
 
-    ReadOnlyBooleanProperty draggableProperty();
+    /**
+     * Sets whether this TabDock can be dragged and repositioned within the docking layout.
+     * <p>
+     * When set to {@code true}, a drag handle is added to the TabDock's header, allowing the user to grab and move
+     * it to a different position in the layout. When set to {@code false}, the drag handle is removed and the
+     * TabDock remains fixed in place.
+     *
+     * @param value {@code true} to enable dragging and show the drag handle, {@code false} to disable it
+     */
+    void setDraggable(boolean value);
+
+    BooleanProperty draggableProperty();
 
     /**
      * Returns whether this TabDock can be minimized into the sidebar.
@@ -66,7 +78,17 @@ public interface TabDockPort extends TabHostPort {
      */
     boolean isMinimizable();
 
-    ReadOnlyBooleanProperty minimizableProperty();
+    /**
+     * Sets whether this TabDock can be minimized into the sidebar.
+     * <p>
+     * When set to {@code true}, a minimize button is added to the TabDock's header, allowing the user to collapse
+     * it into the sidebar while keeping it accessible. When set to {@code false}, the minimize button is removed.
+     *
+     * @param minimizable {@code true} to enable minimizing and show the minimize button, {@code false} to disable it
+     */
+    void setMinimizable(boolean minimizable);
+
+    BooleanProperty minimizableProperty();
 
     /**
      * Returns whether this TabDock can be closed by the user.
@@ -78,5 +100,15 @@ public interface TabDockPort extends TabHostPort {
      */
     boolean isClosable();
 
-    ReadOnlyBooleanProperty closableProperty();
+    /**
+     * Sets whether this TabDock can be closed by the user.
+     * <p>
+     * When set to {@code true}, a close button is added to the TabDock's header, allowing the user to remove it
+     * from the layout entirely. When set to {@code false}, the close button is removed.
+     *
+     * @param closable {@code true} to enable closing and show the close button, {@code false} to disable it
+     */
+    void setClosable(boolean closable);
+
+    BooleanProperty closableProperty();
 }

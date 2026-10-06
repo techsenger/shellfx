@@ -24,6 +24,6 @@ import com.techsenger.shellfx.core.close.CloseAwareViewModel;
  * @author Pavel Castornii
  */
 public interface WindowViewModel<C extends WindowComposer> extends ChildViewModel<C>, CloseAwareViewModel<C>,
-        ContainerWindowPort, FullWindowPort {
+        ContainerWindowPort {
 
 }

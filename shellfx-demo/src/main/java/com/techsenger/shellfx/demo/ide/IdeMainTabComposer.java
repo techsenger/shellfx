@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.demo.ide;
 
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.dialog.FullDialogPort;
+import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.popup.PopupContainerComposer;
 import com.techsenger.shellfx.core.popup.PopupPort;
@@ -29,7 +29,7 @@ import com.techsenger.shellfx.core.tab.TabComposer;
  */
 public interface IdeMainTabComposer extends TabComposer, PopupContainerComposer, IdeMainTabPort.ComposerAccess {
 
-    FullDialogPort openDemoDialog(boolean resizable, DialogParams params);
+    DialogPort openDemoDialog(boolean resizable, DialogParams params);
 
     PopupPort openDemoPopup(OverlayScope scope);
 }

@@ -35,7 +35,7 @@ import javafx.collections.ObservableList;
  * @author Pavel Castornii
  */
 public class PageHostViewModel<C extends PageHostComposer> extends AbstractPageHostViewModel<C>
-        implements PageContainerViewModel<C>, FullPageHostPort {
+        implements PageContainerViewModel<C>, PageHostPort {
 
     static List<PageItem> match(List<PageItem> items, Matcher matcher) {
         return items.stream()

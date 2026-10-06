@@ -31,7 +31,7 @@ import javafx.beans.property.SimpleBooleanProperty;
  * @author Pavel Castornii
  */
 public class TabHostViewModel<C extends TabHostComposer> extends AbstractAreaViewModel<C>
-        implements TabContainerViewModel<C>, FullTabHostPort {
+        implements TabContainerViewModel<C>, TabHostPort {
 
     private final BooleanProperty tabHeaderVisible = new SimpleBooleanProperty(true);
 

@@ -19,10 +19,10 @@ package com.techsenger.shellfx.devtools.shared;
 import com.techsenger.shellfx.shared.find.NavigableFindResult;
 import com.techsenger.shellfx.shared.find.ResultFindPort;
 import java.util.regex.Matcher;
-import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
- * Provides minimal, read-only access to a navigable find toolbar's client API.
+ * Provides full access to a navigable find toolbar's client API.
  *
  * @author Pavel Castornii
  */
@@ -30,7 +30,9 @@ public interface NavigableToolBarPort extends ResultFindPort<NavigableFindResult
 
     String getFindPrompt();
 
-    ReadOnlyStringProperty findPromptProperty();
+    void setFindPrompt(String prompt);
+
+    StringProperty findPromptProperty();
 
     Matcher createFindMatcher();
 }

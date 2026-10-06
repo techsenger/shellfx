@@ -32,7 +32,7 @@ import javafx.beans.property.SimpleObjectProperty;
  * @author Pavel Castornii
  */
 public abstract class AbstractNavigableFindViewModel<C extends ChildComposer, R extends NavigableFindResult>
-        extends AbstractFindViewModel<C, R> implements FullNavigableFindPort<R> {
+        extends AbstractFindViewModel<C, R> implements NavigableFindPort<R> {
 
     private final ObjectProperty<MatchesFormat> matchesFormat =
             new SimpleObjectProperty<>(MatchesFormat.CURRENT_AND_TOTAL);

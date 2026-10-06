@@ -24,6 +24,6 @@ import com.techsenger.shellfx.core.close.CloseAwareViewModel;
  * @author Pavel Castornii
  */
 public interface TabViewModel<C extends TabComposer> extends ChildViewModel<C>, CloseAwareViewModel<C>,
-        ContainerTabPort, FullTabPort {
+        ContainerTabPort {
 
 }

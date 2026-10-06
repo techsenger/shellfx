@@ -19,15 +19,17 @@ package com.techsenger.shellfx.dialogs.file;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.storage.GenericFile;
 import java.net.URI;
+import java.util.List;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -45,15 +47,30 @@ public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort
 
     String getLocationCaption();
 
-    ReadOnlyStringProperty locationCaptionProperty();
+    void setLocationCaption(String value);
+
+    StringProperty locationCaptionProperty();
 
     @Unmodifiable ObservableList<Location> getLocations();
 
+    void setLocations(List<Location> locations);
+
     Location getLocation();
+
+    /**
+     * Sets the current location. This is a request, not a guarantee — the underlying selection control may
+     * adjust or ignore it; observe {@link #locationProperty()} for the value actually applied.
+     *
+     * @param value the requested location
+     */
+    @RequestSetter
+    void setLocation(Location value);
 
     ReadOnlyObjectProperty<Location> locationProperty();
 
     Mode getMode();
+
+    void setMode(Mode mode);
 
     ReadOnlyObjectProperty<Mode> modeProperty();
 
@@ -73,11 +90,24 @@ public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort
 
     @Unmodifiable ObservableList<ExtensionFilter> getExtensionFilters();
 
+    void setExtensionFilters(List<ExtensionFilter> filters);
+
     ExtensionFilter getExtensionFilter();
+
+    /**
+     * Sets the current extension filter. This is a request, not a guarantee — the underlying selection control
+     * may adjust or ignore it; observe {@link #extensionFilterProperty()} for the value actually applied.
+     *
+     * @param filter the requested extension filter
+     */
+    @RequestSetter
+    void setExtensionFilter(ExtensionFilter filter);
 
     ReadOnlyObjectProperty<ExtensionFilter> extensionFilterProperty();
 
     String getFileName();
 
-    ReadOnlyStringProperty fileNameProperty();
+    void setFileName(String fileName);
+
+    StringProperty fileNameProperty();
 }

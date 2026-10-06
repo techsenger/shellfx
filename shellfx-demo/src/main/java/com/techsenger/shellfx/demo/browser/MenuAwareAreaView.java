@@ -18,7 +18,7 @@ package com.techsenger.shellfx.demo.browser;
 
 import com.techsenger.shellfx.core.area.AbstractAreaView;
 import com.techsenger.shellfx.core.dialog.DialogParams;
-import com.techsenger.shellfx.core.dialog.FullDialogPort;
+import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.popup.OverlayScope;
 import com.techsenger.shellfx.core.popup.PopupParams;
 import com.techsenger.shellfx.core.popup.PopupPort;
@@ -52,7 +52,7 @@ public class MenuAwareAreaView<VM extends MenuAwareAreaViewModel<?>> extends Abs
         private HostTabView<?> mainTab;
 
         @Override
-        public FullDialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params) {
+        public DialogPort openDemoDialog(OverlayScope scope, boolean resizable, DialogParams params) {
             var viewModel = new DemoDialogViewModel<>(params);
             var dialogView = new DemoDialogView<>(viewModel);
             dialogView.initialize();

@@ -18,18 +18,19 @@ package com.techsenger.shellfx.devtools.event;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.connectorfx.event.ConnectorEvent;
+import com.techsenger.shellfx.devtools.shared.ToolBarPort;
 import com.techsenger.shellfx.shared.find.FindPort;
 import com.techsenger.shellfx.shared.find.FindResult;
 import java.util.Set;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
-public interface EventToolBarPort extends FindPort<FindResult> {
+public interface EventToolBarPort extends FindPort<FindResult>, ToolBarPort {
 
     @Unmodifiable Set<Class<? extends ConnectorEvent>> getSelectedEventTypes();
 
@@ -47,5 +48,7 @@ public interface EventToolBarPort extends FindPort<FindResult> {
 
     String getStatistics();
 
-    ReadOnlyStringProperty statisticsProperty();
+    void setStatistics(String text);
+
+    StringProperty statisticsProperty();
 }

@@ -16,12 +16,12 @@
 
 package com.techsenger.shellfx.shared.find;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
- * Provides minimal, read-only access to the client API of a find component that can move between individual
- * matches, on top of the plain {@link FindPort} contract.
+ * Provides full access to the client API of a find component that can move between individual matches, on top of
+ * the plain {@link FindPort} contract.
  *
  * @param <R> the kind of {@link NavigableFindResult} this component reports
  * @author Pavel Castornii
@@ -30,7 +30,9 @@ public interface NavigableFindPort<R extends NavigableFindResult> extends FindPo
 
     MatchesFormat getMatchesFormat();
 
-    ReadOnlyObjectProperty<MatchesFormat> matchesFormatProperty();
+    void setMatchesFormat(MatchesFormat matchesFormat);
+
+    ObjectProperty<MatchesFormat> matchesFormatProperty();
 
     boolean isFindNextDisabled();
 

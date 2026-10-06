@@ -19,7 +19,6 @@ package com.techsenger.shellfx.demo.dialog;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
-import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.window.WindowComposer;
 import java.util.function.Consumer;
@@ -28,8 +27,7 @@ import java.util.function.Consumer;
  *
  * @author Pavel Castornii
  */
-public class DemoDialogViewModel<C extends WindowComposer> extends AbstractDialogViewModel<C>
-        implements ClosableDialogPort {
+public class DemoDialogViewModel<C extends WindowComposer> extends AbstractDialogViewModel<C> {
 
     public DemoDialogViewModel(DialogParams params) {
         super(params);

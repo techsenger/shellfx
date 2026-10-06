@@ -22,7 +22,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Side;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -42,9 +42,15 @@ public interface DockHostPort extends AreaPort {
 
         SideBarPolicy getRightBarPolicy();
 
+        void setRightBarPolicy(SideBarPolicy policy);
+
         SideBarPolicy getBottomBarPolicy();
 
+        void setBottomBarPolicy(SideBarPolicy policy);
+
         SideBarPolicy getLeftBarPolicy();
+
+        void setLeftBarPolicy(SideBarPolicy policy);
 
         SideBarPolicy getBarPolicy(Side side);
 

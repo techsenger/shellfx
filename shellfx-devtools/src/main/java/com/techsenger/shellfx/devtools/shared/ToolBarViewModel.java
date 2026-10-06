@@ -31,7 +31,7 @@ import javafx.beans.property.StringProperty;
  * @author Pavel Castornii
  */
 public class ToolBarViewModel<C extends ChildComposer> extends AbstractFindViewModel<C, FindResult>
-        implements FullToolBarPort {
+        implements ToolBarPort {
 
     private final StringProperty findPrompt = new SimpleStringProperty();
 

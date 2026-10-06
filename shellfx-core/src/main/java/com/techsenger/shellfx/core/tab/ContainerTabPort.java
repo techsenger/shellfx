@@ -21,7 +21,7 @@ package com.techsenger.shellfx.core.tab;
  *
  * @author Pavel Castornii
  */
-public interface ContainerTabPort extends ClosableTabPort {
+public interface ContainerTabPort extends TabPort {
 
     /**
      * Sets whether this tab is selected within its container.

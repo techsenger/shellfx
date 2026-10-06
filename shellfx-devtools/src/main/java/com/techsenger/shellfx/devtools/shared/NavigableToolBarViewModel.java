@@ -32,7 +32,7 @@ import javafx.beans.property.StringProperty;
  * @author Pavel Castornii
  */
 public class NavigableToolBarViewModel<C extends ChildComposer>
-        extends AbstractNavigableFindViewModel<C, NavigableFindResult> implements FullNavigableToolBarPort {
+        extends AbstractNavigableFindViewModel<C, NavigableFindResult> implements NavigableToolBarPort {
 
     private final StringProperty findPrompt = new SimpleStringProperty();
 

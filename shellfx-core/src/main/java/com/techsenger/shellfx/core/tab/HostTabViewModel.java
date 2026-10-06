@@ -23,6 +23,6 @@ import com.techsenger.shellfx.core.window.WindowContainerViewModel;
  * @author Pavel Castornii
  */
 public interface HostTabViewModel<C extends HostTabComposer> extends TabViewModel<C>, WindowContainerViewModel<C>,
-        FullHostTabPort {
+        HostTabPort {
 
 }

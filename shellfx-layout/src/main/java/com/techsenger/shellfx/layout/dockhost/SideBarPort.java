@@ -22,7 +22,7 @@ import java.util.List;
 import javafx.geometry.Side;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */

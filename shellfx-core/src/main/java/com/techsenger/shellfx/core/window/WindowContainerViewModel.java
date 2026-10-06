@@ -23,6 +23,6 @@ import com.techsenger.shellfx.core.popup.PopupContainerViewModel;
  * @author Pavel Castornii
  */
 public interface WindowContainerViewModel<C extends WindowContainerComposer> extends PopupContainerViewModel<C>,
-        FullWindowContainerPort {
+        WindowContainerPort {
 
 }

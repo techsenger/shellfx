@@ -20,9 +20,9 @@ import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import com.techsenger.shellfx.core.window.AbstractWindowView;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
+import com.techsenger.shellfx.dialogs.alert.AlertDialogPort;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogView;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogViewModel;
-import com.techsenger.shellfx.dialogs.alert.FullAlertDialogPort;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.style.Spacing;
 import javafx.geometry.Pos;
@@ -42,7 +42,7 @@ public abstract class AbstractEditorDialogView<VM extends AbstractEditorDialogVi
     public class Composer extends AbstractWindowView<VM>.Composer implements EditorDialogComposer {
 
         @Override
-        public FullAlertDialogPort openAlertDialog(AlertDialogParams params) {
+        public AlertDialogPort openAlertDialog(AlertDialogParams params) {
             var dialog = createAlertDialog(params);
             if (params.getWindowType() == WindowType.NESTED) {
                 getParent().getComposer().addDialog(dialog);

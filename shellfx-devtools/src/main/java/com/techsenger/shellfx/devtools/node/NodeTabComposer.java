@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.devtools.node;
 
-import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
+import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.tab.TabComposer;
 import com.techsenger.shellfx.devtools.shared.NavigableToolBarPort;
 import com.techsenger.shellfx.devtools.shared.ToolBarPort;
@@ -31,7 +31,7 @@ public interface NodeTabComposer extends TabComposer {
 
     ToolBarPort getPropertyToolBarPort();
 
-    ClosableDialogPort openViewerDialog(ViewerDialogParams params);
+    DialogPort openViewerDialog(ViewerDialogParams params);
 
     EditorDialogPort openEditorDialog(EditorDialogParams params);
 }

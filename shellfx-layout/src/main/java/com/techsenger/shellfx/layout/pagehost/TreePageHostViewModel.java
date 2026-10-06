@@ -41,7 +41,7 @@ import javafx.collections.ObservableList;
  * @author Pavel Castornii
  */
 public class TreePageHostViewModel<C extends TreePageHostComposer> extends AbstractPageHostViewModel<C>
-        implements TreePageContainerViewModel<C>, FullTreePageHostPort {
+        implements TreePageContainerViewModel<C>, TreePageHostPort {
 
     static FilteredTreePageItem match(TreePageItem node, Matcher matcher, MatchCounts counts) {
         List<FilteredTreePageItem> matchingChildren = node.getChildren().stream()

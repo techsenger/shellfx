@@ -17,11 +17,11 @@
 package com.techsenger.shellfx.dialogs.namevalue;
 
 import com.techsenger.shellfx.core.dialog.DialogPort;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.StringProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */
@@ -29,17 +29,25 @@ public interface NameValueDialogPort extends DialogPort {
 
     String getName();
 
-    ReadOnlyStringProperty nameProperty();
+    void setName(String name);
+
+    StringProperty nameProperty();
 
     boolean isNameEditable();
 
-    ReadOnlyBooleanProperty nameEditableProperty();
+    void setNameEditable(boolean value);
+
+    BooleanProperty nameEditableProperty();
 
     String getValue();
 
-    ReadOnlyStringProperty valueProperty();
+    void setValue(String value);
+
+    StringProperty valueProperty();
 
     boolean isValueEditable();
 
-    ReadOnlyBooleanProperty valueEditableProperty();
+    void setValueEditable(boolean value);
+
+    BooleanProperty valueEditableProperty();
 }

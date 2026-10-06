@@ -29,7 +29,7 @@ import com.techsenger.connectorfx.scenegraph.attributes.AttributeCategory;
 import com.techsenger.patternfx.mvvm.ChildComposer;
 import com.techsenger.patternfx.mvvm.ComponentDescriptor;
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.dialog.ClosableDialogPort;
+import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.tab.AbstractTabView;
 import com.techsenger.shellfx.core.window.WindowContainerView;
 import com.techsenger.shellfx.core.window.WindowType;
@@ -520,7 +520,7 @@ public class NodeTabView<VM extends NodeTabViewModel<?>> extends AbstractTabView
         }
 
         @Override
-        public ClosableDialogPort openViewerDialog(ViewerDialogParams params) {
+        public DialogPort openViewerDialog(ViewerDialogParams params) {
             var dialog = createViewerDialog(params);
             if (params.getWindowType() == WindowType.NESTED) {
                 windowContainer.addDialog(dialog);

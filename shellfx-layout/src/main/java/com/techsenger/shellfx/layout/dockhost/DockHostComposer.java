@@ -22,6 +22,6 @@ import com.techsenger.patternfx.mvvm.ChildComposer;
  *
  * @author Pavel Castornii
  */
-public interface DockHostComposer extends ChildComposer, FullDockHostPort.ComposerAccess {
+public interface DockHostComposer extends ChildComposer, DockHostPort.ComposerAccess {
 
 }

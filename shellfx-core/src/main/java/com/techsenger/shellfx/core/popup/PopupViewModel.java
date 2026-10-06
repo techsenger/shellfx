@@ -24,6 +24,6 @@ import com.techsenger.shellfx.core.close.CloseAwareViewModel;
  * @author Pavel Castornii
  */
 public interface PopupViewModel<C extends PopupComposer> extends AreaViewModel<C>, CloseAwareViewModel<C>,
-        ContainerPopupPort, FullPopupPort {
+        ContainerPopupPort {
 
 }

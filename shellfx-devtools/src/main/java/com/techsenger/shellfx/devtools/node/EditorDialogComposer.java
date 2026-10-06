@@ -18,7 +18,7 @@ package com.techsenger.shellfx.devtools.node;
 
 import com.techsenger.shellfx.core.window.WindowComposer;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
-import com.techsenger.shellfx.dialogs.alert.FullAlertDialogPort;
+import com.techsenger.shellfx.dialogs.alert.AlertDialogPort;
 
 /**
  *
@@ -26,5 +26,5 @@ import com.techsenger.shellfx.dialogs.alert.FullAlertDialogPort;
  */
 public interface EditorDialogComposer extends WindowComposer {
 
-    FullAlertDialogPort openAlertDialog(AlertDialogParams params);
+    AlertDialogPort openAlertDialog(AlertDialogParams params);
 }

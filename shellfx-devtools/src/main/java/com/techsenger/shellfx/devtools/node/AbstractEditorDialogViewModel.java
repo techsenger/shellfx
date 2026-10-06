@@ -32,7 +32,7 @@ import javafx.beans.property.StringProperty;
  * @author Pavel Castornii
  */
 public abstract class AbstractEditorDialogViewModel<C extends EditorDialogComposer> extends AbstractDialogViewModel<C>
-        implements FullEditorDialogPort {
+        implements EditorDialogPort {
 
     private final StringProperty propertyName = new SimpleStringProperty();
 

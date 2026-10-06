@@ -21,7 +21,7 @@ import com.techsenger.shellfx.core.page.PageContainerPort;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
- * Provides minimal, read-only access to the component's client API.
+ * Provides full access to the component's client API.
  *
  * @author Pavel Castornii
  */

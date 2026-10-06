@@ -23,6 +23,6 @@ import com.techsenger.patternfx.mvvm.ChildViewModel;
  * @author Pavel Castornii
  */
 public interface PopupContainerViewModel<C extends PopupContainerComposer> extends ChildViewModel<C>,
-        FullPopupContainerPort {
+        PopupContainerPort {
 
 }
