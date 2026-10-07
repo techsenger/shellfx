@@ -34,8 +34,8 @@ public interface ShellPort extends HostWindowPort, MenuAwarePort {
         @Nullable MenuAwarePort getMenuAwarePort();
 
         /**
-         * Defines the port of the component that currently forms the menu in the Shell; {@code null} when there is
-         * none.
+         * Defines the port of the current menu aware component, the one the menu controls may observe; {@code null}
+         * when there is none.
          *
          * @return
          */

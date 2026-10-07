@@ -335,8 +335,9 @@ described in [Control State](#registries-control-state) and [Menu Visibility](#r
 
 A menu consists of groups separated by separators. Items are added to groups, and empty groups are ignored. Each menu
 and group is identified by its slot. The controls of the menu keep their own state and react to their own actions (see
-[Control State](#registries-control-state)); they take the state from the port of the component that implements the
-`MenuAwarePort` interface and is exposed by `ShellPort.ComposerAccess#menuAwarePortProperty()`.
+[Control State](#registries-control-state)). Each of them decides for itself what to depend on; a control that wants to
+follow the component the user is working with observes the port of the current menu aware component, which is exposed
+by `ShellPort.ComposerAccess#menuAwarePortProperty()`. Controls that do not need it ignore it.
 
 The algorithm works as follows. First, the component that has focus is determined. The `Shell` tracks changes to
 the focused node using `Scene#focusOwnerProperty()`. When this property changes, the component that owns the node is
@@ -344,16 +345,17 @@ identified, and the result is stored in `ShellView#focusedProperty()`. Note that
 when the user clicks on an empty area of that component (for example, a `Pane`), you must explicitly call
 `pane.requestFocus()`.
 
-At the same time, the focused component may not participate in menu formation (for example, it could be just a toolbar).
-Therefore, after the focused component changes, `Shell` searches from the focused component up to the root of the
-tree — the Shell — for the first component whose port implements `MenuAwarePort`. Note that `Shell` can also form
-the main menu, but this is usually done only when the workspace is empty. See also
-`ShellView.Composer#menuAwareProperty()`.
+At the same time, the focused component may not be one the menu pays attention to (for example, it could be just a
+toolbar). Such a component marks itself by implementing `MenuAwarePort`, so after the focused component changes,
+`Shell` searches from it up to the root of the tree - the Shell - for the first component whose port implements
+`MenuAwarePort`; this is the current menu aware component. It does not form the menu: it only tells the menu controls
+which component is current. The `Shell` itself is menu aware too, and it is the current one when nothing else is, for
+example when the workspace is empty. See also `ShellView.Composer#menuAwareProperty()`.
 
-The port of the menu aware component is available to menu controls as
-`ShellPort.ComposerAccess#menuAwarePortProperty()`, which is `null` when no component forms the menu. A control that
-depends on the state of that component observes it through this property, so its state stays actual whether the menu
-is open or an accelerator is pressed.
+The port of the current menu aware component is available to menu controls as
+`ShellPort.ComposerAccess#menuAwarePortProperty()`, which is `null` when there is none. A control that depends on the
+state of that component observes it through this property, so its state stays actual whether the menu is open or an
+accelerator is pressed.
 
 To gain a complete understanding of working with the menu, it is recommended to familiarize yourself with the
 `MenuAwarePort` interface, experiment with the menu in the demo, and pay attention to log messages at the debug level.

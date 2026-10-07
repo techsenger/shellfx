@@ -19,7 +19,9 @@ package com.techsenger.shellfx.core;
 import com.techsenger.patternfx.core.ParentPort;
 
 /**
- * Interface for the port the menu interacts with.
+ * Marks the port of a component the main menu pays attention to. While such a component, or one of its descendants,
+ * has the focus, it is the current menu aware component of the Shell; the menu controls may observe its port, but are
+ * free to ignore it.
  *
  * @author Pavel Castornii
  */

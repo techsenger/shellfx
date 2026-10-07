@@ -36,7 +36,9 @@ public interface ShellView<VM extends ShellViewModel<?>> extends HostWindowView<
         AreaView<?> getWorkspace();
 
         /**
-         * Defines the component that is currently forms the menu in the Shell.
+         * Defines the current menu aware component: the nearest component, from the focused one up to the Shell,
+         * whose port is a menu aware port. The menu controls may react to it, but are not obliged to.
+         *
          * @return
          */
         ReadOnlyObjectProperty<ParentView<?>> menuAwareProperty();
