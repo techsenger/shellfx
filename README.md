@@ -424,6 +424,29 @@ Nested dialogs can be displayed in any implementation of `WindowContainer`. The 
 For example, in a browser-like application, each tab can maintain its own set of dialogs and auxiliary windows,
 isolated from all other tabs.
 
+Dialogs fall into two kinds, depending on who owns the behavior behind them.
+
+A *dumb* dialog only shows data and collects input. It does not know what the result is used for: the code that
+opens it (the client) validates the input, performs the action and decides when the dialog closes. `ProgressDialog` is
+a dumb dialog: it displays the progress of an operation, while the operation itself lives elsewhere and outlives
+the window. `AlertDialog` and `NameValueDialog` are dumb too. The word is a description, not a criticism: the dialog
+intentionally does not know how its result is used, and that is what makes it reusable.
+
+A *smart* dialog owns a complete task. It has its own domain logic and returns a ready result, so the client does not
+repeat that logic. `FileChooserDialog` is a smart dialog: given a `FileStorage`, it browses the directories itself
+and returns the chosen file.
+
+Dumb dialogs are more universal. They need almost nothing from their surroundings, so they can be opened from any
+place and reused by any process; this is why one error or progress dialog can serve many different operations. A smart
+dialog is bound to the context its logic needs (a storage, a file), but any client gets the behavior for free.
+
+The price of a dumb dialog is that every client implements the logic around it, and it is easy to end up with
+several copies of the same validation. This is solved by moving the shared logic into a helper that clients call, not
+necessarily by making the dialog smart. A smart dialog fits a single, quick action in one window. It does not fit a
+long process that goes through several dialogs: the process must outlive each window, and a dialog that owns it would
+have to stay open or open its own successors. Such a process is better owned by a separate object that opens dumb
+dialogs as its steps.
+
 ### Popup <a name="core-popup"></a>
 
 All `Popup`s in ShellFX are inline and have a scope that affects what will be blocked when the `Popup` is open.
@@ -559,7 +582,7 @@ and confirmation requests.
 ### FileChooserDialog <a name="dialog-file-chooser"></a>
 
 `FileChooserDialog` is a dialog for selecting a file when opening or saving. The dialog type is defined using the
-`FileChooserType` enumeration.
+`FileChooserType` enumeration. It is a smart dialog (see [Dialog](#core-dialog)).
 
 It is important to note that this dialog works with files provided by classes from the `storage` module. This makes
 it possible to use the dialog with virtually any file storage implementation, provided that an appropriate `FileStorage`
@@ -573,7 +596,8 @@ while the value is displayed in a `TextArea`.
 ### ProgressDialog <a name="dialog-progress"></a>
 
 `ProgressDialog` is a dialog for reporting the progress of a long-running operation, with an optional message and
-an optional step counter (e.g. `3 / 10`) shown alongside the progress bar.
+an optional step counter (e.g. `3 / 10`) shown alongside the progress bar. It is a dumb dialog (see
+[Dialog](#core-dialog)).
 
 ## DevTools Components <a name="devtools"></a>
 
