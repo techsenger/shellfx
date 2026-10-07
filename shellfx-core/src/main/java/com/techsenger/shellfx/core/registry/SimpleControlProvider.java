@@ -19,6 +19,10 @@ package com.techsenger.shellfx.core.registry;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.slot.Slot;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.MenuItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base of the providers: keeps the slot and the control, which a subclass creates in {@link #initialize} and
@@ -31,6 +35,8 @@ import com.techsenger.shellfx.material.slot.Slot;
  * @author Pavel Castornii
  */
 public class SimpleControlProvider<V extends ParentView<?>, C> implements ControlProvider<V, C> {
+
+    private static final Logger logger = LoggerFactory.getLogger(SimpleControlProvider.class);
 
     private @Nullable Slot<V> slot;
 
@@ -84,6 +90,10 @@ public class SimpleControlProvider<V extends ParentView<?>, C> implements Contro
                     + " has already been initialized");
         }
         initialized = true;
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} Initializing {} in the slot '{}'", getLogPrefix(view), describeControl(),
+                    getSlotText());
+        }
     }
 
     @Override
@@ -93,6 +103,10 @@ public class SimpleControlProvider<V extends ParentView<?>, C> implements Contro
                     + " has already been deinitialized");
         }
         deinitialized = true;
+        if (logger.isDebugEnabled()) {
+            logger.debug("{} Deinitializing {} in the slot '{}'", getLogPrefix(view), describeControl(),
+                    getSlotText());
+        }
     }
 
     /**
@@ -102,5 +116,27 @@ public class SimpleControlProvider<V extends ParentView<?>, C> implements Contro
      */
     protected void setControl(C control) {
         this.control = control;
+    }
+
+    private String getLogPrefix(V view) {
+        return view.getViewModel().getDescriptor().getLogPrefix();
+    }
+
+    private String getSlotText() {
+        return slot == null ? "none" : slot.getText();
+    }
+
+    private String describeControl() {
+        if (control == null) {
+            return "a control that is not created yet";
+        }
+        String text = null;
+        if (control instanceof MenuItem item) {
+            text = item.getText();
+        } else if (control instanceof Labeled labeled) {
+            text = labeled.getText();
+        }
+        var type = control.getClass().getSimpleName();
+        return text == null || text.isEmpty() ? type : type + " '" + text + "'";
     }
 }

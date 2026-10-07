@@ -21,6 +21,7 @@ import com.techsenger.toolkit.fx.FxPlatform;
 import java.util.function.Function;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -47,10 +48,11 @@ final class RegistryTestSupport {
     }
 
     /**
-     * Creates the view the builders are given; they only use its class to pick the registrations that apply.
+     * Creates the view the builders are given; they use its class to pick the registrations that apply and its
+     * view model to build the log prefix of a component, so the mock answers with mocks.
      */
     static ParentView<?> createView() {
-        return mock(ParentView.class);
+        return mock(ParentView.class, RETURNS_DEEP_STUBS);
     }
 
     /**
