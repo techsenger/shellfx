@@ -21,9 +21,12 @@ import com.techsenger.shellfx.material.slot.Slot;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * The tree of slots as the registries describe it for one component instance: which slots sit in
@@ -36,7 +39,17 @@ final class SlotTree<V extends ParentView<?>> {
 
     private final V view;
 
+    /**
+     * All slots put into any slot, collected before the filter is applied; it is what tells orphan groups apart.
+     */
+    private final Set<Slot<?>> registeredChildren = new HashSet<>();
+
     private final Map<Slot<?>, List<SlotRegistration>> childrenByParent = new HashMap<>();
+
+    /**
+     * The slots that the filter rejected, in the order of their registration.
+     */
+    private final Set<Slot<?>> filteredOut = new LinkedHashSet<>();
 
     private final Map<Slot<?>, NodeRegistration> nodesBySlot = new HashMap<>();
 
@@ -46,11 +59,17 @@ final class SlotTree<V extends ParentView<?>> {
 
     private final SlotTreeLogger logger;
 
-    SlotTree(SlotRegistry slotRegistry, ControlRegistry controlRegistry, V view) {
+    SlotTree(SlotRegistry slotRegistry, ControlRegistry controlRegistry, V view,
+            Predicate<? super Slot<?>> slotFilter) {
         this.view = view;
         this.logger = new SlotTreeLogger(getViewName());
         for (var registration : slotRegistry.getRegistrationsFor(view)) {
-            childrenByParent.computeIfAbsent(registration.getParent(), k -> new ArrayList<>()).add(registration);
+            registeredChildren.add(registration.getChild());
+            if (slotFilter.test(registration.getChild())) {
+                childrenByParent.computeIfAbsent(registration.getParent(), k -> new ArrayList<>()).add(registration);
+            } else {
+                filteredOut.add(registration.getChild());
+            }
         }
         childrenByParent.values().forEach(children -> children.sort(
                 Comparator.comparingInt(SlotRegistration::getPosition)));
@@ -81,7 +100,7 @@ final class SlotTree<V extends ParentView<?>> {
     }
 
     /**
-     * Returns the slots put directly into {@code parent}, ordered by position.
+     * Returns the slots put directly into {@code parent} that the filter of the tree accepted, ordered by position.
      */
     List<SlotRegistration> getChildren(Slot<?> parent) {
         return childrenByParent.getOrDefault(parent, List.of());
@@ -114,13 +133,18 @@ final class SlotTree<V extends ParentView<?>> {
      * controls can never be shown.
      */
     void logOrphanGroups(SlotTreeLogger.Node parent) {
-        var placed = childrenByParent.values().stream().flatMap(List::stream).map(SlotRegistration::getChild)
-                .collect(Collectors.toSet());
         leavesByGroup.entrySet().stream()
-                .filter(e -> !placed.contains(e.getKey()))
+                .filter(e -> !registeredChildren.contains(e.getKey()))
                 .sorted(Comparator.comparing(e -> e.getKey().getText()))
                 .forEach(e -> parent.add("Group: " + e.getKey().getText()).warn("not put into any menu or tool bar, "
                         + "its " + e.getValue().size() + " controls are never shown"));
+    }
+
+    /**
+     * Reports the slots that the filter rejected to the logger of the tree.
+     */
+    void logFilteredOut() {
+        filteredOut.forEach(slot -> logger.addFilteredOut(slot.getClass().getSimpleName() + ": " + slot.getText()));
     }
 
     /**

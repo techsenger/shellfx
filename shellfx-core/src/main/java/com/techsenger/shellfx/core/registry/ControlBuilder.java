@@ -28,6 +28,7 @@ import com.techsenger.shellfx.material.slot.ToolBarSlot;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -69,6 +70,8 @@ public class ControlBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(ControlBuilder.class);
 
+    private static final Predicate<Slot<?>> ACCEPT_ALL = slot -> true;
+
     private static final String MISSING_MENU = "no Menu provider registered, it is left out";
 
     private static final String MISSING_GROUP = "no ControlGroup provider registered, its content is left out";
@@ -95,7 +98,22 @@ public class ControlBuilder {
      */
     public <V extends ParentView<?>> Controls<V, MenuBar> buildMenuBar(V view,
             MenuBarSlot<? super V> menuBarSlot) {
-        var tree = createSlotTree(view);
+        return buildMenuBar(view, menuBarSlot, ACCEPT_ALL);
+    }
+
+    /**
+     * Builds the menu bar like {@link #buildMenuBar(ParentView, MenuBarSlot)}, but only from the slots that the
+     * filter accepts; a rejected slot is left out together with everything put into it.
+     *
+     * @param view        the component view passed to each provider
+     * @param menuBarSlot the slot of the menu bar to build; it is not checked by the filter
+     * @param slotFilter  tells whether a menu, a group or a nested menu is built ({@code true}) or left out
+     * @return the assembled menu bar with the initialized providers of all its controls
+     * @throws IllegalStateException if no menu bar control is registered for the slot
+     */
+    public <V extends ParentView<?>> Controls<V, MenuBar> buildMenuBar(V view, MenuBarSlot<? super V> menuBarSlot,
+            Predicate<? super Slot<?>> slotFilter) {
+        var tree = createSlotTree(view, slotFilter);
         if (!tree.hasNode(menuBarSlot)) {
             throw new IllegalStateException("No menu bar control is registered for slot " + menuBarSlot.getText());
         }
@@ -108,6 +126,7 @@ public class ControlBuilder {
             }
         }
         tree.logOrphanGroups(defects);
+        tree.logFilteredOut();
         var menuBar = (MenuBar) tree.createNode(menuBarSlot);
         var built = tree.getLogger().addBuilt("Menu bar: " + menuBarSlot.getText());
         menus.forEach(menu -> menuBar.getMenus().add(createMenu(menu, built, tree)));
@@ -125,13 +144,29 @@ public class ControlBuilder {
      * @throws IllegalStateException if no menu control is registered for the slot
      */
     public <V extends ParentView<?>> Controls<V, Menu> buildMenu(V view, MenuSlot<? super V> menuSlot) {
-        var tree = createSlotTree(view);
+        return buildMenu(view, menuSlot, ACCEPT_ALL);
+    }
+
+    /**
+     * Builds the menu like {@link #buildMenu(ParentView, MenuSlot)}, but only from the slots that the filter
+     * accepts; a rejected slot is left out together with everything put into it.
+     *
+     * @param view       the component view passed to each provider
+     * @param menuSlot   the slot of the menu to build; it is not checked by the filter
+     * @param slotFilter tells whether a group or a nested menu is built ({@code true}) or left out
+     * @return the assembled menu with the initialized providers of all its controls
+     * @throws IllegalStateException if no menu control is registered for the slot
+     */
+    public <V extends ParentView<?>> Controls<V, Menu> buildMenu(V view, MenuSlot<? super V> menuSlot,
+            Predicate<? super Slot<?>> slotFilter) {
+        var tree = createSlotTree(view, slotFilter);
         if (!tree.hasNode(menuSlot)) {
             throw new IllegalStateException("No menu control is registered for slot " + menuSlot.getText());
         }
         var defects = tree.getLogger().addDefects("Menu: " + menuSlot.getText());
         var plan = planContainer(menuSlot, 0, defects, tree);
         tree.logOrphanGroups(defects);
+        tree.logFilteredOut();
         var menu = (Menu) tree.createNode(menuSlot);
         var built = tree.getLogger().addBuilt("Menu: " + describeMenuItem(menu));
         createMenuGroups(plan, menu.getItems(), built, tree);
@@ -151,7 +186,22 @@ public class ControlBuilder {
      */
     public <V extends ParentView<?>> Controls<V, ContextMenu> buildContextMenu(V view,
             ContextMenuSlot<? super V> contextMenuSlot) {
-        var tree = createSlotTree(view);
+        return buildContextMenu(view, contextMenuSlot, ACCEPT_ALL);
+    }
+
+    /**
+     * Builds the context menu like {@link #buildContextMenu(ParentView, ContextMenuSlot)}, but only from the slots
+     * that the filter accepts; a rejected slot is left out together with everything put into it.
+     *
+     * @param view            the component view passed to each provider
+     * @param contextMenuSlot the slot of the context menu to build; it is not checked by the filter
+     * @param slotFilter      tells whether a group or a nested menu is built ({@code true}) or left out
+     * @return the assembled menu with the initialized providers of all its controls
+     * @throws IllegalStateException if no context menu control is registered for the slot
+     */
+    public <V extends ParentView<?>> Controls<V, ContextMenu> buildContextMenu(V view,
+            ContextMenuSlot<? super V> contextMenuSlot, Predicate<? super Slot<?>> slotFilter) {
+        var tree = createSlotTree(view, slotFilter);
         if (!tree.hasNode(contextMenuSlot)) {
             throw new IllegalStateException("No context menu control is registered for slot "
                     + contextMenuSlot.getText());
@@ -159,6 +209,7 @@ public class ControlBuilder {
         var defects = tree.getLogger().addDefects("Context menu: " + contextMenuSlot.getText());
         var plan = planContainer(contextMenuSlot, 0, defects, tree);
         tree.logOrphanGroups(defects);
+        tree.logFilteredOut();
         var contextMenu = (ContextMenu) tree.createNode(contextMenuSlot);
         var built = tree.getLogger().addBuilt("Context menu: " + contextMenuSlot.getText());
         createMenuGroups(plan, contextMenu.getItems(), built, tree);
@@ -179,13 +230,29 @@ public class ControlBuilder {
      */
     public <V extends ParentView<?>> Controls<V, ToolBar> buildToolBar(V view,
             ToolBarSlot<? super V> toolBarSlot) {
-        var tree = createSlotTree(view);
+        return buildToolBar(view, toolBarSlot, ACCEPT_ALL);
+    }
+
+    /**
+     * Builds the tool bar like {@link #buildToolBar(ParentView, ToolBarSlot)}, but only from the groups that the
+     * filter accepts; a rejected group is left out together with its controls.
+     *
+     * @param view        the component view passed to each provider
+     * @param toolBarSlot the slot of the tool bar to build; it is not checked by the filter
+     * @param slotFilter  tells whether a group is built ({@code true}) or left out
+     * @return the assembled tool bar with the initialized providers of all its controls
+     * @throws IllegalStateException if no tool bar control is registered for the slot
+     */
+    public <V extends ParentView<?>> Controls<V, ToolBar> buildToolBar(V view, ToolBarSlot<? super V> toolBarSlot,
+            Predicate<? super Slot<?>> slotFilter) {
+        var tree = createSlotTree(view, slotFilter);
         if (!tree.hasNode(toolBarSlot)) {
             throw new IllegalStateException("No tool bar control is registered for slot " + toolBarSlot.getText());
         }
         var defects = tree.getLogger().addDefects("Tool bar: " + toolBarSlot.getText());
         var groups = planToolBarGroups(toolBarSlot, defects, tree);
         tree.logOrphanGroups(defects);
+        tree.logFilteredOut();
         var toolBar = (ToolBar) tree.createNode(toolBarSlot);
         var built = tree.getLogger().addBuilt("Tool bar: " + toolBarSlot.getText());
         var separatorOrientation = toolBar.getOrientation() == Orientation.HORIZONTAL
@@ -203,8 +270,8 @@ public class ControlBuilder {
     /**
      * Creates the tree of slots for a build; its report is on if the logger of the builder logs at warning level.
      */
-    <V extends ParentView<?>> SlotTree<V> createSlotTree(V view) {
-        var tree = new SlotTree<>(slotRegistry, controlRegistry, view);
+    <V extends ParentView<?>> SlotTree<V> createSlotTree(V view, Predicate<? super Slot<?>> slotFilter) {
+        var tree = new SlotTree<>(slotRegistry, controlRegistry, view, slotFilter);
         tree.getLogger().setEnabled(logger.isWarnEnabled());
         return tree;
     }

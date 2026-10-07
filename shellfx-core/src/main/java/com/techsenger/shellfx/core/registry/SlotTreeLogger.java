@@ -26,8 +26,9 @@ import org.slf4j.Logger;
  * hints and warnings of the controls; it is written while the controls are created. The defects tree is what the
  * registrations lack - a missing provider, a group put nowhere, controls at the same position - with only the places
  * that lead to the defects; it is written while the build is planned. {@link #write(Logger, String)} logs the built
- * tree at debug level and, if there are any, the defects and the warnings of the built tree at warning level. A
- * disabled logger records nothing.
+ * tree at debug level, followed by the slots that the filter of the build rejected, and, if there are any, the
+ * defects followed by the paths to the warnings of the built tree at warning level, in one message. So a build is
+ * logged in at most two messages. A disabled logger records nothing.
  *
  * @author Pavel Castornii
  */
@@ -180,6 +181,8 @@ final class SlotTreeLogger {
 
     private @Nullable Node defectsRoot;
 
+    private final List<String> filteredOut = new ArrayList<>();
+
     private boolean enabled;
 
     SlotTreeLogger(String viewName) {
@@ -226,6 +229,24 @@ final class SlotTreeLogger {
     }
 
     /**
+     * Notes a slot that the filter of the build rejected; it is listed under the built tree.
+     */
+    void addFilteredOut(String slot) {
+        if (enabled) {
+            filteredOut.add(slot);
+        }
+    }
+
+    /**
+     * Describes the slots that the filter rejected in one line.
+     *
+     * @return the line, or an empty text if no slot was rejected.
+     */
+    String describeFilteredOut() {
+        return filteredOut.isEmpty() ? "" : "Filtered out slots: " + String.join(", ", filteredOut);
+    }
+
+    /**
      * Tells whether anything in the registrations looks wrong.
      */
     boolean hasDefects() {
@@ -266,8 +287,8 @@ final class SlotTreeLogger {
     }
 
     /**
-     * Logs the built tree at debug level and, if there are any, the defects and the warnings at warning level, each
-     * in a message of its own.
+     * Logs the built tree with the filtered out slots at debug level and, if there are any, the defects followed by
+     * the paths to the warnings at warning level; at most two messages.
      *
      * @param logger the logger of the builder
      * @param what   what was built, for the first line of the messages
@@ -277,15 +298,16 @@ final class SlotTreeLogger {
             return;
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("{} built for {}:{}{}", what, viewName, System.lineSeparator(), this);
+            var rejected = filteredOut.isEmpty() ? "" : System.lineSeparator() + describeFilteredOut();
+            logger.debug("{} built for {}:{}{}{}", what, viewName, System.lineSeparator(), this, rejected);
         }
-        if (hasDefects()) {
-            logger.warn("{} built for {} with defects:{}{}", what, viewName, System.lineSeparator(),
-                    describeDefects());
-        }
-        if (hasWarnings()) {
-            logger.warn("{} built for {} with warnings:{}{}", what, viewName, System.lineSeparator(),
-                    describeWarnings());
+        if (hasDefects() || hasWarnings()) {
+            var problems = new StringBuilder(describeDefects());
+            if (hasWarnings()) {
+                problems.append(problems.isEmpty() ? "" : System.lineSeparator()).append(describeWarnings());
+            }
+            logger.warn("{} built for {} with {}:{}{}", what, viewName, hasDefects() ? "defects" : "warnings",
+                    System.lineSeparator(), problems);
         }
     }
 

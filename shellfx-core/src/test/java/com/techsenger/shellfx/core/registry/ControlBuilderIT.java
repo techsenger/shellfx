@@ -21,8 +21,11 @@ import com.techsenger.shellfx.material.slot.ContextMenuSlot;
 import com.techsenger.shellfx.material.slot.GroupSlot;
 import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
+import com.techsenger.shellfx.material.slot.Slot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
@@ -130,8 +133,8 @@ public class ControlBuilderIT {
 
     private final ControlBuilder builder = new ControlBuilder(slotRegistry, controlRegistry) {
         @Override
-        <V extends ParentView<?>> SlotTree<V> createSlotTree(V view) {
-            var tree = super.createSlotTree(view);
+        <V extends ParentView<?>> SlotTree<V> createSlotTree(V view, Predicate<? super Slot<?>> slotFilter) {
+            var tree = super.createSlotTree(view, slotFilter);
             tree.getLogger().setEnabled(true);
             report = tree.getLogger();
             return tree;
@@ -294,6 +297,182 @@ public class ControlBuilderIT {
     }
 
     @Test
+    void buildMenuBar_filterAcceptsAll_sameResultAsWithoutFilter() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        var menuBar = builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> true).root();
+
+        assertThat(menuBar.getMenus()).extracting(Menu::getText).containsExactly("File", "Edit");
+        assertThat(texts(menuBar.getMenus().get(0).getItems()))
+                .containsExactly("New", "Open", "Recent", null, "Exit");
+        assertThat(texts(menuBar.getMenus().get(1).getItems())).containsExactly("Copy", "Paste");
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsMenu_menuLeftOutWithItsContent() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        var controls = builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> slot != MenuSlots.EDIT_MENU);
+
+        assertThat(controls.root().getMenus()).extracting(Menu::getText).containsExactly("File");
+        assertThat(controls.providers()).noneMatch(p -> p.getSlot() == MenuSlots.EDIT_MENU
+                || p.getSlot() == MenuSlots.EDIT_GROUP);
+        assertThat(report.toString()).doesNotContain("Edit", "Copy", "Paste");
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsMenu_noProblemsReportedForLeftOutContent() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> slot != MenuSlots.EDIT_MENU);
+
+        assertThat(report.hasDefects()).isFalse();
+        assertThat(report.describeDefects()).isEmpty();
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsGroup_groupAndItsSeparatorLeftOut() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        var menuBar = builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> slot != MenuSlots.EXIT_GROUP).root();
+
+        assertThat(texts(menuBar.getMenus().get(0).getItems())).containsExactly("New", "Open", "Recent");
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsOnlyGroupOfMenu_emptyMenuLeftOut() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        var menuBar = builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> slot != MenuSlots.EDIT_GROUP).root();
+
+        assertThat(menuBar.getMenus()).extracting(Menu::getText).containsExactly("File");
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsNestedMenu_submenuLeftOutOfTheGroup() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        var menuBar = builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> slot != MenuSlots.RECENT_MENU).root();
+
+        assertThat(texts(menuBar.getMenus().get(0).getItems())).containsExactly("New", "Open", null, "Exit");
+        assertThat(report.toString()).doesNotContain("Recent", "a.txt");
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsEveryMenu_returnsEmptyMenuBar() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        var menuBar = builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> false).root();
+
+        assertThat(menuBar.getMenus()).isEmpty();
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsRoot_rootStillBuilt() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        var menuBar = builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> slot != MenuSlots.MAIN_MENU).root();
+
+        assertThat(menuBar.getMenus()).extracting(Menu::getText).containsExactly("File", "Edit");
+    }
+
+    @Test
+    void buildMenuBar_filterGetsEveryPlacedSlotOnce_rootNotAmongThem() {
+        registerMenuSlots();
+        registerMenuControls();
+        var tested = new ArrayList<Slot<?>>();
+
+        builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> tested.add(slot));
+
+        assertThat(tested).doesNotContain(MenuSlots.MAIN_MENU)
+                .containsExactlyInAnyOrder(MenuSlots.FILE_MENU, MenuSlots.EDIT_MENU, MenuSlots.FILE_GROUP,
+                        MenuSlots.EXIT_GROUP, MenuSlots.RECENT_MENU, MenuSlots.RECENT_GROUP, MenuSlots.EDIT_GROUP);
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsGroupWithControls_groupNotReportedAsOrphan() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> slot != MenuSlots.EXIT_GROUP);
+
+        assertThat(report.hasDefects()).isFalse();
+        assertThat(report.describeDefects()).isEmpty();
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsMenu_filteredOutSlotsListed() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> slot != MenuSlots.EDIT_MENU);
+
+        assertThat(report.describeFilteredOut()).isEqualTo("Filtered out slots: MenuSlot: Edit");
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsSlotsOnDifferentLevels_allListed() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        builder.buildMenuBar(view, MenuSlots.MAIN_MENU,
+                slot -> slot != MenuSlots.EDIT_MENU && slot != MenuSlots.EXIT_GROUP);
+
+        assertThat(report.describeFilteredOut()).startsWith("Filtered out slots: ")
+                .contains("MenuSlot: Edit", "GroupSlot: Exit", ", ");
+    }
+
+    @Test
+    void buildMenuBar_filterRejectsMenuAndItsGroup_bothListed() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        builder.buildMenuBar(view, MenuSlots.MAIN_MENU,
+                slot -> slot != MenuSlots.FILE_MENU && slot != MenuSlots.FILE_GROUP);
+
+        assertThat(report.describeFilteredOut()).startsWith("Filtered out slots:")
+                .contains("MenuSlot: File", "GroupSlot: File");
+    }
+
+    @Test
+    void buildMenuBar_filterAcceptsAll_noFilteredOutBlock() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        builder.buildMenuBar(view, MenuSlots.MAIN_MENU, slot -> true);
+
+        assertThat(report.describeFilteredOut()).isEmpty();
+    }
+
+    @Test
+    void buildToolBar_filterRejectsGroup_filteredOutSlotsListed() {
+        registerToolBarSlots();
+        registerToolBarControls();
+
+        builder.buildToolBar(view, ToolBarSlots.TOOL_BAR, slot -> slot != ToolBarSlots.EDIT_GROUP);
+
+        assertThat(report.describeFilteredOut()).isEqualTo("Filtered out slots: GroupSlot: Edit");
+    }
+
+    @Test
+    void buildMenu_filterRejectsGroup_groupLeftOutOfTheMenu() {
+        registerMenuSlots();
+        registerMenuControls();
+
+        var menu = builder.buildMenu(view, MenuSlots.FILE_MENU, slot -> slot != MenuSlots.FILE_GROUP).root();
+
+        assertThat(texts(menu.getItems())).containsExactly("Exit");
+    }
+
+    @Test
     void buildMenu_fileMenuWithGroupsAndSubmenu_buildsMenuWithItsGroups() {
         registerMenuSlots();
         registerMenuControls();
@@ -339,6 +518,45 @@ public class ControlBuilderIT {
                 "Context menu: Popup",
                 "    Group: Popup, position: 0, warning: no ControlGroup provider registered, "
                         + "its content is left out"));
+    }
+
+    @Test
+    void buildContextMenu_filterRejectsGroup_menuEmpty() {
+        slotRegistry.register(MenuSlots.POPUP, 0, MenuSlots.POPUP_GROUP);
+        controlRegistry.register(MenuSlots.POPUP, provider(v -> new ContextMenu()));
+        controlRegistry.register(MenuSlots.POPUP_GROUP, SimpleGroupProvider::new);
+        controlRegistry.register(MenuSlots.POPUP_GROUP, 0, provider(v -> RegistryTestSupport.createItem("Cut")));
+
+        var contextMenu = builder.buildContextMenu(view, MenuSlots.POPUP, slot -> slot != MenuSlots.POPUP_GROUP)
+                .root();
+
+        assertThat(contextMenu.getItems()).isEmpty();
+        assertThat(report.hasDefects()).isFalse();
+    }
+
+    @Test
+    void buildToolBar_filterRejectsGroup_groupLeftOutWithItsControls() {
+        registerToolBarSlots();
+        registerToolBarControls();
+
+        var controls = builder.buildToolBar(view, ToolBarSlots.TOOL_BAR, slot -> slot != ToolBarSlots.FILE_GROUP);
+
+        assertThat(controls.root().getItems()).extracting(n -> n instanceof Button b ? b.getText() : null)
+                .containsExactly("Copy", "Paste");
+        assertThat(controls.providers()).noneMatch(p -> p.getSlot() == ToolBarSlots.FILE_GROUP);
+        assertThat(report.toString()).doesNotContain("File", "New", "Open");
+        assertThat(report.hasDefects()).isFalse();
+    }
+
+    @Test
+    void buildToolBar_filterAcceptsAll_sameResultAsWithoutFilter() {
+        registerToolBarSlots();
+        registerToolBarControls();
+
+        var toolBar = builder.buildToolBar(view, ToolBarSlots.TOOL_BAR, slot -> true).root();
+
+        assertThat(toolBar.getItems()).extracting(n -> n instanceof Button b ? b.getText() : null)
+                .containsExactly("New", "Open", null, "Copy", "Paste");
     }
 
     @Test
