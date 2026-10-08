@@ -246,7 +246,9 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     @Override
     public void writeFile(URI uri, String content, Charset charset) throws AccessDeniedException, IOException {
         var path = toPath(uri);
-        checkWritable(path);
+        if (Files.exists(path)) {
+            checkWritable(path);
+        }
         FileUtils.writeFile(path, content, charset);
     }
 
@@ -261,7 +263,9 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     @Override
     public void writeFile(URI uri, byte[] content) throws AccessDeniedException, IOException {
         var path = toPath(uri);
-        checkWritable(path);
+        if (Files.exists(path)) {
+            checkWritable(path);
+        }
         try (OutputStream out = Files.newOutputStream(path,
                 StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING,
@@ -294,8 +298,15 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         return file.isDirectory() ? StorageIcons.FOLDER : StorageIcons.FILE;
     }
 
+    /**
+     * Checks that {@code path} is writable. Nothing is assumed about its existence: a missing path is not
+     * writable, so callers that may create it check the permission only if it exists.
+     *
+     * @param path the path to check.
+     * @throws AccessDeniedException if the path is not writable.
+     */
     protected void checkWritable(Path path) throws AccessDeniedException {
-        if (Files.exists(path) && !Files.isWritable(path)) {
+        if (!Files.isWritable(path)) {
             throw new AccessDeniedException("No write permission for file: " + path);
         }
     }
