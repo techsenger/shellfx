@@ -28,8 +28,10 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -55,10 +57,13 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
 
     private final Factory<? extends DefaultGenericFile> fileFactory;
 
+    private final Path path;
+
     public AbstractSystemFileStorage(FileStorageType type, String displayName, URI rootUri,
             Factory<? extends DefaultGenericFile> fileFactory) {
         super(type, displayName, rootUri);
         this.fileFactory = fileFactory;
+        this.path = Paths.get(rootUri);
     }
 
     @Override
@@ -75,9 +80,8 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     @Override
     public List<T> getDirectories(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
         var result = new ArrayList<T>();
-        var path = toPath(uri);
-        checkIfExists(path);
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+        var entryPath = toPath(uri);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(entryPath)) {
             for (Path childPath : stream) {
                 try {
                     var attrs = Files.readAttributes(childPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
@@ -91,8 +95,10 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
                     logger.error("Couldn't read attributes for {}", childPath, ex);
                 }
             }
-        } catch (SecurityException | AccessDeniedException e) {
-            throw new AccessDeniedException("No access to directory: " + path);
+        } catch (DirectoryIteratorException e) {
+            throw diagnoseReadFailure(entryPath, e.getCause());
+        } catch (IOException e) {
+            throw diagnoseReadFailure(entryPath, e);
         }
         return result;
     }
@@ -100,9 +106,8 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     @Override
     public List<T> getFiles(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
         var result = new ArrayList<T>();
-        var path = toPath(uri);
-        checkIfExists(path);
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
+        var entryPath = toPath(uri);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(entryPath)) {
             for (Path filePath : stream) {
                 try {
                     T createdFile = createFile(filePath, filePath.toUri());
@@ -111,8 +116,10 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
                     logger.error("Couldn't create GenericFile from {}", filePath, ex);
                 }
             }
-        } catch (SecurityException | AccessDeniedException e) {
-            throw new AccessDeniedException("No access to directory: " + path);
+        } catch (DirectoryIteratorException e) {
+            throw diagnoseReadFailure(entryPath, e.getCause());
+        } catch (IOException e) {
+            throw diagnoseReadFailure(entryPath, e);
         }
         return result;
     }
@@ -120,10 +127,9 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     @Override
     public List<T> getFilesRecursively(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
         var result = new ArrayList<T>();
-        var path = toPath(uri);
-        checkIfExists(path);
+        var entryPath = toPath(uri);
         try {
-            Files.walkFileTree(path, new SimpleFileVisitor<>() {
+            Files.walkFileTree(entryPath, new SimpleFileVisitor<>() {
                 private boolean root = true;
 
                 @Override
@@ -144,25 +150,32 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
                 }
 
                 @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    if (file.equals(entryPath)) {
+                        // the start itself can't be visited, so there is nothing to return
+                        throw exc;
+                    }
                     logger.error("Couldn't visit file {}", file, exc);
                     return FileVisitResult.CONTINUE;
                 }
             });
-        } catch (SecurityException e) {
-            throw new AccessDeniedException("No access to directory: " + path);
+        } catch (IOException e) {
+            throw diagnoseReadFailure(entryPath, e);
         }
         return result;
     }
 
     @Override
     public T getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException {
-        var path = toPath(uri);
-        checkIfExists(path);
-        if (path.getFileName() == null) {
+        var entryPath = toPath(uri);
+        if (entryPath.equals(getPath())) {
             return getRootDirectory();
         }
-        return createFile(path, uri);
+        try {
+            return createFile(entryPath, uri);
+        } catch (IOException ex) {
+            throw diagnoseReadFailure(entryPath, ex);
+        }
     }
 
     @Override
@@ -174,9 +187,12 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         } else if (segments.size() == 1) {
             return getRootDirectory();
         } else {
-            var path = toPath(parentUri);
-            checkIfExists(path);
-            return createFile(path, parentUri);
+            var entryPath = toPath(parentUri);
+            try {
+                return createFile(entryPath, parentUri);
+            } catch (IOException ex) {
+                throw diagnoseReadFailure(entryPath, ex);
+            }
         }
     }
 
@@ -202,19 +218,27 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     @Override
     public void createDirectory(URI uri) throws NoSuchFileException, FileAlreadyExistsException,
             AccessDeniedException, IOException {
-        var path = toPath(uri);
-        var parent = path.getParent();
-        checkIfExists(parent);
-        Files.createDirectory(path);
+        var entryPath = toPath(uri);
+        try {
+            Files.createDirectory(entryPath);
+        } catch (IOException ex) {
+            throw diagnoseCreateFailure(entryPath, ex);
+        }
     }
 
     @Override
     public T createFile(String name, URI uri) throws NoSuchFileException, FileAlreadyExistsException,
             AccessDeniedException, IOException {
-        var path = toPath(uri);
-        checkIfExists(path.getParent());
-        Files.createFile(path);
-        return createFile(path, uri);
+        var entryPath = toPath(uri);
+        try {
+            Files.createFile(entryPath);
+            return createFile(entryPath, uri);
+        } catch (InvalidFileException ex) {
+            // the file was created, only its entry could not be built, so "already exists" would be wrong
+            throw ex;
+        } catch (IOException ex) {
+            throw diagnoseCreateFailure(entryPath, ex);
+        }
     }
 
     @Override
@@ -234,58 +258,68 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     @Override
     public void renameFile(URI uri, String newName) throws NoSuchFileException, FileAlreadyExistsException,
             AccessDeniedException, IOException {
-        var path = toPath(uri);
-        checkIfExists(path);
-        var newPath = path.resolveSibling(newName);
-        if (Files.exists(newPath)) {
-            throw new FileAlreadyExistsException("File already exists: " + newPath);
+        var entryPath = toPath(uri);
+        try {
+            Files.move(entryPath, entryPath.resolveSibling(newName));
+        } catch (IOException ex) {
+            throw diagnoseDeleteFailure(entryPath, ex);
         }
-        Files.move(path, newPath);
     }
 
     @Override
     public void writeFile(URI uri, String content, Charset charset) throws AccessDeniedException, IOException {
-        var path = toPath(uri);
-        if (Files.exists(path)) {
-            checkWritable(path);
+        var entryPath = toPath(uri);
+        try {
+            FileUtils.writeFile(entryPath, content, charset);
+        } catch (IOException ex) {
+            throw diagnoseWriteFailure(entryPath, ex);
         }
-        FileUtils.writeFile(path, content, charset);
     }
 
     @Override
     public String readFile(URI uri, Charset charset) throws NoSuchFileException, AccessDeniedException, IOException {
-        var path = toPath(uri);
-        checkIfExists(path);
-        checkReadable(path);
-        return FileUtils.readFile(path, charset);
+        var entryPath = toPath(uri);
+        try {
+            return FileUtils.readFile(entryPath, charset);
+        } catch (IOException ex) {
+            throw diagnoseReadFailure(entryPath, ex);
+        }
     }
 
     @Override
     public void writeFile(URI uri, byte[] content) throws AccessDeniedException, IOException {
-        var path = toPath(uri);
-        if (Files.exists(path)) {
-            checkWritable(path);
-        }
-        try (OutputStream out = Files.newOutputStream(path,
+        var entryPath = toPath(uri);
+        try (OutputStream out = Files.newOutputStream(entryPath,
                 StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING,
                 StandardOpenOption.WRITE)) {
             out.write(content);
+        } catch (IOException ex) {
+            throw diagnoseWriteFailure(entryPath, ex);
         }
     }
 
     @Override
     public byte[] readFile(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
-        var path = toPath(uri);
-        checkIfExists(path);
-        checkReadable(path);
-        try (InputStream in = Files.newInputStream(path)) {
+        var entryPath = toPath(uri);
+        try (InputStream in = Files.newInputStream(entryPath)) {
             return in.readAllBytes();
+        } catch (IOException ex) {
+            throw diagnoseReadFailure(entryPath, ex);
         }
     }
 
     protected Factory<? extends DefaultGenericFile> getFileFactory() {
         return fileFactory;
+    }
+
+    /**
+     * Returns the path of the root of this storage, the counterpart of {@link #getUri()}.
+     *
+     * @return the root path, never {@code null}
+     */
+    protected Path getPath() {
+        return path;
     }
 
     /**
@@ -299,36 +333,97 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     }
 
     /**
-     * Checks that {@code path} is writable. Nothing is assumed about its existence: a missing path is not
-     * writable, so callers that may create it check the permission only if it exists.
+     * Explains why reading {@code entryPath} (a file, its attributes or a directory listing) failed. The methods of
+     * {@code java.nio.file} document no more than a general {@link IOException} for this, so the specific
+     * {@link NoSuchFileException} and {@link AccessDeniedException} are found out here, and only after the failure,
+     * so a successful read costs no extra check.
      *
-     * @param path the path to check.
-     * @throws AccessDeniedException if the path is not writable.
+     * @param entryPath the path that was read.
+     * @param cause the exception the read failed with.
+     * @return {@code cause} itself if it is already specific (a {@link FileSystemException}) or nothing better is
+     *     found, otherwise the exception that describes the real reason.
      */
-    protected void checkWritable(Path path) throws AccessDeniedException {
-        if (!Files.isWritable(path)) {
-            throw new AccessDeniedException("No write permission for file: " + path);
+    protected IOException diagnoseReadFailure(Path entryPath, IOException cause) {
+        if (cause instanceof FileSystemException) {
+            return cause;
         }
+        if (!Files.exists(entryPath)) {
+            return new NoSuchFileException(entryPath.toString());
+        }
+        if (!Files.isReadable(entryPath)) {
+            return new AccessDeniedException(entryPath.toString());
+        }
+        return cause;
     }
 
-    protected void checkReadable(Path path) throws AccessDeniedException {
-        if (!Files.isReadable(path)) {
-            throw new AccessDeniedException("No read permission for file: " + path);
+    /**
+     * Explains why writing the content of {@code entryPath} failed; same idea as
+     * {@link #diagnoseReadFailure(Path, IOException)}. Writing may create the file, so what is found out depends on
+     * whether it exists: an existing file must be writable itself, a new one needs a parent directory that exists
+     * and is writable.
+     *
+     * @param entryPath the path that was written.
+     * @param cause the exception the write failed with.
+     * @return {@code cause} itself if it is already specific (a {@link FileSystemException}) or nothing better is
+     *     found, otherwise the exception that describes the real reason.
+     */
+    protected IOException diagnoseWriteFailure(Path entryPath, IOException cause) {
+        if (cause instanceof FileSystemException) {
+            return cause;
         }
+        if (Files.exists(entryPath)) {
+            return Files.isWritable(entryPath) ? cause : new AccessDeniedException(entryPath.toString());
+        }
+        return diagnoseParentFailure(entryPath, cause);
     }
 
-    protected void checkIfExists(Path path) throws NoSuchFileException {
-        if (!Files.exists(path)) {
-            throw new NoSuchFileException("File not found: " + path);
+    /**
+     * Explains why creating {@code entryPath} (an empty file or a directory) failed; same idea as
+     * {@link #diagnoseReadFailure(Path, IOException)}. {@code java.nio.file} reports a missing parent directory
+     * only as a general {@link IOException}, and an existing entry only as an optional
+     * {@link FileAlreadyExistsException}.
+     *
+     * @param entryPath the path that was created.
+     * @param cause the exception the creation failed with.
+     * @return {@code cause} itself if it is already specific (a {@link FileSystemException}) or nothing better is
+     *     found, otherwise the exception that describes the real reason.
+     */
+    protected IOException diagnoseCreateFailure(Path entryPath, IOException cause) {
+        if (cause instanceof FileSystemException) {
+            return cause;
         }
+        var parent = entryPath.getParent();
+        if (parent != null && !Files.exists(parent)) {
+            return new NoSuchFileException(parent.toString());
+        }
+        if (Files.exists(entryPath, LinkOption.NOFOLLOW_LINKS)) {
+            return new FileAlreadyExistsException(entryPath.toString());
+        }
+        return diagnoseParentFailure(entryPath, cause);
     }
 
-    protected Path toPath(URI uri) throws AccessDeniedException {
-        try {
-            return Paths.get(uri);
-        } catch (SecurityException ex) {
-            throw new AccessDeniedException("No access to directory: " + uri);
+    /**
+     * Explains why removing {@code entryPath} from its directory (deleting or renaming it) failed; same idea as
+     * {@link #diagnoseReadFailure(Path, IOException)}. The entry must exist, and what it needs is the write
+     * permission on its parent directory, not on itself.
+     *
+     * @param entryPath the path that was removed.
+     * @param cause the exception the removal failed with.
+     * @return {@code cause} itself if it is already specific (a {@link FileSystemException}) or nothing better is
+     *     found, otherwise the exception that describes the real reason.
+     */
+    protected IOException diagnoseDeleteFailure(Path entryPath, IOException cause) {
+        if (cause instanceof FileSystemException) {
+            return cause;
         }
+        if (!Files.exists(entryPath, LinkOption.NOFOLLOW_LINKS)) {
+            return new NoSuchFileException(entryPath.toString());
+        }
+        return diagnoseParentFailure(entryPath, cause);
+    }
+
+    protected Path toPath(URI uri) {
+        return Paths.get(uri);
     }
 
     /**
@@ -347,21 +442,36 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
      * systems it is hidden if its name starts with a dot; a system with another notion (e.g. the hidden attribute
      * on Windows) overrides this.
      *
-     * @param path the entry's path
+     * @param entryPath the entry's path
      * @param attrs the entry's own attributes, read without following links
      * @return {@code true} if the entry is hidden
      */
-    boolean isHidden(Path path, BasicFileAttributes attrs) {
-        var name = path.getFileName();
+    boolean isHidden(Path entryPath, BasicFileAttributes attrs) {
+        var name = entryPath.getFileName();
         return name != null && name.toString().startsWith(".");
     }
 
+    /**
+     * Finds out whether the parent directory of {@code entryPath} is missing or not writable, which is what a failed
+     * change of that directory usually comes down to.
+     */
+    private IOException diagnoseParentFailure(Path entryPath, IOException cause) {
+        var parent = entryPath.getParent();
+        if (parent == null) {
+            return cause;
+        }
+        if (!Files.exists(parent)) {
+            return new NoSuchFileException(parent.toString());
+        }
+        return Files.isWritable(parent) ? cause : new AccessDeniedException(parent.toString());
+    }
+
     @SuppressWarnings("unchecked")
-    private T createFile(Path path, URI uri) throws InvalidFileException {
+    private T createFile(Path entryPath, URI uri) throws InvalidFileException {
         try {
             // the entry's own attributes, so a link is seen as a link and not as what it points to
-            var attrs = Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-            return createFile(path, attrs, uri);
+            var attrs = Files.readAttributes(entryPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+            return createFile(entryPath, attrs, uri);
         } catch (InvalidFileException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -370,11 +480,11 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     }
 
     @SuppressWarnings("unchecked")
-    private T createFile(Path path, BasicFileAttributes attrs, URI uri) {
+    private T createFile(Path entryPath, BasicFileAttributes attrs, URI uri) {
         var file = fileFactory.create();
         file.setStorage(this);
-        file.setName(path.getFileName().toString());
-        file.setHidden(isHidden(path, attrs));
+        file.setName(entryPath.getFileName().toString());
+        file.setHidden(isHidden(entryPath, attrs));
         file.setUri(uri);
         file.setModifiedTime(attrs.lastModifiedTime().toMillis());
         file.setCreatedTime(attrs.creationTime().toMillis());
@@ -382,7 +492,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         file.setEntryType(entryType);
         if (entryType == FileEntryType.LINK) {
             file.setSize(attrs.size());
-            file.setLinkTarget(readLinkTarget(path));
+            file.setLinkTarget(readLinkTarget(entryPath));
         } else if (entryType == FileEntryType.FILE) {
             file.setSize(attrs.size());
         }

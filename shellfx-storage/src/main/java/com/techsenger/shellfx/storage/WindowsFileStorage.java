@@ -94,7 +94,7 @@ public class WindowsFileStorage<T extends GenericFile> extends AbstractSystemFil
     }
 
     @Override
-    boolean isHidden(Path path, BasicFileAttributes attrs) {
+    boolean isHidden(Path entryPath, BasicFileAttributes attrs) {
         return attrs instanceof DosFileAttributes dosAttributes && dosAttributes.isHidden();
     }
 }

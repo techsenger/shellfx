@@ -29,11 +29,10 @@ import java.util.List;
 /**
  * Represents a storage backend that provides access to a hierarchical file system.
  *
- * <p>A {@code FileStorage} abstracts over different storage technologies (local file system, FTP,
- * Google Drive, etc.) and exposes a uniform API for listing, reading, writing, and navigating
- * file entries. All entries produced by a storage are typed via the type parameter {@code T},
- * which allows storage-specific implementations to return richer subclasses of
- * {@link GenericFile} without requiring callers to cast.
+ * <p>A {@code FileStorage} abstracts over different storage technologies (local file system, FTP, Google Drive, etc.)
+ * and exposes a uniform API for listing, reading, writing, and navigating file entries. All entries produced by a
+ * storage are typed via the type parameter {@code T}, which allows storage-specific implementations to return richer
+ * subclasses of {@link GenericFile} without requiring callers to cast.
  *
  * <p><b>Naming.</b> "File" in most of this interface's own names ({@code FileStorage}, {@link #getFiles(URI)},
  * {@link #getFile(URI)}, {@link GenericFile}) is used generically, for an entry of either structural kind - a
@@ -48,6 +47,23 @@ import java.util.List;
  *
  * <p>Every storage has a single root URI returned by {@link #getUri()}. All URIs passed to
  * or returned by this interface must be within that root.
+ *
+ * <p><b>EAFP.</b> A storage follows the EAFP principle (Easier to Ask for Forgiveness than Permission): it performs
+ * the requested operation right away and, only if the operation fails, investigates the reason and reports it with
+ * the most specific exception, such as {@link NoSuchFileException} or {@link AccessDeniedException}, even when the
+ * underlying backend reports it as a plain {@link IOException}. It does not check beforehand that the entry
+ * exists or that the permissions suffice (LBYL, "look before you leap"). The reasons are:
+ * <ul>
+ * <li>A successful operation, the overwhelmingly common case, costs exactly one request to the backend. Every
+ * pre-check is an extra request, which adds up in bulk operations over thousands of entries and is expensive for a
+ * remote storage, where each request is a network round trip.</li>
+ * <li>A pre-check can be outdated by the time the operation runs, because another process may delete or lock the
+ * entry in between. The state found after a failure is the state the operation really failed on.</li>
+ * <li>The caller sees one failure path: whatever went wrong is thrown as an exception, whether or not the backend
+ * would have detected it by itself.</li>
+ * </ul>
+ * The only exception is a check that cannot be made afterwards, because the operation would not fail but do
+ * something unwanted, for instance silently replacing an existing entry.
  *
  * @param <T> the concrete file entry type produced by this storage
  * @author Pavel Castornii
