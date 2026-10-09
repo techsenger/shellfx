@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.dialogs;
+package com.techsenger.shellfx.storage;
+
+import com.techsenger.annotations.Nullable;
 
 /**
+ * Determines the styles a file is shown with. While a view has a resolver, it owns the inline styles of the file
+ * elements, so a missing style clears them.
  *
  * @author Pavel Castornii
+ * @param <F> the type of files
  */
-enum DialogType {
+@FunctionalInterface
+public interface FileStyleResolver<F extends GenericFile> {
 
-    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, TEXT, TEXTS, TEXT_CHOICE, LONG_TEXT, PROGRESS, OPEN_FILE,
-    SAVE_FILE, OPEN_FILE_HIGHLIGHTED, PAGE, TREE_PAGE
+    /**
+     * Resolves the styles of the file.
+     *
+     * @param file the file to resolve the styles for
+     * @return the styles, or {@code null} to clear the styles of the file
+     */
+    @Nullable FileStyle resolve(F file);
 }

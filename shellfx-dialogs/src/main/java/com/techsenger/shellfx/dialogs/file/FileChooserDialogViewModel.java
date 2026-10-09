@@ -36,6 +36,7 @@ import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableConfig;
 import com.techsenger.shellfx.storage.Comparators;
+import com.techsenger.shellfx.storage.FileStyleResolver;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
@@ -111,6 +112,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             FXCollections.unmodifiableObservableList(modifiableExtensionFilters);
 
     private final StringProperty locationCaption = new SimpleStringProperty();
+
+    private final ObjectProperty<@Nullable FileStyleResolver<T>> styleResolver = new SimpleObjectProperty<>();
 
     private final ObservableMap<TableColumnName, TableColumnInfo> columns = FXCollections.observableHashMap();
 
@@ -297,6 +300,21 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     @Override
     public StringProperty fileNameProperty() {
         return fileName;
+    }
+
+    @Override
+    public @Nullable FileStyleResolver<T> getStyleResolver() {
+        return styleResolver.get();
+    }
+
+    @Override
+    public void setStyleResolver(@Nullable FileStyleResolver<T> styleResolver) {
+        this.styleResolver.set(styleResolver);
+    }
+
+    @Override
+    public ObjectProperty<@Nullable FileStyleResolver<T>> styleResolverProperty() {
+        return styleResolver;
     }
 
     @Override

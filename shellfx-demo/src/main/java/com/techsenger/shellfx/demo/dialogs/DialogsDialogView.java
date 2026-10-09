@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.demo.dialogs;
 
 import atlantafx.base.theme.Styles;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.dialog.AbstractDialogView;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.dialog.DialogPort;
@@ -58,9 +59,11 @@ import com.techsenger.shellfx.dialogs.text.TextsDialogPort;
 import com.techsenger.shellfx.dialogs.text.TextsDialogView;
 import com.techsenger.shellfx.dialogs.text.TextsDialogViewModel;
 import com.techsenger.shellfx.material.button.ResultButton;
+import com.techsenger.shellfx.storage.FileStyleResolver;
 import com.techsenger.shellfx.storage.GenericFile;
 import java.util.Arrays;
 import javafx.collections.FXCollections;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -142,7 +145,27 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         public FileChooserDialogPort<GenericFile> openFileChooserDialog(
                 FileChooserDialogParams<GenericFile> params) {
             var viewModel = new FileChooserDialogViewModel<>(params);
-            var dialogView = new FileChooserDialogView<>(viewModel);
+            var dialogView = new FileChooserDialogView<>(viewModel) {
+
+                private @Nullable FileStyleResolver<GenericFile> takenOffResolver;
+
+                @Override
+                protected void build() {
+                    super.build();
+                    var button = new Button("Toggle style resolver");
+                    button.setOnAction(e -> {
+                        if (viewModel.getStyleResolver() != null) {
+                            takenOffResolver = viewModel.getStyleResolver();
+                            viewModel.setStyleResolver(null);
+                        } else {
+                            viewModel.setStyleResolver(takenOffResolver);
+                        }
+                    });
+                    if (takenOffResolver != null) {
+                        getLeftBottomBox().getChildren().add(button);
+                    }
+                }
+            };
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;

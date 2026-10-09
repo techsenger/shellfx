@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.dialogs;
+package com.techsenger.shellfx.storage;
+
+import com.techsenger.annotations.Nullable;
 
 /**
+ * The inline styles a file is shown with. A style is a list of CSS declarations, such as
+ * {@code -fx-text-fill: red;}, and {@code null} clears the style of the element.
  *
  * @author Pavel Castornii
+ * @param iconStyle the style of the file icon
+ * @param textStyle the style of the file texts
  */
-enum DialogType {
+public record FileStyle(@Nullable String iconStyle, @Nullable String textStyle) {
 
-    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, TEXT, TEXTS, TEXT_CHOICE, LONG_TEXT, PROGRESS, OPEN_FILE,
-    SAVE_FILE, OPEN_FILE_HIGHLIGHTED, PAGE, TREE_PAGE
 }

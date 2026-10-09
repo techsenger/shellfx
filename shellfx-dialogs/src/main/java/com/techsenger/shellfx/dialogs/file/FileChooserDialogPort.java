@@ -16,13 +16,16 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.material.RequestSetter;
+import com.techsenger.shellfx.storage.FileStyleResolver;
 import com.techsenger.shellfx.storage.GenericFile;
 import java.net.URI;
 import java.util.List;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
@@ -110,4 +113,15 @@ public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort
     void setFileName(String fileName);
 
     StringProperty fileNameProperty();
+
+    /**
+     * Returns the resolver of the styles files are shown with.
+     *
+     * @return the resolver, or {@code null} if files are shown with the default styles
+     */
+    @Nullable FileStyleResolver<T> getStyleResolver();
+
+    void setStyleResolver(@Nullable FileStyleResolver<T> styleResolver);
+
+    ObjectProperty<@Nullable FileStyleResolver<T>> styleResolverProperty();
 }

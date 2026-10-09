@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.demo.dialogs;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.config.ConfigManager;
@@ -44,12 +45,16 @@ import com.techsenger.shellfx.dialogs.text.TextDialogConfig;
 import com.techsenger.shellfx.dialogs.text.TextDialogParams;
 import com.techsenger.shellfx.dialogs.text.TextsDialogConfig;
 import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
+import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.DefaultGenericFile;
 import com.techsenger.shellfx.storage.FileStorage;
+import com.techsenger.shellfx.storage.FileStyle;
+import com.techsenger.shellfx.storage.FileStyleResolver;
 import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.shellfx.storage.UnixFileStorage;
 import com.techsenger.shellfx.storage.WindowsFileStorage;
 import com.techsenger.toolkit.core.os.OsUtils;
+import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -61,6 +66,37 @@ import javafx.beans.property.SimpleObjectProperty;
  * @author Pavel Castornii
  */
 public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends AbstractDialogViewModel<C> {
+
+    private static @Nullable FileStyle resolveDemoStyle(Theme theme, GenericFile file) {
+        var palette = theme.getPalette();
+        var iconColor = palette.getDefaultFgColor();
+        var textColor = palette.getDefaultFgColor();
+        if (file.isDirectory()) {
+            if (theme.isDark()) {
+                iconColor = palette.getWarning2Color();
+            } else {
+                iconColor = palette.getWarning6Color();
+            }
+        }
+        if (file.isHidden()) {
+            iconColor = ColorUtils.toArgb(180, iconColor);
+            textColor = ColorUtils.toArgb(180, textColor);
+        }
+        return new FileStyle(iconStyle(iconColor), textStyle(textColor));
+    }
+
+    private static String iconStyle(int color) {
+        return "-fx-fill: " + toRgba(color) + ";";
+    }
+
+    private static String textStyle(int color) {
+        return "-fx-text-fill: " + toRgba(color) + ";";
+    }
+
+    private static String toRgba(int color) {
+        return "rgba(" + ((color >> 16) & 0xFF) + "," + ((color >> 8) & 0xFF) + "," + (color & 0xFF) + ","
+                + ColorUtils.getAlphaAsDouble(color) + ")";
+    }
 
     private final ObjectProperty<WindowType> selectedWindowType = new SimpleObjectProperty<>();
 
@@ -144,8 +180,10 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 dialog.setCurrentStep(3);
                 dialog.setProgress(0.3);
             }),
-            Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
-            Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
+            Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN, null)),
+            Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS, null)),
+            Map.entry(DialogType.OPEN_FILE_HIGHLIGHTED, () -> showFileChooserDialog(FileChooserType.OPEN,
+                    (f) -> resolveDemoStyle(getSettings().getTheme(), f))),
             Map.entry(DialogType.PAGE, () -> showPagedDialog(PageMenuType.FLAT)),
             Map.entry(DialogType.TREE_PAGE, () -> showPagedDialog(PageMenuType.TREE))
     );
@@ -192,11 +230,12 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         return settings;
     }
 
-    private void showFileChooserDialog(FileChooserType type) {
+    private void showFileChooserDialog(FileChooserType type, @Nullable FileStyleResolver<GenericFile> resolver) {
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
         var params = new FileChooserDialogParams<GenericFile>(config, selectedWindowType.get(), settings,
                 type, this.storages);
         var dialog = getComposer().openFileChooserDialog(params);
+        dialog.setStyleResolver(resolver);
         dialog.setOnResult((buttonName) -> {
             if (buttonName == FileChooserDialogButtons.OK) {
                 var result = dialog.getResult();

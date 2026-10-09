@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.material.icon;
 
+import com.techsenger.annotations.Nullable;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -62,6 +63,10 @@ import org.slf4j.LoggerFactory;
  *
  * <p>If no font family is resolved for an icon (neither from a {@link PlainFontIcon} nor from CSS), the
  * static {@link #defaultIconFontProperty() default icon font} is used instead.
+ *
+ * <p>The inline style of this view is managed by the view itself, because it keeps the frozen icon size there. To
+ * style the icon from code, use {@link #iconStyleProperty() iconStyle}; never call {@code setStyle()}, as it
+ * erases the frozen size.
  *
  * @author Pavel Castornii
  */
@@ -128,30 +133,6 @@ public class FontIconView extends Text {
         return Css.META_DATA;
     }
 
-    /**
-     * Merges a single CSS declaration into an existing inline style string, replacing any prior
-     * declaration for the same property while leaving all other declarations intact.
-     *
-     * @param style    the current inline style string, possibly {@code null} or blank
-     * @param property the CSS property name to set (e.g. {@code "-fx-icon-size"})
-     * @param value    the value to assign to the property
-     * @return the merged inline style string
-     */
-    private static String normalizeStyle(String style, String property, String value) {
-        StringBuilder sb = new StringBuilder();
-        if (style != null && !style.isBlank()) {
-            for (String part : style.split(";")) {
-                String trimmed = part.trim();
-                if (trimmed.isEmpty() || trimmed.startsWith(property + ":")) {
-                    continue;
-                }
-                sb.append(trimmed).append("; ");
-            }
-        }
-        sb.append(property).append(": ").append(value).append(";");
-        return sb.toString();
-    }
-
     private final StyleableDoubleProperty iconSize =
             new SimpleStyleableDoubleProperty(Css.ICON_SIZE, this, "iconSize", 14.0);
 
@@ -166,6 +147,10 @@ public class FontIconView extends Text {
     private final ChangeListener<String> defaultFontListener = (ov, oldV, newV) -> updateFont();
 
     private final StringProperty units = new SimpleStringProperty(this, "units", "px");
+
+    private final StringProperty iconStyle = new SimpleStringProperty(this, "iconStyle");
+
+    private @Nullable String internalStyle;
 
     /**
      * Creates a view and immediately assigns the given icon.
@@ -191,6 +176,7 @@ public class FontIconView extends Text {
             updateFont();
             freezeResolvedSize(newV.doubleValue());
         });
+        iconStyle.addListener((ov, oldV, newV) -> updateStyle());
         defaultIconFont.addListener(new WeakChangeListener<>(defaultFontListener));
         icon.addListener((ov, oldV, newV) -> {
             if (oldV instanceof StyleFontIcon sfi) {
@@ -361,6 +347,24 @@ public class FontIconView extends Text {
     }
 
     /**
+     * Returns the property holding the inline style of the icon, which is added to the style the view keeps for
+     * itself.
+     *
+     * @return the icon style property
+     */
+    public StringProperty iconStyleProperty() {
+        return this.iconStyle;
+    }
+
+    public @Nullable String getIconStyle() {
+        return this.iconStyle.get();
+    }
+
+    public void setIconStyle(@Nullable String style) {
+        this.iconStyle.set(style);
+    }
+
+    /**
      * Freezes the CSS-resolved icon size as an absolute-unit inline override, preventing the
      * {@code em}-relative {@code -fx-icon-size} declaration from recomputing against this view's own,
      * just-updated font on the next CSS pass (which would otherwise spiral).
@@ -369,7 +373,23 @@ public class FontIconView extends Text {
      */
     private void freezeResolvedSize(double resolvedSize) {
         String resolvedUnits = units.get() == null || units.get().isBlank() ? "px" : units.get();
-        setStyle(normalizeStyle(getStyle(), "-fx-icon-size", resolvedSize + resolvedUnits));
+        internalStyle = "-fx-icon-size: " + resolvedSize + resolvedUnits + ";";
+        updateStyle();
+    }
+
+    /**
+     * Sets the inline style of the view to the icon style followed by the internal one, so the internal
+     * declarations win.
+     */
+    private void updateStyle() {
+        var external = iconStyle.get();
+        if (external == null || external.isBlank()) {
+            setStyle(internalStyle);
+        } else if (internalStyle == null) {
+            setStyle(external);
+        } else {
+            setStyle(external + " " + internalStyle);
+        }
     }
 
     /**
