@@ -99,12 +99,6 @@ public interface GenericFile {
     boolean isHidden();
 
     /**
-     * Returns {@code true} if this entry is a regular file that can be run, e.g. a program or a script. A directory
-     * is never executable, whatever its permissions say.
-     */
-    boolean isExecutable();
-
-    /**
      * Returns {@code true} if this entry is virtual, i.e. it was constructed programmatically without a corresponding
      * real entry on the underlying storage. As a result, virtual entries generally do not have all metadata
      * (such as size, hidden status, etc.).

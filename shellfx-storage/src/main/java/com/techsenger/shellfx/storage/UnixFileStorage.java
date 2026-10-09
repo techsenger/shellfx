@@ -17,9 +17,16 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.toolkit.core.function.Factory;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.filechooser.FileSystemView;
@@ -56,13 +63,26 @@ public class UnixFileStorage<T extends GenericFile> extends AbstractSystemFileSt
         return result;
     }
 
+    private final boolean posixSupported;
+
     public UnixFileStorage(FileStorageType type, String displayName, URI rootUri,
             Factory<? extends DefaultGenericFile> fileFactory) {
         super(type, displayName, rootUri, fileFactory);
+        this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
     }
 
     @Override
     public boolean refersToStorage(URI uri) {
         return "file".equalsIgnoreCase(uri.getScheme());
+    }
+
+    @Override
+    BasicFileAttributes readAttributes(Path entryPath) throws IOException {
+        // asking for the basic attributes would return a wrapper without the permissions; a file system that has
+        // no POSIX attributes (e.g. an in-memory one) can only give the basic ones
+        if (posixSupported) {
+            return Files.readAttributes(entryPath, PosixFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        }
+        return super.readAttributes(entryPath);
     }
 }

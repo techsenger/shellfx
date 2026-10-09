@@ -42,8 +42,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.PosixFileAttributes;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -86,7 +84,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(entryPath)) {
             for (Path childPath : stream) {
                 try {
-                    var attrs = Files.readAttributes(childPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+                    var attrs = readAttributes(childPath);
                     // a link is not a directory, even if it points to one
                     if (attrs.isDirectory() && !isLink(attrs)) {
                         result.add(createFile(childPath, attrs, childPath.toUri()));
@@ -429,6 +427,18 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     }
 
     /**
+     * Reads the entry's own attributes without following links, in a single access to the file system. A system
+     * whose subclasses need a richer kind of attributes overrides this to read them.
+     *
+     * @param entryPath the entry's path
+     * @return the attributes
+     * @throws IOException if the attributes can't be read
+     */
+    BasicFileAttributes readAttributes(Path entryPath) throws IOException {
+        return Files.readAttributes(entryPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+    }
+
+    /**
      * Tells whether an entry with these attributes is itself a link. Recognizes symbolic links; a system with other
      * kinds of links (e.g. Windows junctions) overrides this to recognize them too.
      *
@@ -454,22 +464,15 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     }
 
     /**
-     * Tells whether the entry is an executable file, without any further access to the file system. By convention of
-     * Unix-like systems it is if it is a regular file with an execute permission bit set for anyone; a system with
-     * another notion (e.g. the file extension on Windows) overrides this.
+     * Lets a subclass fill in what only the entry's attributes tell, e.g. the permissions; called once for every
+     * created file, before its icon is resolved. Does nothing by default.
      *
+     * @param file the file being created
      * @param entryPath the entry's path
-     * @param attrs the entry's own attributes, read without following links
-     * @return {@code true} if the entry is executable
+     * @param attrs the entry's own attributes, read without following links; a Unix storage gives the POSIX ones
      */
-    boolean isExecutable(Path entryPath, BasicFileAttributes attrs) {
-        if (!attrs.isRegularFile() || !(attrs instanceof PosixFileAttributes posixAttributes)) {
-            return false;
-        }
-        var permissions = posixAttributes.permissions();
-        return permissions.contains(PosixFilePermission.OWNER_EXECUTE)
-                || permissions.contains(PosixFilePermission.GROUP_EXECUTE)
-                || permissions.contains(PosixFilePermission.OTHERS_EXECUTE);
+    protected void populateFile(DefaultGenericFile file, Path entryPath, BasicFileAttributes attrs) {
+        // empty
     }
 
     /**
@@ -491,7 +494,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     private T createFile(Path entryPath, URI uri) throws InvalidFileException {
         try {
             // the entry's own attributes, so a link is seen as a link and not as what it points to
-            var attrs = Files.readAttributes(entryPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+            var attrs = readAttributes(entryPath);
             return createFile(entryPath, attrs, uri);
         } catch (InvalidFileException ex) {
             throw ex;
@@ -506,7 +509,6 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         file.setStorage(this);
         file.setName(entryPath.getFileName().toString());
         file.setHidden(isHidden(entryPath, attrs));
-        file.setExecutable(isExecutable(entryPath, attrs));
         file.setUri(uri);
         file.setModifiedTime(attrs.lastModifiedTime().toMillis());
         file.setCreatedTime(attrs.creationTime().toMillis());
@@ -519,6 +521,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
             file.setSize(attrs.size());
         }
         file.setVirtual(false);
+        populateFile(file, entryPath, attrs);
         var result = (T) file;
         file.setIcon(resolveIcon(result));
         return result;

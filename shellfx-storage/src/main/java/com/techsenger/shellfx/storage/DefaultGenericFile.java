@@ -57,8 +57,6 @@ public class DefaultGenericFile implements GenericFile {
 
     private boolean hidden;
 
-    private boolean executable;
-
     private boolean virtual;
 
     private @Nullable LinkTarget linkTarget;
@@ -109,11 +107,6 @@ public class DefaultGenericFile implements GenericFile {
     @Override
     public boolean isHidden() {
         return hidden;
-    }
-
-    @Override
-    public boolean isExecutable() {
-        return executable;
     }
 
     @Override
@@ -212,8 +205,7 @@ public class DefaultGenericFile implements GenericFile {
     public String toString() {
         return "DefaultGenericFile[" + "storage=" + storage + ", entryType=" + entryType + ", uri=" + uri
                 + ", size=" + size + ", name=" + name + ", modifiedTime=" + modifiedTime
-                + ", createdTime=" + createdTime + ", hidden=" + hidden + ", executable=" + executable
-                + ", virtual=" + virtual + ']';
+                + ", createdTime=" + createdTime + ", hidden=" + hidden + ", virtual=" + virtual + ']';
     }
 
     /**
@@ -287,15 +279,6 @@ public class DefaultGenericFile implements GenericFile {
      */
     protected void setHidden(boolean hidden) {
         this.hidden = hidden;
-    }
-
-    /**
-     * Sets whether this entry is executable.
-     *
-     * @param executable {@code true} if this entry is executable
-     */
-    protected void setExecutable(boolean executable) {
-        this.executable = executable;
     }
 
     /**
