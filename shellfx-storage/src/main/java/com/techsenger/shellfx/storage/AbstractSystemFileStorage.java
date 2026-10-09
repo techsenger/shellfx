@@ -42,6 +42,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -452,6 +454,25 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     }
 
     /**
+     * Tells whether the entry is an executable file, without any further access to the file system. By convention of
+     * Unix-like systems it is if it is a regular file with an execute permission bit set for anyone; a system with
+     * another notion (e.g. the file extension on Windows) overrides this.
+     *
+     * @param entryPath the entry's path
+     * @param attrs the entry's own attributes, read without following links
+     * @return {@code true} if the entry is executable
+     */
+    boolean isExecutable(Path entryPath, BasicFileAttributes attrs) {
+        if (!attrs.isRegularFile() || !(attrs instanceof PosixFileAttributes posixAttributes)) {
+            return false;
+        }
+        var permissions = posixAttributes.permissions();
+        return permissions.contains(PosixFilePermission.OWNER_EXECUTE)
+                || permissions.contains(PosixFilePermission.GROUP_EXECUTE)
+                || permissions.contains(PosixFilePermission.OTHERS_EXECUTE);
+    }
+
+    /**
      * Finds out whether the parent directory of {@code entryPath} is missing or not writable, which is what a failed
      * change of that directory usually comes down to.
      */
@@ -485,6 +506,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         file.setStorage(this);
         file.setName(entryPath.getFileName().toString());
         file.setHidden(isHidden(entryPath, attrs));
+        file.setExecutable(isExecutable(entryPath, attrs));
         file.setUri(uri);
         file.setModifiedTime(attrs.lastModifiedTime().toMillis());
         file.setCreatedTime(attrs.creationTime().toMillis());

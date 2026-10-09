@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.sun.jna.platform.win32.Kernel32;
+import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.core.function.Factory;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -25,7 +26,11 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.swing.filechooser.FileSystemView;
 
 /**
@@ -33,6 +38,28 @@ import javax.swing.filechooser.FileSystemView;
  * @author Pavel Castornii
  */
 public class WindowsFileStorage<T extends GenericFile> extends AbstractSystemFileStorage<T> {
+
+    private static final Set<String> DEFAULT_EXECUTABLE_EXTENSIONS = Set.of("exe", "bat", "cmd", "com", "msi", "ps1");
+
+    private static final Set<String> EXECUTABLE_EXTENSIONS = readExecutableExtensions();
+
+    /**
+     * Reads the extensions of executable files from the {@code PATHEXT} environment variable; if it is not set or has
+     * no extensions, the default list is used.
+     */
+    private static Set<String> readExecutableExtensions() {
+        var pathExt = System.getenv("PATHEXT");
+        if (pathExt == null) {
+            return DEFAULT_EXECUTABLE_EXTENSIONS;
+        }
+        var extensions = Arrays.stream(pathExt.split(";"))
+                .map(String::trim)
+                .map(extension -> extension.startsWith(".") ? extension.substring(1) : extension)
+                .filter(extension -> !extension.isEmpty())
+                .map(extension -> extension.toLowerCase(Locale.ROOT))
+                .collect(Collectors.toUnmodifiableSet());
+        return extensions.isEmpty() ? DEFAULT_EXECUTABLE_EXTENSIONS : extensions;
+    }
 
     /**
      * Discovers and returns all system storages available on the current Windows machine.
@@ -96,5 +123,15 @@ public class WindowsFileStorage<T extends GenericFile> extends AbstractSystemFil
     @Override
     boolean isHidden(Path entryPath, BasicFileAttributes attrs) {
         return attrs instanceof DosFileAttributes dosAttributes && dosAttributes.isHidden();
+    }
+
+    @Override
+    boolean isExecutable(Path entryPath, BasicFileAttributes attrs) {
+        var name = entryPath.getFileName();
+        if (name == null || !attrs.isRegularFile()) {
+            return false;
+        }
+        var extension = FileUtils.getExtension(name.toString());
+        return extension != null && EXECUTABLE_EXTENSIONS.contains(extension.toLowerCase(Locale.ROOT));
     }
 }
