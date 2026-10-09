@@ -27,6 +27,14 @@ import com.techsenger.shellfx.dialogs.file.FileChooserDialogPort;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueDialogPort;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogPort;
+import com.techsenger.shellfx.dialogs.text.LongTextDialogParams;
+import com.techsenger.shellfx.dialogs.text.LongTextDialogPort;
+import com.techsenger.shellfx.dialogs.text.TextChoiceDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextChoiceDialogPort;
+import com.techsenger.shellfx.dialogs.text.TextDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextDialogPort;
+import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextsDialogPort;
 import com.techsenger.shellfx.storage.GenericFile;
 
 /**
@@ -38,6 +46,14 @@ public interface DialogsDialogComposer extends WindowComposer {
     AlertDialogPort openAlertDialog(AlertDialogParams params);
 
     NameValueDialogPort openNameValueDialog(DialogParams params);
+
+    TextDialogPort openTextDialog(TextDialogParams params);
+
+    TextsDialogPort openTextsDialog(TextsDialogParams params);
+
+    TextChoiceDialogPort openTextChoiceDialog(TextChoiceDialogParams params);
+
+    LongTextDialogPort openLongTextDialog(LongTextDialogParams params);
 
     ProgressDialogPort openProgressDialog(ProgressDialogParams params);
 

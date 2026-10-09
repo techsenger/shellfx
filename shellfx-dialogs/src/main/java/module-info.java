@@ -35,6 +35,7 @@ module com.techsenger.shellfx.dialogs {
     exports com.techsenger.shellfx.dialogs.namevalue;
     exports com.techsenger.shellfx.dialogs.progress;
     exports com.techsenger.shellfx.dialogs.style;
+    exports com.techsenger.shellfx.dialogs.text;
 
     opens com.techsenger.shellfx.dialogs.style;
 }

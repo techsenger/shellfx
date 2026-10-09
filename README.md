@@ -55,6 +55,10 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [FileChooserDialog](#dialog-file-chooser)
     * [NameValueDialog](#dialog-name-value)
     * [ProgressDialog](#dialog-progress)
+    * [TextDialog](#dialog-text)
+    * [TextsDialog](#dialog-texts)
+    * [LongTextDialog](#dialog-long-text)
+    * [TextChoiceDialog](#dialog-text-choice)
 * [DevTools Components](#devtools)
     * [DevToolsTabDock](#devtools-tab-dock)
     * [ComponentTab](#devtools-component-tab)
@@ -165,7 +169,7 @@ custom icons instead, simply create your own stylesheets and add them to Shell.
 * Storage — provides abstractions for working with file systems. The module includes a default implementation for the
 local file system. Additional storage providers (for Google Drive, Dropbox, FTP, and similar) can be implemented
 separately.
-* Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation etc.
+* Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation, text input and choice etc.
 * DevTools — contains tools for exploring component tree and JavaFX scene graph.
 * Demo — showcases ShellFX's core functionality, provides examples for building custom components, and
 presents ready-made components.
@@ -429,8 +433,9 @@ Dialogs fall into two kinds, depending on who owns the behavior behind them.
 A *dumb* dialog only shows data and collects input. It does not know what the result is used for: the code that
 opens it (the client) validates the input, performs the action and decides when the dialog closes. `ProgressDialog` is
 a dumb dialog: it displays the progress of an operation, while the operation itself lives elsewhere and outlives
-the window. `AlertDialog` and `NameValueDialog` are dumb too. The word is a description, not a criticism: the dialog
-intentionally does not know how its result is used, and that is what makes it reusable.
+the window. `AlertDialog`, `NameValueDialog` and the text dialogs (`TextDialog`, `TextsDialog`, `LongTextDialog`,
+`TextChoiceDialog`) are dumb too. A dumb dialog intentionally does not know how its result is used, and that is what
+makes it reusable.
 
 A *smart* dialog owns a complete task. It has its own domain logic and returns a ready result, so the client does not
 repeat that logic. `FileChooserDialog` is a smart dialog: given a `FileStorage`, it browses the directories itself
@@ -597,6 +602,34 @@ while the value is displayed in a `TextArea`.
 
 `ProgressDialog` is a dialog for reporting the progress of a long-running operation, with an optional message and
 an optional step counter (e.g. `3 / 10`) shown alongside the progress bar. It is a dumb dialog (see
+[Dialog](#core-dialog)).
+
+### TextDialog <a name="dialog-text"></a>
+
+`TextDialog` is a dialog for entering or viewing a single line of text in a `TextField`, with a label next to it
+(for example, a name of a new file). It is a dumb dialog (see [Dialog](#core-dialog)): the client validates the text
+and decides when the dialog closes.
+
+### TextsDialog <a name="dialog-texts"></a>
+
+`TextsDialog` is a dialog for entering a single line of text that the user can either type or pick from a list of
+suggested texts (for example, earlier entries), shown in an editable `ComboBox`. The texts belong to the client and
+can be changed while the dialog is open. It is a dumb dialog (see [Dialog](#core-dialog)).
+
+The `editable` flag of `TextsDialog` only makes the editor read-only, so the dialog still looks like a text field with
+an arrow. A combobox without an input field looks different, which is why choosing without typing is a separate
+dialog, `TextChoiceDialog`.
+
+### LongTextDialog <a name="dialog-long-text"></a>
+
+`LongTextDialog` is a dialog for entering or viewing a multiline text in a `TextArea`, with a label next to it. It is
+a dumb dialog (see [Dialog](#core-dialog)). Together with `TextDialog` it forms a pair that differs only in the
+length of the text.
+
+### TextChoiceDialog <a name="dialog-text-choice"></a>
+
+`TextChoiceDialog` is a dialog for choosing one of the given texts in a non-editable `ComboBox`; nothing can be typed.
+The texts belong to the client and can be changed while the dialog is open. It is a dumb dialog (see
 [Dialog](#core-dialog)).
 
 ## DevTools Components <a name="devtools"></a>

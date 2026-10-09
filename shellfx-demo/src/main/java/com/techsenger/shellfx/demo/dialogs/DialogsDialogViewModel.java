@@ -36,6 +36,14 @@ import com.techsenger.shellfx.dialogs.file.FileChooserType;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueButtons;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogConfig;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
+import com.techsenger.shellfx.dialogs.text.LongTextDialogConfig;
+import com.techsenger.shellfx.dialogs.text.LongTextDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextChoiceDialogConfig;
+import com.techsenger.shellfx.dialogs.text.TextChoiceDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextDialogConfig;
+import com.techsenger.shellfx.dialogs.text.TextDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextsDialogConfig;
+import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
 import com.techsenger.shellfx.storage.DefaultGenericFile;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.GenericFile;
@@ -94,6 +102,37 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 dialog.setName("Some Name");
                 dialog.setValue("Some Value");
                 dialog.setRightButtons(NameValueButtons.OK);
+            }),
+            Map.entry(DialogType.TEXT, () -> {
+                var params = new TextDialogParams(new TextDialogConfig(), selectedWindowType.get(),
+                        getSettings());
+                var dialog = getComposer().openTextDialog(params);
+                dialog.setTitle("Text");
+                dialog.setText("Some text");
+            }),
+            Map.entry(DialogType.TEXTS, () -> {
+                var params = new TextsDialogParams(new TextsDialogConfig(), selectedWindowType.get(),
+                        getSettings());
+                var dialog = getComposer().openTextsDialog(params);
+                dialog.setTitle("Texts");
+                dialog.getTexts().setAll(List.of("First", "Second", "Third"));
+                dialog.setEditable(false);
+                dialog.setText("Second");
+            }),
+            Map.entry(DialogType.TEXT_CHOICE, () -> {
+                var params = new TextChoiceDialogParams(new TextChoiceDialogConfig(), selectedWindowType.get(),
+                        getSettings());
+                var dialog = getComposer().openTextChoiceDialog(params);
+                dialog.setTitle("Text Choice");
+                dialog.getTexts().setAll(List.of("First", "Second", "Third"));
+                dialog.setText("Second");
+            }),
+            Map.entry(DialogType.LONG_TEXT, () -> {
+                var params = new LongTextDialogParams(new LongTextDialogConfig(), selectedWindowType.get(),
+                        getSettings());
+                var dialog = getComposer().openLongTextDialog(params);
+                dialog.setTitle("Long Text");
+                dialog.setText("First line\nSecond line");
             }),
             Map.entry(DialogType.PROGRESS, () -> {
                 var params = new ProgressDialogParams(new ProgressDialogConfig(), selectedWindowType.get(),

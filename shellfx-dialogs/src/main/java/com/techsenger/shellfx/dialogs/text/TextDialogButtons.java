@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Pavel Castornii.
+ * Copyright 2026 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.demo.dialogs;
+package com.techsenger.shellfx.dialogs.text;
+
+import com.techsenger.shellfx.material.button.DefaultResultButtonName;
+import com.techsenger.shellfx.material.button.ResultButtonName;
 
 /**
  *
  * @author Pavel Castornii
  */
-enum DialogType {
+public interface TextDialogButtons {
 
-    INFO, WARNING, ERROR, YES_NO, NAME_VALUE, TEXT, TEXTS, TEXT_CHOICE, LONG_TEXT, PROGRESS, OPEN_FILE,
-    SAVE_FILE, PAGE, TREE_PAGE
+    ResultButtonName OK = new DefaultResultButtonName();
+
+    ResultButtonName CANCEL = new DefaultResultButtonName();
 }

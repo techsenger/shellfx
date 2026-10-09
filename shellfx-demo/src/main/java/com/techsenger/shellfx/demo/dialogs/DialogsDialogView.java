@@ -41,6 +41,22 @@ import com.techsenger.shellfx.dialogs.progress.ProgressDialogParams;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogPort;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogView;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogViewModel;
+import com.techsenger.shellfx.dialogs.text.LongTextDialogParams;
+import com.techsenger.shellfx.dialogs.text.LongTextDialogPort;
+import com.techsenger.shellfx.dialogs.text.LongTextDialogView;
+import com.techsenger.shellfx.dialogs.text.LongTextDialogViewModel;
+import com.techsenger.shellfx.dialogs.text.TextChoiceDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextChoiceDialogPort;
+import com.techsenger.shellfx.dialogs.text.TextChoiceDialogView;
+import com.techsenger.shellfx.dialogs.text.TextChoiceDialogViewModel;
+import com.techsenger.shellfx.dialogs.text.TextDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextDialogPort;
+import com.techsenger.shellfx.dialogs.text.TextDialogView;
+import com.techsenger.shellfx.dialogs.text.TextDialogViewModel;
+import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
+import com.techsenger.shellfx.dialogs.text.TextsDialogPort;
+import com.techsenger.shellfx.dialogs.text.TextsDialogView;
+import com.techsenger.shellfx.dialogs.text.TextsDialogViewModel;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.storage.GenericFile;
 import java.util.Arrays;
@@ -72,6 +88,42 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         public NameValueDialogPort openNameValueDialog(DialogParams params) {
             var viewModel = new NameValueDialogViewModel<>(params);
             var dialogView = new NameValueDialogView<>(viewModel);
+            dialogView.initialize();
+            showDialog(dialogView);
+            return viewModel;
+        }
+
+        @Override
+        public TextDialogPort openTextDialog(TextDialogParams params) {
+            var viewModel = new TextDialogViewModel<>(params);
+            var dialogView = new TextDialogView<>(viewModel);
+            dialogView.initialize();
+            showDialog(dialogView);
+            return viewModel;
+        }
+
+        @Override
+        public TextsDialogPort openTextsDialog(TextsDialogParams params) {
+            var viewModel = new TextsDialogViewModel<>(params);
+            var dialogView = new TextsDialogView<>(viewModel);
+            dialogView.initialize();
+            showDialog(dialogView);
+            return viewModel;
+        }
+
+        @Override
+        public TextChoiceDialogPort openTextChoiceDialog(TextChoiceDialogParams params) {
+            var viewModel = new TextChoiceDialogViewModel<>(params);
+            var dialogView = new TextChoiceDialogView<>(viewModel);
+            dialogView.initialize();
+            showDialog(dialogView);
+            return viewModel;
+        }
+
+        @Override
+        public LongTextDialogPort openLongTextDialog(LongTextDialogParams params) {
+            var viewModel = new LongTextDialogViewModel<>(params);
+            var dialogView = new LongTextDialogView<>(viewModel);
             dialogView.initialize();
             showDialog(dialogView);
             return viewModel;
