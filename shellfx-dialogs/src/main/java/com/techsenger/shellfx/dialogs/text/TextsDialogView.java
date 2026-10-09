@@ -32,7 +32,7 @@ public class TextsDialogView<VM extends TextsDialogViewModel<?>> extends Abstrac
 
     private final ComboBox<String> comboBox = new ComboBox<>();
 
-    private final HBox textBox = new HBox(getLabel(), comboBox);
+    private final HBox textBox = new HBox(getTextLabel(), comboBox);
 
     public TextsDialogView(VM viewModel) {
         super(viewModel);

@@ -44,9 +44,9 @@ public class LongTextDialogView<VM extends LongTextDialogViewModel<?>> extends A
 
     @Override
     protected void buildContent() {
-        gridPane.add(getLabel(), 0, 0);
+        gridPane.add(getTextLabel(), 0, 0);
         gridPane.add(textArea, 1, 0);
-        GridPane.setValignment(getLabel(), VPos.TOP);
+        GridPane.setValignment(getTextLabel(), VPos.TOP);
         GridPane.setHgrow(textArea, Priority.ALWAYS);
         GridPane.setVgrow(textArea, Priority.ALWAYS);
         textArea.setWrapText(true);

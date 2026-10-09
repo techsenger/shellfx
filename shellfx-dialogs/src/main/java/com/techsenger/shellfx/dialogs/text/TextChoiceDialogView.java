@@ -33,11 +33,11 @@ import javafx.scene.layout.VBox;
  */
 public class TextChoiceDialogView<VM extends TextChoiceDialogViewModel<?>> extends AbstractDialogView<VM> {
 
-    private final Label label = new Label("Text");
+    private final Label textLabel = new Label("Text");
 
     private final ComboBox<String> comboBox = new ComboBox<>();
 
-    private final HBox textBox = new HBox(label, comboBox);
+    private final HBox textBox = new HBox(textLabel, comboBox);
 
     private final ResultButton cancelButton = new ResultButton(TextDialogButtons.CANCEL, "Cancel");
 
@@ -49,7 +49,7 @@ public class TextChoiceDialogView<VM extends TextChoiceDialogViewModel<?>> exten
 
     public TextChoiceDialogView(VM viewModel, String labelText) {
         super(viewModel);
-        label.setText(labelText);
+        textLabel.setText(labelText);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class TextChoiceDialogView<VM extends TextChoiceDialogViewModel<?>> exten
     @Override
     protected void build() {
         super.build();
-        label.setMinWidth(Label.USE_PREF_SIZE);
+        textLabel.setMinWidth(Label.USE_PREF_SIZE);
         comboBox.setItems(getViewModel().getTexts());
         HBox.setHgrow(comboBox, Priority.ALWAYS);
         comboBox.setMaxWidth(Double.MAX_VALUE);
@@ -81,8 +81,8 @@ public class TextChoiceDialogView<VM extends TextChoiceDialogViewModel<?>> exten
         comboBox.valueProperty().bindBidirectional(getViewModel().textProperty());
     }
 
-    protected Label getLabel() {
-        return label;
+    protected Label getTextLabel() {
+        return textLabel;
     }
 
     protected ComboBox<String> getComboBox() {

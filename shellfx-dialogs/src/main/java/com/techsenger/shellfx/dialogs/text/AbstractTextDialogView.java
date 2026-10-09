@@ -33,7 +33,7 @@ import javafx.scene.control.TextInputControl;
 public abstract class AbstractTextDialogView<VM extends AbstractTextDialogViewModel<?>>
         extends AbstractDialogView<VM> {
 
-    private final Label label = new Label("Text");
+    private final Label textLabel = new Label("Text");
 
     private final ResultButton cancelButton = new ResultButton(TextDialogButtons.CANCEL, "Cancel");
 
@@ -47,7 +47,7 @@ public abstract class AbstractTextDialogView<VM extends AbstractTextDialogViewMo
 
     public AbstractTextDialogView(VM viewModel, String labelText) {
         super(viewModel);
-        label.setText(labelText);
+        textLabel.setText(labelText);
     }
 
     @Override
@@ -63,7 +63,7 @@ public abstract class AbstractTextDialogView<VM extends AbstractTextDialogViewMo
     @Override
     protected void build() {
         super.build();
-        label.setMinWidth(Label.USE_PREF_SIZE);
+        textLabel.setMinWidth(Label.USE_PREF_SIZE);
         buildContent();
         registerButtons(cancelButton, okButton);
         getButtonWidthGroup().add(cancelButton, okButton);
@@ -89,8 +89,8 @@ public abstract class AbstractTextDialogView<VM extends AbstractTextDialogViewMo
         });
     }
 
-    protected Label getLabel() {
-        return label;
+    protected Label getTextLabel() {
+        return textLabel;
     }
 
     /**

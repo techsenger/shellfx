@@ -32,7 +32,7 @@ public class TextDialogView<VM extends TextDialogViewModel<?>> extends AbstractT
 
     private final TextField textField = new TextField();
 
-    private final HBox textBox = new HBox(getLabel(), textField);
+    private final HBox textBox = new HBox(getTextLabel(), textField);
 
     public TextDialogView(VM viewModel) {
         super(viewModel);
