@@ -19,13 +19,13 @@ package com.techsenger.shellfx.storage;
 import com.techsenger.annotations.Nullable;
 
 /**
- * The inline styles a file is shown with. A style is a list of CSS declarations, such as
+ * The inline styles an item (a file or a storage) is shown with. A style is a list of CSS declarations, such as
  * {@code -fx-text-fill: red;}, and {@code null} clears the style of the element.
  *
  * @author Pavel Castornii
- * @param iconStyle the style of the file icon
- * @param textStyle the style of the file texts
+ * @param iconStyle the style of the icon
+ * @param textStyle the style of the texts
  */
-public record FileStyle(@Nullable String iconStyle, @Nullable String textStyle) {
+public record IconTextStyle(@Nullable String iconStyle, @Nullable String textStyle) {
 
 }

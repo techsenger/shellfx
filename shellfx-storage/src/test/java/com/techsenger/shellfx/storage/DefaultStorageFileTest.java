@@ -52,7 +52,7 @@ public class DefaultStorageFileTest {
         root.setVirtual(true);
 
         when(storage.getUri()).thenReturn(rootUri);
-        when(storage.getRootDirectory()).thenReturn(root);
+        when(storage.getRoot()).thenReturn(root);
 
         URI childUri = IS_WINDOWS
                 ? URI.create("file:///C:/home/user/foo/bar")

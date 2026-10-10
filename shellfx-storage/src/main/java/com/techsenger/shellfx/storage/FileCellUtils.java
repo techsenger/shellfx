@@ -67,7 +67,7 @@ public final class FileCellUtils {
      */
     public static <F extends StorageFile> void updateStyles(Labeled cell, @Nullable FontIconView iconView,
             @Nullable F file, FileStyleResolver<F> resolver) {
-        FileStyle fileStyle = file != null ? resolver.resolve(file) : null;
+        IconTextStyle fileStyle = file != null ? resolver.resolve(file) : null;
         cell.setStyle(fileStyle != null ? fileStyle.textStyle() : null);
         if (iconView != null) {
             iconView.setIconStyle(fileStyle != null ? fileStyle.iconStyle() : null);

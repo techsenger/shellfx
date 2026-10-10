@@ -19,20 +19,20 @@ package com.techsenger.shellfx.storage;
 import com.techsenger.annotations.Nullable;
 
 /**
- * Determines the styles a file is shown with. While a view has a resolver, it owns the inline styles of the file
- * elements, so a missing style clears them.
+ * Determines the styles a storage is shown with. While a view has a resolver, it owns the inline styles of the
+ * storage elements, so a missing style clears them.
  *
  * @author Pavel Castornii
- * @param <F> the type of files
+ * @param <S> the type of storages
  */
 @FunctionalInterface
-public interface FileStyleResolver<F extends StorageFile> {
+public interface StorageStyleResolver<S extends FileStorage<?>> {
 
     /**
-     * Resolves the styles of the file.
+     * Resolves the styles of the storage.
      *
-     * @param file the file to resolve the styles for
-     * @return the styles, or {@code null} to clear the styles of the file
+     * @param storage the storage to resolve the styles for
+     * @return the styles, or {@code null} to clear the styles of the storage
      */
-    @Nullable IconTextStyle resolve(F file);
+    @Nullable IconTextStyle resolve(S storage);
 }

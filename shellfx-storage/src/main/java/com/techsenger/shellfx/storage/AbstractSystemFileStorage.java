@@ -61,9 +61,9 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     private final Path path;
 
-    public AbstractSystemFileStorage(FileStorageType type, String displayName, URI rootUri,
+    public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
             Factory<? extends DefaultStorageFile> fileFactory) {
-        super(type, displayName, rootUri);
+        super(type, name, rootUri);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
     }
@@ -80,9 +80,13 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     }
 
     @Override
-    public @Nullable FileStyle createRootStyle(Theme theme) {
-        var style = "-fx-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
-        return new FileStyle(style, style);
+    public @Nullable IconTextStyle createStyle(Theme theme) {
+        return createDefaultStyle(theme);
+    }
+
+    @Override
+    public @Nullable IconTextStyle createRootStyle(Theme theme) {
+        return createDefaultStyle(theme);
     }
 
     @Override
@@ -177,7 +181,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     public T getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException {
         var entryPath = toPath(uri);
         if (entryPath.equals(getPath())) {
-            return getRootDirectory();
+            return getRoot();
         }
         try {
             return createFile(entryPath, uri);
@@ -193,7 +197,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         if (parentUri == null) {
             return null;
         } else if (segments.size() == 1) {
-            return getRootDirectory();
+            return getRoot();
         } else {
             var entryPath = toPath(parentUri);
             try {
@@ -213,7 +217,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     public List<T> getHierarchy(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
         var segments = UriUtils.getPathSegments(getUri(), uri);
         var result = new ArrayList<T>(segments.size() + 1);
-        result.add(getRootDirectory());
+        result.add(getRoot());
         var currentUri = getUri();
         for (var i = 0; i < segments.size(); i++) {
             currentUri = i + 1 == segments.size() ? uri : UriUtils.resolvePath(currentUri, segments.get(i), true);
@@ -229,13 +233,13 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     @Override
     @SuppressWarnings("unchecked")
-    public T getRootDirectory() {
+    public T getRoot() {
         var file = fileFactory.create();
         file.setVirtual(true);
         file.setEntryType(FileEntryType.DIRECTORY);
         file.setUri(getUri());
         file.setStorage(this);
-        file.setName(getDisplayName());
+        file.setName(getName());
         var result = (T) file;
         file.setIcon(resolveIcon(result));
         return result;
@@ -499,6 +503,12 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
      */
     protected void populateFile(DefaultStorageFile file, Path entryPath, BasicFileAttributes attrs) {
         // empty
+    }
+
+    private @Nullable IconTextStyle createDefaultStyle(Theme theme) {
+        var icon = "-fx-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
+        var text = "-fx-text-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
+        return new IconTextStyle(icon, text);
     }
 
     /**

@@ -324,7 +324,7 @@ public class DefaultStorageFile implements StorageFile {
             parents.add(parent);
         }
         if (parents.size() < limit) {
-            parents.add((DefaultStorageFile) storage.getRootDirectory());
+            parents.add((DefaultStorageFile) storage.getRoot());
         }
         return parents;
     }

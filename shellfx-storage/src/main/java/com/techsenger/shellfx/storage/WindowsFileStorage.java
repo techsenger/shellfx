@@ -73,9 +73,9 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
         return result;
     }
 
-    public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri,
+    public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
             Factory<? extends DefaultStorageFile> fileFactory) {
-        super(type, displayName, rootUri, fileFactory);
+        super(type, name, rootUri, fileFactory);
     }
 
     @Override

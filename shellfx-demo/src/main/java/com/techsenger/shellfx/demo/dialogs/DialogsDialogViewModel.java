@@ -48,8 +48,8 @@ import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
 import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.DefaultStorageFile;
 import com.techsenger.shellfx.storage.FileStorage;
-import com.techsenger.shellfx.storage.FileStyle;
 import com.techsenger.shellfx.storage.FileStyleResolver;
+import com.techsenger.shellfx.storage.IconTextStyle;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UnixFileStorage;
 import com.techsenger.shellfx.storage.WindowsFileStorage;
@@ -67,7 +67,7 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends AbstractDialogViewModel<C> {
 
-    private static @Nullable FileStyle resolveDemoStyle(Theme theme, StorageFile file) {
+    private static @Nullable IconTextStyle resolveFileStyle(Theme theme, StorageFile file) {
         if (file.isRoot()) {
             return file.getStorage().createRootStyle(theme);
         }
@@ -85,7 +85,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
             iconColor = ColorUtils.toArgb(180, iconColor);
             textColor = ColorUtils.toArgb(180, textColor);
         }
-        return new FileStyle(iconStyle(iconColor), textStyle(textColor));
+        return new IconTextStyle(iconStyle(iconColor), textStyle(textColor));
     }
 
     private static String iconStyle(int color) {
@@ -181,7 +181,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
             Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN, null)),
             Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS, null)),
             Map.entry(DialogType.OPEN_FILE_HIGHLIGHTED, () -> showFileChooserDialog(FileChooserType.OPEN,
-                    (f) -> resolveDemoStyle(getSettings().getTheme(), f))),
+                    (f) -> resolveFileStyle(getSettings().getTheme(), f))),
             Map.entry(DialogType.PAGE, () -> showPagedDialog(PageMenuType.FLAT)),
             Map.entry(DialogType.TREE_PAGE, () -> showPagedDialog(PageMenuType.TREE))
     );

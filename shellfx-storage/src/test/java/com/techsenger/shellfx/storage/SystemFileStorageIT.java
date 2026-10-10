@@ -402,18 +402,18 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
 
         assertThat(storage.getType()).isEqualTo(FileStorageType.BASE);
-        assertThat(storage.getDisplayName()).isEqualTo("test");
+        assertThat(storage.getName()).isEqualTo("test");
         assertThat(storage.getUri()).isNotNull();
         assertThat(storage.getIcon()).isNotNull();
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
-    public void getRootDirectory_always_virtualDirectoryWithTheUriAndNameOfTheStorage(
+    public void getRoot_always_virtualDirectoryWithTheUriAndNameOfTheStorage(
             Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
 
-        var root = storage.getRootDirectory();
+        var root = storage.getRoot();
 
         assertThat(root.isVirtual()).isTrue();
         assertThat(root.getEntryType()).isEqualTo(FileEntryType.DIRECTORY);
@@ -736,7 +736,7 @@ public class SystemFileStorageIT {
         var hierarchy = storage.getHierarchy(path.toUri());
 
         assertThat(hierarchy).extracting(StorageFile::getName)
-                .containsExactly(storage.getDisplayName(), "first", "second", "file.txt");
+                .containsExactly(storage.getName(), "first", "second", "file.txt");
         assertThat(hierarchy).extracting(StorageFile::getEntryType).containsExactly(FileEntryType.DIRECTORY,
                 FileEntryType.DIRECTORY, FileEntryType.DIRECTORY, FileEntryType.FILE);
         assertThat(hierarchy.get(0).getUri()).isEqualTo(storage.getUri());
@@ -756,7 +756,7 @@ public class SystemFileStorageIT {
         var hierarchy = storage.getHierarchy(second.toUri());
 
         assertThat(hierarchy).extracting(StorageFile::getName)
-                .containsExactly(storage.getDisplayName(), "first", "second");
+                .containsExactly(storage.getName(), "first", "second");
         assertThat(hierarchy.get(2).getUri()).isEqualTo(second.toUri());
     }
 

@@ -87,13 +87,13 @@ public interface FileStorage<T extends StorageFile> {
     URI getUri();
 
     /**
-     * Returns a human-readable name for this storage suitable for display in the UI.
+     * Returns a human-readable name of this storage suitable for display in the UI.
      *
      * <p>Examples: {@code "Disk C:"} on Windows, {@code "/"} on Linux, {@code "Google Drive"}.
      *
-     * @return the display name, never {@code null}
+     * @return the name, never {@code null}
      */
-    String getDisplayName();
+    String getName();
 
     /**
      * Returns the icon representing this storage in the UI (e.g. a location bar or a directory tree root).
@@ -103,14 +103,14 @@ public interface FileStorage<T extends StorageFile> {
     FontIcon<?> getIcon();
 
     /**
-     * Creates the style of the root directory of this storage for the theme, for a {@link FileStyleResolver} to use
-     * when it resolves the style of the root. The root is shown with its icon and its name, so both can be styled.
-     * The storage does not know where it is shown, so views never apply this style themselves.
+     * Creates the style of this storage for the theme, for a {@link FileStyleResolver} to use when it resolves the
+     * style of the storage in a list of storages. The storage is shown with its icon and its name, so both can be
+     * styled. The storage does not know where it is shown, so views never apply this style themselves.
      *
-     * @param theme the theme the root is shown in
-     * @return the style, or {@code null} if the storage has no style of its own for the root
+     * @param theme the theme the storage is shown in
+     * @return the style, or {@code null} if the storage has no style of its own
      */
-    @Nullable FileStyle createRootStyle(Theme theme);
+    @Nullable IconTextStyle createStyle(Theme theme);
 
     /**
      * Returns the root directory entry of this storage.
@@ -120,7 +120,17 @@ public interface FileStorage<T extends StorageFile> {
      *
      * @return the root entry, never {@code null}
      */
-    T getRootDirectory();
+    T getRoot();
+
+    /**
+     * Creates the style of the root directory of this storage for the theme, for a {@link FileStyleResolver} to use
+     * when it resolves the style of the root. The root is shown with its icon and its name, so both can be styled.
+     * The storage does not know where it is shown, so views never apply this style themselves.
+     *
+     * @param theme the theme the root is shown in
+     * @return the style, or {@code null} if the storage has no style of its own for the root
+     */
+    @Nullable IconTextStyle createRootStyle(Theme theme);
 
     /**
      * Returns the direct subdirectories of the directory identified by {@code uri}, excluding regular files.

@@ -65,9 +65,9 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
 
     private final boolean posixSupported;
 
-    public UnixFileStorage(FileStorageType type, String displayName, URI rootUri,
+    public UnixFileStorage(FileStorageType type, String name, URI rootUri,
             Factory<? extends DefaultStorageFile> fileFactory) {
-        super(type, displayName, rootUri, fileFactory);
+        super(type, name, rootUri, fileFactory);
         this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
     }
 

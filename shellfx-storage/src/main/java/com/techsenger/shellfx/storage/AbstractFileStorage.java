@@ -27,13 +27,13 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
 
     private final FileStorageType type;
 
-    private final String displayName;
+    private final String name;
 
     private final URI uri;
 
-    public AbstractFileStorage(FileStorageType type, String displayName, URI uri) {
+    public AbstractFileStorage(FileStorageType type, String name, URI uri) {
         this.type = type;
-        this.displayName = displayName;
+        this.name = name;
         var normalized = uri.normalize();
         this.uri = normalized;
     }
@@ -44,8 +44,8 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
     }
 
     @Override
-    public String getDisplayName() {
-        return displayName;
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -57,7 +57,7 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
     public int hashCode() {
         int hash = 7;
         hash = 79 * hash + Objects.hashCode(this.type);
-        hash = 79 * hash + Objects.hashCode(this.displayName);
+        hash = 79 * hash + Objects.hashCode(this.name);
         hash = 79 * hash + Objects.hashCode(this.uri.toString());
         return hash;
     }
@@ -74,7 +74,7 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
             return false;
         }
         final AbstractFileStorage other = (AbstractFileStorage) obj;
-        if (!Objects.equals(this.displayName, other.displayName)) {
+        if (!Objects.equals(this.name, other.name)) {
             return false;
         }
         if (!Objects.equals(this.uri.toString(), other.uri.toString())) {
@@ -85,6 +85,6 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
 
     @Override
     public String toString() {
-        return "AbstractFileStorage[" + "type=" + type + ", displayName=" + displayName + ", uri=" + uri + ']';
+        return "AbstractFileStorage[" + "type=" + type + ", name=" + name + ", uri=" + uri + ']';
     }
 }

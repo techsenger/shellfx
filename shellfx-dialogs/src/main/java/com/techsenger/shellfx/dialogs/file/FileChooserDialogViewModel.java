@@ -625,7 +625,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             List<T> locations = new ArrayList<>();
             for (var storage : storages) {
                 if (requestedStorage != storage) {
-                    locations.add(storage.getRootDirectory());
+                    locations.add(storage.getRoot());
                     continue;
                 }
                 List<T> hierarchy;
@@ -737,12 +737,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private void setDefaultDirectory() {
         var s = FileStorageUtils.findLocal(storages).stream().findFirst();
-        this.directory.set(s.isPresent() ? s.get().getRootDirectory() : null);
+        this.directory.set(s.isPresent() ? s.get().getRoot() : null);
     }
 
     private T resolveDirectory(FileStorage<T> storage, URI uri) {
         if (uri.equals(storage.getUri())) {
-            return storage.getRootDirectory();
+            return storage.getRoot();
         }
         try {
             return storage.getFile(uri);
