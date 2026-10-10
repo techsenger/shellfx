@@ -78,7 +78,8 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     }
 
     @Override
-    public List<T> getDirectories(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+    public List<T> getDirectories(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException {
         var result = new ArrayList<T>();
         var entryPath = toPath(uri);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(entryPath)) {
@@ -100,11 +101,13 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         } catch (IOException e) {
             throw diagnoseReadFailure(entryPath, e);
         }
+        notifyListeners(uri, FileOperations.LIST, operationType);
         return result;
     }
 
     @Override
-    public List<T> getFiles(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+    public List<T> getFiles(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException {
         var result = new ArrayList<T>();
         var entryPath = toPath(uri);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(entryPath)) {
@@ -121,11 +124,13 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         } catch (IOException e) {
             throw diagnoseReadFailure(entryPath, e);
         }
+        notifyListeners(uri, FileOperations.LIST, operationType);
         return result;
     }
 
     @Override
-    public List<T> getFilesRecursively(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+    public List<T> getFilesRecursively(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException {
         var result = new ArrayList<T>();
         var entryPath = toPath(uri);
         try {
@@ -162,47 +167,59 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         } catch (IOException e) {
             throw diagnoseReadFailure(entryPath, e);
         }
+        notifyListeners(uri, FileOperations.LIST, operationType);
         return result;
     }
 
     @Override
-    public T getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException {
+    public T getFile(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException {
         var entryPath = toPath(uri);
+        T result;
         if (entryPath.equals(getPath())) {
-            return getRoot();
-        }
-        try {
-            return createFile(entryPath, uri);
-        } catch (IOException ex) {
-            throw diagnoseReadFailure(entryPath, ex);
-        }
-    }
-
-    @Override
-    public T getParent(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
-        var segments = UriUtils.getPathSegments(getUri(), uri);
-        var parentUri = getParentUri(getUri(), uri, segments);
-        if (parentUri == null) {
-            return null;
-        } else if (segments.size() == 1) {
-            return getRoot();
+            result = getRoot();
         } else {
-            var entryPath = toPath(parentUri);
             try {
-                return createFile(entryPath, parentUri);
+                result = createFile(entryPath, uri);
             } catch (IOException ex) {
                 throw diagnoseReadFailure(entryPath, ex);
             }
         }
+        notifyListeners(uri, FileOperations.LIST, operationType);
+        return result;
     }
 
     @Override
-    public @Nullable T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException {
-        return getParent(file.getUri());
+    public @Nullable T getParent(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException {
+        var segments = UriUtils.getPathSegments(getUri(), uri);
+        var parentUri = getParentUri(getUri(), uri, segments);
+        T result;
+        if (parentUri == null) {
+            result = null;
+        } else if (segments.size() == 1) {
+            result = getRoot();
+        } else {
+            var entryPath = toPath(parentUri);
+            try {
+                result = createFile(entryPath, parentUri);
+            } catch (IOException ex) {
+                throw diagnoseReadFailure(entryPath, ex);
+            }
+        }
+        notifyListeners(uri, FileOperations.LIST, operationType);
+        return result;
     }
 
     @Override
-    public List<T> getHierarchy(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+    public @Nullable T getParent(T file, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException {
+        return getParent(file.getUri(), operationType);
+    }
+
+    @Override
+    public List<T> getHierarchy(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException {
         var segments = UriUtils.getPathSegments(getUri(), uri);
         var result = new ArrayList<T>(segments.size() + 1);
         result.add(getRoot());
@@ -216,6 +233,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
                 throw diagnoseReadFailure(entryPath, ex);
             }
         }
+        notifyListeners(uri, FileOperations.LIST, operationType);
         return result;
     }
 
@@ -234,34 +252,38 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     }
 
     @Override
-    public void createDirectory(URI uri) throws NoSuchFileException, FileAlreadyExistsException,
-            AccessDeniedException, IOException {
+    public void createDirectory(URI uri, OperationType operationType) throws NoSuchFileException,
+            FileAlreadyExistsException, AccessDeniedException, IOException {
         var entryPath = toPath(uri);
         try {
             Files.createDirectory(entryPath);
         } catch (IOException ex) {
             throw diagnoseCreateFailure(entryPath, ex);
         }
+        notifyListeners(uri, FileOperations.CREATE, operationType);
     }
 
     @Override
-    public T createFile(String name, URI uri) throws NoSuchFileException, FileAlreadyExistsException,
-            AccessDeniedException, IOException {
+    public T createFile(URI uri, String name, OperationType operationType) throws NoSuchFileException,
+            FileAlreadyExistsException, AccessDeniedException, IOException {
         var entryPath = toPath(uri);
+        T result;
         try {
             Files.createFile(entryPath);
-            return createFile(entryPath, uri);
+            result = createFile(entryPath, uri);
         } catch (InvalidFileException ex) {
             // the file was created, only its entry could not be built, so "already exists" would be wrong
             throw ex;
         } catch (IOException ex) {
             throw diagnoseCreateFailure(entryPath, ex);
         }
+        notifyListeners(uri, FileOperations.CREATE, operationType);
+        return result;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T createVirtual(FileEntryType entryType, String name, @Nullable URI uri) {
+    public T createVirtual(@Nullable URI uri, FileEntryType entryType, String name) {
         var file = fileFactory.create();
         file.setEntryType(entryType);
         file.setName(name);
@@ -274,38 +296,47 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     }
 
     @Override
-    public void renameFile(URI uri, String newName) throws NoSuchFileException, FileAlreadyExistsException,
-            AccessDeniedException, IOException {
+    public void renameFile(URI uri, String newName, OperationType operationType) throws NoSuchFileException,
+            FileAlreadyExistsException, AccessDeniedException, IOException {
         var entryPath = toPath(uri);
+        var newPath = entryPath.resolveSibling(newName);
         try {
-            Files.move(entryPath, entryPath.resolveSibling(newName));
+            Files.move(entryPath, newPath);
         } catch (IOException ex) {
             throw diagnoseDeleteFailure(entryPath, ex);
         }
+        notifyListeners(newPath.toUri(), FileOperations.RENAME, operationType);
     }
 
     @Override
-    public void writeFile(URI uri, String content, Charset charset) throws AccessDeniedException, IOException {
+    public void writeFile(URI uri, String content, Charset charset, OperationType operationType)
+            throws AccessDeniedException, IOException {
         var entryPath = toPath(uri);
         try {
             FileUtils.writeFile(entryPath, content, charset);
         } catch (IOException ex) {
             throw diagnoseWriteFailure(entryPath, ex);
         }
+        notifyListeners(uri, FileOperations.WRITE, operationType);
     }
 
     @Override
-    public String readFile(URI uri, Charset charset) throws NoSuchFileException, AccessDeniedException, IOException {
+    public String readFile(URI uri, Charset charset, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException {
         var entryPath = toPath(uri);
+        String result;
         try {
-            return FileUtils.readFile(entryPath, charset);
+            result = FileUtils.readFile(entryPath, charset);
         } catch (IOException ex) {
             throw diagnoseReadFailure(entryPath, ex);
         }
+        notifyListeners(uri, FileOperations.READ, operationType);
+        return result;
     }
 
     @Override
-    public void writeFile(URI uri, byte[] content) throws AccessDeniedException, IOException {
+    public void writeFile(URI uri, byte[] content, OperationType operationType)
+            throws AccessDeniedException, IOException {
         var entryPath = toPath(uri);
         try (OutputStream out = Files.newOutputStream(entryPath,
                 StandardOpenOption.CREATE,
@@ -315,16 +346,21 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         } catch (IOException ex) {
             throw diagnoseWriteFailure(entryPath, ex);
         }
+        notifyListeners(uri, FileOperations.WRITE, operationType);
     }
 
     @Override
-    public byte[] readFile(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+    public byte[] readFile(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException {
         var entryPath = toPath(uri);
+        byte[] result;
         try (InputStream in = Files.newInputStream(entryPath)) {
-            return in.readAllBytes();
+            result = in.readAllBytes();
         } catch (IOException ex) {
             throw diagnoseReadFailure(entryPath, ex);
         }
+        notifyListeners(uri, FileOperations.READ, operationType);
+        return result;
     }
 
     protected Factory<? extends DefaultStorageFile> getFileFactory() {

@@ -107,7 +107,7 @@ public final class FileStorageUtils {
             return Optional.empty();
         }
         try {
-            return Optional.of(storage.get().getFile(homeUri));
+            return Optional.of(storage.get().getFile(homeUri, OperationType.SECONDARY));
         } catch (Exception ex) {
             logger.error("Error getting home file", ex);
             return Optional.empty();

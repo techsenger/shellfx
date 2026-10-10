@@ -130,7 +130,7 @@ public class SystemFileStorageIT {
         Files.writeString(root.resolve("file.txt"), "hello");
         Files.createDirectory(root.resolve("folder"));
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertThat(files).extracting(StorageFile::getName).containsExactlyInAnyOrder("file.txt", "folder");
         var file = find(files, "file.txt");
@@ -153,7 +153,7 @@ public class SystemFileStorageIT {
         var target = Files.writeString(root.resolve("target.txt"), "hello");
         Files.createSymbolicLink(root.resolve("link"), target);
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         var link = find(files, "link");
         assertThat(link.getEntryType()).isEqualTo(FileEntryType.LINK);
@@ -174,7 +174,7 @@ public class SystemFileStorageIT {
         var target = Files.createDirectory(root.resolve("target"));
         Files.createSymbolicLink(root.resolve("link"), target);
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         var link = find(files, "link");
         assertThat(link.getEntryType()).isEqualTo(FileEntryType.LINK);
@@ -195,7 +195,7 @@ public class SystemFileStorageIT {
         var relativeTarget = subFolder.getFileSystem().getPath("..", "real.txt");
         Files.createSymbolicLink(subFolder.resolve("link"), relativeTarget);
 
-        var files = storage.getFiles(subFolder.toUri());
+        var files = storage.getFiles(subFolder.toUri(), OperationType.PRIMARY);
 
         var link = find(files, "link");
         assertThat(link.isLink()).isTrue();
@@ -212,7 +212,7 @@ public class SystemFileStorageIT {
         var folder = Files.createDirectory(root.resolve("tmp"));
         Files.createSymbolicLink(root.resolve("link"), root.getFileSystem().getPath(".", "tmp"));
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files, new ExpectedTarget("link", folder, FileEntryType.DIRECTORY));
         assertThat(find(files, "link").getLinkTarget().getUri().toString()).doesNotContain("/./");
@@ -227,7 +227,7 @@ public class SystemFileStorageIT {
         var missing = root.resolve("missing.txt");
         Files.createSymbolicLink(root.resolve("link"), missing);
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         var link = find(files, "link");
         assertThat(link.getEntryType()).isEqualTo(FileEntryType.LINK);
@@ -249,7 +249,7 @@ public class SystemFileStorageIT {
         var link2 = Files.createSymbolicLink(root.resolve("link2"), link3);
         Files.createSymbolicLink(root.resolve("link1"), link2);
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files,
                 new ExpectedTarget("link1", link2, FileEntryType.LINK),
@@ -268,7 +268,7 @@ public class SystemFileStorageIT {
         var link2 = Files.createSymbolicLink(root.resolve("link2"), link3);
         Files.createSymbolicLink(root.resolve("link1"), link2);
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files,
                 new ExpectedTarget("link1", link2, FileEntryType.LINK),
@@ -287,7 +287,7 @@ public class SystemFileStorageIT {
         var link2 = Files.createSymbolicLink(root.resolve("link2"), link3);
         Files.createSymbolicLink(root.resolve("link1"), link2);
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files,
                 new ExpectedTarget("link1", link2, FileEntryType.LINK),
@@ -306,7 +306,7 @@ public class SystemFileStorageIT {
         Files.createSymbolicLink(a, b);
         Files.createSymbolicLink(b, a);
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files,
                 new ExpectedTarget("a", b, FileEntryType.LINK),
@@ -322,7 +322,7 @@ public class SystemFileStorageIT {
         var target = Files.createDirectory(root.resolve("target"));
         var link = Files.createSymbolicLink(root.resolve("link"), target);
 
-        var file = storage.getFile(link.toUri());
+        var file = storage.getFile(link.toUri(), OperationType.PRIMARY);
 
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.LINK);
         assertThat(file.isLink()).isTrue();
@@ -339,7 +339,7 @@ public class SystemFileStorageIT {
         var target = Files.createDirectory(root.resolve("target"));
         Files.createSymbolicLink(root.resolve("link"), target);
 
-        var directories = storage.getDirectories(root.toUri());
+        var directories = storage.getDirectories(root.toUri(), OperationType.PRIMARY);
 
         assertThat(directories).extracting(StorageFile::getName).containsExactly("target");
     }
@@ -354,7 +354,7 @@ public class SystemFileStorageIT {
         Files.writeString(target.resolve("inside.txt"), "hello");
         Files.createSymbolicLink(root.resolve("link"), target);
 
-        var files = storage.getFilesRecursively(root.toUri());
+        var files = storage.getFilesRecursively(root.toUri(), OperationType.PRIMARY);
 
         assertThat(files).extracting(StorageFile::getName).containsExactlyInAnyOrder("target", "inside.txt", "link");
         assertThat(find(files, "link").isLink()).isTrue();
@@ -369,7 +369,7 @@ public class SystemFileStorageIT {
         Files.writeString(root.resolve(".dotfile"), "hello");
         Files.writeString(root.resolve("visible"), "hello");
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertThat(find(files, ".dotfile").isHidden()).isEqualTo(!(storage instanceof WindowsFileStorage<?>));
         assertThat(find(files, "visible").isHidden()).isFalse();
@@ -429,7 +429,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var uri = rootOf(storage).resolve("pending").toUri();
 
-        var file = storage.createVirtual(FileEntryType.DIRECTORY, "pending", uri);
+        var file = storage.createVirtual(uri, FileEntryType.DIRECTORY, "pending");
 
         assertThat(file.isVirtual()).isTrue();
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.DIRECTORY);
@@ -445,7 +445,7 @@ public class SystemFileStorageIT {
             Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
 
-        var file = storage.createVirtual(FileEntryType.FILE, "new.txt", null);
+        var file = storage.createVirtual(null, FileEntryType.FILE, "new.txt");
 
         assertThat(file.isVirtual()).isTrue();
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.FILE);
@@ -463,7 +463,7 @@ public class SystemFileStorageIT {
         Files.createDirectory(root.resolve("b"));
         Files.writeString(root.resolve("file.txt"), CONTENT);
 
-        var directories = storage.getDirectories(root.toUri());
+        var directories = storage.getDirectories(root.toUri(), OperationType.PRIMARY);
 
         assertThat(directories).extracting(StorageFile::getName).containsExactlyInAnyOrder("a", "b");
         assertThat(directories).allMatch(StorageFile::isDirectory);
@@ -475,7 +475,7 @@ public class SystemFileStorageIT {
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
-        assertThat(storage.getDirectories(rootOf(storage).toUri())).isEmpty();
+        assertThat(storage.getDirectories(rootOf(storage).toUri(), OperationType.PRIMARY)).isEmpty();
     }
 
     @ParameterizedTest
@@ -485,7 +485,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing").toUri();
 
-        assertThatThrownBy(() -> storage.getDirectories(missing)).isInstanceOf(NoSuchFileException.class);
+        assertThatThrownBy(() -> storage.getDirectories(missing, OperationType.PRIMARY))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
     @ParameterizedTest
@@ -495,7 +496,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var file = Files.writeString(rootOf(storage).resolve("file.txt"), CONTENT);
 
-        assertThatThrownBy(() -> storage.getDirectories(file.toUri())).isInstanceOf(NotDirectoryException.class);
+        assertThatThrownBy(() -> storage.getDirectories(file.toUri(), OperationType.PRIMARY))
+                .isInstanceOf(NotDirectoryException.class);
     }
 
     @ParameterizedTest
@@ -508,7 +510,7 @@ public class SystemFileStorageIT {
         Files.writeString(folder.resolve("deep.txt"), CONTENT);
         Files.writeString(root.resolve("file.txt"), CONTENT);
 
-        var files = storage.getFiles(root.toUri());
+        var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertThat(files).extracting(StorageFile::getName).containsExactlyInAnyOrder("folder", "file.txt");
     }
@@ -519,7 +521,7 @@ public class SystemFileStorageIT {
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
-        assertThat(storage.getFiles(rootOf(storage).toUri())).isEmpty();
+        assertThat(storage.getFiles(rootOf(storage).toUri(), OperationType.PRIMARY)).isEmpty();
     }
 
     @ParameterizedTest
@@ -529,7 +531,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing").toUri();
 
-        assertThatThrownBy(() -> storage.getFiles(missing)).isInstanceOf(NoSuchFileException.class);
+        assertThatThrownBy(() -> storage.getFiles(missing, OperationType.PRIMARY))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
     @ParameterizedTest
@@ -539,7 +542,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var file = Files.writeString(rootOf(storage).resolve("file.txt"), CONTENT);
 
-        assertThatThrownBy(() -> storage.getFiles(file.toUri())).isInstanceOf(NotDirectoryException.class);
+        assertThatThrownBy(() -> storage.getFiles(file.toUri(), OperationType.PRIMARY))
+                .isInstanceOf(NotDirectoryException.class);
     }
 
     @ParameterizedTest
@@ -554,7 +558,7 @@ public class SystemFileStorageIT {
         Files.writeString(outer.resolve("middle.txt"), CONTENT);
         Files.writeString(root.resolve("top.txt"), CONTENT);
 
-        var files = storage.getFilesRecursively(root.toUri());
+        var files = storage.getFilesRecursively(root.toUri(), OperationType.PRIMARY);
 
         var names = files.stream().map(StorageFile::getName).toList();
         assertThat(names).containsExactlyInAnyOrder("outer", "inner", "deep.txt", "middle.txt", "top.txt");
@@ -571,7 +575,7 @@ public class SystemFileStorageIT {
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
         Files.writeString(folder.resolve("inside.txt"), CONTENT);
 
-        var files = storage.getFilesRecursively(folder.toUri());
+        var files = storage.getFilesRecursively(folder.toUri(), OperationType.PRIMARY);
 
         assertThat(files).extracting(StorageFile::getName).containsExactly("inside.txt");
     }
@@ -582,7 +586,7 @@ public class SystemFileStorageIT {
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
-        assertThat(storage.getFilesRecursively(rootOf(storage).toUri())).isEmpty();
+        assertThat(storage.getFilesRecursively(rootOf(storage).toUri(), OperationType.PRIMARY)).isEmpty();
     }
 
     @ParameterizedTest
@@ -592,7 +596,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing").toUri();
 
-        assertThatThrownBy(() -> storage.getFilesRecursively(missing)).isInstanceOf(NoSuchFileException.class);
+        assertThatThrownBy(() -> storage.getFilesRecursively(missing, OperationType.PRIMARY))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
     @ParameterizedTest
@@ -602,7 +607,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.write(rootOf(storage).resolve("file.txt"), new byte[] {1, 2, 3});
 
-        var file = storage.getFile(path.toUri());
+        var file = storage.getFile(path.toUri(), OperationType.PRIMARY);
 
         assertThat(file.getName()).isEqualTo("file.txt");
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.FILE);
@@ -618,7 +623,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.createDirectory(rootOf(storage).resolve("folder"));
 
-        var file = storage.getFile(path.toUri());
+        var file = storage.getFile(path.toUri(), OperationType.PRIMARY);
 
         assertThat(file.getName()).isEqualTo("folder");
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.DIRECTORY);
@@ -631,7 +636,7 @@ public class SystemFileStorageIT {
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
-        var file = storage.getFile(storage.getUri());
+        var file = storage.getFile(storage.getUri(), OperationType.PRIMARY);
 
         assertThat(file.isVirtual()).isTrue();
         assertThat(file.getUri()).isEqualTo(storage.getUri());
@@ -644,7 +649,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing.txt").toUri();
 
-        assertThatThrownBy(() -> storage.getFile(missing)).isInstanceOf(NoSuchFileException.class);
+        assertThatThrownBy(() -> storage.getFile(missing, OperationType.PRIMARY))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
     @ParameterizedTest
@@ -653,7 +659,7 @@ public class SystemFileStorageIT {
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
-        assertThat(storage.getParent(storage.getUri())).isNull();
+        assertThat(storage.getParent(storage.getUri(), OperationType.PRIMARY)).isNull();
     }
 
     @ParameterizedTest
@@ -663,7 +669,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("file.txt"), CONTENT);
 
-        var parent = storage.getParent(path.toUri());
+        var parent = storage.getParent(path.toUri(), OperationType.PRIMARY);
 
         assertThat(parent).isNotNull();
         assertThat(parent.isVirtual()).isTrue();
@@ -678,7 +684,7 @@ public class SystemFileStorageIT {
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
         var path = Files.writeString(folder.resolve("file.txt"), CONTENT);
 
-        var parent = storage.getParent(path.toUri());
+        var parent = storage.getParent(path.toUri(), OperationType.PRIMARY);
 
         assertThat(parent).isNotNull();
         assertThat(parent.getName()).isEqualTo("folder");
@@ -693,9 +699,9 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
         var path = Files.writeString(folder.resolve("file.txt"), CONTENT);
-        var file = storage.getFile(path.toUri());
+        var file = storage.getFile(path.toUri(), OperationType.PRIMARY);
 
-        var parent = storage.getParent(file);
+        var parent = storage.getParent(file, OperationType.PRIMARY);
 
         assertThat(parent).isNotNull();
         assertThat(parent.getName()).isEqualTo("folder");
@@ -708,7 +714,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var orphan = rootOf(storage).resolve("missing").resolve("file.txt").toUri();
 
-        assertThatThrownBy(() -> storage.getParent(orphan)).isInstanceOf(NoSuchFileException.class);
+        assertThatThrownBy(() -> storage.getParent(orphan, OperationType.PRIMARY))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
     @ParameterizedTest
@@ -717,7 +724,7 @@ public class SystemFileStorageIT {
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
-        var hierarchy = storage.getHierarchy(storage.getUri());
+        var hierarchy = storage.getHierarchy(storage.getUri(), OperationType.PRIMARY);
 
         assertThat(hierarchy).hasSize(1);
         assertThat(hierarchy.get(0).isVirtual()).isTrue();
@@ -733,7 +740,7 @@ public class SystemFileStorageIT {
         var second = Files.createDirectory(first.resolve("second"));
         var path = Files.writeString(second.resolve("file.txt"), CONTENT);
 
-        var hierarchy = storage.getHierarchy(path.toUri());
+        var hierarchy = storage.getHierarchy(path.toUri(), OperationType.PRIMARY);
 
         assertThat(hierarchy).extracting(StorageFile::getName)
                 .containsExactly(storage.getName(), "first", "second", "file.txt");
@@ -753,7 +760,7 @@ public class SystemFileStorageIT {
         var first = Files.createDirectory(rootOf(storage).resolve("first"));
         var second = Files.createDirectory(first.resolve("second"));
 
-        var hierarchy = storage.getHierarchy(second.toUri());
+        var hierarchy = storage.getHierarchy(second.toUri(), OperationType.PRIMARY);
 
         assertThat(hierarchy).extracting(StorageFile::getName)
                 .containsExactly(storage.getName(), "first", "second");
@@ -767,7 +774,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing").resolve("file.txt").toUri();
 
-        assertThatThrownBy(() -> storage.getHierarchy(missing)).isInstanceOf(NoSuchFileException.class);
+        assertThatThrownBy(() -> storage.getHierarchy(missing, OperationType.PRIMARY))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
     @ParameterizedTest
@@ -777,7 +785,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("folder");
 
-        storage.createDirectory(path.toUri());
+        storage.createDirectory(path.toUri(), OperationType.PRIMARY);
 
         assertThat(Files.isDirectory(path)).isTrue();
     }
@@ -790,7 +798,8 @@ public class SystemFileStorageIT {
         var parent = rootOf(storage).resolve("missing");
         var path = parent.resolve("folder");
 
-        assertThatThrownBy(() -> storage.createDirectory(path.toUri())).isInstanceOf(NoSuchFileException.class);
+        assertThatThrownBy(() -> storage.createDirectory(path.toUri(), OperationType.PRIMARY))
+                .isInstanceOf(NoSuchFileException.class);
         assertThat(Files.exists(parent)).isFalse();
     }
 
@@ -801,7 +810,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.createDirectory(rootOf(storage).resolve("folder"));
 
-        assertThatThrownBy(() -> storage.createDirectory(path.toUri()))
+        assertThatThrownBy(() -> storage.createDirectory(path.toUri(), OperationType.PRIMARY))
                 .isInstanceOf(FileAlreadyExistsException.class);
     }
 
@@ -812,7 +821,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("entry"), CONTENT);
 
-        assertThatThrownBy(() -> storage.createDirectory(path.toUri()))
+        assertThatThrownBy(() -> storage.createDirectory(path.toUri(), OperationType.PRIMARY))
                 .isInstanceOf(FileAlreadyExistsException.class);
         assertThat(Files.isRegularFile(path)).isTrue();
     }
@@ -824,7 +833,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("new.txt");
 
-        var file = storage.createFile("new.txt", path.toUri());
+        var file = storage.createFile(path.toUri(), "new.txt", OperationType.PRIMARY);
 
         assertThat(Files.isRegularFile(path)).isTrue();
         assertThat(Files.size(path)).isZero();
@@ -841,7 +850,7 @@ public class SystemFileStorageIT {
         var parent = rootOf(storage).resolve("missing");
         var path = parent.resolve("new.txt");
 
-        assertThatThrownBy(() -> storage.createFile("new.txt", path.toUri()))
+        assertThatThrownBy(() -> storage.createFile(path.toUri(), "new.txt", OperationType.PRIMARY))
                 .isInstanceOf(NoSuchFileException.class);
         assertThat(Files.exists(parent)).isFalse();
     }
@@ -853,7 +862,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("file.txt"), CONTENT);
 
-        assertThatThrownBy(() -> storage.createFile("file.txt", path.toUri()))
+        assertThatThrownBy(() -> storage.createFile(path.toUri(), "file.txt", OperationType.PRIMARY))
                 .isInstanceOf(FileAlreadyExistsException.class);
         assertThat(Files.readString(path)).isEqualTo(CONTENT);
     }
@@ -865,7 +874,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.createDirectory(rootOf(storage).resolve("entry"));
 
-        assertThatThrownBy(() -> storage.createFile("entry", path.toUri()))
+        assertThatThrownBy(() -> storage.createFile(path.toUri(), "entry", OperationType.PRIMARY))
                 .isInstanceOf(FileAlreadyExistsException.class);
         assertThat(Files.isDirectory(path)).isTrue();
     }
@@ -878,7 +887,7 @@ public class SystemFileStorageIT {
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
         var path = Files.writeString(folder.resolve("old.txt"), CONTENT);
 
-        storage.renameFile(path.toUri(), "new.txt");
+        storage.renameFile(path.toUri(), "new.txt", OperationType.PRIMARY);
 
         assertThat(Files.exists(path)).isFalse();
         assertThat(Files.readString(folder.resolve("new.txt"))).isEqualTo(CONTENT);
@@ -893,7 +902,7 @@ public class SystemFileStorageIT {
         var folder = Files.createDirectory(root.resolve("old"));
         Files.writeString(folder.resolve("inside.txt"), CONTENT);
 
-        storage.renameFile(folder.toUri(), "new");
+        storage.renameFile(folder.toUri(), "new", OperationType.PRIMARY);
 
         assertThat(Files.exists(folder)).isFalse();
         assertThat(Files.readString(root.resolve("new").resolve("inside.txt"))).isEqualTo(CONTENT);
@@ -906,7 +915,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing.txt");
 
-        assertThatThrownBy(() -> storage.renameFile(missing.toUri(), "new.txt"))
+        assertThatThrownBy(() -> storage.renameFile(missing.toUri(), "new.txt", OperationType.PRIMARY))
                 .isInstanceOf(NoSuchFileException.class);
         assertThat(Files.exists(rootOf(storage).resolve("new.txt"))).isFalse();
     }
@@ -920,7 +929,7 @@ public class SystemFileStorageIT {
         var source = Files.writeString(root.resolve("source.txt"), "source");
         var taken = Files.writeString(root.resolve("taken.txt"), "taken");
 
-        assertThatThrownBy(() -> storage.renameFile(source.toUri(), "taken.txt"))
+        assertThatThrownBy(() -> storage.renameFile(source.toUri(), "taken.txt", OperationType.PRIMARY))
                 .isInstanceOf(FileAlreadyExistsException.class);
         assertThat(Files.readString(source)).isEqualTo("source");
         assertThat(Files.readString(taken)).isEqualTo("taken");
@@ -933,7 +942,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("data.bin");
 
-        storage.writeFile(path.toUri(), new byte[] {1, 2, 3});
+        storage.writeFile(path.toUri(), new byte[] {1, 2, 3}, OperationType.PRIMARY);
 
         assertThat(Files.readAllBytes(path)).containsExactly(1, 2, 3);
     }
@@ -945,7 +954,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.write(rootOf(storage).resolve("data.bin"), new byte[] {9, 9, 9, 9, 9});
 
-        storage.writeFile(path.toUri(), new byte[] {1, 2});
+        storage.writeFile(path.toUri(), new byte[] {1, 2}, OperationType.PRIMARY);
 
         assertThat(Files.readAllBytes(path)).containsExactly(1, 2);
     }
@@ -957,7 +966,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("missing").resolve("data.bin");
 
-        assertThatThrownBy(() -> storage.writeFile(path.toUri(), new byte[] {1}))
+        assertThatThrownBy(() -> storage.writeFile(path.toUri(), new byte[] {1}, OperationType.PRIMARY))
                 .isInstanceOf(NoSuchFileException.class);
     }
 
@@ -968,7 +977,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
 
-        assertThatThrownBy(() -> storage.writeFile(folder.toUri(), new byte[] {1})).isInstanceOf(IOException.class);
+        assertThatThrownBy(() -> storage.writeFile(folder.toUri(), new byte[] {1}, OperationType.PRIMARY))
+                .isInstanceOf(IOException.class);
         assertThat(Files.isDirectory(folder)).isTrue();
     }
 
@@ -979,7 +989,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("text.txt");
 
-        storage.writeFile(path.toUri(), CONTENT, StandardCharsets.UTF_8);
+        storage.writeFile(path.toUri(), CONTENT, StandardCharsets.UTF_8, OperationType.PRIMARY);
 
         assertThat(Files.readString(path, StandardCharsets.UTF_8)).isEqualTo(CONTENT);
     }
@@ -991,7 +1001,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("text.txt"), "a much longer old content");
 
-        storage.writeFile(path.toUri(), CONTENT, StandardCharsets.ISO_8859_1);
+        storage.writeFile(path.toUri(), CONTENT, StandardCharsets.ISO_8859_1, OperationType.PRIMARY);
 
         assertThat(Files.readAllBytes(path)).containsExactly(0x63, 0x61, 0x66, 0xE9);
     }
@@ -1003,7 +1013,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("missing").resolve("text.txt");
 
-        assertThatThrownBy(() -> storage.writeFile(path.toUri(), CONTENT, StandardCharsets.UTF_8))
+        assertThatThrownBy(() ->
+                storage.writeFile(path.toUri(), CONTENT, StandardCharsets.UTF_8, OperationType.PRIMARY))
                 .isInstanceOf(NoSuchFileException.class);
     }
 
@@ -1014,7 +1025,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
 
-        assertThatThrownBy(() -> storage.writeFile(folder.toUri(), CONTENT, StandardCharsets.UTF_8))
+        assertThatThrownBy(() ->
+                storage.writeFile(folder.toUri(), CONTENT, StandardCharsets.UTF_8, OperationType.PRIMARY))
                 .isInstanceOf(IOException.class);
         assertThat(Files.isDirectory(folder)).isTrue();
     }
@@ -1026,7 +1038,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.write(rootOf(storage).resolve("data.bin"), new byte[] {1, 2, 3});
 
-        assertThat(storage.readFile(path.toUri())).containsExactly(1, 2, 3);
+        assertThat(storage.readFile(path.toUri(), OperationType.PRIMARY)).containsExactly(1, 2, 3);
     }
 
     @ParameterizedTest
@@ -1036,7 +1048,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.createFile(rootOf(storage).resolve("empty.bin"));
 
-        assertThat(storage.readFile(path.toUri())).isEmpty();
+        assertThat(storage.readFile(path.toUri(), OperationType.PRIMARY)).isEmpty();
     }
 
     @ParameterizedTest
@@ -1046,7 +1058,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing.bin").toUri();
 
-        assertThatThrownBy(() -> storage.readFile(missing)).isInstanceOf(NoSuchFileException.class);
+        assertThatThrownBy(() -> storage.readFile(missing, OperationType.PRIMARY))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
     @ParameterizedTest
@@ -1056,7 +1069,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
 
-        assertThatThrownBy(() -> storage.readFile(folder.toUri())).isInstanceOf(IOException.class);
+        assertThatThrownBy(() -> storage.readFile(folder.toUri(), OperationType.PRIMARY))
+                .isInstanceOf(IOException.class);
     }
 
     @ParameterizedTest
@@ -1066,7 +1080,8 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("text.txt"), CONTENT, StandardCharsets.ISO_8859_1);
 
-        assertThat(storage.readFile(path.toUri(), StandardCharsets.ISO_8859_1)).isEqualTo(CONTENT);
+        assertThat(storage.readFile(path.toUri(), StandardCharsets.ISO_8859_1, OperationType.PRIMARY))
+                .isEqualTo(CONTENT);
     }
 
     @ParameterizedTest
@@ -1076,7 +1091,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing.txt").toUri();
 
-        assertThatThrownBy(() -> storage.readFile(missing, StandardCharsets.UTF_8))
+        assertThatThrownBy(() -> storage.readFile(missing, StandardCharsets.UTF_8, OperationType.PRIMARY))
                 .isInstanceOf(NoSuchFileException.class);
     }
 
@@ -1087,7 +1102,7 @@ public class SystemFileStorageIT {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
 
-        assertThatThrownBy(() -> storage.readFile(folder.toUri(), StandardCharsets.UTF_8))
+        assertThatThrownBy(() -> storage.readFile(folder.toUri(), StandardCharsets.UTF_8, OperationType.PRIMARY))
                 .isInstanceOf(IOException.class);
     }
 
@@ -1100,7 +1115,7 @@ public class SystemFileStorageIT {
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
                 DefaultStorageFile::new);
 
-        var files = storage.getFiles(directory.toUri());
+        var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
 
         assertThat(find(files, "hidden.txt").isHidden()).isTrue();
         assertThat(find(files, "visible.txt").isHidden()).isFalse();
@@ -1118,9 +1133,9 @@ public class SystemFileStorageIT {
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
                 DefaultStorageFile::new);
 
-        var files = storage.getFiles(directory.toUri());
-        var directories = storage.getDirectories(directory.toUri());
-        var recursively = storage.getFilesRecursively(directory.toUri());
+        var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
+        var directories = storage.getDirectories(directory.toUri(), OperationType.PRIMARY);
+        var recursively = storage.getFilesRecursively(directory.toUri(), OperationType.PRIMARY);
 
         var link = find(files, "junction");
         assertThat(link.getEntryType()).isEqualTo(FileEntryType.LINK);

@@ -40,6 +40,7 @@ import com.techsenger.shellfx.storage.FileStyleResolver;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
+import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.toolkit.core.file.FileUtils;
@@ -460,7 +461,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             return;
         }
         // creating a fake directory
-        var file = currentStorage().createVirtual(FileEntryType.DIRECTORY, "New Folder", null);
+        var file = currentStorage().createVirtual(null, FileEntryType.DIRECTORY, "New Folder");
         modifiableFiles.add(0, file);
         scrollToFileSource.next(0);
         editFileSource.next(0);
@@ -480,7 +481,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             case NEW_DIRECTORY -> {
                 var dirUri = UriUtils.resolvePath(directoryUri(), file.getName(), true);
                 try {
-                    currentStorage().createDirectory(dirUri);
+                    currentStorage().createDirectory(dirUri, OperationType.PRIMARY);
                     updateFiles(file);
                 } catch (Exception ex) {
                     logger.error("{} Error creating new directory at {}", getDescriptor().getLogPrefix(), dirUri, ex);
@@ -490,7 +491,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                 try {
                     var storage = currentStorage();
                     if (storage != null) {
-                        storage.renameFile(file.getUri(), file.getName());
+                        storage.renameFile(file.getUri(), file.getName(), OperationType.PRIMARY);
                         updateFiles(file);
                     }
                 } catch (Exception ex) {
@@ -630,7 +631,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                 }
                 List<T> hierarchy;
                 try {
-                    hierarchy = storage.getHierarchy(requestedUri);
+                    hierarchy = storage.getHierarchy(requestedUri, OperationType.PRIMARY);
                 } catch (Exception ex) {
                     logger.error("{} Error getting hierarchy at {}", getDescriptor().getLogPrefix(), requestedUri, ex);
                     hierarchy = List.of(requestedDirectory);
@@ -745,7 +746,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             return storage.getRoot();
         }
         try {
-            return storage.getFile(uri);
+            return storage.getFile(uri, OperationType.PRIMARY);
         } catch (Exception ex) {
             logger.error("{} Error getting directory at {}", getDescriptor().getLogPrefix(), uri, ex);
             return null;
@@ -768,7 +769,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private List<T> getFilesFromStorage() {
         try {
-            return currentStorage().getFiles(directoryUri());
+            return currentStorage().getFiles(directoryUri(), OperationType.PRIMARY);
         } catch (Exception ex) {
             logger.error("{} Error getting files at {}", getDescriptor().getLogPrefix(), directoryUri(), ex);
         }
@@ -834,7 +835,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             return null;
         }
         URI fileUri = UriUtils.resolvePath(getDirectory().getUri(), fileName, false);
-        var file = currentStorage().createVirtual(null, fileName, fileUri);
+        var file = currentStorage().createVirtual(fileUri, null, fileName);
         return file;
     }
 }

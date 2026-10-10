@@ -31,6 +31,8 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
 
     private final URI uri;
 
+    private final StorageListenerSupport listenerSupport = new StorageListenerSupport();
+
     public AbstractFileStorage(FileStorageType type, String name, URI uri) {
         this.type = type;
         this.name = name;
@@ -51,6 +53,16 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
     @Override
     public URI getUri() {
         return uri;
+    }
+
+    @Override
+    public void addListener(StorageListener listener) {
+        listenerSupport.addListener(listener);
+    }
+
+    @Override
+    public void removeListener(StorageListener listener) {
+        listenerSupport.removeListener(listener);
     }
 
     @Override
@@ -86,5 +98,16 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
     @Override
     public String toString() {
         return "AbstractFileStorage[" + "type=" + type + ", name=" + name + ", uri=" + uri + ']';
+    }
+
+    /**
+     * Reports to the listeners of this storage that {@code operation} succeeded on the file at {@code uri}.
+     *
+     * @param uri the URI of the file it was performed on
+     * @param operation the operation performed
+     * @param operationType whether this was a directly user-initiated action or a step of bulk/internal machinery
+     */
+    protected void notifyListeners(URI uri, FileOperation operation, OperationType operationType) {
+        listenerSupport.notifyListeners(uri, operation, operationType);
     }
 }

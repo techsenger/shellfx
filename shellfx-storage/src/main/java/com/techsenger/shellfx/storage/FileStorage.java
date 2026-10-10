@@ -67,6 +67,12 @@ import java.util.List;
  * The only exception is a check that cannot be made afterwards, because the operation would not fail but do
  * something unwanted, for instance silently replacing an existing entry.
  *
+ * <p><b>Listeners.</b> Every method that reaches the storage takes an {@link OperationType} and, once the operation
+ * has succeeded, reports it to the {@link StorageListener}s of the storage: {@link FileOperations#LIST} for the
+ * listing methods and for looking up an entry (for the requested URI), {@link FileOperations#CREATE},
+ * {@link FileOperations#RENAME} (for the new URI), {@link FileOperations#READ} and {@link FileOperations#WRITE}.
+ * A failed operation is not reported.
+ *
  * @param <T> the concrete file entry type produced by this storage
  * @author Pavel Castornii
  */
@@ -147,23 +153,29 @@ public interface FileStorage<T extends StorageFile> {
      * Returns the direct subdirectories of the directory identified by {@code uri}, excluding regular files.
      *
      * @param uri the URI of the directory to list
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return a list of direct subdirectories, never {@code null}, may be empty
      * @throws NoSuchFileException   if no directory exists at {@code uri}
      * @throws AccessDeniedException if the caller lacks read permission for the directory
      * @throws IOException           if an I/O error occurs
      */
-    List<T> getDirectories(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    List<T> getDirectories(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Returns the direct children of the directory identified by {@code uri}.
      *
      * @param uri the URI of the directory to list
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return a list of direct children, never {@code null}, may be empty
      * @throws NoSuchFileException   if no directory exists at {@code uri}
      * @throws AccessDeniedException if the caller lacks read permission for the directory
      * @throws IOException           if an I/O error occurs
      */
-    List<T> getFiles(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    List<T> getFiles(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Returns all descendants of the directory identified by {@code uri}, traversing
@@ -173,17 +185,22 @@ public interface FileStorage<T extends StorageFile> {
      * The directory at {@code uri} itself is not included in the result.
      *
      * @param uri the URI of the root directory for the recursive traversal
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return an ordered list of all descendants, never {@code null}, may be empty
      * @throws NoSuchFileException   if no directory exists at {@code uri}
      * @throws AccessDeniedException if the caller lacks read permission for the directory
      * @throws IOException           if an I/O error occurs
      */
-    List<T> getFilesRecursively(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    List<T> getFilesRecursively(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Returns the file entry at the given URI.
      *
      * @param uri the URI of the entry to retrieve
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return the file entry, never {@code null}
      * @throws NoSuchFileException   if no entry exists at {@code uri}
      * @throws AccessDeniedException if the caller lacks read permission
@@ -192,7 +209,8 @@ public interface FileStorage<T extends StorageFile> {
      *                               (e.g. a {@code Thumbs.db:encryptable} path on Linux)
      * @throws IOException           if an I/O error occurs
      */
-    T getFile(URI uri) throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException;
+    T getFile(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, InvalidFileException, IOException;
 
     /**
      * Returns the parent directory of the given file entry with full metadata loaded from storage.
@@ -201,12 +219,15 @@ public interface FileStorage<T extends StorageFile> {
      * </p>
      *
      * @param file the file whose parent directory to retrieve
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return the parent directory, or {@code null} if {@code file} is the storage root directory
      * @throws NoSuchFileException if the parent directory does not exist
      * @throws AccessDeniedException if the caller lacks read permission
      * @throws IOException if an I/O error occurs
      */
-    @Nullable T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException;
+    @Nullable T getParent(T file, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Returns the parent directory of the file identified by the given URI with full metadata loaded from storage.
@@ -215,12 +236,15 @@ public interface FileStorage<T extends StorageFile> {
      * </p>
      *
      * @param uri the URI of the file whose parent directory to retrieve
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return the parent directory, or {@code null} if the given URI represents the storage root directory
      * @throws NoSuchFileException if the parent directory does not exist
      * @throws AccessDeniedException if the caller lacks read permission
      * @throws IOException if an I/O error occurs
      */
-    @Nullable T getParent(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    @Nullable T getParent(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Returns the whole chain of entries leading to the entry at {@code uri}, from the storage root down to the
@@ -235,26 +259,31 @@ public interface FileStorage<T extends StorageFile> {
      * name, URI and entry type.
      *
      * @param uri the URI of the entry the chain ends with
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return the chain starting with the root directory and ending with the entry at {@code uri}, never
      *     {@code null} or empty
      * @throws NoSuchFileException   if no entry exists at {@code uri}
      * @throws AccessDeniedException if the caller lacks read permission for one of the directories
      * @throws IOException           if an I/O error occurs
      */
-    List<T> getHierarchy(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    List<T> getHierarchy(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Creates a new directory at the given URI. Only one directory level is created; the parent
      * directory must already exist.
      *
      * @param uri the URI of the directory to create
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @throws NoSuchFileException        if the parent directory does not exist
      * @throws FileAlreadyExistsException if an entry already exists at {@code uri}
      * @throws AccessDeniedException      if the caller lacks write permission for the parent
      * @throws IOException                if an I/O error occurs
      */
-    void createDirectory(URI uri) throws NoSuchFileException, FileAlreadyExistsException, AccessDeniedException,
-            IOException;
+    void createDirectory(URI uri, OperationType operationType)
+            throws NoSuchFileException, FileAlreadyExistsException, AccessDeniedException, IOException;
 
     /**
      * Creates a new, empty regular file with real backing on this storage - the only way to do so, since
@@ -264,16 +293,18 @@ public interface FileStorage<T extends StorageFile> {
      * creation needs more than a name and a URI (a symbolic link needs a target, which this method has no
      * parameter for).
      *
-     * @param name the name of the file to create
      * @param uri  the URI of the file to create
+     * @param name the name of the file to create
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return the created file, never {@code null}
      * @throws NoSuchFileException        if the parent directory does not exist
      * @throws FileAlreadyExistsException if an entry already exists at {@code uri}
      * @throws AccessDeniedException      if the caller lacks write permission for the parent
      * @throws IOException                if an I/O error occurs
      */
-    T createFile(String name, URI uri) throws NoSuchFileException, FileAlreadyExistsException,
-            AccessDeniedException, IOException;
+    T createFile(URI uri, String name, OperationType operationType)
+            throws NoSuchFileException, FileAlreadyExistsException, AccessDeniedException, IOException;
 
     /**
      * Creates a virtual entry that has no real backing on this storage.
@@ -281,12 +312,12 @@ public interface FileStorage<T extends StorageFile> {
      * <p>Virtual entries are used as lightweight placeholders — for example, a parent directory
      * inferred from a child URI, or a temporary entry pending a create operation.
      *
+     * @param uri       the URI of the virtual entry
      * @param entryType the structural type of the virtual entry
      * @param name      the name of the virtual entry
-     * @param uri       the URI of the virtual entry
      * @return the virtual entry, never {@code null}
      */
-    T createVirtual(FileEntryType entryType, String name, @Nullable URI uri);
+    T createVirtual(@Nullable URI uri, FileEntryType entryType, String name);
 
     /**
      * Renames the file or directory at {@code uri} to {@code newName}.
@@ -296,14 +327,16 @@ public interface FileStorage<T extends StorageFile> {
      *
      * @param uri     the URI of the entry to rename
      * @param newName the new name (not a full path, just the file name)
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @throws NoSuchFileException        if no entry exists at {@code uri}
      * @throws FileAlreadyExistsException if an entry with {@code newName} already exists in the
      *                                    same directory
      * @throws AccessDeniedException      if the caller lacks write permission
      * @throws IOException                if an I/O error occurs
      */
-    void renameFile(URI uri, String newName) throws NoSuchFileException, FileAlreadyExistsException,
-            AccessDeniedException, IOException;
+    void renameFile(URI uri, String newName, OperationType operationType)
+            throws NoSuchFileException, FileAlreadyExistsException, AccessDeniedException, IOException;
 
     /**
      * Returns {@code true} if the given URI refers to a location within this storage.
@@ -320,22 +353,28 @@ public interface FileStorage<T extends StorageFile> {
      * @param uri     the URI of the file to write
      * @param content the text content to write
      * @param charset the character set to use for encoding
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @throws AccessDeniedException if the caller lacks write permission
      * @throws IOException           if an I/O error occurs
      */
-    void writeFile(URI uri, String content, Charset charset) throws AccessDeniedException, IOException;
+    void writeFile(URI uri, String content, Charset charset, OperationType operationType)
+            throws AccessDeniedException, IOException;
 
     /**
      * Reads the entire content of a text file at {@code uri} using the given character set.
      *
      * @param uri     the URI of the file to read
      * @param charset the character set to use for decoding
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return the file content as a string, never {@code null}
      * @throws NoSuchFileException   if no file exists at {@code uri}
      * @throws AccessDeniedException if the caller lacks read permission
      * @throws IOException           if an I/O error occurs
      */
-    String readFile(URI uri, Charset charset) throws NoSuchFileException, AccessDeniedException, IOException;
+    String readFile(URI uri, Charset charset, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Writes raw bytes to a file at {@code uri}. If the file already exists it is overwritten;
@@ -343,19 +382,39 @@ public interface FileStorage<T extends StorageFile> {
      *
      * @param uri     the URI of the file to write
      * @param content the bytes to write
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @throws AccessDeniedException if the caller lacks write permission
      * @throws IOException           if an I/O error occurs
      */
-    void writeFile(URI uri, byte[] content) throws AccessDeniedException, IOException;
+    void writeFile(URI uri, byte[] content, OperationType operationType) throws AccessDeniedException, IOException;
 
     /**
      * Reads the entire content of a binary file at {@code uri}.
      *
      * @param uri the URI of the file to read
+     * @param operationType whether this call is a directly user-initiated action or a step of bulk/internal
+     *     machinery.
      * @return the file content as a byte array, never {@code null}
      * @throws NoSuchFileException   if no file exists at {@code uri}
      * @throws AccessDeniedException if the caller lacks read permission
      * @throws IOException           if an I/O error occurs
      */
-    byte[] readFile(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+    byte[] readFile(URI uri, OperationType operationType)
+            throws NoSuchFileException, AccessDeniedException, IOException;
+
+    /**
+     * Registers {@code listener}; it is notified of every {@link FileOperation} this storage performs from then on.
+     * A storage may have several listeners at once.
+     *
+     * @param listener the listener to register
+     */
+    void addListener(StorageListener listener);
+
+    /**
+     * Unregisters {@code listener}; a no-op if it isn't currently registered.
+     *
+     * @param listener the listener to unregister
+     */
+    void removeListener(StorageListener listener);
 }
