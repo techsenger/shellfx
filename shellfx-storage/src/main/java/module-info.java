@@ -18,6 +18,7 @@ module com.techsenger.shellfx.storage {
     requires org.slf4j;
     requires com.techsenger.annotations;
     requires com.techsenger.toolkit.core;
+    requires com.techsenger.toolkit.fx;
     requires com.techsenger.shellfx.material;
     requires javafx.controls;
     requires javafx.swing;

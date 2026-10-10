@@ -68,6 +68,9 @@ import javafx.beans.property.SimpleObjectProperty;
 public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends AbstractDialogViewModel<C> {
 
     private static @Nullable FileStyle resolveDemoStyle(Theme theme, GenericFile file) {
+        if (file.isRoot()) {
+            return file.getStorage().createRootStyle(theme);
+        }
         var palette = theme.getPalette();
         var iconColor = palette.getDefaultFgColor();
         var textColor = palette.getDefaultFgColor();
@@ -86,16 +89,11 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
     }
 
     private static String iconStyle(int color) {
-        return "-fx-fill: " + toRgba(color) + ";";
+        return "-fx-fill: " + ColorUtils.toCssRgba(color) + ";";
     }
 
     private static String textStyle(int color) {
-        return "-fx-text-fill: " + toRgba(color) + ";";
-    }
-
-    private static String toRgba(int color) {
-        return "rgba(" + ((color >> 16) & 0xFF) + "," + ((color >> 8) & 0xFF) + "," + (color & 0xFF) + ","
-                + ColorUtils.getAlphaAsDouble(color) + ")";
+        return "-fx-text-fill: " + ColorUtils.toCssRgba(color) + ";";
     }
 
     private final ObjectProperty<WindowType> selectedWindowType = new SimpleObjectProperty<>();

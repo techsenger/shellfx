@@ -54,11 +54,11 @@ public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort
 
     StringProperty locationCaptionProperty();
 
-    @Unmodifiable ObservableList<Location> getLocations();
+    @Unmodifiable ObservableList<T> getLocations();
 
-    void setLocations(List<Location> locations);
+    void setLocations(List<T> locations);
 
-    Location getLocation();
+    T getLocation();
 
     /**
      * Sets the current location. This is a request, not a guarantee — the underlying selection control may
@@ -67,9 +67,9 @@ public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort
      * @param value the requested location
      */
     @RequestSetter
-    void setLocation(Location value);
+    void setLocation(T value);
 
-    ReadOnlyObjectProperty<Location> locationProperty();
+    ReadOnlyObjectProperty<T> locationProperty();
 
     Mode getMode();
 

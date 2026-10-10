@@ -18,10 +18,12 @@ package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.material.theme.Theme;
 import static com.techsenger.shellfx.storage.UriUtils.getParentUri;
 import com.techsenger.shellfx.storage.style.StorageIcons;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.core.function.Factory;
+import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -75,6 +77,12 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
             case OPTICAL -> StorageIcons.DISC;
             default -> throw new AssertionError("Unknown type for system storage");
         };
+    }
+
+    @Override
+    public @Nullable FileStyle createRootStyle(Theme theme) {
+        var style = "-fx-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
+        return new FileStyle(style, style);
     }
 
     @Override
@@ -199,6 +207,24 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
     @Override
     public @Nullable T getParent(T file) throws NoSuchFileException, AccessDeniedException, IOException {
         return getParent(file.getUri());
+    }
+
+    @Override
+    public List<T> getHierarchy(URI uri) throws NoSuchFileException, AccessDeniedException, IOException {
+        var segments = UriUtils.getPathSegments(getUri(), uri);
+        var result = new ArrayList<T>(segments.size() + 1);
+        result.add(getRootDirectory());
+        var currentUri = getUri();
+        for (var i = 0; i < segments.size(); i++) {
+            currentUri = i + 1 == segments.size() ? uri : UriUtils.resolvePath(currentUri, segments.get(i), true);
+            var entryPath = toPath(currentUri);
+            try {
+                result.add(createFile(entryPath, currentUri));
+            } catch (IOException ex) {
+                throw diagnoseReadFailure(entryPath, ex);
+            }
+        }
+        return result;
     }
 
     @Override

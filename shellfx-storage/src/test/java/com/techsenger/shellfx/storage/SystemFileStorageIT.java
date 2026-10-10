@@ -713,6 +713,65 @@ public class SystemFileStorageIT {
 
     @ParameterizedTest
     @MethodSource("flavors")
+    public void getHierarchy_rootUri_onlyVirtualRoot(
+            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+        var storage = storageFactory.get();
+
+        var hierarchy = storage.getHierarchy(storage.getUri());
+
+        assertThat(hierarchy).hasSize(1);
+        assertThat(hierarchy.get(0).isVirtual()).isTrue();
+        assertThat(hierarchy.get(0).isRoot()).isTrue();
+    }
+
+    @ParameterizedTest
+    @MethodSource("flavors")
+    public void getHierarchy_nestedFile_chainFromRootToTheFile(
+            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+        var storage = storageFactory.get();
+        var first = Files.createDirectory(rootOf(storage).resolve("first"));
+        var second = Files.createDirectory(first.resolve("second"));
+        var path = Files.writeString(second.resolve("file.txt"), CONTENT);
+
+        var hierarchy = storage.getHierarchy(path.toUri());
+
+        assertThat(hierarchy).extracting(GenericFile::getName)
+                .containsExactly(storage.getDisplayName(), "first", "second", "file.txt");
+        assertThat(hierarchy).extracting(GenericFile::getEntryType).containsExactly(FileEntryType.DIRECTORY,
+                FileEntryType.DIRECTORY, FileEntryType.DIRECTORY, FileEntryType.FILE);
+        assertThat(hierarchy.get(0).getUri()).isEqualTo(storage.getUri());
+        assertThat(hierarchy.get(0).isVirtual()).isTrue();
+        assertThat(hierarchy.get(3).getUri()).isEqualTo(path.toUri());
+        assertThat(hierarchy.subList(1, 4)).allMatch(f -> !f.isVirtual());
+    }
+
+    @ParameterizedTest
+    @MethodSource("flavors")
+    public void getHierarchy_directory_chainEndsWithTheDirectory(
+            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+        var storage = storageFactory.get();
+        var first = Files.createDirectory(rootOf(storage).resolve("first"));
+        var second = Files.createDirectory(first.resolve("second"));
+
+        var hierarchy = storage.getHierarchy(second.toUri());
+
+        assertThat(hierarchy).extracting(GenericFile::getName)
+                .containsExactly(storage.getDisplayName(), "first", "second");
+        assertThat(hierarchy.get(2).getUri()).isEqualTo(second.toUri());
+    }
+
+    @ParameterizedTest
+    @MethodSource("flavors")
+    public void getHierarchy_missingEntry_noSuchFileException(
+            Supplier<FileStorage<GenericFile>> storageFactory) {
+        var storage = storageFactory.get();
+        var missing = rootOf(storage).resolve("missing").resolve("file.txt").toUri();
+
+        assertThatThrownBy(() -> storage.getHierarchy(missing)).isInstanceOf(NoSuchFileException.class);
+    }
+
+    @ParameterizedTest
+    @MethodSource("flavors")
     public void createDirectory_freeName_folderCreated(
             Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();

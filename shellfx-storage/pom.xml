@@ -23,6 +23,10 @@
             <artifactId>annotations</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.toolkit</groupId>
+            <artifactId>toolkit-fx</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.shellfx</groupId>
             <artifactId>shellfx-material</artifactId>
         </dependency>

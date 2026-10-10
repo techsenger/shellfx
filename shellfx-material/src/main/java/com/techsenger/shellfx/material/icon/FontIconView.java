@@ -379,7 +379,7 @@ public class FontIconView extends Text {
 
     /**
      * Sets the inline style of the view to the icon style followed by the internal one, so the internal
-     * declarations win.
+     * declarations win. A semicolon is added after the icon style if it doesn't end with one.
      */
     private void updateStyle() {
         var external = iconStyle.get();
@@ -388,7 +388,8 @@ public class FontIconView extends Text {
         } else if (internalStyle == null) {
             setStyle(external);
         } else {
-            setStyle(external + " " + internalStyle);
+            var separator = external.stripTrailing().endsWith(";") ? " " : "; ";
+            setStyle(external + separator + internalStyle);
         }
     }
 

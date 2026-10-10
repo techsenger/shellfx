@@ -190,7 +190,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
 
     private final Label locationLabel = new Label();
 
-    private final ComboBox<Location> locationComboBox = new ComboBox<>();
+    private final ComboBox<T> locationComboBox = new ComboBox<>();
 
     private final Button levelUpButton = new Button(null, new FontIconView(DialogIcons.DIRECTORY_UP));
 
@@ -305,13 +305,13 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.setMaxWidth(Double.MAX_VALUE);
         locationComboBox.setCellFactory(cb -> {
-            var cell = new LocationCell(false);
+            var cell = new LocationCell<T>(false, getViewModel()::getStyleResolver);
             cell.setOnMousePressed(e -> {
                 getViewModel().onLocationRequested(cell.getItem());
             });
             return cell;
         });
-        locationComboBox.setButtonCell(new LocationCell(true));
+        locationComboBox.setButtonCell(new LocationCell<T>(true, getViewModel()::getStyleResolver));
         locationComboBox.getStyleClass().add("location");
         levelUpButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         levelUpButton.setTooltip(new Tooltip("Up One Level"));
@@ -436,8 +436,17 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         viewModel.styleResolverProperty().addListener((ov, oldV, newV) -> {
             if (oldV == null && newV != null) {
                 FileCellUtils.saveStyles(getAllCells());
+                if (locationComboBox.getButtonCell() instanceof LocationCell<T> cell) {
+                    cell.saveStyles();
+                }
             } else if (oldV != null && newV == null) {
                 FileCellUtils.restoreStyles(getAllCells());
+                if (locationComboBox.getButtonCell() instanceof LocationCell<T> cell) {
+                    cell.restoreStyles();
+                }
+            }
+            if (locationComboBox.getButtonCell() instanceof LocationCell<T> cell) {
+                cell.updateStyles();
             }
             if (this.listButton.isSelected()) {
                 ColumnViewUtils.updateCells(this.fileListView, false);
@@ -511,7 +520,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         return this.locationLabel;
     }
 
-    protected ComboBox<Location> getLocationComboBox() {
+    protected ComboBox<T> getLocationComboBox() {
         return locationComboBox;
     }
 
@@ -595,7 +604,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         extensionFilterComboBox.getSelectionModel().select(filter);
     }
 
-    private void updateLocation(Location location) {
+    private void updateLocation(T location) {
         locationComboBox.getSelectionModel().select(location);
     }
 

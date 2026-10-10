@@ -18,6 +18,7 @@ package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.material.theme.Theme;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -100,6 +101,16 @@ public interface FileStorage<T extends GenericFile> {
      * @return the icon, never {@code null}
      */
     FontIcon<?> getIcon();
+
+    /**
+     * Creates the style of the root directory of this storage for the theme, for a {@link FileStyleResolver} to use
+     * when it resolves the style of the root. The root is shown with its icon and its name, so both can be styled.
+     * The storage does not know where it is shown, so views never apply this style themselves.
+     *
+     * @param theme the theme the root is shown in
+     * @return the style, or {@code null} if the storage has no style of its own for the root
+     */
+    @Nullable FileStyle createRootStyle(Theme theme);
 
     /**
      * Returns the root directory entry of this storage.
@@ -189,6 +200,27 @@ public interface FileStorage<T extends GenericFile> {
      * @throws IOException if an I/O error occurs
      */
     @Nullable T getParent(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
+
+    /**
+     * Returns the whole chain of entries leading to the entry at {@code uri}, from the storage root down to the
+     * entry itself, which is the last element.
+     *
+     * <p>All elements except the last are always directories. The last one is the entry at {@code uri} itself, so it
+     * is a directory if {@code uri} points to a directory, and a file if it points to a file. If {@code uri} is the
+     * storage URI, the chain is the root directory alone.
+     *
+     * <p>The operation may be very expensive, so the storage decides whether the elements are real entries or
+     * {@link GenericFile#isVirtual() virtual} ones without data. A virtual element is guaranteed to have only its
+     * name, URI and entry type.
+     *
+     * @param uri the URI of the entry the chain ends with
+     * @return the chain starting with the root directory and ending with the entry at {@code uri}, never
+     *     {@code null} or empty
+     * @throws NoSuchFileException   if no entry exists at {@code uri}
+     * @throws AccessDeniedException if the caller lacks read permission for one of the directories
+     * @throws IOException           if an I/O error occurs
+     */
+    List<T> getHierarchy(URI uri) throws NoSuchFileException, AccessDeniedException, IOException;
 
     /**
      * Creates a new directory at the given URI. Only one directory level is created; the parent

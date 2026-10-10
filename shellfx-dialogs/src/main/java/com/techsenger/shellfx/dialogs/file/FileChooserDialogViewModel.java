@@ -18,6 +18,7 @@ package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.shellfx.core.UiExecutor;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.config.ConfigUtils;
@@ -31,7 +32,6 @@ import static com.techsenger.shellfx.dialogs.file.FileChooserType.SAVE_AS;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.material.button.ResultButtonName;
-import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableConfig;
@@ -42,7 +42,6 @@ import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
 import com.techsenger.shellfx.storage.GenericFile;
 import com.techsenger.shellfx.storage.UriUtils;
-import com.techsenger.shellfx.storage.style.StorageIcons;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -51,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -90,13 +90,13 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private final ObservableSource<Integer> editFileSource = new SimpleObservableSource<>();
 
-    private final ObservableList<Location> modifiableLocations = FXCollections.observableArrayList();
+    private final ObservableList<T> modifiableLocations = FXCollections.observableArrayList();
 
-    private final ObservableList<Location> locations = FXCollections.unmodifiableObservableList(modifiableLocations);
+    private final ObservableList<T> locations = FXCollections.unmodifiableObservableList(modifiableLocations);
 
-    private final ReadOnlyObjectWrapper<Location> location = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<T> location = new ReadOnlyObjectWrapper<>();
 
-    private final ObservableSource<Location> locationSource = new SimpleObservableSource<>();
+    private final ObservableSource<T> locationSource = new SimpleObservableSource<>();
 
     private final ReadOnlyObjectWrapper<Mode> mode = new ReadOnlyObjectWrapper<>();
 
@@ -198,28 +198,28 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     @Override
-    public ObservableList<Location> getLocations() {
+    public ObservableList<T> getLocations() {
         return locations;
     }
 
     @Override
-    public void setLocations(List<Location> locations) {
+    public void setLocations(List<T> locations) {
         modifiableLocations.setAll(locations);
     }
 
     @Override
-    public Location getLocation() {
+    public T getLocation() {
         return location.get();
     }
 
     @Override
     @RequestSetter
-    public void setLocation(Location location) {
+    public void setLocation(T location) {
         locationSource.next(location);
     }
 
     @Override
-    public ReadOnlyObjectProperty<Location> locationProperty() {
+    public ReadOnlyObjectProperty<T> locationProperty() {
         return location.getReadOnlyProperty();
     }
 
@@ -423,7 +423,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         return modifiableFiles;
     }
 
-    protected void onLocationRequested(Location location) {
+    protected void onLocationRequested(T location) {
         navigateTo(location.getStorage(), location.getUri());
     }
 
@@ -576,11 +576,11 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
      * intended exclusively for {@code FileChooserDialogFxView}. Direct invocation by user code results in
      * undefined behavior.
      */
-    ReadOnlyObjectWrapper<Location> locationWrapper() {
+    ReadOnlyObjectWrapper<T> locationWrapper() {
         return location;
     }
 
-    ObservableSource<Location> locationSource() {
+    ObservableSource<T> locationSource() {
         return locationSource;
     }
 
@@ -617,37 +617,39 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         if (locationsUpdated) {
             return;
         }
-        Location selectedLocation = null;
-        List<Location> locations = new ArrayList<>();
-        for (var storage : storages) {
-            var storageLocation = createLocation(storage);
-            locations.add(storageLocation);
-            if (currentStorage() == storage) {
-                var segments = UriUtils.getPathSegments(storage.getUri(), directoryUri());
-                if (segments.isEmpty()) {
-                    selectedLocation = storageLocation;
+        var requestedStorage = currentStorage();
+        var requestedDirectory = this.directory.get();
+        var requestedUri = directoryUri();
+        Thread.startVirtualThread(() -> {
+            T selectedLocation = null;
+            List<T> locations = new ArrayList<>();
+            for (var storage : storages) {
+                if (requestedStorage != storage) {
+                    locations.add(storage.getRootDirectory());
+                    continue;
                 }
-                var previousUri = storage.getUri();
-                for (var i = 0; i < segments.size(); i++) {
-                    var segment = segments.get(i);
-                    var segmentUri = UriUtils.resolvePath(previousUri, segment, true);
-                    var directoryLocation = new Location(
-                            StorageIcons.FOLDER,
-                            segment,
-                            i + 1,
-                            storage,
-                            segmentUri);
-                    locations.add(directoryLocation);
-                    if (i + 1 == segments.size()) {
-                        selectedLocation = directoryLocation;
-                    }
-                    previousUri = segmentUri;
+                List<T> hierarchy;
+                try {
+                    hierarchy = storage.getHierarchy(requestedUri);
+                } catch (Exception ex) {
+                    logger.error("{} Error getting hierarchy at {}", getDescriptor().getLogPrefix(), requestedUri, ex);
+                    hierarchy = List.of(requestedDirectory);
                 }
+                locations.addAll(hierarchy);
+                selectedLocation = hierarchy.get(hierarchy.size() - 1);
             }
-        }
-        setLocations(locations);
-        setLocation(selectedLocation);
-        this.locationsUpdated = true;
+            var result = locations;
+            var resultLocation = selectedLocation;
+            UiExecutor.execute(() -> {
+                //the user could navigate elsewhere while the hierarchy was being read
+                if (!Objects.equals(requestedUri, directoryUri())) {
+                    return;
+                }
+                setLocations(result);
+                setLocation(resultLocation);
+                this.locationsUpdated = true;
+            });
+        });
     }
 
     private void navigateTo(FileStorage storage, URI uri) {
@@ -774,36 +776,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     private void updateLocation() {
-        var storage = currentStorage();
-        var segments = UriUtils.getPathSegments(storage.getUri(), directoryUri());
-        Location location = null;
-        if (segments.isEmpty()) {
-            location = createLocation(storage);
-        } else {
-            location = new Location(
-                    StorageIcons.FOLDER,
-                    segments.get(segments.size() - 1),
-                    segments.size(),
-                    storage,
-                    directoryUri());
-        }
-        // The created location must be added to the locations list.
         // We add only one location at a time - the currently selected one.
         // If the user clicks the combobox, all locations will be updated.
+        var location = this.directory.get();
         setLocations(List.of(location));
         setLocation(location);
         this.locationsUpdated = false;
-    }
-
-    private Location createLocation(FileStorage storage) {
-        FontIcon<?> icon = storage.getIcon();
-        var location = new Location(
-                icon,
-                storage.getDisplayName(),
-                0,
-                storage,
-                storage.getUri());
-        return location;
     }
 
     private void updateConfigColumns() {
