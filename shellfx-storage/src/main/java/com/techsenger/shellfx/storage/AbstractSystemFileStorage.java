@@ -18,12 +18,10 @@ package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIcon;
-import com.techsenger.shellfx.material.theme.Theme;
 import static com.techsenger.shellfx.storage.UriUtils.getParentUri;
 import com.techsenger.shellfx.storage.style.StorageIcons;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.core.function.Factory;
-import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,16 +75,6 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
             case OPTICAL -> StorageIcons.DISC;
             default -> throw new AssertionError("Unknown type for system storage");
         };
-    }
-
-    @Override
-    public @Nullable IconTextStyle createStyle(Theme theme) {
-        return createDefaultStyle(theme);
-    }
-
-    @Override
-    public @Nullable IconTextStyle createRootStyle(Theme theme) {
-        return createDefaultStyle(theme);
     }
 
     @Override
@@ -503,12 +491,6 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
      */
     protected void populateFile(DefaultStorageFile file, Path entryPath, BasicFileAttributes attrs) {
         // empty
-    }
-
-    private @Nullable IconTextStyle createDefaultStyle(Theme theme) {
-        var icon = "-fx-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
-        var text = "-fx-text-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
-        return new IconTextStyle(icon, text);
     }
 
     /**

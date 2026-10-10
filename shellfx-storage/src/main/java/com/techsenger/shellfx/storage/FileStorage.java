@@ -19,6 +19,7 @@ package com.techsenger.shellfx.storage;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.material.theme.Theme;
+import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -71,6 +72,12 @@ import java.util.List;
  */
 public interface FileStorage<T extends StorageFile> {
 
+    private static IconTextStyle createDefaultStyle(Theme theme) {
+        var icon = "-fx-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
+        var text = "-fx-text-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
+        return new IconTextStyle(icon, text);
+    }
+
     /**
      * Returns the type of this storage (e.g. local, FTP, cloud).
      *
@@ -110,7 +117,9 @@ public interface FileStorage<T extends StorageFile> {
      * @param theme the theme the storage is shown in
      * @return the style, or {@code null} if the storage has no style of its own
      */
-    @Nullable IconTextStyle createStyle(Theme theme);
+    default @Nullable IconTextStyle createStyle(Theme theme) {
+        return createDefaultStyle(theme);
+    }
 
     /**
      * Returns the root directory entry of this storage.
@@ -130,7 +139,9 @@ public interface FileStorage<T extends StorageFile> {
      * @param theme the theme the root is shown in
      * @return the style, or {@code null} if the storage has no style of its own for the root
      */
-    @Nullable IconTextStyle createRootStyle(Theme theme);
+    default @Nullable IconTextStyle createRootStyle(Theme theme) {
+        return createDefaultStyle(theme);
+    }
 
     /**
      * Returns the direct subdirectories of the directory identified by {@code uri}, excluding regular files.
