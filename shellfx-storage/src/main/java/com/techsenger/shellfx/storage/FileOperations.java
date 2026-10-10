@@ -24,7 +24,6 @@ package com.techsenger.shellfx.storage;
  *
  * @author Pavel Castornii
  */
-@SuppressWarnings("FinalClass")
 public class FileOperations {
 
     /**
@@ -61,7 +60,7 @@ public class FileOperations {
      */
     public static final FileOperation LIST = new DefaultFileOperation("LIST");
 
-    private FileOperations() {
+    protected FileOperations() {
         // empty
     }
 }
