@@ -24,7 +24,7 @@ import java.util.Objects;
 /**
  * Represents a file or directory entry within a {@link FileStorage}.
  *
- * <p>A {@code GenericFile} is a storage-agnostic abstraction over a file system entry. It carries the metadata
+ * <p>A {@code StorageFile} is a storage-agnostic abstraction over a file system entry. It carries the metadata
  * provided by the underlying storage backend (name, URI, size, last modified time, entry type) without imposing any
  * assumptions about the nature of the content.
  *
@@ -34,7 +34,7 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public interface GenericFile {
+public interface StorageFile {
 
     /**
      * Returns the {@link FileStorage} that owns this file.

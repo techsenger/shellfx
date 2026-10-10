@@ -35,7 +35,7 @@ import com.techsenger.shellfx.dialogs.text.TextDialogParams;
 import com.techsenger.shellfx.dialogs.text.TextDialogPort;
 import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
 import com.techsenger.shellfx.dialogs.text.TextsDialogPort;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 
 /**
  *
@@ -57,7 +57,7 @@ public interface DialogsDialogComposer extends WindowComposer {
 
     ProgressDialogPort openProgressDialog(ProgressDialogParams params);
 
-    FileChooserDialogPort<GenericFile> openFileChooserDialog(FileChooserDialogParams<GenericFile> params);
+    FileChooserDialogPort<StorageFile> openFileChooserDialog(FileChooserDialogParams<StorageFile> params);
 
     DialogPort openPagedDialog(PageDialogParams params);
 }

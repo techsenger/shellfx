@@ -35,7 +35,7 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author Pavel Castornii
  */
-public class UnixFileStorage<T extends GenericFile> extends AbstractSystemFileStorage<T> {
+public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileStorage<T> {
 
     /**
      * Discovers and returns all system storages available on the current Unix machine.
@@ -47,13 +47,13 @@ public class UnixFileStorage<T extends GenericFile> extends AbstractSystemFileSt
      * @param fileFactory the factory used to create file entries, must not be {@code null}
      * @return a mutable list of system storages, never {@code null}, may be empty
      */
-    public static List<FileStorage<GenericFile>> createSystemStorages(
-            Factory<? extends DefaultGenericFile> fileFactory) {
-        List<FileStorage<GenericFile>> result = new ArrayList<>();
+    public static List<FileStorage<StorageFile>> createSystemStorages(
+            Factory<? extends DefaultStorageFile> fileFactory) {
+        List<FileStorage<StorageFile>> result = new ArrayList<>();
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             @SuppressWarnings("unchecked")
-            var storage = (FileStorage<GenericFile>) (FileStorage<?>) new UnixFileStorage<>(
+            var storage = (FileStorage<StorageFile>) (FileStorage<?>) new UnixFileStorage<>(
                     FileStorageType.BASE,
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
@@ -66,7 +66,7 @@ public class UnixFileStorage<T extends GenericFile> extends AbstractSystemFileSt
     private final boolean posixSupported;
 
     public UnixFileStorage(FileStorageType type, String displayName, URI rootUri,
-            Factory<? extends DefaultGenericFile> fileFactory) {
+            Factory<? extends DefaultStorageFile> fileFactory) {
         super(type, displayName, rootUri, fileFactory);
         this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
     }

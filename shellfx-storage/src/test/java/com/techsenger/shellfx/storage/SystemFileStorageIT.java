@@ -80,7 +80,7 @@ public class SystemFileStorageIT {
      * root of its own fresh Jimfs file system, which is empty: the working directory Jimfs creates by default is
      * moved into the root itself, so that nothing but the test's own entries is there.
      */
-    static Stream<Named<Supplier<FileStorage<GenericFile>>>> flavors() {
+    static Stream<Named<Supplier<FileStorage<StorageFile>>>> flavors() {
         return Stream.of(
                 Named.of("linux", () -> createStorage(
                         Configuration.unix().toBuilder().setWorkingDirectory("/").build(), false)),
@@ -90,19 +90,19 @@ public class SystemFileStorageIT {
                         Configuration.windows().toBuilder().setWorkingDirectory("C:\\").build(), true)));
     }
 
-    private static FileStorage<GenericFile> createStorage(Configuration configuration, boolean windows) {
+    private static FileStorage<StorageFile> createStorage(Configuration configuration, boolean windows) {
         var fileSystem = Jimfs.newFileSystem(configuration);
         RETAINED_FILE_SYSTEMS.add(fileSystem);
         var rootUri = fileSystem.getRootDirectories().iterator().next().toUri();
         return windows
-                ? new WindowsFileStorage<GenericFile>(FileStorageType.BASE, "test", rootUri, DefaultGenericFile::new)
-                : new UnixFileStorage<GenericFile>(FileStorageType.BASE, "test", rootUri, DefaultGenericFile::new);
+                ? new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, DefaultStorageFile::new)
+                : new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, DefaultStorageFile::new);
     }
 
     /**
      * Verifies that each of the expected links is listed as a link, with the expected target.
      */
-    private static void assertTargets(List<GenericFile> files, ExpectedTarget... expectedTargets) {
+    private static void assertTargets(List<StorageFile> files, ExpectedTarget... expectedTargets) {
         for (var expected : expectedTargets) {
             var link = find(files, expected.linkName());
             assertThat(link.getEntryType()).as(expected.linkName()).isEqualTo(FileEntryType.LINK);
@@ -113,18 +113,18 @@ public class SystemFileStorageIT {
         }
     }
 
-    private static GenericFile find(List<GenericFile> files, String name) {
+    private static StorageFile find(List<StorageFile> files, String name) {
         return files.stream().filter(file -> file.getName().equals(name)).findFirst().orElseThrow();
     }
 
-    private static Path rootOf(FileStorage<GenericFile> storage) {
+    private static Path rootOf(FileStorage<StorageFile> storage) {
         return Paths.get(storage.getUri());
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_regularEntries_haveTheirOwnTypeAndSizeAndNoTarget(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         Files.writeString(root.resolve("file.txt"), "hello");
@@ -132,7 +132,7 @@ public class SystemFileStorageIT {
 
         var files = storage.getFiles(root.toUri());
 
-        assertThat(files).extracting(GenericFile::getName).containsExactlyInAnyOrder("file.txt", "folder");
+        assertThat(files).extracting(StorageFile::getName).containsExactlyInAnyOrder("file.txt", "folder");
         var file = find(files, "file.txt");
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.FILE);
         assertThat(file.getSize()).isEqualTo(5L);
@@ -147,7 +147,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_symbolicLinkToFile_listedAsLinkPointingToTheFile(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var target = Files.writeString(root.resolve("target.txt"), "hello");
@@ -168,7 +168,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_symbolicLinkToFolder_listedAsLinkNotAsFolder(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var target = Files.createDirectory(root.resolve("target"));
@@ -187,7 +187,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_relativeSymbolicLink_targetResolvedAgainstTheFolderOfTheLink(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var real = Files.writeString(root.resolve("real.txt"), "hello");
@@ -206,7 +206,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_linkStatingDotSlashPath_targetPathIsNormalized(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var folder = Files.createDirectory(root.resolve("tmp"));
@@ -221,7 +221,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_brokenSymbolicLink_stillListedAsLinkWithItsTargetPath(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var missing = root.resolve("missing.txt");
@@ -241,7 +241,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_chainOfThreeLinksToFile_eachLinkPointsToTheNextOneAndTheLastToTheFile(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var target = Files.writeString(root.resolve("target.txt"), "hello");
@@ -260,7 +260,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_chainOfThreeLinksToFolder_eachLinkPointsToTheNextOneAndTheLastToTheFolder(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var target = Files.createDirectory(root.resolve("target"));
@@ -279,7 +279,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_chainOfThreeLinksEndingNowhere_onlyTheLastLinkIsBroken(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var missing = root.resolve("missing.txt");
@@ -298,7 +298,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_linksFormingACycle_eachPointsToTheOtherLink(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var a = root.resolve("a");
@@ -316,7 +316,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFile_symbolicLink_returnedAsLink(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var target = Files.createDirectory(root.resolve("target"));
@@ -333,7 +333,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getDirectories_symbolicLinkToFolder_notListedAsDirectory(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var target = Files.createDirectory(root.resolve("target"));
@@ -341,13 +341,13 @@ public class SystemFileStorageIT {
 
         var directories = storage.getDirectories(root.toUri());
 
-        assertThat(directories).extracting(GenericFile::getName).containsExactly("target");
+        assertThat(directories).extracting(StorageFile::getName).containsExactly("target");
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFilesRecursively_symbolicLinkToFolder_listedButNotEntered(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         var target = Files.createDirectory(root.resolve("target"));
@@ -356,14 +356,14 @@ public class SystemFileStorageIT {
 
         var files = storage.getFilesRecursively(root.toUri());
 
-        assertThat(files).extracting(GenericFile::getName).containsExactlyInAnyOrder("target", "inside.txt", "link");
+        assertThat(files).extracting(StorageFile::getName).containsExactlyInAnyOrder("target", "inside.txt", "link");
         assertThat(find(files, "link").isLink()).isTrue();
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_nameStartingWithDot_hiddenOnlyOnLinuxAndMacos(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
         Files.writeString(root.resolve(".dotfile"), "hello");
@@ -377,8 +377,8 @@ public class SystemFileStorageIT {
 
     @Test
     public void refersToStorage_unixStorage_trueOnlyForFileScheme() {
-        var storage = new UnixFileStorage<GenericFile>(FileStorageType.BASE, "/", URI.create("file:///"),
-                DefaultGenericFile::new);
+        var storage = new UnixFileStorage<StorageFile>(FileStorageType.BASE, "/", URI.create("file:///"),
+                DefaultStorageFile::new);
 
         assertThat(storage.refersToStorage(URI.create("file:///home/user/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("FILE:///home/user/a.txt"))).isTrue();
@@ -387,8 +387,8 @@ public class SystemFileStorageIT {
 
     @Test
     public void refersToStorage_windowsStorage_trueOnlyForTheSameDriveIgnoringCase() {
-        var storage = new WindowsFileStorage<GenericFile>(FileStorageType.BASE, "C:", URI.create("file:///C:/"),
-                DefaultGenericFile::new);
+        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "C:", URI.create("file:///C:/"),
+                DefaultStorageFile::new);
 
         assertThat(storage.refersToStorage(URI.create("file:///C:/dir/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("file:///c:/dir/a.txt"))).isTrue();
@@ -398,7 +398,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void properties_storageOfBaseType_reportWhatItWasCreatedWith(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
 
         assertThat(storage.getType()).isEqualTo(FileStorageType.BASE);
@@ -410,7 +410,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getRootDirectory_always_virtualDirectoryWithTheUriAndNameOfTheStorage(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
 
         var root = storage.getRootDirectory();
@@ -425,7 +425,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createVirtual_withUri_virtualEntryOfTheGivenTypeNameAndUri(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var uri = rootOf(storage).resolve("pending").toUri();
 
@@ -442,7 +442,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createVirtual_withoutUri_virtualEntryWithoutUri(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
 
         var file = storage.createVirtual(FileEntryType.FILE, "new.txt", null);
@@ -456,7 +456,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getDirectories_foldersAndFiles_onlyFoldersListed(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = rootOf(storage);
         Files.createDirectory(root.resolve("a"));
@@ -465,14 +465,14 @@ public class SystemFileStorageIT {
 
         var directories = storage.getDirectories(root.toUri());
 
-        assertThat(directories).extracting(GenericFile::getName).containsExactlyInAnyOrder("a", "b");
-        assertThat(directories).allMatch(GenericFile::isDirectory);
+        assertThat(directories).extracting(StorageFile::getName).containsExactlyInAnyOrder("a", "b");
+        assertThat(directories).allMatch(StorageFile::isDirectory);
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
     public void getDirectories_emptyFolder_emptyList(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
         assertThat(storage.getDirectories(rootOf(storage).toUri())).isEmpty();
@@ -481,7 +481,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getDirectories_missingFolder_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing").toUri();
 
@@ -491,7 +491,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getDirectories_regularFile_notDirectoryException(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var file = Files.writeString(rootOf(storage).resolve("file.txt"), CONTENT);
 
@@ -501,7 +501,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_foldersAndFiles_everyDirectChildListedButNotTheDeeperOnes(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = rootOf(storage);
         var folder = Files.createDirectory(root.resolve("folder"));
@@ -510,13 +510,13 @@ public class SystemFileStorageIT {
 
         var files = storage.getFiles(root.toUri());
 
-        assertThat(files).extracting(GenericFile::getName).containsExactlyInAnyOrder("folder", "file.txt");
+        assertThat(files).extracting(StorageFile::getName).containsExactlyInAnyOrder("folder", "file.txt");
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_emptyFolder_emptyList(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
         assertThat(storage.getFiles(rootOf(storage).toUri())).isEmpty();
@@ -525,7 +525,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_missingFolder_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing").toUri();
 
@@ -535,7 +535,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFiles_regularFile_notDirectoryException(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var file = Files.writeString(rootOf(storage).resolve("file.txt"), CONTENT);
 
@@ -545,7 +545,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFilesRecursively_nestedTree_allDescendantsWithFolderBeforeItsContent(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = rootOf(storage);
         var outer = Files.createDirectory(root.resolve("outer"));
@@ -556,7 +556,7 @@ public class SystemFileStorageIT {
 
         var files = storage.getFilesRecursively(root.toUri());
 
-        var names = files.stream().map(GenericFile::getName).toList();
+        var names = files.stream().map(StorageFile::getName).toList();
         assertThat(names).containsExactlyInAnyOrder("outer", "inner", "deep.txt", "middle.txt", "top.txt");
         assertThat(names.indexOf("outer")).isLessThan(names.indexOf("inner"));
         assertThat(names.indexOf("inner")).isLessThan(names.indexOf("deep.txt"));
@@ -566,20 +566,20 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFilesRecursively_subFolder_theFolderItselfNotIncluded(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
         Files.writeString(folder.resolve("inside.txt"), CONTENT);
 
         var files = storage.getFilesRecursively(folder.toUri());
 
-        assertThat(files).extracting(GenericFile::getName).containsExactly("inside.txt");
+        assertThat(files).extracting(StorageFile::getName).containsExactly("inside.txt");
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFilesRecursively_emptyFolder_emptyList(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
         assertThat(storage.getFilesRecursively(rootOf(storage).toUri())).isEmpty();
@@ -588,7 +588,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFilesRecursively_missingFolder_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing").toUri();
 
@@ -598,7 +598,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFile_regularFile_describedWithNameTypeAndSize(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.write(rootOf(storage).resolve("file.txt"), new byte[] {1, 2, 3});
 
@@ -614,7 +614,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFile_folder_describedAsDirectory(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.createDirectory(rootOf(storage).resolve("folder"));
 
@@ -628,7 +628,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFile_rootUri_theRootDirectory(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
         var file = storage.getFile(storage.getUri());
@@ -640,7 +640,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getFile_missingFile_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing.txt").toUri();
 
@@ -650,7 +650,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getParent_rootUri_null(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
         assertThat(storage.getParent(storage.getUri())).isNull();
@@ -659,7 +659,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getParent_entryInRoot_theRootDirectory(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("file.txt"), CONTENT);
 
@@ -673,7 +673,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getParent_nestedEntry_theEnclosingFolder(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
         var path = Files.writeString(folder.resolve("file.txt"), CONTENT);
@@ -689,7 +689,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getParent_file_sameAsParentOfItsUri(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
         var path = Files.writeString(folder.resolve("file.txt"), CONTENT);
@@ -704,7 +704,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getParent_missingParentFolder_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var orphan = rootOf(storage).resolve("missing").resolve("file.txt").toUri();
 
@@ -714,7 +714,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getHierarchy_rootUri_onlyVirtualRoot(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
 
         var hierarchy = storage.getHierarchy(storage.getUri());
@@ -727,7 +727,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getHierarchy_nestedFile_chainFromRootToTheFile(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var first = Files.createDirectory(rootOf(storage).resolve("first"));
         var second = Files.createDirectory(first.resolve("second"));
@@ -735,9 +735,9 @@ public class SystemFileStorageIT {
 
         var hierarchy = storage.getHierarchy(path.toUri());
 
-        assertThat(hierarchy).extracting(GenericFile::getName)
+        assertThat(hierarchy).extracting(StorageFile::getName)
                 .containsExactly(storage.getDisplayName(), "first", "second", "file.txt");
-        assertThat(hierarchy).extracting(GenericFile::getEntryType).containsExactly(FileEntryType.DIRECTORY,
+        assertThat(hierarchy).extracting(StorageFile::getEntryType).containsExactly(FileEntryType.DIRECTORY,
                 FileEntryType.DIRECTORY, FileEntryType.DIRECTORY, FileEntryType.FILE);
         assertThat(hierarchy.get(0).getUri()).isEqualTo(storage.getUri());
         assertThat(hierarchy.get(0).isVirtual()).isTrue();
@@ -748,14 +748,14 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getHierarchy_directory_chainEndsWithTheDirectory(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var first = Files.createDirectory(rootOf(storage).resolve("first"));
         var second = Files.createDirectory(first.resolve("second"));
 
         var hierarchy = storage.getHierarchy(second.toUri());
 
-        assertThat(hierarchy).extracting(GenericFile::getName)
+        assertThat(hierarchy).extracting(StorageFile::getName)
                 .containsExactly(storage.getDisplayName(), "first", "second");
         assertThat(hierarchy.get(2).getUri()).isEqualTo(second.toUri());
     }
@@ -763,7 +763,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void getHierarchy_missingEntry_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing").resolve("file.txt").toUri();
 
@@ -773,7 +773,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createDirectory_freeName_folderCreated(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("folder");
 
@@ -785,7 +785,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createDirectory_missingParent_noSuchFileExceptionAndNothingCreated(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var parent = rootOf(storage).resolve("missing");
         var path = parent.resolve("folder");
@@ -797,7 +797,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createDirectory_existingFolder_fileAlreadyExistsException(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.createDirectory(rootOf(storage).resolve("folder"));
 
@@ -808,7 +808,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createDirectory_existingFile_fileAlreadyExistsException(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("entry"), CONTENT);
 
@@ -820,7 +820,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createFile_freeName_emptyFileCreatedAndReturned(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("new.txt");
 
@@ -836,7 +836,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createFile_missingParent_noSuchFileExceptionAndNothingCreated(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var parent = rootOf(storage).resolve("missing");
         var path = parent.resolve("new.txt");
@@ -849,7 +849,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createFile_existingFile_fileAlreadyExistsExceptionAndContentKept(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("file.txt"), CONTENT);
 
@@ -861,7 +861,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void createFile_existingFolder_fileAlreadyExistsException(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.createDirectory(rootOf(storage).resolve("entry"));
 
@@ -873,7 +873,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void renameFile_regularFile_renamedInTheSameFolder(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
         var path = Files.writeString(folder.resolve("old.txt"), CONTENT);
@@ -887,7 +887,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void renameFile_folder_renamedTogetherWithItsContent(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = rootOf(storage);
         var folder = Files.createDirectory(root.resolve("old"));
@@ -902,7 +902,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void renameFile_missingEntry_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing.txt");
 
@@ -914,7 +914,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void renameFile_nameTakenByAnotherEntry_fileAlreadyExistsExceptionAndBothKept(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = rootOf(storage);
         var source = Files.writeString(root.resolve("source.txt"), "source");
@@ -929,7 +929,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void writeFileBytes_missingFile_fileCreatedWithTheContent(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("data.bin");
 
@@ -941,7 +941,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void writeFileBytes_existingFile_oldContentReplaced(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.write(rootOf(storage).resolve("data.bin"), new byte[] {9, 9, 9, 9, 9});
 
@@ -953,7 +953,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void writeFileBytes_missingParent_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("missing").resolve("data.bin");
 
@@ -964,7 +964,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void writeFileBytes_folder_ioExceptionAndFolderKept(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
 
@@ -975,7 +975,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void writeFileText_missingFile_fileCreatedWithTheContent(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("text.txt");
 
@@ -987,7 +987,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void writeFileText_existingFile_oldContentReplacedAndCharsetUsed(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("text.txt"), "a much longer old content");
 
@@ -999,7 +999,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void writeFileText_missingParent_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var path = rootOf(storage).resolve("missing").resolve("text.txt");
 
@@ -1010,7 +1010,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void writeFileText_folder_ioExceptionAndFolderKept(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
 
@@ -1022,7 +1022,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void readFileBytes_existingFile_wholeContent(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.write(rootOf(storage).resolve("data.bin"), new byte[] {1, 2, 3});
 
@@ -1032,7 +1032,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void readFileBytes_emptyFile_emptyArray(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.createFile(rootOf(storage).resolve("empty.bin"));
 
@@ -1042,7 +1042,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void readFileBytes_missingFile_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing.bin").toUri();
 
@@ -1052,7 +1052,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void readFileBytes_folder_ioException(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
 
@@ -1062,7 +1062,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void readFileText_existingFile_contentDecodedWithTheCharset(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var path = Files.writeString(rootOf(storage).resolve("text.txt"), CONTENT, StandardCharsets.ISO_8859_1);
 
@@ -1072,7 +1072,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void readFileText_missingFile_noSuchFileException(
-            Supplier<FileStorage<GenericFile>> storageFactory) {
+            Supplier<FileStorage<StorageFile>> storageFactory) {
         var storage = storageFactory.get();
         var missing = rootOf(storage).resolve("missing.txt").toUri();
 
@@ -1083,7 +1083,7 @@ public class SystemFileStorageIT {
     @ParameterizedTest
     @MethodSource("flavors")
     public void readFileText_folder_ioException(
-            Supplier<FileStorage<GenericFile>> storageFactory) throws Exception {
+            Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var folder = Files.createDirectory(rootOf(storage).resolve("folder"));
 
@@ -1097,8 +1097,8 @@ public class SystemFileStorageIT {
         var hidden = Files.writeString(directory.resolve("hidden.txt"), "hello");
         Files.setAttribute(hidden, "dos:hidden", true);
         Files.writeString(directory.resolve("visible.txt"), "hello");
-        var storage = new WindowsFileStorage<GenericFile>(FileStorageType.BASE, "test", directory.toUri(),
-                DefaultGenericFile::new);
+        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
+                DefaultStorageFile::new);
 
         var files = storage.getFiles(directory.toUri());
 
@@ -1115,8 +1115,8 @@ public class SystemFileStorageIT {
         var process = new ProcessBuilder("cmd", "/c", "mklink", "/J", junction.toString(), target.toString())
                 .inheritIO().start();
         assertThat(process.waitFor()).as("mklink /J").isZero();
-        var storage = new WindowsFileStorage<GenericFile>(FileStorageType.BASE, "test", directory.toUri(),
-                DefaultGenericFile::new);
+        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
+                DefaultStorageFile::new);
 
         var files = storage.getFiles(directory.toUri());
         var directories = storage.getDirectories(directory.toUri());
@@ -1128,8 +1128,8 @@ public class SystemFileStorageIT {
         assertThat(link.isDirectory()).isFalse();
         assertThat(Paths.get(link.getLinkTarget().getUri()).toRealPath()).isEqualTo(target.toRealPath());
         assertThat(link.getLinkTarget().getEntryType()).isEqualTo(FileEntryType.DIRECTORY);
-        assertThat(directories).extracting(GenericFile::getName).containsExactly("target");
-        assertThat(recursively).extracting(GenericFile::getName)
+        assertThat(directories).extracting(StorageFile::getName).containsExactly("target");
+        assertThat(recursively).extracting(StorageFile::getName)
                 .containsExactlyInAnyOrder("target", "inside.txt", "junction");
     }
 }

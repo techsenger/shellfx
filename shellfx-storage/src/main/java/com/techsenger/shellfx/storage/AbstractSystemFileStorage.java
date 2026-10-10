@@ -53,16 +53,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractSystemFileStorage<T extends GenericFile> extends AbstractFileStorage<T> {
+public abstract class AbstractSystemFileStorage<T extends StorageFile> extends AbstractFileStorage<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractSystemFileStorage.class);
 
-    private final Factory<? extends DefaultGenericFile> fileFactory;
+    private final Factory<? extends DefaultStorageFile> fileFactory;
 
     private final Path path;
 
     public AbstractSystemFileStorage(FileStorageType type, String displayName, URI rootUri,
-            Factory<? extends DefaultGenericFile> fileFactory) {
+            Factory<? extends DefaultStorageFile> fileFactory) {
         super(type, displayName, rootUri);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
@@ -98,7 +98,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
                         result.add(createFile(childPath, attrs, childPath.toUri()));
                     }
                 } catch (InvalidFileException ex) {
-                    logger.error("Couldn't create GenericFile from {}", childPath, ex);
+                    logger.error("Couldn't create StorageFile from {}", childPath, ex);
                 } catch (IOException ex) {
                     logger.error("Couldn't read attributes for {}", childPath, ex);
                 }
@@ -121,7 +121,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
                     T createdFile = createFile(filePath, filePath.toUri());
                     result.add(createdFile);
                 } catch (InvalidFileException ex) {
-                    logger.error("Couldn't create GenericFile from {}", filePath, ex);
+                    logger.error("Couldn't create StorageFile from {}", filePath, ex);
                 }
             }
         } catch (DirectoryIteratorException e) {
@@ -335,7 +335,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
         }
     }
 
-    protected Factory<? extends DefaultGenericFile> getFileFactory() {
+    protected Factory<? extends DefaultStorageFile> getFileFactory() {
         return fileFactory;
     }
 
@@ -497,7 +497,7 @@ public abstract class AbstractSystemFileStorage<T extends GenericFile> extends A
      * @param entryPath the entry's path
      * @param attrs the entry's own attributes, read without following links; a Unix storage gives the POSIX ones
      */
-    protected void populateFile(DefaultGenericFile file, Path entryPath, BasicFileAttributes attrs) {
+    protected void populateFile(DefaultStorageFile file, Path entryPath, BasicFileAttributes attrs) {
         // empty
     }
 

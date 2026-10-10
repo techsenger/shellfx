@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default implementation of {@link GenericFile}.
+ * Default implementation of {@link StorageFile}.
  *
  * <p>Instances are created by {@link FileStorage} implementations via their factory methods. This class is designed to
 be subclassed when additional application-level metadata needs to be attached to a file entry (e.g. a semantic
@@ -37,9 +37,9 @@ content entryType for UI purposes).
  *
  * @author Pavel Castornii
  */
-public class DefaultGenericFile implements GenericFile {
+public class DefaultStorageFile implements StorageFile {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultGenericFile.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultStorageFile.class);
 
     private FileStorage storage;
 
@@ -64,10 +64,10 @@ public class DefaultGenericFile implements GenericFile {
     private FontIcon<?> icon;
 
     /**
-     * Constructs an empty {@code DefaultGenericFile}. Fields should be populated by the
+     * Constructs an empty {@code DefaultStorageFile}. Fields should be populated by the
      * {@link FileStorage} factory method immediately after construction.
      */
-    public DefaultGenericFile() {
+    public DefaultStorageFile() {
     }
 
     @Override
@@ -130,7 +130,7 @@ public class DefaultGenericFile implements GenericFile {
      *
      * @return the parent entry, never {@code null}
      */
-    public DefaultGenericFile getParent() {
+    public DefaultStorageFile getParent() {
         return buildParents(1).get(0);
     }
 
@@ -147,7 +147,7 @@ public class DefaultGenericFile implements GenericFile {
      *
      * @return ordered list of parents from immediate parent to root, never {@code null}, never empty
      */
-    public List<DefaultGenericFile> getParents() {
+    public List<DefaultStorageFile> getParents() {
         return buildParents(Integer.MAX_VALUE);
     }
 
@@ -155,14 +155,14 @@ public class DefaultGenericFile implements GenericFile {
      * Creates a virtual child entry of this directory with the given name and entry type.
      *
      * <p>The child URI is resolved by appending {@code childName} to this entry's URI.
-     * The returned entry is always {@link GenericFile#isVirtual() virtual}.
+     * The returned entry is always {@link StorageFile#isVirtual() virtual}.
      *
      * @param childName the name of the child entry
      * @param childEntryType the structural entryType of the child entry
      * @return a new virtual child entry, never {@code null}
      */
-    public DefaultGenericFile getChild(String childName, FileEntryType childEntryType) {
-        var child = new DefaultGenericFile();
+    public DefaultStorageFile getChild(String childName, FileEntryType childEntryType) {
+        var child = new DefaultStorageFile();
         child.storage = this.storage;
         child.entryType = childEntryType;
         child.name = childName;
@@ -191,7 +191,7 @@ public class DefaultGenericFile implements GenericFile {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final DefaultGenericFile other = (DefaultGenericFile) obj;
+        final DefaultStorageFile other = (DefaultStorageFile) obj;
         if (!Objects.equals(this.storage, other.storage)) {
             return false;
         }
@@ -203,7 +203,7 @@ public class DefaultGenericFile implements GenericFile {
 
     @Override
     public String toString() {
-        return "DefaultGenericFile[" + "storage=" + storage + ", entryType=" + entryType + ", uri=" + uri
+        return "DefaultStorageFile[" + "storage=" + storage + ", entryType=" + entryType + ", uri=" + uri
                 + ", size=" + size + ", name=" + name + ", modifiedTime=" + modifiedTime
                 + ", createdTime=" + createdTime + ", hidden=" + hidden + ", virtual=" + virtual + ']';
     }
@@ -309,13 +309,13 @@ public class DefaultGenericFile implements GenericFile {
         this.icon = icon;
     }
 
-    private List<DefaultGenericFile> buildParents(int limit) {
+    private List<DefaultStorageFile> buildParents(int limit) {
         var rootUri = storage.getUri();
         var segments = UriUtils.getPathSegments(rootUri, this.uri);
-        var parents = new ArrayList<DefaultGenericFile>(Math.min(segments.size(), limit));
+        var parents = new ArrayList<DefaultStorageFile>(Math.min(segments.size(), limit));
         for (int i = segments.size() - 1; i >= 1 && parents.size() < limit; i--) {
             var parentUri = UriUtils.resolvePath(rootUri, String.join("/", segments.subList(0, i)), true);
-            var parent = new DefaultGenericFile();
+            var parent = new DefaultStorageFile();
             parent.storage = this.storage;
             parent.entryType = FileEntryType.DIRECTORY;
             parent.name = segments.get(i - 1);
@@ -324,7 +324,7 @@ public class DefaultGenericFile implements GenericFile {
             parents.add(parent);
         }
         if (parents.size() < limit) {
-            parents.add((DefaultGenericFile) storage.getRootDirectory());
+            parents.add((DefaultStorageFile) storage.getRootDirectory());
         }
         return parents;
     }

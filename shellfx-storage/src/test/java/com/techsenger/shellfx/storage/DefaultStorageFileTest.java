@@ -28,14 +28,14 @@ import static org.mockito.Mockito.when;
  *
  * @author Pavel Castornii
  */
-public class DefaultGenericFileTest {
+public class DefaultStorageFileTest {
 
     private static final boolean IS_WINDOWS = OsUtils.isWindows();
 
     private FileStorage storage;
     private URI rootUri;
-    private DefaultGenericFile root;
-    private DefaultGenericFile child;
+    private DefaultStorageFile root;
+    private DefaultStorageFile child;
 
     @BeforeEach
     void setUp() {
@@ -44,7 +44,7 @@ public class DefaultGenericFileTest {
                 : URI.create("file:///");
         storage = mock(FileStorage.class);
 
-        root = new DefaultGenericFile();
+        root = new DefaultStorageFile();
         root.setStorage(storage);
         root.setEntryType(FileEntryType.DIRECTORY);
         root.setName("");
@@ -58,7 +58,7 @@ public class DefaultGenericFileTest {
                 ? URI.create("file:///C:/home/user/foo/bar")
                 : URI.create("file:///home/user/foo/bar");
 
-        child = new DefaultGenericFile();
+        child = new DefaultStorageFile();
         child.setStorage(storage);
         child.setEntryType(FileEntryType.FILE);
         child.setName("bar");
@@ -86,7 +86,7 @@ public class DefaultGenericFileTest {
                 ? URI.create("file:///C:/home")
                 : URI.create("file:///home");
 
-        var directChild = new DefaultGenericFile();
+        var directChild = new DefaultStorageFile();
         directChild.setStorage(storage);
         directChild.setEntryType(FileEntryType.DIRECTORY);
         directChild.setName("home");
@@ -147,7 +147,7 @@ public class DefaultGenericFileTest {
                 ? URI.create("file:///C:/home")
                 : URI.create("file:///home");
 
-        var directChild = new DefaultGenericFile();
+        var directChild = new DefaultStorageFile();
         directChild.setStorage(storage);
         directChild.setEntryType(FileEntryType.DIRECTORY);
         directChild.setName("home");

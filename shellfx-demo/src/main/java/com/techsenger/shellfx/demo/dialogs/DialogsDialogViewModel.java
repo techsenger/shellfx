@@ -46,11 +46,11 @@ import com.techsenger.shellfx.dialogs.text.TextDialogParams;
 import com.techsenger.shellfx.dialogs.text.TextsDialogConfig;
 import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
 import com.techsenger.shellfx.material.theme.Theme;
-import com.techsenger.shellfx.storage.DefaultGenericFile;
+import com.techsenger.shellfx.storage.DefaultStorageFile;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStyle;
 import com.techsenger.shellfx.storage.FileStyleResolver;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UnixFileStorage;
 import com.techsenger.shellfx.storage.WindowsFileStorage;
 import com.techsenger.toolkit.core.os.OsUtils;
@@ -67,7 +67,7 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends AbstractDialogViewModel<C> {
 
-    private static @Nullable FileStyle resolveDemoStyle(Theme theme, GenericFile file) {
+    private static @Nullable FileStyle resolveDemoStyle(Theme theme, StorageFile file) {
         if (file.isRoot()) {
             return file.getStorage().createRootStyle(theme);
         }
@@ -102,7 +102,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
 
     private final ConfigManager configManager;
 
-    private final List<? extends FileStorage<GenericFile>> storages;
+    private final List<? extends FileStorage<StorageFile>> storages;
 
     private final Map<DialogType, Runnable> dialogActionsByType = Map.ofEntries(
             Map.entry(DialogType.INFO, () -> {
@@ -191,9 +191,9 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         this.settings = params.getSettings();
         this.configManager = params.getManager();
         if (OsUtils.isWindows()) {
-            this.storages = WindowsFileStorage.createSystemStorages(DefaultGenericFile::new);
+            this.storages = WindowsFileStorage.createSystemStorages(DefaultStorageFile::new);
         } else {
-            this.storages = UnixFileStorage.createSystemStorages(DefaultGenericFile::new);
+            this.storages = UnixFileStorage.createSystemStorages(DefaultStorageFile::new);
         }
     }
 
@@ -228,9 +228,9 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         return settings;
     }
 
-    private void showFileChooserDialog(FileChooserType type, @Nullable FileStyleResolver<GenericFile> resolver) {
+    private void showFileChooserDialog(FileChooserType type, @Nullable FileStyleResolver<StorageFile> resolver) {
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
-        var params = new FileChooserDialogParams<GenericFile>(config, selectedWindowType.get(), settings,
+        var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), settings,
                 type, this.storages);
         var dialog = getComposer().openFileChooserDialog(params);
         dialog.setStyleResolver(resolver);

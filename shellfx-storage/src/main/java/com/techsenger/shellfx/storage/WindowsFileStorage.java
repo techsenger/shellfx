@@ -32,7 +32,7 @@ import javax.swing.filechooser.FileSystemView;
  *
  * @author Pavel Castornii
  */
-public class WindowsFileStorage<T extends GenericFile> extends AbstractSystemFileStorage<T> {
+public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFileStorage<T> {
 
     /**
      * Discovers and returns all system storages available on the current Windows machine.
@@ -51,9 +51,9 @@ public class WindowsFileStorage<T extends GenericFile> extends AbstractSystemFil
      * @param fileFactory the factory used to create file entries, must not be {@code null}
      * @return a mutable list of system storages, never {@code null}, may be empty
      */
-    public static List<FileStorage<GenericFile>> createSystemStorages(
-            Factory<? extends DefaultGenericFile> fileFactory) {
-        List<FileStorage<GenericFile>> result = new ArrayList<>();
+    public static List<FileStorage<StorageFile>> createSystemStorages(
+            Factory<? extends DefaultStorageFile> fileFactory) {
+        List<FileStorage<StorageFile>> result = new ArrayList<>();
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             FileStorageType type = switch (Kernel32.INSTANCE.GetDriveType(rootPath.toString())) {
@@ -63,7 +63,7 @@ public class WindowsFileStorage<T extends GenericFile> extends AbstractSystemFil
                 default -> FileStorageType.BASE;
             };
             @SuppressWarnings("unchecked")
-            var storage = (FileStorage<GenericFile>) (FileStorage<?>) new WindowsFileStorage<>(
+            var storage = (FileStorage<StorageFile>) (FileStorage<?>) new WindowsFileStorage<>(
                     type,
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
@@ -74,7 +74,7 @@ public class WindowsFileStorage<T extends GenericFile> extends AbstractSystemFil
     }
 
     public WindowsFileStorage(FileStorageType type, String displayName, URI rootUri,
-            Factory<? extends DefaultGenericFile> fileFactory) {
+            Factory<? extends DefaultStorageFile> fileFactory) {
         super(type, displayName, rootUri, fileFactory);
     }
 

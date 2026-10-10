@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.shellfx.material.column.ColumnListView;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
 
@@ -25,7 +25,7 @@ import javafx.scene.control.ContextMenu;
  *
  * @author Pavel Castornii
  */
-class FileListView<T extends GenericFile> extends ColumnListView<T> {
+class FileListView<T extends StorageFile> extends ColumnListView<T> {
 
     FileListView(ObservableList<T> files, ContextMenu cellContextMenu) {
         setItems(files);

@@ -46,7 +46,7 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public <F extends GenericFile> NamedTableColumn<F, F> buildNameColumn() {
+    public <F extends StorageFile> NamedTableColumn<F, F> buildNameColumn() {
         return buildNameColumn(() -> null);
     }
 
@@ -56,7 +56,7 @@ public class FileColumnBuilder {
      * @param styleResolver supplies the style resolver on every cell update, which may be {@code null}
      * @return
      */
-    public <F extends GenericFile> NamedTableColumn<F, F> buildNameColumn(
+    public <F extends StorageFile> NamedTableColumn<F, F> buildNameColumn(
             Supplier<@Nullable FileStyleResolver<F>> styleResolver) {
         var nameColumn = new NamedTableColumn<F, F>(FileColumns.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
@@ -100,7 +100,7 @@ public class FileColumnBuilder {
                 }
             }
         });
-        nameColumn.setComparator(Comparator.comparing(GenericFile::getName, String.CASE_INSENSITIVE_ORDER));
+        nameColumn.setComparator(Comparator.comparing(StorageFile::getName, String.CASE_INSENSITIVE_ORDER));
         return nameColumn;
     }
 
@@ -109,7 +109,7 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public <F extends GenericFile> NamedTableColumn<F, F> buildSizeColumn() {
+    public <F extends StorageFile> NamedTableColumn<F, F> buildSizeColumn() {
         return buildSizeColumn(() -> null);
     }
 
@@ -119,7 +119,7 @@ public class FileColumnBuilder {
      * @param styleResolver supplies the style resolver on every cell update, which may be {@code null}
      * @return
      */
-    public <F extends GenericFile> NamedTableColumn<F, F> buildSizeColumn(
+    public <F extends StorageFile> NamedTableColumn<F, F> buildSizeColumn(
             Supplier<@Nullable FileStyleResolver<F>> styleResolver) {
         var sizeColumn = new NamedTableColumn<F, F>(FileColumns.SIZE, "Size");
         sizeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
@@ -152,7 +152,7 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public <F extends GenericFile> NamedTableColumn<F, F> buildLastModifiedColumn() {
+    public <F extends StorageFile> NamedTableColumn<F, F> buildLastModifiedColumn() {
         return buildLastModifiedColumn(() -> null);
     }
 
@@ -162,7 +162,7 @@ public class FileColumnBuilder {
      * @param styleResolver supplies the style resolver on every cell update, which may be {@code null}
      * @return
      */
-    public <F extends GenericFile> NamedTableColumn<F, F> buildLastModifiedColumn(
+    public <F extends StorageFile> NamedTableColumn<F, F> buildLastModifiedColumn(
             Supplier<@Nullable FileStyleResolver<F>> styleResolver) {
         var lastModifiedColumn =
                 new NamedTableColumn<F, F>(FileColumns.LAST_MODIFIED, "Modified");
@@ -184,7 +184,7 @@ public class FileColumnBuilder {
                 }
             }
         });
-        lastModifiedColumn.setComparator(Comparator.comparing(GenericFile::getModifiedTime,
+        lastModifiedColumn.setComparator(Comparator.comparing(StorageFile::getModifiedTime,
                 Comparator.nullsLast(Comparator.naturalOrder())));
         lastModifiedColumn.setMaxWidth(this.font.getSize() * 8);
         lastModifiedColumn.setMinWidth(this.font.getSize() * 8);

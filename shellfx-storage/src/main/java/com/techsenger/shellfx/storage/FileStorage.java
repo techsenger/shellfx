@@ -33,10 +33,10 @@ import java.util.List;
  * <p>A {@code FileStorage} abstracts over different storage technologies (local file system, FTP, Google Drive, etc.)
  * and exposes a uniform API for listing, reading, writing, and navigating file entries. All entries produced by a
  * storage are typed via the type parameter {@code T}, which allows storage-specific implementations to return richer
- * subclasses of {@link GenericFile} without requiring callers to cast.
+ * subclasses of {@link StorageFile} without requiring callers to cast.
  *
  * <p><b>Naming.</b> "File" in most of this interface's own names ({@code FileStorage}, {@link #getFiles(URI)},
- * {@link #getFile(URI)}, {@link GenericFile}) is used generically, for an entry of either structural kind - a
+ * {@link #getFile(URI)}, {@link StorageFile}) is used generically, for an entry of either structural kind - a
  * directory is a "file" in that sense too. "Directory" always means specifically the
  * {@link FileEntryType#DIRECTORY} kind, as opposed to {@link FileEntryType#FILE} (a regular, non-directory
  * entry) - so the same word "file" is narrower at the {@link FileEntryType} level than it is at most of this
@@ -69,7 +69,7 @@ import java.util.List;
  * @param <T> the concrete file entry type produced by this storage
  * @author Pavel Castornii
  */
-public interface FileStorage<T extends GenericFile> {
+public interface FileStorage<T extends StorageFile> {
 
     /**
      * Returns the type of this storage (e.g. local, FTP, cloud).
@@ -167,7 +167,7 @@ public interface FileStorage<T extends GenericFile> {
      * @throws NoSuchFileException   if no entry exists at {@code uri}
      * @throws AccessDeniedException if the caller lacks read permission
      * @throws InvalidFileException  if the entry exists on the storage but cannot be represented
-     *                               as a valid {@link GenericFile} in the current environment
+     *                               as a valid {@link StorageFile} in the current environment
      *                               (e.g. a {@code Thumbs.db:encryptable} path on Linux)
      * @throws IOException           if an I/O error occurs
      */
@@ -210,7 +210,7 @@ public interface FileStorage<T extends GenericFile> {
      * storage URI, the chain is the root directory alone.
      *
      * <p>The operation may be very expensive, so the storage decides whether the elements are real entries or
-     * {@link GenericFile#isVirtual() virtual} ones without data. A virtual element is guaranteed to have only its
+     * {@link StorageFile#isVirtual() virtual} ones without data. A virtual element is guaranteed to have only its
      * name, URI and entry type.
      *
      * @param uri the URI of the entry the chain ends with

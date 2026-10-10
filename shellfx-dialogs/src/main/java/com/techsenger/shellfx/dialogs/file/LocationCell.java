@@ -21,7 +21,7 @@ import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.storage.FileCellUtils;
 import com.techsenger.shellfx.storage.FileStyleResolver;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import java.util.List;
 import java.util.function.Supplier;
@@ -37,7 +37,7 @@ import javafx.scene.layout.HBox;
  * @author Pavel Castornii
  * @param <F> the type of files
  */
-public class LocationCell<F extends GenericFile> extends ListCell<F> {
+public class LocationCell<F extends StorageFile> extends ListCell<F> {
 
     private final Label label = new Label();
 

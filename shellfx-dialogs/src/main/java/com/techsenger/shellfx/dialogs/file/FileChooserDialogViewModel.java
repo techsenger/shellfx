@@ -40,7 +40,7 @@ import com.techsenger.shellfx.storage.FileStyleResolver;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T extends GenericFile>
+public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T extends StorageFile>
         extends AbstractDialogViewModel<C> implements FileChooserDialogPort<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileChooserDialogViewModel.class);
@@ -427,7 +427,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         navigateTo(location.getStorage(), location.getUri());
     }
 
-    protected void onNavigateDown(GenericFile file) {
+    protected void onNavigateDown(StorageFile file) {
         if (file.isDirectory()) {
             navigateTo(file.getStorage(), file.getUri());
             scrollToFileSource.next(0);
@@ -503,7 +503,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         this.editType = null;
     }
 
-    protected void onEditCancelled(GenericFile file) {
+    protected void onEditCancelled(StorageFile file) {
         switch (editType) {
             case NEW_DIRECTORY -> modifiableFiles.remove(0);
             case RENAME_FILE -> {

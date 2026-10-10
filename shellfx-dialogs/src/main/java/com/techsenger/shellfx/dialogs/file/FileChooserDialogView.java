@@ -41,7 +41,7 @@ import com.techsenger.shellfx.storage.FileCellUtils;
 import com.techsenger.shellfx.storage.FileColumnBuilder;
 import com.techsenger.shellfx.storage.FileColumns;
 import com.techsenger.shellfx.storage.FileStringConverter;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.toolkit.fx.utils.TableUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.ArrayList;
@@ -108,7 +108,7 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, T extends GenericFile>
+public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, T extends StorageFile>
         extends AbstractDialogView<VM> {
 
     public class Composer extends AbstractWindowView<VM>.Composer implements FileChooserDialogComposer {
@@ -360,7 +360,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         containerContextMenu.getItems().add(createRefreshMenuItem());
         this.fileTableView.setContextMenu(containerContextMenu);
         this.fileListView.setContextMenu(containerContextMenu);
-        var converter = new FileStringConverter<GenericFile>();
+        var converter = new FileStringConverter<StorageFile>();
         this.fileListView.setCellFactory(listView -> new DialogTextFieldColumnListCell(converter));
 
         var columnConstraint1 = new ColumnConstraints();

@@ -26,7 +26,7 @@ import com.techsenger.annotations.Nullable;
  * @param <F> the type of files
  */
 @FunctionalInterface
-public interface FileStyleResolver<F extends GenericFile> {
+public interface FileStyleResolver<F extends StorageFile> {
 
     /**
      * Resolves the styles of the file.

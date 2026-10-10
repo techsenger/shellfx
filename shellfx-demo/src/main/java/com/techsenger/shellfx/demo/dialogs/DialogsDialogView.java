@@ -60,7 +60,7 @@ import com.techsenger.shellfx.dialogs.text.TextsDialogView;
 import com.techsenger.shellfx.dialogs.text.TextsDialogViewModel;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.storage.FileStyleResolver;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 import java.util.Arrays;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
@@ -142,12 +142,12 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
         }
 
         @Override
-        public FileChooserDialogPort<GenericFile> openFileChooserDialog(
-                FileChooserDialogParams<GenericFile> params) {
+        public FileChooserDialogPort<StorageFile> openFileChooserDialog(
+                FileChooserDialogParams<StorageFile> params) {
             var viewModel = new FileChooserDialogViewModel<>(params);
             var dialogView = new FileChooserDialogView<>(viewModel) {
 
-                private @Nullable FileStyleResolver<GenericFile> takenOffResolver;
+                private @Nullable FileStyleResolver<StorageFile> takenOffResolver;
 
                 @Override
                 protected void build() {

@@ -23,7 +23,7 @@ import javafx.util.StringConverter;
  *
  * @author Pavel Castornii
  */
-public class FileStringConverter<F extends GenericFile> extends StringConverter<F> {
+public class FileStringConverter<F extends StorageFile> extends StringConverter<F> {
 
     /**
      * It is supposed that toString is called always before fromString.
@@ -38,7 +38,7 @@ public class FileStringConverter<F extends GenericFile> extends StringConverter<
 
     @Override
     public F fromString(String string) {
-        ((DefaultGenericFile) file).setName(string);
+        ((DefaultStorageFile) file).setName(string);
         return file;
     }
 }

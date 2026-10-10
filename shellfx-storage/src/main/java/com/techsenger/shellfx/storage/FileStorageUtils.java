@@ -46,7 +46,7 @@ public final class FileStorageUtils {
      * @param storages the list of storages to search, must not be {@code null}
      * @return an unmodifiable list, never {@code null}, may be empty
      */
-    public static <T extends GenericFile> List<FileStorage<T>> findLocal(List<? extends FileStorage<T>> storages) {
+    public static <T extends StorageFile> List<FileStorage<T>> findLocal(List<? extends FileStorage<T>> storages) {
         var base = new ArrayList<FileStorage<T>>();
         var optical = new ArrayList<FileStorage<T>>();
         var floppy = new ArrayList<FileStorage<T>>();
@@ -73,7 +73,7 @@ public final class FileStorageUtils {
      * @param <T>      the concrete file entry type produced by the storages
      * @return an {@link Optional} containing the matching storage, or empty if none matches
      */
-    public static <T extends GenericFile> Optional<FileStorage<T>> findByUri(
+    public static <T extends StorageFile> Optional<FileStorage<T>> findByUri(
             List<? extends FileStorage<T>> storages, URI uri) {
         for (var s : storages) {
             if (s.refersToStorage(uri)) {
@@ -96,7 +96,7 @@ public final class FileStorageUtils {
      *         {@code user.home} property is not set, no matching storage is found, or an error
      *         occurs while retrieving the entry
      */
-    public static <T extends GenericFile> Optional<T> getHome(List<? extends FileStorage<T>> storages) {
+    public static <T extends StorageFile> Optional<T> getHome(List<? extends FileStorage<T>> storages) {
         var str = System.getProperty("user.home");
         if (str == null) {
             return Optional.empty();

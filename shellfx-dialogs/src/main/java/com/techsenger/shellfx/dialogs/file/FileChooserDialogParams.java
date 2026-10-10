@@ -20,7 +20,7 @@ import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.storage.FileStorage;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +29,7 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public class FileChooserDialogParams<T extends GenericFile> extends DialogParams {
+public class FileChooserDialogParams<T extends StorageFile> extends DialogParams {
 
     private final FileChooserType chooserType;
 

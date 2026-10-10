@@ -65,7 +65,7 @@ public final class FileCellUtils {
      * @param file the file shown in the cell, or {@code null} if the cell is empty
      * @param resolver the resolver of the view
      */
-    public static <F extends GenericFile> void updateStyles(Labeled cell, @Nullable FontIconView iconView,
+    public static <F extends StorageFile> void updateStyles(Labeled cell, @Nullable FontIconView iconView,
             @Nullable F file, FileStyleResolver<F> resolver) {
         FileStyle fileStyle = file != null ? resolver.resolve(file) : null;
         cell.setStyle(fileStyle != null ? fileStyle.textStyle() : null);

@@ -20,7 +20,7 @@ import com.techsenger.annotations.Nullable;
 import java.net.URI;
 
 /**
- * What a link (see {@link GenericFile#isLink()}) points to: the path the link states and, when something exists
+ * What a link (see {@link StorageFile#isLink()}) points to: the path the link states and, when something exists
  * there, the type of that entry. It describes the target only as far as the link's own storage can see; it is not
  * an entry of a storage and can't be navigated from.
  *

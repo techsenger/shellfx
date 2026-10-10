@@ -22,7 +22,7 @@ import com.techsenger.shellfx.core.dialog.DialogPort;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.storage.FileStyleResolver;
-import com.techsenger.shellfx.storage.GenericFile;
+import com.techsenger.shellfx.storage.StorageFile;
 import java.net.URI;
 import java.util.List;
 import javafx.beans.property.ObjectProperty;
@@ -36,7 +36,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public interface FileChooserDialogPort<T extends GenericFile> extends DialogPort {
+public interface FileChooserDialogPort<T extends StorageFile> extends DialogPort {
 
     T getResult();
 

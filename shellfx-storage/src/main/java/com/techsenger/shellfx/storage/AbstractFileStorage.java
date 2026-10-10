@@ -23,7 +23,7 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public abstract class AbstractFileStorage<T extends GenericFile> implements FileStorage<T> {
+public abstract class AbstractFileStorage<T extends StorageFile> implements FileStorage<T> {
 
     private final FileStorageType type;
 
