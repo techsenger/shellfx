@@ -66,7 +66,7 @@ final class NodeFactory {
     }
 
     static Button createIconButton(String styleClass) {
-        var b = new Button(null, new FontIconView(StorageIcons.FOLDER));
+        var b = new Button(null, new FontIconView(StorageIcons.DIRECTORY));
         b.getStyleClass().add(StyleClasses.SQUARE);
         if (styleClass != null) {
             b.getStyleClass().add(styleClass);

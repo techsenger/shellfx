@@ -147,23 +147,26 @@ public class DialogsDialogView<VM extends DialogsDialogViewModel<?>> extends Abs
             var viewModel = new FileChooserDialogViewModel<>(params);
             var dialogView = new FileChooserDialogView<>(viewModel) {
 
-                private @Nullable FileStyleResolver<StorageFile> takenOffResolver;
+                private @Nullable FileStyleResolver<StorageFile> lastResolver = viewModel.getStyleResolver();
 
                 @Override
                 protected void build() {
                     super.build();
+                    // the resolver is set after the dialog is created, so the last one is remembered
+                    viewModel.styleResolverProperty().addListener((ov, oldV, newV) -> {
+                        if (newV != null) {
+                            lastResolver = newV;
+                        }
+                    });
                     var button = new Button("Toggle style resolver");
                     button.setOnAction(e -> {
                         if (viewModel.getStyleResolver() != null) {
-                            takenOffResolver = viewModel.getStyleResolver();
                             viewModel.setStyleResolver(null);
                         } else {
-                            viewModel.setStyleResolver(takenOffResolver);
+                            viewModel.setStyleResolver(lastResolver);
                         }
                     });
-                    if (takenOffResolver != null) {
-                        getLeftBottomBox().getChildren().add(button);
-                    }
+                    getLeftBottomBox().getChildren().add(button);
                 }
             };
             dialogView.initialize();

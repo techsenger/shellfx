@@ -17,6 +17,10 @@
 package com.techsenger.shellfx.material.icon;
 
 import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.material.style.IconStylesheets;
+import com.techsenger.shellfx.material.style.Stylesheet;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -24,8 +28,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.WeakChangeListener;
 import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableDoubleProperty;
 import javafx.css.SimpleStyleableIntegerProperty;
@@ -62,7 +64,14 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * <p>If no font family is resolved for an icon (neither from a {@link PlainFontIcon} nor from CSS), the
- * static {@link #defaultIconFontProperty() default icon font} is used instead.
+ * static {@link #getDefaultIconFamily() default icon family} is used instead.
+ *
+ * <p>A {@link StyleFontIcon} whose stylesheet rule has no {@code -fx-icon-family} would keep the family of the
+ * previous icon when the view is reused: JavaFX may not return the property to its initial value, because it loses
+ * track of the properties applied after the inline style of the view is changed in the middle of a CSS pass (see
+ * the inline style below). So {@link #setDefaultIconFamily(String)} also registers in {@code IconStylesheets} a
+ * stylesheet with the rule {@code .font-icon-view { -fx-icon-family: '...'; }}, which gives every icon a family;
+ * the rules of the icons with another font are more specific and override it.
  *
  * <p>The inline style of this view is managed by the view itself, because it keeps the frozen icon size there. To
  * style the icon from code, use {@link #iconStyleProperty() iconStyle}; never call {@code setStyle()}, as it
@@ -92,35 +101,36 @@ public class FontIconView extends Text {
      * The application-wide default font family used when an icon does not specify its own font, either via
      * {@link PlainFontIcon#getFont()} or via the {@code -fx-icon-family} CSS property.
      */
-    private static final ObjectProperty<String> defaultIconFont =
-            new SimpleObjectProperty<>(FontIconView.class, "defaultIconFont");
+    private static @Nullable String defaultIconFamily;
 
     /**
-     * Returns the property holding the application-wide default icon font family.
-     *
-     * @return the default icon font property
+     * The stylesheet that gives every icon the default family, or {@code null} if there is no default family.
      */
-    public static ObjectProperty<String> defaultIconFontProperty() {
-        return defaultIconFont;
-    }
+    private static @Nullable Stylesheet defaultFamilyStylesheet;
 
     /**
      * Returns the application-wide default icon font family.
      *
      * @return the default font family, or {@code null} if not set
      */
-    public static String getDefaultIconFont() {
-        return defaultIconFont.get();
+    public static @Nullable String getDefaultIconFamily() {
+        return defaultIconFamily;
     }
 
     /**
      * Sets the application-wide default icon font family, used by any {@link FontIconView} instance that does
      * not resolve its own font family from an icon or from CSS.
      *
-     * @param font the default font family to use
+     * <p>It must be set before the application starts, before any view is created and the UI is initialized: the
+     * views that already exist are not updated. The method also replaces the stylesheet that gives the family to
+     * every icon in {@code IconStylesheets} (see the description of the class). A {@code null} family removes
+     * the stylesheet.
+     *
+     * @param family the default font family to use, or {@code null} for none
      */
-    public static void setDefaultIconFont(String font) {
-        defaultIconFont.set(font);
+    public static void setDefaultIconFamily(@Nullable String family) {
+        defaultIconFamily = family;
+        updateDefaultFamilyStylesheet(family);
     }
 
     /**
@@ -133,6 +143,19 @@ public class FontIconView extends Text {
         return Css.META_DATA;
     }
 
+    private static void updateDefaultFamilyStylesheet(@Nullable String family) {
+        if (defaultFamilyStylesheet != null) {
+            IconStylesheets.remove(defaultFamilyStylesheet);
+            defaultFamilyStylesheet = null;
+        }
+        if (family != null) {
+            var css = ".font-icon-view { -fx-icon-family: '" + family + "'; }";
+            defaultFamilyStylesheet = new Stylesheet("data:text/css;base64,"
+                    + Base64.getEncoder().encodeToString(css.getBytes(StandardCharsets.UTF_8)));
+            IconStylesheets.add(defaultFamilyStylesheet);
+        }
+    }
+
     private final StyleableDoubleProperty iconSize =
             new SimpleStyleableDoubleProperty(Css.ICON_SIZE, this, "iconSize", 14.0);
 
@@ -143,8 +166,6 @@ public class FontIconView extends Text {
             new SimpleStyleableIntegerProperty(Css.ICON_CODE, this, "iconCode", 0);
 
     private final ObjectProperty<FontIcon<?>> icon = new SimpleObjectProperty<>();
-
-    private final ChangeListener<String> defaultFontListener = (ov, oldV, newV) -> updateFont();
 
     private final StringProperty units = new SimpleStringProperty(this, "units", "px");
 
@@ -177,7 +198,6 @@ public class FontIconView extends Text {
             freezeResolvedSize(newV.doubleValue());
         });
         iconStyle.addListener((ov, oldV, newV) -> updateStyle());
-        defaultIconFont.addListener(new WeakChangeListener<>(defaultFontListener));
         icon.addListener((ov, oldV, newV) -> {
             if (oldV instanceof StyleFontIcon sfi) {
                 getStyleClass().remove(sfi.getContent());
@@ -262,7 +282,7 @@ public class FontIconView extends Text {
 
     /**
      * Returns the styleable property holding the icon's font family, backed by the {@code -fx-icon-family}
-     * CSS property. A {@code null} value means the {@link #defaultIconFontProperty() default icon font}
+     * CSS property. A {@code null} value means the {@link #getDefaultIconFamily() default icon family}
      * is used instead. Only used for a {@link StyleFontIcon}; a {@link PlainFontIcon}'s font is read
      * directly from the icon instance instead.
      *
@@ -284,7 +304,7 @@ public class FontIconView extends Text {
     /**
      * Sets the icon's font family. Only meaningful for a {@link StyleFontIcon}.
      *
-     * @param family the font family to use, or {@code null} to fall back to the default icon font
+     * @param family the font family to use, or {@code null} to fall back to the default icon family
      */
     public void setIconFamily(String family) {
         iconFamily.set(family);
@@ -414,9 +434,9 @@ public class FontIconView extends Text {
     private void updateFont() {
         String family;
         if (icon.get() instanceof PlainFontIcon pfi) {
-            family = pfi.getFont() != null ? pfi.getFont() : defaultIconFont.get();
+            family = pfi.getFont() != null ? pfi.getFont() : defaultIconFamily;
         } else {
-            family = iconFamily.get() != null ? iconFamily.get() : defaultIconFont.get();
+            family = iconFamily.get() != null ? iconFamily.get() : defaultIconFamily;
         }
         setFont(family != null ? Font.font(family, iconSize.get()) : Font.font(iconSize.get()));
     }

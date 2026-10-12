@@ -147,7 +147,7 @@ public class StylesheetManager {
 
     private void addToTarget(Stylesheet sheet, Theme theme) {
         var target = targetSupplier.get();
-        var urlStr = sheet.getUrl().toExternalForm();
+        var urlStr = sheet.getUrl();
         if (!managedUrls.contains(urlStr)) {
             target.add(urlStr);
             managedUrls.add(urlStr);

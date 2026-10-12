@@ -36,11 +36,11 @@ import javafx.application.Application;
  *
  * @author Pavel Castornii
  */
-final class FxTestSupport {
+public final class FxTestSupport {
 
     private static volatile boolean started;
 
-    static synchronized void start() throws InterruptedException {
+    public static synchronized void start() throws InterruptedException {
         if (started) {
             return;
         }
@@ -57,7 +57,7 @@ final class FxTestSupport {
      * Runs {@code action} on the FX Application Thread and returns its result, blocking the calling (test)
      * thread until it completes.
      */
-    static <T> T onFxThread(Supplier<T> action) throws InterruptedException {
+    public static <T> T onFxThread(Supplier<T> action) throws InterruptedException {
         var box = new Object[1];
         var error = new Throwable[1];
         FxPlatform.runLaterAndWait(() -> {

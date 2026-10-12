@@ -157,6 +157,17 @@ public interface StorageFile {
     @Nullable LinkTarget getLinkTarget();
 
     /**
+     * Returns {@code true} if this entry is a link whose target exists and is a directory, which can be listed and
+     * opened like a directory although the link itself is not one. A link to another link, or a broken one, is not.
+     *
+     * @return {@code true} if this is a {@link #isLink() link} to a directory
+     */
+    default boolean isDirectoryLink() {
+        var target = getLinkTarget();
+        return target != null && target.getEntryType() == FileEntryType.DIRECTORY;
+    }
+
+    /**
      * Returns {@code true} if this entry represents the root directory of its {@link FileStorage}.
      *
      * @return {@code true} if this entry is a directory whose URI equals the storage root URI

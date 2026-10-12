@@ -18,7 +18,6 @@ package com.techsenger.shellfx.material.style;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.shellfx.material.theme.Theme;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -40,16 +39,18 @@ import java.util.Set;
  */
 public class Stylesheet {
 
-    private final URL url;
+    private final String url;
 
     private final Set<Theme> extensionThemes;
 
     /**
-     * Creates a stylesheet with the given {@link URL} and no theme-specific extensions.
+     * Creates a stylesheet with the given URL and no theme-specific extensions. The URL is a string in the form
+     * accepted by {@code getStylesheets()}, such as the external form of a resource or a {@code data:} URL, which
+     * allows a stylesheet to be given as text.
      *
      * @param url the URL of the stylesheet
      */
-    public Stylesheet(URL url) {
+    public Stylesheet(String url) {
         this(url, Collections.emptySet());
     }
 
@@ -60,8 +61,8 @@ public class Stylesheet {
      * @param extensionThemes the set of themes for which an extension stylesheet exists; an empty set means no
      *                        theme-specific extensions are available
      */
-    public Stylesheet(URL url, Set<Theme> extensionThemes) {
-        this.url = url;
+    public Stylesheet(String url, Set<Theme> extensionThemes) {
+        this.url = Objects.requireNonNull(url);
         this.extensionThemes = extensionThemes;
     }
 
@@ -74,7 +75,7 @@ public class Stylesheet {
         return extensionThemes;
     }
 
-    public URL getUrl() {
+    public String getUrl() {
         return url;
     }
 

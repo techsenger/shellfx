@@ -32,7 +32,17 @@ public interface StorageIcons {
 
     StyleFontIcon NETWORK_DISK = new StyleFontIcon("network-disk-icon");
 
-    StyleFontIcon FOLDER = new StyleFontIcon("folder-icon");
+    StyleFontIcon DIRECTORY = new StyleFontIcon("directory-icon");
 
     StyleFontIcon FILE = new StyleFontIcon("file-icon");
+
+    StyleFontIcon DIRECTORY_LINK = new StyleFontIcon("directory-link-icon");
+
+    StyleFontIcon FILE_LINK = new StyleFontIcon("file-link-icon");
+
+    StyleFontIcon ERROR_DIRECTORY = new StyleFontIcon("error-directory-icon");
+
+    StyleFontIcon ERROR_FILE = new StyleFontIcon("error-file-icon");
+
+    StyleFontIcon OTHER = new StyleFontIcon("other-icon");
 }

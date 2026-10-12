@@ -30,49 +30,49 @@ public final class IconStylesheetFactory {
      * Creates and returns the stylesheet with icons for the 'core' module.
      */
     public static Stylesheet forCore() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("core.css"));
+        return new Stylesheet(IconStylesheetFactory.class.getResource("core.css").toExternalForm());
     }
 
     /**
      * Creates and returns the stylesheet with icons for the 'shared' module.
      */
     public static Stylesheet forShared() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("shared.css"));
+        return new Stylesheet(IconStylesheetFactory.class.getResource("shared.css").toExternalForm());
     }
 
     /**
      * Creates and returns the stylesheet with icons for the 'layout' module.
      */
     public static Stylesheet forLayout() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("layout.css"));
+        return new Stylesheet(IconStylesheetFactory.class.getResource("layout.css").toExternalForm());
     }
 
     /**
      * Creates and returns the stylesheet with icons for the 'material' module.
      */
     public static Stylesheet forMaterial() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("material.css"));
+        return new Stylesheet(IconStylesheetFactory.class.getResource("material.css").toExternalForm());
     }
 
     /**
      * Creates and returns the stylesheet with icons for the 'dialogs' module.
      */
     public static Stylesheet forDialogs() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("dialogs.css"));
+        return new Stylesheet(IconStylesheetFactory.class.getResource("dialogs.css").toExternalForm());
     }
 
     /**
      * Creates and returns the stylesheet with icons for the 'devtools' module.
      */
     public static Stylesheet forDevTools() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("devtools.css"));
+        return new Stylesheet(IconStylesheetFactory.class.getResource("devtools.css").toExternalForm());
     }
 
     /**
      * Creates and returns the stylesheet with icons for the 'storage' module.
      */
     public static Stylesheet forStorage() {
-        return new Stylesheet(IconStylesheetFactory.class.getResource("storage.css"));
+        return new Stylesheet(IconStylesheetFactory.class.getResource("storage.css").toExternalForm());
     }
 
     /**

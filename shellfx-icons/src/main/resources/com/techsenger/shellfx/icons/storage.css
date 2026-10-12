@@ -44,10 +44,34 @@
     -fx-icon-family: 'Techsenger MDI Extension';
 }
 
-.font-icon-view.folder-icon {
+.font-icon-view.directory-icon {
     -fx-icon-code: 983627; /* folder */
 }
 
 .font-icon-view.file-icon {
     -fx-icon-code: 983588; /* file-outline */
+}
+
+.font-icon-view.directory-link-icon {
+    -fx-icon-code: 57351;
+    -fx-icon-family: 'Techsenger MDI Extension';
+}
+
+.font-icon-view.file-link-icon {
+    -fx-icon-code: 57352;
+    -fx-icon-family: 'Techsenger MDI Extension';
+}
+
+.font-icon-view.error-directory-icon {
+    -fx-icon-code: 57357;
+    -fx-icon-family: 'Techsenger MDI Extension';
+}
+
+.font-icon-view.error-file-icon {
+    -fx-icon-code: 57356;
+    -fx-icon-family: 'Techsenger MDI Extension';
+}
+
+.font-icon-view.other-icon {
+    -fx-icon-code: 990254; /* file-star-four-points-outline */
 }

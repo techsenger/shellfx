@@ -28,6 +28,10 @@ import com.techsenger.shellfx.core.config.InMemoryConfigManager;
 import com.techsenger.shellfx.core.registry.ControlRegistry;
 import com.techsenger.shellfx.core.registry.RegistrarManager;
 import com.techsenger.shellfx.core.registry.SlotRegistry;
+import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
+import static com.techsenger.shellfx.demo.ApplicationType.IDE;
+import static com.techsenger.shellfx.demo.ApplicationType.MDI;
+import static com.techsenger.shellfx.demo.ApplicationType.STYLES_ONLY;
 import com.techsenger.shellfx.demo.settings.DemoSettings;
 import com.techsenger.shellfx.demo.shell.ShellControlRegistrar;
 import com.techsenger.shellfx.demo.shell.ShellSlotRegistrar;
@@ -57,10 +61,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.techsenger.shellfx.demo.ApplicationType.BROWSER;
-import static com.techsenger.shellfx.demo.ApplicationType.IDE;
-import static com.techsenger.shellfx.demo.ApplicationType.MDI;
-import static com.techsenger.shellfx.demo.ApplicationType.STYLES_ONLY;
 
 /**
  *
@@ -112,7 +112,7 @@ public class Demo extends Application {
 
     private ShellView<?> createShell(ApplicationType appType) {
         // setting icons
-        FontIconView.setDefaultIconFont(Fonts.MATERIAL_DESIGN_ICONS.getFamily());
+        FontIconView.setDefaultIconFamily(Fonts.MATERIAL_DESIGN_ICONS.getFamily());
         IconStylesheets.addAll(IconStylesheetFactory.forAll());
 
         // creating shell component

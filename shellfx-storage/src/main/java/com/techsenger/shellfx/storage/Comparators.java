@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.annotations.Nullable;
 import java.util.Comparator;
 
 /**
@@ -25,16 +26,16 @@ import java.util.Comparator;
 public final class Comparators {
 
     /**
-     * Wraps an existing aggregate comparator with a higher-priority rule that ensures directories are always sorted
-     * before regular files, regardless of the underlying comparison logic.
+     * Wraps an existing aggregate comparator with a higher-priority rule that ensures directories, including links to
+     * directories, are always sorted before the other entries, regardless of the underlying comparison logic.
      *
      * <p>This method does not modify the provided comparator. Instead, it returns a new comparator that delegates to
      * the given aggregate comparator after applying the directory-first rule.</p>
      *
      * <p>Evaluation order:</p>
      * <ol>
-     *     <li>Directory precedence (directories come before non-directories)</li>
-     *     <li>If both elements are of the same type (both directories or both files),
+     *     <li>Directory precedence (directories and links to directories come before the other entries)</li>
+     *     <li>If both elements are of the same type (both directories or both not),
      *         delegation to the provided aggregate comparator</li>
      * </ol>
      *
@@ -45,10 +46,11 @@ public final class Comparators {
      *                            representing user-defined column sorting logic
      * @return a comparator that enforces directory-first ordering on top of the base comparator
      */
-    public static <T extends StorageFile> Comparator<T> directoryFirst(Comparator<T> aggregateComparator) {
+    public static <T extends StorageFile> Comparator<T> directoryFirst(
+            @Nullable Comparator<? super T> aggregateComparator) {
         return (a, b) -> {
-            boolean aDir = a.isDirectory();
-            boolean bDir = b.isDirectory();
+            boolean aDir = a.isDirectory() || a.isDirectoryLink();
+            boolean bDir = b.isDirectory() || b.isDirectoryLink();
             if (aDir && !bDir) {
                 return -1;
             }

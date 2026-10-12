@@ -792,8 +792,9 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
                 Arrays.stream(JavaFxTheme.values()))
                 .collect(Collectors.toSet());
         List<Stylesheet> result = new ArrayList<>();
-        result.add(new Stylesheet(CssAnchor.class.getResource("core.css"), Set.of(AtlantaFxTheme.values())));
-        result.add(new Stylesheet(StyleClasses.class.getResource("material.css"), allThemes));
+        result.add(new Stylesheet(CssAnchor.class.getResource("core.css").toExternalForm(),
+                Set.of(AtlantaFxTheme.values())));
+        result.add(new Stylesheet(StyleClasses.class.getResource("material.css").toExternalForm(), allThemes));
         result.addAll(IconStylesheets.getAll());
         return Collections.unmodifiableList(result);
     }

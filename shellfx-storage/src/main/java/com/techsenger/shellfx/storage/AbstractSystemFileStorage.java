@@ -377,13 +377,26 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     }
 
     /**
-     * Resolves the icon assigned to {@code file} when it is constructed, before it is exposed to callers.
+     * Resolves the icon assigned to {@code file} when it is constructed, before it is exposed to callers. A link
+     * gets the icon of what it points to, or an error icon if its target can't be determined.
      *
      * @param file the file being constructed, must not be {@code null}
      * @return the icon, never {@code null}
      */
     protected FontIcon<?> resolveIcon(T file) {
-        return file.isDirectory() ? StorageIcons.FOLDER : StorageIcons.FILE;
+        return switch (file.getEntryType()) {
+            case FILE -> StorageIcons.FILE;
+            case DIRECTORY -> StorageIcons.DIRECTORY;
+            case LINK -> {
+                var target = file.getLinkTarget();
+                var targetType = target == null ? null : target.getEntryType();
+                if (targetType == null) {
+                    yield StorageIcons.ERROR_FILE;
+                }
+                yield targetType == FileEntryType.DIRECTORY ? StorageIcons.DIRECTORY_LINK : StorageIcons.FILE_LINK;
+            }
+            case OTHER -> StorageIcons.OTHER;
+        };
     }
 
     /**

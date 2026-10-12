@@ -22,6 +22,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A registry of icon stylesheets used internally by the ShellFX platform. This includes icons for built-in components
@@ -35,6 +37,8 @@ import java.util.Set;
  */
 public final class IconStylesheets {
 
+    private static final Logger logger = LoggerFactory.getLogger(IconStylesheets.class);
+
     private static final Set<Stylesheet> stylesheets = new LinkedHashSet<>();
 
     /**
@@ -43,7 +47,9 @@ public final class IconStylesheets {
      * @param stylesheet the stylesheet to add, must not be {@code null}
      */
     public static void add(Stylesheet stylesheet) {
-        stylesheets.add(Objects.requireNonNull(stylesheet));
+        if (stylesheets.add(Objects.requireNonNull(stylesheet))) {
+            logStylesheets();
+        }
     }
 
     /**
@@ -52,7 +58,13 @@ public final class IconStylesheets {
      * @param stylesheets the stylesheets to add, must not be {@code null}
      */
     public static void addAll(Collection<? extends Stylesheet> stylesheets) {
-        Objects.requireNonNull(stylesheets).forEach(IconStylesheets::add);
+        var changed = false;
+        for (var s : Objects.requireNonNull(stylesheets)) {
+            changed = IconStylesheets.stylesheets.add(Objects.requireNonNull(s)) || changed;
+        }
+        if (changed) {
+            logStylesheets();
+        }
     }
 
     /**
@@ -61,9 +73,12 @@ public final class IconStylesheets {
      * @param stylesheets the stylesheets to add, must not be {@code null}
      */
     public static void addAll(Stylesheet... stylesheets) {
-        Objects.requireNonNull(stylesheets);
-        for (Stylesheet s : stylesheets) {
-            add(s);
+        var changed = false;
+        for (var s : Objects.requireNonNull(stylesheets)) {
+            changed = IconStylesheets.stylesheets.add(Objects.requireNonNull(s)) || changed;
+        }
+        if (changed) {
+            logStylesheets();
         }
     }
 
@@ -73,7 +88,9 @@ public final class IconStylesheets {
      * @param stylesheet the stylesheet to remove, must not be {@code null}
      */
     public static void remove(Stylesheet stylesheet) {
-        stylesheets.remove(Objects.requireNonNull(stylesheet));
+        if (stylesheets.remove(Objects.requireNonNull(stylesheet))) {
+            logStylesheets();
+        }
     }
 
     /**
@@ -83,7 +100,13 @@ public final class IconStylesheets {
      * @param stylesheets the stylesheets to remove, must not be {@code null}
      */
     public static void removeAll(Collection<? extends Stylesheet> stylesheets) {
-        Objects.requireNonNull(stylesheets).forEach(IconStylesheets::remove);
+        var changed = false;
+        for (var s : Objects.requireNonNull(stylesheets)) {
+            changed = IconStylesheets.stylesheets.remove(Objects.requireNonNull(s)) || changed;
+        }
+        if (changed) {
+            logStylesheets();
+        }
     }
 
     /**
@@ -93,9 +116,12 @@ public final class IconStylesheets {
      * @param stylesheets the stylesheets to remove, must not be {@code null}
      */
     public static void removeAll(Stylesheet... stylesheets) {
-        Objects.requireNonNull(stylesheets);
-        for (Stylesheet s : stylesheets) {
-            remove(s);
+        var changed = false;
+        for (var s : Objects.requireNonNull(stylesheets)) {
+            changed = IconStylesheets.stylesheets.remove(Objects.requireNonNull(s)) || changed;
+        }
+        if (changed) {
+            logStylesheets();
         }
     }
 
@@ -106,6 +132,23 @@ public final class IconStylesheets {
      */
     public static @Unmodifiable List<Stylesheet> getAll() {
         return List.copyOf(stylesheets);
+    }
+
+    private static void logStylesheets() {
+        if (logger.isDebugEnabled()) {
+            if (stylesheets.isEmpty()) {
+                logger.debug("Icon stylesheets updated. No icon stylesheets registered");
+            } else {
+                var sb = new StringBuilder();
+                sb.append("Icon stylesheets updated. Current icon stylesheets:");
+                for (var s : stylesheets) {
+                    sb.append(System.lineSeparator());
+                    sb.append("    ");
+                    sb.append(s.getUrl());
+                }
+                logger.debug(sb.toString());
+            }
+        }
     }
 
     private IconStylesheets() {
