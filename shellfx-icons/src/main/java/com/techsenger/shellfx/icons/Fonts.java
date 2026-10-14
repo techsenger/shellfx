@@ -27,8 +27,8 @@ public final class Fonts {
     public static final Font MATERIAL_DESIGN_ICONS =
             Font.loadFont(Fonts.class.getResourceAsStream("font/materialdesignicons-webfont.ttf"), 12);
 
-    public static final Font MATERIAL_DESIGN_ICONS_EXTENSION =
-            Font.loadFont(Fonts.class.getResourceAsStream("font/techsenger-mdi-extension.ttf"), 12);
+    public static final Font TECHSENGER_ICONS_MDI =
+            Font.loadFont(Fonts.class.getResourceAsStream("font/techsenger-icons-mdi.ttf"), 12);
 
     private Fonts() {
         // empty

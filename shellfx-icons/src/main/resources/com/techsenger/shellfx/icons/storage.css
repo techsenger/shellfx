@@ -23,7 +23,7 @@
 }
 
 @font-face {
-    src: url('font/techsenger-mdi-extension.ttf');
+    src: url('font/techsenger-icons-mdi.ttf');
 }
 
 .font-icon-view.disc-icon {
@@ -36,12 +36,12 @@
 
 .font-icon-view.base-disk-icon {
     -fx-icon-code: 57349;
-    -fx-icon-family: 'Techsenger MDI Extension';
+    -fx-icon-family: 'Techsenger Icons MDI';
 }
 
 .font-icon-view.network-disk-icon {
     -fx-icon-code: 57350;
-    -fx-icon-family: 'Techsenger MDI Extension';
+    -fx-icon-family: 'Techsenger Icons MDI';
 }
 
 .font-icon-view.directory-icon {
@@ -54,22 +54,27 @@
 
 .font-icon-view.directory-link-icon {
     -fx-icon-code: 57351;
-    -fx-icon-family: 'Techsenger MDI Extension';
+    -fx-icon-family: 'Techsenger Icons MDI';
 }
 
 .font-icon-view.file-link-icon {
     -fx-icon-code: 57352;
-    -fx-icon-family: 'Techsenger MDI Extension';
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.other-link-icon {
+    -fx-icon-code: 57358;
+    -fx-icon-family: 'Techsenger Icons MDI';
 }
 
 .font-icon-view.error-directory-icon {
     -fx-icon-code: 57357;
-    -fx-icon-family: 'Techsenger MDI Extension';
+    -fx-icon-family: 'Techsenger Icons MDI';
 }
 
 .font-icon-view.error-file-icon {
     -fx-icon-code: 57356;
-    -fx-icon-family: 'Techsenger MDI Extension';
+    -fx-icon-family: 'Techsenger Icons MDI';
 }
 
 .font-icon-view.other-icon {

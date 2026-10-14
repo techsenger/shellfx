@@ -138,7 +138,7 @@ public interface StorageFile {
 
     /**
      * Returns {@code true} if this entry is a link: a symbolic link on any system, or a directory junction on
-     * Windows. It is the link itself that this entry describes; see {@link #getLinkTarget()} for what it points to.
+     * Windows. It is the link itself that this entry describes; see {@link #getLink()} for what it points to.
      * Code that walks a directory tree must not descend into a link, see {@link FileEntryType#LINK}.
      *
      * @return {@code true} if {@link #getEntryType()} is {@link FileEntryType#LINK}
@@ -150,21 +150,22 @@ public interface StorageFile {
     /**
      * Returns what this link points to, or {@code null} if this entry is not a {@link #isLink() link} or the path
      * the link points to couldn't be determined. A broken link still has a target - its path is known, only
-     * {@link LinkTarget#getEntryType()} is {@code null}.
+     * {@link EntryLink#getTarget()} is {@code null}.
      *
      * @return the target of the link, or {@code null}
      */
-    @Nullable LinkTarget getLinkTarget();
+    @Nullable EntryLink getLink();
 
     /**
      * Returns {@code true} if this entry is a link whose target exists and is a directory, which can be listed and
-     * opened like a directory although the link itself is not one. A link to another link, or a broken one, is not.
+     * opened like a directory although the link itself is not one. A broken link is not.
      *
      * @return {@code true} if this is a {@link #isLink() link} to a directory
      */
     default boolean isDirectoryLink() {
-        var target = getLinkTarget();
-        return target != null && target.getEntryType() == FileEntryType.DIRECTORY;
+        var target = getLink();
+        var file = target == null ? null : target.getTarget();
+        return file != null && file.isDirectory();
     }
 
     /**

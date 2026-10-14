@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.sun.jna.platform.win32.Kernel32;
+import com.techsenger.annotations.Nullable;
 import com.techsenger.toolkit.core.function.Factory;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -54,6 +55,8 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
     public static List<FileStorage<StorageFile>> createSystemStorages(
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
+        // the links of a storage may point into any other one of the list
+        StorageFinder<StorageFile> storageFinder = uri -> FileStorageUtils.findByUri(result, uri);
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             FileStorageType type = switch (Kernel32.INSTANCE.GetDriveType(rootPath.toString())) {
@@ -67,7 +70,8 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
                     type,
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
-                    fileFactory);
+                    fileFactory,
+                    storageFinder);
             result.add(storage);
         });
         return result;
@@ -75,7 +79,12 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
 
     public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
             Factory<? extends DefaultStorageFile> fileFactory) {
-        super(type, name, rootUri, fileFactory);
+        this(type, name, rootUri, fileFactory, null);
+    }
+
+    public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
+            Factory<? extends DefaultStorageFile> fileFactory, @Nullable StorageFinder<T> storageFinder) {
+        super(type, name, rootUri, fileFactory, storageFinder);
     }
 
     @Override

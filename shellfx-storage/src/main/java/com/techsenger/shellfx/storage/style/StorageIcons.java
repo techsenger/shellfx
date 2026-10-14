@@ -40,6 +40,8 @@ public interface StorageIcons {
 
     StyleFontIcon FILE_LINK = new StyleFontIcon("file-link-icon");
 
+    StyleFontIcon OTHER_LINK = new StyleFontIcon("other-link-icon");
+
     StyleFontIcon ERROR_DIRECTORY = new StyleFontIcon("error-directory-icon");
 
     StyleFontIcon ERROR_FILE = new StyleFontIcon("error-file-icon");

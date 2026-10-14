@@ -61,7 +61,8 @@ public class SystemFileStorageIT {
     /**
      * @param linkName the name of the link in the listed folder.
      * @param targetPath the path the link is expected to point to.
-     * @param entryType the type the entry at the target is expected to have, {@code null} for a broken link.
+     * @param entryType the type the file at the end of the chain of links is expected to have, {@code null} for a
+     *     broken link.
      */
     private record ExpectedTarget(String linkName, Path targetPath, @Nullable FileEntryType entryType) {
     }
@@ -106,11 +107,16 @@ public class SystemFileStorageIT {
         for (var expected : expectedTargets) {
             var link = find(files, expected.linkName());
             assertThat(link.getEntryType()).as(expected.linkName()).isEqualTo(FileEntryType.LINK);
-            var target = link.getLinkTarget();
+            var target = link.getLink();
             assertThat(target).as(expected.linkName()).isNotNull();
-            assertThat(Paths.get(target.getUri())).as(expected.linkName()).isEqualTo(expected.targetPath());
-            assertThat(target.getEntryType()).as(expected.linkName()).isEqualTo(expected.entryType());
+            assertThat(Paths.get(target.getTargetUri())).as(expected.linkName()).isEqualTo(expected.targetPath());
+            assertThat(targetEntryType(target)).as(expected.linkName()).isEqualTo(expected.entryType());
         }
+    }
+
+    private static @Nullable FileEntryType targetEntryType(EntryLink target) {
+        var file = target.getTarget();
+        return file == null ? null : file.getEntryType();
     }
 
     private static StorageFile find(List<StorageFile> files, String name) {
@@ -137,11 +143,11 @@ public class SystemFileStorageIT {
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.FILE);
         assertThat(file.getSize()).isEqualTo(5L);
         assertThat(file.isLink()).isFalse();
-        assertThat(file.getLinkTarget()).isNull();
+        assertThat(file.getLink()).isNull();
         var folder = find(files, "folder");
         assertThat(folder.getEntryType()).isEqualTo(FileEntryType.DIRECTORY);
         assertThat(folder.isLink()).isFalse();
-        assertThat(folder.getLinkTarget()).isNull();
+        assertThat(folder.getLink()).isNull();
     }
 
     @ParameterizedTest
@@ -160,8 +166,8 @@ public class SystemFileStorageIT {
         assertThat(link.isLink()).isTrue();
         assertThat(link.isFile()).isFalse();
         assertThat(link.isDirectory()).isFalse();
-        assertThat(Paths.get(link.getLinkTarget().getUri())).isEqualTo(target);
-        assertThat(link.getLinkTarget().getEntryType()).isEqualTo(FileEntryType.FILE);
+        assertThat(Paths.get(link.getLink().getTargetUri())).isEqualTo(target);
+        assertThat(targetEntryType(link.getLink())).isEqualTo(FileEntryType.FILE);
         assertThat(find(files, "target.txt").isLink()).isFalse();
     }
 
@@ -180,8 +186,8 @@ public class SystemFileStorageIT {
         assertThat(link.getEntryType()).isEqualTo(FileEntryType.LINK);
         assertThat(link.isLink()).isTrue();
         assertThat(link.isDirectory()).isFalse();
-        assertThat(Paths.get(link.getLinkTarget().getUri())).isEqualTo(target);
-        assertThat(link.getLinkTarget().getEntryType()).isEqualTo(FileEntryType.DIRECTORY);
+        assertThat(Paths.get(link.getLink().getTargetUri())).isEqualTo(target);
+        assertThat(targetEntryType(link.getLink())).isEqualTo(FileEntryType.DIRECTORY);
     }
 
     @ParameterizedTest
@@ -199,8 +205,8 @@ public class SystemFileStorageIT {
 
         var link = find(files, "link");
         assertThat(link.isLink()).isTrue();
-        assertThat(Paths.get(link.getLinkTarget().getUri())).isEqualTo(real);
-        assertThat(link.getLinkTarget().getEntryType()).isEqualTo(FileEntryType.FILE);
+        assertThat(Paths.get(link.getLink().getTargetUri())).isEqualTo(real);
+        assertThat(targetEntryType(link.getLink())).isEqualTo(FileEntryType.FILE);
     }
 
     @ParameterizedTest
@@ -215,7 +221,7 @@ public class SystemFileStorageIT {
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files, new ExpectedTarget("link", folder, FileEntryType.DIRECTORY));
-        assertThat(find(files, "link").getLinkTarget().getUri().toString()).doesNotContain("/./");
+        assertThat(find(files, "link").getLink().getTargetUri().toString()).doesNotContain("/./");
     }
 
     @ParameterizedTest
@@ -232,15 +238,15 @@ public class SystemFileStorageIT {
         var link = find(files, "link");
         assertThat(link.getEntryType()).isEqualTo(FileEntryType.LINK);
         assertThat(link.isLink()).isTrue();
-        assertThat(link.getLinkTarget()).isNotNull();
-        assertThat(Paths.get(link.getLinkTarget().getUri())).isEqualTo(missing);
-        assertThat(link.getLinkTarget().getEntryType()).isNull();
+        assertThat(link.getLink()).isNotNull();
+        assertThat(Paths.get(link.getLink().getTargetUri())).isEqualTo(missing);
+        assertThat(targetEntryType(link.getLink())).isNull();
         assertThat(Files.exists(missing)).isFalse();
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
-    public void getFiles_chainOfThreeLinksToFile_eachLinkPointsToTheNextOneAndTheLastToTheFile(
+    public void getFiles_chainOfThreeLinksToFile_everyLinkStatesTheNextOneAndTargetsTheFile(
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
@@ -252,14 +258,14 @@ public class SystemFileStorageIT {
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files,
-                new ExpectedTarget("link1", link2, FileEntryType.LINK),
-                new ExpectedTarget("link2", link3, FileEntryType.LINK),
+                new ExpectedTarget("link1", link2, FileEntryType.FILE),
+                new ExpectedTarget("link2", link3, FileEntryType.FILE),
                 new ExpectedTarget("link3", target, FileEntryType.FILE));
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
-    public void getFiles_chainOfThreeLinksToFolder_eachLinkPointsToTheNextOneAndTheLastToTheFolder(
+    public void getFiles_chainOfThreeLinksToFolder_everyLinkStatesTheNextOneAndTargetsTheFolder(
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
@@ -271,14 +277,14 @@ public class SystemFileStorageIT {
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files,
-                new ExpectedTarget("link1", link2, FileEntryType.LINK),
-                new ExpectedTarget("link2", link3, FileEntryType.LINK),
+                new ExpectedTarget("link1", link2, FileEntryType.DIRECTORY),
+                new ExpectedTarget("link2", link3, FileEntryType.DIRECTORY),
                 new ExpectedTarget("link3", target, FileEntryType.DIRECTORY));
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
-    public void getFiles_chainOfThreeLinksEndingNowhere_onlyTheLastLinkIsBroken(
+    public void getFiles_chainOfThreeLinksEndingNowhere_everyLinkIsBroken(
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
@@ -290,14 +296,14 @@ public class SystemFileStorageIT {
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files,
-                new ExpectedTarget("link1", link2, FileEntryType.LINK),
-                new ExpectedTarget("link2", link3, FileEntryType.LINK),
+                new ExpectedTarget("link1", link2, null),
+                new ExpectedTarget("link2", link3, null),
                 new ExpectedTarget("link3", missing, null));
     }
 
     @ParameterizedTest
     @MethodSource("flavors")
-    public void getFiles_linksFormingACycle_eachPointsToTheOtherLink(
+    public void getFiles_linksFormingACycle_bothLinksAreBrokenButStateTheOther(
             Supplier<FileStorage<StorageFile>> storageFactory) throws Exception {
         var storage = storageFactory.get();
         var root = Paths.get(storage.getUri());
@@ -309,8 +315,8 @@ public class SystemFileStorageIT {
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
         assertTargets(files,
-                new ExpectedTarget("a", b, FileEntryType.LINK),
-                new ExpectedTarget("b", a, FileEntryType.LINK));
+                new ExpectedTarget("a", b, null),
+                new ExpectedTarget("b", a, null));
     }
 
     @ParameterizedTest
@@ -326,8 +332,8 @@ public class SystemFileStorageIT {
 
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.LINK);
         assertThat(file.isLink()).isTrue();
-        assertThat(Paths.get(file.getLinkTarget().getUri())).isEqualTo(target);
-        assertThat(file.getLinkTarget().getEntryType()).isEqualTo(FileEntryType.DIRECTORY);
+        assertThat(Paths.get(file.getLink().getTargetUri())).isEqualTo(target);
+        assertThat(targetEntryType(file.getLink())).isEqualTo(FileEntryType.DIRECTORY);
     }
 
     @ParameterizedTest
@@ -1141,8 +1147,8 @@ public class SystemFileStorageIT {
         assertThat(link.getEntryType()).isEqualTo(FileEntryType.LINK);
         assertThat(link.isLink()).isTrue();
         assertThat(link.isDirectory()).isFalse();
-        assertThat(Paths.get(link.getLinkTarget().getUri()).toRealPath()).isEqualTo(target.toRealPath());
-        assertThat(link.getLinkTarget().getEntryType()).isEqualTo(FileEntryType.DIRECTORY);
+        assertThat(Paths.get(link.getLink().getTargetUri()).toRealPath()).isEqualTo(target.toRealPath());
+        assertThat(targetEntryType(link.getLink())).isEqualTo(FileEntryType.DIRECTORY);
         assertThat(directories).extracting(StorageFile::getName).containsExactly("target");
         assertThat(recursively).extracting(StorageFile::getName)
                 .containsExactlyInAnyOrder("target", "inside.txt", "junction");

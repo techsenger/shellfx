@@ -74,7 +74,11 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         var palette = theme.getPalette();
         var iconColor = palette.getDefaultFgColor();
         var textColor = palette.getDefaultFgColor();
-        if (file.isDirectory() || file.isDirectoryLink()) {
+        // a link is shown like the file it points to, a broken one like a plain file
+        var link = file.getLink();
+        var target = link == null ? null : link.getTarget();
+        var styled = target != null ? target : file;
+        if (styled.isDirectory()) {
             if (theme.isDark()) {
                 iconColor = palette.getWarning2Color();
             } else {

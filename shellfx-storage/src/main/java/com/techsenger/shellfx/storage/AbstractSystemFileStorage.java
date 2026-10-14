@@ -59,11 +59,29 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     private final Path path;
 
+    private final @Nullable StorageFinder<T> storageFinder;
+
     public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
             Factory<? extends DefaultStorageFile> fileFactory) {
+        this(type, name, rootUri, fileFactory, null);
+    }
+
+    /**
+     * Constructs a storage whose links may point into other storages.
+     *
+     * @param type the storage type
+     * @param name the display name
+     * @param rootUri the root URI
+     * @param fileFactory the factory of the file entries
+     * @param storageFinder finds the storage that holds the target of a link outside this storage, or {@code null}
+     *     if a link can point only into this storage
+     */
+    public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
+            Factory<? extends DefaultStorageFile> fileFactory, @Nullable StorageFinder<T> storageFinder) {
         super(type, name, rootUri);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
+        this.storageFinder = storageFinder;
     }
 
     @Override
@@ -378,7 +396,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     /**
      * Resolves the icon assigned to {@code file} when it is constructed, before it is exposed to callers. A link
-     * gets the icon of what it points to, or an error icon if its target can't be determined.
+     * gets the link icon of the kind of the file it points to, or an error icon if it is broken.
      *
      * @param file the file being constructed, must not be {@code null}
      * @return the icon, never {@code null}
@@ -388,15 +406,34 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
             case FILE -> StorageIcons.FILE;
             case DIRECTORY -> StorageIcons.DIRECTORY;
             case LINK -> {
-                var target = file.getLinkTarget();
-                var targetType = target == null ? null : target.getEntryType();
-                if (targetType == null) {
+                var link = file.getLink();
+                var target = link == null ? null : link.getTarget();
+                if (target == null) {
                     yield StorageIcons.ERROR_FILE;
                 }
-                yield targetType == FileEntryType.DIRECTORY ? StorageIcons.DIRECTORY_LINK : StorageIcons.FILE_LINK;
+                // a chain of links is followed to its end, so the target is never a link itself
+                yield switch (target.getEntryType()) {
+                    case DIRECTORY -> StorageIcons.DIRECTORY_LINK;
+                    case OTHER -> StorageIcons.OTHER_LINK;
+                    case FILE, LINK -> StorageIcons.FILE_LINK;
+                };
             }
             case OTHER -> StorageIcons.OTHER;
         };
+    }
+
+    /**
+     * Creates the link of a file. The target is already found, in this storage or in another one.
+     *
+     * @param targetUri the URI of the path the link states
+     * @param target the file at the end of the chain of links, or {@code null} if the link is broken
+     * @return the link, never {@code null}
+     */
+    protected EntryLink createLink(URI targetUri, @Nullable T target) {
+        var link = new DefaultEntryLink();
+        link.setTargetUri(targetUri);
+        link.setTarget(target);
+        return link;
     }
 
     /**
@@ -583,7 +620,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         file.setEntryType(entryType);
         if (entryType == FileEntryType.LINK) {
             file.setSize(attrs.size());
-            file.setLinkTarget(readLinkTarget(entryPath));
+            file.setLink(readLink(entryPath));
         } else if (entryType == FileEntryType.FILE) {
             file.setSize(attrs.size());
         }
@@ -597,34 +634,61 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     /**
      * Describes what the link at {@code link} points to: the path it states (a relative target is resolved against
      * the link's directory and normalized, so a stated {@code ./tmp} or {@code ../x} comes out as a clean path; a
-     * Windows junction states none, so its resolved path is used instead) and the type of
-     * the entry there, as it is - a link that points to another link has a target of type
-     * {@link FileEntryType#LINK}. If nothing can be read at the target the link is broken and the target has no
-     * type.
+     * Windows junction states none, so its resolved path is used instead) and the file at the end of the chain of
+     * links. If there is none (nothing exists there, the chain is a cycle) the link is broken and the target has no
+     * file.
      *
      * @return the target, or {@code null} if the path can't be determined
      */
-    private @Nullable LinkTarget readLinkTarget(Path link) {
+    private @Nullable EntryLink readLink(Path link) {
+        Path realPath = null;
+        try {
+            realPath = link.toRealPath();
+        } catch (IOException ex) {
+            // the link is broken: nothing exists at the end of the chain, it is a cycle, or it is out of reach
+        }
+        var folder = link.getParent();
+        if (folder == null) {
+            return null;
+        }
         Path targetPath;
         try {
-            try {
-                targetPath = link.resolveSibling(Files.readSymbolicLink(link)).normalize();
-            } catch (NotLinkException | UnsupportedOperationException ex) {
-                targetPath = link.toRealPath();
+            // the path stated in a link is relative to the folder of the link
+            targetPath = folder.resolve(Files.readSymbolicLink(link)).normalize();
+        } catch (NotLinkException | UnsupportedOperationException ex) {
+            // a junction states no path, so the resolved one is used
+            if (realPath == null) {
+                logger.warn("Couldn't determine the target of the link {}", link, ex);
+                return null;
             }
+            targetPath = realPath;
         } catch (IOException ex) {
             logger.warn("Couldn't determine the target of the link {}", link, ex);
             return null;
         }
-        var target = new DefaultLinkTarget();
-        target.setUri(targetPath.toUri());
+        return createLink(targetPath.toUri(), realPath == null ? null : findTarget(realPath.toUri()));
+    }
+
+    /**
+     * Finds the file at the end of a chain of links in this storage or, if it lies elsewhere, in the storage that the
+     * finder gives. A storage that is not known or does not give the file makes the link broken.
+     */
+    private @Nullable T findTarget(URI resolvedUri) {
+        var targetPath = toPath(resolvedUri);
         try {
-            target.setEntryType(resolveEntryType(
-                    Files.readAttributes(targetPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS)));
+            if (targetPath.startsWith(getPath())) {
+                // the file of this storage is built directly: asking the storage would report an operation
+                return targetPath.equals(getPath()) ? getRoot() : createFile(targetPath, resolvedUri);
+            }
+            if (storageFinder == null) {
+                return null;
+            }
+            var storage = storageFinder.find(resolvedUri);
+            return storage.isPresent() ? storage.get().getFile(resolvedUri, OperationType.SECONDARY) : null;
         } catch (IOException ex) {
-            // the link is broken: nothing exists at the target, or it is out of reach
+            logger.warn("Couldn't get the target {} of a link", resolvedUri, ex);
+            return null;
         }
-        return target;
     }
 
     /**

@@ -59,7 +59,7 @@ public class DefaultStorageFile implements StorageFile {
 
     private boolean virtual;
 
-    private @Nullable LinkTarget linkTarget;
+    private @Nullable EntryLink link;
 
     private FontIcon<?> icon;
 
@@ -115,8 +115,8 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     @Override
-    public @Nullable LinkTarget getLinkTarget() {
-        return linkTarget;
+    public @Nullable EntryLink getLink() {
+        return link;
     }
 
     @Override
@@ -293,11 +293,11 @@ public class DefaultStorageFile implements StorageFile {
     /**
      * Sets what this entry points to.
      *
-     * @param linkTarget the target of a link entry, or {@code null} if this is not a link or the path it points
+     * @param link the target of a link entry, or {@code null} if this is not a link or the path it points
      *     to is unknown
      */
-    protected void setLinkTarget(@Nullable LinkTarget linkTarget) {
-        this.linkTarget = linkTarget;
+    protected void setLink(@Nullable EntryLink link) {
+        this.link = link;
     }
 
     /**

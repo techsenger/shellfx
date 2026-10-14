@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
 import java.net.URI;
@@ -50,6 +51,8 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
     public static List<FileStorage<StorageFile>> createSystemStorages(
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
+        // the links of a storage may point into any other one of the list
+        StorageFinder<StorageFile> storageFinder = uri -> FileStorageUtils.findByUri(result, uri);
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             @SuppressWarnings("unchecked")
@@ -57,7 +60,8 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
                     FileStorageType.BASE,
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
-                    fileFactory);
+                    fileFactory,
+                    storageFinder);
             result.add(storage);
         });
         return result;
@@ -67,7 +71,12 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
 
     public UnixFileStorage(FileStorageType type, String name, URI rootUri,
             Factory<? extends DefaultStorageFile> fileFactory) {
-        super(type, name, rootUri, fileFactory);
+        this(type, name, rootUri, fileFactory, null);
+    }
+
+    public UnixFileStorage(FileStorageType type, String name, URI rootUri,
+            Factory<? extends DefaultStorageFile> fileFactory, @Nullable StorageFinder<T> storageFinder) {
+        super(type, name, rootUri, fileFactory, storageFinder);
         this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
     }
 

@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.Objects;
 
 /**
- * Default implementation of {@link LinkTarget}.
+ * Default implementation of {@link EntryLink}.
  *
  * <p>Instances are created by {@link FileStorage} implementations, which populate the fields right after
  * construction. This class is designed to be subclassed when additional application-level information about the
@@ -29,32 +29,32 @@ import java.util.Objects;
  *
  * @author Pavel Castornii
  */
-public class DefaultLinkTarget implements LinkTarget {
+public class DefaultEntryLink implements EntryLink {
 
-    private URI uri;
+    private URI targetUri;
 
-    private @Nullable FileEntryType entryType;
+    private @Nullable StorageFile target;
 
     /**
-     * Constructs an empty {@code DefaultLinkTarget}. Fields should be populated by the {@link FileStorage}
+     * Constructs an empty {@code DefaultEntryLink}. Fields should be populated by the {@link FileStorage}
      * immediately after construction.
      */
-    public DefaultLinkTarget() {
+    public DefaultEntryLink() {
     }
 
     @Override
-    public URI getUri() {
-        return uri;
+    public URI getTargetUri() {
+        return targetUri;
     }
 
     @Override
-    public @Nullable FileEntryType getEntryType() {
-        return entryType;
+    public @Nullable StorageFile getTarget() {
+        return target;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uri, entryType);
+        return Objects.hash(targetUri, target);
     }
 
     @Override
@@ -65,30 +65,30 @@ public class DefaultLinkTarget implements LinkTarget {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        var other = (DefaultLinkTarget) obj;
-        return Objects.equals(uri, other.uri) && entryType == other.entryType;
+        var other = (DefaultEntryLink) obj;
+        return Objects.equals(targetUri, other.targetUri) && Objects.equals(target, other.target);
     }
 
     @Override
     public String toString() {
-        return "DefaultLinkTarget[uri=" + uri + ", entryType=" + entryType + ']';
+        return "DefaultEntryLink[targetUri=" + targetUri + ", target=" + target + ']';
     }
 
     /**
-     * Sets the URI of the path the link points to.
+     * Sets the URI of the path the link states.
      *
-     * @param uri the URI, must not be {@code null}
+     * @param targetUri the URI, must not be {@code null}
      */
-    protected void setUri(URI uri) {
-        this.uri = uri;
+    protected void setTargetUri(URI targetUri) {
+        this.targetUri = targetUri;
     }
 
     /**
-     * Sets the type of the target.
+     * Sets the file the link finally points to.
      *
-     * @param entryType the type of the target, or {@code null} if the link is broken
+     * @param target the file at the end of the chain of links, or {@code null} if the link is broken
      */
-    protected void setEntryType(@Nullable FileEntryType entryType) {
-        this.entryType = entryType;
+    protected void setTarget(@Nullable StorageFile target) {
+        this.target = target;
     }
 }
