@@ -51,7 +51,7 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
         // the links of a storage may point into any other one of the list
-        LinkTargetResolver<StorageFile> linkTargetResolver = FileStorageUtils.createLinkTargetResolver(() -> result);
+        FileResolver<StorageFile> externalFileResolver = new DefaultFileResolver<>(() -> result);
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             @SuppressWarnings("unchecked")
@@ -60,7 +60,7 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
                     fileFactory,
-                    linkTargetResolver);
+                    externalFileResolver);
             result.add(storage);
         });
         return result;
@@ -69,14 +69,9 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
     private final boolean posixSupported;
 
     public UnixFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, LinkTargetResolver<T> linkTargetResolver) {
-        super(type, name, rootUri, fileFactory, linkTargetResolver);
+            Factory<? extends DefaultStorageFile> fileFactory, FileResolver<T> externalFileResolver) {
+        super(type, name, rootUri, fileFactory, externalFileResolver);
         this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
-    }
-
-    @Override
-    public boolean refersToStorage(URI uri) {
-        return "file".equalsIgnoreCase(uri.getScheme());
     }
 
     @Override

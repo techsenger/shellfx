@@ -59,7 +59,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     private final Path path;
 
-    private final LinkTargetResolver<T> linkTargetResolver;
+    private final FileResolver<T> externalFileResolver;
 
     /**
      * Constructs a storage whose links may point into any storage.
@@ -68,14 +68,14 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
      * @param name the display name
      * @param rootUri the root URI
      * @param fileFactory the factory of the file entries
-     * @param linkTargetResolver gives the file at the end of the chain of a link of this storage
+     * @param externalFileResolver gives the file of another storage, where a link of this storage ends
      */
     public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, LinkTargetResolver<T> linkTargetResolver) {
+            Factory<? extends DefaultStorageFile> fileFactory, FileResolver<T> externalFileResolver) {
         super(type, name, rootUri);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
-        this.linkTargetResolver = linkTargetResolver;
+        this.externalFileResolver = externalFileResolver;
     }
 
     @Override
@@ -181,6 +181,11 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         }
         notifyListeners(uri, FileOperations.LIST, operationType);
         return result;
+    }
+
+    @Override
+    public boolean refersToStorage(URI uri) {
+        return FileStorageUtils.isWithin(getUri(), uri, false);
     }
 
     @Override
@@ -379,8 +384,8 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         return fileFactory;
     }
 
-    protected LinkTargetResolver<T> getLinkTargetResolver() {
-        return linkTargetResolver;
+    protected FileResolver<T> getExternalFileResolver() {
+        return externalFileResolver;
     }
 
     /**
@@ -633,8 +638,8 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
      * Describes what the link at {@code link} points to: the path it states (a relative target is resolved against
      * the link's directory and normalized, so a stated {@code ./tmp} or {@code ../x} comes out as a clean path; a
      * Windows junction states none, so its resolved path is used instead) and the file at the end of the chain of
-     * links. If there is none (nothing exists there, the chain is a cycle) the link is broken and the target has no
-     * file.
+     * links, taken from this storage or, if it lies elsewhere, from the one that holds it. If there is none (nothing
+     * exists there, the chain is a cycle) the link is broken and the target has no file.
      *
      * @return the target, or {@code null} if the path can't be determined
      */
@@ -664,7 +669,19 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
             logger.warn("Couldn't determine the target of the link {}", link, ex);
             return null;
         }
-        return createLink(targetPath.toUri(), realPath == null ? null : linkTargetResolver.resolve(realPath.toUri()));
+        T target = null;
+        if (realPath != null) {
+            var targetUri = realPath.toUri();
+            try {
+                target = refersToStorage(targetUri)
+                        ? getFile(targetUri, OperationType.SECONDARY)
+                        : externalFileResolver.resolve(targetUri, OperationType.SECONDARY);
+            } catch (IOException ex) {
+                // no storage holds the end of the chain or it can't be read, so the link is broken
+                logger.debug("Couldn't get the target {} of the link {}", realPath, link, ex);
+            }
+        }
+        return createLink(targetPath.toUri(), target);
     }
 
     /**

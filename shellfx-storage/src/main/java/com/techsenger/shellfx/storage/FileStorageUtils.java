@@ -16,14 +16,13 @@
 
 package com.techsenger.shellfx.storage;
 
-import java.io.IOException;
+import com.techsenger.annotations.Nullable;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,31 +67,6 @@ public final class FileStorageUtils {
     }
 
     /**
-     * Creates the resolver of the targets of links over the storages: the target is the file that the first storage
-     * holding its URI gives, or none if no storage holds it or it can't be read. The storages are asked at every
-     * resolution, so storages added later are found too.
-     *
-     * @param storages gives the list of storages to search, must not be {@code null}
-     * @param <T> the concrete file entry type produced by the storages
-     * @return the resolver, never {@code null}
-     */
-    public static <T extends StorageFile> LinkTargetResolver<T> createLinkTargetResolver(
-            Supplier<? extends List<? extends FileStorage<T>>> storages) {
-        return uri -> {
-            var storage = findByUri(storages.get(), uri);
-            if (storage.isEmpty()) {
-                return null;
-            }
-            try {
-                return storage.get().getFile(uri, OperationType.SECONDARY);
-            } catch (IOException ex) {
-                logger.warn("Couldn't get the target {} of a link", uri, ex);
-                return null;
-            }
-        };
-    }
-
-    /**
      * Returns the first storage whose root URI contains the given URI.
      *
      * @param storages the list of storages to search, must not be {@code null}
@@ -108,6 +82,25 @@ public final class FileStorageUtils {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Tells whether {@code uri} is the root URI itself or lies within it: the scheme and the authority are the
+     * same, and the path starts with the path of the root at a segment boundary.
+     *
+     * @param root the root URI, must not be {@code null}
+     * @param uri the URI to check, must not be {@code null}
+     * @param ignoreCase whether the paths are compared ignoring the case, as in a case-insensitive file system
+     * @return {@code true} if {@code uri} is within {@code root}
+     */
+    public static boolean isWithin(URI root, URI uri, boolean ignoreCase) {
+        if (!equalsIgnoreCase(root.getScheme(), uri.getScheme())
+                || !equalsIgnoreCase(root.getAuthority(), uri.getAuthority())) {
+            return false;
+        }
+        var rootPath = withTrailingSlash(root);
+        var path = withTrailingSlash(uri);
+        return path.regionMatches(ignoreCase, 0, rootPath, 0, rootPath.length());
     }
 
     /**
@@ -139,6 +132,15 @@ public final class FileStorageUtils {
             logger.error("Error getting home file", ex);
             return Optional.empty();
         }
+    }
+
+    private static boolean equalsIgnoreCase(@Nullable String first, @Nullable String second) {
+        return first == null ? second == null : first.equalsIgnoreCase(second);
+    }
+
+    private static String withTrailingSlash(URI uri) {
+        var path = uri.isOpaque() ? uri.getSchemeSpecificPart() : uri.getPath();
+        return path.endsWith("/") ? path : path + "/";
     }
 
     private FileStorageUtils() {

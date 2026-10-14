@@ -55,7 +55,7 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
         // the links of a storage may point into any other one of the list
-        LinkTargetResolver<StorageFile> linkTargetResolver = FileStorageUtils.createLinkTargetResolver(() -> result);
+        FileResolver<StorageFile> externalFileResolver = new DefaultFileResolver<>(() -> result);
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             FileStorageType type = switch (Kernel32.INSTANCE.GetDriveType(rootPath.toString())) {
@@ -70,22 +70,20 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
                     fileFactory,
-                    linkTargetResolver);
+                    externalFileResolver);
             result.add(storage);
         });
         return result;
     }
 
     public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, LinkTargetResolver<T> linkTargetResolver) {
-        super(type, name, rootUri, fileFactory, linkTargetResolver);
+            Factory<? extends DefaultStorageFile> fileFactory, FileResolver<T> externalFileResolver) {
+        super(type, name, rootUri, fileFactory, externalFileResolver);
     }
 
     @Override
     public boolean refersToStorage(URI uri) {
-        String givenRoot = uri.getPath().substring(0, Math.min(uri.getPath().length(), 3));
-        String storageRoot = getUri().getPath().substring(0, 3);
-        return givenRoot.equalsIgnoreCase(storageRoot);
+        return FileStorageUtils.isWithin(getUri(), uri, true);
     }
 
     @Override

@@ -110,15 +110,9 @@ public class SystemFileStorageIT {
      * holds every target.
      */
     private static <S extends FileStorage<StorageFile>> S newStorage(
-            Function<LinkTargetResolver<StorageFile>, S> factory) {
+            Function<FileResolver<StorageFile>, S> factory) {
         var holder = new AtomicReference<FileStorage<StorageFile>>();
-        var storage = factory.apply(uri -> {
-            try {
-                return holder.get().getFile(uri, OperationType.SECONDARY);
-            } catch (IOException ex) {
-                return null;
-            }
-        });
+        var storage = factory.apply(new DefaultFileResolver<>(() -> List.of(holder.get())));
         holder.set(storage);
         return storage;
     }
