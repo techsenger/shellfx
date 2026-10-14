@@ -16,24 +16,24 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.annotations.Nullable;
 import java.net.URI;
-import java.util.Optional;
 
 /**
- * Finds the storage that holds a URI, so a storage can reach a file that lies in another one, e.g. the target of a
- * link.
+ * Gives the file at the end of a chain of links, which may lie in any storage, so a storage can describe a link
+ * without knowing the other storages.
  *
- * @param <T> the type of the files the storages produce
+ * @param <T> the type of the files
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface StorageFinder<T extends StorageFile> {
+public interface LinkTargetResolver<T extends StorageFile> {
 
     /**
-     * Finds the storage that holds the URI.
+     * Resolves the file at the URI.
      *
-     * @param uri the URI to look for
-     * @return the storage, or empty if no storage known to the finder holds it
+     * @param uri the URI of the file at the end of the chain of links
+     * @return the file, or {@code null} if there is none or it can't be reached, so the link is broken
      */
-    Optional<? extends FileStorage<T>> find(URI uri);
+    @Nullable T resolve(URI uri);
 }

@@ -30,8 +30,9 @@ import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Named;
@@ -75,8 +76,6 @@ public class SystemFileStorageIT {
      */
     private static final List<FileSystem> RETAINED_FILE_SYSTEMS = new CopyOnWriteArrayList<>();
 
-    private static final StorageFinder<StorageFile> NO_STORAGES = uri -> Optional.empty();
-
     private static final String CONTENT = "caf\u00e9";
 
     /**
@@ -98,11 +97,30 @@ public class SystemFileStorageIT {
         var fileSystem = Jimfs.newFileSystem(configuration);
         RETAINED_FILE_SYSTEMS.add(fileSystem);
         var rootUri = fileSystem.getRootDirectories().iterator().next().toUri();
-        return windows
-                ? new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
-                        DefaultStorageFile::new, NO_STORAGES)
-                : new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
-                        DefaultStorageFile::new, NO_STORAGES);
+        if (windows) {
+            return newStorage(resolver -> new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
+                    DefaultStorageFile::new, resolver));
+        }
+        return newStorage(resolver -> new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
+                DefaultStorageFile::new, resolver));
+    }
+
+    /**
+     * Creates a storage that resolves the targets of its links with itself: it is the only storage of the test, so it
+     * holds every target.
+     */
+    private static <S extends FileStorage<StorageFile>> S newStorage(
+            Function<LinkTargetResolver<StorageFile>, S> factory) {
+        var holder = new AtomicReference<FileStorage<StorageFile>>();
+        var storage = factory.apply(uri -> {
+            try {
+                return holder.get().getFile(uri, OperationType.SECONDARY);
+            } catch (IOException ex) {
+                return null;
+            }
+        });
+        holder.set(storage);
+        return storage;
     }
 
     /**
@@ -388,8 +406,8 @@ public class SystemFileStorageIT {
 
     @Test
     public void refersToStorage_unixStorage_trueOnlyForFileScheme() {
-        var storage = new UnixFileStorage<StorageFile>(FileStorageType.BASE, "/", URI.create("file:///"),
-                DefaultStorageFile::new, NO_STORAGES);
+        var storage = newStorage(resolver -> new UnixFileStorage<StorageFile>(FileStorageType.BASE, "/",
+                URI.create("file:///"), DefaultStorageFile::new, resolver));
 
         assertThat(storage.refersToStorage(URI.create("file:///home/user/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("FILE:///home/user/a.txt"))).isTrue();
@@ -398,8 +416,8 @@ public class SystemFileStorageIT {
 
     @Test
     public void refersToStorage_windowsStorage_trueOnlyForTheSameDriveIgnoringCase() {
-        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "C:", URI.create("file:///C:/"),
-                DefaultStorageFile::new, NO_STORAGES);
+        var storage = newStorage(resolver -> new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "C:",
+                URI.create("file:///C:/"), DefaultStorageFile::new, resolver));
 
         assertThat(storage.refersToStorage(URI.create("file:///C:/dir/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("file:///c:/dir/a.txt"))).isTrue();
@@ -1123,8 +1141,8 @@ public class SystemFileStorageIT {
         var hidden = Files.writeString(directory.resolve("hidden.txt"), "hello");
         Files.setAttribute(hidden, "dos:hidden", true);
         Files.writeString(directory.resolve("visible.txt"), "hello");
-        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
-                DefaultStorageFile::new, NO_STORAGES);
+        var storage = newStorage(resolver -> new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test",
+                directory.toUri(), DefaultStorageFile::new, resolver));
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
 
@@ -1141,8 +1159,8 @@ public class SystemFileStorageIT {
         var process = new ProcessBuilder("cmd", "/c", "mklink", "/J", junction.toString(), target.toString())
                 .inheritIO().start();
         assertThat(process.waitFor()).as("mklink /J").isZero();
-        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
-                DefaultStorageFile::new, NO_STORAGES);
+        var storage = newStorage(resolver -> new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test",
+                directory.toUri(), DefaultStorageFile::new, resolver));
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
         var directories = storage.getDirectories(directory.toUri(), OperationType.PRIMARY);

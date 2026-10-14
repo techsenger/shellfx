@@ -59,23 +59,23 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     private final Path path;
 
-    private final StorageFinder<T> storageFinder;
+    private final LinkTargetResolver<T> linkTargetResolver;
 
     /**
-     * Constructs a storage whose links may point into other storages.
+     * Constructs a storage whose links may point into any storage.
      *
      * @param type the storage type
      * @param name the display name
      * @param rootUri the root URI
      * @param fileFactory the factory of the file entries
-     * @param storageFinder finds the storage that holds the target of a link outside this storage
+     * @param linkTargetResolver gives the file at the end of the chain of a link of this storage
      */
     public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, StorageFinder<T> storageFinder) {
+            Factory<? extends DefaultStorageFile> fileFactory, LinkTargetResolver<T> linkTargetResolver) {
         super(type, name, rootUri);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
-        this.storageFinder = storageFinder;
+        this.linkTargetResolver = linkTargetResolver;
     }
 
     @Override
@@ -379,6 +379,10 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         return fileFactory;
     }
 
+    protected LinkTargetResolver<T> getLinkTargetResolver() {
+        return linkTargetResolver;
+    }
+
     /**
      * Returns the path of the root of this storage, the counterpart of {@link #getUri()}.
      *
@@ -660,26 +664,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
             logger.warn("Couldn't determine the target of the link {}", link, ex);
             return null;
         }
-        return createLink(targetPath.toUri(), realPath == null ? null : findTarget(realPath.toUri()));
-    }
-
-    /**
-     * Finds the file at the end of a chain of links in this storage or, if it lies elsewhere, in the storage that the
-     * finder gives. A storage that is not known or does not give the file makes the link broken.
-     */
-    private @Nullable T findTarget(URI resolvedUri) {
-        var targetPath = toPath(resolvedUri);
-        try {
-            if (targetPath.startsWith(getPath())) {
-                // the file of this storage is built directly: asking the storage would report an operation
-                return targetPath.equals(getPath()) ? getRoot() : createFile(targetPath, resolvedUri);
-            }
-            var storage = storageFinder.find(resolvedUri);
-            return storage.isPresent() ? storage.get().getFile(resolvedUri, OperationType.SECONDARY) : null;
-        } catch (IOException ex) {
-            logger.warn("Couldn't get the target {} of a link", resolvedUri, ex);
-            return null;
-        }
+        return createLink(targetPath.toUri(), realPath == null ? null : linkTargetResolver.resolve(realPath.toUri()));
     }
 
     /**

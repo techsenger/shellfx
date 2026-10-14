@@ -55,7 +55,7 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
         // the links of a storage may point into any other one of the list
-        StorageFinder<StorageFile> storageFinder = uri -> FileStorageUtils.findByUri(result, uri);
+        LinkTargetResolver<StorageFile> linkTargetResolver = FileStorageUtils.createLinkTargetResolver(() -> result);
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             FileStorageType type = switch (Kernel32.INSTANCE.GetDriveType(rootPath.toString())) {
@@ -70,15 +70,15 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
                     fileFactory,
-                    storageFinder);
+                    linkTargetResolver);
             result.add(storage);
         });
         return result;
     }
 
     public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, StorageFinder<T> storageFinder) {
-        super(type, name, rootUri, fileFactory, storageFinder);
+            Factory<? extends DefaultStorageFile> fileFactory, LinkTargetResolver<T> linkTargetResolver) {
+        super(type, name, rootUri, fileFactory, linkTargetResolver);
     }
 
     @Override

@@ -16,12 +16,14 @@
 
 package com.techsenger.shellfx.storage;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +65,31 @@ public final class FileStorageUtils {
         result.addAll(optical);
         result.addAll(floppy);
         return Collections.unmodifiableList(result);
+    }
+
+    /**
+     * Creates the resolver of the targets of links over the storages: the target is the file that the first storage
+     * holding its URI gives, or none if no storage holds it or it can't be read. The storages are asked at every
+     * resolution, so storages added later are found too.
+     *
+     * @param storages gives the list of storages to search, must not be {@code null}
+     * @param <T> the concrete file entry type produced by the storages
+     * @return the resolver, never {@code null}
+     */
+    public static <T extends StorageFile> LinkTargetResolver<T> createLinkTargetResolver(
+            Supplier<? extends List<? extends FileStorage<T>>> storages) {
+        return uri -> {
+            var storage = findByUri(storages.get(), uri);
+            if (storage.isEmpty()) {
+                return null;
+            }
+            try {
+                return storage.get().getFile(uri, OperationType.SECONDARY);
+            } catch (IOException ex) {
+                logger.warn("Couldn't get the target {} of a link", uri, ex);
+                return null;
+            }
+        };
     }
 
     /**
