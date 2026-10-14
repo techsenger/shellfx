@@ -17,7 +17,6 @@
 package com.techsenger.shellfx.storage;
 
 import com.sun.jna.platform.win32.Kernel32;
-import com.techsenger.annotations.Nullable;
 import com.techsenger.toolkit.core.function.Factory;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -78,12 +77,7 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
     }
 
     public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory) {
-        this(type, name, rootUri, fileFactory, null);
-    }
-
-    public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, @Nullable StorageFinder<T> storageFinder) {
+            Factory<? extends DefaultStorageFile> fileFactory, StorageFinder<T> storageFinder) {
         super(type, name, rootUri, fileFactory, storageFinder);
     }
 

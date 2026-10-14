@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.storage;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
 import java.net.URI;
@@ -70,12 +69,7 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
     private final boolean posixSupported;
 
     public UnixFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory) {
-        this(type, name, rootUri, fileFactory, null);
-    }
-
-    public UnixFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, @Nullable StorageFinder<T> storageFinder) {
+            Factory<? extends DefaultStorageFile> fileFactory, StorageFinder<T> storageFinder) {
         super(type, name, rootUri, fileFactory, storageFinder);
         this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
     }

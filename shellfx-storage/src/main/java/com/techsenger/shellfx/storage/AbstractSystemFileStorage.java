@@ -59,12 +59,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     private final Path path;
 
-    private final @Nullable StorageFinder<T> storageFinder;
-
-    public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory) {
-        this(type, name, rootUri, fileFactory, null);
-    }
+    private final StorageFinder<T> storageFinder;
 
     /**
      * Constructs a storage whose links may point into other storages.
@@ -73,11 +68,10 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
      * @param name the display name
      * @param rootUri the root URI
      * @param fileFactory the factory of the file entries
-     * @param storageFinder finds the storage that holds the target of a link outside this storage, or {@code null}
-     *     if a link can point only into this storage
+     * @param storageFinder finds the storage that holds the target of a link outside this storage
      */
     public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, @Nullable StorageFinder<T> storageFinder) {
+            Factory<? extends DefaultStorageFile> fileFactory, StorageFinder<T> storageFinder) {
         super(type, name, rootUri);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
@@ -679,9 +673,6 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
             if (targetPath.startsWith(getPath())) {
                 // the file of this storage is built directly: asking the storage would report an operation
                 return targetPath.equals(getPath()) ? getRoot() : createFile(targetPath, resolvedUri);
-            }
-            if (storageFinder == null) {
-                return null;
             }
             var storage = storageFinder.find(resolvedUri);
             return storage.isPresent() ? storage.get().getFile(resolvedUri, OperationType.SECONDARY) : null;

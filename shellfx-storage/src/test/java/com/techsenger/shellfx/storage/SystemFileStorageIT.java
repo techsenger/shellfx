@@ -30,6 +30,7 @@ import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -74,6 +75,8 @@ public class SystemFileStorageIT {
      */
     private static final List<FileSystem> RETAINED_FILE_SYSTEMS = new CopyOnWriteArrayList<>();
 
+    private static final StorageFinder<StorageFile> NO_STORAGES = uri -> Optional.empty();
+
     private static final String CONTENT = "caf\u00e9";
 
     /**
@@ -96,8 +99,10 @@ public class SystemFileStorageIT {
         RETAINED_FILE_SYSTEMS.add(fileSystem);
         var rootUri = fileSystem.getRootDirectories().iterator().next().toUri();
         return windows
-                ? new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, DefaultStorageFile::new)
-                : new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, DefaultStorageFile::new);
+                ? new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
+                        DefaultStorageFile::new, NO_STORAGES)
+                : new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
+                        DefaultStorageFile::new, NO_STORAGES);
     }
 
     /**
@@ -384,7 +389,7 @@ public class SystemFileStorageIT {
     @Test
     public void refersToStorage_unixStorage_trueOnlyForFileScheme() {
         var storage = new UnixFileStorage<StorageFile>(FileStorageType.BASE, "/", URI.create("file:///"),
-                DefaultStorageFile::new);
+                DefaultStorageFile::new, NO_STORAGES);
 
         assertThat(storage.refersToStorage(URI.create("file:///home/user/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("FILE:///home/user/a.txt"))).isTrue();
@@ -394,7 +399,7 @@ public class SystemFileStorageIT {
     @Test
     public void refersToStorage_windowsStorage_trueOnlyForTheSameDriveIgnoringCase() {
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "C:", URI.create("file:///C:/"),
-                DefaultStorageFile::new);
+                DefaultStorageFile::new, NO_STORAGES);
 
         assertThat(storage.refersToStorage(URI.create("file:///C:/dir/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("file:///c:/dir/a.txt"))).isTrue();
@@ -1119,7 +1124,7 @@ public class SystemFileStorageIT {
         Files.setAttribute(hidden, "dos:hidden", true);
         Files.writeString(directory.resolve("visible.txt"), "hello");
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
-                DefaultStorageFile::new);
+                DefaultStorageFile::new, NO_STORAGES);
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
 
@@ -1137,7 +1142,7 @@ public class SystemFileStorageIT {
                 .inheritIO().start();
         assertThat(process.waitFor()).as("mklink /J").isZero();
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
-                DefaultStorageFile::new);
+                DefaultStorageFile::new, NO_STORAGES);
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
         var directories = storage.getDirectories(directory.toUri(), OperationType.PRIMARY);
