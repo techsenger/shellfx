@@ -33,7 +33,10 @@ public class DefaultEntryLink implements EntryLink {
 
     private URI targetUri;
 
-    private @Nullable StorageFile target;
+    private @Nullable URI resolvedUri;
+
+    // written by the second loading phase on a background thread
+    private volatile @Nullable StorageFile target;
 
     /**
      * Constructs an empty {@code DefaultEntryLink}. Fields should be populated by the {@link FileStorage}
@@ -45,6 +48,11 @@ public class DefaultEntryLink implements EntryLink {
     @Override
     public URI getTargetUri() {
         return targetUri;
+    }
+
+    @Override
+    public @Nullable URI getResolvedUri() {
+        return resolvedUri;
     }
 
     @Override
@@ -81,6 +89,15 @@ public class DefaultEntryLink implements EntryLink {
      */
     protected void setTargetUri(URI targetUri) {
         this.targetUri = targetUri;
+    }
+
+    /**
+     * Sets the URI of the entry at the end of the chain of links.
+     *
+     * @param resolvedUri the URI, or {@code null} if nothing exists at the end of the chain or it has no path
+     */
+    protected void setResolvedUri(@Nullable URI resolvedUri) {
+        this.resolvedUri = resolvedUri;
     }
 
     /**

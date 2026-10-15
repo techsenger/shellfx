@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Pavel Castornii.
+ * Copyright 2026 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.settings;
 
 import com.techsenger.annotations.Nullable;
 
 /**
- * Determines the styles a storage is shown with. While a view has a resolver, it owns the inline styles of the
- * storage elements, so a missing style clears them.
+ * Settings of the icon of a file. A {@code null} value means that the value is inherited from the style underneath.
  *
  * @author Pavel Castornii
- * @param <S> the type of storages
  */
-@FunctionalInterface
-public interface StorageStyleResolver<S extends FileStorage<?>> {
+public final class IconStyleSettings {
 
-    /**
-     * Resolves the styles of the storage.
-     *
-     * @param storage the storage to resolve the styles for
-     * @return the styles, or {@code null} to clear the styles of the storage
-     */
-    @Nullable IconTextStyle resolve(S storage);
+    private @Nullable Integer color;
+
+    public @Nullable Integer getColor() {
+        return this.color;
+    }
+
+    public void setColor(@Nullable Integer color) {
+        this.color = color;
+    }
 }

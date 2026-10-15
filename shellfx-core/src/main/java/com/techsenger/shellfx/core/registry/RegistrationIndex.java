@@ -19,6 +19,7 @@ package com.techsenger.shellfx.core.registry;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -41,6 +42,8 @@ final class RegistrationIndex<R extends AbstractRegistration> {
 
     private final Map<String, Set<R>> resolvedByClassName = new ConcurrentHashMap<>();
 
+    private volatile UUID stateUuid = UUID.randomUUID();
+
     /**
      * Files {@code registration} under {@code componentClass} and makes it undoable.
      */
@@ -51,13 +54,25 @@ final class RegistrationIndex<R extends AbstractRegistration> {
             return result;
         });
         resolvedByClassName.clear();
+        stateUuid = UUID.randomUUID();
         registration.setUnregister(() -> {
+            var removed = new boolean[1];
             registrationsByClass.computeIfPresent(componentClass, (k, registrations) -> {
-                registrations.remove(registration);
+                removed[0] = registrations.remove(registration);
                 return registrations.isEmpty() ? null : registrations;
             });
             resolvedByClassName.clear();
+            if (removed[0]) {
+                stateUuid = UUID.randomUUID();
+            }
         });
+    }
+
+    /**
+     * Returns the identifier of the current state; see {@link ExtensionRegistry#getStateUuid()}.
+     */
+    UUID getStateUuid() {
+        return stateUuid;
     }
 
     /**

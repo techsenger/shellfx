@@ -17,6 +17,10 @@
 package com.techsenger.shellfx.storage;
 
 import com.sun.jna.platform.win32.Kernel32;
+import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
+import com.techsenger.shellfx.storage.style.StorageIconResolver;
+import com.techsenger.shellfx.storage.style.StorageStyleResolver;
+import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
 import com.techsenger.toolkit.core.function.Factory;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -54,8 +58,6 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
     public static List<FileStorage<StorageFile>> createSystemStorages(
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
-        // the links of a storage may point into any other one of the list
-        FileResolver<StorageFile> externalFileResolver = new DefaultFileResolver<>(() -> result);
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
             FileStorageType type = switch (Kernel32.INSTANCE.GetDriveType(rootPath.toString())) {
@@ -64,21 +66,22 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
                 case 5 -> FileStorageType.OPTICAL;
                 default -> FileStorageType.BASE;
             };
-            @SuppressWarnings("unchecked")
-            var storage = (FileStorage<StorageFile>) (FileStorage<?>) new WindowsFileStorage<>(
+            FileStorage<StorageFile> storage = new WindowsFileStorage<>(
                     type,
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
                     fileFactory,
-                    externalFileResolver);
+                    new DefaultStorageIconResolver(type),
+                    new DefaultStorageStyleResolver());
             result.add(storage);
         });
         return result;
     }
 
     public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, FileResolver<T> externalFileResolver) {
-        super(type, name, rootUri, fileFactory, externalFileResolver);
+            Factory<? extends DefaultStorageFile> fileFactory, StorageIconResolver iconResolver,
+            StorageStyleResolver styleResolver) {
+        super(type, name, rootUri, fileFactory, iconResolver, styleResolver);
     }
 
     @Override

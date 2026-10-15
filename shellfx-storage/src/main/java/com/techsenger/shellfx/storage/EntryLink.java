@@ -20,8 +20,17 @@ import com.techsenger.annotations.Nullable;
 import java.net.URI;
 
 /**
- * Where a link (see {@link StorageFile#isLink()}) points to: the path it states and the file at the end of the chain
- * of links. It describes the target only as far as the storages known to the link's own storage can see.
+ * Where a link (see {@link StorageFile#isLink()}) points to: the path it states, the path of the entry at the end of
+ * the chain of links, and the file there. A link is resolved in one of two loading phases:
+ * <ul>
+ * <li>in the first phase, by the storage of the link, which follows the chain in the file system. If that gives the
+ * path of the end of the chain, it is the {@linkplain #getResolvedUri() resolved URI}, and the file there is left to
+ * the second phase. This is the case for every link but the few that end in something that has no path at all, such
+ * as the pipe behind {@code /dev/stderr}; for those the storage reads the attributes of the end itself and gives the
+ * {@linkplain #getTarget() target} at once, and there is no resolved URI;</li>
+ * <li>in the second phase, by the {@link FileProvider}, which gets the file at the resolved URI from the storage that
+ * holds it, which is not necessarily the storage of the link.</li>
+ * </ul>
  *
  * @author Pavel Castornii
  */
@@ -36,11 +45,23 @@ public interface EntryLink {
     URI getTargetUri();
 
     /**
+     * Returns the URI of the entry at the end of the whole chain of links this link starts, as the storage of the
+     * link sees it. It is known as soon as the link is listed, even when the entry lies in another storage, which is
+     * what lets that storage be asked for the target in the second phase.
+     *
+     * @return the URI, or {@code null} if nothing exists at the end of the chain, or if the end exists but has no
+     *     path of its own, in which case the target is already known
+     */
+    @Nullable URI getResolvedUri();
+
+    /**
      * Returns the file at the end of the whole chain of links this link starts, so it is never a link itself.
      * Returns {@code null} if the link is broken: nothing exists at the end of the chain, the chain is a cycle, the
-     * file is out of reach or its storage is not available.
+     * file is out of reach or its storage is not available. It is also {@code null} until the second loading phase
+     * has got the file at the {@linkplain #getResolvedUri() resolved URI}, so the state of the file tells a link that
+     * is not resolved yet from a broken one.
      *
-     * @return the file the chain finally ends at, or {@code null} if the link is broken
+     * @return the file the chain finally ends at, or {@code null} if the link is broken or not resolved yet
      */
     @Nullable StorageFile getTarget();
 }

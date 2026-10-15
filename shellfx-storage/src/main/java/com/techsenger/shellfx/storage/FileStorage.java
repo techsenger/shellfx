@@ -17,9 +17,8 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.material.icon.FontIcon;
-import com.techsenger.shellfx.material.theme.Theme;
-import com.techsenger.toolkit.fx.color.ColorUtils;
+import com.techsenger.shellfx.storage.style.StorageIconResolver;
+import com.techsenger.shellfx.storage.style.StorageStyleResolver;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -73,16 +72,15 @@ import java.util.List;
  * {@link FileOperations#RENAME} (for the new URI), {@link FileOperations#READ} and {@link FileOperations#WRITE}.
  * A failed operation is not reported.
  *
+ * <p><b>Appearance.</b> A storage is loaded dynamically, so only it knows how it looks itself: the icon and the
+ * style of the storage and of its root, {@link #getIconResolver()} and {@link #getStyleResolver()}.
+ * The files of every storage share one model and are styled centrally, by the {@link FileProvider}. A storage that
+ * extends the model of a file is styled by a provider that knows the extension.
+ *
  * @param <T> the concrete file entry type produced by this storage
  * @author Pavel Castornii
  */
 public interface FileStorage<T extends StorageFile> {
-
-    private static IconTextStyle createDefaultStyle(Theme theme) {
-        var icon = "-fx-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
-        var text = "-fx-text-fill: " + ColorUtils.toCssRgba(theme.getPalette().getDefaultFgColor()) + ";";
-        return new IconTextStyle(icon, text);
-    }
 
     /**
      * Returns the type of this storage (e.g. local, FTP, cloud).
@@ -109,45 +107,33 @@ public interface FileStorage<T extends StorageFile> {
     String getName();
 
     /**
-     * Returns the icon representing this storage in the UI (e.g. a location bar or a directory tree root).
+     * Returns the resolver of the icon representing this storage in the UI (e.g. a location bar or a directory tree
+     * root) in its current state.
      *
-     * @return the icon, never {@code null}
+     * @return the resolver, never {@code null}
      */
-    FontIcon<?> getIcon();
+    StorageIconResolver getIconResolver();
 
     /**
-     * Creates the style of this storage for the theme, for a {@link FileStyleResolver} to use when it resolves the
-     * style of the storage in a list of storages. The storage is shown with its icon and its name, so both can be
-     * styled. The storage does not know where it is shown, so views never apply this style themselves.
+     * Returns the resolver of the styles of this storage. The storage is shown with its icon and its name, so both
+     * can be styled, in a list of storages and as its root directory, whose icon and style the resolvers of the
+     * files take from the storage. The storage does not know where it is shown, so views never apply the style
+     * themselves.
      *
-     * @param theme the theme the storage is shown in
-     * @return the style, or {@code null} if the storage has no style of its own
+     * @return the resolver, never {@code null}
      */
-    default @Nullable IconTextStyle createStyle(Theme theme) {
-        return createDefaultStyle(theme);
-    }
+    StorageStyleResolver getStyleResolver();
 
     /**
      * Returns the root directory entry of this storage.
      *
      * <p>The root may be either a real directory (e.g. on a network drive) or a virtual placeholder (e.g. a local
-     * file system root that does not physically exist as a standalone directory entry).
+     * file system root that does not physically exist as a standalone directory entry). The storage creates it
+     * with {@link StorageFile#isRoot()} set.
      *
      * @return the root entry, never {@code null}
      */
     T getRoot();
-
-    /**
-     * Creates the style of the root directory of this storage for the theme, for a {@link FileStyleResolver} to use
-     * when it resolves the style of the root. The root is shown with its icon and its name, so both can be styled.
-     * The storage does not know where it is shown, so views never apply this style themselves.
-     *
-     * @param theme the theme the root is shown in
-     * @return the style, or {@code null} if the storage has no style of its own for the root
-     */
-    default @Nullable IconTextStyle createRootStyle(Theme theme) {
-        return createDefaultStyle(theme);
-    }
 
     /**
      * Returns the direct subdirectories of the directory identified by {@code uri}, excluding regular files.

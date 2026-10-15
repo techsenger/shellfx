@@ -26,6 +26,7 @@ import com.techsenger.shellfx.material.slot.Slot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -142,6 +143,11 @@ public final class ControlRegistry implements ExtensionRegistry {
         var registration = new LeafRegistration(group, position, factory);
         index.add(group.getComponentClass(), registration);
         return registration;
+    }
+
+    @Override
+    public UUID getStateUuid() {
+        return index.getStateUuid();
     }
 
     /**

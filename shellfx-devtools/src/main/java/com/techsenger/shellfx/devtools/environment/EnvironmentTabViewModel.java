@@ -18,7 +18,6 @@ package com.techsenger.shellfx.devtools.environment;
 
 import com.techsenger.annotations.Unmodifiable;
 import com.techsenger.connectorfx.KeyValue;
-import com.techsenger.shellfx.core.UiExecutor;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.dialog.DialogParams;
@@ -28,6 +27,7 @@ import com.techsenger.shellfx.devtools.DevToolsHostType;
 import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
 import com.techsenger.shellfx.devtools.shared.ToolBarAwarePort;
 import com.techsenger.shellfx.devtools.shared.TotalFindResult;
+import com.techsenger.shellfx.material.UiExecutor;
 import com.techsenger.shellfx.shared.find.FindResult;
 import java.util.ArrayList;
 import java.util.Arrays;

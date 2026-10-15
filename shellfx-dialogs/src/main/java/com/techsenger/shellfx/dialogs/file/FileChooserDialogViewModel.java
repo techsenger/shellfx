@@ -18,7 +18,6 @@ package com.techsenger.shellfx.dialogs.file;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.annotations.Unmodifiable;
-import com.techsenger.shellfx.core.UiExecutor;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.config.ConfigUtils;
@@ -31,16 +30,19 @@ import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
 import static com.techsenger.shellfx.dialogs.file.FileChooserType.SAVE_AS;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.RequestSetter;
+import com.techsenger.shellfx.material.UiExecutor;
 import com.techsenger.shellfx.material.button.ResultButtonName;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableConfig;
 import com.techsenger.shellfx.storage.Comparators;
-import com.techsenger.shellfx.storage.FileStyleResolver;
 import com.techsenger.shellfx.storage.FileEntryType;
+import com.techsenger.shellfx.storage.FileProvider;
+import com.techsenger.shellfx.storage.FileState;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
 import com.techsenger.shellfx.storage.OperationType;
+import com.techsenger.shellfx.storage.RefinedFieldSortPolicy;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.toolkit.core.file.FileUtils;
@@ -114,8 +116,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private final StringProperty locationCaption = new SimpleStringProperty();
 
-    private final ObjectProperty<@Nullable FileStyleResolver<T>> styleResolver = new SimpleObjectProperty<>();
-
     private final ObservableMap<TableColumnName, TableColumnInfo> columns = FXCollections.observableHashMap();
 
     private final ReadOnlyObjectWrapper<T> file = new ReadOnlyObjectWrapper<>();
@@ -134,6 +134,13 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private final List<? extends FileStorage<T>> storages;
 
+    private final FileProvider<T> fileProvider;
+
+    // a provider of its own, as a provider serves one list at a time and the table is refined independently
+    private final FileProvider<T> locationFileProvider;
+
+    private final RefinedFieldSortPolicy refinedFieldSortPolicy;
+
     private final ObjectProperty<Comparator<T>> fileComparator = new SimpleObjectProperty<>();
 
     private T resultFile;
@@ -145,7 +152,10 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     public FileChooserDialogViewModel(FileChooserDialogParams<T> params) {
         super(params);
         this.chooserType = params.getChooserType();
-        this.storages = params.getStorages();
+        this.fileProvider = params.getFileProviderFactory().create();
+        this.locationFileProvider = params.getFileProviderFactory().create();
+        this.storages = fileProvider.getStorages();
+        this.refinedFieldSortPolicy = params.getRefinedFieldSortPolicy();
         this.initialDirectory = params.getInitialDirectory();
         this.initialFileName = params.getInitialFileName();
         this.fileName.set(initialFileName);
@@ -304,21 +314,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     @Override
-    public @Nullable FileStyleResolver<T> getStyleResolver() {
-        return styleResolver.get();
-    }
-
-    @Override
-    public void setStyleResolver(@Nullable FileStyleResolver<T> styleResolver) {
-        this.styleResolver.set(styleResolver);
-    }
-
-    @Override
-    public ObjectProperty<@Nullable FileStyleResolver<T>> styleResolverProperty() {
-        return styleResolver;
-    }
-
-    @Override
     public @Unmodifiable ObservableList<ExtensionFilter> getExtensionFilters() {
         return extensionFilters;
     }
@@ -414,6 +409,13 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         setButtonDefault(FileChooserDialogButtons.OK, true);
         setMinWidth(600);
         setMinHeight(400);
+    }
+
+    @Override
+    protected void postDeinitialize() {
+        super.postDeinitialize();
+        fileProvider.cancelRefinement();
+        locationFileProvider.cancelRefinement();
     }
 
     protected FileStorage getStorage() {
@@ -626,12 +628,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             List<T> locations = new ArrayList<>();
             for (var storage : storages) {
                 if (requestedStorage != storage) {
-                    locations.add(storage.getRoot());
+                    locations.add(locationFileProvider.getRoot(storage));
                     continue;
                 }
                 List<T> hierarchy;
                 try {
-                    hierarchy = storage.getHierarchy(requestedUri, OperationType.PRIMARY);
+                    hierarchy = locationFileProvider.getHierarchy(storage, requestedUri, OperationType.PRIMARY);
                 } catch (Exception ex) {
                     logger.error("{} Error getting hierarchy at {}", getDescriptor().getLogPrefix(), requestedUri, ex);
                     hierarchy = List.of(requestedDirectory);
@@ -649,6 +651,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                 setLocations(result);
                 setLocation(resultLocation);
                 this.locationsUpdated = true;
+                locationFileProvider.refineFilesAsync(result, () -> { });
             });
         });
     }
@@ -697,8 +700,16 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         if (filteredFiles != null) {
             files = filteredFiles;
         }
-        files.sort(this.sortComparator);
+        // a directory with nothing to refine is final after the first phase, so it is sorted whatever the policy is
+        var refinable = files.stream().anyMatch(f -> f.getState() == FileState.PENDING);
+        if (!refinable || refinedFieldSortPolicy == RefinedFieldSortPolicy.AFTER_FIRST_PHASE
+                || refinedFieldSortPolicy == RefinedFieldSortPolicy.AFTER_EACH_PHASE) {
+            files.sort(this.sortComparator);
+        }
         setFiles(files);
+        // the second phase: the files that are not ready are refined in the background, and the cells that show them
+        // follow their properties
+        fileProvider.refineFilesAsync(files, this::sortRefinedFiles);
         //only after sorting we can find the selected file index
         var foundIndex = -1;
         if (selectedFile != null) {
@@ -722,6 +733,22 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         modifiableFiles.setAll(files);
     }
 
+    /**
+     * Sorts the files when the second phase is finished, if the policy asks for it. The list is sorted in place, so
+     * the table moves its selection together with the file, and then the view scrolls to the selected file.
+     */
+    private void sortRefinedFiles() {
+        if (refinedFieldSortPolicy != RefinedFieldSortPolicy.AFTER_SECOND_PHASE
+                && refinedFieldSortPolicy != RefinedFieldSortPolicy.AFTER_EACH_PHASE) {
+            return;
+        }
+        modifiableFiles.sort(this.sortComparator);
+        var index = this.selectedFileIndex.get();
+        if (index >= 0) {
+            scrollToFileSource.next(index);
+        }
+    }
+
     private T computeFile() {
         if (this.selectedFileIndex.get() >= 0) {
             return this.files.get(selectedFileIndex.get());
@@ -738,15 +765,17 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private void setDefaultDirectory() {
         var s = FileStorageUtils.findLocal(storages).stream().findFirst();
-        this.directory.set(s.isPresent() ? s.get().getRoot() : null);
+        this.directory.set(s.isPresent() ? locationFileProvider.getRoot(s.get()) : null);
     }
 
     private T resolveDirectory(FileStorage<T> storage, URI uri) {
         if (uri.equals(storage.getUri())) {
-            return storage.getRoot();
+            return locationFileProvider.getRoot(storage);
         }
         try {
-            return storage.getFile(uri, OperationType.PRIMARY);
+            var file = storage.getFile(uri, OperationType.PRIMARY);
+            locationFileProvider.assembleFiles(storage, List.of(file));
+            return file;
         } catch (Exception ex) {
             logger.error("{} Error getting directory at {}", getDescriptor().getLogPrefix(), uri, ex);
             return null;
@@ -769,7 +798,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private List<T> getFilesFromStorage() {
         try {
-            return currentStorage().getFiles(directoryUri(), OperationType.PRIMARY);
+            return fileProvider.getFiles(currentStorage(), directoryUri(), OperationType.PRIMARY);
         } catch (Exception ex) {
             logger.error("{} Error getting files at {}", getDescriptor().getLogPrefix(), directoryUri(), ex);
         }
@@ -783,6 +812,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         setLocations(List.of(location));
         setLocation(location);
         this.locationsUpdated = false;
+        locationFileProvider.refineFilesAsync(List.of(location), () -> { });
     }
 
     private void updateConfigColumns() {

@@ -17,9 +17,9 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.material.icon.FontIcon;
 import static com.techsenger.shellfx.storage.UriUtils.getParentUri;
-import com.techsenger.shellfx.storage.style.StorageIcons;
+import com.techsenger.shellfx.storage.style.StorageIconResolver;
+import com.techsenger.shellfx.storage.style.StorageStyleResolver;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
@@ -55,38 +55,29 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractSystemFileStorage.class);
 
+    private static final int MAX_LINK_CHAIN = 40;
+
     private final Factory<? extends DefaultStorageFile> fileFactory;
 
     private final Path path;
 
-    private final FileResolver<T> externalFileResolver;
-
     /**
-     * Constructs a storage whose links may point into any storage.
+     * Constructs a storage. The target of a link that ends in another storage is not found by the storage; it is
+     * found later, in the second loading phase.
      *
      * @param type the storage type
      * @param name the display name
      * @param rootUri the root URI
      * @param fileFactory the factory of the file entries
-     * @param externalFileResolver gives the file of another storage, where a link of this storage ends
+     * @param iconResolver the resolver of the icon of the storage
+     * @param styleResolver the resolver of the style of the storage
      */
     public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, FileResolver<T> externalFileResolver) {
-        super(type, name, rootUri);
+            Factory<? extends DefaultStorageFile> fileFactory, StorageIconResolver iconResolver,
+            StorageStyleResolver styleResolver) {
+        super(type, name, rootUri, iconResolver, styleResolver);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
-        this.externalFileResolver = externalFileResolver;
-    }
-
-    @Override
-    public FontIcon<?> getIcon() {
-        return switch (getType()) {
-            case BASE -> StorageIcons.BASE_DISK;
-            case NETWORK -> StorageIcons.NETWORK_DISK;
-            case FLOPPY -> StorageIcons.FLOPPY;
-            case OPTICAL -> StorageIcons.DISC;
-            default -> throw new AssertionError("Unknown type for system storage");
-        };
     }
 
     @Override
@@ -259,13 +250,12 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     public T getRoot() {
         var file = fileFactory.create();
         file.setVirtual(true);
+        file.setRoot(true);
         file.setEntryType(FileEntryType.DIRECTORY);
         file.setUri(getUri());
         file.setStorage(this);
         file.setName(getName());
-        var result = (T) file;
-        file.setIcon(resolveIcon(result));
-        return result;
+        return (T) file;
     }
 
     @Override
@@ -307,9 +297,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         file.setUri(uri);
         file.setStorage(this);
         file.setVirtual(true);
-        var result = (T) file;
-        file.setIcon(resolveIcon(result));
-        return result;
+        return (T) file;
     }
 
     @Override
@@ -384,10 +372,6 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         return fileFactory;
     }
 
-    protected FileResolver<T> getExternalFileResolver() {
-        return externalFileResolver;
-    }
-
     /**
      * Returns the path of the root of this storage, the counterpart of {@link #getUri()}.
      *
@@ -398,43 +382,18 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     }
 
     /**
-     * Resolves the icon assigned to {@code file} when it is constructed, before it is exposed to callers. A link
-     * gets the link icon of the kind of the file it points to, or an error icon if it is broken.
-     *
-     * @param file the file being constructed, must not be {@code null}
-     * @return the icon, never {@code null}
-     */
-    protected FontIcon<?> resolveIcon(T file) {
-        return switch (file.getEntryType()) {
-            case FILE -> StorageIcons.FILE;
-            case DIRECTORY -> StorageIcons.DIRECTORY;
-            case LINK -> {
-                var link = file.getLink();
-                var target = link == null ? null : link.getTarget();
-                if (target == null) {
-                    yield StorageIcons.ERROR_FILE;
-                }
-                // a chain of links is followed to its end, so the target is never a link itself
-                yield switch (target.getEntryType()) {
-                    case DIRECTORY -> StorageIcons.DIRECTORY_LINK;
-                    case OTHER -> StorageIcons.OTHER_LINK;
-                    case FILE, LINK -> StorageIcons.FILE_LINK;
-                };
-            }
-            case OTHER -> StorageIcons.OTHER;
-        };
-    }
-
-    /**
-     * Creates the link of a file. The target is already found, in this storage or in another one.
+     * Creates the link of a file.
      *
      * @param targetUri the URI of the path the link states
-     * @param target the file at the end of the chain of links, or {@code null} if the link is broken
+     * @param resolvedUri the URI of the entry at the end of the chain of links, or {@code null} if there is none
+     * @param target the file at the end of the chain of links, or {@code null} if the second loading phase has to
+     *     find it or the link is broken
      * @return the link, never {@code null}
      */
-    protected EntryLink createLink(URI targetUri, @Nullable T target) {
+    protected EntryLink createLink(URI targetUri, @Nullable URI resolvedUri, @Nullable T target) {
         var link = new DefaultEntryLink();
         link.setTargetUri(targetUri);
+        link.setResolvedUri(resolvedUri);
         link.setTarget(target);
         return link;
     }
@@ -572,7 +531,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
 
     /**
      * Lets a subclass fill in what only the entry's attributes tell, e.g. the permissions; called once for every
-     * created file, before its icon is resolved. Does nothing by default.
+     * created file. Does nothing by default.
      *
      * @param file the file being created
      * @param entryPath the entry's path
@@ -629,27 +588,21 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         }
         file.setVirtual(false);
         populateFile(file, entryPath, attrs);
-        var result = (T) file;
-        file.setIcon(resolveIcon(result));
-        return result;
+        return (T) file;
     }
 
     /**
      * Describes what the link at {@code link} points to: the path it states (a relative target is resolved against
      * the link's directory and normalized, so a stated {@code ./tmp} or {@code ../x} comes out as a clean path; a
-     * Windows junction states none, so its resolved path is used instead) and the file at the end of the chain of
-     * links, taken from this storage or, if it lies elsewhere, from the one that holds it. If there is none (nothing
-     * exists there, the chain is a cycle) the link is broken and the target has no file.
+     * Windows junction states none, so its resolved path is used instead) and the path of the entry at the end of the
+     * chain of links, as the file system resolves it. The file there is left to the second loading phase, except for
+     * an end that exists but has no path of its own (e.g. the pipe behind {@code /dev/stderr}): the file system
+     * cannot be asked about it again, so its attributes are read here and the file is given at once. If nothing
+     * exists at the end, or the chain is a cycle, the link is broken.
      *
-     * @return the target, or {@code null} if the path can't be determined
+     * @return the link, or {@code null} if the path can't be determined
      */
     private @Nullable EntryLink readLink(Path link) {
-        Path realPath = null;
-        try {
-            realPath = link.toRealPath();
-        } catch (IOException ex) {
-            // the link is broken: nothing exists at the end of the chain, it is a cycle, or it is out of reach
-        }
         var folder = link.getParent();
         if (folder == null) {
             return null;
@@ -659,29 +612,60 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
             // the path stated in a link is relative to the folder of the link
             targetPath = folder.resolve(Files.readSymbolicLink(link)).normalize();
         } catch (NotLinkException | UnsupportedOperationException ex) {
-            // a junction states no path, so the resolved one is used
-            if (realPath == null) {
-                logger.warn("Couldn't determine the target of the link {}", link, ex);
+            try {
+                // a junction states no path, so the resolved one is used
+                targetPath = link.toRealPath();
+            } catch (IOException ex2) {
+                logger.warn("Couldn't determine the target of the link {}", link, ex2);
                 return null;
             }
-            targetPath = realPath;
         } catch (IOException ex) {
             logger.warn("Couldn't determine the target of the link {}", link, ex);
             return null;
         }
+        URI resolvedUri = null;
         T target = null;
-        if (realPath != null) {
-            var targetUri = realPath.toUri();
+        try {
+            resolvedUri = link.toRealPath().toUri();
+        } catch (IOException ex) {
+            target = readChainEnd(link);
+        }
+        return createLink(targetPath.toUri(), resolvedUri, target);
+    }
+
+    /**
+     * Gives the file at the end of the chain of links for the case when the file system can't resolve the real path
+     * of the link, so the second loading phase could not find that file by its URI. This happens to an end that exists
+     * but has no path of its own (e.g. the pipe behind {@code /dev/stderr}); its attributes are read through the
+     * links, and the file is created from them with the last path of the chain.
+     *
+     * @return the file, or {@code null} if the link is broken: nothing exists at the end of the chain, it is a
+     *     cycle, or it is out of reach
+     */
+    private @Nullable T readChainEnd(Path link) {
+        try {
+            var endPath = findChainEnd(link);
+            return createFile(endPath, Files.readAttributes(link, BasicFileAttributes.class), endPath.toUri());
+        } catch (IOException ex) {
+            logger.debug("The link {} is broken", link, ex);
+            return null;
+        }
+    }
+
+    /**
+     * Follows the chain of links from {@code link} and returns the path where it ends, without asking the file
+     * system whether that path exists. A chain longer than {@link #MAX_LINK_CHAIN} is cut where it stands.
+     */
+    private Path findChainEnd(Path link) {
+        var current = link;
+        for (var i = 0; i < MAX_LINK_CHAIN && Files.isSymbolicLink(current); i++) {
             try {
-                target = refersToStorage(targetUri)
-                        ? getFile(targetUri, OperationType.SECONDARY)
-                        : externalFileResolver.resolve(targetUri, OperationType.SECONDARY);
-            } catch (IOException ex) {
-                // no storage holds the end of the chain or it can't be read, so the link is broken
-                logger.debug("Couldn't get the target {} of the link {}", realPath, link, ex);
+                current = current.resolveSibling(Files.readSymbolicLink(current)).normalize();
+            } catch (IOException | UnsupportedOperationException ex) {
+                break;
             }
         }
-        return createLink(targetPath.toUri(), target);
+        return current;
     }
 
     /**

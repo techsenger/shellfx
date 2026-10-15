@@ -27,8 +27,6 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogView;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
-import com.techsenger.shellfx.material.column.ColumnListCell;
-import com.techsenger.shellfx.material.column.ColumnViewUtils;
 import com.techsenger.shellfx.material.column.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -37,16 +35,14 @@ import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnManager;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.storage.Comparators;
+import com.techsenger.shellfx.storage.FileCellObserver;
 import com.techsenger.shellfx.storage.FileCellUtils;
 import com.techsenger.shellfx.storage.FileColumnBuilder;
 import com.techsenger.shellfx.storage.FileColumns;
 import com.techsenger.shellfx.storage.FileStringConverter;
 import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.toolkit.fx.utils.TableUtils;
 import com.techsenger.toolkit.fx.value.ValueUtils;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
@@ -56,7 +52,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -139,6 +134,8 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
 
         private final FontIconView iconView = new FontIconView();
 
+        private final FileCellObserver observer = new FileCellObserver(() -> updateItem(getItem(), isEmpty()));
+
         private DialogTextFieldColumnListCell(StringConverter converter) {
             super(converter);
             addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
@@ -165,17 +162,14 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
 
         @Override
         protected void updateItem(T item, boolean empty) {
-            var resolver = getViewModel().getStyleResolver();
             if (item == null || empty) {
+                observer.unobserve();
                 setGraphic(null);
                 setText(null);
-                if (resolver != null) {
-                    FileCellUtils.updateStyles(this, iconView, null, resolver);
-                }
+                FileCellUtils.updateStyles(this, iconView, null);
             } else {
-                if (resolver != null) {
-                    FileCellUtils.updateStyles(this, iconView, item, resolver);
-                }
+                observer.observe(item.iconProperty(), item.styleProperty());
+                FileCellUtils.updateStyles(this, iconView, item);
                 if (item.getEntryType() != null) {
                     iconView.setIcon(item.getIcon());
                     setGraphic(iconView);
@@ -276,7 +270,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
 
         var columnBuilder = new FileColumnBuilder(viewModel.getAppearanceSettings().getRegularFont());
         this.fileColumnManager.registerColumnFactory(FileColumns.NAME, () -> {
-            var column = columnBuilder.<T>buildNameColumn(getViewModel()::getStyleResolver);
+            var column = columnBuilder.<T>buildNameColumn();
             column.setEditable(false);
             column.setOnEditCancel(e -> {
                 var file = (T) e.getOldValue();
@@ -291,12 +285,12 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
             return column;
         });
         this.fileColumnManager.registerColumnFactory(FileColumns.SIZE, () -> {
-            var column = columnBuilder.<T>buildSizeColumn(getViewModel()::getStyleResolver);
+            var column = columnBuilder.<T>buildSizeColumn();
             column.setEditable(false);
             return column;
         });
         this.fileColumnManager.registerColumnFactory(FileColumns.LAST_MODIFIED, () -> {
-            var column = columnBuilder.<T>buildLastModifiedColumn(getViewModel()::getStyleResolver);
+            var column = columnBuilder.<T>buildLastModifiedColumn();
             column.setEditable(false);
             return column;
         });
@@ -305,13 +299,13 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.setMaxWidth(Double.MAX_VALUE);
         locationComboBox.setCellFactory(cb -> {
-            var cell = new LocationCell<T>(false, getViewModel()::getStyleResolver);
+            var cell = new LocationCell<T>(false);
             cell.setOnMousePressed(e -> {
                 getViewModel().onLocationRequested(cell.getItem());
             });
             return cell;
         });
-        locationComboBox.setButtonCell(new LocationCell<T>(true, getViewModel()::getStyleResolver));
+        locationComboBox.setButtonCell(new LocationCell<T>(true));
         locationComboBox.getStyleClass().add("location");
         levelUpButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         levelUpButton.setTooltip(new Tooltip("Up One Level"));
@@ -433,27 +427,6 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         this.fileColumnManager.setSortIndexListener(viewModel::setColumnSortIndex);
 
         viewModel.getFiles().addListener((ListChangeListener<T>) change -> updateFilesChanged());
-        viewModel.styleResolverProperty().addListener((ov, oldV, newV) -> {
-            if (oldV == null && newV != null) {
-                FileCellUtils.saveStyles(getAllCells());
-                if (locationComboBox.getButtonCell() instanceof LocationCell<T> cell) {
-                    cell.saveStyles();
-                }
-            } else if (oldV != null && newV == null) {
-                FileCellUtils.restoreStyles(getAllCells());
-                if (locationComboBox.getButtonCell() instanceof LocationCell<T> cell) {
-                    cell.restoreStyles();
-                }
-            }
-            if (locationComboBox.getButtonCell() instanceof LocationCell<T> cell) {
-                cell.updateStyles();
-            }
-            if (this.listButton.isSelected()) {
-                ColumnViewUtils.updateCells(this.fileListView, false);
-            } else {
-                TableUtils.updateRows(this.fileTableView, false);
-            }
-        });
         locationComboBox.setItems(viewModel.getLocations());
         updateLocation(viewModel.getLocation());
         viewModel.locationSource().addListener((location) -> updateLocation(location));
@@ -574,24 +547,6 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
             this.listButton.setSelected(false);
             this.detailsButton.setSelected(true);
         }
-    }
-
-    /**
-     * Returns every cell of the table and of the list, including the ones that are not shown now.
-     */
-    private List<Labeled> getAllCells() {
-        var cells = new ArrayList<Labeled>();
-        for (var node : this.fileTableView.lookupAll(".table-cell")) {
-            if (node instanceof Labeled cell) {
-                cells.add(cell);
-            }
-        }
-        for (var node : this.fileListView.lookupAll(".cell")) {
-            if (node instanceof ColumnListCell<?> cell) {
-                cells.add(cell);
-            }
-        }
-        return cells;
     }
 
     private void updateFilesChanged() {

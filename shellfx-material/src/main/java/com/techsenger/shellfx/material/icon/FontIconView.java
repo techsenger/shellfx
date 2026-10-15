@@ -63,6 +63,9 @@ import org.slf4j.LoggerFactory;
  *     to be defined entirely in a stylesheet rule for that class.</li>
  * </ul>
  *
+ * <p>The icon is optional: a view without an icon ({@code null}) is valid and shows no text unless a code point is
+ * provided by the {@link #iconCode} property (for example, from CSS).
+ *
  * <p>If no font family is resolved for an icon (neither from a {@link PlainFontIcon} nor from CSS), the
  * static {@link #getDefaultIconFamily() default icon family} is used instead.
  *
@@ -165,7 +168,7 @@ public class FontIconView extends Text {
     private final StyleableIntegerProperty iconCode =
             new SimpleStyleableIntegerProperty(Css.ICON_CODE, this, "iconCode", 0);
 
-    private final ObjectProperty<FontIcon<?>> icon = new SimpleObjectProperty<>();
+    private final ObjectProperty<@Nullable FontIcon<?>> icon = new SimpleObjectProperty<>();
 
     private final StringProperty units = new SimpleStringProperty(this, "units", "px");
 
@@ -176,9 +179,9 @@ public class FontIconView extends Text {
     /**
      * Creates a view and immediately assigns the given icon.
      *
-     * @param icon the icon to display
+     * @param icon the icon to display, or {@code null} to show none
      */
-    public FontIconView(FontIcon<?> icon) {
+    public FontIconView(@Nullable FontIcon<?> icon) {
         this();
         setIcon(icon);
     }
@@ -226,9 +229,9 @@ public class FontIconView extends Text {
     /**
      * Returns the CSS units used when freezing the resolved icon size.
      *
-     * @return the current units, e.g. {@code "px"}
+     * @return the current units, e.g. {@code "px"}, or {@code null} if none are set
      */
-    public String getUnits() {
+    public @Nullable String getUnits() {
         return units.get();
     }
 
@@ -236,9 +239,9 @@ public class FontIconView extends Text {
      * Sets the CSS units used when freezing the resolved icon size. If {@code null} or blank, {@code "px"}
      * is used instead.
      *
-     * @param units the units to use when freezing the resolved icon size
+     * @param units the units to use when freezing the resolved icon size, or {@code null} for {@code "px"}
      */
-    public void setUnits(String units) {
+    public void setUnits(@Nullable String units) {
         this.units.set(units);
     }
 
@@ -297,7 +300,7 @@ public class FontIconView extends Text {
      *
      * @return the current font family, or {@code null} if none is explicitly set
      */
-    public String getIconFamily() {
+    public @Nullable String getIconFamily() {
         return iconFamily.get();
     }
 
@@ -306,7 +309,7 @@ public class FontIconView extends Text {
      *
      * @param family the font family to use, or {@code null} to fall back to the default icon family
      */
-    public void setIconFamily(String family) {
+    public void setIconFamily(@Nullable String family) {
         iconFamily.set(family);
     }
 
@@ -340,11 +343,12 @@ public class FontIconView extends Text {
     }
 
     /**
-     * Returns the property holding the {@link FontIcon} currently assigned to this view.
+     * Returns the property holding the {@link FontIcon} currently assigned to this view. Its value is
+     * {@code null} when no icon is assigned.
      *
      * @return the icon property
      */
-    public ObjectProperty<FontIcon<?>> iconProperty() {
+    public ObjectProperty<@Nullable FontIcon<?>> iconProperty() {
         return this.icon;
     }
 
@@ -353,7 +357,7 @@ public class FontIconView extends Text {
      *
      * @return the current icon, or {@code null} if none is assigned
      */
-    public FontIcon<?> getIcon() {
+    public @Nullable FontIcon<?> getIcon() {
         return this.icon.get();
     }
 
@@ -362,7 +366,7 @@ public class FontIconView extends Text {
      *
      * @param icon the icon to display, or {@code null} to clear the current icon
      */
-    public void setIcon(FontIcon<?> icon) {
+    public void setIcon(@Nullable FontIcon<?> icon) {
         this.icon.set(icon);
     }
 
@@ -392,7 +396,8 @@ public class FontIconView extends Text {
      * @param resolvedSize the size, in pixels, that CSS just resolved for {@code -fx-icon-size}
      */
     private void freezeResolvedSize(double resolvedSize) {
-        String resolvedUnits = units.get() == null || units.get().isBlank() ? "px" : units.get();
+        var currentUnits = units.get();
+        String resolvedUnits = currentUnits == null || currentUnits.isBlank() ? "px" : currentUnits;
         internalStyle = "-fx-icon-size: " + resolvedSize + resolvedUnits + ";";
         updateStyle();
     }
@@ -415,7 +420,7 @@ public class FontIconView extends Text {
 
     /**
      * Resolves the code point to display: read directly from a {@link PlainFontIcon}, or from the
-     * CSS-driven {@link #iconCode} for a {@link StyleFontIcon}.
+     * CSS-driven {@link #iconCode} for a {@link StyleFontIcon} or when there is no icon.
      */
     private void updateText() {
         int cp;
@@ -429,14 +434,16 @@ public class FontIconView extends Text {
 
     /**
      * Resolves the font to apply: read directly from a {@link PlainFontIcon} (falling back to the default
-     * icon font), or from the CSS-driven {@link #iconFamily} for a {@link StyleFontIcon}.
+     * icon font), or from the CSS-driven {@link #iconFamily} for a {@link StyleFontIcon} or when there is no icon.
      */
     private void updateFont() {
         String family;
         if (icon.get() instanceof PlainFontIcon pfi) {
-            family = pfi.getFont() != null ? pfi.getFont() : defaultIconFamily;
+            var iconFont = pfi.getFont();
+            family = iconFont != null ? iconFont : defaultIconFamily;
         } else {
-            family = iconFamily.get() != null ? iconFamily.get() : defaultIconFamily;
+            var cssFamily = iconFamily.get();
+            family = cssFamily != null ? cssFamily : defaultIconFamily;
         }
         setFont(family != null ? Font.font(family, iconSize.get()) : Font.font(iconSize.get()));
     }

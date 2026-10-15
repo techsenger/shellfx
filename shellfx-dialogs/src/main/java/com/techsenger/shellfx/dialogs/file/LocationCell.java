@@ -19,12 +19,10 @@ package com.techsenger.shellfx.dialogs.file;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
+import com.techsenger.shellfx.storage.FileCellObserver;
 import com.techsenger.shellfx.storage.FileCellUtils;
-import com.techsenger.shellfx.storage.FileStyleResolver;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
-import java.util.List;
-import java.util.function.Supplier;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -45,43 +43,18 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
 
     private final boolean valueCell;
 
-    private final Supplier<@Nullable FileStyleResolver<F>> styleResolver;
+    private final FileCellObserver observer = new FileCellObserver(() -> {
+        var item = getItem();
+        if (item != null && !isEmpty()) {
+            showFile(item);
+        }
+    });
 
     private @Nullable FontIconView iconView;
 
-    public LocationCell(boolean valueCell, Supplier<@Nullable FileStyleResolver<F>> styleResolver) {
+    public LocationCell(boolean valueCell) {
         this.valueCell = valueCell;
-        this.styleResolver = styleResolver;
         this.box.setAlignment(Pos.CENTER_LEFT);
-    }
-
-    /**
-     * Keeps the current styles of the cell, so {@link #restoreStyles()} can bring them back. Call it when the
-     * view gets a style resolver.
-     */
-    public void saveStyles() {
-        FileCellUtils.saveStyles(List.of(label));
-    }
-
-    /**
-     * Gives the cell the styles {@link #saveStyles()} kept. Call it when the view loses its style resolver.
-     */
-    public void restoreStyles() {
-        FileCellUtils.restoreStyles(List.of(label));
-        if (iconView != null) {
-            iconView.setIconStyle(null);
-        }
-    }
-
-    /**
-     * Applies the styles the style resolver gives for the shown file; does nothing without a resolver, as then the
-     * styles belong to the developer.
-     */
-    public void updateStyles() {
-        var resolver = styleResolver.get();
-        if (resolver != null) {
-            FileCellUtils.updateStyles(label, iconView, getItem(), resolver);
-        }
     }
 
     @Override
@@ -93,25 +66,31 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
         super.updateItem(item, empty);
         setText(null);
         if (empty || item == null) {
+            observer.unobserve();
             this.iconView = null;
             setGraphic(null);
-            updateStyles();
+            FileCellUtils.updateStyles(label, null, null);
         } else {
+            observer.observe(item.iconProperty(), item.styleProperty());
             if (!this.valueCell) {
                 var level = item.isRoot() ? 0
                         : UriUtils.getPathSegments(item.getStorage().getUri(), item.getUri()).size();
                 this.box.setPadding(new Insets(0, 0, 0, level * Spacing.getHorizontal()));
             }
             this.label.setText(item.getName());
-            var icon = item.isRoot() ? item.getStorage().getIcon() : item.getIcon();
-            if (this.iconView == null || this.iconView.getIcon() != icon) {
-                this.iconView = new FontIconView(icon);
-                this.box.getChildren().setAll(this.iconView, this.label);
-            }
-            if (getGraphic() != this.box) {
-                setGraphic(this.box);
-            }
-            updateStyles();
+            showFile(item);
         }
+    }
+
+    private void showFile(F item) {
+        var icon = item.getIcon();
+        if (this.iconView == null || this.iconView.getIcon() != icon) {
+            this.iconView = new FontIconView(icon);
+            this.box.getChildren().setAll(this.iconView, this.label);
+        }
+        if (getGraphic() != this.box) {
+            setGraphic(this.box);
+        }
+        FileCellUtils.updateStyles(label, iconView, item);
     }
 }

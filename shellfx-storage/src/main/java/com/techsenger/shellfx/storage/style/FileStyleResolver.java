@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.style;
 
-import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.material.theme.Theme;
+import com.techsenger.shellfx.storage.StorageFile;
 
 /**
- * Determines the styles a file is shown with. While a view has a resolver, it owns the inline styles of the file
- * elements, so a missing style clears them.
+ * Determines the styles a file is shown with. The file provider calls the resolver while it loads the file, and a
+ * client calls it to restyle a file.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
@@ -32,7 +33,8 @@ public interface FileStyleResolver<F extends StorageFile> {
      * Resolves the styles of the file.
      *
      * @param file the file to resolve the styles for
-     * @return the styles, or {@code null} to clear the styles of the file
+     * @param theme the theme the file is shown in
+     * @return the styles, never {@code null}; a style without values clears the styles of the file
      */
-    @Nullable IconTextStyle resolve(F file);
+    IconTextStyle resolve(F file, Theme theme);
 }

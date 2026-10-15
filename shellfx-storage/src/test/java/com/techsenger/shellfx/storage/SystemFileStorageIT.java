@@ -19,6 +19,11 @@ package com.techsenger.shellfx.storage;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import com.techsenger.annotations.Nullable;
+import com.techsenger.shellfx.material.theme.AtlantaFxTheme;
+import com.techsenger.shellfx.storage.style.DefaultFileIconResolver;
+import com.techsenger.shellfx.storage.style.IconTextStyle;
+import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
+import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -31,8 +36,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Named;
@@ -98,41 +101,38 @@ public class SystemFileStorageIT {
         RETAINED_FILE_SYSTEMS.add(fileSystem);
         var rootUri = fileSystem.getRootDirectories().iterator().next().toUri();
         if (windows) {
-            return newStorage(resolver -> new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
-                    DefaultStorageFile::new, resolver));
+            return new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
+                    DefaultStorageFile::new,
+                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
         }
-        return newStorage(resolver -> new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
-                DefaultStorageFile::new, resolver));
-    }
-
-    /**
-     * Creates a storage that resolves the targets of its links with itself: it is the only storage of the test, so it
-     * holds every target.
-     */
-    private static <S extends FileStorage<StorageFile>> S newStorage(
-            Function<FileResolver<StorageFile>, S> factory) {
-        var holder = new AtomicReference<FileStorage<StorageFile>>();
-        var storage = factory.apply(new DefaultFileResolver<>(() -> List.of(holder.get())));
-        holder.set(storage);
-        return storage;
+        return new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, DefaultStorageFile::new,
+                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
     }
 
     /**
      * Verifies that each of the expected links is listed as a link, with the expected target.
      */
-    private static void assertTargets(List<StorageFile> files, ExpectedTarget... expectedTargets) {
+    private static void assertTargets(FileStorage<StorageFile> storage, List<StorageFile> files,
+            ExpectedTarget... expectedTargets) throws IOException {
         for (var expected : expectedTargets) {
             var link = find(files, expected.linkName());
             assertThat(link.getEntryType()).as(expected.linkName()).isEqualTo(FileEntryType.LINK);
             var target = link.getLink();
             assertThat(target).as(expected.linkName()).isNotNull();
             assertThat(Paths.get(target.getTargetUri())).as(expected.linkName()).isEqualTo(expected.targetPath());
-            assertThat(targetEntryType(target)).as(expected.linkName()).isEqualTo(expected.entryType());
+            assertThat(targetEntryType(storage, link)).as(expected.linkName()).isEqualTo(expected.entryType());
         }
     }
 
-    private static @Nullable FileEntryType targetEntryType(EntryLink target) {
-        var file = target.getTarget();
+    /**
+     * Follows the link the way the second loading phase does, and returns the type of the file at the end of its
+     * chain, or {@code null} if the link is broken.
+     */
+    private static @Nullable FileEntryType targetEntryType(FileStorage<StorageFile> storage, StorageFile link)
+            throws IOException {
+        new DefaultFileProvider<StorageFile>(List.of(storage), new DefaultFileIconResolver<>(),
+                (file, theme) -> new IconTextStyle(null, null), () -> AtlantaFxTheme.PRIMER_LIGHT).refine(link);
+        var file = link.getLink().getTarget();
         return file == null ? null : file.getEntryType();
     }
 
@@ -184,7 +184,7 @@ public class SystemFileStorageIT {
         assertThat(link.isFile()).isFalse();
         assertThat(link.isDirectory()).isFalse();
         assertThat(Paths.get(link.getLink().getTargetUri())).isEqualTo(target);
-        assertThat(targetEntryType(link.getLink())).isEqualTo(FileEntryType.FILE);
+        assertThat(targetEntryType(storage, link)).isEqualTo(FileEntryType.FILE);
         assertThat(find(files, "target.txt").isLink()).isFalse();
     }
 
@@ -204,7 +204,7 @@ public class SystemFileStorageIT {
         assertThat(link.isLink()).isTrue();
         assertThat(link.isDirectory()).isFalse();
         assertThat(Paths.get(link.getLink().getTargetUri())).isEqualTo(target);
-        assertThat(targetEntryType(link.getLink())).isEqualTo(FileEntryType.DIRECTORY);
+        assertThat(targetEntryType(storage, link)).isEqualTo(FileEntryType.DIRECTORY);
     }
 
     @ParameterizedTest
@@ -223,7 +223,7 @@ public class SystemFileStorageIT {
         var link = find(files, "link");
         assertThat(link.isLink()).isTrue();
         assertThat(Paths.get(link.getLink().getTargetUri())).isEqualTo(real);
-        assertThat(targetEntryType(link.getLink())).isEqualTo(FileEntryType.FILE);
+        assertThat(targetEntryType(storage, link)).isEqualTo(FileEntryType.FILE);
     }
 
     @ParameterizedTest
@@ -237,7 +237,7 @@ public class SystemFileStorageIT {
 
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
-        assertTargets(files, new ExpectedTarget("link", folder, FileEntryType.DIRECTORY));
+        assertTargets(storage, files, new ExpectedTarget("link", folder, FileEntryType.DIRECTORY));
         assertThat(find(files, "link").getLink().getTargetUri().toString()).doesNotContain("/./");
     }
 
@@ -257,7 +257,7 @@ public class SystemFileStorageIT {
         assertThat(link.isLink()).isTrue();
         assertThat(link.getLink()).isNotNull();
         assertThat(Paths.get(link.getLink().getTargetUri())).isEqualTo(missing);
-        assertThat(targetEntryType(link.getLink())).isNull();
+        assertThat(targetEntryType(storage, link)).isNull();
         assertThat(Files.exists(missing)).isFalse();
     }
 
@@ -274,7 +274,7 @@ public class SystemFileStorageIT {
 
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
-        assertTargets(files,
+        assertTargets(storage, files,
                 new ExpectedTarget("link1", link2, FileEntryType.FILE),
                 new ExpectedTarget("link2", link3, FileEntryType.FILE),
                 new ExpectedTarget("link3", target, FileEntryType.FILE));
@@ -293,7 +293,7 @@ public class SystemFileStorageIT {
 
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
-        assertTargets(files,
+        assertTargets(storage, files,
                 new ExpectedTarget("link1", link2, FileEntryType.DIRECTORY),
                 new ExpectedTarget("link2", link3, FileEntryType.DIRECTORY),
                 new ExpectedTarget("link3", target, FileEntryType.DIRECTORY));
@@ -312,7 +312,7 @@ public class SystemFileStorageIT {
 
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
-        assertTargets(files,
+        assertTargets(storage, files,
                 new ExpectedTarget("link1", link2, null),
                 new ExpectedTarget("link2", link3, null),
                 new ExpectedTarget("link3", missing, null));
@@ -331,7 +331,7 @@ public class SystemFileStorageIT {
 
         var files = storage.getFiles(root.toUri(), OperationType.PRIMARY);
 
-        assertTargets(files,
+        assertTargets(storage, files,
                 new ExpectedTarget("a", b, null),
                 new ExpectedTarget("b", a, null));
     }
@@ -350,7 +350,7 @@ public class SystemFileStorageIT {
         assertThat(file.getEntryType()).isEqualTo(FileEntryType.LINK);
         assertThat(file.isLink()).isTrue();
         assertThat(Paths.get(file.getLink().getTargetUri())).isEqualTo(target);
-        assertThat(targetEntryType(file.getLink())).isEqualTo(FileEntryType.DIRECTORY);
+        assertThat(targetEntryType(storage, file)).isEqualTo(FileEntryType.DIRECTORY);
     }
 
     @ParameterizedTest
@@ -400,8 +400,9 @@ public class SystemFileStorageIT {
 
     @Test
     public void refersToStorage_unixStorage_trueOnlyForFileScheme() {
-        var storage = newStorage(resolver -> new UnixFileStorage<StorageFile>(FileStorageType.BASE, "/",
-                URI.create("file:///"), DefaultStorageFile::new, resolver));
+        var storage = new UnixFileStorage<StorageFile>(FileStorageType.BASE, "/", URI.create("file:///"),
+                DefaultStorageFile::new,
+                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
 
         assertThat(storage.refersToStorage(URI.create("file:///home/user/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("FILE:///home/user/a.txt"))).isTrue();
@@ -410,8 +411,9 @@ public class SystemFileStorageIT {
 
     @Test
     public void refersToStorage_windowsStorage_trueOnlyForTheSameDriveIgnoringCase() {
-        var storage = newStorage(resolver -> new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "C:",
-                URI.create("file:///C:/"), DefaultStorageFile::new, resolver));
+        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "C:", URI.create("file:///C:/"),
+                DefaultStorageFile::new,
+                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
 
         assertThat(storage.refersToStorage(URI.create("file:///C:/dir/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("file:///c:/dir/a.txt"))).isTrue();
@@ -427,7 +429,7 @@ public class SystemFileStorageIT {
         assertThat(storage.getType()).isEqualTo(FileStorageType.BASE);
         assertThat(storage.getName()).isEqualTo("test");
         assertThat(storage.getUri()).isNotNull();
-        assertThat(storage.getIcon()).isNotNull();
+        assertThat(storage.getIconResolver().resolve()).isNotNull();
     }
 
     @ParameterizedTest
@@ -1135,8 +1137,9 @@ public class SystemFileStorageIT {
         var hidden = Files.writeString(directory.resolve("hidden.txt"), "hello");
         Files.setAttribute(hidden, "dos:hidden", true);
         Files.writeString(directory.resolve("visible.txt"), "hello");
-        var storage = newStorage(resolver -> new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test",
-                directory.toUri(), DefaultStorageFile::new, resolver));
+        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
+                DefaultStorageFile::new,
+                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
 
@@ -1153,8 +1156,9 @@ public class SystemFileStorageIT {
         var process = new ProcessBuilder("cmd", "/c", "mklink", "/J", junction.toString(), target.toString())
                 .inheritIO().start();
         assertThat(process.waitFor()).as("mklink /J").isZero();
-        var storage = newStorage(resolver -> new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test",
-                directory.toUri(), DefaultStorageFile::new, resolver));
+        var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
+                DefaultStorageFile::new,
+                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
         var directories = storage.getDirectories(directory.toUri(), OperationType.PRIMARY);
@@ -1165,7 +1169,7 @@ public class SystemFileStorageIT {
         assertThat(link.isLink()).isTrue();
         assertThat(link.isDirectory()).isFalse();
         assertThat(Paths.get(link.getLink().getTargetUri()).toRealPath()).isEqualTo(target.toRealPath());
-        assertThat(targetEntryType(link.getLink())).isEqualTo(FileEntryType.DIRECTORY);
+        assertThat(targetEntryType(storage, link)).isEqualTo(FileEntryType.DIRECTORY);
         assertThat(directories).extracting(StorageFile::getName).containsExactly("target");
         assertThat(recursively).extracting(StorageFile::getName)
                 .containsExactlyInAnyOrder("target", "inside.txt", "junction");

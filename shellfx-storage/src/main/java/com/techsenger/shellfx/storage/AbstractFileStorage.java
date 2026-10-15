@@ -16,6 +16,8 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.shellfx.storage.style.StorageIconResolver;
+import com.techsenger.shellfx.storage.style.StorageStyleResolver;
 import java.net.URI;
 import java.util.Objects;
 
@@ -33,7 +35,23 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
 
     private final StorageListenerSupport listenerSupport = new StorageListenerSupport();
 
-    public AbstractFileStorage(FileStorageType type, String name, URI uri) {
+    private final StorageIconResolver iconResolver;
+
+    private final StorageStyleResolver styleResolver;
+
+    /**
+     * Creates a storage.
+     *
+     * @param type the storage type
+     * @param name the display name
+     * @param uri the root URI
+     * @param iconResolver the resolver of the icon of the storage
+     * @param styleResolver the resolver of the style of the storage
+     */
+    public AbstractFileStorage(FileStorageType type, String name, URI uri, StorageIconResolver iconResolver,
+            StorageStyleResolver styleResolver) {
+        this.iconResolver = iconResolver;
+        this.styleResolver = styleResolver;
         this.type = type;
         this.name = name;
         var normalized = uri.normalize();
@@ -53,6 +71,16 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
     @Override
     public URI getUri() {
         return uri;
+    }
+
+    @Override
+    public StorageIconResolver getIconResolver() {
+        return iconResolver;
+    }
+
+    @Override
+    public StorageStyleResolver getStyleResolver() {
+        return styleResolver;
     }
 
     @Override

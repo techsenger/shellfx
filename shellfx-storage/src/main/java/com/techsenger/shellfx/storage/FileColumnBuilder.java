@@ -16,14 +16,12 @@
 
 package com.techsenger.shellfx.storage;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.table.NamedTableColumn;
 import com.techsenger.shellfx.material.table.TextFieldTableCell;
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.time.Year;
 import java.util.Comparator;
-import java.util.function.Supplier;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.TableCell;
 import javafx.scene.layout.HBox;
@@ -42,22 +40,11 @@ public class FileColumnBuilder {
     }
 
     /**
-     * Builds name column without styling.
+     * Builds name column.
      *
      * @return
      */
     public <F extends StorageFile> NamedTableColumn<F, F> buildNameColumn() {
-        return buildNameColumn(() -> null);
-    }
-
-    /**
-     * Builds name column.
-     *
-     * @param styleResolver supplies the style resolver on every cell update, which may be {@code null}
-     * @return
-     */
-    public <F extends StorageFile> NamedTableColumn<F, F> buildNameColumn(
-            Supplier<@Nullable FileStyleResolver<F>> styleResolver) {
         var nameColumn = new NamedTableColumn<F, F>(FileColumns.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         var converter = new FileStringConverter<F>();
@@ -65,20 +52,19 @@ public class FileColumnBuilder {
 
             private final FontIconView iconView = new FontIconView();
 
+            private final FileCellObserver observer = new FileCellObserver(() -> updateItem(getItem(), isEmpty()));
+
             @Override
             public void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
-                var resolver = styleResolver.get();
                 if (file == null || empty) {
+                    observer.unobserve();
                     setGraphic(null);
                     setText(null);
-                    if (resolver != null) {
-                        FileCellUtils.updateStyles(this, iconView, null, resolver);
-                    }
+                    FileCellUtils.updateStyles(this, iconView, null);
                 } else {
-                    if (resolver != null) {
-                        FileCellUtils.updateStyles(this, iconView, file, resolver);
-                    }
+                    observer.observe(file.iconProperty(), file.styleProperty());
+                    FileCellUtils.updateStyles(this, iconView, file);
                     iconView.setIcon(file.getIcon());
                     setGraphic(iconView);
                     setText(file.getName());
@@ -105,33 +91,26 @@ public class FileColumnBuilder {
     }
 
     /**
-     * Builds size column without styling.
+     * Builds size column.
      *
      * @return
      */
     public <F extends StorageFile> NamedTableColumn<F, F> buildSizeColumn() {
-        return buildSizeColumn(() -> null);
-    }
-
-    /**
-     * Builds size column.
-     *
-     * @param styleResolver supplies the style resolver on every cell update, which may be {@code null}
-     * @return
-     */
-    public <F extends StorageFile> NamedTableColumn<F, F> buildSizeColumn(
-            Supplier<@Nullable FileStyleResolver<F>> styleResolver) {
         var sizeColumn = new NamedTableColumn<F, F>(FileColumns.SIZE, "Size");
         sizeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         sizeColumn.setCellFactory(callBack -> new TableCell<F, F>() {
 
+                private final FileCellObserver observer = new FileCellObserver(() -> updateItem(getItem(), isEmpty()));
+
                 @Override
                 protected void updateItem(F file, boolean empty) {
                     super.updateItem(file, empty);
-                    var resolver = styleResolver.get();
-                    if (resolver != null) {
-                        FileCellUtils.updateStyles(this, null, empty ? null : file, resolver);
+                    if (file == null || empty) {
+                        observer.unobserve();
+                    } else {
+                        observer.observe(file.styleProperty());
                     }
+                    FileCellUtils.updateStyles(this, null, empty ? null : file);
                     if (file == null || file.getSize() == null || empty) {
                         setText(null);
                     } else {
@@ -148,35 +127,29 @@ public class FileColumnBuilder {
     }
 
     /**
-     * Builds last modified column without styling.
+     * Builds last modified column.
      *
      * @return
      */
     public <F extends StorageFile> NamedTableColumn<F, F> buildLastModifiedColumn() {
-        return buildLastModifiedColumn(() -> null);
-    }
-
-    /**
-     * Builds last modified column.
-     *
-     * @param styleResolver supplies the style resolver on every cell update, which may be {@code null}
-     * @return
-     */
-    public <F extends StorageFile> NamedTableColumn<F, F> buildLastModifiedColumn(
-            Supplier<@Nullable FileStyleResolver<F>> styleResolver) {
         var lastModifiedColumn =
                 new NamedTableColumn<F, F>(FileColumns.LAST_MODIFIED, "Modified");
         lastModifiedColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
 
         final var currentYear = Year.now();
         lastModifiedColumn.setCellFactory(col -> new TableCell<F, F>() {
+
+            private final FileCellObserver observer = new FileCellObserver(() -> updateItem(getItem(), isEmpty()));
+
             @Override
             protected void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
-                var resolver = styleResolver.get();
-                if (resolver != null) {
-                    FileCellUtils.updateStyles(this, null, empty ? null : file, resolver);
+                if (file == null || empty) {
+                    observer.unobserve();
+                } else {
+                    observer.observe(file.styleProperty());
                 }
+                FileCellUtils.updateStyles(this, null, empty ? null : file);
                 if (file == null || file.getModifiedTime() == null || empty) {
                     setText(null);
                 } else {

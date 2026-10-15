@@ -25,6 +25,7 @@ import com.techsenger.shellfx.material.slot.Slot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import javafx.scene.control.Control;
 import javafx.scene.control.MenuItem;
 
@@ -113,6 +114,11 @@ public final class SlotRegistry implements ExtensionRegistry {
     public <V extends ParentView<?>> Registration register(GroupSlot<V, ? extends MenuItem> group, int position,
             MenuSlot<V> subMenu) {
         return add(group, position, subMenu);
+    }
+
+    @Override
+    public UUID getStateUuid() {
+        return index.getStateUuid();
     }
 
     /**

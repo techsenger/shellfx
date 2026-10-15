@@ -16,10 +16,21 @@
 
 package com.techsenger.shellfx.core.registry;
 
+import java.util.UUID;
+
 /**
+ * A registry of the contributions of plugins to the components, which can change at any time.
  *
  * @author Pavel Castornii
  */
 public interface ExtensionRegistry {
 
+    /**
+     * Returns an identifier of the current state of the registrations that is replaced with a new one on every
+     * change: a registration added or removed. Only a different value matters, so it is compared with the one seen
+     * before.
+     *
+     * @return the identifier of the state, never {@code null}
+     */
+    UUID getStateUuid();
 }

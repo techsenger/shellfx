@@ -18,28 +18,22 @@ package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.storage.style.IconTextStyle;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 
 /**
  * Default implementation of {@link StorageFile}.
  *
  * <p>Instances are created by {@link FileStorage} implementations via their factory methods. This class is designed to
-be subclassed when additional application-level metadata needs to be attached to a file entry (e.g. a semantic
-content entryType for UI purposes).
-
-<p>Navigation helpers ({@link #getParent()}, {@link #getParents()}, {@link #getChild}) construct virtual entries
- * derived from this file's URI and storage without performing any I/O.
+ * be subclassed when additional application-level metadata needs to be attached to a file entry (e.g. a semantic
+ * content entryType for UI purposes).
  *
  * @author Pavel Castornii
  */
 public class DefaultStorageFile implements StorageFile {
-
-    private static final Logger logger = LoggerFactory.getLogger(DefaultStorageFile.class);
 
     private FileStorage storage;
 
@@ -59,9 +53,16 @@ public class DefaultStorageFile implements StorageFile {
 
     private boolean virtual;
 
+    private boolean root;
+
     private @Nullable EntryLink link;
 
-    private FontIcon<?> icon;
+    private final ReadOnlyObjectWrapper<FontIcon<?>> icon = new ReadOnlyObjectWrapper<>();
+
+    private final ReadOnlyObjectWrapper<IconTextStyle> style = new ReadOnlyObjectWrapper<>();
+
+    // written by the second loading phase on a background thread
+    private volatile FileState state = FileState.READY;
 
     /**
      * Constructs an empty {@code DefaultStorageFile}. Fields should be populated by the
@@ -115,60 +116,38 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     @Override
+    public boolean isRoot() {
+        return root;
+    }
+
+    @Override
     public @Nullable EntryLink getLink() {
         return link;
     }
 
     @Override
-    public FontIcon<?> getIcon() {
-        return icon;
+    public @Nullable FontIcon<?> getIcon() {
+        return icon.get();
     }
 
-    /**
-     * Returns the immediate parent directory of this file, or the root directory if this file is
-     * a direct child of the root.
-     *
-     * @return the parent entry, never {@code null}
-     */
-    public DefaultStorageFile getParent() {
-        return buildParents(1).get(0);
+    @Override
+    public ReadOnlyObjectProperty<FontIcon<?>> iconProperty() {
+        return icon.getReadOnlyProperty();
     }
 
-    /**
-     * Returns all parent directories from the immediate parent up to and including the root.
-     *
-     * <p>Example: for a file with URI {@code /home/user/foo/bar}, returns:
-     * <pre>
-     * /home/user/foo/
-     * /home/user/
-     * /home/
-     * /  (root)
-     * </pre>
-     *
-     * @return ordered list of parents from immediate parent to root, never {@code null}, never empty
-     */
-    public List<DefaultStorageFile> getParents() {
-        return buildParents(Integer.MAX_VALUE);
+    @Override
+    public @Nullable IconTextStyle getStyle() {
+        return style.get();
     }
 
-    /**
-     * Creates a virtual child entry of this directory with the given name and entry type.
-     *
-     * <p>The child URI is resolved by appending {@code childName} to this entry's URI.
-     * The returned entry is always {@link StorageFile#isVirtual() virtual}.
-     *
-     * @param childName the name of the child entry
-     * @param childEntryType the structural entryType of the child entry
-     * @return a new virtual child entry, never {@code null}
-     */
-    public DefaultStorageFile getChild(String childName, FileEntryType childEntryType) {
-        var child = new DefaultStorageFile();
-        child.storage = this.storage;
-        child.entryType = childEntryType;
-        child.name = childName;
-        child.uri = UriUtils.resolvePath(this.uri, childName, childEntryType == FileEntryType.DIRECTORY);
-        child.virtual = true;
-        return child;
+    @Override
+    public ReadOnlyObjectProperty<IconTextStyle> styleProperty() {
+        return style.getReadOnlyProperty();
+    }
+
+    @Override
+    public FileState getState() {
+        return state;
     }
 
     @Override
@@ -291,6 +270,15 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     /**
+     * Sets whether this entry is the root directory of its storage.
+     *
+     * @param root {@code true} if this entry is the root directory
+     */
+    protected void setRoot(boolean root) {
+        this.root = root;
+    }
+
+    /**
      * Sets what this entry points to.
      *
      * @param link the target of a link entry, or {@code null} if this is not a link or the path it points
@@ -300,32 +288,20 @@ public class DefaultStorageFile implements StorageFile {
         this.link = link;
     }
 
-    /**
-     * Sets the icon representing this entry in the UI.
-     *
-     * @param icon the icon to display, must not be {@code null}
-     */
-    protected void setIcon(FontIcon<?> icon) {
-        this.icon = icon;
+    protected void setIcon(@Nullable FontIcon<?> icon) {
+        this.icon.set(icon);
     }
 
-    private List<DefaultStorageFile> buildParents(int limit) {
-        var rootUri = storage.getUri();
-        var segments = UriUtils.getPathSegments(rootUri, this.uri);
-        var parents = new ArrayList<DefaultStorageFile>(Math.min(segments.size(), limit));
-        for (int i = segments.size() - 1; i >= 1 && parents.size() < limit; i--) {
-            var parentUri = UriUtils.resolvePath(rootUri, String.join("/", segments.subList(0, i)), true);
-            var parent = new DefaultStorageFile();
-            parent.storage = this.storage;
-            parent.entryType = FileEntryType.DIRECTORY;
-            parent.name = segments.get(i - 1);
-            parent.uri = parentUri;
-            parent.virtual = true;
-            parents.add(parent);
-        }
-        if (parents.size() < limit) {
-            parents.add((DefaultStorageFile) storage.getRoot());
-        }
-        return parents;
+    /**
+     * Sets the style this file is shown with.
+     *
+     * @param style the style, or {@code null} to clear it
+     */
+    protected void setStyle(@Nullable IconTextStyle style) {
+        this.style.set(style);
+    }
+
+    protected void setState(FileState state) {
+        this.state = state;
     }
 }

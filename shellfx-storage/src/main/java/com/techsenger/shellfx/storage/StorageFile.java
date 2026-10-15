@@ -18,8 +18,9 @@ package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.storage.style.IconTextStyle;
 import java.net.URI;
-import java.util.Objects;
+import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
  * Represents a file or directory entry within a {@link FileStorage}.
@@ -111,12 +112,40 @@ public interface StorageFile {
     boolean isVirtual();
 
     /**
-     * Returns the icon representing this entry in the UI - either explicitly assigned, or resolved by the
-     * owning {@link #getStorage() storage} otherwise.
+     * Returns the icon representing this entry in the UI. The icon is set by whoever creates the file (for example,
+     * the {@link FileProvider}); the storage does not provide one.
      *
-     * @return the icon, never {@code null}
+     * @return the icon, or {@code null} if the creator of the file has not set one
      */
-    FontIcon<?> getIcon();
+    @Nullable FontIcon<?> getIcon();
+
+    /**
+     * Returns the property of the icon, which changes when the second loading phase rewrites it. It is changed on
+     * the UI thread once the file is shown, so the elements that show the file can observe it.
+     */
+    ReadOnlyObjectProperty<FontIcon<?>> iconProperty();
+
+    /**
+     * Returns the styles this entry is shown with. The style is set by whoever creates the file and by the client
+     * that restyles it, using the resolver of the storage of the file.
+     *
+     * @return the style, or {@code null} if the file has none, which clears the styles of the elements that show it
+     */
+    @Nullable IconTextStyle getStyle();
+
+    /**
+     * Returns the property of the style, which changes when the second loading phase or the client rewrites it. It
+     * is changed on the UI thread once the file is shown, so the elements that show the file can observe it.
+     */
+    ReadOnlyObjectProperty<IconTextStyle> styleProperty();
+
+    /**
+     * Returns how far this entry is in the two-phase loading. The second phase changes it on a background thread,
+     * so it is not observable: the elements that show the file observe its icon and style, which follow it.
+     *
+     * @return the state, {@link FileState#READY} for a file the {@link FileProvider} has not handled
+     */
+    FileState getState();
 
     /**
      * Returns {@code true} if this entry is a directory.
@@ -169,11 +198,10 @@ public interface StorageFile {
     }
 
     /**
-     * Returns {@code true} if this entry represents the root directory of its {@link FileStorage}.
+     * Returns {@code true} if this entry represents the root directory of its {@link FileStorage}. The flag is set
+     * by whoever creates the file, and it is the storage that creates its root.
      *
-     * @return {@code true} if this entry is a directory whose URI equals the storage root URI
+     * @return {@code true} if this entry is the root directory of its storage
      */
-    default boolean isRoot() {
-        return isDirectory() && Objects.equals(getUri(), getStorage().getUri());
-    }
+    boolean isRoot();
 }

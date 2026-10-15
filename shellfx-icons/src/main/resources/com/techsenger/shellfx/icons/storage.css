@@ -26,6 +26,22 @@
     src: url('font/techsenger-icons-mdi.ttf');
 }
 
+/*
+    Icons of the entries of a file storage: one icon for every entry type in every state of the file.
+
+    +-------------+-----------------------+---------------------------+-----------------------------+
+    | Entry type  | Normal                | Error                     | Pending                     |
+    +-------------+-----------------------+---------------------------+-----------------------------+
+    | DIRECTORY   | directory-icon        | error-directory-icon      | pending-directory-icon      |
+    | FILE        | file-icon             | error-file-icon           | pending-file-icon           |
+    | OTHER       | other-icon            | error-other-icon          | pending-other-icon          |
+    | DIR LINK    | directory-link-icon   | error-directory-link-icon | pending-directory-link-icon |
+    | FILE LINK   | file-link-icon        | error-file-link-icon      | pending-file-link-icon      |
+    | OTHER LINK  | other-link-icon       | error-other-link-icon     | pending-other-link-icon     |
+    +-------------+-----------------------+---------------------------+-----------------------------+
+
+*/
+
 .font-icon-view.disc-icon {
     -fx-icon-code: 984558; /* disc */
 }
@@ -52,6 +68,10 @@
     -fx-icon-code: 983588; /* file-outline */
 }
 
+.font-icon-view.other-icon {
+    -fx-icon-code: 984931; /* square-outline */
+}
+
 .font-icon-view.directory-link-icon {
     -fx-icon-code: 57351;
     -fx-icon-family: 'Techsenger Icons MDI';
@@ -63,7 +83,7 @@
 }
 
 .font-icon-view.other-link-icon {
-    -fx-icon-code: 57358;
+    -fx-icon-code: 57362;
     -fx-icon-family: 'Techsenger Icons MDI';
 }
 
@@ -77,6 +97,52 @@
     -fx-icon-family: 'Techsenger Icons MDI';
 }
 
-.font-icon-view.other-icon {
-    -fx-icon-code: 990254; /* file-star-four-points-outline */
+.font-icon-view.error-other-icon {
+    -fx-icon-code: 57360;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.error-directory-link-icon {
+    -fx-icon-code: 57367;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.error-file-link-icon {
+    -fx-icon-code: 57365;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.error-other-link-icon {
+    -fx-icon-code: 57363;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.pending-directory-icon {
+    -fx-icon-code: 57359;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.pending-file-icon {
+    -fx-icon-code: 57358;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.pending-other-icon {
+    -fx-icon-code: 57361;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.pending-directory-link-icon {
+    -fx-icon-code: 57368;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.pending-file-link-icon {
+    -fx-icon-code: 57366;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.pending-other-link-icon {
+    -fx-icon-code: 57364;
+    -fx-icon-family: 'Techsenger Icons MDI';
 }

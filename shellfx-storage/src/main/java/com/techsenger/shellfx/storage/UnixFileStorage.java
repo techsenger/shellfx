@@ -16,6 +16,10 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
+import com.techsenger.shellfx.storage.style.StorageIconResolver;
+import com.techsenger.shellfx.storage.style.StorageStyleResolver;
+import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
 import java.net.URI;
@@ -50,17 +54,15 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
     public static List<FileStorage<StorageFile>> createSystemStorages(
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
-        // the links of a storage may point into any other one of the list
-        FileResolver<StorageFile> externalFileResolver = new DefaultFileResolver<>(() -> result);
         FileSystemView fsv = FileSystemView.getFileSystemView();
         FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
-            @SuppressWarnings("unchecked")
-            var storage = (FileStorage<StorageFile>) (FileStorage<?>) new UnixFileStorage<>(
+            FileStorage<StorageFile> storage = new UnixFileStorage<>(
                     FileStorageType.BASE,
                     fsv.getSystemDisplayName(rootPath.toFile()),
                     rootPath.toUri(),
                     fileFactory,
-                    externalFileResolver);
+                    new DefaultStorageIconResolver(FileStorageType.BASE),
+                    new DefaultStorageStyleResolver());
             result.add(storage);
         });
         return result;
@@ -69,8 +71,9 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
     private final boolean posixSupported;
 
     public UnixFileStorage(FileStorageType type, String name, URI rootUri,
-            Factory<? extends DefaultStorageFile> fileFactory, FileResolver<T> externalFileResolver) {
-        super(type, name, rootUri, fileFactory, externalFileResolver);
+            Factory<? extends DefaultStorageFile> fileFactory, StorageIconResolver iconResolver,
+            StorageStyleResolver styleResolver) {
+        super(type, name, rootUri, fileFactory, iconResolver, styleResolver);
         this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
     }
 

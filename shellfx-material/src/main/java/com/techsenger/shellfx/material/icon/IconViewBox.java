@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.material.icon;
 
+import com.techsenger.annotations.Nullable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
@@ -24,6 +25,8 @@ import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 
 /**
+ * An {@link HBox} that shows the view of the given icon. The icon is optional: a box without an icon
+ * ({@code null}) is empty and gets the {@code empty} pseudo class.
  *
  * @author Pavel Castornii
  */
@@ -31,13 +34,13 @@ public class IconViewBox extends HBox {
 
     private static final PseudoClass EMPTY_PSEUDO_CLASS = PseudoClass.getPseudoClass("empty");
 
-    private final ObjectProperty<Icon<?>> icon = new SimpleObjectProperty<>();
+    private final ObjectProperty<@Nullable Icon<?>> icon = new SimpleObjectProperty<>();
 
     public IconViewBox() {
         this(null);
     }
 
-    public IconViewBox(Icon<?> i) {
+    public IconViewBox(@Nullable Icon<?> i) {
         getChildren().addListener((ListChangeListener<Node>) change -> {
             pseudoClassStateChanged(EMPTY_PSEUDO_CLASS, getChildren().isEmpty());
         });
@@ -60,15 +63,15 @@ public class IconViewBox extends HBox {
         setIcon(i);
     }
 
-    public Icon<?> getIcon() {
+    public @Nullable Icon<?> getIcon() {
         return icon.get();
     }
 
-    public void setIcon(Icon<?> icon) {
+    public void setIcon(@Nullable Icon<?> icon) {
         this.icon.set(icon);
     }
 
-    public ObjectProperty<Icon<?>> iconProperty() {
+    public ObjectProperty<@Nullable Icon<?>> iconProperty() {
         return icon;
     }
 }

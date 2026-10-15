@@ -16,19 +16,22 @@
 
 package com.techsenger.shellfx.material.icon;
 
+import com.techsenger.annotations.Nullable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.ImageView;
 
 /**
+ * An {@link ImageView} that shows an image icon. The icon is optional: a view without an icon ({@code null})
+ * shows nothing.
  *
  * @author Pavel Castornii
  */
 public class ImageIconView extends ImageView {
 
-    private final ObjectProperty<ImageIcon<?>> icon = new SimpleObjectProperty<>();
+    private final ObjectProperty<@Nullable ImageIcon<?>> icon = new SimpleObjectProperty<>();
 
-    public ImageIconView(ImageIcon<?> icon) {
+    public ImageIconView(@Nullable ImageIcon<?> icon) {
         this();
         setIcon(icon);
     }
@@ -54,15 +57,15 @@ public class ImageIconView extends ImageView {
         });
     }
 
-    public ObjectProperty<ImageIcon<?>> iconProperty() {
+    public ObjectProperty<@Nullable ImageIcon<?>> iconProperty() {
         return this.icon;
     }
 
-    public ImageIcon<?> getIcon() {
+    public @Nullable ImageIcon<?> getIcon() {
         return this.icon.get();
     }
 
-    public void setIcon(ImageIcon<?> icon) {
+    public void setIcon(@Nullable ImageIcon<?> icon) {
         this.icon.set(icon);
     }
 

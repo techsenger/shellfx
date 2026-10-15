@@ -59,5 +59,8 @@ public interface DialogsDialogComposer extends WindowComposer {
 
     FileChooserDialogPort<StorageFile> openFileChooserDialog(FileChooserDialogParams<StorageFile> params);
 
+    FileChooserDialogPort<StorageFile> openDemoFileChooserDialog(FileChooserDialogParams<StorageFile> params,
+            DemoFileStorage demoStorage);
+
     DialogPort openPagedDialog(PageDialogParams params);
 }

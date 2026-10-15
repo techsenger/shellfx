@@ -36,6 +36,8 @@ public interface StorageIcons {
 
     StyleFontIcon FILE = new StyleFontIcon("file-icon");
 
+    StyleFontIcon OTHER = new StyleFontIcon("other-icon");
+
     StyleFontIcon DIRECTORY_LINK = new StyleFontIcon("directory-link-icon");
 
     StyleFontIcon FILE_LINK = new StyleFontIcon("file-link-icon");
@@ -46,5 +48,23 @@ public interface StorageIcons {
 
     StyleFontIcon ERROR_FILE = new StyleFontIcon("error-file-icon");
 
-    StyleFontIcon OTHER = new StyleFontIcon("other-icon");
+    StyleFontIcon ERROR_OTHER = new StyleFontIcon("error-other-icon");
+
+    StyleFontIcon ERROR_DIRECTORY_LINK = new StyleFontIcon("error-directory-link-icon");
+
+    StyleFontIcon ERROR_FILE_LINK = new StyleFontIcon("error-file-link-icon");
+
+    StyleFontIcon ERROR_OTHER_LINK = new StyleFontIcon("error-other-link-icon");
+
+    StyleFontIcon PENDING_DIRECTORY = new StyleFontIcon("pending-directory-icon");
+
+    StyleFontIcon PENDING_FILE = new StyleFontIcon("pending-file-icon");
+
+    StyleFontIcon PENDING_OTHER = new StyleFontIcon("pending-other-icon");
+
+    StyleFontIcon PENDING_DIRECTORY_LINK = new StyleFontIcon("pending-directory-link-icon");
+
+    StyleFontIcon PENDING_FILE_LINK = new StyleFontIcon("pending-file-link-icon");
+
+    StyleFontIcon PENDING_OTHER_LINK = new StyleFontIcon("pending-other-link-icon");
 }

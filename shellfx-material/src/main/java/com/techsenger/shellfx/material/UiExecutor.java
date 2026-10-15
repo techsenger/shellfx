@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core;
+package com.techsenger.shellfx.material;
 
 import java.util.concurrent.Executor;
 import javafx.application.Platform;

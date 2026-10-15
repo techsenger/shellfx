@@ -23,7 +23,6 @@ import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.MODAL;
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.POPUP;
 import static com.techsenger.connectorfx.scenegraph.WindowProperties.WindowType.STAGE;
-import com.techsenger.shellfx.core.UiExecutor;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.tab.AbstractTabViewModel;
@@ -31,6 +30,7 @@ import com.techsenger.shellfx.devtools.DevToolsTabDockPort;
 import com.techsenger.shellfx.devtools.ElementUtils;
 import com.techsenger.shellfx.devtools.shared.ToolBarAwarePort;
 import com.techsenger.shellfx.devtools.shared.TotalFindResult;
+import com.techsenger.shellfx.material.UiExecutor;
 import com.techsenger.shellfx.shared.find.FindResult;
 import java.util.ArrayList;
 import java.util.List;

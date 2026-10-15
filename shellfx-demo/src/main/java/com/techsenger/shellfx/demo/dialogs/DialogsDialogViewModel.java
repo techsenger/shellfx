@@ -16,7 +16,6 @@
 
 package com.techsenger.shellfx.demo.dialogs;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.close.CloseCheckResult;
 import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.config.ConfigManager;
@@ -33,6 +32,7 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogButtons;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogConfig;
 import com.techsenger.shellfx.dialogs.file.FileChooserDialogParams;
+import com.techsenger.shellfx.dialogs.file.FileChooserDialogPort;
 import com.techsenger.shellfx.dialogs.file.FileChooserType;
 import com.techsenger.shellfx.dialogs.namevalue.NameValueButtons;
 import com.techsenger.shellfx.dialogs.progress.ProgressDialogConfig;
@@ -45,16 +45,18 @@ import com.techsenger.shellfx.dialogs.text.TextDialogConfig;
 import com.techsenger.shellfx.dialogs.text.TextDialogParams;
 import com.techsenger.shellfx.dialogs.text.TextsDialogConfig;
 import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
-import com.techsenger.shellfx.material.theme.Theme;
+import com.techsenger.shellfx.storage.DefaultFileProvider;
 import com.techsenger.shellfx.storage.DefaultStorageFile;
 import com.techsenger.shellfx.storage.FileStorage;
-import com.techsenger.shellfx.storage.FileStyleResolver;
-import com.techsenger.shellfx.storage.IconTextStyle;
+import com.techsenger.shellfx.storage.settings.FileStyleDefaults;
+import com.techsenger.shellfx.storage.style.DefaultFileIconResolver;
+import com.techsenger.shellfx.storage.style.DefaultFileStyleResolver;
+import com.techsenger.shellfx.storage.style.FileStyleResolver;
+import com.techsenger.shellfx.storage.RefinedFieldSortPolicy;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UnixFileStorage;
 import com.techsenger.shellfx.storage.WindowsFileStorage;
 import com.techsenger.toolkit.core.os.OsUtils;
-import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -66,39 +68,6 @@ import javafx.beans.property.SimpleObjectProperty;
  * @author Pavel Castornii
  */
 public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends AbstractDialogViewModel<C> {
-
-    private static @Nullable IconTextStyle resolveFileStyle(Theme theme, StorageFile file) {
-        if (file.isRoot()) {
-            return file.getStorage().createRootStyle(theme);
-        }
-        var palette = theme.getPalette();
-        var iconColor = palette.getDefaultFgColor();
-        var textColor = palette.getDefaultFgColor();
-        // a link is shown like the file it points to, a broken one like a plain file
-        var link = file.getLink();
-        var target = link == null ? null : link.getTarget();
-        var styled = target != null ? target : file;
-        if (styled.isDirectory()) {
-            if (theme.isDark()) {
-                iconColor = palette.getWarning2Color();
-            } else {
-                iconColor = palette.getWarning6Color();
-            }
-        }
-        if (file.isHidden()) {
-            iconColor = ColorUtils.toArgb(180, iconColor);
-            textColor = ColorUtils.toArgb(180, textColor);
-        }
-        return new IconTextStyle(iconStyle(iconColor), textStyle(textColor));
-    }
-
-    private static String iconStyle(int color) {
-        return "-fx-fill: " + ColorUtils.toCssRgba(color) + ";";
-    }
-
-    private static String textStyle(int color) {
-        return "-fx-text-fill: " + ColorUtils.toCssRgba(color) + ";";
-    }
 
     private final ObjectProperty<WindowType> selectedWindowType = new SimpleObjectProperty<>();
 
@@ -182,10 +151,9 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
                 dialog.setCurrentStep(3);
                 dialog.setProgress(0.3);
             }),
-            Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN, null)),
-            Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS, null)),
-            Map.entry(DialogType.OPEN_FILE_HIGHLIGHTED, () -> showFileChooserDialog(FileChooserType.OPEN,
-                    (f) -> resolveFileStyle(getSettings().getTheme(), f))),
+            Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
+            Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
+            Map.entry(DialogType.SAVE_FILE_PROVIDER, () -> showFileProviderChooserDialog()),
             Map.entry(DialogType.PAGE, () -> showPagedDialog(PageMenuType.FLAT)),
             Map.entry(DialogType.TREE_PAGE, () -> showPagedDialog(PageMenuType.TREE))
     );
@@ -232,12 +200,36 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         return settings;
     }
 
-    private void showFileChooserDialog(FileChooserType type, @Nullable FileStyleResolver<StorageFile> resolver) {
+    private FileStyleResolver<StorageFile> createFileStyleResolver() {
+        return new DefaultFileStyleResolver<>(FileStyleDefaults::getScheme);
+    }
+
+    private void showFileChooserDialog(FileChooserType type) {
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
         var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), settings,
-                type, this.storages);
-        var dialog = getComposer().openFileChooserDialog(params);
-        dialog.setStyleResolver(resolver);
+                type, () -> new DefaultFileProvider<>(this.storages,
+                        new DefaultFileIconResolver<>(), createFileStyleResolver(), settings::getTheme));
+        handleFileChooserResult(getComposer().openFileChooserDialog(params));
+    }
+
+    /**
+     * Shows a chooser over the demo storage, whose files are listed in the first phase, five of them not ready. The
+     * button of the dialog starts the second phase, and the files are sorted again after it.
+     */
+    private void showFileProviderChooserDialog() {
+        var demoStorage = new DemoFileStorage();
+        List<FileStorage<StorageFile>> demoStorages = List.of(demoStorage);
+        var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
+        var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), settings,
+                FileChooserType.SAVE_AS, () -> new DemoFileProvider(demoStorages,
+                        new DefaultFileIconResolver<>(), createFileStyleResolver(), settings::getTheme));
+        params.setRefinedFieldSortPolicy(RefinedFieldSortPolicy.AFTER_EACH_PHASE);
+        // the demo storage is a network one, so the dialog does not pick it as the local default
+        params.setInitialDirectory(demoStorage.getUri());
+        handleFileChooserResult(getComposer().openDemoFileChooserDialog(params, demoStorage));
+    }
+
+    private void handleFileChooserResult(FileChooserDialogPort<StorageFile> dialog) {
         dialog.setOnResult((buttonName) -> {
             if (buttonName == FileChooserDialogButtons.OK) {
                 var result = dialog.getResult();
