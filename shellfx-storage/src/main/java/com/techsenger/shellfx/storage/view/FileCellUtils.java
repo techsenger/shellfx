@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.view;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIconView;
+import com.techsenger.shellfx.storage.StorageFile;
 import javafx.scene.control.Labeled;
 
 /**

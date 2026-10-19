@@ -16,37 +16,63 @@
 
 package com.techsenger.shellfx.storage;
 
-import com.techsenger.shellfx.material.icon.FontIcon;
-import com.techsenger.shellfx.material.UiExecutor;
-import com.techsenger.shellfx.material.theme.Theme;
-import com.techsenger.shellfx.storage.style.FileIconResolver;
-import com.techsenger.shellfx.storage.style.FileStyleResolver;
-import com.techsenger.shellfx.storage.style.IconTextStyle;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.NoSuchFileException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The default provider: refines the links whose target lies in another storage, and gives every file the icon and the
- * style that its resolvers determine. The files of a network storage are refined in the second phase; the
- * files of any other storage are refined at once, in the first. A subclass refines more by overriding
- * {@link #isRefinable} and {@link #refine}.
+ * The default provider: finds the targets of the links, which may lie in another storage, and gives every file its
+ * state. The links of a storage that is not a network one are resolved in the first phase, while those of a network
+ * storage are refined in the second. A subclass completes more in the first phase by overriding {@link #prepare}, and
+ * refines more in the second by overriding {@link #isRefinable} and {@link #refine}.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
  */
 public class DefaultFileProvider<F extends StorageFile> implements FileProvider<F> {
+
+    @FunctionalInterface
+    private interface Loader<R> {
+
+        R load() throws IOException;
+    }
+
+    private static final class Task implements FileProviderTask {
+
+        private final AtomicBoolean finished = new AtomicBoolean();
+
+        private volatile boolean cancelled;
+
+        @Override
+        public void cancel() {
+            this.cancelled = true;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return cancelled;
+        }
+
+        /**
+         * Gives the end of the operation to the callback, unless some other call has done it already.
+         */
+        void finish(Consumer<FileProviderResult> onFinished, FileProviderResult result) {
+            if (finished.compareAndSet(false, true)) {
+                onFinished.accept(result);
+            }
+        }
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFileProvider.class);
 
@@ -54,29 +80,14 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
 
     private final List<? extends FileStorage<F>> storages;
 
-    private final FileIconResolver<? super F> iconResolver;
-
-    private final FileStyleResolver<? super F> styleResolver;
-
-    private final Supplier<Theme> themeSupplier;
-
-    private final AtomicLong generation = new AtomicLong();
-
     /**
      * Creates a provider that finds the targets of the links that end in another storage.
      *
      * @param storages the storages a link may end in; they are not tracked, so the provider uses the ones it was
      *     given
-     * @param iconResolver determines the icon of every file the provider returns
-     * @param styleResolver determines the style of every file the provider returns
-     * @param themeSupplier gives the current theme the files are styled for
      */
-    public DefaultFileProvider(List<? extends FileStorage<F>> storages, FileIconResolver<? super F> iconResolver,
-            FileStyleResolver<? super F> styleResolver, Supplier<Theme> themeSupplier) {
+    public DefaultFileProvider(List<? extends FileStorage<F>> storages) {
         this.storages = List.copyOf(storages);
-        this.iconResolver = iconResolver;
-        this.styleResolver = styleResolver;
-        this.themeSupplier = themeSupplier;
     }
 
     @Override
@@ -85,36 +96,62 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
     }
 
     @Override
-    public List<F> getFiles(FileStorage<F> storage, URI uri, OperationType operationType) throws IOException {
-        cancelRefinement();
-        var files = storage.getFiles(uri, operationType);
-        assembleFiles(storage, files);
-        return files;
+    public FileProviderTask getFilesAsync(FileStorage<F> storage, URI uri, OperationType operationType,
+            Consumer<List<F>> onLoaded, Consumer<FileProviderResult> onFinished) {
+        return loadAsync("files at " + uri, () -> {
+            var files = storage.getFiles(uri, operationType);
+            files.forEach(file -> assembleListed(storage, file));
+            return files;
+        }, onLoaded, onFinished);
     }
 
     @Override
-    public F getRoot(FileStorage<F> storage) {
-        var root = storage.getRoot();
-        assembleFiles(storage, List.of(root));
-        return root;
+    public FileProviderTask getFileAsync(FileStorage<F> storage, URI uri, OperationType operationType,
+            Consumer<F> onLoaded, Consumer<FileProviderResult> onFinished) {
+        return loadAsync("file at " + uri, () -> {
+            var file = storage.getFile(uri, operationType);
+            assembleListed(storage, file);
+            return file;
+        }, onLoaded, onFinished);
     }
 
     @Override
-    public List<F> getHierarchy(FileStorage<F> storage, URI uri, OperationType operationType)
-            throws IOException {
-        var files = storage.getHierarchy(uri, operationType);
-        assembleFiles(storage, files);
-        return files;
+    public FileProviderTask getHierarchyAsync(FileStorage<F> storage, URI uri, OperationType operationType,
+            Consumer<List<F>> onLoaded, Consumer<FileProviderResult> onFinished) {
+        return loadAsync("hierarchy at " + uri, () -> {
+            var files = storage.getHierarchy(uri, operationType);
+            files.forEach(file -> assembleListed(storage, file));
+            return files;
+        }, onLoaded, onFinished);
     }
 
     @Override
-    public void assembleFiles(FileStorage<F> storage, List<F> files) {
-        files.forEach(file -> assembleListed(storage, file));
+    public FileProviderTask getRootAsync(FileStorage<F> storage, Consumer<F> onLoaded,
+            Consumer<FileProviderResult> onFinished) {
+        return loadAsync("root of " + storage.getUri(), () -> {
+            var root = storage.getRoot();
+            assembleListed(storage, root);
+            return root;
+        }, onLoaded, onFinished);
     }
 
     @Override
-    public void refineFilesAsync(List<F> files, Runnable onFinished) {
-        var token = generation.incrementAndGet();
+    public FileProviderTask getRootsAsync(Consumer<List<F>> onLoaded, Consumer<FileProviderResult> onFinished) {
+        return loadAsync("roots", () -> {
+            List<F> roots = new ArrayList<>();
+            for (FileStorage<F> storage : storages) {
+                var root = storage.getRoot();
+                assembleListed(storage, root);
+                roots.add(root);
+            }
+            return roots;
+        }, onLoaded, onFinished);
+    }
+
+    @Override
+    public FileProviderTask refineFilesAsync(List<F> files, Consumer<F> onRefined,
+            Consumer<FileProviderResult> onFinished) {
+        var task = new Task();
         Map<FileStorage<?>, Queue<F>> queuesByStorage = new HashMap<>();
         var total = 0;
         for (var file : files) {
@@ -127,38 +164,100 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
         for (var queue : queuesByStorage.values()) {
             var workers = Math.min(WORKERS_PER_STORAGE, queue.size());
             for (var i = 0; i < workers; i++) {
-                Thread.startVirtualThread(() -> refineQueue(queue, token, remaining, onFinished));
+                Thread.startVirtualThread(() -> refineQueue(queue, task, remaining, onRefined, onFinished));
             }
         }
-    }
-
-    @Override
-    public void cancelRefinement() {
-        generation.incrementAndGet();
+        return task;
     }
 
     /**
-     * Tells whether the second phase has to refine the file, which is then shown as pending until it is done. The
-     * default is a link whose target is not known yet but whose resolved URI is. A subclass that refines more
-     * overrides this together with {@link #refine} and keeps the answer of the superclass.
+     * Completes a file listed in the first phase, on the calling thread, before it is asked whether it needs the
+     * second phase. The default finds the target of a link of a storage that is not a network one, which is quick. A
+     * subclass gives the file in the same way whatever else it can tell at once, and keeps what the superclass does.
      *
+     * @param storage the storage that holds the file
      * @param file the file listed in the first phase
+     * @throws IOException if the file can't be completed, which makes the file failed
+     */
+    protected void prepare(FileStorage<F> storage, F file) throws IOException {
+        if (storage.getType() != FileStorageType.NETWORK && isLinkUnresolved(file)) {
+            resolveLink(file);
+        }
+    }
+
+    /**
+     * Tells whether the file needs the second phase, which refines it in the background and shows it as pending until
+     * it is done. The default is a link of a network storage whose target is not known yet. A subclass that refines
+     * more overrides this together with {@link #refine} and keeps the answer of the superclass.
+     *
+     * @param storage the storage that holds the file
+     * @param file the file listed in the first phase, after {@link #prepare}
      * @return {@code true} if {@link #refine} has to be called for the file
      */
-    protected boolean isRefinable(F file) {
-        var link = file.getLink();
-        return link != null && link.getTarget() == null && link.getResolvedUri() != null;
+    protected boolean isRefinable(FileStorage<F> storage, F file) {
+        return storage.getType() == FileStorageType.NETWORK && isLinkUnresolved(file);
     }
 
     /**
      * Refines the file that {@link #isRefinable} accepted, on a background thread; it may be slow. The default gets
-     * the target of a link from the storage that holds the resolved URI, which may not be the storage of the link;
-     * the link stays broken if no storage holds it or nothing exists there.
+     * the target of a link.
      *
      * @param file the file to refine
      * @throws IOException if the file can't be refined, which makes the file failed
      */
     protected void refine(F file) throws IOException {
+        resolveLink(file);
+    }
+
+    /**
+     * Tells whether the file is a link whose target is not known yet but whose resolved URI is.
+     *
+     * @param file the file
+     * @return {@code true} if the target of the link is to be found
+     */
+    protected boolean isLinkUnresolved(F file) {
+        var link = file.getLink();
+        return link != null && link.getTarget() == null && link.getResolvedUri() != null;
+    }
+
+    /**
+     * Writes the state to the file. The default works on {@link DefaultStorageFile}; a subclass whose files are of
+     * another class overrides it to write the state its own way.
+     *
+     * @param file the file to write to
+     * @param state the state of the file
+     * @throws IllegalArgumentException if the provider can't write to the file
+     */
+    protected void setState(F file, FileState state) {
+        toDefaultFile(file).setState(state);
+    }
+
+    private DefaultStorageFile toDefaultFile(F file) {
+        if (!(file instanceof DefaultStorageFile defaultFile)) {
+            throw new IllegalArgumentException("The provider can only write to DefaultStorageFile: " + file);
+        }
+        return defaultFile;
+    }
+
+    private void assembleListed(FileStorage<F> storage, F file) {
+        var state = FileState.READY;
+        try {
+            prepare(storage, file);
+            if (isRefinable(storage, file)) {
+                state = FileState.PENDING;
+            }
+        } catch (IOException | RuntimeException ex) {
+            logger.error("Couldn't prepare the file {}", file.getUri(), ex);
+            state = FileState.FAILED;
+        }
+        setState(file, state);
+    }
+
+    /**
+     * Gets the target of a link from the storage that holds the resolved URI, which may not be the storage of the
+     * link; the link stays broken if no storage holds it or nothing exists there.
+     */
+    private void resolveLink(F file) throws IOException {
         var link = file.getLink();
         var resolvedUri = link == null ? null : link.getResolvedUri();
         if (resolvedUri == null || !(link instanceof DefaultEntryLink defaultLink)) {
@@ -177,67 +276,32 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
     }
 
     /**
-     * Gives the file its state, and the icon and style that the resolvers determine for it in that state. It is
-     * for the files that nobody observes yet, so everything is written on the calling thread.
-     *
-     * @param file the file to assemble
-     * @param state the state the file is in now
+     * Loads on a background thread and gives the result, unless the task has been cancelled by then.
      */
-    protected void assemble(F file, FileState state) {
-        assemble(file, state, Runnable::run);
-    }
-
-    /**
-     * Writes the state to the file. The default works on {@link DefaultStorageFile}; a subclass whose files are of
-     * another class overrides it to write the state its own way.
-     *
-     * @param file the file to write to
-     * @param state the state of the file
-     * @throws IllegalArgumentException if the provider can't write to the file
-     */
-    protected void setState(F file, FileState state) {
-        toDefaultFile(file).setState(state);
-    }
-
-    /**
-     * Writes the icon to the file. The default works on {@link DefaultStorageFile}; a subclass whose files are of
-     * another class overrides it to write the icon its own way.
-     *
-     * @param file the file to write to
-     * @param icon the icon of the file
-     * @throws IllegalArgumentException if the provider can't write to the file
-     */
-    protected void setIcon(F file, FontIcon<?> icon) {
-        toDefaultFile(file).setIcon(icon);
-    }
-
-    /**
-     * Writes the style to the file. The default works on {@link DefaultStorageFile}; a subclass whose files are of
-     * another class overrides it to write the style its own way.
-     *
-     * @param file the file to write to
-     * @param style the style of the file
-     * @throws IllegalArgumentException if the provider can't write to the file
-     */
-    protected void setStyle(F file, IconTextStyle style) {
-        toDefaultFile(file).setStyle(style);
-    }
-
-    private DefaultStorageFile toDefaultFile(F file) {
-        if (!(file instanceof DefaultStorageFile defaultFile)) {
-            throw new IllegalArgumentException("The provider can only write to DefaultStorageFile: " + file);
-        }
-        return defaultFile;
-    }
-
-    private void assembleListed(FileStorage<F> storage, F file) {
-        if (!isRefinable(file)) {
-            assemble(file, FileState.READY);
-        } else if (storage.getType() == FileStorageType.NETWORK) {
-            assemble(file, FileState.PENDING);
-        } else {
-            assemble(file, tryRefine(file) ? FileState.READY : FileState.FAILED);
-        }
+    private <R> FileProviderTask loadAsync(String what, Loader<R> loader, Consumer<R> onLoaded,
+            Consumer<FileProviderResult> onFinished) {
+        var task = new Task();
+        Thread.startVirtualThread(() -> {
+            if (task.isCancelled()) {
+                task.finish(onFinished, FileProviderResult.CANCELLED);
+                return;
+            }
+            R result;
+            try {
+                result = loader.load();
+            } catch (IOException | RuntimeException ex) {
+                logger.error("Error getting {}", what, ex);
+                task.finish(onFinished, FileProviderResult.FAILED);
+                return;
+            }
+            if (task.isCancelled()) {
+                task.finish(onFinished, FileProviderResult.CANCELLED);
+                return;
+            }
+            onLoaded.accept(result);
+            task.finish(onFinished, FileProviderResult.SUCCESS);
+        });
+        return task;
     }
 
     private boolean tryRefine(F file) {
@@ -250,40 +314,27 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
         }
     }
 
-    /**
-     * Writes the state at once and resolves the icon and style for it on the calling thread, then lets the publisher
-     * write them, so that the publisher decides where the observable properties of the file are changed.
-     */
-    private void assemble(F file, FileState state, Executor publisher) {
-        setState(file, state);
-        var icon = iconResolver.resolve(file);
-        var style = styleResolver.resolve(file, themeSupplier.get());
-        publisher.execute(() -> {
-            setIcon(file, icon);
-            setStyle(file, style);
-        });
-    }
-
-    private void refineQueue(Queue<F> queue, long token, AtomicInteger remaining, Runnable onFinished) {
-        while (generation.get() == token) {
+    private void refineQueue(Queue<F> queue, Task task, AtomicInteger remaining, Consumer<F> onRefined,
+            Consumer<FileProviderResult> onFinished) {
+        while (true) {
+            if (task.isCancelled()) {
+                task.finish(onFinished, FileProviderResult.CANCELLED);
+                return;
+            }
             var file = queue.poll();
             if (file == null) {
                 return;
             }
             var refined = tryRefine(file);
-            if (generation.get() != token) {
+            if (task.isCancelled()) {
+                task.finish(onFinished, FileProviderResult.CANCELLED);
                 return;
             }
-            // the file is shown by now, so its icon and style are written on the UI thread, where their observers are
-            assemble(file, refined ? FileState.READY : FileState.FAILED, task -> UiExecutor.execute(() -> {
-                if (generation.get() != token) {
-                    return;
-                }
-                task.run();
-                if (remaining.decrementAndGet() == 0) {
-                    onFinished.run();
-                }
-            }));
+            setState(file, refined ? FileState.READY : FileState.FAILED);
+            onRefined.accept(file);
+            if (remaining.decrementAndGet() == 0) {
+                task.finish(onFinished, FileProviderResult.SUCCESS);
+            }
         }
     }
 }

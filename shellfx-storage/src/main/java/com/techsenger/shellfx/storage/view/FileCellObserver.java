@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.view;
 
 import java.util.Arrays;
 import javafx.beans.value.ChangeListener;

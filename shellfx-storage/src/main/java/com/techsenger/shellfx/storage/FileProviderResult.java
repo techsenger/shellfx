@@ -16,29 +16,25 @@
 
 package com.techsenger.shellfx.storage;
 
-import javafx.util.StringConverter;
-
-
 /**
+ * How an asynchronous operation of a {@link FileProvider} ended.
  *
  * @author Pavel Castornii
  */
-public class FileStringConverter<F extends StorageFile> extends StringConverter<F> {
+public enum FileProviderResult {
 
     /**
-     * It is supposed that toString is called always before fromString.
+     * The operation has given all its data.
      */
-    private F file;
+    SUCCESS,
 
-    @Override
-    public String toString(F object) {
-        this.file = object;
-        return object != null ? object.getName() : "";
-    }
+    /**
+     * The operation failed, which the provider has logged.
+     */
+    FAILED,
 
-    @Override
-    public F fromString(String string) {
-        ((DefaultStorageFile) file).setName(string);
-        return file;
-    }
+    /**
+     * The operation was cancelled before it ended.
+     */
+    CANCELLED
 }

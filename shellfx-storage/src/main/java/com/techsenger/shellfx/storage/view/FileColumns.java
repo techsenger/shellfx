@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.view;
+
+import com.techsenger.shellfx.material.table.TableColumnName;
 
 /**
  *
  * @author Pavel Castornii
  */
-public final class FileViewConstants {
+public enum FileColumns implements TableColumnName {
 
-    public static final double HIDDEN_FILE_OPACITY = 0.5;
+    NAME("Name"), SIZE("Size"), LAST_MODIFIED("Last Modified");
 
-    private FileViewConstants() {
-        // empty
+    private final String text;
+
+    FileColumns(String text) {
+        this.text = text;
+    }
+
+    @Override
+    public String getText() {
+        return this.text;
     }
 }

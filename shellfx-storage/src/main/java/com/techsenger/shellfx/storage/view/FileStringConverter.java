@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.view;
 
-import com.techsenger.shellfx.material.table.TableColumnName;
+import com.techsenger.shellfx.storage.DefaultStorageFile;
+import com.techsenger.shellfx.storage.StorageFile;
+import javafx.util.StringConverter;
 
 /**
  *
  * @author Pavel Castornii
  */
-public enum FileColumns implements TableColumnName {
+public class FileStringConverter<F extends StorageFile> extends StringConverter<F> {
 
-    NAME("Name"), SIZE("Size"), LAST_MODIFIED("Last Modified");
+    /**
+     * It is supposed that toString is called always before fromString.
+     */
+    private F file;
 
-    private final String text;
-
-    FileColumns(String text) {
-        this.text = text;
+    @Override
+    public String toString(F object) {
+        this.file = object;
+        return object != null ? object.getName() : "";
     }
 
     @Override
-    public String getText() {
-        return this.text;
+    public F fromString(String string) {
+        ((DefaultStorageFile) file).setName(string);
+        return file;
     }
 }

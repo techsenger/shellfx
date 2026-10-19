@@ -19,10 +19,19 @@ package com.techsenger.shellfx.dialogs.file;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.storage.FileProviderFactory;
-import com.techsenger.shellfx.storage.RefinedFieldSortPolicy;
+import com.techsenger.shellfx.storage.DefaultFileDecorator;
+import com.techsenger.shellfx.storage.DefaultFileProvider;
+import com.techsenger.shellfx.storage.FileDecorator;
+import com.techsenger.shellfx.storage.FileProvider;
+import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.TwoPhaseSortPolicy;
+import com.techsenger.shellfx.storage.settings.FileStyleDefaults;
+import com.techsenger.shellfx.storage.settings.FileStyleScheme;
+import com.techsenger.shellfx.storage.style.DefaultFileIconResolver;
+import com.techsenger.shellfx.storage.style.DefaultFileStyleResolver;
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -33,9 +42,12 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
 
     private final FileChooserType chooserType;
 
-    private final FileProviderFactory<T> fileProviderFactory;
+    private FileProvider<T> fileProvider;
 
-    private RefinedFieldSortPolicy refinedFieldSortPolicy = RefinedFieldSortPolicy.ON_REQUEST;
+    private FileDecorator<T> fileDecorator = new DefaultFileDecorator<T>(new DefaultFileIconResolver<T>(),
+            new DefaultFileStyleResolver<T, FileStyleScheme>(FileStyleDefaults::getScheme));
+
+    private TwoPhaseSortPolicy twoPhaseSortPolicy = TwoPhaseSortPolicy.ON_REQUEST;
 
     private URI initialDirectory;
 
@@ -48,36 +60,58 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
      * @param windowType the type of the window
      * @param settings the appearance settings
      * @param chooserType the type of the chooser
-     * @param fileProviderFactory the factory of the providers of the files, which also give the storages the user
-     *     can choose files from; the dialog asks it for a provider of its own for each list it shows
+     * @param storages the storages the user can choose files from
      */
     public FileChooserDialogParams(FileChooserDialogConfig config, WindowType windowType, AppearanceSettings settings,
-            FileChooserType chooserType, FileProviderFactory<T> fileProviderFactory) {
+            FileChooserType chooserType, List<? extends FileStorage<T>> storages) {
         super(config, windowType, settings);
         this.chooserType = chooserType;
-        this.fileProviderFactory = fileProviderFactory;
+        this.fileProvider = new DefaultFileProvider<T>(storages);
     }
 
     public FileChooserType getChooserType() {
         return chooserType;
     }
 
-    public FileProviderFactory<T> getFileProviderFactory() {
-        return fileProviderFactory;
-    }
-
-    public RefinedFieldSortPolicy getRefinedFieldSortPolicy() {
-        return refinedFieldSortPolicy;
+    public FileProvider<T> getFileProvider() {
+        return fileProvider;
     }
 
     /**
-     * Sets when the files are sorted automatically if a second phase refines them, which only the files of a network
-     * storage have. It can't be changed once the dialog is opened.
+     * Sets the provider that loads the files, for all the lists the dialog shows. It can't be changed once the dialog
+     * is opened.
      *
-     * @param refinedFieldSortPolicy the policy, {@code ON_REQUEST} by default
+     * @param fileProvider the provider, a {@link DefaultFileProvider} over the storages by default
      */
-    public void setRefinedFieldSortPolicy(RefinedFieldSortPolicy refinedFieldSortPolicy) {
-        this.refinedFieldSortPolicy = refinedFieldSortPolicy;
+    public void setFileProvider(FileProvider<T> fileProvider) {
+        this.fileProvider = fileProvider;
+    }
+
+    public FileDecorator<T> getFileDecorator() {
+        return fileDecorator;
+    }
+
+    /**
+     * Sets the decorator that gives the files their icon and style. It can't be changed once the dialog is opened.
+     *
+     * @param fileDecorator the decorator, resolving the icons and styles of the default scheme by default
+     */
+    public void setFileDecorator(FileDecorator<T> fileDecorator) {
+        this.fileDecorator = fileDecorator;
+    }
+
+    public TwoPhaseSortPolicy getTwoPhaseSortPolicy() {
+        return twoPhaseSortPolicy;
+    }
+
+    /**
+     * Sets when the files are sorted automatically if a second phase refines them, which only some files have. It
+     * can't be changed once the dialog is opened.
+     *
+     * @param twoPhaseSortPolicy the policy, {@code ON_REQUEST} by default
+     */
+    public void setTwoPhaseSortPolicy(TwoPhaseSortPolicy twoPhaseSortPolicy) {
+        this.twoPhaseSortPolicy = twoPhaseSortPolicy;
     }
 
     public URI getInitialDirectory() {
@@ -106,7 +140,8 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
         super.validate();
         Objects.requireNonNull(getConfig());
         Objects.requireNonNull(chooserType);
-        Objects.requireNonNull(fileProviderFactory);
-        Objects.requireNonNull(refinedFieldSortPolicy);
+        Objects.requireNonNull(fileProvider);
+        Objects.requireNonNull(fileDecorator);
+        Objects.requireNonNull(twoPhaseSortPolicy);
     }
 }

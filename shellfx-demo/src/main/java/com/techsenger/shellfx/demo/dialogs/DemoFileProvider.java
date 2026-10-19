@@ -16,15 +16,11 @@
 
 package com.techsenger.shellfx.demo.dialogs;
 
-import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.DefaultFileProvider;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.style.FileIconResolver;
-import com.techsenger.shellfx.storage.style.FileStyleResolver;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Refines the pending files of the demo storage, but only after the user presses the button of the dialog, so the
@@ -34,20 +30,20 @@ import java.util.function.Supplier;
  */
 final class DemoFileProvider extends DefaultFileProvider<StorageFile> {
 
-    DemoFileProvider(List<? extends FileStorage<StorageFile>> storages, FileIconResolver<StorageFile> iconResolver,
-            FileStyleResolver<StorageFile> styleResolver, Supplier<Theme> themeSupplier) {
-        super(storages, iconResolver, styleResolver, themeSupplier);
+    DemoFileProvider(List<? extends FileStorage<StorageFile>> storages) {
+        super(storages);
     }
 
     @Override
-    protected boolean isRefinable(StorageFile file) {
-        return super.isRefinable(file) || (file instanceof DemoFile demoFile && demoFile.isPending());
+    protected boolean isRefinable(FileStorage<StorageFile> storage, StorageFile file) {
+        return super.isRefinable(storage, file) || (file instanceof DemoFile demoFile && demoFile.isPending());
     }
 
     @Override
     protected void refine(StorageFile file) throws IOException {
         if (file instanceof DemoFile demoFile && file.getStorage() instanceof DemoFileStorage storage) {
             storage.awaitRelease();
+            storage.simulateLatency();
             demoFile.complete();
         } else {
             super.refine(file);

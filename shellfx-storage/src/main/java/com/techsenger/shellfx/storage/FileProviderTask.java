@@ -17,19 +17,23 @@
 package com.techsenger.shellfx.storage;
 
 /**
- * Creates file providers. A provider serves one list at a time, so a client that shows several lists at once, such
- * as the files of a directory and the locations leading to it, asks the factory for a provider of its own for each.
+ * An asynchronous operation of a {@link FileProvider} that is running and can be cancelled.
  *
  * @author Pavel Castornii
- * @param <F> the type of files
  */
-@FunctionalInterface
-public interface FileProviderFactory<F extends StorageFile> {
+public interface FileProviderTask {
 
     /**
-     * Creates a new provider.
-     *
-     * @return the provider, never {@code null}
+     * Cancels the operation: the callbacks with data that have not started yet are not called, and the end callback
+     * gets {@link FileProviderResult#CANCELLED} unless the operation has already ended. A callback that is running,
+     * and the work that has been started, is not interrupted. Calling it again has no effect.
      */
-    FileProvider<F> create();
+    void cancel();
+
+    /**
+     * Tells whether the operation has been cancelled.
+     *
+     * @return {@code true} if {@link #cancel} has been called
+     */
+    boolean isCancelled();
 }

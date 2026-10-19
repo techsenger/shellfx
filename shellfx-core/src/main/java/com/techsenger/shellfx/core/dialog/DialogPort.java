@@ -17,6 +17,7 @@
 package com.techsenger.shellfx.core.dialog;
 
 import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.shellfx.core.traits.Waitable;
 import com.techsenger.shellfx.core.window.WindowPort;
 import com.techsenger.shellfx.material.button.ResultButtonName;
 import java.util.Optional;
@@ -28,7 +29,7 @@ import javafx.collections.ObservableList;
  *
  * @author Pavel Castornii
  */
-public interface DialogPort extends WindowPort {
+public interface DialogPort extends WindowPort, Waitable {
 
     /**
      * Returns the action to be executed when a result button is clicked.

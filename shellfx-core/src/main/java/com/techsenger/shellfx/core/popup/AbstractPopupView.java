@@ -18,7 +18,7 @@ package com.techsenger.shellfx.core.popup;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.area.AbstractAreaView;
-import javafx.scene.Cursor;
+import com.techsenger.shellfx.material.pane.WaitingPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -63,8 +63,6 @@ public abstract class AbstractPopupView<VM extends AbstractPopupViewModel<?>>
      */
     private final StackPane stackPane = new StackPane(contentBox);
 
-    private final Pane waitingPane = new Pane();
-
     public AbstractPopupView(VM viewModel) {
         super(viewModel);
     }
@@ -90,9 +88,6 @@ public abstract class AbstractPopupView<VM extends AbstractPopupViewModel<?>>
 
     @Override
     protected void build() {
-        waitingPane.setMouseTransparent(false);
-        waitingPane.setCursor(Cursor.WAIT);
-
         contentBox.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         VBox.setVgrow(contentBox, Priority.ALWAYS);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
@@ -101,13 +96,7 @@ public abstract class AbstractPopupView<VM extends AbstractPopupViewModel<?>>
     @Override
     protected void addListeners() {
         super.addListeners();
-        getViewModel().waitingProperty().addListener((ov, oldV, newV) -> {
-            if (newV) {
-                stackPane.getChildren().add(waitingPane);
-            } else {
-                stackPane.getChildren().remove(waitingPane);
-            }
-        });
+        WaitingPane.install(stackPane, getViewModel().waitingProperty());
         getViewModel().widthSource().addListener((value) -> stackPane.setPrefWidth(value));
         getViewModel().heightSource().addListener((value) -> stackPane.setPrefHeight(value));
     }

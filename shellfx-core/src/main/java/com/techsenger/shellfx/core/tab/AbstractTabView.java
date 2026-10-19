@@ -22,12 +22,11 @@ import com.techsenger.patternfx.mvvm.ViewUtils;
 import com.techsenger.shellfx.core.ShellPort;
 import com.techsenger.shellfx.core.ShellView;
 import com.techsenger.shellfx.material.icon.IconViewBox;
+import com.techsenger.shellfx.material.pane.WaitingPane;
 import com.techsenger.toolkit.fx.pulse.PulseListenerManager;
 import com.techsenger.toolkit.fx.value.ValueUtils;
-import javafx.scene.Cursor;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -81,8 +80,6 @@ public abstract class AbstractTabView<VM extends AbstractTabViewModel<?>> extend
     private final Tab root = new Tab();
 
     private final VBox contentBox = new VBox();
-
-    private final Pane bgPane = new Pane();
 
     private final StackPane wrapperPane = new StackPane(contentBox);
 
@@ -142,19 +139,7 @@ public abstract class AbstractTabView<VM extends AbstractTabViewModel<?>> extend
     protected void addListeners() {
         super.addListeners();
         var viewModel = getViewModel();
-        viewModel.waitingProperty().addListener((ov, oldV, newV) -> {
-            if (newV) {
-                if (bgPane.getParent() == null) {
-                    bgPane.setMouseTransparent(false);
-                    wrapperPane.getChildren().add(bgPane);
-                    bgPane.setCursor(Cursor.WAIT);
-                }
-            } else {
-                if (bgPane.getParent() != null) {
-                    wrapperPane.getChildren().remove(bgPane);
-                }
-            }
-        });
+        WaitingPane.install(wrapperPane, viewModel.waitingProperty());
         ValueUtils.callAndAddListener(viewModel.tooltipProperty(), (ov, oldV, newV) -> {
             if (newV != null) {
                 this.root.setTooltip(new Tooltip(newV));

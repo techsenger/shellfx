@@ -19,7 +19,7 @@ package com.techsenger.shellfx.dialogs.file;
 import com.techsenger.shellfx.core.dialog.DialogConfig;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableConfig;
-import com.techsenger.shellfx.storage.FileColumns;
+import com.techsenger.shellfx.storage.view.FileColumns;
 import java.io.Serial;
 import java.util.ArrayList;
 import javafx.scene.control.TableColumn;

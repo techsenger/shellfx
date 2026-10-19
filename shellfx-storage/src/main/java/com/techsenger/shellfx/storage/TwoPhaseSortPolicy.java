@@ -18,13 +18,12 @@ package com.techsenger.shellfx.storage;
 
 /**
  * Defines when files that have a second phase are sorted automatically: after the first phase, after the second one,
- * after each of them, or never. The second phase refines the fields whose values are final only after it, which only
- * the files of a network storage have. A directory whose files are all ready after the first phase is sorted right
- * after it, whatever the policy is.
+ * after each of them, or never. The second phase refines the fields whose values are final only after it. A directory
+ * whose files are all ready after the first phase is sorted right after it, whatever the policy is.
  *
  * @author Pavel Castornii
  */
-public enum RefinedFieldSortPolicy {
+public enum TwoPhaseSortPolicy {
 
     /**
      * Files are never sorted automatically. The sorting becomes available when the second phase is finished, and is

@@ -22,6 +22,7 @@ import com.techsenger.shellfx.core.window.WindowType;
 import com.techsenger.shellfx.material.button.ButtonWidthGroup;
 import com.techsenger.shellfx.material.button.ResultButton;
 import com.techsenger.shellfx.material.button.ResultButtonName;
+import com.techsenger.shellfx.material.pane.WaitingPane;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.toolkit.fx.FocusTrap;
@@ -37,6 +38,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.stage.WindowEvent;
 
 /**
@@ -53,6 +55,11 @@ public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
     private final HBox rightBottomBox = new HBox();
 
     private final HBox bottomBox = new HBox(leftBottomBox, bottomSpacer, rightBottomBox);
+
+    /**
+     * Holds the bottom box, so that the buttons can be covered separately from the content of the dialog.
+     */
+    private final StackPane bottomPane = new StackPane(bottomBox);
 
     /**
      * Trap for focus dialog. This trap should always be activated after adding all controls to dialog. Otherwise
@@ -85,7 +92,7 @@ public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
         }
         getContentBox().setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
                 0, Spacing.getHorizontal()));
-        getWindowBox().getChildren().add(bottomBox);
+        getWindowBox().getChildren().add(bottomPane);
         this.bottomBox.getStyleClass().addAll(StyleClasses.CORNERS_BOTTOM, "bottom-box");
         this.bottomBox.setPadding(new Insets(Spacing.getVertical(), Spacing.getHorizontal(),
                 Spacing.getVertical(), Spacing.getHorizontal()));
@@ -97,6 +104,17 @@ public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
         rightBottomBox.setSpacing(Spacing.getHorizontal());
         rightBottomBox.getStyleClass().add("right-bottom-box");
         rightBottomBox.setAlignment(Pos.CENTER_RIGHT);
+    }
+
+    @Override
+    protected void bind() {
+        super.bind();
+        var viewModel = getViewModel();
+        // while the dialog waits, it can be moved and closed, but not resized, and its content and buttons are covered
+        getMinimizeButton().disableProperty().bind(viewModel.waitingProperty());
+        getMaximizeButton().disableProperty().bind(viewModel.waitingProperty());
+        WaitingPane.install(getContentPane(), viewModel.waitingProperty());
+        WaitingPane.install(bottomPane, viewModel.waitingProperty());
     }
 
     @Override
@@ -219,6 +237,10 @@ public abstract class AbstractDialogView<VM extends AbstractDialogViewModel<?>>
      */
     protected HBox getRightBottomBox() {
         return rightBottomBox;
+    }
+
+    protected StackPane getBottomPane() {
+        return bottomPane;
     }
 
     protected HBox getBottomBox() {

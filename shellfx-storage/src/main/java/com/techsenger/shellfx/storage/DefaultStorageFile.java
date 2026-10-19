@@ -188,6 +188,42 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     /**
+     * Sets the icon this file is shown with. It is changed on the UI thread once the file is shown.
+     *
+     * @param icon the icon, or {@code null} to clear it
+     */
+    public void setIcon(@Nullable FontIcon<?> icon) {
+        this.icon.set(icon);
+    }
+
+    /**
+     * Sets the style this file is shown with. It is changed on the UI thread once the file is shown.
+     *
+     * @param style the style, or {@code null} to clear it
+     */
+    public void setStyle(@Nullable IconTextStyle style) {
+        this.style.set(style);
+    }
+
+    /**
+     * Sets how far this file is in the two-phase loading. It is changed by the file provider, on any thread.
+     *
+     * @param state the state
+     */
+    public void setState(FileState state) {
+        this.state = state;
+    }
+
+    /**
+     * Sets the name of this entry.
+     *
+     * @param name the entry name, must not be {@code null}
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Sets the storage that owns this entry.
      *
      * @param storage the storage, must not be {@code null}
@@ -203,15 +239,6 @@ public class DefaultStorageFile implements StorageFile {
      */
     protected void setEntryType(FileEntryType type) {
         this.entryType = type;
-    }
-
-    /**
-     * Sets the name of this entry.
-     *
-     * @param name the entry name, must not be {@code null}
-     */
-    protected void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -286,22 +313,5 @@ public class DefaultStorageFile implements StorageFile {
      */
     protected void setLink(@Nullable EntryLink link) {
         this.link = link;
-    }
-
-    protected void setIcon(@Nullable FontIcon<?> icon) {
-        this.icon.set(icon);
-    }
-
-    /**
-     * Sets the style this file is shown with.
-     *
-     * @param style the style, or {@code null} to clear it
-     */
-    protected void setStyle(@Nullable IconTextStyle style) {
-        this.style.set(style);
-    }
-
-    protected void setState(FileState state) {
-        this.state = state;
     }
 }

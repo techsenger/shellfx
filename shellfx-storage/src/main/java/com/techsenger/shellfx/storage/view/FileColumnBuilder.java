@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.view;
 
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.table.NamedTableColumn;
 import com.techsenger.shellfx.material.table.TextFieldTableCell;
+import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.time.Year;
 import java.util.Comparator;

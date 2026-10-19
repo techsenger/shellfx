@@ -23,6 +23,7 @@ import com.techsenger.shellfx.core.close.ClosePreparationResult;
 import com.techsenger.shellfx.core.config.ConfigUtils;
 import com.techsenger.shellfx.core.dialog.AbstractDialogViewModel;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
+import com.techsenger.shellfx.core.settings.SettingsSubscription;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
@@ -36,14 +37,17 @@ import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableConfig;
 import com.techsenger.shellfx.storage.Comparators;
+import com.techsenger.shellfx.storage.FileDecorator;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileProvider;
+import com.techsenger.shellfx.storage.FileProviderResult;
+import com.techsenger.shellfx.storage.FileProviderTask;
 import com.techsenger.shellfx.storage.FileState;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
 import com.techsenger.shellfx.storage.OperationType;
-import com.techsenger.shellfx.storage.RefinedFieldSortPolicy;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.TwoPhaseSortPolicy;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
@@ -53,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -136,10 +139,9 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private final FileProvider<T> fileProvider;
 
-    // a provider of its own, as a provider serves one list at a time and the table is refined independently
-    private final FileProvider<T> locationFileProvider;
+    private final TwoPhaseSortPolicy twoPhaseSortPolicy;
 
-    private final RefinedFieldSortPolicy refinedFieldSortPolicy;
+    private final FileDecorator<T> fileDecorator;
 
     private final ObjectProperty<Comparator<T>> fileComparator = new SimpleObjectProperty<>();
 
@@ -149,13 +151,19 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private Comparator<T> sortComparator;
 
+    private SettingsSubscription themeSubscription;
+
+    private long loadToken;
+
+    private final List<FileProviderTask> tasks = new ArrayList<>();
+
     public FileChooserDialogViewModel(FileChooserDialogParams<T> params) {
         super(params);
         this.chooserType = params.getChooserType();
-        this.fileProvider = params.getFileProviderFactory().create();
-        this.locationFileProvider = params.getFileProviderFactory().create();
+        this.fileProvider = params.getFileProvider();
         this.storages = fileProvider.getStorages();
-        this.refinedFieldSortPolicy = params.getRefinedFieldSortPolicy();
+        this.twoPhaseSortPolicy = params.getTwoPhaseSortPolicy();
+        this.fileDecorator = params.getFileDecorator();
         this.initialDirectory = params.getInitialDirectory();
         this.initialFileName = params.getInitialFileName();
         this.fileName.set(initialFileName);
@@ -170,7 +178,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                 setFileName(null);
             }
         });
-        extensionFilter.addListener((obs, oldV, newV) -> updateFiles(getFile()));
+        extensionFilter.addListener((obs, oldV, newV) -> reload(getFile()));
     }
 
     @Override
@@ -321,7 +329,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     @Override
     public void setExtensionFilters(List<ExtensionFilter> extensionFilters) {
         modifiableExtensionFilters.setAll(extensionFilters);
-        updateFiles(getFile());
+        reload(getFile());
     }
 
     @Override
@@ -385,6 +393,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     @Override
     protected void postInitialize() {
         super.postInitialize();
+        this.themeSubscription = getAppearanceSettings().onThemeChanged((oldV, newV) -> decorateShownFiles());
         switch (chooserType) {
             case OPEN -> {
                 setTitle("Open");
@@ -398,13 +407,17 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             }
             default -> throw new AssertionError();
         }
+        var navigated = false;
         if (this.initialDirectory != null) {
-            var s = FileStorageUtils.findByUri(storages, initialDirectory);
-            if (s.isPresent()) {
-                this.directory.set(resolveDirectory(s.get(), this.initialDirectory));
+            var initialStorage = FileStorageUtils.findByUri(storages, initialDirectory);
+            if (initialStorage.isPresent()) {
+                navigateTo(initialStorage.get(), this.initialDirectory, null);
+                navigated = true;
             }
         }
-        updateFiles(null);
+        if (!navigated) {
+            reload(null);
+        }
         setRightButtons(FileChooserDialogButtons.CANCEL, FileChooserDialogButtons.OK);
         setButtonDefault(FileChooserDialogButtons.OK, true);
         setMinWidth(600);
@@ -414,8 +427,10 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     @Override
     protected void postDeinitialize() {
         super.postDeinitialize();
-        fileProvider.cancelRefinement();
-        locationFileProvider.cancelRefinement();
+        themeSubscription.unsubscribe();
+        // the results of the loading that is still running are not wanted any more
+        loadToken++;
+        cancelTasks();
     }
 
     protected FileStorage getStorage() {
@@ -427,13 +442,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     protected void onLocationRequested(T location) {
-        navigateTo(location.getStorage(), location.getUri());
+        navigateTo(location.getStorage(), location.getUri(), null);
     }
 
     protected void onNavigateDown(StorageFile file) {
         if (file.isDirectory()) {
-            navigateTo(file.getStorage(), file.getUri());
-            scrollToFileSource.next(0);
+            navigateTo(file.getStorage(), file.getUri(), null);
         }
     }
 
@@ -446,9 +460,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         if (parentUri == null) {
             return;
         }
-        var currentDirectory = this.directory.get();
-        this.directory.set(resolveDirectory(storage, parentUri));
-        updateFiles(currentDirectory);
+        navigateTo(storage, parentUri, this.directory.get());
     }
 
     protected void onNavigateHome() {
@@ -484,7 +496,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                 var dirUri = UriUtils.resolvePath(directoryUri(), file.getName(), true);
                 try {
                     currentStorage().createDirectory(dirUri, OperationType.PRIMARY);
-                    updateFiles(file);
+                    reload(file);
                 } catch (Exception ex) {
                     logger.error("{} Error creating new directory at {}", getDescriptor().getLogPrefix(), dirUri, ex);
                 }
@@ -494,7 +506,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                     var storage = currentStorage();
                     if (storage != null) {
                         storage.renameFile(file.getUri(), file.getName(), OperationType.PRIMARY);
-                        updateFiles(file);
+                        reload(file);
                     }
                 } catch (Exception ex) {
                     logger.error("{} Error renaming file at {} to {}", getDescriptor().getLogPrefix(), file.getUri(),
@@ -526,7 +538,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     protected void onRefresh() {
-        updateFiles(getFile());
+        reload(getFile());
     }
 
     protected void setColumnWidth(TableColumnName name, double width) {
@@ -622,65 +634,173 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         }
         var requestedStorage = currentStorage();
         var requestedDirectory = this.directory.get();
-        var requestedUri = directoryUri();
-        Thread.startVirtualThread(() -> {
-            T selectedLocation = null;
-            List<T> locations = new ArrayList<>();
-            for (var storage : storages) {
-                if (requestedStorage != storage) {
-                    locations.add(locationFileProvider.getRoot(storage));
-                    continue;
-                }
-                List<T> hierarchy;
-                try {
-                    hierarchy = locationFileProvider.getHierarchy(storage, requestedUri, OperationType.PRIMARY);
-                } catch (Exception ex) {
-                    logger.error("{} Error getting hierarchy at {}", getDescriptor().getLogPrefix(), requestedUri, ex);
-                    hierarchy = List.of(requestedDirectory);
-                }
-                locations.addAll(hierarchy);
-                selectedLocation = hierarchy.get(hierarchy.size() - 1);
-            }
-            var result = locations;
-            var resultLocation = selectedLocation;
-            UiExecutor.execute(() -> {
-                //the user could navigate elsewhere while the hierarchy was being read
-                if (!Objects.equals(requestedUri, directoryUri())) {
-                    return;
-                }
-                setLocations(result);
-                setLocation(resultLocation);
-                this.locationsUpdated = true;
-                locationFileProvider.refineFilesAsync(result, () -> { });
-            });
-        });
+        var token = loadToken;
+        tasks.add(fileProvider.getRootsAsync(
+                roots -> UiExecutor.execute(() -> {
+                    //the user could navigate elsewhere while the roots were being read
+                    if (isCurrent(token)) {
+                        loadHierarchy(roots, requestedStorage, requestedDirectory, token);
+                    }
+                }),
+                result -> { }));
     }
 
-    private void navigateTo(FileStorage storage, URI uri) {
-        FileStorage<T> typedStorage = storage;
-        this.directory.set(resolveDirectory(typedStorage, uri));
-        updateFiles(null);
-    }
-
-    private void updateFiles(T selectedFile) {
+    /**
+     * Starts loading that supersedes the one that is running, which the user waits for, and clears the files.
+     *
+     * @return the token that tells the results of this loading from those of a superseded one
+     */
+    private long startLoading() {
+        loadToken++;
+        cancelTasks();
+        setWaiting(true);
         setFiles(Collections.emptyList());
-        boolean defaultUsed = false;
-        if (this.directory.get() == null) {
-            setDefaultDirectory();
-            defaultUsed = true;
-            selectedFile = null;
+        return loadToken;
+    }
+
+    private boolean isCurrent(long token) {
+        return token == loadToken;
+    }
+
+    /**
+     * Shows the files of the directory at the URI, which is made the current one.
+     */
+    private void navigateTo(FileStorage storage, URI uri, @Nullable T selectedFile) {
+        FileStorage<T> typedStorage = storage;
+        var token = startLoading();
+        Consumer<T> onLoaded = directory -> UiExecutor.execute(() -> {
+            if (isCurrent(token)) {
+                decorate(List.of(directory));
+                listDirectory(directory, selectedFile, token, false);
+            }
+        });
+        Consumer<FileProviderResult> onFinished = result -> {
+            if (result == FileProviderResult.FAILED) {
+                UiExecutor.execute(() -> {
+                    if (isCurrent(token)) {
+                        listDefaultDirectory(token);
+                    }
+                });
+            }
+        };
+        if (uri.equals(storage.getUri())) {
+            tasks.add(fileProvider.getRootAsync(typedStorage, onLoaded, onFinished));
+        } else {
+            tasks.add(fileProvider.getFileAsync(typedStorage, uri, OperationType.PRIMARY, onLoaded, onFinished));
         }
-        List<T> storageFiles = getFilesFromStorage();
-        if (storageFiles == null && !defaultUsed) {
-            //the second attempt
-            setDefaultDirectory();
-            storageFiles = getFilesFromStorage();
-            selectedFile = null;
+    }
+
+    /**
+     * Shows the files of the current directory again, or of the default one if there is no current directory.
+     */
+    private void reload(@Nullable T selectedFile) {
+        var token = startLoading();
+        var current = this.directory.get();
+        if (current == null) {
+            listDefaultDirectory(token);
+        } else {
+            listDirectory(current, selectedFile, token, false);
         }
-        if (storageFiles == null) {
+    }
+
+    private void listDefaultDirectory(long token) {
+        var local = FileStorageUtils.findLocal(storages).stream().findFirst();
+        if (local.isEmpty()) {
             this.directory.set(null);
+            setWaiting(false);
             return;
         }
+        tasks.add(fileProvider.getRootAsync(local.get(),
+                root -> UiExecutor.execute(() -> {
+                    if (isCurrent(token)) {
+                        decorate(List.of(root));
+                        listDirectory(root, null, token, true);
+                    }
+                }),
+                result -> {
+                    if (result == FileProviderResult.FAILED) {
+                        UiExecutor.execute(() -> {
+                            if (isCurrent(token)) {
+                                this.directory.set(null);
+                                setWaiting(false);
+                            }
+                        });
+                    }
+                }));
+    }
+
+    /**
+     * Makes the directory the current one and lists it. If it can't be listed, the default directory is tried once.
+     */
+    private void listDirectory(T newDirectory, @Nullable T selectedFile, long token, boolean defaultUsed) {
+        this.directory.set(newDirectory);
+        tasks.add(fileProvider.getFilesAsync(currentStorage(), directoryUri(), OperationType.PRIMARY,
+                storageFiles -> UiExecutor.execute(() -> {
+                    if (isCurrent(token)) {
+                        showFiles(storageFiles, selectedFile);
+                    }
+                }),
+                result -> UiExecutor.execute(() -> {
+                    if (!isCurrent(token)) {
+                        return;
+                    }
+                    if (result == FileProviderResult.SUCCESS) {
+                        setWaiting(false);
+                    } else if (result == FileProviderResult.FAILED && !defaultUsed) {
+                        listDefaultDirectory(token);
+                    } else if (result == FileProviderResult.FAILED) {
+                        this.directory.set(null);
+                        setWaiting(false);
+                    }
+                })));
+    }
+
+    /**
+     * Reads the directories that lead to the current one, after the roots of the storages are known.
+     */
+    private void loadHierarchy(List<T> roots, @Nullable FileStorage<T> requestedStorage,
+            @Nullable T requestedDirectory, long token) {
+        if (requestedStorage == null) {
+            showLocations(roots, null, List.of());
+            return;
+        }
+        tasks.add(fileProvider.getHierarchyAsync(requestedStorage, requestedDirectory.getUri(), OperationType.PRIMARY,
+                hierarchy -> UiExecutor.execute(() -> {
+                    if (isCurrent(token)) {
+                        showLocations(roots, requestedStorage, hierarchy);
+                    }
+                }),
+                result -> {
+                    if (result == FileProviderResult.FAILED) {
+                        UiExecutor.execute(() -> {
+                            if (isCurrent(token)) {
+                                showLocations(roots, requestedStorage, List.of(requestedDirectory));
+                            }
+                        });
+                    }
+                }));
+    }
+
+    private void showLocations(List<T> roots, @Nullable FileStorage<T> requestedStorage, List<T> hierarchy) {
+        T selectedLocation = null;
+        List<T> newLocations = new ArrayList<>();
+        decorate(roots);
+        for (var root : roots) {
+            if (root.getStorage() != requestedStorage) {
+                newLocations.add(root);
+                continue;
+            }
+            decorate(hierarchy);
+            newLocations.addAll(hierarchy);
+            selectedLocation = hierarchy.get(hierarchy.size() - 1);
+        }
+        setLocations(newLocations);
+        setLocation(selectedLocation);
+        this.locationsUpdated = true;
+        refineAsync(newLocations, () -> { });
+    }
+
+    private void showFiles(List<T> storageFiles, @Nullable T selectedFile) {
         updateLocation();
         var extFilter = getExtensionFilter();
         List<T> filteredFiles = null;
@@ -702,14 +822,15 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         }
         // a directory with nothing to refine is final after the first phase, so it is sorted whatever the policy is
         var refinable = files.stream().anyMatch(f -> f.getState() == FileState.PENDING);
-        if (!refinable || refinedFieldSortPolicy == RefinedFieldSortPolicy.AFTER_FIRST_PHASE
-                || refinedFieldSortPolicy == RefinedFieldSortPolicy.AFTER_EACH_PHASE) {
+        if (!refinable || twoPhaseSortPolicy == TwoPhaseSortPolicy.AFTER_FIRST_PHASE
+                || twoPhaseSortPolicy == TwoPhaseSortPolicy.AFTER_EACH_PHASE) {
             files.sort(this.sortComparator);
         }
+        decorate(files);
         setFiles(files);
         // the second phase: the files that are not ready are refined in the background, and the cells that show them
         // follow their properties
-        fileProvider.refineFilesAsync(files, this::sortRefinedFiles);
+        refineAsync(files, () -> UiExecutor.execute(this::sortRefinedFiles));
         //only after sorting we can find the selected file index
         var foundIndex = -1;
         if (selectedFile != null) {
@@ -726,6 +847,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         if (foundIndex != -1) {
             selectFileSource.next(foundIndex);
             scrollToFileSource.next(foundIndex);
+        } else {
+            scrollToFileSource.next(0);
         }
     }
 
@@ -738,8 +861,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
      * the table moves its selection together with the file, and then the view scrolls to the selected file.
      */
     private void sortRefinedFiles() {
-        if (refinedFieldSortPolicy != RefinedFieldSortPolicy.AFTER_SECOND_PHASE
-                && refinedFieldSortPolicy != RefinedFieldSortPolicy.AFTER_EACH_PHASE) {
+        if (twoPhaseSortPolicy != TwoPhaseSortPolicy.AFTER_SECOND_PHASE
+                && twoPhaseSortPolicy != TwoPhaseSortPolicy.AFTER_EACH_PHASE) {
             return;
         }
         modifiableFiles.sort(this.sortComparator);
@@ -763,25 +886,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         getComposer().addAlertDialog(params, text);
     }
 
-    private void setDefaultDirectory() {
-        var s = FileStorageUtils.findLocal(storages).stream().findFirst();
-        this.directory.set(s.isPresent() ? locationFileProvider.getRoot(s.get()) : null);
-    }
-
-    private T resolveDirectory(FileStorage<T> storage, URI uri) {
-        if (uri.equals(storage.getUri())) {
-            return locationFileProvider.getRoot(storage);
-        }
-        try {
-            var file = storage.getFile(uri, OperationType.PRIMARY);
-            locationFileProvider.assembleFiles(storage, List.of(file));
-            return file;
-        } catch (Exception ex) {
-            logger.error("{} Error getting directory at {}", getDescriptor().getLogPrefix(), uri, ex);
-            return null;
-        }
-    }
-
     private URI directoryUri() {
         var d = this.directory.get();
         return d != null ? d.getUri() : null;
@@ -796,15 +900,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         return raw;
     }
 
-    private List<T> getFilesFromStorage() {
-        try {
-            return fileProvider.getFiles(currentStorage(), directoryUri(), OperationType.PRIMARY);
-        } catch (Exception ex) {
-            logger.error("{} Error getting files at {}", getDescriptor().getLogPrefix(), directoryUri(), ex);
-        }
-        return null;
-    }
-
     private void updateLocation() {
         // We add only one location at a time - the currently selected one.
         // If the user clicks the combobox, all locations will be updated.
@@ -812,7 +907,34 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         setLocations(List.of(location));
         setLocation(location);
         this.locationsUpdated = false;
-        locationFileProvider.refineFilesAsync(List.of(location), () -> { });
+        refineAsync(List.of(location), () -> { });
+    }
+
+    /**
+     * Decorates the files on the calling thread, which is the UI thread or the one that loaded the files.
+     */
+    private void decorate(List<T> files) {
+        fileDecorator.decorate(files, getAppearanceSettings().getTheme());
+    }
+
+    private void decorateShownFiles() {
+        decorate(modifiableFiles);
+        decorate(modifiableLocations);
+    }
+
+    /**
+     * Starts the second phase of the provider for the files, whose results are decorated in the background and
+     * written on the UI thread by the decorator.
+     */
+    private void refineAsync(List<T> files, Runnable onFinished) {
+        var settings = getAppearanceSettings();
+        tasks.add(fileProvider.refineFilesAsync(files, file -> fileDecorator.decorateAsync(file, settings.getTheme()),
+                result -> onFinished.run()));
+    }
+
+    private void cancelTasks() {
+        tasks.forEach(FileProviderTask::cancel);
+        tasks.clear();
     }
 
     private void updateConfigColumns() {

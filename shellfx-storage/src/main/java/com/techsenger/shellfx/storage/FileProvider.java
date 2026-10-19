@@ -16,19 +16,26 @@
 
 package com.techsenger.shellfx.storage;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
- * Loads the files of a directory and assembles the final result in the files themselves. The first phase lists the
- * directory and gives every file its icon, style and state at once. Only the files of a network storage are loaded in
- * two phases, so a slow storage never keeps the user waiting: the second phase refines, in the background, the files
- * that are not ready, and rewrites the icon, style and state of each as soon as it is done. A file that is not ready
- * yet has a state icon. The files of any other storage are final after the first phase. The storages themselves only
- * list: whatever needs more than a listing is done here.
+ * Loads the files of a directory and gives them their state. The first phase lists the directory and gives every file
+ * its state at once. What is slow to find out is left to the second phase, so a slow storage never keeps the user
+ * waiting: it refines, in the background, the files that are not ready, and gives each its final state as soon as it
+ * is done. The files that need nothing slow are final after the first phase. The storages themselves only list:
+ * whatever needs more than a listing is done here. The provider does not decorate the files, that is up to the
+ * client, see {@link FileDecorator}.
  *
- * <p>A provider serves one list at a time: loading a directory cancels the refinement of the previous one.
+ * <p>Both phases run in the background, and their callbacks are called on a background thread. Every asynchronous
+ * method takes a callback for the data and one for the end, and returns the {@link FileProviderTask} of the
+ * operation. {@code onFinished} is called once, with {@link FileProviderResult#SUCCESS} when all the data has been
+ * given, {@link FileProviderResult#FAILED} if the operation failed, which the provider has logged, or
+ * {@link FileProviderResult#CANCELLED} if the task was cancelled before it ended; the data is not given after the
+ * cancellation. The only exception is {@link #refineFilesAsync}, which ends with nothing if there was nothing to
+ * refine. The provider keeps no state of the operations, so one provider serves any number of lists at once, and the
+ * client cancels the tasks it no longer needs.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
@@ -43,63 +50,80 @@ public interface FileProvider<F extends StorageFile> {
     List<? extends FileStorage<F>> getStorages();
 
     /**
-     * Runs the first phase: lists the directory and gives every file its state, icon and style; a file of a network
-     * storage that the second phase has to refine gets {@link FileState#PENDING}. The refinement of the previous
-     * directory, if any, is cancelled.
+     * Runs the first phase for a directory: lists it and gives every file its state; a file that the second phase has
+     * to refine gets {@link FileState#PENDING}.
      *
      * @param storage the storage that holds the directory
      * @param uri the URI of the directory
      * @param operationType how the storage classifies the listing it reports
-     * @return the files of the directory, to be shown right away
-     * @throws IOException if the directory can't be listed
+     * @param onLoaded called with the files of the directory, to be shown right away
+     * @param onFinished called with {@code SUCCESS} after the files, or with {@code FAILED} if the directory can't be
+     *     listed
+     * @return the task of the operation
      */
-    List<F> getFiles(FileStorage<F> storage, URI uri, OperationType operationType) throws IOException;
+    FileProviderTask getFilesAsync(FileStorage<F> storage, URI uri, OperationType operationType,
+            Consumer<List<F>> onLoaded, Consumer<FileProviderResult> onFinished);
 
     /**
-     * Returns the root directory of the storage, with its icon, style and state like the files of the first phase.
-     * The root is never refined.
+     * Runs the first phase for the file at the URI, giving it its state.
      *
-     * @param storage the storage whose root to return
-     * @return the root, which belongs to the caller
+     * @param storage the storage that holds the file
+     * @param uri the URI of the file
+     * @param operationType how the storage classifies the access it reports
+     * @param onLoaded called with the file, which belongs to the caller
+     * @param onFinished called with {@code SUCCESS} after the file, or with {@code FAILED} if it can't be read
+     * @return the task of the operation
      */
-    F getRoot(FileStorage<F> storage);
+    FileProviderTask getFileAsync(FileStorage<F> storage, URI uri, OperationType operationType,
+            Consumer<F> onLoaded, Consumer<FileProviderResult> onFinished);
 
     /**
-     * Returns the directories that lead from the root of the storage to the directory at the URI, each with its
-     * icon, style and state like the files of the first phase. It does not cancel the refinement.
+     * Runs the first phase for the directories that lead from the root of the storage to the directory at the URI,
+     * giving each its state.
      *
      * @param storage the storage that holds the directory
      * @param uri the URI of the directory
      * @param operationType how the storage classifies the access it reports
-     * @return the directories from the root to the one at the URI, which belong to the caller
-     * @throws IOException if the hierarchy can't be read
+     * @param onLoaded called with the directories from the root to the one at the URI, which belong to the caller
+     * @param onFinished called with {@code SUCCESS} after the directories, or with {@code FAILED} if the hierarchy
+     *     can't be read
+     * @return the task of the operation
      */
-    List<F> getHierarchy(FileStorage<F> storage, URI uri, OperationType operationType) throws IOException;
+    FileProviderTask getHierarchyAsync(FileStorage<F> storage, URI uri, OperationType operationType,
+            Consumer<List<F>> onLoaded, Consumer<FileProviderResult> onFinished);
 
     /**
-     * Gives the files that the client has got from the storage itself their icon, style and state, like the files of
-     * the first phase, so a client that reads the storage directly can still use the second phase for them.
+     * Runs the first phase for the root directory of the storage, giving it its state. The root may be a real
+     * directory, so it is read in the background, and it is never refined.
      *
-     * @param storage the storage the files come from
-     * @param files the files to assemble, which belong to the caller
+     * @param storage the storage whose root to get
+     * @param onLoaded called with the root, which belongs to the caller
+     * @param onFinished called with {@code SUCCESS} after the root, or with {@code FAILED} if it can't be read
+     * @return the task of the operation
      */
-    void assembleFiles(FileStorage<F> storage, List<F> files);
+    FileProviderTask getRootAsync(FileStorage<F> storage, Consumer<F> onLoaded,
+            Consumer<FileProviderResult> onFinished);
 
     /**
-     * Runs the second phase in the background, which only the files of a network storage need: refines the files
-     * that are not ready, a few at a time for every storage, and rewrites their state on a background thread and
-     * their icon and style on the UI thread, where the elements that show the files observe them. The refinement of
-     * the previous call, if any, is cancelled.
+     * Runs the first phase for the root directories of all the storages of this provider, giving each its state.
+     *
+     * @param onLoaded called with the roots in the order of {@link #getStorages()}, which belong to the caller
+     * @param onFinished called with {@code SUCCESS} after the roots, or with {@code FAILED} if any of them can't be
+     *     read
+     * @return the task of the operation
+     */
+    FileProviderTask getRootsAsync(Consumer<List<F>> onLoaded, Consumer<FileProviderResult> onFinished);
+
+    /**
+     * Runs the second phase in the background, which only some files need: refines the files that are not ready, a
+     * few at a time for every storage, and gives each its final state.
      *
      * @param files the files of the first phase
-     * @param onFinished called once on the UI thread when every file has been handled; it is not called if there
-     *     was nothing to refine or the refinement is cancelled
+     * @param onRefined called for every file as soon as it is ready or has failed, with the final state already in
+     *     the file
+     * @param onFinished called with {@code SUCCESS} once every file has been handled; it is not called if there was
+     *     nothing to refine
+     * @return the task of the operation
      */
-    void refineFilesAsync(List<F> files, Runnable onFinished);
-
-    /**
-     * Stops the refinement that is running: the files still waiting stay in the state they have, and the callback
-     * of the refinement is not called any more.
-     */
-    void cancelRefinement();
+    FileProviderTask refineFilesAsync(List<F> files, Consumer<F> onRefined, Consumer<FileProviderResult> onFinished);
 }

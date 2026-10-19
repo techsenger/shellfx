@@ -28,5 +28,6 @@ module com.techsenger.shellfx.storage {
     exports com.techsenger.shellfx.storage;
     exports com.techsenger.shellfx.storage.settings;
     exports com.techsenger.shellfx.storage.style;
+    exports com.techsenger.shellfx.storage.view;
 
 }

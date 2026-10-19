@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -58,10 +60,27 @@ public abstract class AbstractDialogViewModel<C extends WindowComposer> extends 
     private final ObservableMap<ResultButtonName, Boolean> defaultByName =
             FXCollections.unmodifiableObservableMap(modifiableDefaultByName);
 
+    private final BooleanProperty waiting = new SimpleBooleanProperty();
+
     private Consumer<ResultButtonName> onResult = (name) -> closeSafely();
 
     public AbstractDialogViewModel(DialogParams params) {
         super(params);
+    }
+
+    @Override
+    public void setWaiting(boolean waiting) {
+        this.waiting.set(waiting);
+    }
+
+    @Override
+    public boolean isWaiting() {
+        return waiting.get();
+    }
+
+    @Override
+    public BooleanProperty waitingProperty() {
+        return waiting;
     }
 
     @Override

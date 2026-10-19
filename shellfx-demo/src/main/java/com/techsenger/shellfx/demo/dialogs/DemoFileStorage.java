@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * A read-only storage of the demo with one flat directory of ten entries. Five of them are listed ready, the other
- * five without their size and modified time, which the second loading phase fills in after
- * {@link #release()} is called.
+ * A read-only and slow storage of the demo with one flat directory of ten entries. Listing the directory takes
+ * three seconds. Five of the entries are listed ready, the other five without their size and modified time, which
+ * the second loading phase fills in after {@link #release()} is called, taking three seconds for each of them.
  *
  * @author Pavel Castornii
  */
@@ -48,6 +48,8 @@ final class DemoFileStorage extends AbstractFileStorage<StorageFile> {
     private static final long BASE_TIME = 1_735_689_600_000L;
 
     private static final long DAY = 86_400_000L;
+
+    private static final long LATENCY_MILLIS = 3_000L;
 
     private static final List<Entry> ENTRIES = List.of(
             new Entry("alpha", true, null, 10, false),
@@ -74,6 +76,17 @@ final class DemoFileStorage extends AbstractFileStorage<StorageFile> {
      */
     void release() {
         gate.complete(null);
+    }
+
+    /**
+     * Blocks for the time that the storage needs to answer, as a slow network storage does.
+     */
+    void simulateLatency() {
+        try {
+            Thread.sleep(LATENCY_MILLIS);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
@@ -104,6 +117,7 @@ final class DemoFileStorage extends AbstractFileStorage<StorageFile> {
 
     @Override
     public List<StorageFile> getFiles(URI uri, OperationType operationType) {
+        simulateLatency();
         // a new listing starts a new first phase: the files of the previous one stop waiting, the new ones wait
         var previous = gate;
         gate = new CompletableFuture<>();
