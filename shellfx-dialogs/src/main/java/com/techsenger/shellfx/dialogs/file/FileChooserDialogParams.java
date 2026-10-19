@@ -16,20 +16,15 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.storage.DefaultFileDecorator;
-import com.techsenger.shellfx.storage.DefaultFileProvider;
 import com.techsenger.shellfx.storage.FileDecorator;
 import com.techsenger.shellfx.storage.FileProvider;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.TwoPhaseSortPolicy;
-import com.techsenger.shellfx.storage.settings.FileStyleDefaults;
-import com.techsenger.shellfx.storage.settings.FileStyleScheme;
-import com.techsenger.shellfx.storage.style.DefaultFileIconResolver;
-import com.techsenger.shellfx.storage.style.DefaultFileStyleResolver;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
@@ -42,10 +37,11 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
 
     private final FileChooserType chooserType;
 
-    private FileProvider<T> fileProvider;
+    private final List<? extends FileStorage<T>> storages;
 
-    private FileDecorator<T> fileDecorator = new DefaultFileDecorator<T>(new DefaultFileIconResolver<T>(),
-            new DefaultFileStyleResolver<T, FileStyleScheme>(FileStyleDefaults::getScheme));
+    private @Nullable FileProvider<T> fileProvider;
+
+    private @Nullable FileDecorator<T> fileDecorator;
 
     private TwoPhaseSortPolicy twoPhaseSortPolicy = TwoPhaseSortPolicy.ON_REQUEST;
 
@@ -66,14 +62,18 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
             FileChooserType chooserType, List<? extends FileStorage<T>> storages) {
         super(config, windowType, settings);
         this.chooserType = chooserType;
-        this.fileProvider = new DefaultFileProvider<T>(storages);
+        this.storages = List.copyOf(storages);
     }
 
     public FileChooserType getChooserType() {
         return chooserType;
     }
 
-    public FileProvider<T> getFileProvider() {
+    public List<? extends FileStorage<T>> getStorages() {
+        return storages;
+    }
+
+    public @Nullable FileProvider<T> getFileProvider() {
         return fileProvider;
     }
 
@@ -81,22 +81,22 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
      * Sets the provider that loads the files, for all the lists the dialog shows. It can't be changed once the dialog
      * is opened.
      *
-     * @param fileProvider the provider, a {@link DefaultFileProvider} over the storages by default
+     * @param fileProvider the provider, or {@code null} for the default one over the storages
      */
-    public void setFileProvider(FileProvider<T> fileProvider) {
+    public void setFileProvider(@Nullable FileProvider<T> fileProvider) {
         this.fileProvider = fileProvider;
     }
 
-    public FileDecorator<T> getFileDecorator() {
+    public @Nullable FileDecorator<T> getFileDecorator() {
         return fileDecorator;
     }
 
     /**
      * Sets the decorator that gives the files their icon and style. It can't be changed once the dialog is opened.
      *
-     * @param fileDecorator the decorator, resolving the icons and styles of the default scheme by default
+     * @param fileDecorator the decorator, or {@code null} for the one that uses the default scheme
      */
-    public void setFileDecorator(FileDecorator<T> fileDecorator) {
+    public void setFileDecorator(@Nullable FileDecorator<T> fileDecorator) {
         this.fileDecorator = fileDecorator;
     }
 
@@ -140,8 +140,6 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
         super.validate();
         Objects.requireNonNull(getConfig());
         Objects.requireNonNull(chooserType);
-        Objects.requireNonNull(fileProvider);
-        Objects.requireNonNull(fileDecorator);
         Objects.requireNonNull(twoPhaseSortPolicy);
     }
 }

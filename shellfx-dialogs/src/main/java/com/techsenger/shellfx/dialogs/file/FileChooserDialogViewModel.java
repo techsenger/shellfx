@@ -37,6 +37,8 @@ import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableConfig;
 import com.techsenger.shellfx.storage.Comparators;
+import com.techsenger.shellfx.storage.DefaultFileDecorator;
+import com.techsenger.shellfx.storage.DefaultFileProvider;
 import com.techsenger.shellfx.storage.FileDecorator;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.FileProvider;
@@ -49,6 +51,10 @@ import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.TwoPhaseSortPolicy;
 import com.techsenger.shellfx.storage.UriUtils;
+import com.techsenger.shellfx.storage.settings.FileStyleDefaults;
+import com.techsenger.shellfx.storage.settings.FileStyleScheme;
+import com.techsenger.shellfx.storage.style.DefaultFileIconResolver;
+import com.techsenger.shellfx.storage.style.DefaultFileStyleResolver;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -160,10 +166,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     public FileChooserDialogViewModel(FileChooserDialogParams<T> params) {
         super(params);
         this.chooserType = params.getChooserType();
-        this.fileProvider = params.getFileProvider();
+        var paramsProvider = params.getFileProvider();
+        this.fileProvider = paramsProvider != null ? paramsProvider : createDefaultFileProvider(params.getStorages());
         this.storages = fileProvider.getStorages();
         this.twoPhaseSortPolicy = params.getTwoPhaseSortPolicy();
-        this.fileDecorator = params.getFileDecorator();
+        var paramsDecorator = params.getFileDecorator();
+        this.fileDecorator = paramsDecorator != null ? paramsDecorator : createDefaultFileDecorator();
         this.initialDirectory = params.getInitialDirectory();
         this.initialFileName = params.getInitialFileName();
         this.fileName.set(initialFileName);
@@ -567,6 +575,15 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     protected Comparator<T> getFileComparator() {
         return sortComparator;
+    }
+
+    protected FileProvider<T> createDefaultFileProvider(List<? extends FileStorage<T>> storages) {
+        return new DefaultFileProvider<T>(storages);
+    }
+
+    protected FileDecorator<T> createDefaultFileDecorator() {
+        return new DefaultFileDecorator<T>(new DefaultFileIconResolver<T>(),
+                new DefaultFileStyleResolver<T, FileStyleScheme>(FileStyleDefaults::getScheme));
     }
 
     ObservableMap<TableColumnName, TableColumnInfo> getColumns() {
