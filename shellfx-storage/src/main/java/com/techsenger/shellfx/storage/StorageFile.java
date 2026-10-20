@@ -76,12 +76,26 @@ public interface StorageFile {
     @Nullable Long getSize();
 
     /**
+     * Returns the size as a property, which the second loading phase may change on the UI thread.
+     *
+     * @return the property of the size
+     */
+    ReadOnlyObjectProperty<@Nullable Long> sizeProperty();
+
+    /**
      * Returns the last-modified timestamp of this entry in milliseconds since the Unix epoch
      * (January 1, 1970, 00:00:00 UTC), or {@code null} if the value is unavailable.
      *
      * @return last-modified time in milliseconds since the Unix epoch, or {@code null}
      */
     @Nullable Long getModifiedTime();
+
+    /**
+     * Returns the modified time as a property, which the second loading phase may change on the UI thread.
+     *
+     * @return the property of the modified time
+     */
+    ReadOnlyObjectProperty<@Nullable Long> modifiedTimeProperty();
 
     /**
      * Returns the creation timestamp of this entry in milliseconds since the Unix epoch
@@ -113,7 +127,7 @@ public interface StorageFile {
 
     /**
      * Returns the icon representing this entry in the UI. The icon is set by whoever creates the file (for example,
-     * the {@link FileProvider}); the storage does not provide one.
+     * a file decorator); the storage does not provide one.
      *
      * @return the icon, or {@code null} if the creator of the file has not set one
      */
@@ -138,14 +152,6 @@ public interface StorageFile {
      * is changed on the UI thread once the file is shown, so the elements that show the file can observe it.
      */
     ReadOnlyObjectProperty<IconTextStyle> styleProperty();
-
-    /**
-     * Returns how far this entry is in the two-phase loading. The second phase changes it on a background thread,
-     * so it is not observable: the elements that show the file observe its icon and style, which follow it.
-     *
-     * @return the state, {@link FileState#READY} for a file the {@link FileProvider} has not handled
-     */
-    FileState getState();
 
     /**
      * Returns {@code true} if this entry is a directory.

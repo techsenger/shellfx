@@ -41,11 +41,11 @@ public class DefaultStorageFile implements StorageFile {
 
     private URI uri;
 
-    private @Nullable Long size;
+    private final ReadOnlyObjectWrapper<@Nullable Long> size = new ReadOnlyObjectWrapper<>();
 
     private String name;
 
-    private @Nullable Long modifiedTime;
+    private final ReadOnlyObjectWrapper<@Nullable Long> modifiedTime = new ReadOnlyObjectWrapper<>();
 
     private @Nullable Long createdTime;
 
@@ -60,9 +60,6 @@ public class DefaultStorageFile implements StorageFile {
     private final ReadOnlyObjectWrapper<FontIcon<?>> icon = new ReadOnlyObjectWrapper<>();
 
     private final ReadOnlyObjectWrapper<IconTextStyle> style = new ReadOnlyObjectWrapper<>();
-
-    // written by the second loading phase on a background thread
-    private volatile FileState state = FileState.READY;
 
     /**
      * Constructs an empty {@code DefaultStorageFile}. Fields should be populated by the
@@ -93,12 +90,22 @@ public class DefaultStorageFile implements StorageFile {
 
     @Override
     public @Nullable Long getSize() {
-        return size;
+        return size.get();
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<@Nullable Long> sizeProperty() {
+        return size.getReadOnlyProperty();
     }
 
     @Override
     public @Nullable Long getModifiedTime() {
-        return modifiedTime;
+        return modifiedTime.get();
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<@Nullable Long> modifiedTimeProperty() {
+        return modifiedTime.getReadOnlyProperty();
     }
 
     public @Nullable Long getCreatedTime() {
@@ -146,11 +153,6 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     @Override
-    public FileState getState() {
-        return state;
-    }
-
-    @Override
     public int hashCode() {
         int hash = 7;
         hash = 29 * hash + Objects.hashCode(this.storage);
@@ -183,7 +185,7 @@ public class DefaultStorageFile implements StorageFile {
     @Override
     public String toString() {
         return "DefaultStorageFile[" + "storage=" + storage + ", entryType=" + entryType + ", uri=" + uri
-                + ", size=" + size + ", name=" + name + ", modifiedTime=" + modifiedTime
+                + ", size=" + getSize() + ", name=" + name + ", modifiedTime=" + getModifiedTime()
                 + ", createdTime=" + createdTime + ", hidden=" + hidden + ", virtual=" + virtual + ']';
     }
 
@@ -203,15 +205,6 @@ public class DefaultStorageFile implements StorageFile {
      */
     public void setStyle(@Nullable IconTextStyle style) {
         this.style.set(style);
-    }
-
-    /**
-     * Sets how far this file is in the two-phase loading. It is changed by the file provider, on any thread.
-     *
-     * @param state the state
-     */
-    public void setState(FileState state) {
-        this.state = state;
     }
 
     /**
@@ -256,7 +249,7 @@ public class DefaultStorageFile implements StorageFile {
      * @param size size in bytes, or {@code null} if not applicable
      */
     protected void setSize(@Nullable Long size) {
-        this.size = size;
+        this.size.set(size);
     }
 
     /**
@@ -265,7 +258,7 @@ public class DefaultStorageFile implements StorageFile {
      * @param modifiedTime milliseconds since the Unix epoch, or {@code null} if unavailable
      */
     protected void setModifiedTime(@Nullable Long modifiedTime) {
-        this.modifiedTime = modifiedTime;
+        this.modifiedTime.set(modifiedTime);
     }
 
     /**

@@ -109,7 +109,7 @@ public class FileColumnBuilder {
                     if (file == null || empty) {
                         observer.unobserve();
                     } else {
-                        observer.observe(file.styleProperty());
+                        observer.observe(file.sizeProperty(), file.styleProperty());
                     }
                     FileCellUtils.updateStyles(this, null, empty ? null : file);
                     if (file == null || file.getSize() == null || empty) {
@@ -148,7 +148,7 @@ public class FileColumnBuilder {
                 if (file == null || empty) {
                     observer.unobserve();
                 } else {
-                    observer.observe(file.styleProperty());
+                    observer.observe(file.modifiedTimeProperty(), file.styleProperty());
                 }
                 FileCellUtils.updateStyles(this, null, empty ? null : file);
                 if (file == null || file.getModifiedTime() == null || empty) {

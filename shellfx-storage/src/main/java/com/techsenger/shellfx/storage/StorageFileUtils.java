@@ -17,28 +17,27 @@
 package com.techsenger.shellfx.storage;
 
 /**
- * Tells how far a listed file is in the two-phase loading of a directory: whether the data the first phase gave is
- * final, or the second phase still has to refine it.
+ * Utilities for the files of a storage.
  *
  * @author Pavel Castornii
  */
-public enum FileState {
+public final class StorageFileUtils {
 
     /**
-     * The data of the file is not final: the second phase has not refined it yet. The file is shown with a state
-     * icon instead of its own.
+     * Casts the file to a writable one, so that its icon or style can be set.
+     *
+     * @param file the file to write to
+     * @return the same file
+     * @throws IllegalArgumentException if the file is not a {@link DefaultStorageFile}
      */
-    PENDING,
+    public static DefaultStorageFile cast(StorageFile file) {
+        if (!(file instanceof DefaultStorageFile defaultFile)) {
+            throw new IllegalArgumentException("Only DefaultStorageFile can be written to: " + file);
+        }
+        return defaultFile;
+    }
 
-    /**
-     * The data of the file is final, either because it needed no refining or because the second phase has refined
-     * it.
-     */
-    READY,
-
-    /**
-     * The second phase could not refine the file, so the data of the first phase is all there is. The file is shown
-     * with an error icon.
-     */
-    FAILED
+    private StorageFileUtils() {
+        // empty
+    }
 }

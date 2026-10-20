@@ -18,7 +18,6 @@ package com.techsenger.shellfx.storage.style;
 
 import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.FileEntryType;
-import com.techsenger.shellfx.storage.FileState;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.settings.FileStyleScheme;
 import com.techsenger.shellfx.storage.settings.FileStyleSettings;
@@ -57,23 +56,24 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
     }
 
     @Override
-    public IconTextStyle resolve(F file, Theme theme) {
+    public IconTextStyle resolve(F file, FileDecorationType type, Theme theme) {
         if (file.isRoot()) {
             return file.getStorage().getStyleResolver().resolve(theme);
         }
         var scheme = schemesByTheme.computeIfAbsent(theme, schemeFactory);
-        return toIconTextStyle(resolveSettings(file, scheme));
+        return toIconTextStyle(resolveSettings(file, type, scheme));
     }
 
     /**
      * Gives the style of a file that is not a root: the style of its kind with the masks of its states over it.
      *
      * @param file the file
+     * @param type whether the decoration is provisional or final
      * @param scheme the scheme of the current theme
      * @return the settings of the style
      */
-    protected FileStyleSettings resolveSettings(F file, S scheme) {
-        return applyMasks(selectStyle(getStyledFile(file), scheme), file, scheme);
+    protected FileStyleSettings resolveSettings(F file, FileDecorationType type, S scheme) {
+        return applyMasks(selectStyle(getStyledFile(file), scheme), file, type, scheme);
     }
 
     /**
@@ -82,12 +82,13 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
      *
      * @param style the style of the kind of the file
      * @param file the file
+     * @param type whether the decoration is provisional or final
      * @param scheme the scheme of the current theme
      * @return the style with the masks laid over it
      */
-    protected FileStyleSettings applyMasks(FileStyleSettings style, F file, S scheme) {
+    protected FileStyleSettings applyMasks(FileStyleSettings style, F file, FileDecorationType type, S scheme) {
         var result = style;
-        if (isError(file)) {
+        if (isError(file, type)) {
             result = overlay(result, scheme.getError());
         }
         if (file.isHidden()) {
@@ -109,19 +110,17 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
     }
 
     /**
-     * Tells whether the file is shown as failed: it could not be refined, or it is a link that turned out to be
-     * broken.
+     * Tells whether the file is shown as erroneous: the default says so of a link that turned out to be broken, once
+     * the file is final. An application with more kinds of errors overrides it and keeps the answer of the
+     * superclass.
      *
      * @param file the file
+     * @param type whether the decoration is provisional or final
      * @return {@code true} if the mask of the error is laid over the file
      */
-    protected boolean isError(F file) {
-        var state = file.getState();
-        if (state == FileState.FAILED) {
-            return true;
-        }
+    protected boolean isError(F file, FileDecorationType type) {
         var link = file.getLink();
-        return state == FileState.READY && link != null && link.getTarget() == null;
+        return type == FileDecorationType.FINAL && link != null && link.getTarget() == null;
     }
 
     /**

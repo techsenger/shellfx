@@ -27,8 +27,6 @@ import com.techsenger.shellfx.core.settings.SettingsSubscription;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
-import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
-import static com.techsenger.shellfx.dialogs.file.FileChooserType.SAVE_AS;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.material.UiExecutor;
@@ -37,24 +35,27 @@ import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnName;
 import com.techsenger.shellfx.material.table.TableConfig;
 import com.techsenger.shellfx.storage.Comparators;
-import com.techsenger.shellfx.storage.DefaultFileDecorator;
-import com.techsenger.shellfx.storage.DefaultFileProvider;
-import com.techsenger.shellfx.storage.FileDecorator;
 import com.techsenger.shellfx.storage.FileEntryType;
-import com.techsenger.shellfx.storage.FileProvider;
-import com.techsenger.shellfx.storage.FileProviderResult;
-import com.techsenger.shellfx.storage.FileProviderTask;
-import com.techsenger.shellfx.storage.FileState;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
 import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.TwoPhaseSortPolicy;
 import com.techsenger.shellfx.storage.UriUtils;
+import com.techsenger.shellfx.storage.async.AsyncResult;
+import com.techsenger.shellfx.storage.async.AsyncTask;
+import com.techsenger.shellfx.storage.async.DefaultFileProvider;
+import com.techsenger.shellfx.storage.async.DefaultFileRefiner;
+import com.techsenger.shellfx.storage.async.FileProvider;
+import com.techsenger.shellfx.storage.async.FileRefinement;
+import com.techsenger.shellfx.storage.async.FileRefiner;
+import com.techsenger.shellfx.storage.async.TwoPhaseSortPolicy;
 import com.techsenger.shellfx.storage.settings.FileStyleDefaults;
 import com.techsenger.shellfx.storage.settings.FileStyleScheme;
+import com.techsenger.shellfx.storage.style.DefaultFileDecorator;
 import com.techsenger.shellfx.storage.style.DefaultFileIconResolver;
 import com.techsenger.shellfx.storage.style.DefaultFileStyleResolver;
+import com.techsenger.shellfx.storage.style.FileDecorationType;
+import com.techsenger.shellfx.storage.style.FileDecorator;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -62,7 +63,12 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -78,6 +84,8 @@ import javafx.collections.ObservableMap;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
+import static com.techsenger.shellfx.dialogs.file.FileChooserType.SAVE_AS;
 
 /**
  *
@@ -149,6 +157,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private final FileDecorator<T> fileDecorator;
 
+    private final FileRefiner<T> fileRefiner;
+
     private final ObjectProperty<Comparator<T>> fileComparator = new SimpleObjectProperty<>();
 
     private T resultFile;
@@ -161,7 +171,17 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private long loadToken;
 
-    private final List<FileProviderTask> tasks = new ArrayList<>();
+    private final List<AsyncTask> tasks = new ArrayList<>();
+
+    /**
+     * The files that are shown provisionally, as the second phase is still to refine them. The files are compared by
+     * identity, as the refinement of a file can change what it is equal to.
+     */
+    private final Set<T> pending = Collections.synchronizedSet(Collections.newSetFromMap(new IdentityHashMap<>()));
+
+    private final Queue<FileRefinement<T>> refinements = new ConcurrentLinkedQueue<>();
+
+    private final AtomicBoolean refinementsScheduled = new AtomicBoolean();
 
     public FileChooserDialogViewModel(FileChooserDialogParams<T> params) {
         super(params);
@@ -172,6 +192,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         this.twoPhaseSortPolicy = params.getTwoPhaseSortPolicy();
         var paramsDecorator = params.getFileDecorator();
         this.fileDecorator = paramsDecorator != null ? paramsDecorator : createDefaultFileDecorator();
+        var paramsRefiner = params.getFileRefiner();
+        this.fileRefiner = paramsRefiner != null ? paramsRefiner : createDefaultFileRefiner();
         this.initialDirectory = params.getInitialDirectory();
         this.initialFileName = params.getInitialFileName();
         this.fileName.set(initialFileName);
@@ -581,6 +603,10 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         return new DefaultFileProvider<T>(storages);
     }
 
+    protected FileRefiner<T> createDefaultFileRefiner() {
+        return new DefaultFileRefiner<T>(storages);
+    }
+
     protected FileDecorator<T> createDefaultFileDecorator() {
         return new DefaultFileDecorator<T>(new DefaultFileIconResolver<T>(),
                 new DefaultFileStyleResolver<T, FileStyleScheme>(FileStyleDefaults::getScheme));
@@ -652,13 +678,16 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         var requestedStorage = currentStorage();
         var requestedDirectory = this.directory.get();
         var token = loadToken;
-        tasks.add(fileProvider.getRootsAsync(
-                roots -> UiExecutor.execute(() -> {
-                    //the user could navigate elsewhere while the roots were being read
-                    if (isCurrent(token)) {
-                        loadHierarchy(roots, requestedStorage, requestedDirectory, token);
-                    }
-                }),
+        tasks.add(fileProvider.provideRootsAsync(
+                roots -> {
+                    prepareToShow(roots);
+                    UiExecutor.execute(() -> {
+                        //the user could navigate elsewhere while the roots were being read
+                        if (isCurrent(token)) {
+                            loadHierarchy(roots, requestedStorage, requestedDirectory, token);
+                        }
+                    });
+                },
                 result -> { }));
     }
 
@@ -671,6 +700,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         loadToken++;
         cancelTasks();
         setWaiting(true);
+        modifiableFiles.forEach(pending::remove);
         setFiles(Collections.emptyList());
         return loadToken;
     }
@@ -685,14 +715,16 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     private void navigateTo(FileStorage storage, URI uri, @Nullable T selectedFile) {
         FileStorage<T> typedStorage = storage;
         var token = startLoading();
-        Consumer<T> onLoaded = directory -> UiExecutor.execute(() -> {
-            if (isCurrent(token)) {
-                decorate(List.of(directory));
-                listDirectory(directory, selectedFile, token, false);
-            }
-        });
-        Consumer<FileProviderResult> onFinished = result -> {
-            if (result == FileProviderResult.FAILED) {
+        Consumer<T> onLoaded = directory -> {
+            prepareToShow(List.of(directory));
+            UiExecutor.execute(() -> {
+                if (isCurrent(token)) {
+                    listDirectory(directory, selectedFile, token, false);
+                }
+            });
+        };
+        Consumer<AsyncResult> onFinished = result -> {
+            if (result == AsyncResult.FAILED) {
                 UiExecutor.execute(() -> {
                     if (isCurrent(token)) {
                         listDefaultDirectory(token);
@@ -701,9 +733,9 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             }
         };
         if (uri.equals(storage.getUri())) {
-            tasks.add(fileProvider.getRootAsync(typedStorage, onLoaded, onFinished));
+            tasks.add(fileProvider.provideRootAsync(typedStorage, onLoaded, onFinished));
         } else {
-            tasks.add(fileProvider.getFileAsync(typedStorage, uri, OperationType.PRIMARY, onLoaded, onFinished));
+            tasks.add(fileProvider.provideFileAsync(typedStorage, uri, OperationType.PRIMARY, onLoaded, onFinished));
         }
     }
 
@@ -727,15 +759,17 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             setWaiting(false);
             return;
         }
-        tasks.add(fileProvider.getRootAsync(local.get(),
-                root -> UiExecutor.execute(() -> {
-                    if (isCurrent(token)) {
-                        decorate(List.of(root));
-                        listDirectory(root, null, token, true);
-                    }
-                }),
+        tasks.add(fileProvider.provideRootAsync(local.get(),
+                root -> {
+                    prepareToShow(List.of(root));
+                    UiExecutor.execute(() -> {
+                        if (isCurrent(token)) {
+                            listDirectory(root, null, token, true);
+                        }
+                    });
+                },
                 result -> {
-                    if (result == FileProviderResult.FAILED) {
+                    if (result == AsyncResult.FAILED) {
                         UiExecutor.execute(() -> {
                             if (isCurrent(token)) {
                                 this.directory.set(null);
@@ -751,21 +785,24 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
      */
     private void listDirectory(T newDirectory, @Nullable T selectedFile, long token, boolean defaultUsed) {
         this.directory.set(newDirectory);
-        tasks.add(fileProvider.getFilesAsync(currentStorage(), directoryUri(), OperationType.PRIMARY,
-                storageFiles -> UiExecutor.execute(() -> {
-                    if (isCurrent(token)) {
-                        showFiles(storageFiles, selectedFile);
-                    }
-                }),
+        tasks.add(fileProvider.provideFilesAsync(currentStorage(), directoryUri(), OperationType.PRIMARY,
+                storageFiles -> {
+                    prepareToShow(storageFiles);
+                    UiExecutor.execute(() -> {
+                        if (isCurrent(token)) {
+                            showFiles(storageFiles, selectedFile);
+                        }
+                    });
+                },
                 result -> UiExecutor.execute(() -> {
                     if (!isCurrent(token)) {
                         return;
                     }
-                    if (result == FileProviderResult.SUCCESS) {
+                    if (result == AsyncResult.SUCCESS) {
                         setWaiting(false);
-                    } else if (result == FileProviderResult.FAILED && !defaultUsed) {
+                    } else if (result == AsyncResult.FAILED && !defaultUsed) {
                         listDefaultDirectory(token);
-                    } else if (result == FileProviderResult.FAILED) {
+                    } else if (result == AsyncResult.FAILED) {
                         this.directory.set(null);
                         setWaiting(false);
                     }
@@ -781,14 +818,17 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             showLocations(roots, null, List.of());
             return;
         }
-        tasks.add(fileProvider.getHierarchyAsync(requestedStorage, requestedDirectory.getUri(), OperationType.PRIMARY,
-                hierarchy -> UiExecutor.execute(() -> {
-                    if (isCurrent(token)) {
-                        showLocations(roots, requestedStorage, hierarchy);
-                    }
-                }),
+        tasks.add(fileProvider.provideHierarchyAsync(requestedStorage, requestedDirectory.getUri(),
+                OperationType.PRIMARY, hierarchy -> {
+                    prepareToShow(hierarchy);
+                    UiExecutor.execute(() -> {
+                        if (isCurrent(token)) {
+                            showLocations(roots, requestedStorage, hierarchy);
+                        }
+                    });
+                },
                 result -> {
-                    if (result == FileProviderResult.FAILED) {
+                    if (result == AsyncResult.FAILED) {
                         UiExecutor.execute(() -> {
                             if (isCurrent(token)) {
                                 showLocations(roots, requestedStorage, List.of(requestedDirectory));
@@ -801,13 +841,11 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     private void showLocations(List<T> roots, @Nullable FileStorage<T> requestedStorage, List<T> hierarchy) {
         T selectedLocation = null;
         List<T> newLocations = new ArrayList<>();
-        decorate(roots);
         for (var root : roots) {
             if (root.getStorage() != requestedStorage) {
                 newLocations.add(root);
                 continue;
             }
-            decorate(hierarchy);
             newLocations.addAll(hierarchy);
             selectedLocation = hierarchy.get(hierarchy.size() - 1);
         }
@@ -838,12 +876,11 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             files = filteredFiles;
         }
         // a directory with nothing to refine is final after the first phase, so it is sorted whatever the policy is
-        var refinable = files.stream().anyMatch(f -> f.getState() == FileState.PENDING);
+        var refinable = files.stream().anyMatch(pending::contains);
         if (!refinable || twoPhaseSortPolicy == TwoPhaseSortPolicy.AFTER_FIRST_PHASE
                 || twoPhaseSortPolicy == TwoPhaseSortPolicy.AFTER_EACH_PHASE) {
             files.sort(this.sortComparator);
         }
-        decorate(files);
         setFiles(files);
         // the second phase: the files that are not ready are refined in the background, and the cells that show them
         // follow their properties
@@ -928,10 +965,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     /**
-     * Decorates the files on the calling thread, which is the UI thread or the one that loaded the files.
+     * Marks the files the second phase has to refine as pending and decorates them, on the background thread of the
+     * provider, before they are shown.
      */
-    private void decorate(List<T> files) {
-        fileDecorator.decorate(files, getAppearanceSettings().getTheme());
+    private void prepareToShow(List<T> files) {
+        files.stream().filter(fileRefiner::isRefinable).forEach(pending::add);
+        decorate(files);
     }
 
     private void decorateShownFiles() {
@@ -940,17 +979,45 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     /**
-     * Starts the second phase of the provider for the files, whose results are decorated in the background and
-     * written on the UI thread by the decorator.
+     * Decorates the files provisionally if they are pending, and for good otherwise.
+     */
+    private void decorate(List<T> files) {
+        var theme = getAppearanceSettings().getTheme();
+        for (var file : files) {
+            var type = pending.contains(file) ? FileDecorationType.TEMP : FileDecorationType.FINAL;
+            fileDecorator.decorate(file, type, theme);
+        }
+    }
+
+    /**
+     * Starts the second phase for the pending files. The refinements are queued as they come, and one UI task applies
+     * and decorates all that are queued by then, so a directory of many files doesn't schedule a task for each file.
      */
     private void refineAsync(List<T> files, Runnable onFinished) {
-        var settings = getAppearanceSettings();
-        tasks.add(fileProvider.refineFilesAsync(files, file -> fileDecorator.decorateAsync(file, settings.getTheme()),
-                result -> onFinished.run()));
+        var refinable = files.stream().filter(pending::contains).toList();
+        tasks.add(fileRefiner.refineFilesAsync(refinable, refinement -> {
+            refinements.add(refinement);
+            if (refinementsScheduled.compareAndSet(false, true)) {
+                UiExecutor.execute(this::applyRefinements);
+            }
+        }, result -> onFinished.run()));
+    }
+
+    private void applyRefinements() {
+        refinementsScheduled.set(false);
+        var theme = getAppearanceSettings().getTheme();
+        var refinement = refinements.poll();
+        while (refinement != null) {
+            var file = refinement.getFile();
+            refinement.apply();
+            pending.remove(file);
+            fileDecorator.decorate(file, FileDecorationType.FINAL, theme);
+            refinement = refinements.poll();
+        }
     }
 
     private void cancelTasks() {
-        tasks.forEach(FileProviderTask::cancel);
+        tasks.forEach(AsyncTask::cancel);
         tasks.clear();
     }
 

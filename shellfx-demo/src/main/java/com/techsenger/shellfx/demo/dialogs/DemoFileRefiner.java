@@ -16,9 +16,9 @@
 
 package com.techsenger.shellfx.demo.dialogs;
 
-import com.techsenger.shellfx.storage.DefaultFileProvider;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.async.DefaultFileRefiner;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,25 +28,24 @@ import java.util.List;
  *
  * @author Pavel Castornii
  */
-final class DemoFileProvider extends DefaultFileProvider<StorageFile> {
+final class DemoFileRefiner extends DefaultFileRefiner<StorageFile> {
 
-    DemoFileProvider(List<? extends FileStorage<StorageFile>> storages) {
+    DemoFileRefiner(List<? extends FileStorage<StorageFile>> storages) {
         super(storages);
     }
 
     @Override
-    protected boolean isRefinable(FileStorage<StorageFile> storage, StorageFile file) {
-        return super.isRefinable(storage, file) || (file instanceof DemoFile demoFile && demoFile.isPending());
+    public boolean isRefinable(StorageFile file) {
+        return super.isRefinable(file) || (file instanceof DemoFile demoFile && demoFile.isPending());
     }
 
     @Override
-    protected void refine(StorageFile file) throws IOException {
+    protected Runnable refine(StorageFile file) throws IOException {
         if (file instanceof DemoFile demoFile && file.getStorage() instanceof DemoFileStorage storage) {
             storage.awaitRelease();
             storage.simulateLatency();
-            demoFile.complete();
-        } else {
-            super.refine(file);
+            return demoFile::complete;
         }
+        return super.refine(file);
     }
 }

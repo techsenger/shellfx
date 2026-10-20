@@ -19,8 +19,9 @@ package com.techsenger.shellfx.storage;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
+import com.techsenger.shellfx.storage.async.LinkUtils;
 import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
+import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -127,7 +128,7 @@ public class SystemFileStorageIT {
      */
     private static @Nullable FileEntryType targetEntryType(FileStorage<StorageFile> storage, StorageFile link)
             throws IOException {
-        new DefaultFileProvider<StorageFile>(List.of(storage)).refine(link);
+        LinkUtils.resolve(List.of(storage), link);
         var file = link.getLink().getTarget();
         return file == null ? null : file.getEntryType();
     }

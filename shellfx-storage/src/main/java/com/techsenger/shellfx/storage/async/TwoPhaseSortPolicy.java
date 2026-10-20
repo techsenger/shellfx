@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.async;
 
 /**
  * Defines when files that have a second phase are sorted automatically: after the first phase, after the second one,

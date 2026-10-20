@@ -20,9 +20,9 @@ import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.storage.StorageFile;
 
 /**
- * Determines the icon of a file in any of its states: a state icon while the file is not ready or has failed, its
- * own icon otherwise. An application that knows more kinds of files gives its own resolver to the file provider; such
- * a resolver can extend {@link DefaultFileIconResolver} and give the default icon for the rest.
+ * Determines the icon of a file: a pending icon while the file is still to be refined, an error icon if it is
+ * erroneous, its own icon otherwise. An application that knows more kinds of files gives its own resolver to the file
+ * provider; such a resolver can extend {@link DefaultFileIconResolver} and give the default icon for the rest.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
@@ -34,7 +34,8 @@ public interface FileIconResolver<F extends StorageFile> {
      * Resolves the icon of the file.
      *
      * @param file the file to resolve the icon for
+     * @param type whether the decoration is provisional, as the file is still to be refined, or final
      * @return the icon, never {@code null}
      */
-    FontIcon<?> resolve(F file);
+    FontIcon<?> resolve(F file, FileDecorationType type);
 }

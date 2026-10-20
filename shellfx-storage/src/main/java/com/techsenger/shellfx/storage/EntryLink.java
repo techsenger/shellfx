@@ -28,8 +28,8 @@ import java.net.URI;
  * the second phase. This is the case for every link but the few that end in something that has no path at all, such
  * as the pipe behind {@code /dev/stderr}; for those the storage reads the attributes of the end itself and gives the
  * {@linkplain #getTarget() target} at once, and there is no resolved URI;</li>
- * <li>in the second phase, by the {@link FileProvider}, which gets the file at the resolved URI from the storage that
- * holds it, which is not necessarily the storage of the link.</li>
+ * <li>in the second phase, by the file provider or the file refiner, which gets the file at the resolved URI from the
+ * storage that holds it, which is not necessarily the storage of the link.</li>
  * </ul>
  *
  * @author Pavel Castornii

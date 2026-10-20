@@ -33,8 +33,9 @@ public interface FileStyleResolver<F extends StorageFile> {
      * Resolves the styles of the file.
      *
      * @param file the file to resolve the styles for
+     * @param type whether the decoration is provisional, as the file is still to be refined, or final
      * @param theme the theme the file is shown in
      * @return the styles, never {@code null}; a style without values clears the styles of the file
      */
-    IconTextStyle resolve(F file, Theme theme);
+    IconTextStyle resolve(F file, FileDecorationType type, Theme theme);
 }

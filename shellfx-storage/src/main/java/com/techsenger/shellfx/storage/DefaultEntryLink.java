@@ -83,6 +83,16 @@ public class DefaultEntryLink implements EntryLink {
     }
 
     /**
+     * Sets the file the link finally points to. It is public so that the second loading phase can set it, and must be
+     * called on a thread that owns the link, as it is not observable.
+     *
+     * @param target the file at the end of the chain of links, or {@code null} if the link is broken
+     */
+    public void setTarget(@Nullable StorageFile target) {
+        this.target = target;
+    }
+
+    /**
      * Sets the URI of the path the link states.
      *
      * @param targetUri the URI, must not be {@code null}
@@ -98,14 +108,5 @@ public class DefaultEntryLink implements EntryLink {
      */
     protected void setResolvedUri(@Nullable URI resolvedUri) {
         this.resolvedUri = resolvedUri;
-    }
-
-    /**
-     * Sets the file the link finally points to.
-     *
-     * @param target the file at the end of the chain of links, or {@code null} if the link is broken
-     */
-    protected void setTarget(@Nullable StorageFile target) {
-        this.target = target;
     }
 }

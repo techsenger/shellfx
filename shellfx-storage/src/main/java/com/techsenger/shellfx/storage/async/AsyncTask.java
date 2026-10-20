@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.async;
 
 /**
- * An asynchronous operation of a {@link FileProvider} that is running and can be cancelled.
+ * An asynchronous operation of a {@link FileProvider} or a {@link FileRefiner} that is running and can be cancelled.
  *
  * @author Pavel Castornii
  */
-public interface FileProviderTask {
+public interface AsyncTask {
 
     /**
      * Cancels the operation: the callbacks with data that have not started yet are not called, and the end callback
-     * gets {@link FileProviderResult#CANCELLED} unless the operation has already ended. A callback that is running,
-     * and the work that has been started, is not interrupted. Calling it again has no effect.
+     * gets {@link AsyncResult#CANCELLED} unless the operation has already ended. A callback that is running, and the
+     * work that has been started, is not interrupted. Calling it again has no effect.
      */
     void cancel();
 

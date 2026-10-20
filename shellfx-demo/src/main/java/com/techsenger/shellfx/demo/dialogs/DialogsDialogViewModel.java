@@ -48,9 +48,9 @@ import com.techsenger.shellfx.dialogs.text.TextsDialogParams;
 import com.techsenger.shellfx.storage.DefaultStorageFile;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.TwoPhaseSortPolicy;
 import com.techsenger.shellfx.storage.UnixFileStorage;
 import com.techsenger.shellfx.storage.WindowsFileStorage;
+import com.techsenger.shellfx.storage.async.TwoPhaseSortPolicy;
 import com.techsenger.toolkit.core.os.OsUtils;
 import java.util.List;
 import java.util.Map;
@@ -213,7 +213,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
         var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), settings,
                 FileChooserType.SAVE_AS, demoStorages);
-        params.setFileProvider(new DemoFileProvider(demoStorages));
+        params.setFileRefiner(new DemoFileRefiner(demoStorages));
         params.setTwoPhaseSortPolicy(TwoPhaseSortPolicy.AFTER_EACH_PHASE);
         // the demo storage is a network one, so the dialog does not pick it as the local default
         params.setInitialDirectory(demoStorage.getUri());

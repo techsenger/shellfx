@@ -74,8 +74,8 @@ import java.util.List;
  *
  * <p><b>Appearance.</b> A storage is loaded dynamically, so only it knows how it looks itself: the icon and the
  * style of the storage and of its root, {@link #getIconResolver()} and {@link #getStyleResolver()}.
- * The files of every storage share one model and are styled centrally, by the {@link FileProvider}. A storage that
- * extends the model of a file is styled by a provider that knows the extension.
+ * The files of every storage share one model and are styled centrally, by a file decorator. A storage that
+ * extends the model of a file is styled by a decorator that knows the extension.
  *
  * @param <T> the concrete file entry type produced by this storage
  * @author Pavel Castornii

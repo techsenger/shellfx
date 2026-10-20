@@ -20,11 +20,12 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.storage.FileDecorator;
-import com.techsenger.shellfx.storage.FileProvider;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.TwoPhaseSortPolicy;
+import com.techsenger.shellfx.storage.async.FileProvider;
+import com.techsenger.shellfx.storage.async.FileRefiner;
+import com.techsenger.shellfx.storage.async.TwoPhaseSortPolicy;
+import com.techsenger.shellfx.storage.style.FileDecorator;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,8 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
     private @Nullable FileProvider<T> fileProvider;
 
     private @Nullable FileDecorator<T> fileDecorator;
+
+    private @Nullable FileRefiner<T> fileRefiner;
 
     private TwoPhaseSortPolicy twoPhaseSortPolicy = TwoPhaseSortPolicy.ON_REQUEST;
 
@@ -85,6 +88,20 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
      */
     public void setFileProvider(@Nullable FileProvider<T> fileProvider) {
         this.fileProvider = fileProvider;
+    }
+
+    public @Nullable FileRefiner<T> getFileRefiner() {
+        return fileRefiner;
+    }
+
+    /**
+     * Sets the refiner that does the second phase for the files that need it. It can't be changed once the dialog is
+     * opened.
+     *
+     * @param fileRefiner the refiner, or {@code null} for the default one over the storages
+     */
+    public void setFileRefiner(@Nullable FileRefiner<T> fileRefiner) {
+        this.fileRefiner = fileRefiner;
     }
 
     public @Nullable FileDecorator<T> getFileDecorator() {

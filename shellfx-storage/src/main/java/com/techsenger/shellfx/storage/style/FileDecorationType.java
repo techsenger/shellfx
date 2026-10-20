@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage;
+package com.techsenger.shellfx.storage.style;
 
 /**
- * How an asynchronous operation of a {@link FileProvider} ended.
+ * Tells whether the decoration a client asks for is the last one the file will get, or the second loading phase is
+ * still to refine the file and decorate it again.
  *
  * @author Pavel Castornii
  */
-public enum FileProviderResult {
+public enum FileDecorationType {
 
     /**
-     * The operation has given all its data.
+     * The file is still to be refined, so it is decorated provisionally: it is shown with a pending icon instead of
+     * its own.
      */
-    SUCCESS,
+    TEMP,
 
     /**
-     * The operation failed, which the provider has logged.
+     * The file needs no refining, or it has been refined, so what it is decorated with is final.
      */
-    FAILED,
-
-    /**
-     * The operation was cancelled before it ended.
-     */
-    CANCELLED
+    FINAL
 }
