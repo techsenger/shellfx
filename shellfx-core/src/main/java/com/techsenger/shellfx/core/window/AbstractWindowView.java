@@ -365,7 +365,7 @@ public abstract class AbstractWindowView<VM extends AbstractWindowViewModel<?>> 
             if (this.stage == null) {
                 this.stage = new Stage();
             }
-            HeaderBar.setPrefButtonHeight(stage, 0); // to hide default buttons
+            HeaderBar.setSystemButtonHeight(stage, 0); // to hide default buttons
             stage.initStyle(StageStyle.EXTENDED);
             var scene = new Scene(windowNode);
             stage.setScene(scene);
