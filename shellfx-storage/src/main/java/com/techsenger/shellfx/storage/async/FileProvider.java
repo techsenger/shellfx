@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /**
  * Provides the files of a directory, a root and so on, completing what is quick to find out. What is slow to find out
  * is left to the second phase, which is up to the {@link FileRefiner}, and giving the files their icon and style is up
- * to the client and the decorator. The storages themselves only list: whatever needs more than a listing is done
+ * to the client and the resolvers. The storages themselves only list: whatever needs more than a listing is done
  * here.
  *
  * <p>The provider works in the background, and its callbacks are called on a background thread. Every asynchronous

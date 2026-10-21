@@ -25,7 +25,6 @@ import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.async.FileProvider;
 import com.techsenger.shellfx.storage.async.FileRefiner;
 import com.techsenger.shellfx.storage.async.TwoPhaseSortPolicy;
-import com.techsenger.shellfx.storage.style.FileDecorator;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
@@ -41,8 +40,6 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
     private final List<? extends FileStorage<T>> storages;
 
     private @Nullable FileProvider<T> fileProvider;
-
-    private @Nullable FileDecorator<T> fileDecorator;
 
     private @Nullable FileRefiner<T> fileRefiner;
 
@@ -102,19 +99,6 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
      */
     public void setFileRefiner(@Nullable FileRefiner<T> fileRefiner) {
         this.fileRefiner = fileRefiner;
-    }
-
-    public @Nullable FileDecorator<T> getFileDecorator() {
-        return fileDecorator;
-    }
-
-    /**
-     * Sets the decorator that gives the files their icon and style. It can't be changed once the dialog is opened.
-     *
-     * @param fileDecorator the decorator, or {@code null} for the one that uses the default scheme
-     */
-    public void setFileDecorator(@Nullable FileDecorator<T> fileDecorator) {
-        this.fileDecorator = fileDecorator;
     }
 
     public TwoPhaseSortPolicy getTwoPhaseSortPolicy() {

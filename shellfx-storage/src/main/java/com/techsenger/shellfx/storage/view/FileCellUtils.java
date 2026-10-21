@@ -36,7 +36,8 @@ public final class FileCellUtils {
      * @param file the file shown in the cell, or {@code null} if the cell is empty
      */
     public static void updateStyles(Labeled cell, @Nullable FontIconView iconView, @Nullable StorageFile file) {
-        var fileStyle = file != null ? file.getStyle() : null;
+        var decoration = file != null ? file.getDecoration() : null;
+        var fileStyle = decoration != null ? decoration.style() : null;
         cell.setStyle(fileStyle != null ? fileStyle.textStyle() : null);
         if (iconView != null) {
             iconView.setIconStyle(fileStyle != null ? fileStyle.iconStyle() : null);

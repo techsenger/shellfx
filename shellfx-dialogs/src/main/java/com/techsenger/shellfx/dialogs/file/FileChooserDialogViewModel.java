@@ -49,13 +49,7 @@ import com.techsenger.shellfx.storage.async.FileProvider;
 import com.techsenger.shellfx.storage.async.FileRefinement;
 import com.techsenger.shellfx.storage.async.FileRefiner;
 import com.techsenger.shellfx.storage.async.TwoPhaseSortPolicy;
-import com.techsenger.shellfx.storage.settings.FileStyleDefaults;
-import com.techsenger.shellfx.storage.settings.FileStyleScheme;
-import com.techsenger.shellfx.storage.style.DefaultFileDecorator;
-import com.techsenger.shellfx.storage.style.DefaultFileIconResolver;
-import com.techsenger.shellfx.storage.style.DefaultFileStyleResolver;
 import com.techsenger.shellfx.storage.style.FileDecorationType;
-import com.techsenger.shellfx.storage.style.FileDecorator;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -110,6 +104,18 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private final ObservableSource<Integer> editFileSource = new SimpleObservableSource<>();
 
+    /**
+     * Tells the view that the icon and the style of the files are outdated, which happens when the second loading
+     * phase refines them. The view decorates the files again from scratch.
+     */
+    private final ObservableSource<List<T>> decorateSource = new SimpleObservableSource<>();
+
+    /**
+     * Tells the view that only the style of the files is outdated, as a theme or a mark changes nothing else. The
+     * view keeps their icons and resolves just the styles again.
+     */
+    private final ObservableSource<List<T>> restyleSource = new SimpleObservableSource<>();
+
     private final ObservableList<T> modifiableLocations = FXCollections.observableArrayList();
 
     private final ObservableList<T> locations = FXCollections.unmodifiableObservableList(modifiableLocations);
@@ -155,8 +161,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private final TwoPhaseSortPolicy twoPhaseSortPolicy;
 
-    private final FileDecorator<T> fileDecorator;
-
     private final FileRefiner<T> fileRefiner;
 
     private final ObjectProperty<Comparator<T>> fileComparator = new SimpleObjectProperty<>();
@@ -190,8 +194,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         this.fileProvider = paramsProvider != null ? paramsProvider : createDefaultFileProvider(params.getStorages());
         this.storages = fileProvider.getStorages();
         this.twoPhaseSortPolicy = params.getTwoPhaseSortPolicy();
-        var paramsDecorator = params.getFileDecorator();
-        this.fileDecorator = paramsDecorator != null ? paramsDecorator : createDefaultFileDecorator();
         var paramsRefiner = params.getFileRefiner();
         this.fileRefiner = paramsRefiner != null ? paramsRefiner : createDefaultFileRefiner();
         this.initialDirectory = params.getInitialDirectory();
@@ -202,7 +204,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         selectedFileIndex.addListener((obs, oldV, newV) -> {
             var f = computeFile();
             this.file.set(f);
-            if (f != null && !f.isDirectory()) {
+            if (f != null && !f.isDirectory() && !f.isDirectoryLink()) {
                 setFileName(f.getName());
             } else {
                 setFileName(null);
@@ -475,10 +477,24 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         navigateTo(location.getStorage(), location.getUri(), null);
     }
 
-    protected void onNavigateDown(StorageFile file) {
-        if (file.isDirectory()) {
-            navigateTo(file.getStorage(), file.getUri(), null);
+    /**
+     * Enters the directory the file is or points to.
+     *
+     * @param file the file to enter, which may be {@code null} when nothing is selected
+     * @return {@code true} if the file was entered, {@code false} if it is not a directory or a link to one
+     */
+    protected boolean onNavigateDown(@Nullable StorageFile file) {
+        if (file == null) {
+            return false;
         }
+        // a link is entered by going to the directory it points to, which may lie in another storage
+        var link = file.getLink();
+        var directory = file.isDirectory() ? file : (link != null ? link.getTarget() : null);
+        if (directory == null || !directory.isDirectory()) {
+            return false;
+        }
+        navigateTo(directory.getStorage(), directory.getUri(), null);
+        return true;
     }
 
     protected void onNavigateUp() {
@@ -607,11 +623,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         return new DefaultFileRefiner<T>(storages);
     }
 
-    protected FileDecorator<T> createDefaultFileDecorator() {
-        return new DefaultFileDecorator<T>(new DefaultFileIconResolver<T>(),
-                new DefaultFileStyleResolver<T, FileStyleScheme>(FileStyleDefaults::getScheme));
-    }
-
     ObservableMap<TableColumnName, TableColumnInfo> getColumns() {
         return columns;
     }
@@ -665,6 +676,21 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     ObservableSource<Integer> editFileSource() {
         return editFileSource;
+    }
+
+    ObservableSource<List<T>> decorateSource() {
+        return decorateSource;
+    }
+
+    ObservableSource<List<T>> restyleSource() {
+        return restyleSource;
+    }
+
+    /**
+     * Tells how the view has to decorate the file at the moment it is about to be shown.
+     */
+    FileDecorationType getDecorationType(T file) {
+        return pending.contains(file) ? FileDecorationType.TEMP : FileDecorationType.FINAL;
     }
 
     /**
@@ -862,7 +888,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         if (extFilter != null && !extFilter.matchesAllFiles()) {
             filteredFiles = new ArrayList<>();
             for (var f : storageFiles) {
-                if (f.isDirectory()) {
+                if (f.isDirectory() || f.isDirectoryLink()) {
                     filteredFiles.add(f);
                 } else {
                     if (extFilter.matches(f.getName())) {
@@ -965,33 +991,22 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     /**
-     * Marks the files the second phase has to refine as pending and decorates them, on the background thread of the
-     * provider, before they are shown.
+     * Marks the files the second phase has to refine as pending, on the background thread of the provider, before
+     * they are shown.
      */
     private void prepareToShow(List<T> files) {
         files.stream().filter(fileRefiner::isRefinable).forEach(pending::add);
-        decorate(files);
     }
 
     private void decorateShownFiles() {
-        decorate(modifiableFiles);
-        decorate(modifiableLocations);
-    }
-
-    /**
-     * Decorates the files provisionally if they are pending, and for good otherwise.
-     */
-    private void decorate(List<T> files) {
-        var theme = getAppearanceSettings().getTheme();
-        for (var file : files) {
-            var type = pending.contains(file) ? FileDecorationType.TEMP : FileDecorationType.FINAL;
-            fileDecorator.decorate(file, type, theme);
-        }
+        restyleSource.next(new ArrayList<>(modifiableFiles));
+        restyleSource.next(new ArrayList<>(modifiableLocations));
     }
 
     /**
      * Starts the second phase for the pending files. The refinements are queued as they come, and one UI task applies
-     * and decorates all that are queued by then, so a directory of many files doesn't schedule a task for each file.
+     * all that are queued by then and tells the view to decorate their files, so a directory of many files doesn't
+     * schedule a task for each file.
      */
     private void refineAsync(List<T> files, Runnable onFinished) {
         var refinable = files.stream().filter(pending::contains).toList();
@@ -1005,15 +1020,16 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private void applyRefinements() {
         refinementsScheduled.set(false);
-        var theme = getAppearanceSettings().getTheme();
+        var refinedFiles = new ArrayList<T>();
         var refinement = refinements.poll();
         while (refinement != null) {
             var file = refinement.getFile();
             refinement.apply();
             pending.remove(file);
-            fileDecorator.decorate(file, FileDecorationType.FINAL, theme);
+            refinedFiles.add(file);
             refinement = refinements.poll();
         }
+        decorateSource.next(refinedFiles);
     }
 
     private void cancelTasks() {
@@ -1046,7 +1062,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         }
         //there is a file with such name
         for (var file : getFiles()) {
-            if (!file.isDirectory() && file.getName().equals(fileName)) {
+            if (!file.isDirectory() && !file.isDirectoryLink() && file.getName().equals(fileName)) {
                 return file;
             }
         }

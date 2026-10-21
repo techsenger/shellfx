@@ -17,8 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.material.icon.FontIcon;
-import com.techsenger.shellfx.storage.style.IconTextStyle;
+import com.techsenger.shellfx.storage.style.FileDecoration;
 import java.net.URI;
 import java.util.Objects;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -34,6 +33,20 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
  * @author Pavel Castornii
  */
 public class DefaultStorageFile implements StorageFile {
+
+    /**
+     * Casts the file to a writable one, so that its decoration can be set.
+     *
+     * @param file the file to write to
+     * @return the same file
+     * @throws IllegalArgumentException if the file is not a {@code DefaultStorageFile}
+     */
+    public static DefaultStorageFile cast(StorageFile file) {
+        if (!(file instanceof DefaultStorageFile defaultFile)) {
+            throw new IllegalArgumentException("Only DefaultStorageFile can be written to: " + file);
+        }
+        return defaultFile;
+    }
 
     private FileStorage storage;
 
@@ -57,9 +70,7 @@ public class DefaultStorageFile implements StorageFile {
 
     private @Nullable EntryLink link;
 
-    private final ReadOnlyObjectWrapper<FontIcon<?>> icon = new ReadOnlyObjectWrapper<>();
-
-    private final ReadOnlyObjectWrapper<IconTextStyle> style = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<FileDecoration> decoration = new ReadOnlyObjectWrapper<>();
 
     /**
      * Constructs an empty {@code DefaultStorageFile}. Fields should be populated by the
@@ -133,23 +144,13 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     @Override
-    public @Nullable FontIcon<?> getIcon() {
-        return icon.get();
+    public @Nullable FileDecoration getDecoration() {
+        return decoration.get();
     }
 
     @Override
-    public ReadOnlyObjectProperty<FontIcon<?>> iconProperty() {
-        return icon.getReadOnlyProperty();
-    }
-
-    @Override
-    public @Nullable IconTextStyle getStyle() {
-        return style.get();
-    }
-
-    @Override
-    public ReadOnlyObjectProperty<IconTextStyle> styleProperty() {
-        return style.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<FileDecoration> decorationProperty() {
+        return decoration.getReadOnlyProperty();
     }
 
     @Override
@@ -190,21 +191,12 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     /**
-     * Sets the icon this file is shown with. It is changed on the UI thread once the file is shown.
+     * Sets the icon and the style this file is shown with. It is changed on the UI thread once the file is shown.
      *
-     * @param icon the icon, or {@code null} to clear it
+     * @param decoration the decoration, or {@code null} to make the file undecorated
      */
-    public void setIcon(@Nullable FontIcon<?> icon) {
-        this.icon.set(icon);
-    }
-
-    /**
-     * Sets the style this file is shown with. It is changed on the UI thread once the file is shown.
-     *
-     * @param style the style, or {@code null} to clear it
-     */
-    public void setStyle(@Nullable IconTextStyle style) {
-        this.style.set(style);
+    public void setDecoration(@Nullable FileDecoration decoration) {
+        this.decoration.set(decoration);
     }
 
     /**

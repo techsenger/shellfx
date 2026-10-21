@@ -16,13 +16,12 @@
 
 package com.techsenger.shellfx.dialogs.file;
 
-import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
-import com.techsenger.shellfx.storage.view.FileCellObserver;
-import com.techsenger.shellfx.storage.view.FileCellUtils;
+import com.techsenger.shellfx.storage.style.FileDecorator;
+import com.techsenger.shellfx.storage.view.FileCellUpdater;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -39,22 +38,24 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
 
     private final Label label = new Label();
 
+    private final FontIconView iconView = new FontIconView();
+
     private final HBox box = new HBox();
 
     private final boolean valueCell;
 
-    private final FileCellObserver observer = new FileCellObserver(() -> {
-        var item = getItem();
-        if (item != null && !isEmpty()) {
-            showFile(item);
-        }
-    });
+    private final FileCellUpdater<F> updater;
 
-    private @Nullable FontIconView iconView;
-
-    public LocationCell(boolean valueCell) {
+    public LocationCell(boolean valueCell, FileDecorator<F> decorator) {
         this.valueCell = valueCell;
+        this.updater = new FileCellUpdater<>(label, iconView, decorator, () -> {
+            var item = getItem();
+            if (item != null && !isEmpty()) {
+                showFile(item);
+            }
+        });
         this.box.setAlignment(Pos.CENTER_LEFT);
+        this.box.getChildren().setAll(this.iconView, this.label);
     }
 
     @Override
@@ -66,12 +67,9 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
         super.updateItem(item, empty);
         setText(null);
         if (empty || item == null) {
-            observer.unobserve();
-            this.iconView = null;
+            updater.clear();
             setGraphic(null);
-            FileCellUtils.updateStyles(label, null, null);
         } else {
-            observer.observe(item.iconProperty(), item.styleProperty());
             if (!this.valueCell) {
                 var level = item.isRoot() ? 0
                         : UriUtils.getPathSegments(item.getStorage().getUri(), item.getUri()).size();
@@ -83,14 +81,9 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
     }
 
     private void showFile(F item) {
-        var icon = item.getIcon();
-        if (this.iconView == null || this.iconView.getIcon() != icon) {
-            this.iconView = new FontIconView(icon);
-            this.box.getChildren().setAll(this.iconView, this.label);
-        }
+        updater.update(item);
         if (getGraphic() != this.box) {
             setGraphic(this.box);
         }
-        FileCellUtils.updateStyles(label, iconView, item);
     }
 }

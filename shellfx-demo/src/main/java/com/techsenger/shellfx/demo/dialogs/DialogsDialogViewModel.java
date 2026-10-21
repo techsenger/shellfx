@@ -148,7 +148,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
             }),
             Map.entry(DialogType.OPEN_FILE, () -> showFileChooserDialog(FileChooserType.OPEN)),
             Map.entry(DialogType.SAVE_FILE, () -> showFileChooserDialog(FileChooserType.SAVE_AS)),
-            Map.entry(DialogType.SAVE_FILE_PROVIDER, () -> showDemoFileChooserDialog()),
+            Map.entry(DialogType.SAVE_FILE_SLOW, () -> showDemoFileChooserDialog()),
             Map.entry(DialogType.PAGE, () -> showPagedDialog(PageMenuType.FLAT)),
             Map.entry(DialogType.TREE_PAGE, () -> showPagedDialog(PageMenuType.TREE))
     );

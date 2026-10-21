@@ -19,8 +19,8 @@ package com.techsenger.shellfx.storage.settings;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.theme.AtlantaFxTheme;
 import com.techsenger.shellfx.material.theme.Theme;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -41,17 +41,7 @@ public final class FileStyleDefaults {
             AtlantaFxTheme.NORD_DARK, FileStyleDefaults::nordDark,
             AtlantaFxTheme.DRACULA, FileStyleDefaults::dracula);
 
-    private static final Map<Theme, FileStyleScheme> SCHEMES_BY_THEME;
-
-    static {
-        var schemes = new HashMap<Theme, FileStyleScheme>();
-        for (var theme : FILLERS_BY_THEME.keySet()) {
-            var scheme = new FileStyleScheme();
-            fill(scheme, theme);
-            schemes.put(theme, scheme);
-        }
-        SCHEMES_BY_THEME = Map.copyOf(schemes);
-    }
+    private static final Map<Theme, FileStyleScheme> SCHEMES_BY_THEME = new ConcurrentHashMap<>();
 
     /**
      * Returns the default scheme of a theme. The scheme is shared, so the caller must not change it.
@@ -61,11 +51,12 @@ public final class FileStyleDefaults {
      * @throws IllegalArgumentException if there are no default styles for the theme
      */
     public static FileStyleScheme getScheme(Theme theme) {
-        var scheme = SCHEMES_BY_THEME.get(theme);
-        if (scheme == null) {
-            throw new IllegalArgumentException("No file styles for theme " + theme);
-        }
-        return scheme;
+        // the palette of a theme is created on first use, so a scheme is created when it is asked for
+        return SCHEMES_BY_THEME.computeIfAbsent(theme, key -> {
+            var scheme = new FileStyleScheme();
+            fill(scheme, key);
+            return scheme;
+        });
     }
 
     /**

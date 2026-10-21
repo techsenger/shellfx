@@ -76,6 +76,12 @@ ShellFX is built on top of the [PatternFX](https://github.com/techsenger/pattern
     * [Control Builder](#registries-control-builder)
     * [Control State](#registries-control-state)
     * [Menu Visibility](#registries-menu-visibility)
+* [FileStorage](#storage)
+    * [Packages](#storage-packages)
+    * [Core Concepts](#storage-concepts)
+    * [Two-Phase Loading](#storage-two-phase)
+    * [Appearance](#storage-appearance)
+    * [Custom Storage](#storage-custom)
 * [Naming Convention](#naming-convention)
 * [Quick Start](#quick-start)
 * [Requirements](#requirements)
@@ -1054,6 +1060,195 @@ visible, so the `material` module has ready-made classes for the common case:
   items. It never changes the visibility of the menu or of its items and does not depend on `ControlRegistry` or
   `ControlBuilder`. The builder puts a separator between the groups of any menu, so a plain `Menu` that has groups
   with nothing to show should install it too: `GroupCollapser.install(menu)`.
+
+## FileStorage <a name="storage"></a>
+
+`FileStorage` is an abstraction layer over any disk. It gives one uniform API for listing, reading, writing, creating
+and renaming entries, no matter where they live: the local file system, an FTP server, a cloud drive, an archive or a
+virtual tree. Entries are addressed by `URI`, every storage has its own root URI, and everything above the layer works
+with `StorageFile` and never with `java.nio.file.Path` or any other technology-specific type. The `storage` module
+contains the layer itself and the default storages for the local file system (`UnixFileStorage`,
+`WindowsFileStorage`). Storages for other disks are meant to be implemented separately and plugged in.
+
+**Currently the layer is used in ShellFX only by the [FileChooserDialog](#dialog-file-chooser)**, which is why a
+dialog can show Google Drive or an FTP server as easily as the local disk. No other component depends on it.
+
+### Packages <a name="storage-packages"></a>
+
+* `storage` — the model (`StorageFile`, `EntryLink`), the storages (`FileStorage` and its base and local
+implementations), operation types, listeners and utilities.
+* `storage.async` — loading of the files in the background in two phases: `FileProvider` and `FileRefiner`, with their
+default implementations, the cancellable task and the sort policy.
+* `storage.style` — the icon and the style the files are shown with: resolvers of files and storages, `FileDecorator`
+that gives files their `FileDecoration` (icon and style), the icon set and the types of decoration.
+* `storage.settings` — the settings of the styles (colors, bold, italic, opacity) grouped by kinds of files into a
+scheme, with the default schemes of the themes.
+* `storage.view` — the helpers of the views that show files: the columns and the cell updater.
+
+### Core Concepts <a name="storage-concepts"></a>
+
+* **StorageFile** — an entry of a storage. Its structural kind is `FileEntryType`: `DIRECTORY`, `FILE`, `LINK` (a
+symbolic link, or a junction on Windows) or `OTHER` (a socket, a pipe, a device). A link is a kind of its own and is
+never treated as a directory, so code that walks a tree does not leave it by accident. Where a link leads is described
+by `EntryLink`: the URI it states, the URI at the end of the whole chain and, once it is known, the target file. The
+target may lie in another storage.
+* **FileStorage** — a source of entries. `FileStorageType` (`BASE`, `FLOPPY`, `OPTICAL`, `NETWORK`, `VIRTUAL`) tells
+the client what to expect from it, for example that a network storage is slow. A storage follows the EAFP principle: it
+performs the operation at once and investigates only if it failed, so a successful operation costs one request.
+* **OperationType** — every operation says whether it is `PRIMARY`, initiated by the user (open, save, rename), or
+`SECONDARY`, a step of internal machinery (copying a tree, resolving a link). It lets a listener, for example a
+"recently used" tracker, react only to what the user did.
+* **StorageListener** — gets the successful operations of a storage: list, create, rename, read, write.
+* **Appearance of the storage itself** — a storage is loaded dynamically, so only it knows its own icon and style, which
+it provides through `StorageIconResolver` and `StorageStyleResolver`.
+
+### Two-Phase Loading <a name="storage-two-phase"></a>
+
+A directory is not always cheap to show. A local disk lists a directory in milliseconds, but a network storage may take
+seconds for a listing and more for every detail: the target of a link that lies in another storage, the type of a file
+found from its header, the size of a remote file. If a client waited for all of it, the user would stare at an empty
+list, and one slow file would hold the whole directory back.
+
+That is why loading is split into two phases:
+
+1. **The first phase gets what is quick.** `FileProvider` lists the directory on a background thread and completes only
+what costs almost nothing, for example the targets of the links of a storage that is not a network one. The client gets
+the files at once, sorts them and shows them. A file that still needs the second phase is marked as *pending* and is
+shown provisionally, with a pending icon.
+2. **The second phase gets the rest.** `FileRefiner` refines the pending files in the background, a few at a time for
+every storage, and gives each file to the client **as soon as it is refined**, not when all of them are. A refinement
+is a `FileRefinement`: the refiner only prepares the change and never touches a file itself. The client applies it on
+the UI thread (`FileRefinement.apply()`), after which the file is final, its icon and style are resolved again, and
+the cells that show it follow its observable properties. So a slow file never delays the others, and the list becomes
+complete little by little while the user already works with it.
+
+Details that make it safe:
+
+* **Who decides.** `FileRefiner.isRefinable(file)` says which files need the second phase. The client marks them, and
+only they are given to `refineFilesAsync`. The files that need nothing are final after the first phase.
+* **Threads.** Every callback of the provider and the refiner runs on a background thread, and the end callback runs
+once. All changes of a shown file are made on the UI thread, which is what `apply()` is for.
+* **Cancellation.** Both return an `AsyncTask`. When the user navigates elsewhere, the client cancels the tasks it no
+longer needs, and nothing is given after the cancellation. `AsyncResult` tells how the operation ended: `SUCCESS`,
+`FAILED` or `CANCELLED`.
+* **Failures.** A file that can't be refined is logged and given a refinement that changes nothing, so one broken file
+does not break the list. The provider does the same for a file it can't complete.
+* **Sorting.** Some sort keys are known only after the second phase, so `TwoPhaseSortPolicy` tells when to sort:
+`ON_REQUEST` (never automatically, the default), `AFTER_FIRST_PHASE` (once, refined values are not known yet and such
+files go last), `AFTER_SECOND_PHASE` (once, the list does not move twice) or `AFTER_EACH_PHASE` (after both, the order
+may change when the values become known). A directory whose files are all final after the first phase is sorted at once
+whatever the policy is.
+* **No state.** The provider and the refiner keep no state of the operations, so one instance serves any number of lists
+at once.
+
+The default implementations, `DefaultFileProvider` and `DefaultFileRefiner`, work for any storage: links of a network
+storage are left to the second phase, and the links of the others are resolved in the first one. The demo shows the
+whole process with a deliberately slow storage in the `SAVE_FILE_SLOW` dialog.
+
+The diagram shows how a directory gets onto the screen, from the listing to the final icon of a refined file. The
+view model owns the process, and the cells only show what the files carry.
+
+```mermaid
+sequenceDiagram
+    participant VM as ViewModel
+    participant P as FileProvider
+    participant R as FileRefiner
+    participant V as View
+    participant C as Cell
+    participant S as FileCellUpdater
+    participant D as FileDecorator
+    participant X as Icon and style resolvers
+
+    Note over VM,X: First phase
+    VM->>P: provideFilesAsync
+    Note right of P: background thread
+    P-->>VM: onProvided with the files
+    VM->>R: isRefinable for every file
+    Note right of VM: refinable files become pending
+    Note over VM,C: UI thread
+    VM->>V: setFiles
+    V->>C: the files are shown
+    C->>S: update file
+    S->>D: decorate file
+    D->>X: resolve icon and style, TEMP for a pending file
+    D-->>S: the file has a decoration
+    S-->>C: the cell is styled and observes the file
+
+    Note over VM,X: Second phase
+    VM->>R: refineFilesAsync for the pending files
+    Note right of R: background thread, a few files at a time
+    R-->>VM: onRefined with a FileRefinement
+    Note over VM,C: UI thread
+    VM->>VM: refinement.apply and the file leaves pending
+    VM->>V: decorateSource with the refined files
+    V->>D: reset the refined files
+    Note right of D: the decoration of the files becomes null
+    D-->>S: the decoration of the file changes
+    S->>D: decorate file
+    D->>X: resolve icon and style, FINAL
+    S-->>C: the icon and the style are set
+```
+
+### Appearance <a name="storage-appearance"></a>
+
+A file carries its decoration, `FileDecoration`, as an observable property: the icon and the style (the inline styles
+of the icon and of the texts) that are given to the file in one step, so a cell that shows it is told once. They are
+resolved by two independent resolvers, `FileIconResolver` and `FileStyleResolver`, which are passed to the view and
+replaced when an application knows more kinds of files than the defaults (Commander does, with the types of its
+files). A resolver gets the `FileDecorationType` of the file, `TEMP` while the file is still to be refined and `FINAL`
+otherwise, which is how the pending icon becomes the real one.
+
+Decoration is lazy. A cell decorates a file only if the file has no decoration (`FileDecorator`), so only the files
+that are shown are decorated, however many the directory has. When the decoration of a file becomes outdated (the
+second phase refined it, the theme changed, the file was marked), the view resets the property and the cells that show
+the file decorate it again, while the other files wait until they are shown. A theme or a mark changes only the style,
+so the view resets the style and keeps the icon. The default schemes of the themes are created on first use too, because
+ the palette of a theme is created when it is first needed.
+
+A cell does not talk to the decorator directly. It owns a `FileCellUpdater`, which decorates the file it is about to
+show, sets the icon of the cell and applies the style of the file to the cell and its icon. It does the same by itself
+whenever the decoration of the file changes, so the cell is not asked to show the file again. The cell is told only when
+another value it displays (a size, a date) changes.
+
+```mermaid
+classDiagram
+    class StorageFile
+    class FileProvider
+    class FileRefiner
+    class FileRefinement
+    class FileIconResolver
+    class FileStyleResolver
+    class FileDecoration
+    class FileDecorator
+    class FileCellUpdater
+    class ViewModel
+    class View
+    class Cell
+
+    ViewModel --> FileProvider : lists
+    ViewModel --> FileRefiner : refines
+    FileProvider ..> StorageFile : provides
+    FileRefiner ..> FileRefinement : creates
+    FileRefinement ..> StorageFile : changes on apply
+    View --> FileDecorator : creates and resets
+    FileDecorator o-- FileIconResolver
+    FileDecorator o-- FileStyleResolver
+    FileDecorator ..> FileDecoration : creates
+    FileDecorator ..> StorageFile : writes the decoration
+    StorageFile o-- FileDecoration
+    View *-- Cell
+    Cell *-- FileCellUpdater
+    FileCellUpdater --> FileDecorator : decorates with
+    FileCellUpdater ..> StorageFile : observes
+```
+
+### Custom Storage <a name="storage-custom"></a>
+
+To add a storage for another disk, extend `AbstractFileStorage` (the local storages extend `AbstractSystemFileStorage`),
+implement the listing and the operations, report them to the listeners, throw the specific exceptions
+(`NoSuchFileException`, `AccessDeniedException`) and give the icon and style resolvers of the storage. Make slow things
+slow only where the client can wait for them: listing returns quickly, and what is expensive goes to the refiner.
+Then pass the storage to the file chooser dialog together with the others.
 
 ## Naming Convention <a name="naming-convention"></a>
 

@@ -17,8 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.material.icon.FontIcon;
-import com.techsenger.shellfx.storage.style.IconTextStyle;
+import com.techsenger.shellfx.storage.style.FileDecoration;
 import java.net.URI;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
@@ -126,32 +125,19 @@ public interface StorageFile {
     boolean isVirtual();
 
     /**
-     * Returns the icon representing this entry in the UI. The icon is set by whoever creates the file (for example,
-     * a file decorator); the storage does not provide one.
+     * Returns the icon and the style this entry is shown with. The storage does not provide them: the client gives
+     * them to the file that it is about to show, using the resolvers of the files.
      *
-     * @return the icon, or {@code null} if the creator of the file has not set one
+     * @return the decoration, or {@code null} if the file has not been decorated yet or has to be decorated again
      */
-    @Nullable FontIcon<?> getIcon();
+    @Nullable FileDecoration getDecoration();
 
     /**
-     * Returns the property of the icon, which changes when the second loading phase rewrites it. It is changed on
-     * the UI thread once the file is shown, so the elements that show the file can observe it.
+     * Returns the property of the decoration, which changes when the file is decorated, when the second loading phase
+     * or the client makes it outdated. It is changed on the UI thread once the file is shown, so the elements that
+     * show the file can observe it.
      */
-    ReadOnlyObjectProperty<FontIcon<?>> iconProperty();
-
-    /**
-     * Returns the styles this entry is shown with. The style is set by whoever creates the file and by the client
-     * that restyles it, using the resolver of the storage of the file.
-     *
-     * @return the style, or {@code null} if the file has none, which clears the styles of the elements that show it
-     */
-    @Nullable IconTextStyle getStyle();
-
-    /**
-     * Returns the property of the style, which changes when the second loading phase or the client rewrites it. It
-     * is changed on the UI thread once the file is shown, so the elements that show the file can observe it.
-     */
-    ReadOnlyObjectProperty<IconTextStyle> styleProperty();
+    ReadOnlyObjectProperty<FileDecoration> decorationProperty();
 
     /**
      * Returns {@code true} if this entry is a directory.

@@ -20,6 +20,7 @@ import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.table.NamedTableColumn;
 import com.techsenger.shellfx.material.table.TextFieldTableCell;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.style.FileDecorator;
 import com.techsenger.toolkit.core.file.FileUtils;
 import java.time.Year;
 import java.util.Comparator;
@@ -29,15 +30,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 
 /**
+ * Builds the columns that show files, whose cells resolve the icon and the style of the files they are about to show.
  *
  * @author Pavel Castornii
+ * @param <F> the type of files
  */
-public class FileColumnBuilder {
+public class FileColumnBuilder<F extends StorageFile> {
 
     private final Font font;
 
-    public FileColumnBuilder(Font font) {
+    private final FileDecorator<F> decorator;
+
+    public FileColumnBuilder(Font font, FileDecorator<F> decorator) {
         this.font = font;
+        this.decorator = decorator;
     }
 
     /**
@@ -45,7 +51,7 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public <F extends StorageFile> NamedTableColumn<F, F> buildNameColumn() {
+    public NamedTableColumn<F, F> buildNameColumn() {
         var nameColumn = new NamedTableColumn<F, F>(FileColumns.NAME, "Name");
         nameColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         var converter = new FileStringConverter<F>();
@@ -53,20 +59,18 @@ public class FileColumnBuilder {
 
             private final FontIconView iconView = new FontIconView();
 
-            private final FileCellObserver observer = new FileCellObserver(() -> updateItem(getItem(), isEmpty()));
+            private final FileCellUpdater<F> updater =
+                    new FileCellUpdater<>(this, iconView, decorator, () -> updateItem(getItem(), isEmpty()));
 
             @Override
             public void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
                 if (file == null || empty) {
-                    observer.unobserve();
+                    updater.clear();
                     setGraphic(null);
                     setText(null);
-                    FileCellUtils.updateStyles(this, iconView, null);
                 } else {
-                    observer.observe(file.iconProperty(), file.styleProperty());
-                    FileCellUtils.updateStyles(this, iconView, file);
-                    iconView.setIcon(file.getIcon());
+                    updater.update(file);
                     setGraphic(iconView);
                     setText(file.getName());
                 }
@@ -96,26 +100,23 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public <F extends StorageFile> NamedTableColumn<F, F> buildSizeColumn() {
+    public NamedTableColumn<F, F> buildSizeColumn() {
         var sizeColumn = new NamedTableColumn<F, F>(FileColumns.SIZE, "Size");
         sizeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         sizeColumn.setCellFactory(callBack -> new TableCell<F, F>() {
 
-                private final FileCellObserver observer = new FileCellObserver(() -> updateItem(getItem(), isEmpty()));
+                private final FileCellUpdater<F> updater =
+                        new FileCellUpdater<>(this, decorator, () -> updateItem(getItem(), isEmpty()));
 
                 @Override
                 protected void updateItem(F file, boolean empty) {
                     super.updateItem(file, empty);
                     if (file == null || empty) {
-                        observer.unobserve();
-                    } else {
-                        observer.observe(file.sizeProperty(), file.styleProperty());
-                    }
-                    FileCellUtils.updateStyles(this, null, empty ? null : file);
-                    if (file == null || file.getSize() == null || empty) {
+                        updater.clear();
                         setText(null);
                     } else {
-                        setText(FileUtils.formatSize(file.getSize()));
+                        updater.update(file, file.sizeProperty());
+                        setText(file.getSize() != null ? FileUtils.formatSize(file.getSize()) : null);
                     }
                 }
             }
@@ -132,7 +133,7 @@ public class FileColumnBuilder {
      *
      * @return
      */
-    public <F extends StorageFile> NamedTableColumn<F, F> buildLastModifiedColumn() {
+    public NamedTableColumn<F, F> buildLastModifiedColumn() {
         var lastModifiedColumn =
                 new NamedTableColumn<F, F>(FileColumns.LAST_MODIFIED, "Modified");
         lastModifiedColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
@@ -140,21 +141,19 @@ public class FileColumnBuilder {
         final var currentYear = Year.now();
         lastModifiedColumn.setCellFactory(col -> new TableCell<F, F>() {
 
-            private final FileCellObserver observer = new FileCellObserver(() -> updateItem(getItem(), isEmpty()));
+            private final FileCellUpdater<F> updater =
+                    new FileCellUpdater<>(this, decorator, () -> updateItem(getItem(), isEmpty()));
 
             @Override
             protected void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
                 if (file == null || empty) {
-                    observer.unobserve();
-                } else {
-                    observer.observe(file.modifiedTimeProperty(), file.styleProperty());
-                }
-                FileCellUtils.updateStyles(this, null, empty ? null : file);
-                if (file == null || file.getModifiedTime() == null || empty) {
+                    updater.clear();
                     setText(null);
                 } else {
-                    setText(DateTimeUtils.format(file.getModifiedTime(), currentYear));
+                    updater.update(file, file.modifiedTimeProperty());
+                    setText(file.getModifiedTime() != null
+                            ? DateTimeUtils.format(file.getModifiedTime(), currentYear) : null);
                 }
             }
         });
@@ -168,5 +167,9 @@ public class FileColumnBuilder {
 
     protected Font getFont() {
         return font;
+    }
+
+    protected FileDecorator<F> getDecorator() {
+        return decorator;
     }
 }
