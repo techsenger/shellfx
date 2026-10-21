@@ -1070,7 +1070,7 @@ with `StorageFile` and never with `java.nio.file.Path` or any other technology-s
 contains the layer itself and the default storages for the local file system (`UnixFileStorage`,
 `WindowsFileStorage`). Storages for other disks are meant to be implemented separately and plugged in.
 
-**Currently the layer is used in ShellFX only by the [FileChooserDialog](#dialog-file-chooser)**, which is why a
+Currently the layer is used in ShellFX only by the [FileChooserDialog](#dialog-file-chooser), which is why a
 dialog can show Google Drive or an FTP server as easily as the local disk. No other component depends on it.
 
 ### Packages <a name="storage-packages"></a>
