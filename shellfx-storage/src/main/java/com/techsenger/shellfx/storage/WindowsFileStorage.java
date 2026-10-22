@@ -22,9 +22,12 @@ import com.techsenger.shellfx.storage.style.StorageIconResolver;
 import com.techsenger.shellfx.storage.style.StorageStyleResolver;
 import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
 import com.techsenger.toolkit.core.function.Factory;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributes;
@@ -37,6 +40,11 @@ import javax.swing.filechooser.FileSystemView;
  * @author Pavel Castornii
  */
 public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFileStorage<T> {
+
+    /**
+     * The FILE_ATTRIBUTE_DIRECTORY and FILE_ATTRIBUTE_REPARSE_POINT bits of the Windows attributes mask.
+     */
+    private static final int DIRECTORY_REPARSE_POINT = 0x10 | 0x400;
 
     /**
      * Discovers and returns all system storages available on the current Windows machine.
@@ -90,15 +98,31 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
     }
 
     @Override
-    boolean isLink(BasicFileAttributes ownAttributes) {
-        // A directory junction isn't a symbolic link for Java, but it is a reparse point, which Windows reports as
-        // isOther() - for a directory, that can only be a junction or another reparse point (e.g. a cloud
-        // placeholder), and descending into any of those is as unsafe as into a link.
-        return super.isLink(ownAttributes) || (ownAttributes.isDirectory() && ownAttributes.isOther());
+    FileEntryType resolveEntryType(Path entryPath, BasicFileAttributes attrs) {
+        var type = super.resolveEntryType(entryPath, attrs);
+        // a directory junction isn't a symbolic link for Java and isn't even a directory, so it can only be told
+        // from the other special entries (e.g. a socket) by the attributes mask, which is read only for those
+        if (type == FileEntryType.OTHER && isDirectoryReparsePoint(entryPath)) {
+            return FileEntryType.LINK;
+        }
+        return type;
     }
 
     @Override
     boolean isHidden(Path entryPath, BasicFileAttributes attrs) {
         return attrs instanceof DosFileAttributes dosAttributes && dosAttributes.isHidden();
+    }
+
+    /**
+     * Tells whether the entry is a directory that is also a reparse point. The mask is not a part of the Java SE
+     * specification, so an entry is considered not to be one if the JDK doesn't provide it.
+     */
+    private boolean isDirectoryReparsePoint(Path entryPath) {
+        try {
+            var mask = Files.getAttribute(entryPath, "dos:attributes", LinkOption.NOFOLLOW_LINKS);
+            return mask instanceof Integer value && (value & DIRECTORY_REPARSE_POINT) == DIRECTORY_REPARSE_POINT;
+        } catch (IOException | UnsupportedOperationException | IllegalArgumentException ex) {
+            return false;
+        }
     }
 }

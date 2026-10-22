@@ -530,6 +530,24 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
     }
 
     /**
+     * Returns the type of the entry. A system whose attributes can't tell some entry from a link (e.g. a Windows
+     * junction) overrides this to recognize it.
+     *
+     * @param entryPath the entry's path
+     * @param attrs the entry's own attributes, read without following links
+     * @return the type of the entry
+     */
+    FileEntryType resolveEntryType(Path entryPath, BasicFileAttributes attrs) {
+        if (isLink(attrs)) {
+            return FileEntryType.LINK;
+        }
+        if (attrs.isDirectory()) {
+            return FileEntryType.DIRECTORY;
+        }
+        return attrs.isOther() ? FileEntryType.OTHER : FileEntryType.FILE;
+    }
+
+    /**
      * Lets a subclass fill in what only the entry's attributes tell, e.g. the permissions; called once for every
      * created file. Does nothing by default.
      *
@@ -578,7 +596,7 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
         file.setUri(uri);
         file.setModifiedTime(attrs.lastModifiedTime().toMillis());
         file.setCreatedTime(attrs.creationTime().toMillis());
-        var entryType = resolveEntryType(attrs);
+        var entryType = resolveEntryType(entryPath, attrs);
         file.setEntryType(entryType);
         if (entryType == FileEntryType.LINK) {
             file.setSize(attrs.size());
@@ -666,18 +684,5 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
             }
         }
         return current;
-    }
-
-    /**
-     * Returns the type of the entry with these own attributes (read without following links).
-     */
-    private FileEntryType resolveEntryType(BasicFileAttributes attrs) {
-        if (isLink(attrs)) {
-            return FileEntryType.LINK;
-        }
-        if (attrs.isDirectory()) {
-            return FileEntryType.DIRECTORY;
-        }
-        return attrs.isOther() ? FileEntryType.OTHER : FileEntryType.FILE;
     }
 }
