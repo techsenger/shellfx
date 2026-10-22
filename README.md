@@ -1298,7 +1298,7 @@ the [MVVM](https://github.com/techsenger/patternfx#templates-mvvm) template, and
 
 ## Requirements <a name="requirements"></a>
 
-The library requires Java 25 and JavaFX 25.
+The platform requires Java 27 and JavaFX 27.
 
 ## Dependencies <a name="dependencies"></a>
 

@@ -98,6 +98,13 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
     }
 
     @Override
+    boolean isLink(BasicFileAttributes ownAttributes) {
+        // Older JDKs report a directory junction as a directory that is also isOther() (any reparse point is);
+        // newer ones report it as neither, see resolveEntryType().
+        return super.isLink(ownAttributes) || (ownAttributes.isDirectory() && ownAttributes.isOther());
+    }
+
+    @Override
     FileEntryType resolveEntryType(Path entryPath, BasicFileAttributes attrs) {
         var type = super.resolveEntryType(entryPath, attrs);
         // a directory junction isn't a symbolic link for Java and isn't even a directory, so it can only be told
