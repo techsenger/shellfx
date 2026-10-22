@@ -177,6 +177,8 @@ local file system. Additional storage providers (for Google Drive, Dropbox, FTP,
 separately.
 * Dialogs — provides ready-to-use dialogs: alert, file chooser, confirmation, text input and choice etc.
 * DevTools — contains tools for exploring component tree and JavaFX scene graph.
+* Test — provides shared test support, such as starting the JavaFX toolkit in headless mode and running code on the
+JavaFX Application Thread. It is used by the tests of other modules and is not published.
 * Demo — showcases ShellFX's core functionality, provides examples for building custom components, and
 presents ready-made components.
 
