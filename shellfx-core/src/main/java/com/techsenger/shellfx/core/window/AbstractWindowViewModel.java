@@ -69,9 +69,9 @@ public abstract class AbstractWindowViewModel<C extends WindowComposer> extends 
 
     private final DoubleProperty minHeight = new SimpleDoubleProperty();
 
-    private final DoubleProperty maxWidth = new SimpleDoubleProperty();
+    private final DoubleProperty maxWidth = new SimpleDoubleProperty(Double.MAX_VALUE);
 
-    private final DoubleProperty maxHeight = new SimpleDoubleProperty();
+    private final DoubleProperty maxHeight = new SimpleDoubleProperty(Double.MAX_VALUE);
 
     private final BooleanProperty resizable = new SimpleBooleanProperty(true);
 
