@@ -1146,8 +1146,10 @@ public class SystemFileStorageIT {
 
     @Test
     @EnabledOnOs(OS.WINDOWS)
-    public void getFiles_junction_listedAsLinkAndNeverEntered(@TempDir Path directory) throws Exception {
-        var target = Files.createDirectory(directory.resolve("target"));
+    public void getFiles_junction_listedAsLinkAndNeverEntered(@TempDir Path tempDirectory) throws Exception {
+        // the real path, as the target of the junction is found by its real path, which has no short 8.3 names
+        var directory = tempDirectory.toRealPath();
+        var target =Files.createDirectory(directory.resolve("target"));
         Files.writeString(target.resolve("inside.txt"), "hello");
         var junction = directory.resolve("junction");
         var process = new ProcessBuilder("cmd", "/c", "mklink", "/J", junction.toString(), target.toString())
