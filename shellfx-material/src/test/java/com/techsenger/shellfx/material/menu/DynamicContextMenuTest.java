@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.material.menu;
 
+import com.techsenger.shellfx.test.FxTestSupport;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.Event;
@@ -38,7 +39,7 @@ class DynamicContextMenuTest {
 
     @BeforeAll
     static void startFx() throws InterruptedException {
-        MenuTestSupport.start();
+        FxTestSupport.start();
     }
 
     /**
@@ -54,7 +55,7 @@ class DynamicContextMenuTest {
 
     @Test
     void menuWithoutItems_refusesToBeShown() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu();
 
             assertThat(isShowingRefused(menu)).isTrue();
@@ -63,7 +64,7 @@ class DynamicContextMenuTest {
 
     @Test
     void menuWithVisibleItem_isShown() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu(new MenuItem("a"));
 
             assertThat(isShowingRefused(menu)).isFalse();
@@ -72,7 +73,7 @@ class DynamicContextMenuTest {
 
     @Test
     void menuWithOnlyHiddenItemsAndSeparators_refusesToBeShown() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var hidden = new MenuItem("a");
             hidden.setVisible(false);
             var menu = new DynamicContextMenu(hidden, new SeparatorMenuItem());
@@ -83,7 +84,7 @@ class DynamicContextMenuTest {
 
     @Test
     void visibilityOfItems_isReadEveryTimeTheMenuIsShown() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var item = new MenuItem("a");
             var menu = new DynamicContextMenu(item);
             assertThat(isShowingRefused(menu)).isFalse();
@@ -98,7 +99,7 @@ class DynamicContextMenuTest {
 
     @Test
     void falseCondition_refusesShowingAndTrueConditionAllowsIt() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu(new MenuItem("a"));
             var condition = new SimpleBooleanProperty(false);
             menu.addVisibleCondition(condition);
@@ -111,7 +112,7 @@ class DynamicContextMenuTest {
 
     @Test
     void trueCondition_doesNotAllowMenuWithoutVisibleItems() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu();
             menu.addVisibleCondition(new SimpleBooleanProperty(true));
 
@@ -121,7 +122,7 @@ class DynamicContextMenuTest {
 
     @Test
     void severalConditions_allMustBeTrue() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu(new MenuItem("a"));
             var first = new SimpleBooleanProperty(true);
             var second = new SimpleBooleanProperty(false);
@@ -139,7 +140,7 @@ class DynamicContextMenuTest {
 
     @Test
     void nullValueOfCondition_countsAsFalse() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu(new MenuItem("a"));
             menu.addVisibleCondition(new SimpleObjectProperty<Boolean>(null));
 
@@ -149,7 +150,7 @@ class DynamicContextMenuTest {
 
     @Test
     void removingCondition_makesTheMenuIndependentOfIt() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu(new MenuItem("a"));
             var condition = new SimpleBooleanProperty(false);
             menu.addVisibleCondition(condition);
@@ -163,7 +164,7 @@ class DynamicContextMenuTest {
 
     @Test
     void removingUnknownCondition_doesNothing() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu(new MenuItem("a"));
 
             menu.removeVisibleCondition(new SimpleBooleanProperty(false));
@@ -174,7 +175,7 @@ class DynamicContextMenuTest {
 
     @Test
     void addingSameConditionTwice_countsItOnce() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicContextMenu(new MenuItem("a"));
             var condition = new SimpleBooleanProperty(false);
 
@@ -188,7 +189,7 @@ class DynamicContextMenuTest {
 
     @Test
     void showingMenu_hidesSeparatorsAroundEmptyGroups() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var hiddenFirst = new MenuItem("a");
             hiddenFirst.setVisible(false);
             var visible = new MenuItem("b");
@@ -207,7 +208,7 @@ class DynamicContextMenuTest {
 
     @Test
     void showingMenu_keepsSeparatorBetweenTwoVisibleGroups() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var separator = new SeparatorMenuItem();
             var menu = new DynamicContextMenu(new MenuItem("a"), separator, new MenuItem("b"));
 

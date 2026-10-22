@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.material.menu;
 
+import com.techsenger.shellfx.test.FxTestSupport;
 import java.lang.ref.WeakReference;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -38,12 +39,12 @@ class DynamicMenuTest {
 
     @BeforeAll
     static void startFx() throws InterruptedException {
-        MenuTestSupport.start();
+        FxTestSupport.start();
     }
 
     @Test
     void emptyMenu_isNotVisible() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
 
             assertThat(menu.isVisible()).isFalse();
@@ -52,7 +53,7 @@ class DynamicMenuTest {
 
     @Test
     void menuWithVisibleItem_isVisible() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
 
             menu.getItems().add(new MenuItem("a"));
@@ -63,7 +64,7 @@ class DynamicMenuTest {
 
     @Test
     void hidingAndShowingTheOnlyItem_updatesTheMenuWithoutShowingIt() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             var item = new MenuItem("a");
             menu.getItems().add(item);
@@ -78,7 +79,7 @@ class DynamicMenuTest {
 
     @Test
     void itemsThatAreHiddenOrSeparators_doNotMakeTheMenuVisible() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             var hidden = new MenuItem("a");
             hidden.setVisible(false);
@@ -91,7 +92,7 @@ class DynamicMenuTest {
 
     @Test
     void addingAndRemovingItems_updatesVisibility() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             var first = new MenuItem("a");
             var second = new MenuItem("b");
@@ -107,7 +108,7 @@ class DynamicMenuTest {
 
     @Test
     void nestedDynamicMenu_isVisibleOnlyWhenItHasVisibleItems() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var parent = new DynamicMenu("Parent");
             var child = new DynamicMenu("Child");
             parent.getItems().add(child);
@@ -125,7 +126,7 @@ class DynamicMenuTest {
 
     @Test
     void visibleProperty_isBoundAndCannotBeSet() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
 
             assertThat(menu.visibleProperty().isBound()).isTrue();
@@ -135,7 +136,7 @@ class DynamicMenuTest {
 
     @Test
     void falseCondition_hidesMenuWithVisibleItem() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             menu.getItems().add(new MenuItem("a"));
 
@@ -147,7 +148,7 @@ class DynamicMenuTest {
 
     @Test
     void trueCondition_doesNotShowMenuWithoutVisibleItems() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
 
             menu.addVisibleCondition(new SimpleBooleanProperty(true));
@@ -158,7 +159,7 @@ class DynamicMenuTest {
 
     @Test
     void changingCondition_updatesVisibility() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             menu.getItems().add(new MenuItem("a"));
             var condition = new SimpleBooleanProperty(true);
@@ -175,7 +176,7 @@ class DynamicMenuTest {
 
     @Test
     void severalConditions_allMustBeTrue() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             menu.getItems().add(new MenuItem("a"));
             var first = new SimpleBooleanProperty(true);
@@ -198,7 +199,7 @@ class DynamicMenuTest {
 
     @Test
     void nullValueOfCondition_countsAsFalse() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             menu.getItems().add(new MenuItem("a"));
             var condition = new SimpleObjectProperty<Boolean>(null);
@@ -213,7 +214,7 @@ class DynamicMenuTest {
 
     @Test
     void removingCondition_makesTheMenuIndependentOfIt() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             menu.getItems().add(new MenuItem("a"));
             var condition = new SimpleBooleanProperty(false);
@@ -230,7 +231,7 @@ class DynamicMenuTest {
 
     @Test
     void removingUnknownCondition_doesNothing() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             menu.getItems().add(new MenuItem("a"));
 
@@ -242,7 +243,7 @@ class DynamicMenuTest {
 
     @Test
     void addingSameConditionTwice_countsItOnce() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             menu.getItems().add(new MenuItem("a"));
             var condition = new SimpleBooleanProperty(false);
@@ -257,7 +258,7 @@ class DynamicMenuTest {
 
     @Test
     void conditionFromMap_followsItsSourceAndCanBeRemoved() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             menu.getItems().add(new MenuItem("a"));
             var source = new SimpleObjectProperty<String>();
@@ -279,7 +280,7 @@ class DynamicMenuTest {
 
     @Test
     void showingMenu_hidesSeparatorsAroundEmptyGroups() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             var hiddenFirst = new MenuItem("a");
             hiddenFirst.setVisible(false);
@@ -299,7 +300,7 @@ class DynamicMenuTest {
 
     @Test
     void showingMenu_keepsSeparatorBetweenTwoVisibleGroups() throws InterruptedException {
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             var menu = new DynamicMenu("Menu");
             var separator = new SeparatorMenuItem();
             menu.getItems().addAll(new MenuItem("a"), separator, new MenuItem("b"));
@@ -326,7 +327,7 @@ class DynamicMenuTest {
 
     private DynamicMenu createMenuWithCondition(SimpleBooleanProperty source) throws InterruptedException {
         var menu = new DynamicMenu[1];
-        MenuTestSupport.runOnFx(() -> {
+        FxTestSupport.runOnFx(() -> {
             menu[0] = new DynamicMenu("Menu");
             menu[0].getItems().add(new MenuItem("a"));
             menu[0].addVisibleCondition(source);

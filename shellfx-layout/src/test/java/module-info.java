@@ -30,6 +30,7 @@ open module com.techsenger.shellfx.layout {
     requires javafx.controls;
     requires atlantafx.base;
 
+    requires com.techsenger.shellfx.test;
     requires org.junit.jupiter.api;
     requires org.assertj.core;
     requires org.mockito;

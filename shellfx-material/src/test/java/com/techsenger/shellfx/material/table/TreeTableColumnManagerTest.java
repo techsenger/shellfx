@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.material.table;
 
-import com.techsenger.toolkit.fx.FxPlatform;
+import com.techsenger.shellfx.test.FxTestSupport;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -52,12 +52,7 @@ class TreeTableColumnManagerTest {
 
     @BeforeAll
     static void initJavaFxToolkit() {
-        try {
-            System.setProperty("glass.platform", "Headless");
-            FxPlatform.start();
-        } catch (IllegalStateException alreadyStarted) {
-            // toolkit already running in this JVM (e.g. started by another test class); nothing to do
-        }
+        FxTestSupport.start();
     }
 
     // TreeTableView appears to silently discard additions to getSortOrder() when it has no root - the sort

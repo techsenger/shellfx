@@ -29,6 +29,7 @@ open module com.techsenger.shellfx.core {
     requires com.techsenger.patternfx.mvvm;
     requires com.techsenger.shellfx.material;
 
+    requires com.techsenger.shellfx.test;
     requires org.junit.jupiter.api;
     requires org.assertj.core;
     requires org.mockito;

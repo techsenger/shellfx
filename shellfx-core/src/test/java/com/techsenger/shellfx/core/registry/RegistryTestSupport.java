@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.core.registry;
 
 import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.toolkit.fx.FxPlatform;
+import com.techsenger.shellfx.test.FxTestSupport;
 import java.util.function.Function;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -32,19 +32,8 @@ import static org.mockito.Mockito.mock;
  */
 final class RegistryTestSupport {
 
-    private static boolean started;
-
-    static synchronized void startFxToolkit() {
-        if (started) {
-            return;
-        }
-        try {
-            System.setProperty("glass.platform", "Headless");
-            FxPlatform.start();
-        } catch (IllegalStateException alreadyStarted) {
-            // toolkit already running in this JVM (e.g. started by another test class); nothing to do
-        }
-        started = true;
+    static void startFxToolkit() {
+        FxTestSupport.start();
     }
 
     /**

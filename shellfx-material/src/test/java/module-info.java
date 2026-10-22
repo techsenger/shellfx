@@ -27,6 +27,7 @@ open module com.techsenger.shellfx.material {
     requires com.helger.css;
     requires com.helger.commons;
 
+    requires com.techsenger.shellfx.test;
     requires org.junit.jupiter.api;
     requires org.assertj.core;
 }

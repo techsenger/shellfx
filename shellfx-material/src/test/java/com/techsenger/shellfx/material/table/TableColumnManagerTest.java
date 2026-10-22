@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.material.table;
 
-import com.techsenger.toolkit.fx.FxPlatform;
+import com.techsenger.shellfx.test.FxTestSupport;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,12 +55,7 @@ class TableColumnManagerTest {
 
     @BeforeAll
     static void initJavaFxToolkit() {
-        try {
-            System.setProperty("glass.platform", "Headless");
-            FxPlatform.start();
-        } catch (IllegalStateException alreadyStarted) {
-            // toolkit already running in this JVM (e.g. started by another test class); nothing to do
-        }
+        FxTestSupport.start();
     }
 
     private final TableView<Object> tableView = new TableView<>();

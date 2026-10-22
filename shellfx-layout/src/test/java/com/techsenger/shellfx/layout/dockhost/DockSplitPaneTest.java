@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.layout.dockhost;
 
+import com.techsenger.shellfx.test.FxTestSupport;
 import java.util.Set;
-import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -67,13 +67,7 @@ class DockSplitPaneTest {
 
     @BeforeAll
     static void initJavaFxToolkit() {
-        try {
-            System.setProperty("glass.platform", "Headless");
-            System.setProperty("prism.order", "sw");
-            Platform.startup(() -> { });
-        } catch (IllegalStateException alreadyStarted) {
-            // toolkit already running in this JVM (e.g. started by another test class); nothing to do
-        }
+        FxTestSupport.start();
     }
 
     private static Region newChild() {

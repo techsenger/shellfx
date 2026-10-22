@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.material.column;
 
+import com.techsenger.shellfx.test.FxTestSupport;
 import com.techsenger.toolkit.fx.FxPlatform;
 import com.techsenger.toolkit.fx.utils.ScrollPosition;
 import javafx.collections.FXCollections;

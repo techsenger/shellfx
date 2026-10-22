@@ -42,7 +42,7 @@
     </developers>
 
     <properties>
-        <publishing.plugin.exclusions>shellfx-demo</publishing.plugin.exclusions>
+        <publishing.plugin.exclusions>shellfx-test,shellfx-demo</publishing.plugin.exclusions>
         <maven.compiler.release>27</maven.compiler.release>
         <javafx.version>27</javafx.version>
     </properties>
@@ -113,6 +113,12 @@
 
             <dependency>
                 <groupId>com.techsenger.shellfx</groupId>
+                <artifactId>shellfx-test</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.techsenger.shellfx</groupId>
                 <artifactId>shellfx-material</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -155,6 +161,7 @@
     </dependencyManagement>
 
     <modules>
+        <module>shellfx-test</module>
         <module>shellfx-material</module>
         <module>shellfx-core</module>
         <module>shellfx-layout</module>
