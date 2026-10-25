@@ -19,11 +19,10 @@ module com.techsenger.shellfx.storage {
     requires com.techsenger.annotations;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
+    requires com.techsenger.drivekit.core;
     requires com.techsenger.shellfx.material;
     requires javafx.controls;
     requires javafx.swing;
-    requires com.sun.jna;
-    requires com.sun.jna.platform;
 
     exports com.techsenger.shellfx.storage;
     exports com.techsenger.shellfx.storage.async;

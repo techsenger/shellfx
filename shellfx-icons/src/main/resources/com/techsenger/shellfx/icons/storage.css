@@ -42,20 +42,34 @@
 
 */
 
-.font-icon-view.disc-icon {
+.font-icon-view.optical-storage-icon {
     -fx-icon-code: 984558; /* disc */
 }
 
-.font-icon-view.floppy-icon {
+.font-icon-view.floppy-storage-icon {
     -fx-icon-code: 983625; /* floppy */
 }
 
-.font-icon-view.base-disk-icon {
+.font-icon-view.base-storage-icon {
     -fx-icon-code: 57349;
     -fx-icon-family: 'Techsenger Icons MDI';
 }
 
-.font-icon-view.network-disk-icon {
+.font-icon-view.hdd-storage-icon {
+    -fx-icon-code: 983754; /* harddisk */
+}
+
+.font-icon-view.ssd-storage-icon {
+    -fx-icon-code: 57369;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.removable-storage-icon {
+    -fx-icon-code: 57370;
+    -fx-icon-family: 'Techsenger Icons MDI';
+}
+
+.font-icon-view.network-storage-icon {
     -fx-icon-code: 57350;
     -fx-icon-family: 'Techsenger Icons MDI';
 }

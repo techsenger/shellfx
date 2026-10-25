@@ -16,6 +16,7 @@
 
 package com.techsenger.shellfx.storage;
 
+import com.techsenger.drivekit.core.DriveDetector;
 import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
 import com.techsenger.shellfx.storage.style.StorageIconResolver;
 import com.techsenger.shellfx.storage.style.StorageStyleResolver;
@@ -23,8 +24,6 @@ import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -44,9 +43,10 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
     /**
      * Discovers and returns all system storages available on the current Unix machine.
      *
-     * <p>Each root directory reported by the default {@link FileSystem} is wrapped in a
-     * {@link UnixFileStorage} instance with type {@link FileStorageType#BASE}. The display name
-     * is obtained from {@link FileSystemView#getSystemDisplayName(java.io.File)}.
+     * <p>Each place found by {@link DriveDetector#detect()} is wrapped in a {@link UnixFileStorage} instance: on Linux
+     * every mounted file system, on the other systems the root of the file system. The display name is the label of
+     * the volume, if it has one, otherwise it is obtained from
+     * {@link FileSystemView#getSystemDisplayName(java.io.File)}.
      *
      * @param fileFactory the factory used to create file entries, must not be {@code null}
      * @return a mutable list of system storages, never {@code null}, may be empty
@@ -55,25 +55,32 @@ public class UnixFileStorage<T extends StorageFile> extends AbstractSystemFileSt
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
         FileSystemView fsv = FileSystemView.getFileSystemView();
-        FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
+        for (var drive : DriveDetector.detect()) {
+            if (!DriveUtils.isShown(drive)) {
+                continue;
+            }
+            var type = DriveUtils.toStorageType(drive.getType());
+            var name = drive.getLabel().isEmpty()
+                    ? fsv.getSystemDisplayName(drive.getRoot().toFile()) : drive.getLabel();
             FileStorage<StorageFile> storage = new UnixFileStorage<>(
-                    FileStorageType.BASE,
-                    fsv.getSystemDisplayName(rootPath.toFile()),
-                    rootPath.toUri(),
+                    type,
+                    name,
+                    drive.getRoot().toUri(),
+                    drive.getId(),
                     fileFactory,
-                    new DefaultStorageIconResolver(FileStorageType.BASE),
+                    new DefaultStorageIconResolver(type),
                     new DefaultStorageStyleResolver());
             result.add(storage);
-        });
+        }
         return result;
     }
 
     private final boolean posixSupported;
 
-    public UnixFileStorage(FileStorageType type, String name, URI rootUri,
+    public UnixFileStorage(FileStorageType type, String name, URI rootUri, String id,
             Factory<? extends DefaultStorageFile> fileFactory, StorageIconResolver iconResolver,
             StorageStyleResolver styleResolver) {
-        super(type, name, rootUri, fileFactory, iconResolver, styleResolver);
+        super(type, name, rootUri, id, fileFactory, iconResolver, styleResolver);
         this.posixSupported = Paths.get(rootUri).getFileSystem().supportedFileAttributeViews().contains("posix");
     }
 

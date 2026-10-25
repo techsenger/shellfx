@@ -99,11 +99,12 @@ public class SystemFileStorageIT {
         RETAINED_FILE_SYSTEMS.add(fileSystem);
         var rootUri = fileSystem.getRootDirectories().iterator().next().toUri();
         if (windows) {
-            return new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri,
+            return new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, "test",
                     DefaultStorageFile::new,
                 new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
         }
-        return new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, DefaultStorageFile::new,
+        return new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, "test",
+                DefaultStorageFile::new,
                 new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
     }
 
@@ -398,7 +399,7 @@ public class SystemFileStorageIT {
     @Test
     public void refersToStorage_unixStorage_trueOnlyForFileScheme() {
         var storage = new UnixFileStorage<StorageFile>(FileStorageType.BASE, "/", URI.create("file:///"),
-                DefaultStorageFile::new,
+                "/", DefaultStorageFile::new,
                 new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
 
         assertThat(storage.refersToStorage(URI.create("file:///home/user/a.txt"))).isTrue();
@@ -409,7 +410,7 @@ public class SystemFileStorageIT {
     @Test
     public void refersToStorage_windowsStorage_trueOnlyForTheSameDriveIgnoringCase() {
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "C:", URI.create("file:///C:/"),
-                DefaultStorageFile::new,
+                "C:", DefaultStorageFile::new,
                 new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
 
         assertThat(storage.refersToStorage(URI.create("file:///C:/dir/a.txt"))).isTrue();
@@ -1135,7 +1136,7 @@ public class SystemFileStorageIT {
         Files.setAttribute(hidden, "dos:hidden", true);
         Files.writeString(directory.resolve("visible.txt"), "hello");
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
-                DefaultStorageFile::new,
+                "test", DefaultStorageFile::new,
                 new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
@@ -1156,7 +1157,7 @@ public class SystemFileStorageIT {
                 .inheritIO().start();
         assertThat(process.waitFor()).as("mklink /J").isZero();
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
-                DefaultStorageFile::new,
+                "test", DefaultStorageFile::new,
                 new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);

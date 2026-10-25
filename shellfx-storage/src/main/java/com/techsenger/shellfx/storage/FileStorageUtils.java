@@ -17,11 +17,16 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
+import com.techsenger.annotations.Unmodifiable;
+import com.techsenger.toolkit.core.os.OsUtils;
 import java.net.URI;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,39 +40,66 @@ public final class FileStorageUtils {
     private static final Logger logger = LoggerFactory.getLogger(FileStorageUtils.class);
 
     /**
-     * Returns all local disk storages among {@code storages} - those backed by the local file system (Unix or
-     * Windows), excluding both network shares and any storage registered programmatically (e.g. FTP, cloud,
-     * {@code Recent}), which never carry a local disk {@link FileStorageType}.
+     * The priority of the local storages by their type: the lower the number, the earlier the storage is listed.
+     */
+    private static final Map<FileStorageType, Integer> prioritiesByType = Map.of(
+            FileStorageType.FLOPPY, 0,
+            FileStorageType.HDD, 1,
+            FileStorageType.SSD, 2,
+            FileStorageType.BASE, 3,
+            FileStorageType.REMOVABLE, 4,
+            FileStorageType.OPTICAL, 5,
+            FileStorageType.VIRTUAL, 6);
+
+    /**
+     * Returns all local disk storages among {@code storages} - the system ones, backed by the local file system,
+     * excluding network shares.
      *
-     * <p>The result is ordered by media priority - all {@link FileStorageType#BASE} storages first, then
-     * {@link FileStorageType#OPTICAL}, then {@link FileStorageType#FLOPPY} - so a caller picking a single
-     * fallback (e.g. via {@code findLocal(storages).stream().findFirst()}) prefers a real disk over
-     * removable media, rather than depending on whatever order the storages happened to be discovered in.
+     * <p>The result is ordered by the type of the medium: {@link FileStorageType#FLOPPY}, {@link FileStorageType#HDD},
+     * {@link FileStorageType#SSD}, {@link FileStorageType#BASE}, {@link FileStorageType#REMOVABLE},
+     * {@link FileStorageType#OPTICAL}, {@link FileStorageType#VIRTUAL}. The storages of one type keep the order they
+     * were given in.
      *
      * @param storages the list of storages to search, must not be {@code null}
      * @return an unmodifiable list, never {@code null}, may be empty
      */
-    public static <T extends StorageFile> List<FileStorage<T>> findLocal(List<? extends FileStorage<T>> storages) {
-        var base = new ArrayList<FileStorage<T>>();
-        var optical = new ArrayList<FileStorage<T>>();
-        var floppy = new ArrayList<FileStorage<T>>();
+    public static <T extends StorageFile> @Unmodifiable List<FileStorage<T>>
+            findLocal(List<? extends FileStorage<T>> storages) {
+        var result = new ArrayList<FileStorage<T>>();
         for (var s : storages) {
-            switch (s.getType()) {
-                case BASE -> base.add(s);
-                case OPTICAL -> optical.add(s);
-                case FLOPPY -> floppy.add(s);
-                default -> { }
+            if (s.getType() != FileStorageType.NETWORK) {
+                result.add(s);
             }
         }
-        var result = new ArrayList<FileStorage<T>>(base.size() + optical.size() + floppy.size());
-        result.addAll(base);
-        result.addAll(optical);
-        result.addAll(floppy);
+        result.sort(Comparator.comparingInt(s -> prioritiesByType.get(s.getType())));
         return Collections.unmodifiableList(result);
     }
 
     /**
-     * Returns the first storage whose root URI contains the given URI.
+     * Returns the main local storage: the one that holds the root of the operating system ({@code /} or the system
+     * drive). If it is not found, the first of the local storages is returned.
+     *
+     * @param storages the list of storages to search, must contain a local storage
+     * @param <T>      the concrete file entry type produced by the storages
+     * @return the storage, never {@code null}
+     * @throws IllegalStateException if there is no local storage
+     */
+    public static <T extends StorageFile> FileStorage<T> getMain(
+            List<? extends FileStorage<T>> storages) {
+        var local = findLocal(storages);
+        var systemRoot = findSystemRoot();
+        if (systemRoot != null) {
+            var storage = findByUri(local, systemRoot.toUri());
+            if (storage.isPresent()) {
+                return storage.get();
+            }
+        }
+        return local.stream().findFirst().orElseThrow(() -> new IllegalStateException("There is no local storage"));
+    }
+
+    /**
+     * Returns the storage that owns the given URI. Roots of storages may be nested, as a volume is mounted into
+     * a directory of another one, so the one with the most specific (the longest) root wins.
      *
      * @param storages the list of storages to search, must not be {@code null}
      * @param uri      the URI to resolve, must not be {@code null}
@@ -76,12 +108,15 @@ public final class FileStorageUtils {
      */
     public static <T extends StorageFile> Optional<FileStorage<T>> findByUri(
             List<? extends FileStorage<T>> storages, URI uri) {
+        @Nullable FileStorage<T> result = null;
         for (var s : storages) {
-            if (s.refersToStorage(uri)) {
-                return Optional.of(s);
+            // roots that both contain the URI lie one within the other, so the longer one is the more specific
+            if (s.refersToStorage(uri) && (result == null
+                    || s.getUri().toString().length() > result.getUri().toString().length())) {
+                result = s;
             }
         }
-        return Optional.empty();
+        return Optional.ofNullable(result);
     }
 
     /**
@@ -132,6 +167,14 @@ public final class FileStorageUtils {
             logger.error("Error getting home file", ex);
             return Optional.empty();
         }
+    }
+
+    private static @Nullable Path findSystemRoot() {
+        if (!OsUtils.isWindows()) {
+            return Paths.get("/");
+        }
+        var systemRoot = System.getenv("SystemRoot");
+        return systemRoot == null ? null : Paths.get(systemRoot).getRoot();
     }
 
     private static boolean equalsIgnoreCase(@Nullable String first, @Nullable String second) {

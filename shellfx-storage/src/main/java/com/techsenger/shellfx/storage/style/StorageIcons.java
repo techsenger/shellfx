@@ -24,13 +24,19 @@ import com.techsenger.shellfx.material.icon.StyleFontIcon;
  */
 public interface StorageIcons {
 
-    StyleFontIcon DISC = new StyleFontIcon("disc-icon");
+    StyleFontIcon OPTICAL_STORAGE = new StyleFontIcon("optical-storage-icon");
 
-    StyleFontIcon FLOPPY = new StyleFontIcon("floppy-icon");
+    StyleFontIcon FLOPPY_STORAGE = new StyleFontIcon("floppy-storage-icon");
 
-    StyleFontIcon BASE_DISK = new StyleFontIcon("base-disk-icon");
+    StyleFontIcon BASE_STORAGE = new StyleFontIcon("base-storage-icon");
 
-    StyleFontIcon NETWORK_DISK = new StyleFontIcon("network-disk-icon");
+    StyleFontIcon HDD_STORAGE = new StyleFontIcon("hdd-storage-icon");
+
+    StyleFontIcon SSD_STORAGE = new StyleFontIcon("ssd-storage-icon");
+
+    StyleFontIcon REMOVABLE_STORAGE = new StyleFontIcon("removable-storage-icon");
+
+    StyleFontIcon NETWORK_STORAGE = new StyleFontIcon("network-storage-icon");
 
     StyleFontIcon DIRECTORY = new StyleFontIcon("directory-icon");
 

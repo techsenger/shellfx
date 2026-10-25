@@ -19,11 +19,10 @@ open module com.techsenger.shellfx.storage {
     requires com.techsenger.annotations;
     requires com.techsenger.toolkit.core;
     requires com.techsenger.toolkit.fx;
+    requires com.techsenger.drivekit.core;
     requires com.techsenger.shellfx.material;
     requires javafx.controls;
     requires javafx.swing;
-    requires com.sun.jna;
-    requires com.sun.jna.platform;
 
     requires com.google.common.jimfs;
     requires org.junit.jupiter.api;

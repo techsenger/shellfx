@@ -68,14 +68,15 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
      * @param type the storage type
      * @param name the display name
      * @param rootUri the root URI
+     * @param id the identifier of the volume or the device the storage stands for
      * @param fileFactory the factory of the file entries
      * @param iconResolver the resolver of the icon of the storage
      * @param styleResolver the resolver of the style of the storage
      */
-    public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri,
+    public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri, String id,
             Factory<? extends DefaultStorageFile> fileFactory, StorageIconResolver iconResolver,
             StorageStyleResolver styleResolver) {
-        super(type, name, rootUri, iconResolver, styleResolver);
+        super(type, name, rootUri, id, iconResolver, styleResolver);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
     }

@@ -1089,14 +1089,21 @@ scheme, with the default schemes of the themes.
 
 ### Core Concepts <a name="storage-concepts"></a>
 
+* **FileStorage** — a source of entries. `FileStorageType` (`BASE`, `HDD`, `SSD`, `REMOVABLE`, `FLOPPY`, `OPTICAL`,
+`NETWORK`, `VIRTUAL`) tells the client what to expect from it, for example that a network storage is slow. A storage
+follows the EAFP principle: it performs the operation at once and investigates only if it failed, so a successful
+operation costs one request. A storage is either a volume or the whole device. A device with a partition table (a hard
+disk, an SSD, a USB flash drive, a memory card) is split into volumes, and every volume is a storage of its own. A
+device with a removable medium and no partitions (a floppy disk, an optical drive, a tape) has exactly one volume, so
+the device itself is the storage: it stays when the medium is taken out or replaced, and only what it contains changes.
+The reader of the API should never assume that one disk means one storage, nor that one storage means one disk. A
+storage carries an `id` that the operating system keeps for the volume across reboots; the system storages take it from
+the drive found by DriveKit. It is a part of `equals`, so a provider can tell the volume found again from another one.
 * **StorageFile** — an entry of a storage. Its structural kind is `FileEntryType`: `DIRECTORY`, `FILE`, `LINK` (a
 symbolic link, or a junction on Windows) or `OTHER` (a socket, a pipe, a device). A link is a kind of its own and is
 never treated as a directory, so code that walks a tree does not leave it by accident. Where a link leads is described
 by `EntryLink`: the URI it states, the URI at the end of the whole chain and, once it is known, the target file. The
 target may lie in another storage.
-* **FileStorage** — a source of entries. `FileStorageType` (`BASE`, `FLOPPY`, `OPTICAL`, `NETWORK`, `VIRTUAL`) tells
-the client what to expect from it, for example that a network storage is slow. A storage follows the EAFP principle: it
-performs the operation at once and investigates only if it failed, so a successful operation costs one request.
 * **OperationType** — every operation says whether it is `PRIMARY`, initiated by the user (open, save, rename), or
 `SECONDARY`, a step of internal machinery (copying a tree, resolving a link). It lets a listener, for example a
 "recently used" tracker, react only to what the user did.

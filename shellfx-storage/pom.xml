@@ -27,6 +27,10 @@
             <artifactId>toolkit-fx</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.techsenger.drivekit</groupId>
+            <artifactId>drivekit-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.techsenger.shellfx</groupId>
             <artifactId>shellfx-material</artifactId>
         </dependency>
@@ -41,14 +45,6 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna-platform</artifactId>
         </dependency>
         <!-- testing -->
         <dependency>

@@ -33,6 +33,8 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
 
     private final URI uri;
 
+    private final String id;
+
     private final StorageListenerSupport listenerSupport = new StorageListenerSupport();
 
     private final StorageIconResolver iconResolver;
@@ -45,15 +47,18 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
      * @param type the storage type
      * @param name the display name
      * @param uri the root URI
+     * @param id the identifier of the volume or the device the storage stands for, which the operating system keeps
+     *     across reboots; it tells a provider whether a storage found again is the one it found before
      * @param iconResolver the resolver of the icon of the storage
      * @param styleResolver the resolver of the style of the storage
      */
-    public AbstractFileStorage(FileStorageType type, String name, URI uri, StorageIconResolver iconResolver,
-            StorageStyleResolver styleResolver) {
+    public AbstractFileStorage(FileStorageType type, String name, URI uri, String id,
+            StorageIconResolver iconResolver, StorageStyleResolver styleResolver) {
         this.iconResolver = iconResolver;
         this.styleResolver = styleResolver;
         this.type = type;
         this.name = name;
+        this.id = id;
         var normalized = uri.normalize();
         this.uri = normalized;
     }
@@ -99,6 +104,7 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
         hash = 79 * hash + Objects.hashCode(this.type);
         hash = 79 * hash + Objects.hashCode(this.name);
         hash = 79 * hash + Objects.hashCode(this.uri.toString());
+        hash = 79 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
@@ -120,12 +126,15 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
         if (!Objects.equals(this.uri.toString(), other.uri.toString())) {
             return false;
         }
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
         return this.type == other.type;
     }
 
     @Override
     public String toString() {
-        return "AbstractFileStorage[" + "type=" + type + ", name=" + name + ", uri=" + uri + ']';
+        return "AbstractFileStorage[" + "type=" + type + ", name=" + name + ", uri=" + uri + ", id=" + id + ']';
     }
 
     /**

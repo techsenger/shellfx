@@ -16,7 +16,7 @@
 
 package com.techsenger.shellfx.storage;
 
-import com.sun.jna.platform.win32.Kernel32;
+import com.techsenger.drivekit.core.DriveDetector;
 import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
 import com.techsenger.shellfx.storage.style.StorageIconResolver;
 import com.techsenger.shellfx.storage.style.StorageStyleResolver;
@@ -24,8 +24,6 @@ import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -49,16 +47,9 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
     /**
      * Discovers and returns all system storages available on the current Windows machine.
      *
-     * <p>Each root directory reported by the default {@link FileSystem} is wrapped in a
-     * {@link WindowsFileStorage} instance. The storage type is determined by the Windows drive
-     * type via {@code Kernel32.GetDriveType}:
-     * <ul>
-     *   <li>{@code 2} → {@link FileStorageType#FLOPPY}</li>
-     *   <li>{@code 4} → {@link FileStorageType#NETWORK}</li>
-     *   <li>{@code 5} → {@link FileStorageType#OPTICAL}</li>
-     *   <li>any other value → {@link FileStorageType#BASE}</li>
-     * </ul>
-     * The display name is obtained from {@link FileSystemView#getSystemDisplayName(java.io.File)}.
+     * <p>Each drive found by {@link DriveDetector#detect()} is wrapped in a {@link WindowsFileStorage} instance. The
+     * storage type is determined by the Windows drive type. The display name is obtained from
+     * {@link FileSystemView#getSystemDisplayName(java.io.File)}.
      *
      * @param fileFactory the factory used to create file entries, must not be {@code null}
      * @return a mutable list of system storages, never {@code null}, may be empty
@@ -67,29 +58,28 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
             Factory<? extends DefaultStorageFile> fileFactory) {
         List<FileStorage<StorageFile>> result = new ArrayList<>();
         FileSystemView fsv = FileSystemView.getFileSystemView();
-        FileSystems.getDefault().getRootDirectories().forEach(rootPath -> {
-            FileStorageType type = switch (Kernel32.INSTANCE.GetDriveType(rootPath.toString())) {
-                case 2 -> FileStorageType.FLOPPY;
-                case 4 -> FileStorageType.NETWORK;
-                case 5 -> FileStorageType.OPTICAL;
-                default -> FileStorageType.BASE;
-            };
+        for (var drive : DriveDetector.detect()) {
+            if (!DriveUtils.isShown(drive)) {
+                continue;
+            }
+            var type = DriveUtils.toStorageType(drive.getType());
             FileStorage<StorageFile> storage = new WindowsFileStorage<>(
                     type,
-                    fsv.getSystemDisplayName(rootPath.toFile()),
-                    rootPath.toUri(),
+                    fsv.getSystemDisplayName(drive.getRoot().toFile()),
+                    drive.getRoot().toUri(),
+                    drive.getId(),
                     fileFactory,
                     new DefaultStorageIconResolver(type),
                     new DefaultStorageStyleResolver());
             result.add(storage);
-        });
+        }
         return result;
     }
 
-    public WindowsFileStorage(FileStorageType type, String name, URI rootUri,
+    public WindowsFileStorage(FileStorageType type, String name, URI rootUri, String id,
             Factory<? extends DefaultStorageFile> fileFactory, StorageIconResolver iconResolver,
             StorageStyleResolver styleResolver) {
-        super(type, name, rootUri, fileFactory, iconResolver, styleResolver);
+        super(type, name, rootUri, id, fileFactory, iconResolver, styleResolver);
     }
 
     @Override

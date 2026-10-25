@@ -20,8 +20,7 @@ import com.techsenger.shellfx.material.icon.FontIcon;
 import com.techsenger.shellfx.storage.FileStorageType;
 
 /**
- * Gives a storage the icon of its type: a disk, a network disk, a floppy or an optical disc. It is the default of the
- * storages of the local machine.
+ * Gives a storage the icon of its type. It is the default of the storages of the local machine.
  *
  * @author Pavel Castornii
  */
@@ -41,11 +40,13 @@ public final class DefaultStorageIconResolver implements StorageIconResolver {
     @Override
     public FontIcon<?> resolve() {
         return switch (type) {
-            case BASE -> StorageIcons.BASE_DISK;
-            case NETWORK -> StorageIcons.NETWORK_DISK;
-            case FLOPPY -> StorageIcons.FLOPPY;
-            case OPTICAL -> StorageIcons.DISC;
-            default -> throw new AssertionError("Unknown type for system storage");
+            case BASE, VIRTUAL -> StorageIcons.BASE_STORAGE;
+            case HDD -> StorageIcons.HDD_STORAGE;
+            case SSD -> StorageIcons.SSD_STORAGE;
+            case REMOVABLE -> StorageIcons.REMOVABLE_STORAGE;
+            case NETWORK -> StorageIcons.NETWORK_STORAGE;
+            case FLOPPY -> StorageIcons.FLOPPY_STORAGE;
+            case OPTICAL -> StorageIcons.OPTICAL_STORAGE;
         };
     }
 }

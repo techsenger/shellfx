@@ -736,16 +736,21 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     /**
-     * Shows the files of the directory at the URI, which is made the current one.
+     * Shows the files of the directory at the URI, which is made the current one. If it can't be opened, the user is
+     * told so and stays where they were; only the first opening, when there is no current directory yet, falls
+     * back to the default directory.
      */
     private void navigateTo(FileStorage storage, URI uri, @Nullable T selectedFile) {
         FileStorage<T> typedStorage = storage;
+        var previous = this.directory.get();
+        var previousSelection = computeFile();
         var token = startLoading();
+        Runnable onFailed = () -> returnAfterFailure(previous, previousSelection, uri, token);
         Consumer<T> onLoaded = directory -> {
             prepareToShow(List.of(directory));
             UiExecutor.execute(() -> {
                 if (isCurrent(token)) {
-                    listDirectory(directory, selectedFile, token, false);
+                    listDirectory(directory, selectedFile, token, onFailed);
                 }
             });
         };
@@ -753,7 +758,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             if (result == AsyncResult.FAILED) {
                 UiExecutor.execute(() -> {
                     if (isCurrent(token)) {
-                        listDefaultDirectory(token);
+                        onFailed.run();
                     }
                 });
             }
@@ -774,23 +779,48 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         if (current == null) {
             listDefaultDirectory(token);
         } else {
-            listDirectory(current, selectedFile, token, false);
+            listDirectory(current, selectedFile, token,
+                    () -> returnAfterFailure(current, selectedFile, current.getUri(), token));
         }
     }
 
-    private void listDefaultDirectory(long token) {
-        var local = FileStorageUtils.findLocal(storages).stream().findFirst();
-        if (local.isEmpty()) {
-            this.directory.set(null);
-            setWaiting(false);
+    /**
+     * Tells the user that the directory can't be opened and shows the directory they were in again. With no such
+     * directory, as at the first opening, the default one is shown.
+     */
+    private void returnAfterFailure(@Nullable T previous, @Nullable T previousSelection, URI failedUri, long token) {
+        if (previous == null) {
+            listDefaultDirectory(token);
             return;
         }
-        tasks.add(fileProvider.provideRootAsync(local.get(),
+        var path = failedUri.getPath() != null ? failedUri.getPath() : failedUri.toString();
+        showWarning("The directory '" + path + "' can't be opened.");
+        // a failure of the directory they were in is not repeated endlessly: nothing is shown then
+        listDirectory(previous, previousSelection, startLoading(), this::showNothing);
+    }
+
+    private void showNothing() {
+        this.directory.set(null);
+        setWaiting(false);
+    }
+
+    private void listDefaultDirectory(long token) {
+        var home = FileStorageUtils.getHome(storages);
+        if (home.isPresent()) {
+            prepareToShow(List.of(home.get()));
+            listDirectory(home.get(), null, token, () -> listMainDirectory(token));
+        } else {
+            listMainDirectory(token);
+        }
+    }
+
+    private void listMainDirectory(long token) {
+        tasks.add(fileProvider.provideRootAsync(FileStorageUtils.getMain(storages),
                 root -> {
                     prepareToShow(List.of(root));
                     UiExecutor.execute(() -> {
                         if (isCurrent(token)) {
-                            listDirectory(root, null, token, true);
+                            listDirectory(root, null, token, this::showNothing);
                         }
                     });
                 },
@@ -798,8 +828,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                     if (result == AsyncResult.FAILED) {
                         UiExecutor.execute(() -> {
                             if (isCurrent(token)) {
-                                this.directory.set(null);
-                                setWaiting(false);
+                                showNothing();
                             }
                         });
                     }
@@ -807,9 +836,9 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     /**
-     * Makes the directory the current one and lists it. If it can't be listed, the default directory is tried once.
+     * Makes the directory the current one and lists it; {@code onFailed} is run if it can't be listed.
      */
-    private void listDirectory(T newDirectory, @Nullable T selectedFile, long token, boolean defaultUsed) {
+    private void listDirectory(T newDirectory, @Nullable T selectedFile, long token, Runnable onFailed) {
         this.directory.set(newDirectory);
         tasks.add(fileProvider.provideFilesAsync(currentStorage(), directoryUri(), OperationType.PRIMARY,
                 storageFiles -> {
@@ -826,11 +855,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                     }
                     if (result == AsyncResult.SUCCESS) {
                         setWaiting(false);
-                    } else if (result == AsyncResult.FAILED && !defaultUsed) {
-                        listDefaultDirectory(token);
                     } else if (result == AsyncResult.FAILED) {
-                        this.directory.set(null);
-                        setWaiting(false);
+                        onFailed.run();
                     }
                 })));
     }

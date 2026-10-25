@@ -67,7 +67,7 @@ final class DemoFileStorage extends AbstractFileStorage<StorageFile> {
     private volatile CompletableFuture<Void> gate = new CompletableFuture<>();
 
     DemoFileStorage() {
-        super(FileStorageType.NETWORK, "Demo", URI.create("demo:///"), () -> StorageIcons.BASE_DISK,
+        super(FileStorageType.NETWORK, "Demo", URI.create("demo:///"), "demo", () -> StorageIcons.BASE_STORAGE,
                 new DefaultStorageStyleResolver());
     }
 

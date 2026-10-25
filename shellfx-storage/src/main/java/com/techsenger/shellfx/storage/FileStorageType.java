@@ -17,11 +17,23 @@
 package com.techsenger.shellfx.storage;
 
 /**
- * The types are defined based on the possibilities of their identification.
+ * The kind of the medium a storage lives on.
  *
  * @author Pavel Castornii
  */
 public enum FileStorageType {
 
-    BASE, FLOPPY, OPTICAL, NETWORK, VIRTUAL
+    /**
+     * A local storage whose medium is unknown or not told apart: a drive the system does not report the type of, or
+     * a layer over other drives (LVM, RAID).
+     */
+    BASE,
+
+    HDD, SSD, REMOVABLE, FLOPPY, OPTICAL, NETWORK,
+
+    /**
+     * A storage that has no medium of its own: a virtual drive (a mounted disk image or a RAM disk) or a virtual
+     * storage that is not a drive at all.
+     */
+    VIRTUAL
 }
