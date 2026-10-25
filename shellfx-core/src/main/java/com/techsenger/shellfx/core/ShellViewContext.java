@@ -16,8 +16,8 @@
 
 package com.techsenger.shellfx.core;
 
-import com.techsenger.shellfx.core.registry.ControlRegistry;
-import com.techsenger.shellfx.core.registry.SlotRegistry;
+import com.techsenger.shellfx.core.registries.ControlRegistry;
+import com.techsenger.shellfx.core.registries.SlotRegistry;
 
 /**
  * The part of the shell context that is available to views: the shell uses its registries on the view side only.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.slot.ContextMenuSlot;
@@ -23,6 +23,8 @@ import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
 import com.techsenger.shellfx.material.slot.Slot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
+import com.techsenger.shellfx.core.registry.Registration;
+import com.techsenger.shellfx.test.FxTestSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -36,7 +38,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToolBar;
-import static com.techsenger.shellfx.core.registry.RegistryTestSupport.provider;
+import static com.techsenger.shellfx.core.registries.ControlBuilderTestSupport.createItem;
+import static com.techsenger.shellfx.core.registries.ControlBuilderTestSupport.createMenu;
+import static com.techsenger.shellfx.core.registries.ControlBuilderTestSupport.provider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import org.junit.jupiter.api.BeforeAll;
@@ -122,14 +126,14 @@ public class ControlBuilderIT {
 
     @BeforeAll
     static void startFxToolkit() {
-        RegistryTestSupport.startFxToolkit();
+        FxTestSupport.start();
     }
 
     private final SlotRegistry slotRegistry = new SlotRegistry();
 
     private final ControlRegistry controlRegistry = new ControlRegistry();
 
-    private final ParentView<?> view = RegistryTestSupport.createView();
+    private final ParentView<?> view = ControlBuilderTestSupport.createView();
 
     private final ControlBuilder builder = new ControlBuilder(slotRegistry, controlRegistry) {
         @Override
@@ -259,7 +263,7 @@ public class ControlBuilderIT {
     void buildMenuBar_itemsWithSamePosition_bothBuiltAndTheSecondMarkedInTheProblems() {
         registerMenuSlots();
         registerMenuControls();
-        controlRegistry.register(MenuSlots.FILE_GROUP, 100, provider(v -> RegistryTestSupport.createItem("Twin")));
+        controlRegistry.register(MenuSlots.FILE_GROUP, 100, provider(v -> createItem("Twin")));
 
         var menuBar = builder.buildMenuBar(view, MenuSlots.MAIN_MENU).root();
 
@@ -275,7 +279,7 @@ public class ControlBuilderIT {
     void buildMenuBar_controlsOfGroupPutNowhere_builtTreeLacksThemAndProblemsListTheGroup() {
         registerMenuSlots();
         registerMenuControls();
-        controlRegistry.register(MenuSlots.ORPHAN_GROUP, 0, provider(v -> RegistryTestSupport.createItem("Lost")));
+        controlRegistry.register(MenuSlots.ORPHAN_GROUP, 0, provider(v -> createItem("Lost")));
 
         var menuBar = builder.buildMenuBar(view, MenuSlots.MAIN_MENU).root();
 
@@ -496,8 +500,8 @@ public class ControlBuilderIT {
         slotRegistry.register(MenuSlots.POPUP, 0, MenuSlots.POPUP_GROUP);
         controlRegistry.register(MenuSlots.POPUP, provider(v -> new ContextMenu()));
         controlRegistry.register(MenuSlots.POPUP_GROUP, SimpleGroupProvider::new);
-        controlRegistry.register(MenuSlots.POPUP_GROUP, 0, provider(v -> RegistryTestSupport.createItem("Cut")));
-        controlRegistry.register(MenuSlots.POPUP_GROUP, 100, provider(v -> RegistryTestSupport.createItem("Paste")));
+        controlRegistry.register(MenuSlots.POPUP_GROUP, 0, provider(v -> createItem("Cut")));
+        controlRegistry.register(MenuSlots.POPUP_GROUP, 100, provider(v -> createItem("Paste")));
 
         var contextMenu = builder.buildContextMenu(view, MenuSlots.POPUP).root();
 
@@ -508,7 +512,7 @@ public class ControlBuilderIT {
     void buildContextMenu_groupWithoutFactory_menuEmptyAndProblemsShowTheGroup() {
         slotRegistry.register(MenuSlots.POPUP, 0, MenuSlots.POPUP_GROUP);
         controlRegistry.register(MenuSlots.POPUP, provider(v -> new ContextMenu()));
-        controlRegistry.register(MenuSlots.POPUP_GROUP, 0, provider(v -> RegistryTestSupport.createItem("Cut")));
+        controlRegistry.register(MenuSlots.POPUP_GROUP, 0, provider(v -> createItem("Cut")));
 
         var contextMenu = builder.buildContextMenu(view, MenuSlots.POPUP).root();
 
@@ -525,7 +529,7 @@ public class ControlBuilderIT {
         slotRegistry.register(MenuSlots.POPUP, 0, MenuSlots.POPUP_GROUP);
         controlRegistry.register(MenuSlots.POPUP, provider(v -> new ContextMenu()));
         controlRegistry.register(MenuSlots.POPUP_GROUP, SimpleGroupProvider::new);
-        controlRegistry.register(MenuSlots.POPUP_GROUP, 0, provider(v -> RegistryTestSupport.createItem("Cut")));
+        controlRegistry.register(MenuSlots.POPUP_GROUP, 0, provider(v -> createItem("Cut")));
 
         var contextMenu = builder.buildContextMenu(view, MenuSlots.POPUP, slot -> slot != MenuSlots.POPUP_GROUP)
                 .root();
@@ -682,24 +686,24 @@ public class ControlBuilderIT {
 
     private void registerMenuControls() {
         menuBarFactory = controlRegistry.register(MenuSlots.MAIN_MENU, provider(v -> new MenuBar()));
-        controlRegistry.register(MenuSlots.FILE_MENU, provider(v -> RegistryTestSupport.createMenu("File")));
+        controlRegistry.register(MenuSlots.FILE_MENU, provider(v -> createMenu("File")));
         editMenuFactory = controlRegistry.register(MenuSlots.EDIT_MENU,
-                provider(v -> RegistryTestSupport.createMenu("Edit")));
+                provider(v -> createMenu("Edit")));
         recentMenuFactory = controlRegistry.register(MenuSlots.RECENT_MENU,
-                provider(v -> RegistryTestSupport.createMenu("Recent")));
+                provider(v -> createMenu("Recent")));
 
         controlRegistry.register(MenuSlots.FILE_GROUP, SimpleGroupProvider::new);
         controlRegistry.register(MenuSlots.EXIT_GROUP, SimpleGroupProvider::new);
         controlRegistry.register(MenuSlots.RECENT_GROUP, SimpleGroupProvider::new);
         menuEditGroupFactory = controlRegistry.register(MenuSlots.EDIT_GROUP, SimpleGroupProvider::new);
 
-        controlRegistry.register(MenuSlots.FILE_GROUP, 0, provider(v -> RegistryTestSupport.createItem("New")));
-        controlRegistry.register(MenuSlots.FILE_GROUP, 100, provider(v -> RegistryTestSupport.createItem("Open")));
-        controlRegistry.register(MenuSlots.EXIT_GROUP, 0, provider(v -> RegistryTestSupport.createItem("Exit")));
-        controlRegistry.register(MenuSlots.RECENT_GROUP, 0, provider(v -> RegistryTestSupport.createItem("a.txt")));
-        controlRegistry.register(MenuSlots.RECENT_GROUP, 100, provider(v -> RegistryTestSupport.createItem("b.txt")));
-        controlRegistry.register(MenuSlots.EDIT_GROUP, 0, provider(v -> RegistryTestSupport.createItem("Copy")));
-        controlRegistry.register(MenuSlots.EDIT_GROUP, 100, provider(v -> RegistryTestSupport.createItem("Paste")));
+        controlRegistry.register(MenuSlots.FILE_GROUP, 0, provider(v -> createItem("New")));
+        controlRegistry.register(MenuSlots.FILE_GROUP, 100, provider(v -> createItem("Open")));
+        controlRegistry.register(MenuSlots.EXIT_GROUP, 0, provider(v -> createItem("Exit")));
+        controlRegistry.register(MenuSlots.RECENT_GROUP, 0, provider(v -> createItem("a.txt")));
+        controlRegistry.register(MenuSlots.RECENT_GROUP, 100, provider(v -> createItem("b.txt")));
+        controlRegistry.register(MenuSlots.EDIT_GROUP, 0, provider(v -> createItem("Copy")));
+        controlRegistry.register(MenuSlots.EDIT_GROUP, 100, provider(v -> createItem("Paste")));
     }
 
     private void registerToolBarSlots() {

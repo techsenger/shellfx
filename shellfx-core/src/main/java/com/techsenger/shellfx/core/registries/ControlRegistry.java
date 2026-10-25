@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.ControlGroup;
@@ -24,9 +24,10 @@ import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
 import com.techsenger.shellfx.material.slot.Slot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
+import com.techsenger.shellfx.core.registry.AbstractExtensionRegistry;
+import com.techsenger.shellfx.core.registry.Registration;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -44,9 +45,9 @@ import javafx.scene.control.ToolBar;
  *
  * @author Pavel Castornii
  */
-public final class ControlRegistry implements ExtensionRegistry {
+public final class ControlRegistry extends AbstractExtensionRegistry {
 
-    private final RegistrationIndex<AbstractControlRegistration> index = new RegistrationIndex<>();
+    private final RegistrationIndex<AbstractControlRegistration> index = new RegistrationIndex<>(this::renewState);
 
     /**
      * Registers the provider of the menu bar a slot stands for. The factory is not invoked here, only when a
@@ -143,11 +144,6 @@ public final class ControlRegistry implements ExtensionRegistry {
         var registration = new LeafRegistration(group, position, factory);
         index.add(group.getComponentClass(), registration);
         return registration;
-    }
-
-    @Override
-    public UUID getStateUuid() {
-        return index.getStateUuid();
     }
 
     /**

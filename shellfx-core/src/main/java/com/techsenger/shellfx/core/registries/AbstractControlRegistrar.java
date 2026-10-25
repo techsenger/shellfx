@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.ControlGroup;
@@ -23,6 +23,7 @@ import com.techsenger.shellfx.material.slot.GroupSlot;
 import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
+import com.techsenger.shellfx.core.registry.AbstractRegistrar;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;

@@ -17,8 +17,8 @@
 package com.techsenger.shellfx.core;
 
 import com.techsenger.shellfx.core.config.ConfigManager;
-import com.techsenger.shellfx.core.registry.ControlRegistry;
-import com.techsenger.shellfx.core.registry.SlotRegistry;
+import com.techsenger.shellfx.core.registries.ControlRegistry;
+import com.techsenger.shellfx.core.registries.SlotRegistry;
 import javafx.application.HostServices;
 import com.techsenger.shellfx.core.settings.ShellSettings;
 

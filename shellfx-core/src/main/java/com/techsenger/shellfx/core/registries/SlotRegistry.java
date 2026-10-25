@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.slot.ContextMenuSlot;
@@ -23,9 +23,10 @@ import com.techsenger.shellfx.material.slot.MenuBarSlot;
 import com.techsenger.shellfx.material.slot.MenuSlot;
 import com.techsenger.shellfx.material.slot.Slot;
 import com.techsenger.shellfx.material.slot.ToolBarSlot;
+import com.techsenger.shellfx.core.registry.AbstractExtensionRegistry;
+import com.techsenger.shellfx.core.registry.Registration;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import javafx.scene.control.Control;
 import javafx.scene.control.MenuItem;
 
@@ -43,9 +44,9 @@ import javafx.scene.control.MenuItem;
  *
  * @author Pavel Castornii
  */
-public final class SlotRegistry implements ExtensionRegistry {
+public final class SlotRegistry extends AbstractExtensionRegistry {
 
-    private final RegistrationIndex<SlotRegistration> index = new RegistrationIndex<>();
+    private final RegistrationIndex<SlotRegistration> index = new RegistrationIndex<>(this::renewState);
 
     /**
      * Puts a menu into a menu bar.
@@ -114,11 +115,6 @@ public final class SlotRegistry implements ExtensionRegistry {
     public <V extends ParentView<?>> Registration register(GroupSlot<V, ? extends MenuItem> group, int position,
             MenuSlot<V> subMenu) {
         return add(group, position, subMenu);
-    }
-
-    @Override
-    public UUID getStateUuid() {
-        return index.getStateUuid();
     }
 
     /**

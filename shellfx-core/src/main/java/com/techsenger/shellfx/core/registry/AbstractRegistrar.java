@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Base of the registrars of a registry, be it the {@link ControlRegistry} or the {@link SlotRegistry}:
- * it remembers every registration made through {@link #addRegistration(Registration)} and undoes them all in
- * {@link #unregister()}, which also forgets them, so a repeated call does nothing.
+ * Base of the registrars of a registry: it remembers every registration made through
+ * {@link #addRegistration(Registration)} and undoes them all in {@link #unregister()}, which also forgets them, so a
+ * repeated call does nothing.
  *
  * @param <R> the type of the registry this registrar contributes to
  * @author Pavel Castornii

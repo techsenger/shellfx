@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.slot.Slot;

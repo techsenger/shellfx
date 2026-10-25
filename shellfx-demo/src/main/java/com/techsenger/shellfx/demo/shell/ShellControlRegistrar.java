@@ -17,9 +17,9 @@
 package com.techsenger.shellfx.demo.shell;
 
 import com.techsenger.shellfx.core.ShellView;
-import com.techsenger.shellfx.core.registry.AbstractControlRegistrar;
-import com.techsenger.shellfx.core.registry.SimpleControlProvider;
-import com.techsenger.shellfx.core.registry.SimpleGroupProvider;
+import com.techsenger.shellfx.core.registries.AbstractControlRegistrar;
+import com.techsenger.shellfx.core.registries.SimpleControlProvider;
+import com.techsenger.shellfx.core.registries.SimpleGroupProvider;
 import com.techsenger.shellfx.core.window.WindowArrangement;
 import com.techsenger.shellfx.demo.ApplicationType;
 import com.techsenger.shellfx.demo.main.DemoMenuAwarePort;

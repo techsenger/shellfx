@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.patternfx.mvvm.ParentView;
+import com.techsenger.shellfx.material.slot.Slot;
 
 /**
- * Creates a new {@link ControlProvider} for every build of the controls: a provider keeps its control, so one
- * provider can serve only one component view.
+ * Puts the control a provider creates (a menu item, a button) into a group slot at a position among its siblings.
  *
- * @param <V> the view type of the component the controls are built for
- * @param <C> the type of the control of the created provider; the provider may hold a control of a narrower type
  * @author Pavel Castornii
  */
-@FunctionalInterface
-public interface ControlProviderFactory<V extends ParentView<?>, C> {
+final class LeafRegistration extends AbstractControlRegistration {
 
-    ControlProvider<V, ? extends C> create();
+    private final int position;
+
+    LeafRegistration(Slot<?> group, int position,  ControlProviderFactory<? extends ParentView<?>, ?> factory) {
+        super(group, factory);
+        this.position = position;
+    }
+
+    int getPosition() {
+        return position;
+    }
 }

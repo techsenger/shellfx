@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
 import com.techsenger.patternfx.mvvm.ParentView;
-import com.techsenger.shellfx.test.FxTestSupport;
 import java.util.function.Function;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -25,16 +24,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 /**
- * Shared fixture of the builder integration tests: starts the JavaFX toolkit, creates the view the builders are
- * given, and creates menu items and menus.
+ * Shared fixture of the builder integration tests: creates the view the builders are given, and creates menu items
+ * and menus.
  *
  * @author Pavel Castornii
  */
-final class RegistryTestSupport {
-
-    static void startFxToolkit() {
-        FxTestSupport.start();
-    }
+final class ControlBuilderTestSupport {
 
     /**
      * Creates the view the builders are given; they use its class to pick the registrations that apply and its
@@ -72,7 +67,7 @@ final class RegistryTestSupport {
         return new Menu(text);
     }
 
-    private RegistryTestSupport() {
+    private ControlBuilderTestSupport() {
         // empty
     }
 }

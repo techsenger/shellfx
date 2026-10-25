@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,7 +41,16 @@ final class RegistrationIndex<R extends AbstractRegistration> {
 
     private final Map<String, Set<R>> resolvedByClassName = new ConcurrentHashMap<>();
 
-    private volatile UUID stateUuid = UUID.randomUUID();
+    private final Runnable onChanged;
+
+    /**
+     * Creates an index.
+     *
+     * @param onChanged what to do after a registration is added or removed
+     */
+    RegistrationIndex(Runnable onChanged) {
+        this.onChanged = onChanged;
+    }
 
     /**
      * Files {@code registration} under {@code componentClass} and makes it undoable.
@@ -54,7 +62,6 @@ final class RegistrationIndex<R extends AbstractRegistration> {
             return result;
         });
         resolvedByClassName.clear();
-        stateUuid = UUID.randomUUID();
         registration.setUnregister(() -> {
             var removed = new boolean[1];
             registrationsByClass.computeIfPresent(componentClass, (k, registrations) -> {
@@ -63,16 +70,11 @@ final class RegistrationIndex<R extends AbstractRegistration> {
             });
             resolvedByClassName.clear();
             if (removed[0]) {
-                stateUuid = UUID.randomUUID();
+                onChanged.run();
             }
         });
-    }
-
-    /**
-     * Returns the identifier of the current state; see {@link ExtensionRegistry#getStateUuid()}.
-     */
-    UUID getStateUuid() {
-        return stateUuid;
+        // after the registration is undoable, so a listener may undo it
+        onChanged.run();
     }
 
     /**

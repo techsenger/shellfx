@@ -14,26 +14,38 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.core.registry;
+package com.techsenger.shellfx.core.registries;
 
-import com.techsenger.patternfx.mvvm.ParentView;
 import com.techsenger.shellfx.material.slot.Slot;
 
 /**
- * Puts the control a provider creates (a menu item, a button) into a group slot at a position among its siblings.
+ * Puts a slot into another one at a position among its siblings.
  *
  * @author Pavel Castornii
  */
-final class LeafRegistration extends AbstractControlRegistration {
+final class SlotRegistration extends AbstractRegistration {
+
+    private final Slot<?> parent;
 
     private final int position;
 
-    LeafRegistration(Slot<?> group, int position,  ControlProviderFactory<? extends ParentView<?>, ?> factory) {
-        super(group, factory);
+    private final Slot<?> child;
+
+    SlotRegistration(Slot<?> parent, int position, Slot<?> child) {
+        this.parent = parent;
         this.position = position;
+        this.child = child;
+    }
+
+    Slot<?> getParent() {
+        return parent;
     }
 
     int getPosition() {
         return position;
+    }
+
+    Slot<?> getChild() {
+        return child;
     }
 }
