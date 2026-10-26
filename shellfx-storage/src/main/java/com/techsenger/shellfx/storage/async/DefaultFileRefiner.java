@@ -18,6 +18,7 @@ package com.techsenger.shellfx.storage.async;
 
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.StorageProvider;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -43,16 +44,16 @@ public class DefaultFileRefiner<F extends StorageFile> implements FileRefiner<F>
 
     private static final int WORKERS_PER_STORAGE = 4;
 
-    private final List<? extends FileStorage<F>> storages;
+    private final StorageProvider<F> storageProvider;
 
     /**
      * Creates a refiner.
      *
-     * @param storages the storages the targets of the links and the recorded files may lie in; they are not tracked,
-     *     so the refiner uses the ones it was given
+     * @param storageProvider tells the storages the targets of the links may lie in; it is asked each time they are
+     *     needed
      */
-    public DefaultFileRefiner(List<? extends FileStorage<F>> storages) {
-        this.storages = List.copyOf(storages);
+    public DefaultFileRefiner(StorageProvider<F> storageProvider) {
+        this.storageProvider = storageProvider;
     }
 
     /**
@@ -104,17 +105,17 @@ public class DefaultFileRefiner<F extends StorageFile> implements FileRefiner<F>
      * @throws IOException if the file can't be refined, which makes the file failed
      */
     protected Runnable refine(F file) throws IOException {
-        var target = LinkUtils.findTarget(storages, file);
+        var target = LinkUtils.findTarget(storageProvider.getStorages(), file);
         return () -> LinkUtils.setTarget(file, target);
     }
 
     /**
-     * Returns the storages this refiner was created with.
+     * Returns the provider of the storages the refiner works with.
      *
-     * @return the storages, never {@code null}
+     * @return the storage provider, never {@code null}
      */
-    protected List<? extends FileStorage<F>> getStorages() {
-        return storages;
+    protected StorageProvider<F> getStorageProvider() {
+        return storageProvider;
     }
 
     private FileRefinement<F> refineFile(F file) {

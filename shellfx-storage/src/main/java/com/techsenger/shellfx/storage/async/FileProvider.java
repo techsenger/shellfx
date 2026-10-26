@@ -19,6 +19,7 @@ package com.techsenger.shellfx.storage.async;
 import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.StorageProvider;
 import java.net.URI;
 import java.util.List;
 import java.util.function.Consumer;
@@ -44,11 +45,12 @@ import java.util.function.Consumer;
 public interface FileProvider<F extends StorageFile> {
 
     /**
-     * Returns the storages the files of this provider come from, and where the target of a link may lie.
+     * Returns the provider of the storages the files of this provider come from, and where the target of a link may
+     * lie.
      *
-     * @return the storages, never {@code null}
+     * @return the storage provider, never {@code null}
      */
-    List<? extends FileStorage<F>> getStorages();
+    StorageProvider<F> getStorageProvider();
 
     /**
      * Provides a directory: lists it. The files that need the second phase are marked by the client, see
@@ -106,7 +108,8 @@ public interface FileProvider<F extends StorageFile> {
     /**
      * Provides the root directories of all the storages of this provider.
      *
-     * @param onProvided called with the roots in the order of {@link #getStorages()}, which belong to the caller
+     * @param onProvided called with the roots in the order of the storages of {@link #getStorageProvider()}, which
+     *     belong to the caller
      * @param onFinished called with {@code SUCCESS} after the roots, or with {@code FAILED} if any of them can't be
      *     read
      * @return the task of the operation

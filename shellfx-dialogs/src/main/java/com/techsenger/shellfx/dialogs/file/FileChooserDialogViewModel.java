@@ -27,6 +27,8 @@ import com.techsenger.shellfx.core.settings.SettingsSubscription;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogConfig;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogParams;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogType;
+import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
+import static com.techsenger.shellfx.dialogs.file.FileChooserType.SAVE_AS;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.RequestSetter;
 import com.techsenger.shellfx.material.UiExecutor;
@@ -40,6 +42,7 @@ import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageUtils;
 import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.StorageProvider;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.shellfx.storage.async.AsyncResult;
 import com.techsenger.shellfx.storage.async.AsyncStatus;
@@ -80,8 +83,6 @@ import javafx.collections.ObservableMap;
 import javafx.scene.control.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.techsenger.shellfx.dialogs.file.FileChooserType.OPEN;
-import static com.techsenger.shellfx.dialogs.file.FileChooserType.SAVE_AS;
 
 /**
  *
@@ -157,8 +158,6 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
 
     private boolean locationsUpdated;
 
-    private final List<? extends FileStorage<T>> storages;
-
     private final FileProvider<T> fileProvider;
 
     private final TwoPhaseSortPolicy twoPhaseSortPolicy;
@@ -193,11 +192,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         super(params);
         this.chooserType = params.getChooserType();
         var paramsProvider = params.getFileProvider();
-        this.fileProvider = paramsProvider != null ? paramsProvider : createDefaultFileProvider(params.getStorages());
-        this.storages = fileProvider.getStorages();
+        this.fileProvider = paramsProvider != null ? paramsProvider
+                : createDefaultFileProvider(params.getStorageProvider());
         this.twoPhaseSortPolicy = params.getTwoPhaseSortPolicy();
         var paramsRefiner = params.getFileRefiner();
-        this.fileRefiner = paramsRefiner != null ? paramsRefiner : createDefaultFileRefiner();
+        this.fileRefiner = paramsRefiner != null ? paramsRefiner
+                : createDefaultFileRefiner(params.getStorageProvider());
         this.initialDirectory = params.getInitialDirectory();
         this.initialFileName = params.getInitialFileName();
         this.fileName.set(initialFileName);
@@ -443,7 +443,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         }
         var navigated = false;
         if (this.initialDirectory != null) {
-            var initialStorage = FileStorageUtils.findByUri(storages, initialDirectory);
+            var initialStorage = FileStorageUtils.findByUri(fileProvider.getStorageProvider().getStorages(),
+                    initialDirectory);
             if (initialStorage.isPresent()) {
                 navigateTo(initialStorage.get(), this.initialDirectory, null);
                 navigated = true;
@@ -512,7 +513,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     protected void onNavigateHome() {
-        var file = FileStorageUtils.getHome(storages);
+        var file = FileStorageUtils.getHome(fileProvider.getStorageProvider().getStorages());
         if (file.isPresent()) {
             onNavigateDown(file.get());
         }
@@ -617,12 +618,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         return sortComparator;
     }
 
-    protected FileProvider<T> createDefaultFileProvider(List<? extends FileStorage<T>> storages) {
-        return new DefaultFileProvider<T>(storages);
+    protected FileProvider<T> createDefaultFileProvider(StorageProvider<T> storageProvider) {
+        return new DefaultFileProvider<T>(storageProvider);
     }
 
-    protected FileRefiner<T> createDefaultFileRefiner() {
-        return new DefaultFileRefiner<T>(storages);
+    protected FileRefiner<T> createDefaultFileRefiner(StorageProvider<T> storageProvider) {
+        return new DefaultFileRefiner<T>(storageProvider);
     }
 
     ObservableMap<TableColumnName, TableColumnInfo> getColumns() {
@@ -809,7 +810,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     private void listDefaultDirectory(long token) {
-        var home = FileStorageUtils.getHome(storages);
+        var home = FileStorageUtils.getHome(fileProvider.getStorageProvider().getStorages());
         if (home.isPresent()) {
             prepareToShow(List.of(home.get()));
             listDirectory(home.get(), null, token, failure -> listMainDirectory(token));
@@ -819,7 +820,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     private void listMainDirectory(long token) {
-        tasks.add(fileProvider.provideRootAsync(FileStorageUtils.getMain(storages),
+        var main = FileStorageUtils.getMain(fileProvider.getStorageProvider().getStorages());
+        tasks.add(fileProvider.provideRootAsync(main,
                 root -> {
                     prepareToShow(List.of(root));
                     UiExecutor.execute(() -> {

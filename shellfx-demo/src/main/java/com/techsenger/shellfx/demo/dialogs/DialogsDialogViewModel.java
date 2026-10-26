@@ -198,7 +198,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
     private void showFileChooserDialog(FileChooserType type) {
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
         var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), settings,
-                type, this.storages);
+                type, () -> this.storages);
         handleFileChooserResult(getComposer().openFileChooserDialog(params));
     }
 
@@ -212,7 +212,7 @@ public class DialogsDialogViewModel<C extends DialogsDialogComposer> extends Abs
         List<FileStorage<StorageFile>> demoStorages = List.of(demoStorage);
         var config = configManager.getOrCreateConfig(FileChooserDialogConfig.class, FileChooserDialogConfig::new);
         var params = new FileChooserDialogParams<StorageFile>(config, selectedWindowType.get(), settings,
-                FileChooserType.SAVE_AS, demoStorages);
+                FileChooserType.SAVE_AS, () -> demoStorages);
         params.setFileRefiner(new DemoFileRefiner(demoStorages));
         params.setTwoPhaseSortPolicy(TwoPhaseSortPolicy.AFTER_EACH_PHASE);
         // the demo storage is a network one, so the dialog does not pick it as the local default

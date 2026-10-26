@@ -20,6 +20,7 @@ import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.FileStorageType;
 import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.StorageProvider;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -58,21 +59,20 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultFileProvider.class);
 
-    private final List<? extends FileStorage<F>> storages;
+    private final StorageProvider<F> storageProvider;
 
     /**
      * Creates a provider that finds the targets of the links that end in another storage.
      *
-     * @param storages the storages a link may end in; they are not tracked, so the provider uses the ones it was
-     *     given
+     * @param storageProvider tells the storages a link may end in; it is asked each time they are needed
      */
-    public DefaultFileProvider(List<? extends FileStorage<F>> storages) {
-        this.storages = List.copyOf(storages);
+    public DefaultFileProvider(StorageProvider<F> storageProvider) {
+        this.storageProvider = storageProvider;
     }
 
     @Override
-    public List<? extends FileStorage<F>> getStorages() {
-        return storages;
+    public StorageProvider<F> getStorageProvider() {
+        return storageProvider;
     }
 
     @Override
@@ -119,7 +119,7 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
     public AsyncTask provideRootsAsync(Consumer<List<F>> onProvided, Consumer<AsyncResult> onFinished) {
         return provideAsync("roots", () -> {
             List<F> roots = new ArrayList<>();
-            for (FileStorage<F> storage : storages) {
+            for (FileStorage<F> storage : storageProvider.getStorages()) {
                 var root = storage.getRoot();
                 assemble(storage, root);
                 roots.add(root);
@@ -139,7 +139,7 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
      */
     protected void prepare(FileStorage<F> storage, F file) throws IOException {
         if (storage.getType() != FileStorageType.NETWORK && LinkUtils.isUnresolved(file)) {
-            LinkUtils.resolve(storages, file);
+            LinkUtils.resolve(storageProvider.getStorages(), file);
         }
     }
 

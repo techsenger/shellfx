@@ -20,13 +20,12 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.core.dialog.DialogParams;
 import com.techsenger.shellfx.core.settings.AppearanceSettings;
 import com.techsenger.shellfx.core.window.WindowType;
-import com.techsenger.shellfx.storage.FileStorage;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.StorageProvider;
 import com.techsenger.shellfx.storage.async.FileProvider;
 import com.techsenger.shellfx.storage.async.FileRefiner;
 import com.techsenger.shellfx.storage.async.TwoPhaseSortPolicy;
 import java.net.URI;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -37,7 +36,7 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
 
     private final FileChooserType chooserType;
 
-    private final List<? extends FileStorage<T>> storages;
+    private final StorageProvider<T> storageProvider;
 
     private @Nullable FileProvider<T> fileProvider;
 
@@ -56,21 +55,21 @@ public class FileChooserDialogParams<T extends StorageFile> extends DialogParams
      * @param windowType the type of the window
      * @param settings the appearance settings
      * @param chooserType the type of the chooser
-     * @param storages the storages the user can choose files from
+     * @param storageProvider tells the storages the user can choose files from, each time they are needed
      */
     public FileChooserDialogParams(FileChooserDialogConfig config, WindowType windowType, AppearanceSettings settings,
-            FileChooserType chooserType, List<? extends FileStorage<T>> storages) {
+            FileChooserType chooserType, StorageProvider<T> storageProvider) {
         super(config, windowType, settings);
         this.chooserType = chooserType;
-        this.storages = List.copyOf(storages);
+        this.storageProvider = storageProvider;
     }
 
     public FileChooserType getChooserType() {
         return chooserType;
     }
 
-    public List<? extends FileStorage<T>> getStorages() {
-        return storages;
+    public StorageProvider<T> getStorageProvider() {
+        return storageProvider;
     }
 
     public @Nullable FileProvider<T> getFileProvider() {

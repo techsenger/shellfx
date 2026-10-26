@@ -31,7 +31,7 @@ import java.util.List;
 final class DemoFileRefiner extends DefaultFileRefiner<StorageFile> {
 
     DemoFileRefiner(List<? extends FileStorage<StorageFile>> storages) {
-        super(storages);
+        super(() -> storages);
     }
 
     @Override
