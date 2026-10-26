@@ -42,6 +42,7 @@ import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.shellfx.storage.async.AsyncResult;
+import com.techsenger.shellfx.storage.async.AsyncStatus;
 import com.techsenger.shellfx.storage.async.AsyncTask;
 import com.techsenger.shellfx.storage.async.DefaultFileProvider;
 import com.techsenger.shellfx.storage.async.DefaultFileRefiner;
@@ -50,6 +51,7 @@ import com.techsenger.shellfx.storage.async.FileRefinement;
 import com.techsenger.shellfx.storage.async.FileRefiner;
 import com.techsenger.shellfx.storage.async.TwoPhaseSortPolicy;
 import com.techsenger.shellfx.storage.style.FileDecorationType;
+import com.techsenger.shellfx.storage.view.StorageErrors;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.fx.value.ObservableSource;
 import com.techsenger.toolkit.fx.value.SimpleObservableSource;
@@ -745,7 +747,8 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         var previous = this.directory.get();
         var previousSelection = computeFile();
         var token = startLoading();
-        Runnable onFailed = () -> returnAfterFailure(previous, previousSelection, uri, token);
+        Consumer<@Nullable Exception> onFailed = cause ->
+                returnAfterFailure(previous, previousSelection, uri, token, cause);
         Consumer<T> onLoaded = directory -> {
             prepareToShow(List.of(directory));
             UiExecutor.execute(() -> {
@@ -755,10 +758,10 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             });
         };
         Consumer<AsyncResult> onFinished = result -> {
-            if (result == AsyncResult.FAILED) {
+            if (result.getStatus() == AsyncStatus.FAILED) {
                 UiExecutor.execute(() -> {
                     if (isCurrent(token)) {
-                        onFailed.run();
+                        onFailed.accept(result.getException());
                     }
                 });
             }
@@ -780,7 +783,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
             listDefaultDirectory(token);
         } else {
             listDirectory(current, selectedFile, token,
-                    () -> returnAfterFailure(current, selectedFile, current.getUri(), token));
+                    cause -> returnAfterFailure(current, selectedFile, current.getUri(), token, cause));
         }
     }
 
@@ -788,15 +791,16 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
      * Tells the user that the directory can't be opened and shows the directory they were in again. With no such
      * directory, as at the first opening, the default one is shown.
      */
-    private void returnAfterFailure(@Nullable T previous, @Nullable T previousSelection, URI failedUri, long token) {
+    private void returnAfterFailure(@Nullable T previous, @Nullable T previousSelection, URI failedUri, long token,
+            @Nullable Exception cause) {
         if (previous == null) {
             listDefaultDirectory(token);
             return;
         }
         var path = failedUri.getPath() != null ? failedUri.getPath() : failedUri.toString();
-        showWarning("The directory '" + path + "' can't be opened.");
+        showWarning("The directory '" + path + "' can't be opened: " + StorageErrors.describe(cause) + ".");
         // a failure of the directory they were in is not repeated endlessly: nothing is shown then
-        listDirectory(previous, previousSelection, startLoading(), this::showNothing);
+        listDirectory(previous, previousSelection, startLoading(), failure -> showNothing());
     }
 
     private void showNothing() {
@@ -808,7 +812,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
         var home = FileStorageUtils.getHome(storages);
         if (home.isPresent()) {
             prepareToShow(List.of(home.get()));
-            listDirectory(home.get(), null, token, () -> listMainDirectory(token));
+            listDirectory(home.get(), null, token, failure -> listMainDirectory(token));
         } else {
             listMainDirectory(token);
         }
@@ -820,12 +824,12 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                     prepareToShow(List.of(root));
                     UiExecutor.execute(() -> {
                         if (isCurrent(token)) {
-                            listDirectory(root, null, token, this::showNothing);
+                            listDirectory(root, null, token, failure -> showNothing());
                         }
                     });
                 },
                 result -> {
-                    if (result == AsyncResult.FAILED) {
+                    if (result.getStatus() == AsyncStatus.FAILED) {
                         UiExecutor.execute(() -> {
                             if (isCurrent(token)) {
                                 showNothing();
@@ -836,9 +840,11 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
     }
 
     /**
-     * Makes the directory the current one and lists it; {@code onFailed} is run if it can't be listed.
+     * Makes the directory the current one and lists it; {@code onFailed} is called with the cause if it can't be
+     * listed.
      */
-    private void listDirectory(T newDirectory, @Nullable T selectedFile, long token, Runnable onFailed) {
+    private void listDirectory(T newDirectory, @Nullable T selectedFile, long token,
+            Consumer<@Nullable Exception> onFailed) {
         this.directory.set(newDirectory);
         tasks.add(fileProvider.provideFilesAsync(currentStorage(), directoryUri(), OperationType.PRIMARY,
                 storageFiles -> {
@@ -853,10 +859,10 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                     if (!isCurrent(token)) {
                         return;
                     }
-                    if (result == AsyncResult.SUCCESS) {
+                    if (result.getStatus() == AsyncStatus.SUCCESS) {
                         setWaiting(false);
-                    } else if (result == AsyncResult.FAILED) {
-                        onFailed.run();
+                    } else if (result.getStatus() == AsyncStatus.FAILED) {
+                        onFailed.accept(result.getException());
                     }
                 })));
     }
@@ -880,7 +886,7 @@ public class FileChooserDialogViewModel<C extends FileChooserDialogComposer, T e
                     });
                 },
                 result -> {
-                    if (result == AsyncResult.FAILED) {
+                    if (result.getStatus() == AsyncStatus.FAILED) {
                         UiExecutor.execute(() -> {
                             if (isCurrent(token)) {
                                 showLocations(roots, requestedStorage, List.of(requestedDirectory));

@@ -25,7 +25,7 @@ public interface AsyncTask {
 
     /**
      * Cancels the operation: the callbacks with data that have not started yet are not called, and the end callback
-     * gets {@link AsyncResult#CANCELLED} unless the operation has already ended. A callback that is running, and the
+     * gets {@link AsyncStatus#CANCELLED} unless the operation has already ended. A callback that is running, and the
      * work that has been started, is not interrupted. Calling it again has no effect.
      */
     void cancel();

@@ -31,10 +31,11 @@ import java.util.function.Consumer;
  *
  * <p>The provider works in the background, and its callbacks are called on a background thread. Every asynchronous
  * method takes a callback for the data and one for the end, and returns the {@link AsyncTask} of the operation.
- * {@code onFinished} is called once, with {@link AsyncResult#SUCCESS} when all the data has been given,
- * {@link AsyncResult#FAILED} if the operation failed, which the provider has logged, or {@link AsyncResult#CANCELLED}
- * if the task was cancelled before it ended; the data is not given after the cancellation. The provider keeps no state
- * of the operations, so one provider serves any number of lists at once, and the client cancels the tasks it no longer
+ * {@code onFinished} is called once, with {@link AsyncStatus#SUCCESS} when all the data has been given,
+ * {@link AsyncStatus#FAILED} if the operation failed, which the provider has logged, or {@link AsyncStatus#CANCELLED}
+ * if the task was cancelled before it ended; the data is not given after the cancellation. A failed result carries
+ * the exception that failed the operation, so the client can tell the user why. The provider keeps no state of the
+ * operations, so one provider serves any number of lists at once, and the client cancels the tasks it no longer
  * needs.
  *
  * @author Pavel Castornii

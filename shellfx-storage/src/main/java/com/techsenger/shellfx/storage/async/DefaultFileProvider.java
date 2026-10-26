@@ -31,17 +31,28 @@ import org.slf4j.LoggerFactory;
 /**
  * The default provider: lists the files and completes what is quick to find out. The links of a storage that is not a
  * network one are resolved here, which may lead to another storage, while those of a network storage are left to the
- * refiner. A subclass completes more by overriding {@link #prepare}. A file that can't be completed is logged and
- * given as it is.
+ * refiner. A subclass completes more by overriding {@link #prepare}, and loads in its own way with
+ * {@link #provideAsync}. A file that can't be completed is logged and given as it is.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
  */
 public class DefaultFileProvider<F extends StorageFile> implements FileProvider<F> {
 
+    /**
+     * Loads the data of an operation, on a background thread.
+     *
+     * @param <R> the type of the data
+     */
     @FunctionalInterface
-    private interface Loader<R> {
+    protected interface Loader<R> {
 
+        /**
+         * Loads the data.
+         *
+         * @return the data to give to the client
+         * @throws IOException if the data can't be loaded, which makes the whole operation failed
+         */
         R load() throws IOException;
     }
 
@@ -132,7 +143,14 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
         }
     }
 
-    private void assemble(FileStorage<F> storage, F file) {
+    /**
+     * Completes a file with {@link #prepare}, on the calling thread. A file that can't be completed is logged and left
+     * as it is.
+     *
+     * @param storage the storage that holds the file
+     * @param file the file to complete
+     */
+    protected void assemble(FileStorage<F> storage, F file) {
         try {
             prepare(storage, file);
         } catch (IOException | RuntimeException ex) {
@@ -141,9 +159,18 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
     }
 
     /**
-     * Loads on a background thread and gives the result, unless the task has been cancelled by then.
+     * Loads on a background thread and gives the result, unless the task has been cancelled by then. It is what every
+     * method of this provider is made of, and a subclass that loads in its own way uses it to get the same
+     * cancellation and the same end.
+     *
+     * @param what describes the operation in the log
+     * @param loader loads the data
+     * @param onProvided called with the data
+     * @param onFinished called once with the result of the operation
+     * @param <R> the type of the data
+     * @return the task of the operation
      */
-    private <R> AsyncTask provideAsync(String what, Loader<R> loader, Consumer<R> onProvided,
+    protected <R> AsyncTask provideAsync(String what, Loader<R> loader, Consumer<R> onProvided,
             Consumer<AsyncResult> onFinished) {
         var task = new DefaultAsyncTask();
         Thread.startVirtualThread(() -> {
@@ -156,7 +183,7 @@ public class DefaultFileProvider<F extends StorageFile> implements FileProvider<
                 result = loader.load();
             } catch (IOException | RuntimeException ex) {
                 logger.error("Error getting {}", what, ex);
-                task.finish(onFinished, AsyncResult.FAILED);
+                task.finish(onFinished, AsyncResult.failed(ex));
                 return;
             }
             if (task.isCancelled()) {

@@ -16,25 +16,55 @@
 
 package com.techsenger.shellfx.storage.async;
 
+import com.techsenger.annotations.Nullable;
+
 /**
- * How an asynchronous operation of a {@link FileProvider} or a {@link FileRefiner} ended.
+ * The end of an asynchronous operation of a {@link FileProvider} or a {@link FileRefiner}: how it ended and, if it
+ * failed, the exception that failed it, so the client can tell the user why.
  *
  * @author Pavel Castornii
  */
-public enum AsyncResult {
+public final class AsyncResult {
 
     /**
      * The operation has given all its data.
      */
-    SUCCESS,
-
-    /**
-     * The operation failed, which has been logged.
-     */
-    FAILED,
+    public static final AsyncResult SUCCESS = new AsyncResult(AsyncStatus.SUCCESS, null);
 
     /**
      * The operation was cancelled before it ended.
      */
-    CANCELLED
+    public static final AsyncResult CANCELLED = new AsyncResult(AsyncStatus.CANCELLED, null);
+
+    /**
+     * Creates the result of an operation that failed.
+     *
+     * @param exception the exception that failed the operation
+     * @return the result with the status {@code FAILED}
+     */
+    public static AsyncResult failed(Exception exception) {
+        return new AsyncResult(AsyncStatus.FAILED, exception);
+    }
+
+    private final AsyncStatus status;
+
+    private final @Nullable Exception exception;
+
+    private AsyncResult(AsyncStatus status, @Nullable Exception exception) {
+        this.status = status;
+        this.exception = exception;
+    }
+
+    public AsyncStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * Returns the exception that failed the operation.
+     *
+     * @return the exception, or {@code null} if the operation did not fail
+     */
+    public @Nullable Exception getException() {
+        return exception;
+    }
 }
