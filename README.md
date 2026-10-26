@@ -1078,14 +1078,15 @@ dialog can show Google Drive or an FTP server as easily as the local disk. No ot
 ### Packages <a name="storage-packages"></a>
 
 * `storage` — the model (`StorageFile`, `EntryLink`), the storages (`FileStorage` and its base and local
-implementations), operation types, listeners and utilities.
+implementations), `StorageProvider` that tells which storages there are, operation types, listeners and utilities.
 * `storage.async` — loading of the files in the background in two phases: `FileProvider` and `FileRefiner`, with their
 default implementations, the cancellable task and the sort policy.
 * `storage.style` — the icon and the style the files are shown with: resolvers of files and storages, `FileDecorator`
 that gives files their `FileDecoration` (icon and style), the icon set and the types of decoration.
 * `storage.settings` — the settings of the styles (colors, bold, italic, opacity) grouped by kinds of files into a
 scheme, with the default schemes of the themes.
-* `storage.view` — the helpers of the views that show files: the columns and the cell updater.
+* `storage.view` — the helpers of the views that show files: the columns, the cell updater and `StorageErrors`, which
+tells the user why an operation of a storage failed.
 
 ### Core Concepts <a name="storage-concepts"></a>
 
@@ -1108,6 +1109,10 @@ target may lie in another storage.
 `SECONDARY`, a step of internal machinery (copying a tree, resolving a link). It lets a listener, for example a
 "recently used" tracker, react only to what the user did.
 * **StorageListener** — gets the successful operations of a storage: list, create, rename, read, write.
+* **StorageProvider** — tells which storages there are at the moment. Storages come and go (a removable drive is
+plugged in or taken out), so the provider, the refiner and the file chooser do not keep a list of storages: they ask the
+`StorageProvider` each time they need one. A client that works with only some of the storages gives a provider that
+returns just those; the interface has one method, so a lambda is enough.
 * **Appearance of the storage itself** — a storage is loaded dynamically, so only it knows its own icon and style, which
 it provides through `StorageIconResolver` and `StorageStyleResolver`.
 
@@ -1138,10 +1143,12 @@ only they are given to `refineFilesAsync`. The files that need nothing are final
 * **Threads.** Every callback of the provider and the refiner runs on a background thread, and the end callback runs
 once. All changes of a shown file are made on the UI thread, which is what `apply()` is for.
 * **Cancellation.** Both return an `AsyncTask`. When the user navigates elsewhere, the client cancels the tasks it no
-longer needs, and nothing is given after the cancellation. `AsyncResult` tells how the operation ended: `SUCCESS`,
-`FAILED` or `CANCELLED`.
+longer needs, and nothing is given after the cancellation. `AsyncResult` tells how the operation ended: its
+`AsyncStatus` is `SUCCESS`, `FAILED` or `CANCELLED`.
 * **Failures.** A file that can't be refined is logged and given a refinement that changes nothing, so one broken file
-does not break the list. The provider does the same for a file it can't complete.
+does not break the list. The provider does the same for a file it can't complete. If the whole operation fails, for
+example the directory can't be listed, the `AsyncResult` of a failed operation carries the exception, so the client can
+tell the user the reason with `StorageErrors.describe`, which chooses the words by the type of the exception.
 * **Sorting.** Some sort keys are known only after the second phase, so `TwoPhaseSortPolicy` tells when to sort:
 `ON_REQUEST` (never automatically, the default), `AFTER_FIRST_PHASE` (once, refined values are not known yet and such
 files go last), `AFTER_SECOND_PHASE` (once, the list does not move twice) or `AFTER_EACH_PHASE` (after both, the order
@@ -1151,8 +1158,10 @@ whatever the policy is.
 at once.
 
 The default implementations, `DefaultFileProvider` and `DefaultFileRefiner`, work for any storage: links of a network
-storage are left to the second phase, and the links of the others are resolved in the first one. The demo shows the
-whole process with a deliberately slow storage in the `SAVE_FILE_SLOW` dialog.
+storage are left to the second phase, and the links of the others are resolved in the first one. A subclass completes
+the listed files by overriding `prepare`, and loads in its own way with `provideAsync`, which gives it the same
+background thread, cancellation and end as the provider has. The demo shows the whole process with a deliberately slow
+storage in the `SAVE_FILE_SLOW` dialog.
 
 The diagram shows how a directory gets onto the screen, from the listing to the final icon of a refined file. The
 view model owns the process, and the cells only show what the files carry.
@@ -1255,9 +1264,10 @@ classDiagram
 
 To add a storage for another disk, extend `AbstractFileStorage` (the local storages extend `AbstractSystemFileStorage`),
 implement the listing and the operations, report them to the listeners, throw the specific exceptions
-(`NoSuchFileException`, `AccessDeniedException`) and give the icon and style resolvers of the storage. Make slow things
+(`NoSuchFileException`, `AccessDeniedException`), which `StorageErrors` turns into the words the user reads, and give
+the icon and style resolvers of the storage. Make slow things
 slow only where the client can wait for them: listing returns quickly, and what is expensive goes to the refiner.
-Then pass the storage to the file chooser dialog together with the others.
+Then give the storage to the file chooser dialog together with the others, through a `StorageProvider`.
 
 ## Naming Convention <a name="naming-convention"></a>
 
