@@ -335,6 +335,20 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         protected List<ColumnTileViewRow<T>> getCells() {
             return super.getCells();
         }
+
+        /**
+         * Marks the row the flow takes for reuse as dirty, so it shows its items again. A row that left the
+         * viewport waits in the pile of the flow with its old offset and its old cells, because the flow clears the
+         * pile only in a layout pass that finds something to do; when such a row comes back with the same offset,
+         * the guard of {@link ColumnTileViewRow#updateItem} would skip it, and its cells would keep whatever they
+         * showed before the items changed.
+         */
+        @Override
+        protected ColumnTileViewRow<T> getAvailableCell(int prefIndex) {
+            var row = super.getAvailableCell(prefIndex);
+            row.markDirty();
+            return row;
+        }
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ColumnTileView.class);

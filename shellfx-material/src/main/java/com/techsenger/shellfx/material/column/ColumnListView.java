@@ -322,6 +322,20 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
             return super.getCells();
         }
 
+        /**
+         * Marks the column the flow takes for reuse as dirty, so it shows its items again. A column that left the
+         * viewport waits in the pile of the flow with its old offset and its old cells, because the flow clears the
+         * pile only in a layout pass that finds something to do; when such a column comes back with the same offset,
+         * the guard of {@link ColumnListViewColumn#updateItem} would skip it, and its cells would keep whatever
+         * they showed before the items changed.
+         */
+        @Override
+        protected ColumnListViewColumn<T> getAvailableCell(int prefIndex) {
+            var column = super.getAvailableCell(prefIndex);
+            column.markDirty();
+            return column;
+        }
+
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ColumnListView.class);
