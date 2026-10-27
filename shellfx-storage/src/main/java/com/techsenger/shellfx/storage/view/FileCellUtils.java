@@ -29,6 +29,25 @@ import javafx.scene.control.Labeled;
 public final class FileCellUtils {
 
     /**
+     * Sets the icon of the cell and applies the style to the cell and its icon from the decoration of the file; does
+     * nothing if the decoration is outdated, which a reset leaves until the file is decorated again.
+     *
+     * @param cell the cell whose texts to style
+     * @param iconView the icon of the cell, or {@code null} if the cell has no icon
+     * @param file the file shown in the cell
+     */
+    public static void updateDecoration(Labeled cell, @Nullable FontIconView iconView, StorageFile file) {
+        var decoration = file.getDecoration();
+        if (decoration == null || decoration.style() == null) {
+            return;
+        }
+        if (iconView != null) {
+            iconView.setIcon(decoration.icon());
+        }
+        updateStyles(cell, iconView, file);
+    }
+
+    /**
      * Applies the styles of the file to the cell and its icon, and clears them if the file has none.
      *
      * @param cell the cell whose texts to style

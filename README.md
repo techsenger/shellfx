@@ -1085,8 +1085,8 @@ default implementations, the cancellable task and the sort policy.
 that gives files their `FileDecoration` (icon and style), the icon set and the types of decoration.
 * `storage.settings` — the settings of the styles (colors, bold, italic, opacity) grouped by kinds of files into a
 scheme, with the default schemes of the themes.
-* `storage.view` — the helpers of the views that show files: the columns, the cell updater and `StorageErrors`, which
-tells the user why an operation of a storage failed.
+* `storage.view` — the helpers of the views that show files: the columns, `FileCellUpdater` and `FileCellUtils` that
+keep a cell up to date, and `StorageErrors`, which tells the user why an operation of a storage failed.
 
 ### Core Concepts <a name="storage-concepts"></a>
 
@@ -1186,11 +1186,11 @@ sequenceDiagram
     Note over VM,C: UI thread
     VM->>V: setFiles
     V->>C: the files are shown
-    C->>S: update file
-    S->>D: decorate file
+    C->>D: decorate file
     D->>X: resolve icon and style, TEMP for a pending file
-    D-->>S: the file has a decoration
-    S-->>C: the cell is styled and observes the file
+    D-->>C: the file has a decoration
+    C->>S: observe the properties of the file
+    S-->>C: the update sets the icon and the style
 
     Note over VM,X: Second phase
     VM->>R: refineFilesAsync for the pending files
@@ -1198,13 +1198,17 @@ sequenceDiagram
     R-->>VM: onRefined with a FileRefinement
     Note over VM,C: UI thread
     VM->>VM: refinement.apply and the file leaves pending
+    VM-->>S: the values of the file change, such as a size or a type
+    S-->>C: the update sets the text
     VM->>V: decorateSource with the refined files
     V->>D: reset the refined files
     Note right of D: the decoration of the files becomes null
     D-->>S: the decoration of the file changes
-    S->>D: decorate file
+    Note right of S: the update ignores a decoration that is not complete
+    V->>D: decorate the files of the cells that exist in the virtual flow
     D->>X: resolve icon and style, FINAL
-    S-->>C: the icon and the style are set
+    D-->>S: the decoration of the file becomes complete
+    S-->>C: the update sets the icon and the style
 ```
 
 ### Appearance <a name="storage-appearance"></a>
@@ -1216,17 +1220,30 @@ replaced when an application knows more kinds of files than the defaults. A reso
 the file, `TEMP` while the file is still to be refined and `FINAL` otherwise, which is how the pending icon becomes the
 real one.
 
-Decoration is lazy. A cell decorates a file only if the file has no decoration (`FileDecorator`), so only the files
-that are shown are decorated, however many the directory has. When the decoration of a file becomes outdated (the
-second phase refined it, the theme changed, the file was marked), the view resets the property and the cells that show
-the file decorate it again, while the other files wait until they are shown. A theme or a mark changes only the style,
-so the view resets the style and keeps the icon. The default schemes of the themes are created on first use too, because
- the palette of a theme is created when it is first needed.
+Decoration is lazy. A cell decorates a file only if its decoration is not complete (`FileDecorator`): it is `null`, or
+it has no style, in which case the icon is kept and only the style is resolved again. So only the files that are shown
+are decorated, however many the directory has. When the decoration of a file becomes outdated (the second phase refined
+it, the theme changed, the file was marked), the view resets it and decorates again the files of the cells that exist in
+the virtual flow, while the other files wait until their cells show them. A theme or a mark changes only the style, so
+the view resets the style and keeps the icon. The default schemes of the themes are created on first use too, because
+the palette of a theme is created when it is first needed.
 
-A cell does not talk to the decorator directly. It owns a `FileCellUpdater`, which decorates the file it is about to
-show, sets the icon of the cell and applies the style of the file to the cell and its icon. It does the same by itself
-whenever the decoration of the file changes, so the cell is not asked to show the file again. The cell is told only when
-another value it displays (a size, a date) changes.
+A cell decorates the file it is about to show with the `FileDecorator` of its view, and owns a `FileCellUpdater`. The
+updater knows nothing about decoration or about what a cell shows: the cell gives it its update and, when it shows a
+file, the file and the properties it is bound to as method references (`StorageFile::decorationProperty`, and
+`StorageFile::sizeProperty` or the like if the cell shows a value). The updater takes the properties out of the file,
+runs the update for the file when it starts observing and whenever one of the properties changes, and stops with
+`unobserve` when the cell becomes empty. The file is given to the updater and not read from the cell, because some
+cells set their item only at the end of `updateItem`. For the icon and the styles the update is
+`FileCellUtils.updateDecoration`, which ignores an outdated decoration that a reset leaves; a cell that shows a value
+adds its own `setText` to the update. The updater never calls the cell otherwise, so several cells of one row, one for
+each column, are each updated by the properties they observe, and the cell is not asked to show its file again.
+
+Whoever resets the decoration decorates the files again: the view walks the cells that exist in the virtual flow with
+`ColumnViewUtils.forEachItem` and `TableViewUtils.forEachItem` of the `material` module, which pass the item of each
+cell without touching the cell or creating one, and decorates every item. A cell that has left the viewport is empty
+and gets its item through `updateItem` when it returns, so it decorates the file itself. A control whose cells cannot
+be walked, such as the combo box of locations in `FileChooserDialog`, is decorated by the view directly.
 
 ```mermaid
 classDiagram
@@ -1239,6 +1256,9 @@ classDiagram
     class FileDecoration
     class FileDecorator
     class FileCellUpdater
+    class FileCellUtils
+    class ColumnViewUtils
+    class TableViewUtils
     class ViewModel
     class View
     class Cell
@@ -1249,15 +1269,18 @@ classDiagram
     FileRefiner ..> FileRefinement : creates
     FileRefinement ..> StorageFile : changes on apply
     View --> FileDecorator : creates and resets
+    View ..> ColumnViewUtils : walks the cells with
+    View ..> TableViewUtils : walks the cells with
     FileDecorator o-- FileIconResolver
     FileDecorator o-- FileStyleResolver
     FileDecorator ..> FileDecoration : creates
     FileDecorator ..> StorageFile : writes the decoration
     StorageFile o-- FileDecoration
     View *-- Cell
+    Cell --> FileDecorator : decorates with
     Cell *-- FileCellUpdater
-    FileCellUpdater --> FileDecorator : decorates with
-    FileCellUpdater ..> StorageFile : observes
+    Cell ..> FileCellUtils : applies the decoration with
+    FileCellUpdater ..> StorageFile : observes the properties of
 ```
 
 ### Custom Storage <a name="storage-custom"></a>

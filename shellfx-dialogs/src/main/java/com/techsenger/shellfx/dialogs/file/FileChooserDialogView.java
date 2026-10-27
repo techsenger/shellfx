@@ -27,6 +27,7 @@ import com.techsenger.shellfx.dialogs.alert.AlertDialogView;
 import com.techsenger.shellfx.dialogs.alert.AlertDialogViewModel;
 import com.techsenger.shellfx.dialogs.style.DialogIcons;
 import com.techsenger.shellfx.material.button.ResultButton;
+import com.techsenger.shellfx.material.column.ColumnViewUtils;
 import com.techsenger.shellfx.material.column.TextFieldColumnListCell;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
@@ -34,6 +35,7 @@ import com.techsenger.shellfx.material.style.StyleClasses;
 import com.techsenger.shellfx.material.table.TableColumnInfo;
 import com.techsenger.shellfx.material.table.TableColumnManager;
 import com.techsenger.shellfx.material.table.TableColumnName;
+import com.techsenger.shellfx.material.table.TableViewUtils;
 import com.techsenger.shellfx.storage.Comparators;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.settings.FileStyleDefaults;
@@ -44,11 +46,13 @@ import com.techsenger.shellfx.storage.style.FileDecorator;
 import com.techsenger.shellfx.storage.style.FileIconResolver;
 import com.techsenger.shellfx.storage.style.FileStyleResolver;
 import com.techsenger.shellfx.storage.view.FileCellUpdater;
+import com.techsenger.shellfx.storage.view.FileCellUtils;
 import com.techsenger.shellfx.storage.view.FileColumnBuilder;
 import com.techsenger.shellfx.storage.view.FileColumns;
 import com.techsenger.shellfx.storage.view.FileStringConverter;
 import com.techsenger.toolkit.fx.value.ValueUtils;
 import java.util.Comparator;
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
@@ -141,7 +145,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         private final FontIconView iconView = new FontIconView();
 
         private final FileCellUpdater<T> updater =
-                new FileCellUpdater<>(this, iconView, decorator, () -> updateItem(getItem(), isEmpty()));
+                new FileCellUpdater<>(file -> FileCellUtils.updateDecoration(this, iconView, file));
 
         private DialogTextFieldColumnListCell(StringConverter converter) {
             super(converter);
@@ -170,11 +174,13 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         @Override
         protected void updateItem(T item, boolean empty) {
             if (item == null || empty) {
-                updater.clear();
+                updater.unobserve();
+                FileCellUtils.updateStyles(this, iconView, null);
                 setGraphic(null);
                 setText(null);
             } else {
-                updater.update(item);
+                decorator.decorate(item);
+                updater.observe(item, StorageFile::decorationProperty);
                 if (item.getEntryType() != null) {
                     setGraphic(iconView);
                 } else {
@@ -452,8 +458,8 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         viewModel.selectFileSource().addListener((index) -> updateSelectFile(index));
         viewModel.scrollToFileSource().addListener((index) -> updateScrollToFile(index));
         viewModel.editFileSource().addListener((index) -> updateEditFile(index));
-        viewModel.decorateSource().addListener((files) -> decorator.reset(files));
-        viewModel.restyleSource().addListener((files) -> decorator.resetStyle(files));
+        viewModel.decorateSource().addListener((files) -> updateDecoration(files, false));
+        viewModel.restyleSource().addListener((files) -> updateDecoration(files, true));
     }
 
     @Override
@@ -558,6 +564,26 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
             this.listButton.setSelected(false);
             this.detailsButton.setSelected(true);
         }
+    }
+
+    /**
+     * Makes the decoration of the files outdated and decorates again the files that are shown: the cells of the
+     * control that is shown and exist in its virtual flow are walked, while the cells of the location combo box cannot
+     * be walked, so its few locations are decorated here. The other files are decorated by the cells when they come
+     * into view.
+     */
+    private void updateDecoration(List<T> files, boolean styleOnly) {
+        if (styleOnly) {
+            decorator.resetStyle(files);
+        } else {
+            decorator.reset(files);
+        }
+        if (getViewModel().getMode() == Mode.LIST) {
+            ColumnViewUtils.forEachItem(fileListView, true, decorator::decorate);
+        } else {
+            TableViewUtils.forEachItem(fileTableView, true, decorator::decorate);
+        }
+        getViewModel().getLocations().forEach(decorator::decorate);
     }
 
     private void updateFilesChanged() {

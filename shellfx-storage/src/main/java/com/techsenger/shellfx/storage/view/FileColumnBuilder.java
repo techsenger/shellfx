@@ -60,17 +60,19 @@ public class FileColumnBuilder<F extends StorageFile> {
             private final FontIconView iconView = new FontIconView();
 
             private final FileCellUpdater<F> updater =
-                    new FileCellUpdater<>(this, iconView, decorator, () -> updateItem(getItem(), isEmpty()));
+                    new FileCellUpdater<>(file -> FileCellUtils.updateDecoration(this, iconView, file));
 
             @Override
             public void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
                 if (file == null || empty) {
-                    updater.clear();
+                    updater.unobserve();
+                    FileCellUtils.updateStyles(this, iconView, null);
                     setGraphic(null);
                     setText(null);
                 } else {
-                    updater.update(file);
+                    decorator.decorate(file);
+                    updater.observe(file, StorageFile::decorationProperty);
                     setGraphic(iconView);
                     setText(file.getName());
                 }
@@ -105,18 +107,21 @@ public class FileColumnBuilder<F extends StorageFile> {
         sizeColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper(data.getValue()));
         sizeColumn.setCellFactory(callBack -> new TableCell<F, F>() {
 
-                private final FileCellUpdater<F> updater =
-                        new FileCellUpdater<>(this, decorator, () -> updateItem(getItem(), isEmpty()));
+                private final FileCellUpdater<F> updater = new FileCellUpdater<>(file -> {
+                    FileCellUtils.updateDecoration(this, null, file);
+                    setText(file.getSize() != null ? FileUtils.formatSize(file.getSize()) : null);
+                });
 
                 @Override
                 protected void updateItem(F file, boolean empty) {
                     super.updateItem(file, empty);
                     if (file == null || empty) {
-                        updater.clear();
+                        updater.unobserve();
+                        FileCellUtils.updateStyles(this, null, null);
                         setText(null);
                     } else {
-                        updater.update(file, file.sizeProperty());
-                        setText(file.getSize() != null ? FileUtils.formatSize(file.getSize()) : null);
+                        decorator.decorate(file);
+                        updater.observe(file, StorageFile::decorationProperty, StorageFile::sizeProperty);
                     }
                 }
             }
@@ -141,19 +146,22 @@ public class FileColumnBuilder<F extends StorageFile> {
         final var currentYear = Year.now();
         lastModifiedColumn.setCellFactory(col -> new TableCell<F, F>() {
 
-            private final FileCellUpdater<F> updater =
-                    new FileCellUpdater<>(this, decorator, () -> updateItem(getItem(), isEmpty()));
+            private final FileCellUpdater<F> updater = new FileCellUpdater<>(file -> {
+                FileCellUtils.updateDecoration(this, null, file);
+                setText(file.getModifiedTime() != null
+                        ? DateTimeUtils.format(file.getModifiedTime(), currentYear) : null);
+            });
 
             @Override
             protected void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
                 if (file == null || empty) {
-                    updater.clear();
+                    updater.unobserve();
+                    FileCellUtils.updateStyles(this, null, null);
                     setText(null);
                 } else {
-                    updater.update(file, file.modifiedTimeProperty());
-                    setText(file.getModifiedTime() != null
-                            ? DateTimeUtils.format(file.getModifiedTime(), currentYear) : null);
+                    decorator.decorate(file);
+                    updater.observe(file, StorageFile::decorationProperty, StorageFile::modifiedTimeProperty);
                 }
             }
         });

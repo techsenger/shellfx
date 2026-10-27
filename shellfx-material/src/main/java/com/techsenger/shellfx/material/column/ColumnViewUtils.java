@@ -19,6 +19,7 @@ package com.techsenger.shellfx.material.column;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.toolkit.fx.utils.ScrollPosition;
 import com.techsenger.toolkit.fx.utils.VirtualFlowUtils;
+import java.util.function.Consumer;
 
 /**
  * Item-index-based utilities for {@link ColumnListView} and {@link ColumnTileView}, mirroring what
@@ -190,6 +191,44 @@ public final class ColumnViewUtils {
      */
     public static void updateCells(ColumnTileView<?> tileView, boolean onlyVisible) {
         tileView.forceUpdateCells(onlyVisible);
+    }
+
+    /**
+     * Passes the items of {@code listView} to {@code action}, without touching the cells themselves, so a caller
+     * can prepare the items that are shown (e.g. decorate them).
+     *
+     * <p>With {@code onlyVisible} the cells are those that exist in the virtual flow, the columns from the first to
+     * the last visible one, and no cell is created; a cell that left the viewport is empty and gets its item through
+     * {@code updateItem} when it returns. Without it every item of the list is passed and no cell is involved.
+     *
+     * @param <T> the type of items
+     * @param listView the list view whose items to walk
+     * @param onlyVisible whether to walk only the items of the existing cells of the virtual flow or every item
+     * @param action what to do with each item
+     */
+    public static <T> void forEachItem(ColumnListView<T> listView, boolean onlyVisible, Consumer<? super T> action) {
+        if (onlyVisible) {
+            listView.forEachCell(true, cell -> action.accept(cell.getItem()));
+        } else {
+            listView.getItems().forEach(action);
+        }
+    }
+
+    /**
+     * The {@link ColumnTileView} counterpart of {@link #forEachItem(ColumnListView, boolean, Consumer)}, which walks
+     * rows instead of columns.
+     *
+     * @param <T> the type of items
+     * @param tileView the tile view whose items to walk
+     * @param onlyVisible whether to walk only the items of the existing cells of the virtual flow or every item
+     * @param action what to do with each item
+     */
+    public static <T> void forEachItem(ColumnTileView<T> tileView, boolean onlyVisible, Consumer<? super T> action) {
+        if (onlyVisible) {
+            tileView.forEachCell(true, cell -> action.accept(cell.getItem()));
+        } else {
+            tileView.getItems().forEach(action);
+        }
     }
 
     /**

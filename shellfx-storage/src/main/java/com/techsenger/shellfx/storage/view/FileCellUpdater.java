@@ -17,135 +17,77 @@
 package com.techsenger.shellfx.storage.view;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.material.icon.FontIconView;
-import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.style.FileDecorator;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
-import javafx.scene.control.Labeled;
 
 /**
- * Keeps the look of a cell that shows a file: decorates the file, sets the icon and the styles of the cell whenever
- * the decoration of the file changes, and tells the cell when the other values it displays change, which the second
- * loading phase does after the file is shown. A cell owns one updater and moves it to the new file whenever the cell
- * gets another item.
+ * Keeps a cell that shows a file up to date: runs the update of the cell for the file now, and again whenever one of
+ * the properties the cell is bound to changes, such as the decoration of the file or a size. The updater knows nothing
+ * about what the update does and never calls the cell otherwise. A cell owns one updater and gives it the file and
+ * the properties it is bound to whenever it gets another item.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
  */
-public final class FileCellUpdater<F extends StorageFile> {
+public final class FileCellUpdater<F> {
 
-    private final Labeled cell;
+    private final Consumer<? super F> update;
 
-    private final @Nullable FontIconView iconView;
+    private final ChangeListener<Object> listener;
 
-    private final FileDecorator<F> decorator;
-
-    /**
-     * Asks the cell to show the file again when a value it displays, such as a size or a date, changes. The cell
-     * knows how to turn the value into text, the updater does not.
-     */
-    private final ChangeListener<Object> valuesListener;
-
-    private final WeakChangeListener<Object> weakValuesListener;
-
-    /**
-     * Sets the icon and the styles of the cell when the decoration of the file changes, which the updater does by
-     * itself without asking the cell to show the file again.
-     */
-    private final ChangeListener<Object> decorationListener;
-
-    private final WeakChangeListener<Object> weakDecorationListener;
+    private final WeakChangeListener<Object> weakListener;
 
     private @Nullable F file;
 
     private ObservableValue<?>[] observed = new ObservableValue<?>[0];
 
     /**
-     * Creates an updater for a cell that has no icon. It is not showing any file yet.
+     * Creates an updater. It is not observing anything yet.
      *
-     * @param cell the cell whose texts to style
-     * @param decorator gives the shown files their icon and style
-     * @param onChanged called on the UI thread when a value passed to {@code update} changes, so the cell shows the
-     *     file again
+     * @param update updates the cell for the file, called on the UI thread
      */
-    public FileCellUpdater(Labeled cell, FileDecorator<F> decorator, Runnable onChanged) {
-        this(cell, null, decorator, onChanged);
-    }
-
-    /**
-     * Creates an updater for a cell. It is not showing any file yet.
-     *
-     * @param cell the cell whose texts to style
-     * @param iconView the icon of the cell, which gets the icon and the style of the file, or {@code null} if the
-     *     cell has no icon
-     * @param decorator gives the shown files their icon and style
-     * @param onChanged called on the UI thread when a value passed to {@code update} changes, so the cell shows the
-     *     file again
-     */
-    public FileCellUpdater(Labeled cell, @Nullable FontIconView iconView, FileDecorator<F> decorator,
-            Runnable onChanged) {
-        this.cell = cell;
-        this.iconView = iconView;
-        this.decorator = decorator;
-        this.valuesListener = (obs, oldValue, newValue) -> onChanged.run();
-        this.weakValuesListener = new WeakChangeListener<>(this.valuesListener);
-        this.decorationListener = (obs, oldValue, newValue) -> {
+    public FileCellUpdater(Consumer<? super F> update) {
+        this.update = update;
+        this.listener = (obs, oldValue, newValue) -> {
             if (this.file != null) {
-                refresh(this.file);
+                update.accept(this.file);
             }
         };
-        this.weakDecorationListener = new WeakChangeListener<>(this.decorationListener);
+        this.weakListener = new WeakChangeListener<>(this.listener);
     }
 
     /**
-     * Decorates the file, sets the icon of the cell and applies the style to the cell and its icon, and keeps doing
-     * so when the decoration of the file changes. The cell sets its text itself and is asked to show the file again
-     * when one of the values changes.
+     * Observes the properties of the file and updates the cell for it now, and again whenever one of the properties
+     * changes. It stops observing the file shown before; nothing is subscribed again for the same file.
      *
      * @param file the file shown in the cell
-     * @param values the other values the cell displays of the file
+     * @param properties give the properties the cell is bound to out of the file, such as its decoration or size
      */
-    public void update(F file, ObservableValue<?>... values) {
-        if (this.file != file || !Arrays.equals(this.observed, values)) {
+    @SafeVarargs
+    public final void observe(F file, Function<? super F, ? extends ObservableValue<?>>... properties) {
+        if (this.file != file) {
             unobserve();
-            this.file = file;
-            this.observed = values;
-            for (var value : values) {
-                value.addListener(weakValuesListener);
+            this.observed = new ObservableValue<?>[properties.length];
+            for (var i = 0; i < properties.length; i++) {
+                this.observed[i] = properties[i].apply(file);
+                this.observed[i].addListener(weakListener);
             }
-            file.decorationProperty().addListener(weakDecorationListener);
+            this.file = file;
         }
-        refresh(file);
+        update.accept(file);
     }
 
     /**
-     * Stops observing and clears the styles of the cell, which a cell does when it becomes empty.
+     * Stops observing the properties, which a cell does when it becomes empty.
      */
-    public void clear() {
-        unobserve();
-        FileCellUtils.updateStyles(cell, iconView, null);
-    }
-
-    private void refresh(F file) {
-        decorator.decorate(file);
-        if (iconView != null) {
-            iconView.setIcon(Objects.requireNonNull(file.getDecoration()).icon());
-        }
-        FileCellUtils.updateStyles(cell, iconView, file);
-    }
-
-    private void unobserve() {
-        for (var value : this.observed) {
-            value.removeListener(weakValuesListener);
+    public void unobserve() {
+        for (var property : this.observed) {
+            property.removeListener(weakListener);
         }
         this.observed = new ObservableValue<?>[0];
-        if (this.file != null) {
-            this.file.decorationProperty().removeListener(weakDecorationListener);
-            this.file = null;
-        }
+        this.file = null;
     }
 }

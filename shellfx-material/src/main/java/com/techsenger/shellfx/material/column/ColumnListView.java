@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
@@ -726,17 +727,19 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
     }
 
     /**
-     * Forces cells to re-derive their visual content from their current item, without touching this view's
-     * items/offset bookkeeping or scroll position/selection &mdash; the {@link ColumnListView} counterpart of
-     * {@code VirtualFlowUtils#updateCells}, reaching directly into each realized column's own cached cells
-     * instead of toggling the column's index (which would be the only option available to a generic,
-     * outside-the-package utility, since {@link ColumnListViewColumn}'s cached cells are a private
-     * implementation detail).
+     * Passes every non-empty cell to {@code action}, so a caller reaches the item of each cell without touching
+     * the cell itself.
      *
-     * @param onlyVisible whether to touch only the currently visible columns (cheap) or every column
-     *     (thorough) &mdash; see {@code VirtualFlowUtils#updateCells} for what each means
+     * <p>With {@code onlyVisible} the cells are those that exist in the virtual flow, the columns from the first to
+     * the last visible one, and none is created. Without it every one of the flow's cells is passed (its count is
+     * that of all columns of the control, not of the realized ones), and a cell that does not exist yet is built by
+     * the service cell of the flow.
+     *
+     * @param onlyVisible whether to pass only the existing cells of the virtual flow or those of every column
+     *     of the control
+     * @param action what to do with each cell
      */
-    void forceUpdateCells(boolean onlyVisible) {
+    void forEachCell(boolean onlyVisible, Consumer<? super ColumnListCell<T>> action) {
         int first;
         int last;
         if (onlyVisible) {
@@ -756,11 +759,26 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
             if (column != null && !column.isEmpty()) {
                 for (var cell : column.cachedCells) {
                     if (!cell.isEmpty()) {
-                        cell.updateItem(cell.getItem(), false);
+                        action.accept(cell);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Forces cells to re-derive their visual content from their current item, without touching this view's
+     * items/offset bookkeeping or scroll position/selection &mdash; the {@link ColumnListView} counterpart of
+     * {@code VirtualFlowUtils#updateCells}, reaching directly into each realized column's own cached cells
+     * instead of toggling the column's index (which would be the only option available to a generic,
+     * outside-the-package utility, since {@link ColumnListViewColumn}'s cached cells are a private
+     * implementation detail).
+     *
+     * @param onlyVisible whether to touch only the currently visible columns (cheap) or every column
+     *     (thorough) &mdash; see {@code VirtualFlowUtils#updateCells} for what each means
+     */
+    void forceUpdateCells(boolean onlyVisible) {
+        forEachCell(onlyVisible, cell -> cell.updateItem(cell.getItem(), false));
         applyCss();
         layout();
     }

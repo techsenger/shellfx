@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -603,17 +604,19 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
     }
 
     /**
-     * Forces cells to re-derive their visual content from their current item, without touching this view's
-     * items/offset bookkeeping or scroll position/selection &mdash; the {@link ColumnTileView} counterpart of
-     * {@code VirtualFlowUtils#updateCells}, reaching directly into each realized row's own cached cells
-     * instead of toggling the row's index (which would be the only option available to a generic,
-     * outside-the-package utility, since {@link ColumnTileViewRow}'s cached cells are a private
-     * implementation detail).
+     * Passes every non-empty cell to {@code action}, so a caller reaches the item of each cell without touching
+     * the cell itself.
      *
-     * @param onlyVisible whether to touch only the currently visible rows (cheap) or every row (thorough)
-     *     &mdash; see {@code VirtualFlowUtils#updateCells} for what each means
+     * <p>With {@code onlyVisible} the cells are those that exist in the virtual flow, the rows from the first to
+     * the last visible one, and none is created. Without it every one of the flow's cells is passed (its count is
+     * that of all rows of the control, not of the realized ones), and a cell that does not exist yet is built by
+     * the service cell of the flow.
+     *
+     * @param onlyVisible whether to pass only the existing cells of the virtual flow or those of every row
+     *     of the control
+     * @param action what to do with each cell
      */
-    void forceUpdateCells(boolean onlyVisible) {
+    void forEachCell(boolean onlyVisible, Consumer<? super TileCell<T>> action) {
         int first;
         int last;
         if (onlyVisible) {
@@ -633,11 +636,26 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
             if (row != null && !row.isEmpty()) {
                 for (var cell : row.cachedCells) {
                     if (!cell.isEmpty()) {
-                        cell.updateItem(cell.getItem(), false);
+                        action.accept(cell);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Forces cells to re-derive their visual content from their current item, without touching this view's
+     * items/offset bookkeeping or scroll position/selection &mdash; the {@link ColumnTileView} counterpart of
+     * {@code VirtualFlowUtils#updateCells}, reaching directly into each realized row's own cached cells
+     * instead of toggling the row's index (which would be the only option available to a generic,
+     * outside-the-package utility, since {@link ColumnTileViewRow}'s cached cells are a private
+     * implementation detail).
+     *
+     * @param onlyVisible whether to touch only the currently visible rows (cheap) or every row (thorough)
+     *     &mdash; see {@code VirtualFlowUtils#updateCells} for what each means
+     */
+    void forceUpdateCells(boolean onlyVisible) {
+        forEachCell(onlyVisible, cell -> cell.updateItem(cell.getItem(), false));
         applyCss();
         layout();
     }

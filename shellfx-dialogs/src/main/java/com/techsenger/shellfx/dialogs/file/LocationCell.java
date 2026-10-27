@@ -22,6 +22,7 @@ import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
 import com.techsenger.shellfx.storage.style.FileDecorator;
 import com.techsenger.shellfx.storage.view.FileCellUpdater;
+import com.techsenger.shellfx.storage.view.FileCellUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -44,16 +45,14 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
 
     private final boolean valueCell;
 
+    private final FileDecorator<F> decorator;
+
     private final FileCellUpdater<F> updater;
 
     public LocationCell(boolean valueCell, FileDecorator<F> decorator) {
         this.valueCell = valueCell;
-        this.updater = new FileCellUpdater<>(label, iconView, decorator, () -> {
-            var item = getItem();
-            if (item != null && !isEmpty()) {
-                showFile(item);
-            }
-        });
+        this.decorator = decorator;
+        this.updater = new FileCellUpdater<>(file -> FileCellUtils.updateDecoration(label, iconView, file));
         this.box.setAlignment(Pos.CENTER_LEFT);
         this.box.getChildren().setAll(this.iconView, this.label);
     }
@@ -67,7 +66,8 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
         super.updateItem(item, empty);
         setText(null);
         if (empty || item == null) {
-            updater.clear();
+            updater.unobserve();
+            FileCellUtils.updateStyles(label, iconView, null);
             setGraphic(null);
         } else {
             if (!this.valueCell) {
@@ -81,7 +81,8 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
     }
 
     private void showFile(F item) {
-        updater.update(item);
+        decorator.decorate(item);
+        updater.observe(item, StorageFile::decorationProperty);
         if (getGraphic() != this.box) {
             setGraphic(this.box);
         }
