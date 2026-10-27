@@ -17,11 +17,10 @@
 package com.techsenger.shellfx.core.registry;
 
 import java.util.UUID;
-import javafx.beans.property.ReadOnlyObjectProperty;
 
 /**
- * A registry of the contributions of plugins to the components, which can change at any time. The identifier of its
- * state is changed and read in the JavaFX Application Thread only.
+ * A registry of the contributions of plugins to the components, which can change at any time. It is not synchronized
+ * and promises nothing about threads: its listeners are called in the thread that changed it.
  *
  * @author Pavel Castornii
  */
@@ -36,5 +35,17 @@ public interface ExtensionRegistry {
      */
     UUID getStateUuid();
 
-    ReadOnlyObjectProperty<UUID> stateUuidProperty();
+    /**
+     * Adds a listener to be told about every change of the state.
+     *
+     * @param listener the listener to add
+     */
+    void addListener(RegistryStateListener listener);
+
+    /**
+     * Removes a listener; does nothing if it was not added.
+     *
+     * @param listener the listener to remove
+     */
+    void removeListener(RegistryStateListener listener);
 }

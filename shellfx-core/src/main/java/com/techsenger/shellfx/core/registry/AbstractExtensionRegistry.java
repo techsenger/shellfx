@@ -16,35 +16,45 @@
 
 package com.techsenger.shellfx.core.registry;
 
+import java.util.List;
 import java.util.UUID;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Base of the extension registries: keeps the identifier of the state. A subclass calls {@link #renewState()} after
- * every change of what it holds.
+ * Base of the extension registries: keeps the identifier of the state and the listeners. A subclass calls
+ * {@link #renewState()} after every change of what it holds.
  *
  * @author Pavel Castornii
  */
 public abstract class AbstractExtensionRegistry implements ExtensionRegistry {
 
-    private final ReadOnlyObjectWrapper<UUID> stateUuid = new ReadOnlyObjectWrapper<>(UUID.randomUUID());
+    private final List<RegistryStateListener> listeners = new CopyOnWriteArrayList<>();
+
+    private volatile UUID stateUuid = UUID.randomUUID();
 
     @Override
     public UUID getStateUuid() {
-        return stateUuid.get();
+        return stateUuid;
     }
 
     @Override
-    public ReadOnlyObjectProperty<UUID> stateUuidProperty() {
-        return stateUuid.getReadOnlyProperty();
+    public void addListener(RegistryStateListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(RegistryStateListener listener) {
+        listeners.remove(listener);
     }
 
     /**
-     * Replaces the identifier of the state with a new one, so the listeners of the property are notified. It must be
-     * called in the JavaFX Application Thread.
+     * Replaces the identifier of the state with a new one and tells the listeners, in the calling thread.
      */
     protected void renewState() {
-        stateUuid.set(UUID.randomUUID());
+        var newUuid = UUID.randomUUID();
+        stateUuid = newUuid;
+        for (var listener : listeners) {
+            listener.stateChanged(newUuid);
+        }
     }
 }
