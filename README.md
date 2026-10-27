@@ -1212,9 +1212,9 @@ sequenceDiagram
 A file carries its decoration, `FileDecoration`, as an observable property: the icon and the style (the inline styles
 of the icon and of the texts) that are given to the file in one step, so a cell that shows it is told once. They are
 resolved by two independent resolvers, `FileIconResolver` and `FileStyleResolver`, which are passed to the view and
-replaced when an application knows more kinds of files than the defaults (Commander does, with the types of its
-files). A resolver gets the `FileDecorationType` of the file, `TEMP` while the file is still to be refined and `FINAL`
-otherwise, which is how the pending icon becomes the real one.
+replaced when an application knows more kinds of files than the defaults. A resolver gets the `FileDecorationType` of
+the file, `TEMP` while the file is still to be refined and `FINAL` otherwise, which is how the pending icon becomes the
+real one.
 
 Decoration is lazy. A cell decorates a file only if the file has no decoration (`FileDecorator`), so only the files
 that are shown are decorated, however many the directory has. When the decoration of a file becomes outdated (the
