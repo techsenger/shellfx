@@ -20,8 +20,6 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.settings.FileStyleScheme;
-import com.techsenger.shellfx.storage.settings.FileStyleSettings;
 import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.function.Function;
 

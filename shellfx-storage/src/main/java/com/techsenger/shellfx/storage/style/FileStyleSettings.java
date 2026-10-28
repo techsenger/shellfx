@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage.settings;
+package com.techsenger.shellfx.storage.style;
 
 /**
  * The style of a kind of a file, or a mask of a state that is laid over such a style. A {@code null} value means that

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage.settings;
+package com.techsenger.shellfx.storage.style;
 
 /**
  * The styles of the kinds of files a storage knows for one theme: directories, files, links of every kind and other

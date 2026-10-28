@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.techsenger.shellfx.storage.settings;
+package com.techsenger.shellfx.storage.style;
 
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.theme.AtlantaFxTheme;
