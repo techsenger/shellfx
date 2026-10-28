@@ -16,24 +16,22 @@
 
 package com.techsenger.shellfx.storage.style;
 
+import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.settings.FileStyleScheme;
 import com.techsenger.shellfx.storage.settings.FileStyleSettings;
 import com.techsenger.toolkit.fx.color.ColorUtils;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
  * Styles the files with the scheme of the current theme: the root of a storage is styled as its storage, any other
  * file by the style of its kind (a link by the kind of the file it points to), over which the masks of a failed and a
  * hidden file are laid in this order. An application that knows more kinds of files and states extends its scheme
- * and overrides {@link #selectStyle} and {@link #applyMasks}.
+ * and overrides {@link #selectSettings} and {@link #applyMasks}.
  *
- * <p>The schemes are kept per theme, so a resolver creates each of them once. It can be called from several
- * threads.
+ * <p>It can be called from several threads.
  *
  * @author Pavel Castornii
  * @param <F> the type of files
@@ -42,17 +40,16 @@ import java.util.function.Function;
 public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyleScheme>
         implements FileStyleResolver<F> {
 
-    private final Function<Theme, S> schemeFactory;
-
-    private final Map<Theme, S> schemesByTheme = new ConcurrentHashMap<>();
+    private final Function<Theme, S> schemeProvider;
 
     /**
      * Creates a resolver.
      *
-     * @param schemeFactory creates the scheme of a theme, once for every theme
+     * @param schemeProvider gives the scheme of a theme. It is called for every file, so it must be fast and safe
+     *     for several threads, that is, keep the schemes it has created.
      */
-    public DefaultFileStyleResolver(Function<Theme, S> schemeFactory) {
-        this.schemeFactory = schemeFactory;
+    public DefaultFileStyleResolver(Function<Theme, S> schemeProvider) {
+        this.schemeProvider = schemeProvider;
     }
 
     @Override
@@ -60,20 +57,10 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
         if (file.isRoot()) {
             return file.getStorage().getStyleResolver().resolve(theme);
         }
-        var scheme = schemesByTheme.computeIfAbsent(theme, schemeFactory);
-        return toIconTextStyle(resolveSettings(file, type, scheme));
-    }
-
-    /**
-     * Gives the style of a file that is not a root: the style of its kind with the masks of its states over it.
-     *
-     * @param file the file
-     * @param type whether the decoration is provisional or final
-     * @param scheme the scheme of the current theme
-     * @return the settings of the style
-     */
-    protected FileStyleSettings resolveSettings(F file, FileDecorationType type, S scheme) {
-        return applyMasks(selectStyle(getStyledFile(file), scheme), file, type, scheme);
+        var scheme = schemeProvider.apply(theme);
+        var foreground = theme.getPalette().getDefaultFgColor() & 0xFFFFFF;
+        var settings = applyMasks(selectSettings(getStyledFile(file), scheme), file, type, scheme);
+        return toIconTextStyle(settings, foreground);
     }
 
     /**
@@ -91,7 +78,7 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
         if (isError(file, type)) {
             result = overlay(result, scheme.getError());
         }
-        if (file.isHidden()) {
+        if (isHidden(file)) {
             result = overlay(result, scheme.getHidden());
         }
         return result;
@@ -110,6 +97,17 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
     }
 
     /**
+     * Tells whether the file is shown as hidden, that is, dimmed. An application overrides it when a state of the
+     * file makes it show at full strength.
+     *
+     * @param file the file
+     * @return {@code true} if the mask of the hidden file is laid over the file
+     */
+    protected boolean isHidden(F file) {
+        return file.isHidden();
+    }
+
+    /**
      * Tells whether the file is shown as erroneous: the default says so of a link that turned out to be broken, once
      * the file is final. An application with more kinds of errors overrides it and keeps the answer of the
      * superclass.
@@ -124,13 +122,13 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
     }
 
     /**
-     * Selects the style of the kind of the file.
+     * Selects the settings of the kind of the file.
      *
      * @param file the file whose kind to style
      * @param scheme the scheme of the current theme
-     * @return the settings of the style of the kind
+     * @return the settings of the kind
      */
-    protected FileStyleSettings selectStyle(StorageFile file, S scheme) {
+    protected FileStyleSettings selectSettings(StorageFile file, S scheme) {
         if (file.isDirectory()) {
             return scheme.getDirectory();
         }
@@ -142,8 +140,8 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
     }
 
     /**
-     * Lays a mask over a style: every value the mask sets replaces the one of the style, and the opacity of the mask
-     * is multiplied by the opacity of the style.
+     * Lays a mask over a style: the color of the mask is composited over the color of the style by its alpha, and
+     * every other value the mask sets replaces the one of the style.
      *
      * @param base the style to lay the mask over
      * @param mask the mask
@@ -151,38 +149,27 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
      */
     protected FileStyleSettings overlay(FileStyleSettings base, FileStyleSettings mask) {
         var result = new FileStyleSettings();
-        var baseOpacity = base.getOpacity();
-        var maskOpacity = mask.getOpacity();
-        if (baseOpacity != null && maskOpacity != null) {
-            result.setOpacity(baseOpacity * maskOpacity);
-        } else {
-            result.setOpacity(maskOpacity != null ? maskOpacity : baseOpacity);
-        }
-        var maskIconColor = mask.getIcon().getColor();
-        result.getIcon().setColor(maskIconColor != null ? maskIconColor : base.getIcon().getColor());
+        result.getIcon().setColor(over(mask.getIcon().getColor(), base.getIcon().getColor()));
         var maskText = mask.getText();
         var baseText = base.getText();
         var text = result.getText();
-        text.setColor(maskText.getColor() != null ? maskText.getColor() : baseText.getColor());
+        text.setColor(over(maskText.getColor(), baseText.getColor()));
         text.setBold(maskText.getBold() != null ? maskText.getBold() : baseText.getBold());
         text.setItalic(maskText.getItalic() != null ? maskText.getItalic() : baseText.getItalic());
         return result;
     }
 
     /**
-     * Converts the settings of a style to the inline styles of the icon and of the texts.
+     * Converts the settings of a style to the inline styles of the icon and of the texts. A color that is not
+     * opaque is composited over the main color of the theme.
      *
      * @param style the settings
+     * @param foreground the main color of the theme, 0xRRGGBB
      * @return the styles
      */
-    protected IconTextStyle toIconTextStyle(FileStyleSettings style) {
-        // Alpha 0 means "no alpha" for ColorUtils, so a fully transparent style is made almost transparent.
-        var opacity = style.getOpacity();
-        int alpha = opacity == null ? 255 : Math.max(1, (int) Math.round(opacity * 255));
-
+    protected IconTextStyle toIconTextStyle(FileStyleSettings style, int foreground) {
         var iconColor = style.getIcon().getColor();
-        var iconStyle = iconColor == null ? null
-                : "-fx-fill: " + ColorUtils.toCssRgba(ColorUtils.toArgb(alpha, iconColor)) + ";";
+        var iconStyle = iconColor == null ? null : "-fx-fill: " + toCssColor(iconColor, foreground) + ";";
 
         var text = style.getText();
         var textColor = text.getColor();
@@ -190,8 +177,7 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
         var italic = text.getItalic();
         var textStyle = new StringBuilder();
         if (textColor != null) {
-            textStyle.append("-fx-text-fill: ").append(ColorUtils.toCssRgba(ColorUtils.toArgb(alpha, textColor)))
-                    .append(";");
+            textStyle.append("-fx-text-fill: ").append(toCssColor(textColor, foreground)).append(";");
         }
         if (bold != null) {
             textStyle.append("-fx-font-weight: ").append(bold ? "bold" : "normal").append(";");
@@ -200,5 +186,32 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
             textStyle.append("-fx-font-style: ").append(italic ? "italic" : "normal").append(";");
         }
         return new IconTextStyle(iconStyle, textStyle.isEmpty() ? null : textStyle.toString());
+    }
+
+    private @Nullable Integer over(@Nullable Integer top, @Nullable Integer bottom) {
+        if (top == null) {
+            return bottom;
+        }
+        return bottom == null ? top : composite(top, bottom);
+    }
+
+    private String toCssColor(int color, int foreground) {
+        return ColorUtils.toCssRgba(composite(color, (foreground << 8) | 0xFF) >>> 8);
+    }
+
+    private int composite(int top, int bottom) {
+        double topAlpha = (top & 0xFF) / 255.0;
+        double bottomAlpha = (bottom & 0xFF) / 255.0;
+        double alpha = topAlpha + bottomAlpha * (1 - topAlpha);
+        if (alpha == 0) {
+            return 0;
+        }
+        int result = (int) Math.round(alpha * 255);
+        for (int shift = 24; shift >= 8; shift -= 8) {
+            double channel = (((top >>> shift) & 0xFF) * topAlpha
+                    + ((bottom >>> shift) & 0xFF) * bottomAlpha * (1 - topAlpha)) / alpha;
+            result |= (int) Math.round(channel) << shift;
+        }
+        return result;
     }
 }

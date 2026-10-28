@@ -16,29 +16,18 @@
 
 package com.techsenger.shellfx.storage.settings;
 
-import com.techsenger.annotations.Nullable;
-
 /**
  * The style of a kind of a file, or a mask of a state that is laid over such a style. A {@code null} value means that
- * the value is inherited from the style underneath, and the colors are RGB without alpha.
+ * the value is inherited from the style underneath. The colors are 0xRRGGBBAA: a color of a mask is composited over
+ * the color underneath by its alpha, so the alpha FF replaces the color and a smaller alpha tints or dims it.
  *
  * @author Pavel Castornii
  */
 public final class FileStyleSettings {
 
-    private @Nullable Double opacity;
-
     private IconStyleSettings icon = new IconStyleSettings();
 
     private TextStyleSettings text = new TextStyleSettings();
-
-    public @Nullable Double getOpacity() {
-        return this.opacity;
-    }
-
-    public void setOpacity(@Nullable Double opacity) {
-        this.opacity = opacity;
-    }
 
     public IconStyleSettings getIcon() {
         return this.icon;

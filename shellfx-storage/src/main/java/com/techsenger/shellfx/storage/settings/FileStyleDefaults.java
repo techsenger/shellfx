@@ -24,13 +24,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
- * The default styles of the files of a storage for every theme.
+ * The default styles of the files of a storage for every theme. Calculated on the base of CIEDE2000 (ΔE₀₀) where
+ * ΔE₀₀ >= 15.
  *
  * @author Pavel Castornii
  */
 public final class FileStyleDefaults {
 
-    private static final double HIDDEN_OPACITY = 0.7;
+    /**
+     * The alpha (0.3) of the background color that is laid over a hidden file, so that the file is shown dimmed.
+     */
+    private static final int HIDDEN_ALPHA = 0x4D;
+
+    private static final Map<Theme, FileStyleScheme> SCHEMES_BY_THEME = new ConcurrentHashMap<>();
 
     private static final Map<Theme, Consumer<FileStyleScheme>> FILLERS_BY_THEME = Map.of(
             AtlantaFxTheme.CUPERTINO_LIGHT, FileStyleDefaults::cupertinoLight,
@@ -40,8 +46,6 @@ public final class FileStyleDefaults {
             AtlantaFxTheme.NORD_LIGHT, FileStyleDefaults::nordLight,
             AtlantaFxTheme.NORD_DARK, FileStyleDefaults::nordDark,
             AtlantaFxTheme.DRACULA, FileStyleDefaults::dracula);
-
-    private static final Map<Theme, FileStyleScheme> SCHEMES_BY_THEME = new ConcurrentHashMap<>();
 
     /**
      * Returns the default scheme of a theme. The scheme is shared, so the caller must not change it.
@@ -73,97 +77,60 @@ public final class FileStyleDefaults {
             throw new IllegalArgumentException("No file styles for theme " + theme);
         }
         filler.accept(scheme);
-        var palette = theme.getPalette();
-        int folderColor = theme.isDark() ? palette.getWarning2Color() : palette.getWarning6Color();
-        scheme.getDirectory().getIcon().setColor(folderColor);
-        scheme.getDirectoryLink().getIcon().setColor(folderColor);
         var hidden = new FileStyleSettings();
-        hidden.setOpacity(HIDDEN_OPACITY);
+        int dimColor = ((theme.getPalette().getDefaultBgColor() & 0xFFFFFF) << 8) | HIDDEN_ALPHA;
+        hidden.getIcon().setColor(dimColor);
+        hidden.getText().setColor(dimColor);
         scheme.setHidden(hidden);
     }
 
     private static FileStyleSettings style(@Nullable Integer iconColor, @Nullable Integer textColor) {
         var style = new FileStyleSettings();
-        style.getIcon().setColor(iconColor);
-        style.getText().setColor(textColor);
+        style.getIcon().setColor(iconColor == null ? null : (iconColor << 8) | 0xFF);
+        style.getText().setColor(textColor == null ? null : (textColor << 8) | 0xFF);
         return style;
     }
 
     private static void cupertinoLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0x242424, 0x242424));
-        scheme.setDirectoryLink(style(0x242424, 0x242424));
-        scheme.setFileLink(style(0x000000, 0x000000));
-        scheme.setLinkLink(style(0x000000, 0x000000));
-        scheme.setOtherLink(style(0x636366, 0x636366));
-        scheme.setOther(style(0x77717D, 0x77717D));
-        scheme.setFile(style(0x000000, 0x000000));
-        scheme.setError(style(0xC66D6D, 0xC66D6D));
+        scheme.setDirectory(style(0x9D5D08, null));
+        scheme.setOther(style(0x434345, null));
+        scheme.setError(style(0xC52A16, 0xC52A16));
     }
 
     private static void cupertinoDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xFFFFFF, 0xFFFFFF));
-        scheme.setDirectoryLink(style(0xFFFFFF, 0xFFFFFF));
-        scheme.setFileLink(style(0xFFFFFF, 0xFFFFFF));
-        scheme.setLinkLink(style(0xFFFFFF, 0xFFFFFF));
-        scheme.setOtherLink(style(0xAEAEB2, 0xAEAEB2));
-        scheme.setOther(style(0x9B929F, 0x9B929F));
-        scheme.setFile(style(0xFFFFFF, 0xFFFFFF));
-        scheme.setError(style(0xE88780, 0xE88780));
+        scheme.setDirectory(style(0xDD8019, null));
+        scheme.setOther(style(0x838388, null));
+        scheme.setError(style(0xDC5A3B, 0xDC5A3B));
     }
 
     private static void primerLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0x24292F, 0x24292F));
-        scheme.setDirectoryLink(style(0x24292F, 0x24292F));
-        scheme.setFileLink(style(0x24292F, 0x24292F));
-        scheme.setLinkLink(style(0x24292F, 0x24292F));
-        scheme.setOtherLink(style(0x57606A, 0x57606A));
-        scheme.setOther(style(0x77717D, 0x77717D));
-        scheme.setFile(style(0x24292F, 0x24292F));
-        scheme.setError(style(0xC66D75, 0xC66D75));
+        scheme.setDirectory(style(0xAC5001, null));
+        scheme.setOther(style(0x4A535C, null));
+        scheme.setError(style(0xB31922, 0xB31922));
     }
 
     private static void primerDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xC9D1D9, 0xC9D1D9));
-        scheme.setDirectoryLink(style(0xC9D1D9, 0xC9D1D9));
-        scheme.setFileLink(style(0xC9D1D9, 0xC9D1D9));
-        scheme.setLinkLink(style(0xC9D1D9, 0xC9D1D9));
-        scheme.setOtherLink(style(0x8B949E, 0x8B949E));
-        scheme.setOther(style(0x9B929F, 0x9B929F));
-        scheme.setFile(style(0xC9D1D9, 0xC9D1D9));
-        scheme.setError(style(0xE58A83, 0xE58A83));
+        scheme.setDirectory(style(0xD47C18, null));
+        scheme.setOther(style(0x747C87, null));
+        scheme.setError(style(0xDB4C32, 0xDB4C32));
     }
 
     private static void nordLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0x2E3440, 0x2E3440));
-        scheme.setDirectoryLink(style(0x2E3440, 0x2E3440));
-        scheme.setFileLink(style(0x2E3440, 0x2E3440));
-        scheme.setLinkLink(style(0x2E3440, 0x2E3440));
-        scheme.setOtherLink(style(0x788192, 0x788192));
-        scheme.setOther(style(0x817B8B, 0x817B8B));
-        scheme.setFile(style(0x2E3440, 0x2E3440));
-        scheme.setError(style(0xB9777E, 0xB9777E));
+        scheme.setDirectory(style(0xAA5D04, null));
+        scheme.setOther(style(0x4B5569, null));
+        scheme.setError(style(0xC51D16, 0xC51D16));
     }
 
     private static void nordDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xECEFF4, 0xECEFF4));
-        scheme.setDirectoryLink(style(0xECEFF4, 0xECEFF4));
-        scheme.setFileLink(style(0xECEFF4, 0xECEFF4));
-        scheme.setLinkLink(style(0xECEFF4, 0xECEFF4));
-        scheme.setOtherLink(style(0xB7BECB, 0xB7BECB));
-        scheme.setOther(style(0xAAA2B2, 0xAAA2B2));
-        scheme.setFile(style(0xECEFF4, 0xECEFF4));
-        scheme.setError(style(0xD18A91, 0xD18A91));
+        scheme.setDirectory(style(0xE48619, null));
+        scheme.setOther(style(0x949CAB, null));
+        scheme.setError(style(0xE77D78, 0xE77D78));
     }
 
     private static void dracula(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xF8F8F2, 0xF8F8F2));
-        scheme.setDirectoryLink(style(0xF8F8F2, 0xF8F8F2));
-        scheme.setFileLink(style(0xF8F8F2, 0xF8F8F2));
-        scheme.setLinkLink(style(0xF8F8F2, 0xF8F8F2));
-        scheme.setOtherLink(style(0xBFBFC3, 0xBFBFC3));
-        scheme.setOther(style(0x9E96A8, 0x9E96A8));
-        scheme.setFile(style(0xF8F8F2, 0xF8F8F2));
-        scheme.setError(style(0xE88F83, 0xE88F83));
+        scheme.setDirectory(style(0xCE7F22, null));
+        scheme.setOther(style(0x909197, null));
+        scheme.setError(style(0xE46C68, 0xE46C68));
     }
 
     private FileStyleDefaults() {
