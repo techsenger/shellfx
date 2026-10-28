@@ -92,43 +92,43 @@ public final class FileStyleDefaults {
     }
 
     private static void cupertinoLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0x9D5D08, null));
+        scheme.setDirectory(style(0xAD6200, null));
         scheme.setOther(style(0x434345, null));
-        scheme.setError(style(0xC52A16, 0xC52A16));
+        scheme.setError(style(0xA41E1E, 0xA41E1E));
     }
 
     private static void cupertinoDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xDD8019, null));
+        scheme.setDirectory(style(0xD18125, null));
         scheme.setOther(style(0x838388, null));
-        scheme.setError(style(0xDC5A3B, 0xDC5A3B));
+        scheme.setError(style(0xE0535E, 0xE0535E));
     }
 
     private static void primerLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xAC5001, null));
-        scheme.setOther(style(0x4A535C, null));
-        scheme.setError(style(0xB31922, 0xB31922));
+        scheme.setDirectory(style(0xAB6101, null));
+        scheme.setOther(style(0x475059, null));
+        scheme.setError(style(0xA41E25, 0xA41E25));
     }
 
     private static void primerDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xD47C18, null));
-        scheme.setOther(style(0x747C87, null));
-        scheme.setError(style(0xDB4C32, 0xDB4C32));
+        scheme.setDirectory(style(0xC67B24, null));
+        scheme.setOther(style(0x747D87, null));
+        scheme.setError(style(0xDD4352, 0xDD4352));
     }
 
     private static void nordLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xAA5D04, null));
+        scheme.setDirectory(style(0xAA6204, null));
         scheme.setOther(style(0x4B5569, null));
-        scheme.setError(style(0xC51D16, 0xC51D16));
+        scheme.setError(style(0xA41E1F, 0xA41E1F));
     }
 
     private static void nordDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xE48619, null));
+        scheme.setDirectory(style(0xD98A2E, null));
         scheme.setOther(style(0x949CAB, null));
-        scheme.setError(style(0xE77D78, 0xE77D78));
+        scheme.setError(style(0xE77D79, 0xE77D79));
     }
 
     private static void dracula(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xCE7F22, null));
+        scheme.setDirectory(style(0xCF7F25, null));
         scheme.setOther(style(0x909197, null));
         scheme.setError(style(0xE46C68, 0xE46C68));
     }
