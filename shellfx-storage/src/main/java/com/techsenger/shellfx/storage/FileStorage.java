@@ -73,9 +73,9 @@ import java.util.List;
  * A failed operation is not reported.
  *
  * <p><b>Appearance.</b> A storage is loaded dynamically, so only it knows how it looks itself: the icon and the
- * style of the storage and of its root, {@link #getIconResolver()} and {@link #getStyleResolver()}.
- * The files of every storage share one model and are styled centrally, by file resolvers. A storage that
- * extends the model of a file is styled by resolvers that know the extension.
+ * style of the storage and of its root, {@link #getIconResolver()} and {@link #getStyleResolver()}, which a view
+ * applies where it shows the storage itself, e.g. its root in a tree. The files of every storage share one model and
+ * are styled centrally, by file resolvers, which know nothing of the storage.
  *
  * @param <T> the concrete file entry type produced by this storage
  * @author Pavel Castornii
@@ -115,10 +115,8 @@ public interface FileStorage<T extends StorageFile> {
     StorageIconResolver getIconResolver();
 
     /**
-     * Returns the resolver of the styles of this storage. The storage is shown with its icon and its name, so both
-     * can be styled, in a list of storages and as its root directory, whose icon and style the resolvers of the
-     * files take from the storage. The storage does not know where it is shown, so views never apply the style
-     * themselves.
+     * Returns the resolver of the styles of this storage, for its icon and its name. A view that shows the storage
+     * itself, such as its root in a tree, applies them; the resolvers of the files do not.
      *
      * @return the resolver, never {@code null}
      */

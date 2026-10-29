@@ -21,7 +21,7 @@ import com.techsenger.shellfx.storage.FileEntryType;
 import com.techsenger.shellfx.storage.StorageFile;
 
 /**
- * Gives a file the icon of its entry type, and the root of a storage the icon of the storage. A link gets the link
+ * Gives a file the icon of its entry type. A link gets the link
  * icon of the kind of the file it points to, or of a file if the target is not known. A broken link gets an error
  * icon, a file that is still to be refined a pending one. It is the fallback for the files that an application
  * has no icon of its own for.
@@ -39,9 +39,6 @@ public class DefaultFileIconResolver<F extends StorageFile> implements FileIconR
 
     @Override
     public FontIcon<?> resolve(F file, FileDecorationType type) {
-        if (file.isRoot()) {
-            return file.getStorage().getIconResolver().resolve();
-        }
         var link = file.getLink();
         var target = link == null ? null : link.getTarget();
         var look = Look.NORMAL;

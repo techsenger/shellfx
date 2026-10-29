@@ -24,10 +24,10 @@ import com.techsenger.toolkit.fx.color.ColorUtils;
 import java.util.function.Function;
 
 /**
- * Styles the files with the scheme of the current theme: the root of a storage is styled as its storage, any other
- * file by the style of its kind (a link by the kind of the file it points to), over which the masks of a failed and a
- * hidden file are laid in this order. An application that knows more kinds of files and states extends its scheme
- * and overrides {@link #selectSettings} and {@link #applyMasks}.
+ * Styles the files with the scheme of the current theme: a file by the style of its kind (a link by the kind of the
+ * file it points to), over which the masks of a failed and a hidden file are laid in this order. An application that
+ * knows more kinds of files and states extends its scheme and overrides {@link #selectSettings} and
+ * {@link #applyMasks}.
  *
  * <p>It can be called from several threads.
  *
@@ -52,9 +52,6 @@ public class DefaultFileStyleResolver<F extends StorageFile, S extends FileStyle
 
     @Override
     public IconTextStyle resolve(F file, FileDecorationType type, Theme theme) {
-        if (file.isRoot()) {
-            return file.getStorage().getStyleResolver().resolve(theme);
-        }
         var scheme = schemeProvider.apply(theme);
         var foreground = theme.getPalette().getDefaultFgColor() & 0xFFFFFF;
         var settings = applyMasks(selectSettings(getStyledFile(file), scheme), file, type, scheme);

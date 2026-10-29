@@ -194,6 +194,11 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
 
     private final FileDecorator<T> decorator;
 
+    /**
+     * Decorates the locations, which show the root of a storage as the storage itself, unlike the files.
+     */
+    private final FileDecorator<T> locationDecorator;
+
     private final Label locationLabel = new Label();
 
     private final ComboBox<T> locationComboBox = new ComboBox<>();
@@ -252,6 +257,14 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         super(viewModel);
         this.decorator = new FileDecorator<T>(iconResolver, styleResolver, viewModel::getDecorationType,
                 () -> viewModel.getAppearanceSettings().getTheme());
+        FileIconResolver<T> locationIconResolver = (file, type) -> file.isRoot()
+                ? file.getStorage().getIconResolver().resolve()
+                : iconResolver.resolve(file, type);
+        FileStyleResolver<T> locationStyleResolver = (file, type, theme) -> file.isRoot()
+                ? file.getStorage().getStyleResolver().resolve(theme)
+                : styleResolver.resolve(file, type, theme);
+        this.locationDecorator = new FileDecorator<T>(locationIconResolver, locationStyleResolver,
+                viewModel::getDecorationType, () -> viewModel.getAppearanceSettings().getTheme());
     }
 
     @Override
@@ -320,13 +333,13 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         HBox.setHgrow(locationComboBox, Priority.ALWAYS);
         locationComboBox.setMaxWidth(Double.MAX_VALUE);
         locationComboBox.setCellFactory(cb -> {
-            var cell = new LocationCell<T>(false, decorator);
+            var cell = new LocationCell<T>(false, locationDecorator);
             cell.setOnMousePressed(e -> {
                 getViewModel().onLocationRequested(cell.getItem());
             });
             return cell;
         });
-        locationComboBox.setButtonCell(new LocationCell<T>(true, decorator));
+        locationComboBox.setButtonCell(new LocationCell<T>(true, locationDecorator));
         locationComboBox.getStyleClass().add("location");
         levelUpButton.getStyleClass().addAll(Styles.FLAT, StyleClasses.SIZE_M);
         levelUpButton.setTooltip(new Tooltip("Up One Level"));
@@ -583,7 +596,7 @@ public class FileChooserDialogView<VM extends FileChooserDialogViewModel<?, T>, 
         } else {
             TableViewUtils.forEachItem(fileTableView, true, decorator::decorate);
         }
-        getViewModel().getLocations().forEach(decorator::decorate);
+        getViewModel().getLocations().forEach(locationDecorator::decorate);
     }
 
     private void updateFilesChanged() {
