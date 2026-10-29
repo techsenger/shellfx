@@ -19,20 +19,21 @@ package com.techsenger.shellfx.storage.style;
 import com.techsenger.shellfx.material.theme.Theme;
 
 /**
- * Determines the styles a storage is shown with. The storage gives its own resolver, which knows the state of the
- * storage. While a view has a style of a storage, it owns the inline styles of the storage elements, so a style without
- * values clears them.
+ * Decorates a storage with the icon and the style it is shown with. The decorator is given to the storage when it is
+ * created, by the one who knows the kinds and the states of the storage, and it takes both from one state of the
+ * storage, so they never disagree.
  *
  * @author Pavel Castornii
  */
 @FunctionalInterface
-public interface StorageStyleResolver {
+public interface StorageDecorator {
 
     /**
-     * Resolves the styles of the storage.
+     * Decorates the storage for a theme.
      *
      * @param theme the theme the storage is shown in
-     * @return the styles, never {@code null}; a style without values clears the styles of the storage
+     * @return the icon and the style of the storage in its current state, never {@code null}; the style is never
+     *     {@code null} either, and a style without values clears the styles of the storage
      */
-    IconTextStyle resolve(Theme theme);
+    IconStyleDecoration decorate(Theme theme);
 }

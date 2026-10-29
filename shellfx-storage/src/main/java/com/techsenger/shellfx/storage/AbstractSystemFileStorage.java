@@ -18,8 +18,7 @@ package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
 import static com.techsenger.shellfx.storage.UriUtils.getParentUri;
-import com.techsenger.shellfx.storage.style.StorageIconResolver;
-import com.techsenger.shellfx.storage.style.StorageStyleResolver;
+import com.techsenger.shellfx.storage.style.StorageDecorator;
 import com.techsenger.toolkit.core.file.FileUtils;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
@@ -70,13 +69,11 @@ public abstract class AbstractSystemFileStorage<T extends StorageFile> extends A
      * @param rootUri the root URI
      * @param id the identifier of the volume or the device the storage stands for
      * @param fileFactory the factory of the file entries
-     * @param iconResolver the resolver of the icon of the storage
-     * @param styleResolver the resolver of the style of the storage
+     * @param decorator the decorator that gives the storage its icon and style
      */
     public AbstractSystemFileStorage(FileStorageType type, String name, URI rootUri, String id,
-            Factory<? extends DefaultStorageFile> fileFactory, StorageIconResolver iconResolver,
-            StorageStyleResolver styleResolver) {
-        super(type, name, rootUri, id, iconResolver, styleResolver);
+            Factory<? extends DefaultStorageFile> fileFactory, StorageDecorator decorator) {
+        super(type, name, rootUri, id, decorator);
         this.fileFactory = fileFactory;
         this.path = Paths.get(rootUri);
     }

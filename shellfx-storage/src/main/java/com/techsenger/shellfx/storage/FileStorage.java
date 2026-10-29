@@ -17,8 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.style.StorageIconResolver;
-import com.techsenger.shellfx.storage.style.StorageStyleResolver;
+import com.techsenger.shellfx.storage.style.StorageDecorator;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -73,8 +72,8 @@ import java.util.List;
  * A failed operation is not reported.
  *
  * <p><b>Appearance.</b> A storage is loaded dynamically, so only it knows how it looks itself: the icon and the
- * style of the storage and of its root, {@link #getIconResolver()} and {@link #getStyleResolver()}, which a view
- * applies where it shows the storage itself, e.g. its root in a tree. The files of every storage share one model and
+ * style of the storage and of its root, given by {@link #getDecorator()}, which a view applies where it shows the
+ * storage itself, e.g. its root in a tree. The files of every storage share one model and
  * are styled centrally, by file resolvers, which know nothing of the storage.
  *
  * @param <T> the concrete file entry type produced by this storage
@@ -107,20 +106,13 @@ public interface FileStorage<T extends StorageFile> {
     String getName();
 
     /**
-     * Returns the resolver of the icon representing this storage in the UI (e.g. a location bar or a directory tree
-     * root) in its current state.
+     * Returns the decorator that gives this storage the icon and the style it is shown with, e.g. in a location bar or
+     * as a root in a directory tree. A view that shows the storage itself applies them; the resolvers of the files do
+     * not.
      *
-     * @return the resolver, never {@code null}
+     * @return the decorator, never {@code null}
      */
-    StorageIconResolver getIconResolver();
-
-    /**
-     * Returns the resolver of the styles of this storage, for its icon and its name. A view that shows the storage
-     * itself, such as its root in a tree, applies them; the resolvers of the files do not.
-     *
-     * @return the resolver, never {@code null}
-     */
-    StorageStyleResolver getStyleResolver();
+    StorageDecorator getDecorator();
 
     /**
      * Returns the root directory entry of this storage.

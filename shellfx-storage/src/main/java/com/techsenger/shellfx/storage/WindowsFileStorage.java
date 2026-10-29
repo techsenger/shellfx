@@ -17,10 +17,8 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.drivekit.core.DriveDetector;
-import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
-import com.techsenger.shellfx.storage.style.StorageIconResolver;
-import com.techsenger.shellfx.storage.style.StorageStyleResolver;
-import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
+import com.techsenger.shellfx.storage.style.DefaultStorageDecorator;
+import com.techsenger.shellfx.storage.style.StorageDecorator;
 import com.techsenger.toolkit.core.function.Factory;
 import java.io.IOException;
 import java.net.URI;
@@ -69,17 +67,15 @@ public class WindowsFileStorage<T extends StorageFile> extends AbstractSystemFil
                     drive.getRoot().toUri(),
                     drive.getId(),
                     fileFactory,
-                    new DefaultStorageIconResolver(type),
-                    new DefaultStorageStyleResolver());
+                    new DefaultStorageDecorator(type));
             result.add(storage);
         }
         return result;
     }
 
     public WindowsFileStorage(FileStorageType type, String name, URI rootUri, String id,
-            Factory<? extends DefaultStorageFile> fileFactory, StorageIconResolver iconResolver,
-            StorageStyleResolver styleResolver) {
-        super(type, name, rootUri, id, fileFactory, iconResolver, styleResolver);
+            Factory<? extends DefaultStorageFile> fileFactory, StorageDecorator decorator) {
+        super(type, name, rootUri, id, fileFactory, decorator);
     }
 
     @Override

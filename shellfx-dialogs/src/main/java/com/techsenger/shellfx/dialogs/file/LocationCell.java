@@ -20,9 +20,9 @@ import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.material.style.Spacing;
 import com.techsenger.shellfx.storage.StorageFile;
 import com.techsenger.shellfx.storage.UriUtils;
-import com.techsenger.shellfx.storage.style.FileDecorator;
 import com.techsenger.shellfx.storage.view.FileCellUpdater;
-import com.techsenger.shellfx.storage.view.FileCellUtils;
+import com.techsenger.shellfx.storage.view.DecorationCellUtils;
+import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -45,14 +45,20 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
 
     private final boolean valueCell;
 
-    private final FileDecorator<F> decorator;
+    private final Consumer<? super F> decorate;
 
     private final FileCellUpdater<F> updater;
 
-    public LocationCell(boolean valueCell, FileDecorator<F> decorator) {
+    /**
+     * Creates a cell.
+     *
+     * @param valueCell whether the cell shows the chosen location rather than an item of the list
+     * @param decorate gives a location its decoration, which the cell shows while it is decorated
+     */
+    public LocationCell(boolean valueCell, Consumer<? super F> decorate) {
         this.valueCell = valueCell;
-        this.decorator = decorator;
-        this.updater = new FileCellUpdater<>(file -> FileCellUtils.updateDecoration(label, iconView, file));
+        this.decorate = decorate;
+        this.updater = new FileCellUpdater<>(file -> DecorationCellUtils.updateDecoration(label, iconView, file));
         this.box.setAlignment(Pos.CENTER_LEFT);
         this.box.getChildren().setAll(this.iconView, this.label);
     }
@@ -67,7 +73,7 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
         setText(null);
         if (empty || item == null) {
             updater.unobserve();
-            FileCellUtils.updateStyles(label, iconView, null);
+            DecorationCellUtils.updateStyles(label, iconView, null);
             setGraphic(null);
         } else {
             if (!this.valueCell) {
@@ -81,7 +87,7 @@ public class LocationCell<F extends StorageFile> extends ListCell<F> {
     }
 
     private void showFile(F item) {
-        decorator.decorate(item);
+        decorate.accept(item);
         updater.observe(item, StorageFile::decorationProperty);
         if (getGraphic() != this.box) {
             setGraphic(this.box);

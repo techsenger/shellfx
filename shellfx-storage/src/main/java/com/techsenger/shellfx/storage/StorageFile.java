@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.style.FileDecoration;
+import com.techsenger.shellfx.storage.style.IconStyleDecoration;
 import java.net.URI;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
@@ -130,14 +130,14 @@ public interface StorageFile {
      *
      * @return the decoration, or {@code null} if the file has not been decorated yet or has to be decorated again
      */
-    @Nullable FileDecoration getDecoration();
+    @Nullable IconStyleDecoration getDecoration();
 
     /**
      * Returns the property of the decoration, which changes when the file is decorated, when the second loading phase
      * or the client makes it outdated. It is changed on the UI thread once the file is shown, so the elements that
      * show the file can observe it.
      */
-    ReadOnlyObjectProperty<FileDecoration> decorationProperty();
+    ReadOnlyObjectProperty<IconStyleDecoration> decorationProperty();
 
     /**
      * Returns {@code true} if this entry is a directory.

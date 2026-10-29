@@ -71,7 +71,7 @@ public final class FileDecorator<F extends StorageFile> {
         var type = typeResolver.apply(file);
         var icon = decoration != null ? decoration.icon() : iconResolver.resolve(file, type);
         var style = styleResolver.resolve(file, type, themeSupplier.get());
-        DefaultStorageFile.cast(file).setDecoration(new FileDecoration(icon, style));
+        DefaultStorageFile.cast(file).setDecoration(new IconStyleDecoration(icon, style));
     }
 
     /**
@@ -95,7 +95,7 @@ public final class FileDecorator<F extends StorageFile> {
         for (var file : files) {
             var decoration = file.getDecoration();
             if (decoration != null) {
-                DefaultStorageFile.cast(file).setDecoration(new FileDecoration(decoration.icon(), null));
+                DefaultStorageFile.cast(file).setDecoration(new IconStyleDecoration(decoration.icon(), null));
             }
         }
     }

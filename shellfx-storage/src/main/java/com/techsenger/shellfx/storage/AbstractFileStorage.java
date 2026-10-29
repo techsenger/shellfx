@@ -16,8 +16,7 @@
 
 package com.techsenger.shellfx.storage;
 
-import com.techsenger.shellfx.storage.style.StorageIconResolver;
-import com.techsenger.shellfx.storage.style.StorageStyleResolver;
+import com.techsenger.shellfx.storage.style.StorageDecorator;
 import java.net.URI;
 import java.util.Objects;
 
@@ -37,9 +36,7 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
 
     private final StorageListenerSupport listenerSupport = new StorageListenerSupport();
 
-    private final StorageIconResolver iconResolver;
-
-    private final StorageStyleResolver styleResolver;
+    private final StorageDecorator decorator;
 
     /**
      * Creates a storage.
@@ -49,13 +46,10 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
      * @param uri the root URI
      * @param id the identifier of the volume or the device the storage stands for, which the operating system keeps
      *     across reboots; it tells a provider whether a storage found again is the one it found before
-     * @param iconResolver the resolver of the icon of the storage
-     * @param styleResolver the resolver of the style of the storage
+     * @param decorator the decorator that gives the storage its icon and style
      */
-    public AbstractFileStorage(FileStorageType type, String name, URI uri, String id,
-            StorageIconResolver iconResolver, StorageStyleResolver styleResolver) {
-        this.iconResolver = iconResolver;
-        this.styleResolver = styleResolver;
+    public AbstractFileStorage(FileStorageType type, String name, URI uri, String id, StorageDecorator decorator) {
+        this.decorator = decorator;
         this.type = type;
         this.name = name;
         this.id = id;
@@ -79,13 +73,8 @@ public abstract class AbstractFileStorage<T extends StorageFile> implements File
     }
 
     @Override
-    public StorageIconResolver getIconResolver() {
-        return iconResolver;
-    }
-
-    @Override
-    public StorageStyleResolver getStyleResolver() {
-        return styleResolver;
+    public StorageDecorator getDecorator() {
+        return decorator;
     }
 
     @Override

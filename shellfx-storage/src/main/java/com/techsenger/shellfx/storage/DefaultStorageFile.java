@@ -17,7 +17,7 @@
 package com.techsenger.shellfx.storage;
 
 import com.techsenger.annotations.Nullable;
-import com.techsenger.shellfx.storage.style.FileDecoration;
+import com.techsenger.shellfx.storage.style.IconStyleDecoration;
 import java.net.URI;
 import java.util.Objects;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -70,7 +70,7 @@ public class DefaultStorageFile implements StorageFile {
 
     private @Nullable EntryLink link;
 
-    private final ReadOnlyObjectWrapper<FileDecoration> decoration = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<IconStyleDecoration> decoration = new ReadOnlyObjectWrapper<>();
 
     /**
      * Constructs an empty {@code DefaultStorageFile}. Fields should be populated by the
@@ -144,12 +144,12 @@ public class DefaultStorageFile implements StorageFile {
     }
 
     @Override
-    public @Nullable FileDecoration getDecoration() {
+    public @Nullable IconStyleDecoration getDecoration() {
         return decoration.get();
     }
 
     @Override
-    public ReadOnlyObjectProperty<FileDecoration> decorationProperty() {
+    public ReadOnlyObjectProperty<IconStyleDecoration> decorationProperty() {
         return decoration.getReadOnlyProperty();
     }
 
@@ -195,7 +195,7 @@ public class DefaultStorageFile implements StorageFile {
      *
      * @param decoration the decoration, or {@code null} to make the file undecorated
      */
-    public void setDecoration(@Nullable FileDecoration decoration) {
+    public void setDecoration(@Nullable IconStyleDecoration decoration) {
         this.decoration.set(decoration);
     }
 

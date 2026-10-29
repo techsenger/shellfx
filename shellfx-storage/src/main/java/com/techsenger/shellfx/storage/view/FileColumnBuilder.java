@@ -60,14 +60,14 @@ public class FileColumnBuilder<F extends StorageFile> {
             private final FontIconView iconView = new FontIconView();
 
             private final FileCellUpdater<F> updater =
-                    new FileCellUpdater<>(file -> FileCellUtils.updateDecoration(this, iconView, file));
+                    new FileCellUpdater<>(file -> DecorationCellUtils.updateDecoration(this, iconView, file));
 
             @Override
             public void updateItem(F file, boolean empty) {
                 super.updateItem(file, empty);
                 if (file == null || empty) {
                     updater.unobserve();
-                    FileCellUtils.updateStyles(this, iconView, null);
+                    DecorationCellUtils.updateStyles(this, iconView, null);
                     setGraphic(null);
                     setText(null);
                 } else {
@@ -108,7 +108,7 @@ public class FileColumnBuilder<F extends StorageFile> {
         sizeColumn.setCellFactory(callBack -> new TableCell<F, F>() {
 
                 private final FileCellUpdater<F> updater = new FileCellUpdater<>(file -> {
-                    FileCellUtils.updateDecoration(this, null, file);
+                    DecorationCellUtils.updateDecoration(this, null, file);
                     setText(file.getSize() != null ? FileUtils.formatSize(file.getSize()) : null);
                 });
 
@@ -117,7 +117,7 @@ public class FileColumnBuilder<F extends StorageFile> {
                     super.updateItem(file, empty);
                     if (file == null || empty) {
                         updater.unobserve();
-                        FileCellUtils.updateStyles(this, null, null);
+                        DecorationCellUtils.updateStyles(this, null, null);
                         setText(null);
                     } else {
                         decorator.decorate(file);
@@ -147,7 +147,7 @@ public class FileColumnBuilder<F extends StorageFile> {
         lastModifiedColumn.setCellFactory(col -> new TableCell<F, F>() {
 
             private final FileCellUpdater<F> updater = new FileCellUpdater<>(file -> {
-                FileCellUtils.updateDecoration(this, null, file);
+                DecorationCellUtils.updateDecoration(this, null, file);
                 setText(file.getModifiedTime() != null
                         ? DateTimeUtils.format(file.getModifiedTime(), currentYear) : null);
             });
@@ -157,7 +157,7 @@ public class FileColumnBuilder<F extends StorageFile> {
                 super.updateItem(file, empty);
                 if (file == null || empty) {
                     updater.unobserve();
-                    FileCellUtils.updateStyles(this, null, null);
+                    DecorationCellUtils.updateStyles(this, null, null);
                     setText(null);
                 } else {
                     decorator.decorate(file);

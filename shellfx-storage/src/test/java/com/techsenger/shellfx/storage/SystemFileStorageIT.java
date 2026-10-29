@@ -20,8 +20,7 @@ import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.storage.async.LinkUtils;
-import com.techsenger.shellfx.storage.style.DefaultStorageIconResolver;
-import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
+import com.techsenger.shellfx.storage.style.DefaultStorageDecorator;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -101,11 +100,11 @@ public class SystemFileStorageIT {
         if (windows) {
             return new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, "test",
                     DefaultStorageFile::new,
-                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
+                new DefaultStorageDecorator(FileStorageType.BASE));
         }
         return new UnixFileStorage<StorageFile>(FileStorageType.BASE, "test", rootUri, "test",
                 DefaultStorageFile::new,
-                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
+                new DefaultStorageDecorator(FileStorageType.BASE));
     }
 
     /**
@@ -400,7 +399,7 @@ public class SystemFileStorageIT {
     public void refersToStorage_unixStorage_trueOnlyForFileScheme() {
         var storage = new UnixFileStorage<StorageFile>(FileStorageType.BASE, "/", URI.create("file:///"),
                 "/", DefaultStorageFile::new,
-                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
+                new DefaultStorageDecorator(FileStorageType.BASE));
 
         assertThat(storage.refersToStorage(URI.create("file:///home/user/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("FILE:///home/user/a.txt"))).isTrue();
@@ -411,7 +410,7 @@ public class SystemFileStorageIT {
     public void refersToStorage_windowsStorage_trueOnlyForTheSameDriveIgnoringCase() {
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "C:", URI.create("file:///C:/"),
                 "C:", DefaultStorageFile::new,
-                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
+                new DefaultStorageDecorator(FileStorageType.BASE));
 
         assertThat(storage.refersToStorage(URI.create("file:///C:/dir/a.txt"))).isTrue();
         assertThat(storage.refersToStorage(URI.create("file:///c:/dir/a.txt"))).isTrue();
@@ -427,7 +426,7 @@ public class SystemFileStorageIT {
         assertThat(storage.getType()).isEqualTo(FileStorageType.BASE);
         assertThat(storage.getName()).isEqualTo("test");
         assertThat(storage.getUri()).isNotNull();
-        assertThat(storage.getIconResolver().resolve()).isNotNull();
+        assertThat(storage.getDecorator()).isNotNull();
     }
 
     @ParameterizedTest
@@ -1137,7 +1136,7 @@ public class SystemFileStorageIT {
         Files.writeString(directory.resolve("visible.txt"), "hello");
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
                 "test", DefaultStorageFile::new,
-                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
+                new DefaultStorageDecorator(FileStorageType.BASE));
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
 
@@ -1158,7 +1157,7 @@ public class SystemFileStorageIT {
         assertThat(process.waitFor()).as("mklink /J").isZero();
         var storage = new WindowsFileStorage<StorageFile>(FileStorageType.BASE, "test", directory.toUri(),
                 "test", DefaultStorageFile::new,
-                new DefaultStorageIconResolver(FileStorageType.BASE), new DefaultStorageStyleResolver());
+                new DefaultStorageDecorator(FileStorageType.BASE));
 
         var files = storage.getFiles(directory.toUri(), OperationType.PRIMARY);
         var directories = storage.getDirectories(directory.toUri(), OperationType.PRIMARY);

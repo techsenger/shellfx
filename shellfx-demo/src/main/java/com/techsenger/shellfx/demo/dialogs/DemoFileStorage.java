@@ -24,7 +24,8 @@ import com.techsenger.shellfx.storage.FileStorageType;
 import com.techsenger.shellfx.storage.FileStorageUtils;
 import com.techsenger.shellfx.storage.OperationType;
 import com.techsenger.shellfx.storage.StorageFile;
-import com.techsenger.shellfx.storage.style.DefaultStorageStyleResolver;
+import com.techsenger.shellfx.storage.style.IconStyleDecoration;
+import com.techsenger.shellfx.storage.style.IconTextStyle;
 import com.techsenger.shellfx.storage.style.StorageIcons;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -67,8 +68,8 @@ final class DemoFileStorage extends AbstractFileStorage<StorageFile> {
     private volatile CompletableFuture<Void> gate = new CompletableFuture<>();
 
     DemoFileStorage() {
-        super(FileStorageType.NETWORK, "Demo", URI.create("demo:///"), "demo", () -> StorageIcons.BASE_STORAGE,
-                new DefaultStorageStyleResolver());
+        super(FileStorageType.NETWORK, "Demo", URI.create("demo:///"), "demo",
+                theme -> new IconStyleDecoration(StorageIcons.BASE_STORAGE, IconTextStyle.foreground(theme)));
     }
 
     /**

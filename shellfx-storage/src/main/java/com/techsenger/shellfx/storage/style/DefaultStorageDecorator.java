@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Pavel Castornii.
+ * Copyright 2024-2026 Pavel Castornii.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,34 @@
 package com.techsenger.shellfx.storage.style;
 
 import com.techsenger.shellfx.material.icon.FontIcon;
+import com.techsenger.shellfx.material.theme.Theme;
 import com.techsenger.shellfx.storage.FileStorageType;
 
 /**
- * Gives a storage the icon of its type. It is the default of the storages of the local machine.
+ * Gives a storage the icon of its type and paints the icon and the texts with the default foreground color of the
+ * theme. It is the default of the storages of the local machine.
  *
  * @author Pavel Castornii
  */
-public final class DefaultStorageIconResolver implements StorageIconResolver {
+public final class DefaultStorageDecorator implements StorageDecorator {
 
     private final FileStorageType type;
 
     /**
-     * Creates a resolver.
+     * Creates a decorator.
      *
      * @param type the type of the storage
      */
-    public DefaultStorageIconResolver(FileStorageType type) {
+    public DefaultStorageDecorator(FileStorageType type) {
         this.type = type;
     }
 
     @Override
-    public FontIcon<?> resolve() {
+    public IconStyleDecoration decorate(Theme theme) {
+        return new IconStyleDecoration(resolveIcon(), IconTextStyle.foreground(theme));
+    }
+
+    private FontIcon<?> resolveIcon() {
         return switch (type) {
             case BASE, VIRTUAL -> StorageIcons.BASE_STORAGE;
             case HDD -> StorageIcons.HDD_STORAGE;

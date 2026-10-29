@@ -19,14 +19,15 @@ package com.techsenger.shellfx.storage.view;
 import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIconView;
 import com.techsenger.shellfx.storage.StorageFile;
+import com.techsenger.shellfx.storage.style.IconStyleDecoration;
 import javafx.scene.control.Labeled;
 
 /**
- * Utilities for the cells that show files.
+ * Utilities for the cells that show decorated elements, such as files and storages.
  *
  * @author Pavel Castornii
  */
-public final class FileCellUtils {
+public final class DecorationCellUtils {
 
     /**
      * Sets the icon of the cell and applies the style to the cell and its icon from the decoration of the file; does
@@ -38,13 +39,29 @@ public final class FileCellUtils {
      */
     public static void updateDecoration(Labeled cell, @Nullable FontIconView iconView, StorageFile file) {
         var decoration = file.getDecoration();
-        if (decoration == null || decoration.style() == null) {
+        if (decoration != null) {
+            updateDecoration(cell, iconView, decoration);
+        }
+    }
+
+    /**
+     * Sets the icon of the cell and applies the style to the cell and its icon from the decoration; does nothing if
+     * the decoration is outdated in its style.
+     *
+     * @param cell the cell whose texts to style
+     * @param iconView the icon of the cell, or {@code null} if the cell has no icon
+     * @param decoration the decoration of what is shown in the cell
+     */
+    public static void updateDecoration(Labeled cell, @Nullable FontIconView iconView, IconStyleDecoration decoration) {
+        var style = decoration.style();
+        if (style == null) {
             return;
         }
+        cell.setStyle(style.textStyle());
         if (iconView != null) {
             iconView.setIcon(decoration.icon());
+            iconView.setIconStyle(style.iconStyle());
         }
-        updateStyles(cell, iconView, file);
     }
 
     /**
@@ -63,7 +80,7 @@ public final class FileCellUtils {
         }
     }
 
-    private FileCellUtils() {
+    private DecorationCellUtils() {
         // empty
     }
 }

@@ -1081,11 +1081,12 @@ dialog can show Google Drive or an FTP server as easily as the local disk. No ot
 implementations), `StorageProvider` that tells which storages there are, operation types, listeners and utilities.
 * `storage.async` — loading of the files in the background in two phases: `FileProvider` and `FileRefiner`, with their
 default implementations, the cancellable task and the sort policy.
-* `storage.style` — the icon and the style the files are shown with: resolvers of files and storages, `FileDecorator`
-that gives files their `FileDecoration` (icon and style), the icon set and the types of decoration.
+* `storage.style` — the icon and the style the files and storages are shown with: resolvers of files,
+`StorageDecorator` that gives a storage its `IconStyleDecoration` (icon and style), `FileDecorator` that gives files
+theirs, the icon set and the types of decoration.
 * `storage.settings` — the settings of the styles (colors, bold, italic, opacity) grouped by kinds of files into a
 scheme, with the default schemes of the themes.
-* `storage.view` — the helpers of the views that show files: the columns, `FileCellUpdater` and `FileCellUtils` that
+* `storage.view` — the helpers of the views that show files: the columns, `FileCellUpdater` and `DecorationCellUtils` that
 keep a cell up to date, and `StorageErrors`, which tells the user why an operation of a storage failed.
 
 ### Core Concepts <a name="storage-concepts"></a>
@@ -1114,7 +1115,7 @@ plugged in or taken out), so the provider, the refiner and the file chooser do n
 `StorageProvider` each time they need one. A client that works with only some of the storages gives a provider that
 returns just those; the interface has one method, so a lambda is enough.
 * **Appearance of the storage itself** — a storage is loaded dynamically, so only it knows its own icon and style, which
-it provides through `StorageIconResolver` and `StorageStyleResolver`.
+it provides through its `StorageDecorator`, which gives both in one step from one state of the storage.
 
 ### Two-Phase Loading <a name="storage-two-phase"></a>
 
@@ -1213,7 +1214,7 @@ sequenceDiagram
 
 ### Appearance <a name="storage-appearance"></a>
 
-A file carries its decoration, `FileDecoration`, as an observable property: the icon and the style (the inline styles
+A file carries its decoration, `IconStyleDecoration`, as an observable property: the icon and the style (the inline styles
 of the icon and of the texts) that are given to the file in one step, so a cell that shows it is told once. They are
 resolved by two independent resolvers, `FileIconResolver` and `FileStyleResolver`, which are passed to the view and
 replaced when an application knows more kinds of files than the defaults. A resolver gets the `FileDecorationType` of
@@ -1235,7 +1236,7 @@ file, the file and the properties it is bound to as method references (`StorageF
 runs the update for the file when it starts observing and whenever one of the properties changes, and stops with
 `unobserve` when the cell becomes empty. The file is given to the updater and not read from the cell, because some
 cells set their item only at the end of `updateItem`. For the icon and the styles the update is
-`FileCellUtils.updateDecoration`, which ignores an outdated decoration that a reset leaves; a cell that shows a value
+`DecorationCellUtils.updateDecoration`, which ignores an outdated decoration that a reset leaves; a cell that shows a value
 adds its own `setText` to the update. The updater never calls the cell otherwise, so several cells of one row, one for
 each column, are each updated by the properties they observe, and the cell is not asked to show its file again.
 
@@ -1253,10 +1254,10 @@ classDiagram
     class FileRefinement
     class FileIconResolver
     class FileStyleResolver
-    class FileDecoration
+    class IconStyleDecoration
     class FileDecorator
     class FileCellUpdater
-    class FileCellUtils
+    class DecorationCellUtils
     class ColumnViewUtils
     class TableViewUtils
     class ViewModel
@@ -1273,13 +1274,13 @@ classDiagram
     View ..> TableViewUtils : walks the cells with
     FileDecorator o-- FileIconResolver
     FileDecorator o-- FileStyleResolver
-    FileDecorator ..> FileDecoration : creates
+    FileDecorator ..> IconStyleDecoration : creates
     FileDecorator ..> StorageFile : writes the decoration
-    StorageFile o-- FileDecoration
+    StorageFile o-- IconStyleDecoration
     View *-- Cell
     Cell --> FileDecorator : decorates with
     Cell *-- FileCellUpdater
-    Cell ..> FileCellUtils : applies the decoration with
+    Cell ..> DecorationCellUtils : applies the decoration with
     FileCellUpdater ..> StorageFile : observes the properties of
 ```
 

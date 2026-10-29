@@ -20,13 +20,14 @@ import com.techsenger.annotations.Nullable;
 import com.techsenger.shellfx.material.icon.FontIcon;
 
 /**
- * The icon and the style a file is shown with. A file gets both in one step, so the elements that show it are told
- * once. A decoration without a style is outdated in its style only: the icon is kept and the style is resolved again.
+ * The icon and the style an element, such as a file or a storage, is shown with. The element gets both in one step,
+ * so the views that show it are told once. A decoration without a style is outdated in its style only: the icon is
+ * kept and the style is resolved again.
  *
  * @author Pavel Castornii
- * @param icon the icon of the file
+ * @param icon the icon of the element
  * @param style the style of the icon and the texts, or {@code null} if it has to be resolved again
  */
-public record FileDecoration(FontIcon<?> icon, @Nullable IconTextStyle style) {
+public record IconStyleDecoration(FontIcon<?> icon, @Nullable IconTextStyle style) {
 
 }
