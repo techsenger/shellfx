@@ -84,53 +84,61 @@ public final class FileStyleDefaults {
         scheme.setHidden(hidden);
     }
 
-    private static FileStyleSettings style(@Nullable Integer iconColor, @Nullable Integer textColor) {
+    /**
+     * Creates the style of a file kind from the given colors. A color is 0xRRGGBBAA and is used as it is, so a color
+     * that is not opaque is allowed.
+     *
+     * @param iconColor the color of the icon, or {@code null} to leave it unset
+     * @param textColor the color of the text, or {@code null} to leave it unset
+     * @return the style
+     */
+    public static FileStyleSettings style(@Nullable Integer iconColor, @Nullable Integer textColor) {
         var style = new FileStyleSettings();
-        style.getIcon().setColor(iconColor == null ? null : (iconColor << 8) | 0xFF);
-        style.getText().setColor(textColor == null ? null : (textColor << 8) | 0xFF);
+        style.getIcon().setColor(iconColor);
+        style.getText().setColor(textColor);
         return style;
     }
 
     private static void cupertinoLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xAD6200, null));
-        scheme.setOther(style(0x434345, null));
-        scheme.setError(style(0xA41E1E, 0xA41E1E));
+        scheme.setDirectory(style(0xAD6200FF, null));
+        scheme.setOther(style(0x434345FF, null));
+        scheme.setError(style(0xA41E1EFF, 0xA41E1EFF));
     }
 
     private static void cupertinoDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xD18125, null));
-        scheme.setOther(style(0x838388, null));
-        scheme.setError(style(0xE0535E, 0xE0535E));
+        scheme.setDirectory(style(0xD18125FF, null));
+        scheme.setOther(style(0x838388FF, null));
+        scheme.setError(style(0xE0535EFF, 0xE0535EFF));
     }
 
     private static void primerLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xAB6101, null));
-        scheme.setOther(style(0x475059, null));
-        scheme.setError(style(0xA41E25, 0xA41E25));
+        scheme.setDirectory(style(0xAB6101FF, null));
+        scheme.setOther(style(0x475059FF, null));
+        scheme.setError(style(0xA41E25FF, 0xA41E25FF));
     }
 
     private static void primerDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xC67B24, null));
-        scheme.setOther(style(0x747D87, null));
-        scheme.setError(style(0xDD4352, 0xDD4352));
+        scheme.setDirectory(style(0xC67B24FF, null));
+        scheme.setOther(style(0x747D87FF, null));
+        scheme.setError(style(0xDD4352FF, 0xDD4352FF));
     }
 
     private static void nordLight(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xAA6204, null));
-        scheme.setOther(style(0x4B5569, null));
-        scheme.setError(style(0xA41E1F, 0xA41E1F));
+        scheme.setDirectory(style(0xAA6204FF, null));
+        scheme.setOther(style(0x4B5569FF, null));
+        scheme.setError(style(0xA41E1FFF, 0xA41E1FFF));
     }
 
     private static void nordDark(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xD98A2E, null));
-        scheme.setOther(style(0x949CAB, null));
-        scheme.setError(style(0xE77D79, 0xE77D79));
+        scheme.setDirectory(style(0xD98A2EFF, null));
+        scheme.setOther(style(0x949CABFF, null));
+        scheme.setError(style(0xE77D79FF, 0xE77D79FF));
     }
 
     private static void dracula(FileStyleScheme scheme) {
-        scheme.setDirectory(style(0xCF7F25, null));
-        scheme.setOther(style(0x909197, null));
-        scheme.setError(style(0xE46C68, 0xE46C68));
+        scheme.setDirectory(style(0xCF7F25FF, null));
+        scheme.setOther(style(0x909197FF, null));
+        scheme.setError(style(0xE46C68FF, 0xE46C68FF));
     }
 
     private FileStyleDefaults() {
