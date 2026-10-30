@@ -59,11 +59,6 @@ public class TextFieldColumnListCell<T> extends ColumnListCell<T> {
     @Override
     public void commitEdit(T newValue) {
         super.commitEdit(newValue);
-        if (this.converter != null) {
-            var item = converter.fromString(this.textField.getText());
-            getListView().getItems().set(getIndex(), item);
-            requestLayout();
-        }
         removeBox();
     }
 
