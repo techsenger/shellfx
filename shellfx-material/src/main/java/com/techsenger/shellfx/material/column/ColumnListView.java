@@ -99,6 +99,12 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
 
         private boolean dirty = true;
 
+        /**
+         * The {@link ColumnListView#contentVersion} this column was last built with; a column built with an older
+         * version shows items that have changed since.
+         */
+        private int builtVersion = -1;
+
         ColumnListViewColumn(final ColumnListView<T> listView) {
             this.listView = listView;
             node.getStyleClass().add("column");
@@ -123,7 +129,8 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
         @Override
         public void updateItem(Integer item, boolean empty) {
             updateColumnWidth();
-            if (item != null && item.equals(getItem()) && !empty && !dirty) {
+            if (item != null && item.equals(getItem()) && !empty && !dirty
+                    && builtVersion == listView.contentVersion) {
                 return;
             }
             super.updateItem(item, empty);
@@ -142,6 +149,7 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
                 if (listView.rowHeight > 0) {
                     updateCells();
                     dirty = false;
+                    builtVersion = listView.contentVersion;
                 } else {
                     addRowHeightCell();
                 }
@@ -322,20 +330,6 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
             return super.getCells();
         }
 
-        /**
-         * Marks the column the flow takes for reuse as dirty, so it shows its items again. A column that left the
-         * viewport waits in the pile of the flow with its old offset and its old cells, because the flow clears the
-         * pile only in a layout pass that finds something to do; when such a column comes back with the same offset,
-         * the guard of {@link ColumnListViewColumn#updateItem} would skip it, and its cells would keep whatever
-         * they showed before the items changed.
-         */
-        @Override
-        protected ColumnListViewColumn<T> getAvailableCell(int prefIndex) {
-            var column = super.getAvailableCell(prefIndex);
-            column.markDirty();
-            return column;
-        }
-
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ColumnListView.class);
@@ -410,6 +404,13 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
     private final EnumSet<RequestLayoutTrigger> pendingTriggers = EnumSet.noneOf(RequestLayoutTrigger.class);
 
     private final List<WeakReference<ColumnListViewColumn<?>>> columns = new LinkedList<>();
+
+    /**
+     * Grows every time the items shown by the columns change (the items themselves or how they are split into
+     * columns). A column built with an older version is stale and rebuilds when the flow reuses it, whereas a column
+     * of the current version is reused as it is, so reusing columns stays cheap.
+     */
+    private int contentVersion;
 
     public ColumnListView() {
         getStylesheets().add(ColumnListView.class.getResource("column-list-view.css").toExternalForm());
@@ -643,22 +644,12 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
                         this.virtualFlow.getPosition(), this.virtualFlow.getWidth(), this.virtualFlow.getHeight());
                 var itemsTriggered = triggers.contains(RequestLayoutTrigger.ITEMS);
                 if (newRowCount > 0 && (itemsTriggered || getRowCount() != newRowCount)) {
-                    // Only marked dirty when a genuine geometry change is about to be applied - not on every
-                    // layoutChildren() pass (this now runs far more often than the old, separately-triggered
-                    // refresh() ever did, since any descendant's requestLayout() - e.g. edit()'s own, on just
-                    // one column - bubbles up here too). Sweeping unconditionally would force every column to
-                    // rebuild on passes that change nothing, discarding e.g. a cell mid-edit for no reason.
-                    var iterator = this.columns.iterator();
-                    while (iterator.hasNext()) {
-                        var ref = iterator.next();
-                        var column = ref.get();
-                        if (column == null) {
-                            iterator.remove();
-                        } else {
-                            column.markDirty();
-                        }
-                    }
+                    // Only a genuine change of the items or of the geometry makes the columns stale - not every
+                    // layoutChildren() pass (any descendant's requestLayout() bubbles up here too), otherwise every
+                    // column would rebuild on passes that change nothing, discarding e.g. a cell mid-edit.
                     updateOffsets(newRowCount);
+                    // after the offsets: a column rebuilt before them has been built from the old ones
+                    contentVersion++;
                     scrollToFirstColumn(getFirstVisibleCellIndex());
                 }
                 consumeFirstVisibleCellIndexReset();
@@ -795,6 +786,29 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
         forEachCell(onlyVisible, cell -> cell.updateItem(cell.getItem(), false));
         applyCss();
         layout();
+    }
+
+    /**
+     * Makes the columns rebuild their cells from the current items the next time the flow reuses them, which a
+     * column that is not shown now would otherwise skip because its offset has not changed.
+     *
+     * @param onlyHidden whether to leave the columns from the first to the last visible one as they are, because
+     *     the caller has already updated them
+     */
+    void invalidateCells(boolean onlyHidden) {
+        contentVersion++;
+        if (onlyHidden) {
+            var firstCell = this.virtualFlow.getFirstVisibleCell();
+            var lastCell = this.virtualFlow.getLastVisibleCell();
+            if (firstCell == null || lastCell == null) {
+                return;
+            }
+            for (var column : this.virtualFlow.getCells()) {
+                if (column.getIndex() >= firstCell.getIndex() && column.getIndex() <= lastCell.getIndex()) {
+                    column.builtVersion = contentVersion;
+                }
+            }
+        }
     }
 
     @Override

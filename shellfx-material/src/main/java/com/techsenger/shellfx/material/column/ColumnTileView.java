@@ -85,6 +85,12 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
 
         private boolean dirty = true;
 
+        /**
+         * The {@link ColumnTileView#contentVersion} this row was last built with; a row built with an older version
+         * shows items that have changed since.
+         */
+        private int builtVersion = -1;
+
         ColumnTileViewRow(final ColumnTileView<T> tileView) {
             this.tileView = tileView;
             node.getStyleClass().add("row");
@@ -110,7 +116,8 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         public void updateItem(Integer item, boolean empty) {
             updateRowHeight();
             updateCellWidths();
-            if (item != null && item.equals(getItem()) && !empty && !dirty) {
+            if (item != null && item.equals(getItem()) && !empty && !dirty
+                    && builtVersion == tileView.contentVersion) {
                 return;
             }
             super.updateItem(item, empty);
@@ -129,6 +136,7 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
                 if (tileView.rowHeight > 0) {
                     updateCells();
                     dirty = false;
+                    builtVersion = tileView.contentVersion;
                 } else {
                     addRowHeightCell();
                 }
@@ -335,20 +343,6 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         protected List<ColumnTileViewRow<T>> getCells() {
             return super.getCells();
         }
-
-        /**
-         * Marks the row the flow takes for reuse as dirty, so it shows its items again. A row that left the
-         * viewport waits in the pile of the flow with its old offset and its old cells, because the flow clears the
-         * pile only in a layout pass that finds something to do; when such a row comes back with the same offset,
-         * the guard of {@link ColumnTileViewRow#updateItem} would skip it, and its cells would keep whatever they
-         * showed before the items changed.
-         */
-        @Override
-        protected ColumnTileViewRow<T> getAvailableCell(int prefIndex) {
-            var row = super.getAvailableCell(prefIndex);
-            row.markDirty();
-            return row;
-        }
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ColumnTileView.class);
@@ -382,6 +376,13 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
     private final EnumSet<RequestLayoutTrigger> pendingTriggers = EnumSet.noneOf(RequestLayoutTrigger.class);
 
     private final List<WeakReference<ColumnTileViewRow<?>>> rows = new LinkedList<>();
+
+    /**
+     * Grows every time the items shown by the rows change (the items themselves or how they are split into rows). A
+     * row built with an older version is stale and rebuilds when the flow reuses it, whereas a row of the current
+     * version is reused as it is, so reusing rows stays cheap.
+     */
+    private int contentVersion;
 
     public ColumnTileView() {
         getStylesheets().add(ColumnTileView.class.getResource("column-tile-view.css").toExternalForm());
@@ -567,22 +568,12 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
                         getRowCount(), newRowCount);
                 var itemsTriggered = triggers.contains(RequestLayoutTrigger.ITEMS);
                 if (itemsTriggered || getRowCount() != newRowCount) {
-                    // Only marked dirty when a genuine geometry change is about to be applied - not on every
-                    // layoutChildren() pass (this now runs far more often than the old, separately-triggered
-                    // refresh() ever did, since any descendant's requestLayout() - e.g. edit()'s own, on just
-                    // one row - bubbles up here too). Sweeping unconditionally would force every row to
-                    // rebuild on passes that change nothing, discarding e.g. a cell mid-edit for no reason.
-                    var iterator = this.rows.iterator();
-                    while (iterator.hasNext()) {
-                        var ref = iterator.next();
-                        var row = ref.get();
-                        if (row == null) {
-                            iterator.remove();
-                        } else {
-                            row.markDirty();
-                        }
-                    }
+                    // Only a genuine change of the items or of the geometry makes the rows stale - not every
+                    // layoutChildren() pass (any descendant's requestLayout() bubbles up here too), otherwise every
+                    // row would rebuild on passes that change nothing, discarding e.g. a cell mid-edit.
                     updateOffsets(newRowCount);
+                    // after the offsets: a row rebuilt before them has been built from the old ones
+                    contentVersion++;
                     scrollToFirstRow(getFirstVisibleCellIndex());
                 }
                 consumeFirstVisibleCellIndexReset();
@@ -672,6 +663,29 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
         forEachCell(onlyVisible, cell -> cell.updateItem(cell.getItem(), false));
         applyCss();
         layout();
+    }
+
+    /**
+     * Makes the rows rebuild their cells from the current items the next time the flow reuses them, which a row
+     * that is not shown now would otherwise skip because its offset has not changed.
+     *
+     * @param onlyHidden whether to leave the rows from the first to the last visible one as they are, because the
+     *     caller has already updated them
+     */
+    void invalidateCells(boolean onlyHidden) {
+        contentVersion++;
+        if (onlyHidden) {
+            var firstCell = this.virtualFlow.getFirstVisibleCell();
+            var lastCell = this.virtualFlow.getLastVisibleCell();
+            if (firstCell == null || lastCell == null) {
+                return;
+            }
+            for (var row : this.virtualFlow.getCells()) {
+                if (row.getIndex() >= firstCell.getIndex() && row.getIndex() <= lastCell.getIndex()) {
+                    row.builtVersion = contentVersion;
+                }
+            }
+        }
     }
 
     @Override

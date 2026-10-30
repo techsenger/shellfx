@@ -194,6 +194,29 @@ public final class ColumnViewUtils {
     }
 
     /**
+     * Makes the columns of {@code listView} rebuild their cells from the current items when they come back into
+     * view. Call it after items change in place, so that columns that are not shown do not keep the old state.
+     *
+     * @param listView the list view whose cells to invalidate
+     * @param onlyHidden whether to invalidate only the columns outside of the visible ones; pass {@code true} only if
+     *     the visible ones have already been updated by the caller, otherwise they are not rebuilt and stay outdated
+     */
+    public static void invalidateCells(ColumnListView<?> listView, boolean onlyHidden) {
+        listView.invalidateCells(onlyHidden);
+    }
+
+    /**
+     * The {@link ColumnTileView} counterpart of {@link #invalidateCells(ColumnListView, boolean)}, which
+     * invalidates rows instead of columns.
+     *
+     * @param tileView the tile view whose cells to invalidate
+     * @param onlyHidden whether to invalidate only the rows outside of the visible ones
+     */
+    public static void invalidateCells(ColumnTileView<?> tileView, boolean onlyHidden) {
+        tileView.invalidateCells(onlyHidden);
+    }
+
+    /**
      * Passes the items of {@code listView} to {@code action}, without touching the cells themselves, so a caller
      * can prepare the items that are shown (e.g. decorate them).
      *
