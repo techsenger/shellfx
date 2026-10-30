@@ -944,7 +944,7 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
         var columnIndex = resolveColumnIndex(selectedIndex);
         var newColumnIndex = resolveColumnIndex(newSelectedIndex);
         var firstVisibleColumnIndex = this.virtualFlow.getFirstVisibleCell().getIndex();
-        if (newColumnIndex <= firstVisibleColumnIndex) {
+        if (newColumnIndex != columnIndex && newColumnIndex <= firstVisibleColumnIndex) {
             scrollToFirstColumn(newColumnIndex);
             // Without forcing the scroll to actually be laid out here, select() below fires
             // updateSelectedCellHighlight() while the target column is still the pre-scroll one as far as
@@ -961,7 +961,7 @@ public class ColumnListView<T> extends AbstractColumnView<T> {
         var columnIndex = resolveColumnIndex(selectedIndex);
         var newColumnIndex = resolveColumnIndex(newSelectedIndex);
         var lastVisibleColumnIndex = this.virtualFlow.getLastVisibleCell().getIndex();
-        if (newColumnIndex >= lastVisibleColumnIndex) {
+        if (newColumnIndex != columnIndex && newColumnIndex >= lastVisibleColumnIndex) {
             scrollToLastColumn(newColumnIndex);
             // See the identical comment in selectPrevious.
             applyCss();

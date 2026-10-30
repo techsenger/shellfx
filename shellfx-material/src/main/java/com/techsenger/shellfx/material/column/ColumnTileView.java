@@ -867,9 +867,10 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
 
     private void selectPrevious(int selectedIndex, int newSelectedIndex) {
         //firstly we provide the row (it can be absent)
+        var rowIndex = resolveRowIndex(selectedIndex);
         var newRowIndex = resolveRowIndex(newSelectedIndex);
         var firstVisibleRowIndex = this.virtualFlow.getFirstVisibleCell().getIndex();
-        if (newRowIndex <= firstVisibleRowIndex) {
+        if (newRowIndex != rowIndex && newRowIndex <= firstVisibleRowIndex) {
             scrollToFirstRow(newRowIndex);
         }
         getSelectionModel().select(newSelectedIndex);
@@ -877,9 +878,10 @@ public class ColumnTileView<T> extends AbstractColumnView<T> {
 
     private void selectNext(int selectedIndex, int newSelectedIndex) {
         //firstly we provide the row (it can be absent)
+        var rowIndex = resolveRowIndex(selectedIndex);
         var newRowIndex = resolveRowIndex(newSelectedIndex);
         var lastVisibleRowIndex = this.virtualFlow.getLastVisibleCell().getIndex();
-        if (newRowIndex >= lastVisibleRowIndex) {
+        if (newRowIndex != rowIndex && newRowIndex >= lastVisibleRowIndex) {
             scrollToLastRow(newRowIndex);
         }
         getSelectionModel().select(newSelectedIndex);
